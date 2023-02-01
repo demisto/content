@@ -53,6 +53,46 @@ def install_packs_from_content_packs_to_install_path(servers, pack_ids, marketpl
             raise Exception('Failed to search and install packs and their dependencies.')
 
 
+def xsoar_configure_and_install_all_packs(options, branch_name: str, build_number: str):
+    """
+    Args:
+        options: script arguments.
+        branch_name(str): name of the current branch.
+        build_number(str): number of the current build flow
+    """
+    # Get the host by the ami env
+    server_to_port_mapping, server_version = XSOARBuild.get_servers(ami_env=options.ami_env)
+
+    logging.info('Retrieving the credentials for Cortex XSOAR server')
+    secret_conf_file = get_json(file_path=options.secret)
+    username: str = secret_conf_file.get('username')
+    password: str = secret_conf_file.get('userPassword')
+
+    # Configure the Servers
+    for server_url in server_to_port_mapping:
+        server = XSOARServer(internal_ip=server_url, user_name=username, password=password)
+        logging.info(f'Adding Marketplace configuration to {server_url}')
+        error_msg: str = 'Failed to set marketplace configuration.'
+        server.add_server_configuration(config_dict=MARKET_PLACE_CONFIGURATION, error_msg=error_msg)
+        XSOARBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
+
+        # Acquire the server's host and install all content packs (one threaded execution)
+        logging.info(f'Starting to install all content packs in {server_url}')
+        server_host: str = server.client.api_client.configuration.host
+        success_flag = install_all_content_packs_from_build_bucket(
+            client=server.client, host=server_host, server_version=server_version,
+            bucket_packs_root_path=GCPConfig.BUILD_BUCKET_PACKS_ROOT_PATH.format(branch=branch_name,
+                                                                                 build=build_number,
+                                                                                 marketplace='xsoar'),
+            service_account=options.service_account, extract_destination_path=options.extract_path
+        )
+        if success_flag:
+            logging.success(f'Finished installing all content packs in {server_url}')
+        else:
+            logging.error('Failed to install all packs.')
+            sys.exit(1)
+
+
 def xsoar_configure_and_install_flow(options, branch_name: str, build_number: str):
     """
     Args:
@@ -70,8 +110,8 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
 
     servers = []
     # Configure the Servers
-    for server_url, port in server_to_port_mapping.items():
-        server = XSOARServer(internal_ip=server_url, port=port, user_name=username, password=password)
+    for server_url in server_to_port_mapping:
+        server = XSOARServer(internal_ip=server_url, user_name=username, password=password)
         logging.info(f'Adding Marketplace configuration to {server_url}')
         error_msg: str = 'Failed to set marketplace configuration.'
         server.add_server_configuration(config_dict=MARKET_PLACE_CONFIGURATION, error_msg=error_msg)

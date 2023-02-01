@@ -174,7 +174,7 @@ demisto-sdk-nightly:run-commands-against-instance:
   stage: run-instances
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   script:
-    - !reference [.open-ssh-tunnel]
+    - !reference [.ssh-config-setup]
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - !reference [.download-demisto-conf]
     - |
@@ -206,7 +206,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     - *change-file-ids
     - *upload-entities-to-cortex-xsoar
     - section_start "Destroy instances"
-    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
+    - python3 ./Tests/scripts/destroy_instances.py --aritfacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
     - section_end "Destroy instances"
     - job-done
 
@@ -227,7 +227,6 @@ demisto-sdk-nightly:run-end-to-end-tests:
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
-    - !reference [.open-ssh-tunnel]
     - |
       mkdir $ARTIFACTS_FOLDER/demisto-sdk
       git clone -b master --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
