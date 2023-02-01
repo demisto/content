@@ -1,4 +1,4 @@
-The playbook sends a HTTP get response to the domain and validates if there is missing bucket information. 
+The playbook sends a HTTP get response to the hostname and validates if there is missing bucket information. 
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -10,8 +10,8 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* http
 * Set
+* http
 
 ### Commands
 This playbook does not use any commands.
@@ -21,7 +21,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| RemoteUrl | Remote IP address in an incident/alert.  | alert.hostname | Required |
+| RemoteHostname | Remote hostname in an incident/alert.  | alert.hostname | Required |
 
 ## Playbook Outputs
 ---
