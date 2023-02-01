@@ -101,6 +101,14 @@ INCIDENTS = [
     }
 ]
 
+INCIDENTS_MIRRORING_PLAYBOOK_ID = [
+    {
+        "id": 1,
+        "created": (datetime.now() - timedelta(minutes=10)).strftime(XSOAR_DATE_FORMAT),
+        "playbookId": "test"
+    },
+    ]
+
 REMOTE_INCIDENT = {
     "id": 1,
     "created": (datetime.now() - timedelta(minutes=10)).strftime(XSOAR_DATE_FORMAT),
@@ -129,6 +137,52 @@ def test_fetch_incidents(mocker):
 
     assert len(incidents_result) == 3
     assert dateparser.parse(next_run['last_fetch']) == dateparser.parse(INCIDENTS[-1]['created']) + timedelta(milliseconds=1)
+
+
+def test_fetch_incidents_mirroring_playbook_id(mocker):
+    """
+    Given:
+        - List of incident.
+
+    When:
+        - Running the fetch_incidents and getting this incident.
+
+    Then:
+        - Ensure the incident result contains playbookId field as expected.
+    """
+    mocker.patch.object(Client, 'search_incidents', return_value=INCIDENTS_MIRRORING_PLAYBOOK_ID)
+
+    first_fetch = dateparser.parse('3 days').strftime(XSOAR_DATE_FORMAT)
+    client = Client("")
+
+    next_run, incidents_result = fetch_incidents(client=client, max_results=3, last_run={}, first_fetch_time=first_fetch,
+                                                 query='', mirror_direction='None', mirror_tag=[])
+
+    assert len(incidents_result) == 1
+    assert "playbookId" in incidents_result[0]
+    
+    
+def test_fetch_incidents_drop_playbook_id(mocker):
+    """
+    Given:
+        - List of incident.
+
+    When:
+        - Running the fetch_incidents and getting this incident.
+
+    Then:
+        - Ensure the incident result does not contain playbookId field as expected.
+    """
+    mocker.patch.object(Client, 'search_incidents', return_value=INCIDENTS_MIRRORING_PLAYBOOK_ID)
+
+    first_fetch = dateparser.parse('3 days').strftime(XSOAR_DATE_FORMAT)
+    client = Client("")
+
+    next_run, incidents_result = fetch_incidents(client=client, max_results=3, last_run={}, first_fetch_time=first_fetch,
+                                                 query='', mirror_direction='None', mirror_tag=[], drop_playbookid=True)
+
+    assert len(incidents_result) == 1
+    assert "playbookId" not in incidents_result[0]
 
 
 def test_update_remote_system(mocker):

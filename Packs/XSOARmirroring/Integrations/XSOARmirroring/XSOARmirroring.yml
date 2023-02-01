@@ -87,9 +87,9 @@ configuration:
   name: debug_mode
   type: 8
   required: false
-- display: Mirror Playbook ID
-  name: mirror_playbookId
-  defaultvalue: "true"
+- display: Drop Playbook ID
+  name: drop_playbookId
+  defaultvalue: "false"
   type: 8
   required: false
   additionalinfo: 'Should the integration mirror the playbook ID field to the remote system? Note: Mirroring the playbook ID means that the remote system must be running the same playbook as the source system.'

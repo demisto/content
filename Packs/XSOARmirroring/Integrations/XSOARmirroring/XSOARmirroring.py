@@ -17,7 +17,7 @@ MAX_INCIDENTS_TO_FETCH = 100
 FIELDS_TO_COPY_FROM_REMOTE_INCIDENT = [
     'name', 'rawName', 'severity', 'occurred', 'modified', 'roles', 'type', 'rawType', 'status', 'reason', 'created',
     'closed', 'sla', 'labels', 'attachment', 'details', 'openDuration', 'lastOpen', 'owner', 'closeReason',
-    'rawCloseReason', 'closeNotes', 'dueDate', 'reminder', 'runStatus', 'notifyTime', 'phase',
+    'rawCloseReason', 'closeNotes', 'playbookId', 'dueDate', 'reminder', 'runStatus', 'notifyTime', 'phase',
     'rawPhase', 'CustomFields', 'category', 'rawCategory'
 ]
 
@@ -238,7 +238,7 @@ def test_module(client: Client, first_fetch_time: str) -> str:
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[str, int]],
                     first_fetch_time: Union[int, str], query: Optional[str], mirror_direction: str,
-                    mirror_tag: List[str]) -> Tuple[Dict[str, str], List[dict]]:
+                    mirror_tag: List[str], drop_playbookid: bool = False) -> Tuple[Dict[str, str], List[dict]]:
     """This function retrieves new incidents every interval (default is 1 minute).
 
     :type client: ``Client``
@@ -265,6 +265,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
     :param mirror_direction:
         Mirror direction for the fetched incidents
 
+    :type drop_playbookid: `bool`
+    :param drop_playbookid:
+        If the playbookid is being mirrored or not.
+
     :type mirror_tag: ``List[str]``
     :param mirror_tag:
         The tags that you will mirror out of the incident.
@@ -279,6 +283,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
     """
 
     last_fetch = last_run.get('last_fetch')
+    # Drop playbookId field if configured.
+    if drop_playbookid and 'playbookId' in FIELDS_TO_COPY_FROM_REMOTE_INCIDENT:
+        FIELDS_TO_COPY_FROM_REMOTE_INCIDENT.remove('playbookId')
     if not last_fetch:
         last_fetch = first_fetch_time  # type: ignore
     else:
@@ -752,9 +759,7 @@ def main() -> None:
 
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = arg_to_datetime(demisto.params().get('first_fetch', '3 days')).strftime(XSOAR_DATE_FORMAT)  # type: ignore
-    # Only mirror the playbookId field if configured.
-    if demisto.params().get('mirror_playbookId'):
-        FIELDS_TO_COPY_FROM_REMOTE_INCIDENT.append('playbookId')
+
     proxy = demisto.params().get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     mirror_tags = set(demisto.params().get('mirror_tag', '').split(',')) \
