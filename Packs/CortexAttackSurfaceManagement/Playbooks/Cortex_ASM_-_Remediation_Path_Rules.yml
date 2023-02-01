@@ -56,6 +56,12 @@ tasks:
         complex:
           root: alert
           accessor: asmattacksurfaceruleid
+          transformers:
+          - operator: StripChars
+            args:
+              chars:
+                value:
+                  simple: '["]'
       sort_by_creation_time:
         simple: desc
     separatecontext: false
