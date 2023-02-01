@@ -183,11 +183,14 @@ class MsGraphClient:
         except Exception as e:
             raise e
 
-    def list_users(self, properties, page_url):
+    def list_users(self, properties, page_url, filters):
         if page_url:
             response = self.ms_client.http_request(method='GET', url_suffix='users', full_url=page_url)
         else:
-            response = self.ms_client.http_request(method='GET', url_suffix='users', params={'$select': properties})
+            response = self.ms_client.http_request(method='GET', url_suffix='users',
+                                                   headers={"ConsistencyLevel": "eventual"},
+                                                   params={'$filter': filters, '$select': properties, "$count": "true"})
+
         next_page_url = response.get('@odata.nextLink')
         users = response.get('value')
         return users, next_page_url
@@ -390,7 +393,8 @@ def get_user_command(client: MsGraphClient, args: Dict):
 def list_users_command(client: MsGraphClient, args: Dict):
     properties = args.get('properties', 'id,displayName,jobTitle,mobilePhone,mail')
     next_page = args.get('next_page', None)
-    users_data, result_next_page = client.list_users(properties, next_page)
+    filters = args.get('filter', None)
+    users_data, result_next_page = client.list_users(properties, next_page, filters)
     users_readable, users_outputs = parse_outputs(users_data)
     accounts = create_account_outputs(users_outputs)
     metadata = None
@@ -474,7 +478,8 @@ def main():
     proxy = params.get('proxy', False)
     handle_error = argToBoolean(params.get('handle_error', 'true'))
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or params.get('certificate_thumbprint', '')
-    private_key = params.get('creds_certificate', {}).get('password', '') or params.get('private_key', '')
+    private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
+                   or params.get('private_key', ''))
     if not self_deployed and not enc_key:
         raise DemistoException('Key must be provided. For further information see '
                                'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
