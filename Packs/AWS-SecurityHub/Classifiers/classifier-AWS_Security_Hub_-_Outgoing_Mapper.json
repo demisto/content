@@ -33,12 +33,12 @@
                                 "args": {
                                     "input_values": {
                                         "value": {
-                                            "simple": "0,1,2,3,4"
+                                            "simple": "0.5,1,2,3,4"
                                         }
                                     },
                                     "mapped_values": {
                                         "value": {
-                                            "simple": "INFORMATIONAL, LOW, MEDIUM, HIGH, CRITICAL"
+                                            "simple": "INFORMATIONAL,LOW,MEDIUM,HIGH,CRITICAL"
                                         }
                                     }
                                 },

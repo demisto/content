@@ -109,7 +109,7 @@
                     "simple": "mirror_direction"
                 },
                 "dbotMirrorId": {
-                    "simple": "incident_id"
+                    "simple": "Id"
                 },
                 "dbotMirrorInstance": {
                     "simple": "mirror_instance"

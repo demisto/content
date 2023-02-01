@@ -16,6 +16,10 @@ MIRROR_DIRECTION_MAPPING = {
     "Incoming And Outgoing": "Both",
 }
 
+OUT_FIELDS = ['Confidence', 'Criticality', 'Note.Text', 'Note.UpdatedBy', 'Severity.Label', 'VerificationState',
+              'Workflow.Status']
+FindingIdentifiers_lIST = ['FindingIdentifiers.Id', 'FindingIdentifiers.ProductArn']
+
 '''HELPER FUNCTIONS'''
 
 
@@ -740,6 +744,7 @@ def batch_update_findings_command(client, args):
 
 def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filters, mirror_direction, finding_types,
                     workflow_status, product_name):
+    demisto.debug(f'{mirror_direction=}')
     last_run = demisto.getLastRun().get('lastRun', None)
     next_token = demisto.getLastRun().get('next_token', None)
     if last_run is None:
@@ -777,15 +782,17 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
         response = client.get_findings(Filters=filters)
     findings = response['Findings']
     next_token = response.get('NextToken')
-    incidents = [{
-        'occurred': finding['CreatedAt'],
-        'severity': severity_mapping(finding['Severity']['Label']),
-        'rawJSON': json.dumps(finding),
-        'dbotMirrorId': finding['Id'],
-        'mirror_direction': mirror_direction,
-        'mirror_instance': demisto.integrationInstance()
-    }
-        for finding in findings]
+    incidents = []
+    for finding in findings:
+        finding.update({
+            'mirror_direction': mirror_direction,
+            'mirror_instance': demisto.integrationInstance()
+        })
+        incidents.append({
+            'occurred': finding['CreatedAt'],
+            'severity': severity_mapping(finding['Severity']['Label']),
+            'rawJSON': json.dumps(finding)
+        })
     if findings:
         # in case we got finding, we should get the latest created one and increase it by 1 ms so the next fetch
         # wont include it in the query and fetch duplicates
@@ -912,9 +919,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     incident_type_scheme = SchemeTypeMapping(type_name='AWS Security Hub Finding')
     demisto.debug('Collecting incident mapping.')
 
-    out_fields = ['FindingIdentifiers.Id', 'FindingIdentifiers.ProductArn', 'Confidence', 'Criticality', 'Note.Text',
-                  'Note.UpdatedBy', 'Severity.Label', 'VerificationState', 'Workflow.Status']
-    for field in out_fields:
+    for field in OUT_FIELDS + FindingIdentifiers_lIST:
         incident_type_scheme.add_field(field)
 
     mapping_response = GetMappingFieldsResponse()
@@ -938,14 +943,40 @@ def update_remote_system_command(client: boto3.client, args: Dict[str, Any]) -> 
     delta = parsed_args.delta
     remote_incident_id = parsed_args.remote_incident_id
     data = parsed_args.data
+    list_delta_keys = []
     demisto.debug(f'Got the following {parsed_args=}, {data=}, {delta=}, and remote ID: {remote_incident_id}.')
     if delta:
+        list_delta_keys = list(delta.keys())
         demisto.debug(f'Got the following delta keys {list(delta.keys())}.')
     if parsed_args.incident_changed:
         demisto.debug(f'Incident id {remote_incident_id} and incident change: {parsed_args.incident_changed}')
-        response = client.batch_update_findings(**delta)
-        if response:
-            demisto.debug(f'The response is: {response}')
+        if any(field in list_delta_keys for field in OUT_FIELDS):
+            kwargs = {
+                "FindingIdentifiers": [{
+                    "Id": data.get('FindingIdentifiers.Id'),
+                    "ProductArn": data.get('FindingIdentifiers.ProductArn')
+                }],
+                "Severity": {
+                    "Label": delta.get('Severity.Label')
+                },
+                # should contain only 1 state
+                "VerificationState": delta.get('VerificationState')[0] if delta.get('VerificationState') else None,
+                "Workflow": {
+                    "Status": delta.get('Workflow.Status')
+                },
+                "Confidence": int(delta.get('Confidence')) if delta.get('Confidence') else None,
+                "Criticality": int(delta.get('Criticality')) if delta.get('Criticality') else None
+            }
+            if delta.get('Note.Text') or delta.get('Note.UpdatedBy'):
+                kwargs['Note'] = {
+                    "Text": delta.get('Note.Text') if delta.get('Note.Text') else data.get('Note.Text'),
+                    "UpdatedBy": delta.get('Note.UpdatedBy') if delta.get('Note.UpdatedBy') else data.get('Note.UpdatedBy')
+                }
+            kwargs = remove_empty_elements(kwargs)
+            demisto.debug(f'{kwargs=}')
+            response = client.batch_update_findings(**kwargs)
+            if response:
+                demisto.debug(f'The response is: {response}')
     else:
         demisto.debug(f'Skipping updating remote incident {remote_incident_id} as it did not change.')
     return remote_incident_id
@@ -1029,9 +1060,11 @@ def main():  # pragma: no cover
         elif command == 'update-remote-system':
             return_results(update_remote_system_command(client, args))
             return
-        elif demisto.command() == 'get-mapping-fields':
+        elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
             return
+        else:
+            raise NotImplementedError(f'{command} command is not implemented.')
 
         return_outputs(human_readable, outputs, response)
 

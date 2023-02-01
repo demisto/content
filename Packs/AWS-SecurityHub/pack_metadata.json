@@ -16,5 +16,8 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
+    ],
+    "itemPrefix": [
+        "AWS Security Hub"
     ]
 }

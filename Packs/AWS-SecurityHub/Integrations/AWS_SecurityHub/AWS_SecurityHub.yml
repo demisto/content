@@ -3399,10 +3399,8 @@ script:
       required: false
       secret: false
   - name: get-mapping-fields
-    arguments: [ ]
     description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
   - name: update-remote-system
-    arguments: [ ]
     description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
   dockerimage: demisto/boto3py3:1.0.0.44742
   feed: false
