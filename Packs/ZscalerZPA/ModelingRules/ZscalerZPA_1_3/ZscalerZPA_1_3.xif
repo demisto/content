@@ -39,7 +39,8 @@ filter
     xdm.target.host.hostname = ZEN,
     xdm.target.application.name = "Zscaler Private Access (ZPA)",
     xdm.auth.mfa.provider = Idp,
-    xdm.auth.mfa.client_details = SAMLAttributes;
+    xdm.auth.mfa.client_details = SAMLAttributes,
+    xdm.source.application.name = ;
 
 filter cat in ("Connector Status")
 | alter
