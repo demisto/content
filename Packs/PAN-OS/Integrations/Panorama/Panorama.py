@@ -3436,7 +3436,7 @@ def target_filter(rule: dict, target: str) -> bool:
 
 
 @logger
-def panorama_list_rules(xpath: str, tag: str = None):
+def panorama_list_rules(xpath: str, filters: dict = None, query: str = None):
     params = {
         'action': 'get',
         'type': 'config',
@@ -3444,8 +3444,25 @@ def panorama_list_rules(xpath: str, tag: str = None):
         'key': API_KEY
     }
 
-    if tag:
-        params["xpath"] = f'{params["xpath"]}[(tag/member = \'{tag}\') and (disabled = \'{demisto.args().get("disabled")}\')]'
+    if query:
+        params["xpath"] = f'{params["xpath"]}{query}'
+    else:
+        xpath_prefix = ''
+        for key, value in filters.items():
+            if key == 'tags':
+                for tag in value:
+                    if xpath_prefix:
+                        xpath_prefix += " and "
+                    xpath_prefix += f"(tag/member = '{tag}')"
+            if key in ('disabled', 'action'):
+                if xpath_prefix:
+                    xpath_prefix += " and "
+                xpath_prefix += f"({key} = '{value}')"
+            if key == 'rule_name':
+                if xpath_prefix:
+                    xpath_prefix += " and  "
+                xpath_prefix += f"@name = '{value}'"
+        params["xpath"] = f'{params["xpath"]}[{xpath_prefix}]'
 
     result = http_request(
         URL,
@@ -3468,9 +3485,16 @@ def panorama_list_rules_command(args: dict):
     else:
         xpath = XPATH_SECURITY_RULES
 
-    tag = args.get('tag')
+    filters = {
+        'rule_name': args.get('rulename'),
+        'tags': argToList(args.get('tags')),
+        'disabled': args.get('disabled'),
+        'action': args.get('action'),
+    }
+    query = args.get('query')
     target = args.get('target')
-    rules = panorama_list_rules(xpath, tag)
+
+    rules = panorama_list_rules(xpath, filters, query)
     pretty_rules = prettify_rules(rules, target)
 
     return_results({
