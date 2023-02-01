@@ -639,7 +639,7 @@ script:
       name: job_id
       required: false
     - default: false
-      defaultValue: '200'
+      defaultValue: '50'
       description: The maximum number of results to return. Default is 50.
       isArray: false
       name: limit

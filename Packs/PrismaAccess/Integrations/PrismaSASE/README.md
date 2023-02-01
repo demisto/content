@@ -1,118 +1,111 @@
 Provides commands for interaction with Prisma SASE API.
-This integration was integrated and tested with version 1 of Prisma SASE
+This integration was integrated and tested with version xx of Palo Alto Networks - Prisma SASE
 
-## Configure Prisma SASE on Cortex XSOAR
+## Configure Palo Alto Networks - Prisma SASE on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Prisma SASE.
+2. Search for Palo Alto Networks - Prisma SASE.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | API Gateway URL |  | True |
+    | Server URL |  | True |
     | API Client ID |  | True |
     | API Client Secret |  | True |
-    | Use system proxy settings |  | False |
     | Tenant Services Group ID | Default Tenant Services Group ID to use for API calls. Example: 1234567890. | True |
-    | Prisma API OAUTH URL | URL used to obtain the OAUTH2 access token. | False |
     | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### prisma-access-create-security-rule
+### prisma-sase-security-rule-create
 ***
 Create a new security rule.
 
 
 #### Base Command
 
-`prisma-access-create-security-rule`
+`prisma-sase-security-rule-create`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder | Prisma access folder location for the rule. | Required | 
-| position | Rule position. Possible values are: pre, post. | Required | 
-| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
-| name | Friendly name of the rule. | Required | 
-| action | Rule action. | Required | 
-| description | Rule description. | Optional | 
+| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| position | Rule position. Possible values are: pre, post. Default is pre. | Optional | 
+| name | The name of the security rule. | Required | 
+| action | Rule action. Possible values are: deny, allow, drop, reset-client, reset-server, reset-both. | Required | 
+| description | The security rule's description. | Optional | 
 | log_setting | Rule log setting. | Optional | 
-| application | A comma-separated list of applications. | Required | 
-| category | A comma-separated list of categories. | Required | 
-| destination | A comma-separated list of destination networks. | Required | 
+| application | A comma-separated list of applications. Default is any. | Optional | 
+| category | A comma-separated list of categories. You can get category values by running the prisma-sase-custom-url-category-list command. Default is any. | Optional | 
+| destination | A comma-separated list of destination networks. Default is any. | Optional | 
 | destination_hip | A comma-separated list of destination HIPs. | Optional | 
 | profile_setting | Security profiles to apply to the traffic. | Optional | 
-| service | Services the rule applies to. | Required | 
-| source | A comma-separated list of source networks. | Required | 
+| service | Services the rule applies to. Default is any. | Optional | 
+| source | A comma-separated list of source networks. Default is any. | Optional | 
 | source_hip | A comma-separated list of source HIPs. | Optional | 
-| source_user | A semi-colon (;) separated list of source users or groups. | Required | 
+| source_user | A semi-colon (;) separated list of source users or groups. Default is any. | Optional | 
 | tag | A comma-separated list of rule tags. | Optional | 
-| from | A comma-separated list of source zones. | Required | 
-| to | A comma-separated list of destination zones. | Required | 
+| from | A comma-separated list of source zones. Default is any. | Optional | 
+| to | A comma-separated list of destination zones. Default is any. | Optional | 
 | disabled | Whether the rule is disabled. | Optional | 
 | negate_source | Negate the source. | Optional | 
 | negate_destination | Negate the destination. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAccess.CreatedSecurityRule | unknown | Created security rule. | 
-| PrismaAccess.CreatedSecurityRule.action | String | Security rule action. | 
-| PrismaAccess.CreatedSecurityRule.application | String | Security rule application. | 
-| PrismaAccess.CreatedSecurityRule.category | String | Security rule category. | 
-| PrismaAccess.CreatedSecurityRule.description | String | Security rule description. | 
-| PrismaAccess.CreatedSecurityRule.destination | String | Security rule destination. | 
-| PrismaAccess.CreatedSecurityRule.folder | String | Security rule folder. | 
-| PrismaAccess.CreatedSecurityRule.from | String | Security rule from field \(source zone\(s\)\). | 
-| PrismaAccess.CreatedSecurityRule.id | String | Security rule ID. | 
-| PrismaAccess.CreatedSecurityRule.name | String | Security rule name. | 
-| PrismaAccess.CreatedSecurityRule.position | String | Security rule position. | 
-| PrismaAccess.CreatedSecurityRule.profile_setting.group | String | Security rule group. | 
-| PrismaAccess.CreatedSecurityRule.service | String | Security rule service. | 
-| PrismaAccess.CreatedSecurityRule.source | String | Security rule source. | 
-| PrismaAccess.CreatedSecurityRule.source_user | String | Security rule source user. | 
-| PrismaAccess.CreatedSecurityRule.to | String | Security rule to field \(destination zone\(s\)\). | 
+| PrismaSase.SecurityRule | String | Created security rule. | 
+| PrismaSase.SecurityRule.action | String | Security rule action. | 
+| PrismaSase.SecurityRule.application | String | Security rule application. | 
+| PrismaSase.SecurityRule.category | String | Security rule category. | 
+| PrismaSase.SecurityRule.description | String | Security rule description. | 
+| PrismaSase.SecurityRule.destination | String | Security rule destination. | 
+| PrismaSase.SecurityRule.folder | String | Security rule folder. | 
+| PrismaSase.SecurityRule.from | String | Security rule from field \(source zone\(s\)\). | 
+| PrismaSase.SecurityRule.id | String | Security rule ID. | 
+| PrismaSase.SecurityRule.name | String | Security rule name. | 
+| PrismaSase.SecurityRule.position | String | Security rule position. | 
+| PrismaSase.SecurityRule.profile_setting.group | String | Security rule group. | 
+| PrismaSase.SecurityRule.service | String | Security rule service. | 
+| PrismaSase.SecurityRule.source | String | Security rule source. | 
+| PrismaSase.SecurityRule.source_user | String | Security rule source user. | 
+| PrismaSase.SecurityRule.to | String | Security rule to field \(destination zone\(s\)\). | 
 
 #### Command example
-```!prisma-access-create-security-rule name="new-test-rule B" action="deny" description="Test Rule Created by XSOAR" application="any" category="any" destination="XSOAR Test Object A" profile_setting="best-practice" service="application-default" source="XSOAR Test Object A" source_user="any" from="trust" to="any" folder="Shared" position="pre"```
+```!prisma-sase-security-rule-create name="somename" action="allow"```
 #### Context Example
 ```json
 {
-    "PrismaAccess": {
-        "CreatedSecurityRule": {
-            "action": "deny",
+    "PrismaSase": {
+        "SecurityRule": {
+            "action": "allow",
             "application": [
                 "any"
             ],
             "category": [
                 "any"
             ],
-            "description": "Test Rule Created by XSOAR",
             "destination": [
-                "XSOAR Test Object A"
+                "any"
             ],
             "folder": "Shared",
             "from": [
-                "trust"
+                "any"
             ],
-            "id": "########-####-####-####-############",
-            "name": "new-test-rule B",
+            "id": "id",
+            "name": "somename",
             "position": "pre",
-            "profile_setting": {
-                "group": [
-                    "best-practice"
-                ]
-            },
             "service": [
-                "application-default"
+                "any"
             ],
             "source": [
-                "XSOAR Test Object A"
+                "any"
             ],
             "source_user": [
                 "any"
@@ -128,28 +121,29 @@ Create a new security rule.
 #### Human Readable Output
 
 >### Security Rule Created
->|Action|Application|Category|Description|Destination|Folder|From|Id|Name|Position|Profile Setting|Service|Source|Source User|To|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| deny | any | any | Test Rule Created by XSOAR | XSOAR Test Object A | Shared | trust | ########-####-####-####-############ | new-test-rule B | pre | group: best-practice | application-default | XSOAR Test Object A | any | any |
+>|Action|Application|Category|Destination|Folder|From|Id|Name|Position|Service|Source|Source User|To|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| allow | any | any | any | Shared | any | a1f60c27-b877-4a18-b5d6-50c1c447e9c9 | somename | pre | any | any | any | any |
 
 
-### prisma-access-list-security-rules
+### prisma-sase-security-rule-list
 ***
-List the security rules.
+Lists all security rules.
 
 
 #### Base Command
 
-`prisma-access-list-security-rules`
+`prisma-sase-security-rule-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder | Prisma access folder location for the rule. | Required | 
-| position | Security rule position. Possible values are: pre, post. | Required | 
-| name | Name of the security rule. | Optional | 
-| limit | The maximum number of results to return. Default is 10. | Optional | 
-| offset | Results paging offset. | Optional | 
+| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| position | Security rule position. Possible values are: pre, post. Default is pre. | Optional | 
+| limit | The maximum number of results to return. Default is 50. Default is 50. | Optional | 
+| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
+| page_size | Number of results per page to display. | Optional | 
+| rule_id | A specific security rule to return. If not specified, all security rules will be returned. | Optional | 
 | tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 
 
@@ -157,217 +151,68 @@ List the security rules.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAccess.FoundSecurityRule | unknown | Found security rule. | 
-| PrismaAccess.FoundSecurityRule.action | String | Security rule action. | 
-| PrismaAccess.FoundSecurityRule.application | String | Security rule application. | 
-| PrismaAccess.FoundSecurityRule.category | String | Security rule category. | 
-| PrismaAccess.FoundSecurityRule.description | String | Security rule description. | 
-| PrismaAccess.FoundSecurityRule.destination | String | Security rule destination. | 
-| PrismaAccess.FoundSecurityRule.folder | String | Security rule folder. | 
-| PrismaAccess.FoundSecurityRule.from | String | Security rule from field \(source zone\(s\)\). | 
-| PrismaAccess.FoundSecurityRule.id | String | Security rule ID. | 
-| PrismaAccess.FoundSecurityRule.log_setting | String | Security rule log setting. | 
-| PrismaAccess.FoundSecurityRule.name | String | Security rule name. | 
-| PrismaAccess.FoundSecurityRule.position | String | Security rule position. | 
-| PrismaAccess.FoundSecurityRule.service | String | Security rule service. | 
-| PrismaAccess.FoundSecurityRule.source | String | Security rule source. | 
-| PrismaAccess.FoundSecurityRule.source_user | String | Security rule source user. | 
-| PrismaAccess.FoundSecurityRule.tag | String | Security rule tag. | 
-| PrismaAccess.FoundSecurityRule.to | String | Security rule to field \(destination zone\(s\)\). | 
-| PrismaAccess.FoundSecurityRule.negate_destination | Boolean | Security rule negate destination. | 
+| PrismaSase.SecurityRule | String | Found security rule. | 
+| PrismaSase.SecurityRule.action | String | Security rule action. | 
+| PrismaSase.SecurityRule.application | String | Security rule application. | 
+| PrismaSase.SecurityRule.category | String | Security rule category. | 
+| PrismaSase.SecurityRule.description | String | Security rule description. | 
+| PrismaSase.SecurityRule.destination | String | Security rule destination. | 
+| PrismaSase.SecurityRule.folder | String | Security rule folder. | 
+| PrismaSase.SecurityRule.from | String | Security rule from field \(source zone\(s\)\). | 
+| PrismaSase.SecurityRule.id | String | Security rule ID. | 
+| PrismaSase.SecurityRule.log_setting | String | Security rule log setting. | 
+| PrismaSase.SecurityRule.name | String | Security rule name. | 
+| PrismaSase.SecurityRule.position | String | Security rule position. | 
+| PrismaSase.SecurityRule.service | String | Security rule service. | 
+| PrismaSase.SecurityRule.source | String | Security rule source. | 
+| PrismaSase.SecurityRule.source_user | String | Security rule source user. | 
+| PrismaSase.SecurityRule.tag | String | Security rule tag. | 
+| PrismaSase.SecurityRule.to | String | Security rule to field \(destination zone\(s\)\). | 
+| PrismaSase.SecurityRule.negate_destination | Boolean | Security rule negate destination. | 
 
 #### Command example
-```!prisma-access-list-security-rules folder="Shared" position="pre" limit=5```
+```!prisma-sase-security-rule-list limit=1```
 #### Context Example
 ```json
 {
-    "PrismaAccess": {
-        "FoundSecurityRule": [
-            {
-                "action": "drop",
-                "application": [
-                    "any"
-                ],
-                "category": [
-                    "any"
-                ],
-                "description": "Rule to block traffic to well known malicious IP addresses, as provided by dynamic feeds from Palo Alto Networks threat intel",
-                "destination": [
-                    "panw-known-ip-list"
-                ],
-                "folder": "Shared",
-                "from": [
-                    "any"
-                ],
-                "id": "########-####-####-####-############",
-                "log_setting": "Cortex Data Lake",
-                "name": "Drop Traffic to Known Malicious IP Addresses",
-                "position": "pre",
-                "service": [
-                    "any"
-                ],
-                "source": [
-                    "any"
-                ],
-                "source_user": [
-                    "any"
-                ],
-                "tag": [
-                    "best-practice"
-                ],
-                "to": [
-                    "any"
-                ]
-            },
-            {
-                "action": "drop",
-                "application": [
-                    "any"
-                ],
-                "category": [
-                    "any"
-                ],
-                "description": "Rule to block traffic to IP addresses that have recently been featured in threat activity advisories distributed by high-trust organizations",
-                "destination": [
-                    "panw-highrisk-ip-list"
-                ],
-                "folder": "Shared",
-                "from": [
-                    "any"
-                ],
-                "id": "########-####-####-####-############",
-                "log_setting": "Cortex Data Lake",
-                "name": "Drop Traffic to Potential High Risk IP Addresses",
-                "negate_destination": false,
-                "position": "pre",
-                "service": [
-                    "any"
-                ],
-                "source": [
-                    "any"
-                ],
-                "source_user": [
-                    "any"
-                ],
-                "tag": [
-                    "best-practice"
-                ],
-                "to": [
-                    "any"
-                ]
-            },
-            {
-                "action": "drop",
-                "application": [
-                    "any"
-                ],
-                "category": [
-                    "any"
-                ],
-                "description": "Rule to block traffic to bulletproof IP addresses as bulletproof hosting providers place few, if any, restrictions on content and attackers can use these services to host and distribute malicious, illegal, and unethical material",
-                "destination": [
-                    "panw-bulletproof-ip-list"
-                ],
-                "folder": "Shared",
-                "from": [
-                    "any"
-                ],
-                "id": "########-####-####-####-############",
-                "log_setting": "Cortex Data Lake",
-                "name": "Drop Traffic to Bulletproof hosting providers",
-                "negate_destination": false,
-                "position": "pre",
-                "service": [
-                    "any"
-                ],
-                "source": [
-                    "any"
-                ],
-                "source_user": [
-                    "any"
-                ],
-                "tag": [
-                    "best-practice"
-                ],
-                "to": [
-                    "any"
-                ]
-            },
-            {
-                "action": "drop",
-                "application": [
-                    "any"
-                ],
-                "category": [
-                    "any"
-                ],
-                "description": "Rule to block traffic from well known malicious IP addresses, as provided by dynamic feeds from Palo Alto Networks threat intel",
-                "destination": [
-                    "any"
-                ],
-                "folder": "Shared",
-                "from": [
-                    "any"
-                ],
-                "id": "########-####-####-####-############",
-                "log_setting": "Cortex Data Lake",
-                "name": "Drop Traffic from Known Malicious IP Addresses",
-                "negate_destination": false,
-                "position": "pre",
-                "service": [
-                    "any"
-                ],
-                "source": [
-                    "panw-known-ip-list"
-                ],
-                "source_user": [
-                    "any"
-                ],
-                "tag": [
-                    "best-practice"
-                ],
-                "to": [
-                    "any"
-                ]
-            },
-            {
-                "action": "drop",
-                "application": [
-                    "any"
-                ],
-                "category": [
-                    "any"
-                ],
-                "description": "Rule to block traffic from IP addresses that have recently been featured in threat activity advisories distributed by high-trust organizations",
-                "destination": [
-                    "any"
-                ],
-                "folder": "Shared",
-                "from": [
-                    "any"
-                ],
-                "id": "########-####-####-####-############",
-                "log_setting": "Cortex Data Lake",
-                "name": "Drop Traffic from Potential High Risk IP Addresses",
-                "negate_destination": false,
-                "position": "pre",
-                "service": [
-                    "any"
-                ],
-                "source": [
-                    "panw-highrisk-ip-list"
-                ],
-                "source_user": [
-                    "any"
-                ],
-                "tag": [
-                    "best-practice"
-                ],
-                "to": [
-                    "any"
-                ]
-            }
-        ]
+    "PrismaSase": {
+        "SecurityRule": {
+            "action": "drop",
+            "application": [
+                "any"
+            ],
+            "category": [
+                "any"
+            ],
+            "description": "Rule to block traffic to IP addresses that have recently been featured in threat activity advisories distributed by high-trust organizations",
+            "destination": [
+                "panw-highrisk-ip-list"
+            ],
+            "folder": "Shared",
+            "from": [
+                "any"
+            ],
+            "id": "id",
+            "log_setting": "Cortex Data Lake",
+            "name": "Drop Traffic to Potential High Risk IP Addresses",
+            "negate_destination": false,
+            "position": "pre",
+            "service": [
+                "any"
+            ],
+            "source": [
+                "any"
+            ],
+            "source_user": [
+                "any"
+            ],
+            "tag": [
+                "best-practice"
+            ],
+            "to": [
+                "any"
+            ]
+        }
     }
 }
 ```
@@ -377,27 +222,26 @@ List the security rules.
 >### Security Rules
 >|Id|Name|Description|Action|Destination|Folder|
 >|---|---|---|---|---|---|
->| ########-####-####-####-############ | Drop Traffic to Known Malicious IP Addresses | Rule to block traffic to well known malicious IP addresses, as provided by dynamic feeds from Palo Alto Networks threat intel | drop | panw-known-ip-list | Shared |
->| ########-####-####-####-############ | Drop Traffic to Potential High Risk IP Addresses | Rule to block traffic to IP addresses that have recently been featured in threat activity advisories distributed by high-trust organizations | drop | panw-highrisk-ip-list | Shared |
->| ########-####-####-####-############ | Drop Traffic to Bulletproof hosting providers | Rule to block traffic to bulletproof IP addresses as bulletproof hosting providers place few, if any, restrictions on content and attackers can use these services to host and distribute malicious, illegal, and unethical material | drop | panw-bulletproof-ip-list | Shared |
->| ########-####-####-####-############ | Drop Traffic from Known Malicious IP Addresses | Rule to block traffic from well known malicious IP addresses, as provided by dynamic feeds from Palo Alto Networks threat intel | drop | any | Shared |
->| ########-####-####-####-############ | Drop Traffic from Potential High Risk IP Addresses | Rule to block traffic from IP addresses that have recently been featured in threat activity advisories distributed by high-trust organizations | drop | any | Shared |
+>| bfc2caa7-42c4-4eb3-ae8e-0fb76ec20265 | Drop Traffic to Potential High Risk IP Addresses | Rule to block traffic to IP addresses that have recently been featured in threat activity advisories distributed by high-trust organizations | drop | panw-highrisk-ip-list | Shared |
 
 
-### prisma-access-push-candidate-config
+### prisma-sase-candidate-config-push
 ***
 Push the candidate configuration.
 
 
 #### Base Command
 
-`prisma-access-push-candidate-config`
+`prisma-sase-candidate-config-push`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | folders | Comma-separated list of targets (Remote Networks, Mobile Users, Service Connections). | Required | 
 | description | Configuration push job description. | Optional | 
+| interval_in_seconds | interval for polling command. Default is 30. | Optional | 
+| job_id | For polling use. | Optional | 
+| parent_finished | For polling use. | Optional | 
 | tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 
 
@@ -405,212 +249,43 @@ Push the candidate configuration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAccess.ConfigPush | unknown | Configuration job information. | 
-| PrismaAccess.ConfigPush.job_id | String | Configuration job ID. | 
-| PrismaAccess.ConfigPush.message | String | Configuration job message. | 
-| PrismaAccess.ConfigPush.success | Boolean | Whether the configuration job was successful. | 
+| PrismaSase.CandidateConfig.job_id | String | Configuration job ID. | 
+| PrismaSase.CandidateConfig.result | Boolean | The configuration push result. | 
 
-#### Command example
-```!prisma-access-push-candidate-config folders="Mobile Users"```
-#### Context Example
-```json
-{
-    "PrismaAccess": {
-        "ConfigPush": {
-            "job_id": "58",
-            "message": "CommitAndPush job enqueued with jobid 58",
-            "success": true
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Configuration Push Requested
->|Job Id|Message|Success|
->|---|---|---|
->| 58 | CommitAndPush job enqueued with jobid 58 | true |
-
-
-### prisma-access-edit-security-rule
+### prisma-sase-security-rule-update
 ***
-Edit an existing security rule.
+Update an existing security rule.
 
 
 #### Base Command
 
-`prisma-access-edit-security-rule`
+`prisma-sase-security-rule-update`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | ID of the rule to be changed. | Required | 
-| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
-| name | Friendly name of the rule. | Required | 
-| action | Rule action. | Required | 
-| description | Rule description. | Optional | 
+| rule_id | ID of the rule to be changed. | Required | 
+| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| position | Security rule position. Possible values are: pre, post. Default is pre. | Optional | 
+| action | Rule action. Possible values are: deny, allow, drop, reset-client, reset-server, reset-both. | Optional | 
+| description | The security rule's description. | Optional | 
 | log_setting | Rule log setting. | Optional | 
-| application | A comma-separated list of applications. | Required | 
-| category | A comma-separated list of categories. | Required | 
-| destination | A comma-separated list of destination networks. | Required | 
+| application | A comma-separated list of applications. | Optional | 
+| category | A comma-separated list of categories. | Optional | 
+| destination | A comma-separated list of destination networks. | Optional | 
 | destination_hip | A comma-separated list of destination HIPs. | Optional | 
 | profile_setting | Security profiles to apply to the traffic. | Optional | 
-| service | Services the rule applies to. | Required | 
-| source | A comma-separated list of source networks. | Required | 
+| service | Services the rule applies to. | Optional | 
+| source | A comma-separated list of source networks. | Optional | 
 | source_hip | A comma-separated list of source HIPs. | Optional | 
-| source_user | A semi-colon (;) separated list of source user(s). | Required | 
+| source_user | A semi-colon (;) separated list of source user(s). | Optional | 
 | tag | A comma-separated list of rule tags. | Optional | 
-| from | A comma-separated list of source zones. | Required | 
-| to | A comma-separated list of destination zones. | Required | 
+| from | A comma-separated list of source zones. | Optional | 
+| to | A comma-separated list of destination zones. | Optional | 
 | disabled | Whether the rule is disabled. | Optional | 
 | negate_source | Negate source. | Optional | 
 | negate_destination | Negate the destination. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PrismaAccess.EditedSecurityRule | unknown | Edited security rule. | 
-| PrismaAccess.UpdatedSecurityRule.action | String | Security rule action. | 
-| PrismaAccess.UpdatedSecurityRule.application | String | Security rule application. | 
-| PrismaAccess.UpdatedSecurityRule.category | String | Security rule category. | 
-| PrismaAccess.UpdatedSecurityRule.description | String | Security rule description. | 
-| PrismaAccess.UpdatedSecurityRule.destination | String | Security rule destination. | 
-| PrismaAccess.UpdatedSecurityRule.folder | String | Security rule folder. | 
-| PrismaAccess.UpdatedSecurityRule.from | String | Security rule from field \(source zone\(s\)\). | 
-| PrismaAccess.UpdatedSecurityRule.id | String | Security rule ID. | 
-| PrismaAccess.UpdatedSecurityRule.name | String | Security rule name. | 
-| PrismaAccess.UpdatedSecurityRule.profile_setting.group | String | Security rule profile setting. | 
-| PrismaAccess.UpdatedSecurityRule.service | String | Security rule service. | 
-| PrismaAccess.UpdatedSecurityRule.source | String | Security rule source. | 
-| PrismaAccess.UpdatedSecurityRule.source_user | String | Security rule source user. | 
-| PrismaAccess.UpdatedSecurityRule.to | String | Security rule to field \(destination zone\(s\)\). | 
-
-#### Command example
-```!prisma-access-edit-security-rule id="########-####-####-####-############" name="new-test-rule A" action="deny" description="Rule Edited by XSOAR" application="any" category="any" destination="XSOAR Test Object A" profile_setting="best-practice" service="application-default" source="XSOAR Test Object A" source_user="any" from="trust" to="any"```
-#### Context Example
-```json
-{
-    "PrismaAccess": {
-        "EditedSecurityRule": {
-            "action": "deny",
-            "application": [
-                "any"
-            ],
-            "category": [
-                "any"
-            ],
-            "description": "Rule Edited by XSOAR",
-            "destination": [
-                "XSOAR Test Object A"
-            ],
-            "folder": "Shared",
-            "from": [
-                "trust"
-            ],
-            "id": "########-####-####-####-############",
-            "name": "new-test-rule A",
-            "profile_setting": {
-                "group": [
-                    "best-practice"
-                ]
-            },
-            "service": [
-                "application-default"
-            ],
-            "source": [
-                "XSOAR Test Object A"
-            ],
-            "source_user": [
-                "any"
-            ],
-            "to": [
-                "any"
-            ]
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Security Rule Updated
->|Action|Application|Category|Description|Destination|Folder|From|Id|Name|Profile Setting|Service|Source|Source User|To|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| deny | any | any | Rule Edited by XSOAR | XSOAR Test Object A | Shared | trust | ########-####-####-####-############ | new-test-rule A | group: best-practice | application-default | XSOAR Test Object A | any | any |
-
-
-### prisma-sase-query-agg-monitor-api
-***
-Query the aggregate monitor API.
-
-
-#### Base Command
-
-`prisma-sase-query-agg-monitor-api`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
-| query_data | Query data. | Optional | 
-| uri | Aggregate monitor URI to query (for example: mt/monitor/v1/agg/threats). | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PrismaSASE.AggregateQueryResponse | unknown | Aggregate query response. | 
-| PrismaSASE.AggregateQueryResponse.header.dataCount | Number | Query response data count. | 
-
-#### Command example
-```!prisma-sase-query-agg-monitor-api uri="mt/monitor/v1/agg/alerts/list" query_data="{\"filter\":{\"operator\":\"AND\",\"rules\":[{\"operator\":\"in\",\"property\":\"domain\",\"values\":[\"External\",\"external\"]},{\"operator\":\"last_n_days\",\"property\":\"event_time\",\"values\":[7]}]},\"properties\":[{\"property\":\"total_count\"},{\"property\":\"mu_count\"},{\"property\":\"rn_count\"},{\"property\":\"sc_count\"}]}"```
-#### Context Example
-```json
-{
-    "PrismaSASE": {
-        "AggregateQueryResponse": {
-            "data": [],
-            "header": {
-                "clientRequestId": "########-####-####-####-############",
-                "createdAt": "2022-11-29T19:39:03Z",
-                "dataCount": 0,
-                "requestId": "########-####-####-####-############",
-                "status": {
-                    "subCode": 204
-                }
-            }
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Aggregate Monitor API Query Response
->|data|header|
->|---|---|
->|  | createdAt: 2022-11-29T19:39:03Z<br/>dataCount: 0<br/>requestId: ########-####-####-####-############<br/>clientRequestId: ########-####-####-####-############<br/>status: {"subCode": 204} |
-
-
-### prisma-access-get-security-rule-by-name
-***
-Get a security rule using the name.
-
-
-#### Base Command
-
-`prisma-access-get-security-rule-by-name`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Name of the security rule to search. | Required | 
-| folder | Prisma access folder location for the rule. | Required | 
-| position | Rule position. Possible values are: pre, post. | Required | 
+| overwrite | This argument specifies rather to append or overwrite the.... Possible values are: true, false. Default is false. | Optional | 
 | tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 
 
@@ -618,91 +293,40 @@ Get a security rule using the name.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAccess.FoundSecurityRule | unknown | Found security rule. | 
-| PrismaAccess.FoundSecurityRule.action | String | Security rule action. | 
-| PrismaAccess.FoundSecurityRule.application | String | Security rule application. | 
-| PrismaAccess.FoundSecurityRule.category | String | Security rule category. | 
-| PrismaAccess.FoundSecurityRule.description | String | Security rule description. | 
-| PrismaAccess.FoundSecurityRule.destination | String | Security rule destination. | 
-| PrismaAccess.FoundSecurityRule.folder | String | Security rule folder. | 
-| PrismaAccess.FoundSecurityRule.from | String | Security rule from field \(source zone\(s\)\). | 
-| PrismaAccess.FoundSecurityRule.id | String | Security rule ID. | 
-| PrismaAccess.FoundSecurityRule.name | String | Security rule name. | 
-| PrismaAccess.FoundSecurityRule.position | String | Security rule position. | 
-| PrismaAccess.FoundSecurityRule.profile_setting.group | String | Security rule profile setting. | 
-| PrismaAccess.FoundSecurityRule.service | String | Security rule service. | 
-| PrismaAccess.FoundSecurityRule.source | String | Security rule source. | 
-| PrismaAccess.FoundSecurityRule.source_user | String | Security rule source user. | 
-| PrismaAccess.FoundSecurityRule.to | String | Security rule to field \(destination zone\(s\)\). | 
+| PrismaSase.SecurityRule | String | Edited security rule. | 
+| PrismaSase.SecurityRule.action | String | Security rule action. | 
+| PrismaSase.SecurityRule.application | String | Security rule application. | 
+| PrismaSase.SecurityRule.category | String | Security rule category. | 
+| PrismaSase.SecurityRule.description | String | Security rule description. | 
+| PrismaSase.SecurityRule.destination | String | Security rule destination. | 
+| PrismaSase.SecurityRule.folder | String | Security rule folder. | 
+| PrismaSase.SecurityRule.from | String | Security rule from field \(source zone\(s\)\). | 
+| PrismaSase.SecurityRule.id | String | Security rule ID. | 
+| PrismaSase.SecurityRule.name | String | Security rule name. | 
+| PrismaSase.SecurityRule.profile_setting.group | String | Security rule profile setting. | 
+| PrismaSase.SecurityRule.service | String | Security rule service. | 
+| PrismaSase.SecurityRule.source | String | Security rule source. | 
+| PrismaSase.SecurityRule.source_user | String | Security rule source user. | 
+| PrismaSase.SecurityRule.to | String | Security rule to field \(destination zone\(s\)\). | 
 
-#### Command example
-```!prisma-access-get-security-rule-by-name folder="Shared" name="new-test-rule B" position="pre"```
-#### Context Example
-```json
-{
-    "PrismaAccess": {
-        "FoundSecurityRule": {
-            "action": "deny",
-            "application": [
-                "any"
-            ],
-            "category": [
-                "any"
-            ],
-            "description": "Test Rule Created by XSOAR",
-            "destination": [
-                "XSOAR Test Object A"
-            ],
-            "folder": "Shared",
-            "from": [
-                "trust"
-            ],
-            "id": "########-####-####-####-############",
-            "name": "new-test-rule B",
-            "position": "pre",
-            "profile_setting": {
-                "group": [
-                    "best-practice"
-                ]
-            },
-            "service": [
-                "application-default"
-            ],
-            "source": [
-                "XSOAR Test Object A"
-            ],
-            "source_user": [
-                "any"
-            ],
-            "to": [
-                "any"
-            ]
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Security Rules
->|action|application|category|description|destination|folder|from|id|name|position|profile_setting|service|source|source_user|to|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| deny | any | any | Test Rule Created by XSOAR | XSOAR Test Object A | Shared | trust | ########-####-####-####-############ | new-test-rule B | pre | group: best-practice | application-default | XSOAR Test Object A | any | any |
-
-
-### prisma-access-get-config-jobs-by-id
+### prisma-sase-address-object-update
 ***
-Get a specific configuration job by the job ID.
+Update an existing address object.
 
 
 #### Base Command
 
-`prisma-access-get-config-jobs-by-id`
+`prisma-sase-address-object-update`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | A comma-separated list of job IDs. | Required | 
+| object_id | ID of the address object to edit. | Required | 
+| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| description | The address object's description. | Optional | 
+| type | The type of the address. Possible values are: ip_netmask, ip_range, ip_wildcard, fqdn. | Optional | 
+| address_value | The address value (should match the type). | Required | 
+| tag | A comma-separated list of address object tags. | Optional | 
 | tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 
 
@@ -710,197 +334,71 @@ Get a specific configuration job by the job ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAccess.ConfigJob | unknown | Configuration job details. | 
-| PrismaAccess.ConfigJob.details | String | Config job details. | 
-| PrismaAccess.ConfigJob.end_ts | Date | Configuration job end timestamp. | 
-| PrismaAccess.ConfigJob.id | String | Configuration job ID. | 
-| PrismaAccess.ConfigJob.insert_ts | Date | Configuration job insert timestamp. | 
-| PrismaAccess.ConfigJob.job_result | String | Configuration job result. | 
-| PrismaAccess.ConfigJob.job_status | String | Configuration job status. | 
-| PrismaAccess.ConfigJob.job_type | String | Configuration job type. | 
-| PrismaAccess.ConfigJob.last_update | Date | Configuration job last update. | 
-| PrismaAccess.ConfigJob.opaque_int | String | Configuration job opaque integer. | 
-| PrismaAccess.ConfigJob.opaque_str | String | Configuration job opaque string. | 
-| PrismaAccess.ConfigJob.owner | String | Configuration job owner. | 
-| PrismaAccess.ConfigJob.parent_id | String | Configuration job parent ID. | 
-| PrismaAccess.ConfigJob.percent | String | Configuration job percent. | 
-| PrismaAccess.ConfigJob.result_i | String | Configuration job result integer. | 
-| PrismaAccess.ConfigJob.result_str | String | Configuration job string. | 
-| PrismaAccess.ConfigJob.session_id | String | Configuration job session ID. | 
-| PrismaAccess.ConfigJob.start_ts | Date | Configuration job start timestamp. | 
-| PrismaAccess.ConfigJob.status_i | String | Config job status integer. | 
-| PrismaAccess.ConfigJob.status_str | String | Configuration job status string. | 
-| PrismaAccess.ConfigJob.summary | String | Configuration job summary. | 
-| PrismaAccess.ConfigJob.type_i | String | Configuration job type integer. | 
-| PrismaAccess.ConfigJob.type_str | String | Configuration job type string. | 
-| PrismaAccess.ConfigJob.uname | String | Configuration job uname. | 
+| PrismaSase.Address.description | String | Address description. | 
+| PrismaSase.Address.folder | String | Address folder. | 
+| PrismaSase.Address.id | String | Address ID. | 
+| PrismaSase.Address.address_value | String | Address value. | 
+| PrismaSase.Address.type | String | Address type. | 
+| PrismaSase.Address.name | String | Address name. | 
 
-#### Command example
-```!prisma-access-get-config-jobs-by-id id=21```
-#### Context Example
-```json
-{
-    "PrismaAccess": {
-        "ConfigJob": {
-            "details": "{\"info\":[\"Configuration committed successfully\"],\"errors\":[],\"warnings\":[],\"description\":\"Test Push from XSOAR\"}",
-            "end_ts": "2022-09-30 05:03:30",
-            "id": "21",
-            "insert_ts": "2022-09-30 05:02:41",
-            "job_result": "2",
-            "job_status": "2",
-            "job_type": "53",
-            "last_update": "2022-09-30 05:03:33",
-            "opaque_int": "0",
-            "opaque_str": "",
-            "owner": "cfgserv",
-            "parent_id": "0",
-            "percent": "100",
-            "result_i": "2",
-            "result_str": "OK",
-            "session_id": "",
-            "start_ts": "2022-09-30 05:02:41",
-            "status_i": "2",
-            "status_str": "FIN",
-            "summary": "",
-            "type_i": "53",
-            "type_str": "CommitAndPush",
-            "uname": "user@example.com"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Config Jobs
->|Id|Type Str|
->|---|---|
->| 21 | CommitAndPush |
-
-
-### prisma-access-list-config-jobs
+### prisma-sase-config-job-list
 ***
-List configuration jobs.
+Lists all configuration jobs.
 
 
 #### Base Command
 
-`prisma-access-list-config-jobs`
+`prisma-sase-config-job-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| job_id | A specific config job to return. If not specified, all config jobs will be returned. | Optional | 
+| limit | The maximum number of results to return. Default is 50. Default is 200. | Optional | 
 | tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
-| limit | The maximum number of results to return. Default is 200. | Optional | 
-| offset | Results paging offset. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAccess.ConfigJob | unknown | Configuration job details. | 
-| PrismaAccess.ConfigJob.description | String | Configuration job description. | 
-| PrismaAccess.ConfigJob.end_ts | Date | Configuration job end timestamp. | 
-| PrismaAccess.ConfigJob.id | String | Configuration job ID. | 
-| PrismaAccess.ConfigJob.job_result | String | Configuration job result. | 
-| PrismaAccess.ConfigJob.job_status | String | Configuration job status. | 
-| PrismaAccess.ConfigJob.job_type | String | Configuration job type. | 
-| PrismaAccess.ConfigJob.parent_id | String | Configuration job parent ID. | 
-| PrismaAccess.ConfigJob.percent | String | Configuration job percent. | 
-| PrismaAccess.ConfigJob.result_str | String | Configuration job result string. | 
-| PrismaAccess.ConfigJob.start_ts | Date | Configuration job start timestamp. | 
-| PrismaAccess.ConfigJob.status_str | String | Configuration job status string. | 
-| PrismaAccess.ConfigJob.summary | String | Configuration job summary. | 
-| PrismaAccess.ConfigJob.type_str | String | Configuration job type string. | 
-| PrismaAccess.ConfigJob.uname | String | Configuration job uname. | 
+| PrismaSase.ConfigJob.description | String | Configuration job description. | 
+| PrismaSase.ConfigJob.end_ts | Date | Configuration job end timestamp. | 
+| PrismaSase.ConfigJob.id | String | Configuration job ID. | 
+| PrismaSase.ConfigJob.job_result | String | Configuration job result. | 
+| PrismaSase.ConfigJob.job_status | String | Configuration job status. | 
+| PrismaSase.ConfigJob.job_type | String | Configuration job type. | 
+| PrismaSase.ConfigJob.parent_id | String | Configuration job parent ID. | 
+| PrismaSase.ConfigJob.percent | String | Configuration job percent. | 
+| PrismaSase.ConfigJob.result_str | String | Configuration job result string. | 
+| PrismaSase.ConfigJob.start_ts | Date | Configuration job start timestamp. | 
+| PrismaSase.ConfigJob.status_str | String | Configuration job status string. | 
+| PrismaSase.ConfigJob.summary | String | Configuration job summary. | 
+| PrismaSase.ConfigJob.type_str | String | Configuration job type string. | 
+| PrismaSase.ConfigJob.uname | String | Configuration job uname. | 
 
 #### Command example
-```!prisma-access-list-config-jobs limit=5```
+```!prisma-sase-config-job-list limit=1```
 #### Context Example
 ```json
 {
-    "PrismaAccess": {
+    "PrismaSase": {
         "ConfigJob": [
             {
-                "description": "Mobile Users Global Protect configuration pushed to cloud",
-                "end_ts": "2022-11-29 19:36:12",
-                "id": "57",
+                "description": "Remote Networks configuration pushed to cloud",
+                "end_ts": "2023-02-01 12:57:54",
+                "id": "200",
                 "job_result": "2",
                 "job_status": "2",
                 "job_type": "22",
-                "parent_id": "56",
+                "parent_id": "199",
                 "percent": "100",
                 "result_str": "OK",
-                "start_ts": "2022-11-29 19:32:40",
+                "start_ts": "2023-02-01 12:55:31",
                 "status_str": "FIN",
                 "summary": "Configuration push finished",
                 "type_str": "CommitAll",
-                "uname": "user@example.com"
-            },
-            {
-                "description": "",
-                "end_ts": "2022-11-29 19:32:40",
-                "id": "56",
-                "job_result": "2",
-                "job_status": "2",
-                "job_type": "53",
-                "parent_id": "0",
-                "percent": "100",
-                "result_str": "OK",
-                "start_ts": "2022-11-29 19:31:31",
-                "status_str": "FIN",
-                "summary": "",
-                "type_str": "CommitAndPush",
-                "uname": "user@example.com"
-            },
-            {
-                "description": "Service Connections configuration pushed to cloud",
-                "end_ts": "2022-11-23 16:00:56",
-                "id": "55",
-                "job_result": "2",
-                "job_status": "2",
-                "job_type": "22",
-                "parent_id": "54",
-                "percent": "100",
-                "result_str": "OK",
-                "start_ts": "2022-11-23 15:59:34",
-                "status_str": "FIN",
-                "summary": "Configuration push finished",
-                "type_str": "CommitAll",
-                "uname": "user@example.com"
-            },
-            {
-                "description": "",
-                "end_ts": "2022-11-23 15:59:35",
-                "id": "54",
-                "job_result": "2",
-                "job_status": "2",
-                "job_type": "53",
-                "parent_id": "0",
-                "percent": "100",
-                "result_str": "OK",
-                "start_ts": "2022-11-23 15:58:26",
-                "status_str": "FIN",
-                "summary": "",
-                "type_str": "CommitAndPush",
-                "uname": "user@example.com"
-            },
-            {
-                "description": "Service Connections configuration pushed to cloud",
-                "end_ts": "2022-11-23 15:50:43",
-                "id": "53",
-                "job_result": "1",
-                "job_status": "2",
-                "job_type": "22",
-                "parent_id": "52",
-                "percent": "100",
-                "result_str": "FAIL",
-                "start_ts": "2022-11-23 14:55:28",
-                "status_str": "FIN",
-                "summary": "Configuration push failed",
-                "type_str": "CommitAll",
-                "uname": "user@example.com"
+                "uname": "APIGateway@ProdInternal.com"
             }
         ]
     }
@@ -910,23 +408,19 @@ List configuration jobs.
 #### Human Readable Output
 
 >### Config Job
->|Id|Type Str|Description|Summary|
->|---|---|---|---|
->| 57 | CommitAll | Mobile Users Global Protect configuration pushed to cloud | Configuration push finished |
->| 56 | CommitAndPush |  |  |
->| 55 | CommitAll | Service Connections configuration pushed to cloud | Configuration push finished |
->| 54 | CommitAndPush |  |  |
->| 53 | CommitAll | Service Connections configuration pushed to cloud | Configuration push failed |
+>|Id|Type Str|Status Str|Result Str|Start Ts|End Ts|
+>|---|---|---|---|---|---|
+>| 200 | CommitAll | FIN | OK | 2023-02-01 12:55:31 | 2023-02-01 12:57:54 |
 
 
-### prisma-access-delete-security-rule
+### prisma-sase-security-rule-delete
 ***
-Delete a security rule.
+Delete a specific security rule.
 
 
 #### Base Command
 
-`prisma-access-delete-security-rule`
+`prisma-sase-security-rule-delete`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -937,65 +431,103 @@ Delete a security rule.
 
 #### Context Output
 
+There is no context output for this command.
+### prisma-sase-address-object-create
+***
+Create a new address object.
+
+
+#### Base Command
+
+`prisma-sase-address-object-create`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| name | The name of the address object. | Required | 
+| description | The address object's description. | Optional | 
+| type | The type of the address. Possible values are: ip_netmask, ip_range, ip_wildcard, fqdn. | Required | 
+| tag | A comma-separated list of address object tags. | Optional | 
+| address_value | The address value (should match the type). | Required | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
+
+
+#### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAccess.DeletedSecurityRule | unknown | Deleted security rule info. | 
-| PrismaAccess.DeletedSecurityRule.action | String | Security rule action. | 
-| PrismaAccess.DeletedSecurityRule.application | String | Security rule application. | 
-| PrismaAccess.DeletedSecurityRule.category | String | Security rule category. | 
-| PrismaAccess.DeletedSecurityRule.description | String | Security rule description. | 
-| PrismaAccess.DeletedSecurityRule.destination | String | Security rule destination. | 
-| PrismaAccess.DeletedSecurityRule.folder | String | Security rule folder. | 
-| PrismaAccess.DeletedSecurityRule.from | String | Security rule from field \(source zone\(s\)\). | 
-| PrismaAccess.DeletedSecurityRule.id | String | Security rule ID. | 
-| PrismaAccess.DeletedSecurityRule.name | String | Security rule name. | 
-| PrismaAccess.DeletedSecurityRule.profile_setting.group | String | Security rule profile setting. | 
-| PrismaAccess.DeletedSecurityRule.service | String | Security rule service. | 
-| PrismaAccess.DeletedSecurityRule.source | String | Security rule source. | 
-| PrismaAccess.DeletedSecurityRule.source_user | String | Security rule source user. | 
-| PrismaAccess.DeletedSecurityRule.to | String | Security rule to field \(destination zone\(s\)\). | 
+| PrismaSase.Address | String | Created address object. | 
+| PrismaSase.Address.description | String | Address description. | 
+| PrismaSase.Address.folder | String | Address folder. | 
+| PrismaSase.Address.id | String | Address ID. | 
+| PrismaSase.Address.type | String | Address type. | 
+| PrismaSase.Address.address_value | String | Address value. | 
+| PrismaSase.Address.name | String | Address name. | 
+
+### prisma-sase-address-object-delete
+***
+Delete a specific address object.
+
+
+#### Base Command
+
+`prisma-sase-address-object-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_id | ID of the address object to delete. | Required | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### prisma-sase-address-object-list
+***
+Lists all addresses objects.
+
+
+#### Base Command
+
+`prisma-sase-address-object-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_id | The specific address object to return. If not specified, all addresses will be returned. | Optional | 
+| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| limit | The maximum number of results to return. Default is 50. Default is 50. | Optional | 
+| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
+| page_size | Number of results per page to display. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaSase.Address.description | String | Address description. | 
+| PrismaSase.Address.folder | String | Address folder. | 
+| PrismaSase.Address.id | String | Address ID. | 
+| PrismaSase.Address.name | String | Address name. | 
+| PrismaSase.Address.address_value | String | Address value. | 
+| PrismaSase.Address.type | String | Address type. | 
 
 #### Command example
-```!prisma-access-delete-security-rule rule_id="########-####-####-####-############"```
+```!prisma-sase-address-object-list limit=1```
 #### Context Example
 ```json
 {
-    "PrismaAccess": {
-        "DeletedSecurityRule": {
-            "action": "deny",
-            "application": [
-                "any"
-            ],
-            "category": [
-                "any"
-            ],
-            "description": "Rule Edited by XSOAR",
-            "destination": [
-                "XSOAR Test Object A"
-            ],
+    "PrismaSase": {
+        "Address": {
+            "address_value": "sinkhole.paloaltonetworks.com",
+            "description": "Palo Alto Networks sinkhole",
             "folder": "Shared",
-            "from": [
-                "trust"
-            ],
-            "id": "########-####-####-####-############",
-            "name": "new-test-rule A",
-            "profile_setting": {
-                "group": [
-                    "best-practice"
-                ]
-            },
-            "service": [
-                "application-default"
-            ],
-            "source": [
-                "XSOAR Test Object A"
-            ],
-            "source_user": [
-                "any"
-            ],
-            "to": [
-                "any"
-            ]
+            "id": "id",
+            "name": "Palo Alto Networks Sinkhole",
+            "type": "fqdn"
         }
     }
 }
@@ -1003,55 +535,105 @@ Delete a security rule.
 
 #### Human Readable Output
 
->### Security Rule Deleted
->|Action|Application|Category|Description|Destination|Folder|From|Id|Name|Profile Setting|Service|Source|Source User|To|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| deny | any | any | Rule Edited by XSOAR | XSOAR Test Object A | Shared | trust | ########-####-####-####-############ | new-test-rule A | group: best-practice | application-default | XSOAR Test Object A | any | any |
+>### Address Objects
+>|Id|Name|Description|Type|Address Value|Tag|
+>|---|---|---|---|---|---|
+>| 28f8667c-e89c-403a-aa6d-e294bd08e7ba | Palo Alto Networks Sinkhole | Palo Alto Networks sinkhole | fqdn | sinkhole.paloaltonetworks.com |  |
 
 
-### prisma-access-create-address-object
+### prisma-sase-tag-list
 ***
-Create a new address object
+Lists all tags.
 
 
 #### Base Command
 
-`prisma-access-create-address-object`
+`prisma-sase-tag-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder | Prisma Access Folder Location for the Object. | Required | 
+| tag_id | A specific tag to return. If not specified, all tags will be returned. | Optional | 
+| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| limit | The maximum number of results to return. Default is 50. Default is 50. | Optional | 
+| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
+| page_size | Number of results per page to display. | Optional | 
 | tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
-| name | Friendly name of the address object. | Required | 
-| description | Address object description. | Optional | 
-| ip_netmask | IP/Netmask of the object using slash notation. | Required | 
-| tag | A comma-separated list of address object tags. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAccess.CreatedAddressObject | unknown | Created address object. | 
-| PrismaAccess.CreatedAddress.description | String | Address description. | 
-| PrismaAccess.CreatedAddress.folder | String | Address folder. | 
-| PrismaAccess.CreatedAddress.id | String | Address ID. | 
-| PrismaAccess.CreatedAddress.ip_netmask | String | Address IP netmask. | 
-| PrismaAccess.CreatedAddress.name | String | Address name. | 
+| PrismaSase.Tag.id | String | Tag ID. | 
+| PrismaSase.Tag.name | String | Tag name. | 
+| PrismaSase.Tag.folder | String | Tag folder. | 
+| PrismaSase.Tag.comments | String | Tag comments. | 
+| PrismaSase.Tag.color | String | The tag color. | 
 
 #### Command example
-```!prisma-access-create-address-object folder="Shared" ip_netmask="1.1.1.1/32" name="XSOAR Test Object A" description="Test Object Creation from XSOAR"```
+```!prisma-sase-tag-list limit=1```
 #### Context Example
 ```json
 {
-    "PrismaAccess": {
-        "CreatedAddress": {
-            "description": "Test Object Creation from XSOAR",
+    "PrismaSase": {
+        "Tag": {
+            "color": "Olive",
+            "folder": "predefined",
+            "name": "Sanctioned"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Tags
+>|Id|Name|Folder|Color|Comments|
+>|---|---|---|---|---|
+>|  | Sanctioned | predefined | Olive |  |
+
+
+### prisma-sase-tag-create
+***
+Create a new tag.
+
+
+#### Base Command
+
+`prisma-sase-tag-create`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| name | The tag unique name. | Required | 
+| color | Tag color. Possible values are: Red, Green, Blue, Yellow, Copper, Orange, Purple, Gray, Light Green, Cyan, Light Gray, Blue Gray, Lime, Black, Gold, Brown, Olive, Maroon, Red-Orange, Yellow-Orange, Forest Green, Turquoise Blue, Azure Blue, Cerulean Blue, Midnight Blue, Medium Blue, Cobalt Blue, Violet Blue, Blue Violet, Medium Violet, Medium Rose, Lavender, Orchid, Thistle, Peach, Salmon, Magenta, Red Violet, Mahogany, Burnt Sienna, Chestnut. | Optional | 
+| comments | Tag comments. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaSase.Tag.id | String | The tag id. | 
+| PrismaSase.Tag.name | String | The tag name. | 
+| PrismaSase.Tag.folder | String | The tag folder. | 
+| PrismaSase.Tag.color | String | The tag color. | 
+| PrismaSase.Tag.comments | String | The tag momments. | 
+
+#### Command example
+```!prisma-sase-tag-create name="somename" color="Azure Blue"```
+#### Context Example
+```json
+{
+    "PrismaSase": {
+        "Tag": {
+            "color": "Azure Blue",
             "folder": "Shared",
-            "id": "########-####-####-####-############",
-            "ip_netmask": "1.1.1.1/32",
-            "name": "XSOAR Test Object A"
+            "id": "id",
+            "name": "somename"
         }
     }
 }
@@ -1060,188 +642,658 @@ Create a new address object
 #### Human Readable Output
 
 >### Address Object Created
->|Description|Folder|Id|Ip Netmask|Name|
->|---|---|---|---|---|
->| Test Object Creation from XSOAR | Shared | ########-####-####-####-############ | 1.1.1.1/32 | XSOAR Test Object A |
-
-
-### prisma-access-edit-address-object
-***
-Edit address object
-
-
-#### Base Command
-
-`prisma-access-edit-address-object`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | ID of the address object to edit. | Required | 
-| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
-| name | Friendly name of the address object. | Required | 
-| description | Address Object description. | Optional | 
-| ip_netmask | IP/Netmask of the object using slash notation. | Required | 
-| tag | A comma-separated list of address object tags. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PrismaAccess.EditedAddressObject | unknown | Edited address object. | 
-| PrismaAccess.EditedAddress.description | String | Address description. | 
-| PrismaAccess.EditedAddress.folder | String | Address folder. | 
-| PrismaAccess.EditedAddress.id | String | Address ID. | 
-| PrismaAccess.EditedAddress.ip_netmask | String | Address IP netmask. | 
-| PrismaAccess.EditedAddress.name | String | Address name. | 
-
-#### Command example
-```!prisma-access-edit-address-object id="########-####-####-####-############" ip_netmask="1.1.1.11/32" name="XSOAR Test Object B" description="XSOAR edited object"```
-#### Context Example
-```json
-{
-    "PrismaAccess": {
-        "EditedAddress": {
-            "description": "XSOAR edited object",
-            "folder": "Shared",
-            "id": "########-####-####-####-############",
-            "ip_netmask": "1.1.1.11/32",
-            "name": "XSOAR Test Object B"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Address Object Edited
->|Description|Folder|Id|Ip Netmask|Name|
->|---|---|---|---|---|
->| XSOAR edited object | Shared | ########-####-####-####-############ | 1.1.1.11/32 | XSOAR Test Object B |
-
-
-### prisma-access-delete-address-object
-***
-Delete address object
-
-
-#### Base Command
-
-`prisma-access-delete-address-object`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | ID of the address object to delete. | Required | 
-| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PrismaAccess.DeletedAddressObject | unknown | Deleted address object. | 
-| PrismaAccess.DeletedAddress.description | String | Deleted address description. | 
-| PrismaAccess.DeletedAddress.folder | String | Deleted address folder. | 
-| PrismaAccess.DeletedAddress.id | String | Deleted address ID. | 
-| PrismaAccess.DeletedAddress.ip_netmask | String | Deleted address IP netmask. | 
-| PrismaAccess.DeletedAddress.name | String | Deleted address name. | 
-
-#### Command example
-```!prisma-access-delete-address-object id="########-####-####-####-############"```
-#### Context Example
-```json
-{
-    "PrismaAccess": {
-        "DeletedAddress": {
-            "description": "XSOAR edited object",
-            "folder": "Shared",
-            "id": "########-####-####-####-############",
-            "ip_netmask": "1.1.1.11/32",
-            "name": "XSOAR Test Object B"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Address Object Deleted
->|Description|Folder|Id|Ip Netmask|Name|
->|---|---|---|---|---|
->| XSOAR edited object | Shared | ########-####-####-####-############ | 1.1.1.11/32 | XSOAR Test Object B |
-
-
-### prisma-access-list-address-objects
-***
-List address objects.
-
-
-#### Base Command
-
-`prisma-access-list-address-objects`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| folder | Prisma access folder location for the object. | Required | 
-| name | Name of the security object. | Optional | 
-| limit | The maximum number of results to return. Default is 10. | Optional | 
-| offset | Results paging offset. | Optional | 
-| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PrismaAccess.FoundSecurityRule | unknown | Found security rule. | 
-| PrismaAccess.FoundAddressObjects.description | String | Address description. | 
-| PrismaAccess.FoundAddressObjects.folder | String | Address folder. | 
-| PrismaAccess.FoundAddressObjects.fqdn | String | Address FQDN. | 
-| PrismaAccess.FoundAddressObjects.id | String | Address ID. | 
-| PrismaAccess.FoundAddressObjects.name | String | Address name. | 
-| PrismaAccess.FoundAddressObjects.ip_netmask | String | Address IP netmask. | 
-
-#### Command example
-```!prisma-access-list-address-objects folder="Shared"```
-#### Context Example
-```json
-{
-    "PrismaAccess": {
-        "FoundAddressObjects": [
-            {
-                "description": "Palo Alto Networks sinkhole",
-                "folder": "Shared",
-                "fqdn": "sinkhole.paloaltonetworks.com",
-                "id": "########-####-####-####-############",
-                "name": "Palo Alto Networks Sinkhole"
-            },
-            {
-                "folder": "Shared",
-                "id": "########-####-####-####-############",
-                "ip_netmask": "1.1.1.1/16",
-                "name": "GP-Users"
-            },
-            {
-                "description": "Test Object Creation from XSOAR",
-                "folder": "Shared",
-                "id": "########-####-####-####-############",
-                "ip_netmask": "1.1.1.1/32",
-                "name": "XSOAR Test Object B"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Address Objects
->|Name|Description|Ip Netmask|Fqdn|
+>|Color|Folder|Id|Name|
 >|---|---|---|---|
->| Palo Alto Networks Sinkhole | Palo Alto Networks sinkhole |  | sinkhole.paloaltonetworks.com |
->| GP-Users |  | 1.1.1.1/16 |  |
->| XSOAR Test Object B | Test Object Creation from XSOAR | 1.1.1.1/32 |  |
+>| Azure Blue | Shared | b6d9a8d8-5b6d-470b-981f-29bb664adb92 | somename |
+
+
+### prisma-sase-tag-update
+***
+Update an existing tag.
+
+
+#### Base Command
+
+`prisma-sase-tag-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| tag_id | The tag ID. | Required | 
+| color | Tag color. Possible values are: Red, Green, Blue, Yellow, Copper, Orange, Purple, Gray, Light Green, Cyan, Light Gray, Blue Gray, Lime, Black, Gold, Brown, Olive, Maroon, Red-Orange, Yellow-Orange, Forest Green, Turquoise Blue, Azure Blue, Cerulean Blue, Midnight Blue, Medium Blue, Cobalt Blue, Violet Blue, Blue Violet, Medium Violet, Medium Rose, Lavender, Orchid, Thistle, Peach, Salmon, Magenta, Red Violet, Mahogany, Burnt Sienna, Chestnut. | Optional | 
+| comments | Tag comments. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaSase.Tag.id | String | The tag id. | 
+| PrismaSase.Tag.name | String | The tag name. | 
+| PrismaSase.Tag.folder | String | The tag folder. | 
+| PrismaSase.Tag.color | String | The tag color. | 
+| PrismaSase.Tag.comments | String | The tag comments. | 
+
+### prisma-sase-tag-delete
+***
+Delete a specific tag.
+
+
+#### Base Command
+
+`prisma-sase-tag-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tag_id | The specific tag to delete. | Required | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### prisma-sase-address-group-list
+***
+Lists all address groups.
+
+
+#### Base Command
+
+`prisma-sase-address-group-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | A specific address group to return. If not specified, all address groups will be returned. | Optional | 
+| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
+| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
+| page_size | Number of results per page to display. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaSase.AddressGroup.id | String | The address group id. | 
+| PrismaSase.AddressGroup.name | String | The address group name. | 
+| PrismaSase.AddressGroup.description | String | The address group description. | 
+| PrismaSase.AddressGroup.addresses | String | The address group addresses. | 
+| PrismaSase.AddressGroup.dynamic_filter | String | The address group filter. | 
+
+#### Command example
+```!prisma-sase-address-group-list limit=1```
+#### Context Example
+```json
+{
+    "PrismaSase": {
+        "AddressGroup": {
+            "description": "test",
+            "dynamic_filter": "'test' or 'test2",
+            "folder": "Shared",
+            "id": "id",
+            "name": "name"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Address Groups
+>|Id|Name|Description|Addresses|Dynamic Filter|
+>|---|---|---|---|---|
+>| 4e0ba3d6-0961-4c64-935b-2388db661af0 | Moishy_Test | test |  | 'Api test' or 'Hamuzim' and 'best-practice' |
+
+
+### prisma-sase-address-group-create
+***
+Create a new address group.
+
+
+#### Base Command
+
+`prisma-sase-address-group-create`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| type | The address group type. Possible values are: static, dynamic. | Required | 
+| static_addresses | static addresses for the address group. If the type is static, value must be provided. | Optional | 
+| dynamic_filter | dynamic filter for the address group. If the type is dynamic, value must be provided. | Optional | 
+| description | The address group's description. | Optional | 
+| name | The name of the address group. | Required | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaSase.AddressGroup.id | String | The address group id. | 
+| PrismaSase.AddressGroup.name | String | The address group name. | 
+| PrismaSase.AddressGroup.folder | String | The address group folder. | 
+| PrismaSase.AddressGroup.description | String | The address group description. | 
+| PrismaSase.AddressGroup.addresses | String | The address group addresses. | 
+| PrismaSase.AddressGroup.dynamic_filter | String | The address group filter. | 
+
+#### Command example
+```!prisma-sase-address-group-create type="dynamic" dynamic_filter="Hamuzim" name="somename"```
+#### Context Example
+```json
+{
+    "PrismaSase": {
+        "AddressGroup": {
+            "dynamic_filter": "test",
+            "folder": "Shared",
+            "id": "id",
+            "name": "somename"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Address Group Created
+>|Dynamic Filter|Folder|Id|Name|
+>|---|---|---|---|
+>| Hamuzim | Shared | 4ac3f38c-f75d-4fe4-9a52-37389a45edbb | somename |
+
+
+#### Command example
+```!prisma-sase-address-group-create folder="Shared" type="static" static_addresses="shachar_test" name="somename1"```
+#### Context Example
+```json
+{
+    "PrismaSase": {
+        "AddressGroup": {
+            "addresses": [
+                "test"
+            ],
+            "folder": "Shared",
+            "id": "id",
+            "name": "somename1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Address Group Created
+>|Addresses|Folder|Id|Name|
+>|---|---|---|---|
+>| shachar_test | Shared | e5996528-9877-4693-a4ad-99f187d46ac7 | somename1 |
+
+
+### prisma-sase-address-group-update
+***
+Update an existing address group.
+
+
+#### Base Command
+
+`prisma-sase-address-group-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | The id of the address group. | Required | 
+| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| static_addresses | static addresses for the address group. If the type is static, value must be provided. | Optional | 
+| dynamic_filter | dynamic filter for the address group. If the type is dynamic, value must be provided. | Optional | 
+| overwrite | Rather to overwrite existing data. Possible values are: true, false. Default is false. | Optional | 
+| description | The address group's description. | Optional | 
+| type | The address group type. Possible values are: dynamic, static. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaSase.AddressGroup.id | String | The address group id. | 
+| PrismaSase.AddressGroup.name | String | The address group name. | 
+| PrismaSase.AddressGroup.folder | String | The address group folder. | 
+| PrismaSase.AddressGroup.description | String | The address group description. | 
+| PrismaSase.AddressGroup.addresses | String | The address group addresses. | 
+| PrismaSase.AddressGroup.dynamic_filter | String | The address group filter. | 
+
+### prisma-sase-address-group-delete
+***
+Delete a specific address group.
+
+
+#### Base Command
+
+`prisma-sase-address-group-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | The name of the address group. | Required | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### prisma-sase-custom-url-category-list
+***
+Lists all custom URL categories.
+
+
+#### Base Command
+
+`prisma-sase-custom-url-category-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | A specific url category to return. If not specified, all url categories will be returned. | Optional | 
+| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
+| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
+| page_size | Number of results per page to display. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaSase.CustomURLCategory.id | String | The URL category id. | 
+| PrismaSase.CustomURLCategory.name | String | The URL category name. | 
+| PrismaSase.CustomURLCategory.folder | String | The URL category folder. | 
+| PrismaSase.CustomURLCategory.type | String | The URL category type. | 
+| PrismaSase.CustomURLCategory.list | String | The URL category match list. | 
+| PrismaSase.CustomURLCategory.description | String | The URL category description. | 
+
+#### Command example
+```!prisma-sase-custom-url-category-list limit=1```
+#### Context Example
+```json
+{
+    "PrismaSase": {
+        "CustomURLCategory": {
+            "folder": "Shared",
+            "id": "id",
+            "list": [
+                "www.youtube.com",
+                "www.google.com"
+            ],
+            "name": "name",
+            "type": "URL List"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Custom Url Categories
+>|Id|Name|Folder|Type|List|
+>|---|---|---|---|---|
+>| c36a960a-8290-4dd2-82ac-a58082a76370 | Moishy Api | Shared | URL List | www.youtube.com,<br/>www.google.com |
+
+
+### prisma-sase-custom-url-category-create
+***
+Create a new url category.
+
+
+#### Base Command
+
+`prisma-sase-custom-url-category-create`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| type | The custom URL category's type. Possible values are: URL List, Category Match. | Required | 
+| value | If the type is url list the value will be a comma separated array of url addresses. If the type is Category Match the value will be a comma separated array of categories name. The user can get the names by running prisma-sase-url-access-profile-list. | Required | 
+| description | The custom URL category's description. | Optional | 
+| name | The name of the custom URL category. | Required | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaSase.CustomURLCategory.id | String | The URL category id. | 
+| PrismaSase.CustomURLCategory.name | String | The URL category name. | 
+| PrismaSase.CustomURLCategory.folder | String | The URL category folder. | 
+| PrismaSase.CustomURLCategory.type | String | The URL category type. | 
+| PrismaSase.CustomURLCategory.list | String | The URL category match list. | 
+| PrismaSase.CustomURLCategory.description | String | The URL category description. | 
+
+#### Command example
+```!prisma-sase-custom-url-category-create type="Category Match" value="low-risk" name="somename"```
+#### Context Example
+```json
+{
+    "PrismaSase": {
+        "CustomURLCategory": {
+            "folder": "Shared",
+            "id": "id",
+            "list": [
+                "low-risk"
+            ],
+            "name": "somename",
+            "type": "Category Match"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Custom URrl Category Created
+>|Folder|Id|List|Name|Type|
+>|---|---|---|---|---|
+>| Shared | 107ca93c-cc4a-4573-b453-156737cc3900 | low-risk | somename | Category Match |
+
+
+### prisma-sase-custom-url-category-update
+***
+Update an existing url category.
+
+
+#### Base Command
+
+`prisma-sase-custom-url-category-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The custom URL category id. | Required | 
+| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| value | . | Optional | 
+| overwrite | This argument specifies rather to append or overwrite the.... Possible values are: true, false. Default is false. | Optional | 
+| description | The custom URL category's description. | Optional | 
+| type | The custom URL category's type. Possible values are: URL List, Category Match. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaSase.CustomURLCategory.id | String | The URL category id. | 
+| PrismaSase.CustomURLCategory.name | String | The URL category name. | 
+| PrismaSase.CustomURLCategory.folder | String | The URL category folder. | 
+| PrismaSase.CustomURLCategory.type | String | The URL category type. | 
+| PrismaSase.CustomURLCategory.list | String | The URL category match list. | 
+| PrismaSase.CustomURLCategory.description | String | The URL category description. | 
+
+### prisma-sase-custom-url-category-delete
+***
+Delete a specific url category.
+
+
+#### Base Command
+
+`prisma-sase-custom-url-category-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The custom URL category id. | Required | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### prisma-sase-external-dynamic-list-list
+***
+Lists all external dynamic lists.
+
+
+#### Base Command
+
+`prisma-sase-external-dynamic-list-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | A specific external dynamic list to return. If not specified, all external dynamic lists will be returned. | Optional | 
+| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
+| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
+| page_size | Number of results per page to display. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaSase.ExternalDynamicList.id | String | The external dynamic list id. | 
+| PrismaSase.ExternalDynamicList.name | String | The external dynamic list name. | 
+| PrismaSase.ExternalDynamicList.folder | String | The external dynamic list folder. | 
+| PrismaSase.ExternalDynamicList.description | String | The external dynamic list description. | 
+| PrismaSase.ExternalDynamicList.type | String | The external dynamic list type. | 
+| PrismaSase.ExternalDynamicList.source | String | The external dynamic list source. | 
+| PrismaSase.ExternalDynamicList.frequency | String | The external dynamic list frequency. | 
+
+#### Command example
+```!prisma-sase-external-dynamic-list-list limit=1```
+#### Context Example
+```json
+{
+    "PrismaSase": {
+        "ExternalDynamicList": {
+            "description": "IP addresses that are currently used almost exclusively by malicious actors for malware distribution, command-and-control, and for launching various attacks.",
+            "display_name": "Palo Alto Networks - Known malicious IP addresses",
+            "folder": "predefined",
+            "name": "panw-known-ip-list",
+            "source": "predefined",
+            "type": "predefined"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### External Dynamic Lists
+>|Id|Name|Type|Folder|Description|Source|Frequency|
+>|---|---|---|---|---|---|---|
+>|  | panw-known-ip-list | predefined | predefined | IP addresses that are currently used almost exclusively by malicious actors for malware distribution, command-and-control, and for launching various attacks. | predefined |  |
+
+
+### prisma-sase-external-dynamic-list-create
+***
+Create a new dynamic list.
+
+
+#### Base Command
+
+`prisma-sase-external-dynamic-list-create`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The external dynamic list name. | Required | 
+| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| description | The dynamic list's description. | Optional | 
+| type | The dynamic list's type. Possible values are: predefined_ip, predefined_url, ip, domain, url. | Required | 
+| predefined_ip_list | The predefined IP list. If the type is predefined_ip, value must be provided. Possible values are: panw-torexit-ip-list, panw-bulletproof-ip-list, panw-highrisk-ip-list, panw-known-ip-list. | Optional | 
+| predefined_url_list | The predefined URL list. If the type is predefined_url, value must be provided. Possible values are: panw–auth-portal-exclude-list. | Optional | 
+| source_url | The source URL. If the type is IP, URL or Domain, value must be provided. | Optional | 
+| frequency | Frequency to check for updates. Possible values are: five_minute, hourly, daily, weekly, monthly. | Optional | 
+| frequency_hour | The frequency hour. If the frequency argument is daily, weekly or monthly, value must be provided. Possible values are 00-23. | Optional | 
+| day_of_week | The day of the week. If the frequency argument is weekly or monthly, value must be provided. Possible values are: monday, tuesday, wednesday, thursday, friday, saturday, sunday. | Optional | 
+| day_of_month | The day of the month. If the frequency argument is monthly, value must be provided. Possible values are between 1 and 31. | Optional | 
+| exception_list | The user can exclude certain addresses from the list depending on the type of list. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaSase.ExternalDynamicList.id | String | The external dynamic list id. | 
+| PrismaSase.ExternalDynamicList.name | String | The external dynamic list name. | 
+| PrismaSase.ExternalDynamicList.folder | String | The external dynamic list folder. | 
+| PrismaSase.ExternalDynamicList.description | String | The external dynamic list description. | 
+| PrismaSase.ExternalDynamicList.type | String | The external dynamic list type. | 
+| PrismaSase.ExternalDynamicList.source | String | The external dynamic list source. | 
+| PrismaSase.ExternalDynamicList.frequency | String | The external dynamic list frequency. | 
+
+#### Command example
+```!prisma-sase-external-dynamic-list-create name="somename" folder="Shared" type="predefined_ip" predefined_ip_list="panw-highrisk-ip-list"```
+#### Context Example
+```json
+{
+    "PrismaSase": {
+        "ExternalDynamicList": {
+            "description": null,
+            "exception_list": null,
+            "folder": "Shared",
+            "frequency": null,
+            "id": "id",
+            "name": "somename",
+            "source": "panw-highrisk-ip-list",
+            "type": "predefined_ip"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### External Dynamic List Created
+>|Id|Name|Type|Folder|Description|Source|Frequency|
+>|---|---|---|---|---|---|---|
+>| 10359e8c-7981-46cc-b36e-7d5962dab0bd | somename | predefined_ip | Shared |  | panw-highrisk-ip-list |  |
+
+
+#### Command example
+```!prisma-sase-external-dynamic-list-create name="somename1" folder="Shared" type="domain" source_url="domain.com" frequency="monthly" frequency_hour="09" day_of_month="1"```
+#### Context Example
+```json
+{
+    "PrismaSase": {
+        "ExternalDynamicList": {
+            "description": null,
+            "exception_list": null,
+            "folder": "Shared",
+            "frequency": {
+                "monthly": {
+                    "at": "09",
+                    "day_of_month": 1
+                }
+            },
+            "id": "id",
+            "name": "somename1",
+            "source": "domain.com",
+            "type": "domain"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### External Dynamic List Created
+>|Id|Name|Type|Folder|Description|Source|Frequency|
+>|---|---|---|---|---|---|---|
+>| 5f5b45a3-ae8b-452b-8df0-14b45f76f8aa | somename1 | domain | Shared |  | domain.com | **monthly**:<br/>	***at***: 09<br/>	***day_of_month***: 1 |
+
+
+### prisma-sase-external-dynamic-list-update
+***
+Update an existing dynamic list.
+
+
+#### Base Command
+
+`prisma-sase-external-dynamic-list-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The external dynamic list id. | Required | 
+| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| overwrite | This argument specifies rather to append or overwrite the.... Possible values are: true, false. Default is false. | Optional | 
+| description | The dynamic list's description. | Optional | 
+| type | The dynamic list's type. Possible values are: predefined_ip, predefined_url, ip, domain, url. | Optional | 
+| predefined_ip_list | Dont know yet. Possible values are: panw-torexit-ip-list, panw-bulletproof-ip-list, panw-highrisk-ip-list, panw-known-ip-list. | Optional | 
+| predefined_url_list | Dont know yet. Possible values are: panw–auth-portal-exclude-list. | Optional | 
+| source_url | Dont know yet. | Optional | 
+| frequency | Dont know yet. Possible values are: five_minute, hourly, daily, weekly, monthly. | Optional | 
+| frequency_hour | The frequency hour. | Optional | 
+| day_of_week | The day of the week. Possible values are: monday, tuesday, wednesday, thursday, friday, saturday, sunday. | Optional | 
+| day_of_month | The day of the month. Possible values are between 1 and 31. | Optional | 
+| exception_list | The user can exclude certain addresses from the list depending on the type of list. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaSase.ExternalDynamicList.id | String | The external dynamic list id. | 
+| PrismaSase.ExternalDynamicList.name | String | The external dynamic list name. | 
+| PrismaSase.ExternalDynamicList.folder | String | The external dynamic list folder. | 
+| PrismaSase.ExternalDynamicList.description | String | The external dynamic list description. | 
+| PrismaSase.ExternalDynamicList.type | String | The external dynamic list type. | 
+| PrismaSase.ExternalDynamicList.source | String | The external dynamic list source. | 
+| PrismaSase.ExternalDynamicList.frequency | String | The external dynamic list frequency. | 
+
+### prisma-sase-external-dynamic-list-delete
+***
+Delete a specific dynamic list.
+
+
+#### Base Command
+
+`prisma-sase-external-dynamic-list-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The external dynamic list id. | Required | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### prisma-sase-url-category-list
+***
+Get all predefined URL categories.
+
+
+#### Base Command
+
+`prisma-sase-url-category-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!prisma-sase-url-category-list limit=1```
+#### Human Readable Output
+
+>### URL categories
+>|alert|allow|block|continue|override|
+>|---|---|---|---|---|
+>| recreation-and-hobbies,<br/>educational-institutions,<br/>real-estate,<br/>web-advertisements,<br/>health-and-medicine,<br/>stock-advice-and-tools,<br/>travel,<br/>computer-and-internet-info,<br/>personal-sites-and-blogs,<br/>swimsuits-and-intimate-apparel,<br/>social-networking,<br/>religion,<br/>medium-risk,<br/>business-and-economy,<br/>private-ip-addresses,<br/>web-hosting,<br/>entertainment-and-arts,<br/>streaming-media,<br/>abortion,<br/>translation,<br/>internet-portals,<br/>online-storage-and-backup,<br/>job-search,<br/>motor-vehicles,<br/>web-based-email,<br/>nudity,<br/>sports,<br/>training-and-tools,<br/>government,<br/>shareware-and-freeware,<br/>legal,<br/>shopping,<br/>alcohol-and-tobacco,<br/>low-risk,<br/>auctions,<br/>high-risk,<br/>search-engines,<br/>cryptocurrency,<br/>not-resolved,<br/>society,<br/>financial-services,<br/>military,<br/>news,<br/>philosophy-and-political-advocacy,<br/>content-delivery-networks,<br/>internet-communications-and-telephony,<br/>music,<br/>home-and-garden,<br/>hunting-and-fishing,<br/>reference-and-research,<br/>dating,<br/>sex-education,<br/>games |  | hacking,<br/>extremism,<br/>weapons,<br/>command-and-control,<br/>ransomware,<br/>copyright-infringement,<br/>dynamic-dns,<br/>parked,<br/>phishing,<br/>medium-risk,<br/>unknown,<br/>abused-drugs,<br/>insufficient-content,<br/>adult,<br/>newly-registered-domain,<br/>grayware,<br/>high-risk,<br/>gambling,<br/>malware,<br/>peer-to-peer,<br/>proxy-avoidance-and-anonymizers,<br/>questionable |  |  |
 

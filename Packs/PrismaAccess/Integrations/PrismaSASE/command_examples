@@ -1,13 +1,16 @@
-!prisma-access-list-security-rules folder="Shared" position="pre" limit=5
-!prisma-access-list-config-jobs limit=5
-!prisma-access-list-address-objects folder="Shared"
-!prisma-sase-query-agg-monitor-api uri="mt/monitor/v1/agg/alerts/list" query_data="{\"filter\":{\"operator\":\"AND\",\"rules\":[{\"operator\":\"in\",\"property\":\"domain\",\"values\":[\"External\",\"external\"]},{\"operator\":\"last_n_days\",\"property\":\"event_time\",\"values\":[7]}]},\"properties\":[{\"property\":\"total_count\"},{\"property\":\"mu_count\"},{\"property\":\"rn_count\"},{\"property\":\"sc_count\"}]}"
-!prisma-access-create-address-object folder="Shared" ip_netmask="1.1.1.1/32" name="XSOAR Test Object" description="Test Object Creation from XSOAR"
-!prisma-access-create-security-rule name="new-test-rule B" action="deny" description="Test Rule Created by XSOAR" application="any" category="any" destination="XSOAR Test Object" profile_setting="best-practice" service="application-default" source="XSOAR Test Object" source_user="any" from="trust" to="any" folder="Shared" position="pre"
-!prisma-access-get-security-rule-by-name folder="Shared" name="new-test-rule B" position="pre"
-!prisma-access-edit-security-rule id="########-####-####-####-############" name="new-test-rule" action="deny" description="Rule Edited by XSOAR" application="any" category="any" destination="XSOAR Test Object" profile_setting="best-practice" service="application-default" source="XSOAR Test Object" source_user="any" from="trust" to="any"
-!prisma-access-delete-security-rule rule_id="########-####-####-####-############"
-!prisma-access-edit-address-object id="########-####-####-####-############" ip_netmask="1.1.1.11/32" name="XSOAR Test Object B" description="XSOAR edited object"
-!prisma-access-delete-address-object id="########-####-####-####-############"
-!prisma-access-get-config-jobs-by-id id=21
-!prisma-access-push-candidate-config folders="Mobile Users"
+!prisma-sase-address-group-create type="dynamic" dynamic_filter="Hamuzim" name="somename"
+!prisma-sase-security-rule-create name="somename" action="allow"
+!prisma-sase-address-group-create folder="Shared" type="static" static_addresses="shachar_test" name="somename1"
+!prisma-sase-external-dynamic-list-create name="somename" folder="Shared" type="predefined_ip" predefined_ip_list="panw-highrisk-ip-list"
+!prisma-sase-external-dynamic-list-create name="somename1" folder="Shared" type="domain" source_url="domain.com" frequency="monthly" frequency_hour="09" day_of_month="1"
+!prisma-sase-tag-create name="somename" color="Azure Blue"
+!prisma-sase-custom-url-category-create type="Category Match" value="low-risk" name="somename"
+!prisma-sase-address-object-create name="somename" type="ip_netmask" address_value="8.8.8.8/32"
+!prisma-sase-url-category-list limit=1
+!prisma-sase-custom-url-category-list limit=1
+!prisma-sase-address-group-list limit=1
+!prisma-sase-config-job-list limit=1
+!prisma-sase-tag-list limit=1
+!prisma-sase-address-object-list limit=1
+!prisma-sase-external-dynamic-list-list limit=1
+!prisma-sase-security-rule-list limit=1

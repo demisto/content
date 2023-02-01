@@ -1337,7 +1337,7 @@ def list_config_jobs_command(client: Client, args: Dict[str, Any]) -> CommandRes
     else:
         query_params.update(get_pagination_params(args))
 
-        raw_response = client.list_config_jobs(tsg_id=tsg_id)  # type: ignore
+        raw_response = client.list_config_jobs(tsg_id=tsg_id, query_params=query_params)  # type: ignore
 
     outputs = raw_response.get('data')
 
