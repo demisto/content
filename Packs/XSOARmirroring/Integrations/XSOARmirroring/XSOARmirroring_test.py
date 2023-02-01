@@ -142,7 +142,7 @@ def test_fetch_incidents(mocker):
 def test_fetch_incidents_mirroring_or_dropping_playbook_id(mocker, drop_playbook_id: bool):
     """
     Given:
-        - List of incident.
+        - a list of incidents.
 
     When:
         - Running the fetch_incidents and getting this incident, with the *implicit* default `drop_playbook_id = False`.
