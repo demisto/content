@@ -39,9 +39,14 @@
 			"cliName": "alertid",
 			"type": "shortText",
 			"name": "Alert ID"
+		},
+		{
+			"cliName": "externalid",
+			"type": "shortText",
+			"name": "External ID"
 		}
 	],
-    "marketplaces": [
+	"marketplaces": [
 		"marketplacev2"
-    ]
+	]
 }
