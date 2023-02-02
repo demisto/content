@@ -101,17 +101,23 @@ configuration:
 - display: Security Hub Incidents Severity Level
   name: sh_severity
   required: false
-  type: 0
+  type: 15
   section: Collect
   advanced: true
-  additionalinfo: "Severity level of fetched incidents. Could be Informational, Low, Medium, High and Critical. For example, if you set the severity level to Medium, only findings with severity level Medium, High or Critical will be fetched. [AWS documantation link about severity](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_Severity.html)"
+  options:
+    - Informational
+    - Low
+    - Medium
+    - High
+    - Critical
+  additionalinfo: "Severity level of fetched incidents. Could be Informational, Low, Medium, High and Critical. For example, if you set the severity level to Medium, only findings with severity level Medium, High or Critical will be fetched."
 - display: Additional Incidents Filters
   name: additionalFilters
   required: false
   type: 0
   section: Collect
   advanced: true
-  additionalinfo: "A comma-separated list of additional incident filters in the form 'name=name1,value=value1,comparison=comparison1. [AWS documantation link about User Defined Fields](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_AwsSecurityFindingFilters.html#securityhub-Type-AwsSecurityFindingFilters-UserDefinedFields)"
+  additionalinfo: "A comma-separated list of additional incident filters in the form 'name=name1,value=value1,comparison=comparison1."
 - display: Change findings workflow to 'NOTIFIED'
   name: archiveFindings
   required: false

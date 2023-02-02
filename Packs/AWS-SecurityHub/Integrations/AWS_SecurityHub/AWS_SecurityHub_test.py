@@ -125,6 +125,7 @@ FINDINGS = [{
     'Description': 'Test',
     'SchemaVersion': '2021-05-27',
     'CreatedAt': '2020-03-22T13:22:13.933Z',
+    'UpdatedAt': '2023-02-01T14:01:59.833Z',
     'Id': 'Id',
     'Severity': {
         'Product': 0,
@@ -185,9 +186,146 @@ def test_list_members_command(mocker):
     client = aws_client.aws_session(service='securityhub', region="reg", role_arn='roleArnroleArnroleArn',
                                     role_session_name='roleSessionName')
     time_val = datetime.datetime(2022, 1, 1, 12, 0, 0, 0)
-    mock_response = {'ResponseMetadata': 'mock_ResponseMetadata', 'Members': [{'UpdatedAt': time_val, 'InvitedAt': time_val}]}
+    mock_response = {'ResponseMetadata': 'mock_ResponseMetadata',
+                     'Members': [{'UpdatedAt': time_val, 'InvitedAt': time_val}]}
     mocker.patch.object(client, 'list_members', return_value=mock_response)
     _, _, response = list_members_command(client, {})
     time_val_iso_format = time_val.isoformat()
     assert response == {'Members': [{'UpdatedAt': time_val_iso_format, 'InvitedAt': time_val_iso_format}]}
     assert type(response['Members'][0]['UpdatedAt']) == str
+
+
+severity_list = [('LOW', 1),
+                 ('MEDIUM', 2),
+                 ('HIGH', 3),
+                 ('CRITICAL', 4),
+                 ('INFORMATIONAL', 0)]
+
+
+@pytest.mark.parametrize('severity, expected_demisto_severity', severity_list)
+def test_severity_mapping(severity, expected_demisto_severity):
+    """
+        Given:
+            - A string representing the incident severity, that returned from get_findings.
+        When:
+            - fetch_incidents command is running.
+        Then:
+            - Verifying demisto severity.
+    """
+    from AWS_SecurityHub import severity_mapping
+    result = severity_mapping(severity)
+    assert result == expected_demisto_severity
+
+
+create_filters_list_dictionaries_params = [
+    (
+        ["TTPs", "Effects"],
+        "PREFIX",
+        [
+            {"Comparison": "PREFIX", "Value": "TTPs"},
+            {"Comparison": "PREFIX", "Value": "Effects"},
+        ],
+    ),
+    (["New"], "EQUALS", [{"Comparison": "EQUALS", "Value": "New"}]),
+]
+
+
+@pytest.mark.parametrize('arr, compare_param, expected_result', create_filters_list_dictionaries_params)
+def test_create_filters_list_dictionaries(arr, compare_param, expected_result):
+    """
+        Given:
+            - A list of strings represents finding types or workflow statuses or product names and a
+                comparison parameter.
+        When:
+            - fetch_incidents command is running.
+        Then:
+            - Checks the list of returned comparisons objects.
+    """
+    from AWS_SecurityHub import create_filters_list_dictionaries
+    result = create_filters_list_dictionaries(arr, compare_param)
+    assert result == expected_result
+
+
+build_severity_label_obj_params = [
+    (
+        "Medium",
+        [
+            {"Comparison": "EQUALS", "Value": "MEDIUM"},
+            {"Comparison": "EQUALS", "Value": "HIGH"},
+            {"Comparison": "EQUALS", "Value": "CRITICAL"},
+        ],
+    ),
+    ("Critical", [{"Comparison": "EQUALS", "Value": "CRITICAL"}]),
+]
+
+
+@pytest.mark.parametrize('label, expected_result', build_severity_label_obj_params)
+def test_build_severity_label_obj(label, expected_result):
+    """
+        Given:
+            - A severity label.
+        When:
+            - fetch_incidents command is running.
+        Then:
+            - Checks the returned  list of comparisons objects. For example, if the severity level is Medium, than the
+                list of comparison object will contain MEDIUM, HIGH and CRITICAL.
+    """
+    from AWS_SecurityHub import build_severity_label_obj
+    result = build_severity_label_obj(label)
+    assert result == expected_result
+
+
+def test_get_remote_data_command(mocker):
+    """
+    Given:
+        - An incident id and the last update date
+    When:
+        - get_remote_data_command is executed
+    Then:
+        - Verifying the returned GetRemoteDataResponse object.
+    """
+    from AWS_SecurityHub import get_remote_data_command
+    client = MockClient()
+    args = {
+        'id': 'Id',
+        'lastUpdate': '2023-02-01T13:30:21.172707565Z'
+    }
+    result = get_remote_data_command(client, args)
+    assert result.mirrored_object == FINDINGS[0]
+
+
+def test_get_mapping_fields_command():
+    """
+    When:
+        - get_mapping_fields_command is executed
+    Then:
+        - Verifying that a SchemeTypeMapping object containing the fields in the outgoing mapper is returned.
+    """
+    from AWS_SecurityHub import get_mapping_fields_command
+    expected_fields = {
+        'AWS Security Hub Finding': {
+            'Confidence': '',
+            'Criticality': '',
+            'Note.Text': '',
+            'Note.UpdatedBy': '',
+            'Severity.Label': '',
+            'VerificationState': '',
+            'Workflow.Status': '',
+            'FindingIdentifiers.Id': '',
+            'FindingIdentifiers.ProductArn': ''
+        }
+    }
+    result = get_mapping_fields_command()
+    assert result.extract_mapping() == expected_fields
+
+
+def test_update_remote_system_command(mocker):
+    """
+    Given:
+        - A client and arguments that contain the incident data, entries, remote_incident_id, inc_status, delta,
+            incident_changed.
+    When:
+        - update_remote_system_command is executed
+    Then:
+        - .
+    """
