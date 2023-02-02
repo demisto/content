@@ -1,4 +1,7 @@
 category: Authentication
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Okta v2
   version: -1
@@ -7,18 +10,29 @@ configuration:
   name: url
   required: true
   type: 0
-- display: API Token (see Detailed Instructions)
+  section: Connect
+- name: credentials
+  type: 9
+  displaypassword: API Token (see detailed instructions)
+  hiddenusername: true
+  section: Connect
+- display: API Token (see detailed instructions)
   name: apitoken
-  required: true
   type: 4
+  hidden: true
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Integration with Okta's cloud-based identity management service.
 display: Okta v2
 name: Okta v2
@@ -398,10 +412,7 @@ script:
     deprecated: false
     execution: false
   - arguments:
-    - description: "The cursor in which to retrive the results from and on.\
-        \ if the query didn't reach the end of results,\
-        \ the tag can be obtained from the bottom of the grid in the readable output,\
-        \ or in the context path Okta.User.tag."
+    - description: "The cursor in which to retrive the results from and on. if the query didn't reach the end of results, the tag can be obtained from the bottom of the grid in the readable output, or in the context path Okta.User.tag."
       name: after
     - description: The maximum number of results to return, the default is 200.
       name: limit
@@ -464,7 +475,7 @@ script:
       description: Timestamp for when the user's password was last changed.
       type: Date
     - contextPath: Okta.User.tag
-      description: The location of the next item, used with after param. 
+      description: The location of the next item, used with after param.
       type: String
     deprecated: false
     execution: false
@@ -2015,7 +2026,7 @@ script:
     name: okta-assign-group-to-app
     deprecated: false
     execution: false
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.9.42476
   runonce: false
   script: '-'
   subtype: python3

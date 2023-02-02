@@ -703,8 +703,17 @@ class MsGraphClient:
                                                   overwrite_rate_limit_retry=overwrite_rate_limit_retry).get('value', [])
 
         for attachment in attachments:
+
             attachment_type = attachment.get('@odata.type', '')
             attachment_name = attachment.get('name', 'untitled_attachment')
+
+            try:
+                demisto.debug(f"Trying to decode the attachment file name: {attachment_name}")
+                attachment_name = base64.b64decode(attachment_name)
+            except Exception as e:
+                demisto.debug(f"Could not decode the {attachment_name=}: error: {e}")
+                pass
+
             if attachment_type == self.FILE_ATTACHMENT:
                 try:
                     attachment_content = base64.b64decode(attachment.get('contentBytes', ''))
@@ -719,8 +728,10 @@ class MsGraphClient:
                 # skip attachments that are not of the previous types (type referenceAttachment)
                 continue
             # upload the item/file attachment to War Room
+            demisto.debug(f"Uploading attachment file: {attachment_name=}, {attachment_content=}")
             upload_file(attachment_name, attachment_content, attachment_results)
 
+        demisto.debug(f"Final attachment results = {attachment_results}")
         return attachment_results
 
     def _parse_email_as_incident(self, email, overwrite_rate_limit_retry=False):
@@ -1617,11 +1628,12 @@ def main():
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     ok_codes = (200, 201, 202)
-    refresh_token = params.get('refresh_token', '')
-    auth_and_token_url = params.get('auth_id', '')
-    enc_key = params.get('enc_key', '')
-    certificate_thumbprint = params.get('certificate_thumbprint')
-    private_key = params.get('private_key')
+    refresh_token = params.get('creds_refresh_token', {}).get('password') or params.get('refresh_token', '')
+    auth_and_token_url = params.get('creds_auth_id', {}).get('password') or params.get('auth_id', '')
+    enc_key = params.get('creds_enc_key', {}).get('password') or params.get('enc_key', '')
+    certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or params.get('certificate_thumbprint')
+    private_key = replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')) or params.get('private_key')
+    auth_code = params.get('creds_auth_code', {}).get('password') or params.get('auth_code', '')
     app_name = 'ms-graph-mail-listener'
 
     if not self_deployed and not enc_key:
@@ -1648,7 +1660,7 @@ def main():
 
     client = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
                            ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
-                           emails_fetch_limit, auth_code=params.get('auth_code', ''), private_key=private_key,
+                           emails_fetch_limit, auth_code=auth_code, private_key=private_key,
                            display_full_email_body=display_full_email_body, mark_fetched_read=mark_fetched_read,
                            redirect_uri=params.get('redirect_uri', ''), certificate_thumbprint=certificate_thumbprint)
     try:

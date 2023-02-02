@@ -31,7 +31,7 @@ INVESTIGATION_STATUSES = set((
     "Closed: Not Vulnerable",
     "Closed: Threat Mitigated",
 ))
-INVESTIGATION_UPDATE_FIELDS = set(("key_findings", "priority", "status", "service_desk_id", "service_desk_type"))
+INVESTIGATION_UPDATE_FIELDS = set(("key_findings", "priority", "status", "service_desk_id", "service_desk_type", "assignee_id"))
 
 
 """ CLIENT """
@@ -484,12 +484,17 @@ def fetch_comments_command(client: Client, env: str, args=None):
     return results
 
 
-def fetch_incidents(client: Client, max_fetch: int = 15):
+def fetch_incidents(client: Client, max_fetch: int = 15, include_assets: bool = True):
     """
     Fetch Taegis Investigations for the use with "Fetch Incidents"
     """
     if not 0 < int(max_fetch) < 201:
         raise ValueError("Max Fetch must be between 1 and 200")
+
+    asset_query = ""
+    if include_assets:
+        demisto.debug("include_assets=True, fetching assets with investigation")
+        asset_query = "assets {id hostnames {id hostname} tags {tag}}"
 
     query = """
     query investigations(
@@ -542,19 +547,10 @@ def fetch_incidents(client: Client, max_fetch: int = 15):
             latest_activity
             priority
             status
-            assets {
-                id
-                hostnames {
-                    id
-                    hostname
-                }
-                tags {
-                    tag
-                }
-            }
+            %s
         }
     }
-    """
+    """ % (asset_query)
 
     variables = {
         "orderByField": "created_at",
@@ -824,6 +820,69 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
     return results
 
 
+def fetch_users_command(client: Client, env: str, args=None):
+    page = int(args.get("page", 0))
+    page_size = int(args.get("page_size", 10))
+
+    variables: Dict[str, Any] = {
+        "filters": {
+            "status": args.get("status", ""),
+            "perPage": page_size,
+            "pageOffset": page_size * page,
+        }
+    }
+    fields = "user_id email family_name given_name status"
+    if args.get("id"):
+        if not args["id"].startswith("auth0"):
+            raise ValueError("id MUST be in 'auth0|12345' format")
+
+        query = """
+        query ($ids: [String!]) {
+            tdrusersByIDs (userIDs: $ids) {
+                %s
+            }
+        }
+        """ % (fields)
+        variables = {"ids": [args["id"]]}
+    else:
+        query = """
+        query ($filters: TDRUsersSearchInput) {
+            tdrUsersSearch (filters: $filters) {
+                results {
+                    %s
+                }
+            }
+        }
+        """ % (fields)
+
+    if args.get("email"):
+        variables["filters"]["emails"] = args["email"]
+
+    result = client.graphql_run(query=query, variables=variables)
+
+    try:
+        if args.get("id"):
+            user = result["data"]["tdrusersByIDs"]
+        else:
+            user = result["data"]["tdrUsersSearch"]["results"]
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to fetch user information: {result['errors'][0]['message']}")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.Users",
+        outputs_key_field="user_id",
+        outputs=user,
+        readable_output=tableToMarkdown(
+            "Taegis Users",
+            user,
+            removeNull=True,
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
 def update_comment_command(client: Client, env: str, args=None):
     if not args.get("id"):
         raise ValueError("Cannot update comment, comment id cannot be empty")
@@ -872,6 +931,10 @@ def update_investigation_command(client: Client, env: str, args=None):
     if not investigation_id:
         raise ValueError("Cannot fetch investigation without investigation_id defined")
 
+    if args.get("assignee_id"):
+        if not args["assignee_id"].startswith("auth0") and args["assignee_id"] != "@secureworks":
+            raise ValueError("assignee_id MUST be in 'auth0|12345' format or '@secureworks'")
+
     query = """
     mutation ($investigation_id: ID!, $investigation: UpdateInvestigationInput!) {
         updateInvestigation(investigation_id: $investigation_id, investigation: $investigation) {
@@ -919,6 +982,98 @@ def update_investigation_command(client: Client, env: str, args=None):
     return results
 
 
+def archive_investigation_command(client: Client, env: str, args=None):
+    investigation_id = args.get("id")
+    if not investigation_id:
+        raise ValueError("Cannot archive investigation, missing investigation id")
+
+    query = """
+    mutation ($investigation_id: ID!) {
+      archiveInvestigation(investigation_id: $investigation_id) {
+        id
+      }
+    }
+    """
+
+    variables = {"investigation_id": investigation_id}
+    result = client.graphql_run(query=query, variables=variables)
+    try:
+        investigation = result["data"]["archiveInvestigation"]
+        status = "Successfully Archived Investigation"
+    except (KeyError, TypeError):
+        raise ValueError(f"Could not locate investigation with id: {investigation_id}")
+
+    archive_results = {
+        "id": investigation_id,
+        "result": investigation,
+        "status": status,
+        "url": generate_id_url(env, "investigations", investigation_id),
+    }
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.ArchivedInvestigation",
+        outputs_key_field="id",
+        outputs=archive_results,
+        readable_output=tableToMarkdown(
+            "Taegis Investigation Archiving",
+            archive_results,
+            removeNull=True,
+            url_keys=("url"),
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
+def unarchive_investigation_command(client: Client, env: str, args=None):
+    investigation_id = args.get("id")
+    if not investigation_id:
+        raise ValueError("Cannot unarchive investigation, missing investigation id")
+
+    query = """
+    mutation ($investigation_id: ID!) {
+      unArchiveInvestigation(investigation_id: $investigation_id) {
+        id
+      }
+    }
+    """
+
+    variables = {"investigation_id": investigation_id}
+    result = client.graphql_run(query=query, variables=variables)
+    try:
+        investigation = result["data"]["unArchiveInvestigation"]
+        status = "Successfully Unarchived Investigation"
+    except (KeyError, TypeError):
+        if result["errors"][0].get("message"):
+            investigation = {}
+            status = "Investigation is not currently archived"
+        else:
+            raise ValueError(f"Could not locate investigation with id: {investigation_id}")
+
+    archive_results = {
+        "id": investigation_id,
+        "result": investigation,
+        "status": status,
+        "url": generate_id_url(env, "investigations", investigation_id),
+    }
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.UnarchivedInvestigation",
+        outputs_key_field="id",
+        outputs=archive_results,
+        readable_output=tableToMarkdown(
+            "Taegis Investigation Unarchiving",
+            archive_results,
+            removeNull=True,
+            url_keys=("url"),
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
 def test_module(client: Client) -> str:
     """
     Returns success if authentication was successful
@@ -956,8 +1111,11 @@ def main():
         "taegis-fetch-investigation": fetch_investigation_command,
         "taegis-fetch-investigation-alerts": fetch_investigation_alerts_command,
         "taegis-fetch-playbook-execution": fetch_playbook_execution_command,
+        "taegis-fetch-users": fetch_users_command,
         "taegis-update-comment": update_comment_command,
         "taegis-update-investigation": update_investigation_command,
+        "taegis-archive-investigation": archive_investigation_command,
+        "taegis-unarchive-investigation": unarchive_investigation_command,
         "test-module": test_module,
     }
 
@@ -986,7 +1144,7 @@ def main():
             return_results(result)
 
         elif command == "fetch-incidents":
-            commands[command](client=client, max_fetch=PARAMS.get("max_fetch"))
+            commands[command](client=client, max_fetch=PARAMS.get("max_fetch"), include_assets=PARAMS.get("include_assets"))
         else:
             return_results(commands[command](client=client, env=environment, args=demisto.args()))
     except Exception as e:

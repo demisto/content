@@ -1,6 +1,6 @@
 This playbook retrieves email data based on the `URLDomain` and `MessageID` inputs. It uses the Microsoft 365 Defender's Advanced Hunting to search only for URL click events based on the playbook inputs and enriches it with the full email data.
 
-**URLDomain** - If the “URLDomain” value is found as a substring of URL(s) in the body of the email, the email is retrieved.
+**URLDomain** - If the “URLDomain” value is found as a substring of the URL(s) in the body of the email, the email is retrieved.
 
 **MessageID** - The message ID of the email from which the URL was clicked. Note that this can be either of the following 2 values:
 - The value of the header "Message-ID".
@@ -15,14 +15,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-Microsoft 365 Defender
+* Microsoft 365 Defender
 
 ### Scripts
 * IsIntegrationAvailable
 * SetAndHandleEmpty
 
 ### Commands
-*microsoft-365-defender-advanced-hunting
+* microsoft-365-defender-advanced-hunting
 
 ## Playbook Inputs
 ---
@@ -30,10 +30,11 @@ Microsoft 365 Defender
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | URLDomain | Represents a domain or URL. Can be a single domain or URL, or an array of domains or URLs to search. The search looks for URLs containing this input that were clicked within emails. |  | Optional |
-| MessageID | Message ID of the email from which the URL was clicked. Please note that this can be either of the following 2 values:<br/>- The value of the header "Message-ID".<br/>- The internal ID of the message within Microsoft's products \(e.g., NetworkMessageId\).<br/><br/>Can be a single MessageID or an array of MessageIDs to search. |  | Optional |
-| Timeout | The time limit in seconds for the HTTP request to run. | 120 | Optional |
-| SearchTimeframe | Number of days past to search.  | 7 | Optional |
-| ResultsLimit | Number of retrieved entries. Enter -1 for unlimited query. | 50 | Optional |
+| MessageID | MessageID of the email from which the URL was clicked. Note that this can be either of the following 2 values:<br/>- The value of the header "Message-ID".<br/>- The internal ID of the message within Microsoft's products \(e.g., NetworkMessageId\).<br/><br/>Can be a single MessageID or an array of MessageIDs to search. |  | Optional |
+| Timeout | The time limit in seconds for the HTTP request to run. Default is 120. | 120 | Optional |
+| SearchTimeframe | Number of days past to search. Default is 7. | 7 | Optional |
+| ResultsLimit | Number of retrieved entries. Enter -1 for unlimited query. 50 is the default. | 50 | Optional |
+| ListenerMailbox | The mailbox of the listening integration. In case it is provided, the emails found in it will be ignored. |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -41,7 +42,7 @@ Microsoft 365 Defender
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | Microsoft365Defender.RetrievedEmails.UrlCount | Number of embedded URLs in the email. | number |
-| Microsoft365Defender.RetrievedEmails.InternetMessageId | Public-facing identifier for the email that is set by the sending email system. This will be the value of the "Message-ID" header. | string |
+| Microsoft365Defender.RetrievedEmails.InternetMessageId | Public-facing identifier for the email that is set by the sending email system. This is the value of the "Message-ID" header. | string |
 | Microsoft365Defender.RetrievedEmails.SenderFromDomain | Sender domain in the FROM header, which is visible to email recipients on their email clients. | string |
 | Microsoft365Defender.RetrievedEmails.EmailDirection | Direction of the email relative to your network: Inbound, Outbound, Intra-org. | string |
 | Microsoft365Defender.RetrievedEmails.AccountUpn | User principal name \(UPN\) of the account. | string |
@@ -49,7 +50,7 @@ Microsoft 365 Defender
 | Microsoft365Defender.RetrievedEmails.DeliveryLocation | Location where the email was delivered: Inbox/Folder, On-premises/External, Junk, Quarantine, Failed, Dropped, Deleted items. | string |
 | Microsoft365Defender.RetrievedEmails.AuthenticationDetails | List of pass or fail verdicts by email authentication protocols like DMARC, DKIM, SPF or a combination of multiple authentication types \(CompAuth\). | string |
 | Microsoft365Defender.RetrievedEmails.DeliveryAction | Delivery action of the email: Delivered, Junked, Blocked, or Replaced. | string |
-| Microsoft365Defender.RetrievedEmails.BulkComplaintLevel | Threshold assigned to email from bulk mailers. A high bulk complain level \(BCL\) means the email is more likely to generate complaints, and therefore more likely to be spam. | string |
+| Microsoft365Defender.RetrievedEmails.BulkComplaintLevel | Threshold assigned to emails from bulk mailers. A high bulk complain level \(BCL\) means the email is more likely to generate complaints, and thus more likely to be spam. | string |
 | Microsoft365Defender.RetrievedEmails.Subject | Subject of the email. | string |
 | Microsoft365Defender.RetrievedEmails.AttachmentCount | Number of attachments in the email. | number |
 | Microsoft365Defender.RetrievedEmails.IPAddress | IP address assigned to the device during communication. | string |
