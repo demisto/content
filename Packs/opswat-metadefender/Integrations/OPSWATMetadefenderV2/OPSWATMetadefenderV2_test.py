@@ -43,7 +43,7 @@ def mocked_requests_post(*args, **kwargs):
 def test_scan_file_command(mocker, file_name, data, expected_md_results):
     """
     Given:
-    - File_name, type and content to mock file_entry.
+    - File_name and content to mock file_entry.
     - case 1: a docx file with chinese letters in the name and content
     When:
     - Calling scan_file_command.
