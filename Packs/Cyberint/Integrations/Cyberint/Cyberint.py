@@ -309,7 +309,8 @@ def cyberint_alerts_fetch_command(client: Client, args: dict) -> CommandResults:
         if alert_csv_id:
             alert['csv_data'] = {
                 'csv_id': alert_csv_id,
-                'name': dict_safe_get(alert, ['alert_data', 'csv', 'name'])
+                'name': dict_safe_get(alert, ['alert_data', 'csv', 'name']),
+                'content': dict_safe_get(alert, ['alert_data', 'csv', 'content'])
             }
             extracted_csv_data = extract_data_from_csv_stream(client, alert.get('ref_id', ''),
                                                               alert_csv_id)
@@ -540,18 +541,11 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
                         attachments.append(tmp_attachment)
 
         alert["attachments"] = attachments
-        alert_data = dict_safe_get(alert, ['alert_data', 'csv'])
-        incident_csv_records = dict_safe_get(alert, ['alert_data', 'csv', 'content']) or []
+        alert_data = dict_safe_get(alert, ['alert_data', 'csv'], {})
+        incident_csv_records = alert_data.get('content', [])
 
-        incident = {
-            'name': f'Cyberint alert {alert_id}: {alert_title}',
-            'occurred': datetime.strftime(alert_created_time, DATE_FORMAT),
-            'rawJSON': json.dumps(alert),
-            'severity': SEVERITIES.get(alert.get('severity', 'low'), 1),
-            'attachment': incident_attachments,
-        }
+        alert_csv_id = dict_safe_get(alert, ['alert_data', 'csv', 'id'])
 
-        alert_csv_id = alert.get('alert_data', {}).get('csv', {}).get('id', '')
         if alert_csv_id:
             extracted_csv_data = extract_data_from_csv_stream(
                 client,
@@ -559,21 +553,24 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
                 alert_csv_id)
             alert['alert_data']['csv'] = extracted_csv_data
 
-        if duplicate_alert:
-            if incident_csv_records:
-                for index, incident_csv_record in enumerate(incident_csv_records):
-                    alert_data.update({'content': incident_csv_record})
-                    alert.update({'attachments': alert_data})
-                    incident.update({
-                        'name': f'Cyberint alert {alert_id} ({index+1}): {alert_title}',
-                        'rawJSON': json.dumps(alert)
-                    })
-                    incidents.append(copy.deepcopy(incident))
-            else:
-                incidents.append(incident)
-        else:
+        incident = {
+            'name': f'Cyberint alert {alert_id}: {alert_title}',
+            'occurred': datetime.strftime(alert_created_time, DATE_FORMAT),
+            'rawJSON': json.dumps(alert),
+            'severity': SEVERITIES.get(alert.get('severity', 'low')),
+            'attachment': incident_attachments,
+        }
 
-            incident.update({'rawJSON': json.dumps(alert)})
+        if duplicate_alert and incident_csv_records:
+            for index, incident_csv_record in enumerate(incident_csv_records):
+                alert_data.update({'content': incident_csv_record})
+                alert.update({'attachments': alert_data})
+                incident.update({
+                    'name': f'Cyberint alert {alert_id} ({index+1}): {alert_title}',
+                    'rawJSON': json.dumps(alert)
+                })
+                incidents.append(copy.deepcopy(incident))
+        else:
             incidents.append(incident)
 
     if incidents:
