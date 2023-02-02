@@ -54,7 +54,7 @@ if private_ranges:
 else:
     private_ranges = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]  # No ranges in list, use default ranges
 
-# Create list of IPs with private property
+# Create list of IPs with private property and tag
 ip_list = [{"Address": ip, "Private": check_ip_internal(ip, private_ranges), "Tag": get_ip_tag(
     ip, private_ranges)} for ip in ip_addresses_to_check]
 demisto.log(f"IP list: {ip_list}")
