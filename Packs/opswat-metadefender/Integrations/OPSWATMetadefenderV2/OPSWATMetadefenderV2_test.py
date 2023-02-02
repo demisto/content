@@ -37,10 +37,10 @@ def mocked_requests_post(*args, **kwargs):
         return MockResponse(str(e), 404)
 
 
-@pytest.mark.parametrize('file_name, file_type, data, expected_md_results', [
-    ('2022年年年年年', 'docx', '年年年年年', '# OPSWAT-Metadefender\nThe file has been successfully submitted to scan.\nScan id: mock_id\n')
+@pytest.mark.parametrize('file_name, data, expected_md_results', [
+    ('2022年年年年年.docx', '年年年年年', '# OPSWAT-Metadefender\nThe file has been successfully submitted to scan.\nScan id: mock_id\n')
 ])
-def test_scan_file_command(mocker, file_name, file_type, data, expected_md_results):
+def test_scan_file_command(mocker, file_name, data, expected_md_results):
     """
     Given:
     - File_name, type and content to mock file_entry.
@@ -51,10 +51,10 @@ def test_scan_file_command(mocker, file_name, file_type, data, expected_md_resul
     - Ensures the String type was parsed correctly and that the entry was generated correctly.
     - case 1: Ensures the request didn't fail due to letters parsing issue and that the entry was generated correctly.
     """
-    try:
-        _, file_path = tempfile.mkstemp(prefix=file_name, suffix=file_type)
-        with open(file_path, 'w') as temp_file:
-            temp_file.write(data)
+    with tempfile.TemporaryDirectory() as temp_dir:
+        file_path = f'{temp_dir}/{file_name}'
+        with open(file_path, 'w') as f:
+            f.write(data)
         mocker.patch.object(demisto, 'getFilePath', return_value={"path": file_path, "name": file_name})
         mocker.patch.object(demisto, 'params', return_value={'url': BASE_URL})
         mocker.patch.object(requests, 'post', side_effect=mocked_requests_post)
@@ -62,9 +62,8 @@ def test_scan_file_command(mocker, file_name, file_type, data, expected_md_resul
         mocker.patch.object(demisto, 'results')
 
         from OPSWATMetadefenderV2 import scan_file_command
-        entry = scan_file_command()
-    finally:
-        os.remove(file_path)
+        scan_file_command()
+
     entry = demisto.results.call_args[0][0]
     ec_results = entry.get('EntryContext', {}).get('OPSWAT', {})
     assert entry.get('HumanReadable') == expected_md_results

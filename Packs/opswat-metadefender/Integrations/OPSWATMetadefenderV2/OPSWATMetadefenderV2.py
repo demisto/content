@@ -35,10 +35,7 @@ def http_req(method='GET', url_suffix='', file_name=None, parse_json=True):
     if USE_CLOUD:
         headers['apikey'] = API_KEY
     if file_name:
-        if type(file_name) == str:
-            headers['filename'] = file_name.encode('utf-8')  # type: ignore
-        else:
-            headers['filename'] = file_name
+        headers['filename'] = file_name.encode('utf-8')  # type: ignore
         with open(file_name, 'rb') as file_:
             res = requests.post(url, verify=USE_SSL, files={'file': file_}, headers=headers)
     elif method.upper() == 'GET':
