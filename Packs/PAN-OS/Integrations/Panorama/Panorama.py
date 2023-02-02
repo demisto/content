@@ -192,6 +192,9 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'ransomware'
 }
 
+RULE_FILTERS = ('disabled', 'nat-type', 'action')
+
+
 class PAN_OS_Not_Found(Exception):
     """ PAN-OS Error. """
 
@@ -515,6 +518,7 @@ def dict_to_xml(_dictionary, contains_xml_chars=False):
         return xml.replace('&gt;', '>').replace('&lt;', '<')
     return xml
 
+
 def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any_: Optional[bool] = False) -> str:
     member_stringify_list = ''
     if arg:
@@ -685,6 +689,23 @@ def get_pan_os_major_version() -> int:
     """
     major_version = int(get_pan_os_version().split('.')[0])
     return major_version
+
+
+def build_xpath_filter(rule_name: str = None, filters: dict = None) -> str:
+    xpath_prefix = ''
+    if rule_name:
+        xpath_prefix = f"@name = '{rule_name}'"
+    for key, value in filters.items():
+        if key in RULE_FILTERS:
+            if xpath_prefix:
+                xpath_prefix += ' and '
+            xpath_prefix += f"({key} = '{value}')"
+        if key == 'tags':
+            for tag in value:
+                if xpath_prefix:
+                    xpath_prefix += ' and '
+                xpath_prefix += f"(tag/member = '{tag}')"
+    return xpath_prefix
 
 
 ''' FUNCTIONS'''
@@ -3436,7 +3457,7 @@ def target_filter(rule: dict, target: str) -> bool:
 
 
 @logger
-def panorama_list_rules(xpath: str, filters: dict = None, query: str = None):
+def panorama_list_rules(xpath: str, name: str = None, filters: dict = None, query: str = None):
     params = {
         'action': 'get',
         'type': 'config',
@@ -3447,22 +3468,7 @@ def panorama_list_rules(xpath: str, filters: dict = None, query: str = None):
     if query:
         params["xpath"] = f'{params["xpath"]}{query}'
     else:
-        xpath_prefix = ''
-        for key, value in filters.items():
-            if key == 'tags':
-                for tag in value:
-                    if xpath_prefix:
-                        xpath_prefix += " and "
-                    xpath_prefix += f"(tag/member = '{tag}')"
-            if key in ('disabled', 'action'):
-                if xpath_prefix:
-                    xpath_prefix += " and "
-                xpath_prefix += f"({key} = '{value}')"
-            if key == 'rule_name':
-                if xpath_prefix:
-                    xpath_prefix += " and  "
-                xpath_prefix += f"@name = '{value}'"
-        params["xpath"] = f'{params["xpath"]}[{xpath_prefix}]'
+        params["xpath"] = f'{params["xpath"]}[{build_xpath_filter(name, filters)}]'
 
     result = http_request(
         URL,
@@ -3486,15 +3492,15 @@ def panorama_list_rules_command(args: dict):
         xpath = XPATH_SECURITY_RULES
 
     filters = {
-        'rule_name': args.get('rulename'),
         'tags': argToList(args.get('tags')),
         'disabled': args.get('disabled'),
         'action': args.get('action'),
     }
+    name = args.get('rulename')
     query = args.get('query')
     target = args.get('target')
 
-    rules = panorama_list_rules(xpath, filters, query)
+    rules = panorama_list_rules(xpath, name, filters, query)
     pretty_rules = prettify_rules(rules, target)
 
     return_results({
@@ -11654,21 +11660,32 @@ def pan_os_list_templates_command(args):
     )
 
 
-def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] = None,
-                    disabled: bool = None, tags: list[str] = None, nat_type: str = None, query: str = None):
+def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] = None, filters: dict = None, query: str = None):
     _xpath = f"{XPATH_RULEBASE}{pre_post}/nat"
     if query:
         _xpath = f"{_xpath}/rules/entry[{query}]"
     else:
+        xpath_prefix = ''
         if name:
-            _xpath = f"{_xpath}/rules/entry[@name='{name}']"
+            xpath_prefix += f"@name = '{name}'"
+        for key, value in filters.items():
+            if key == 'tags':
+                for tag in value:
+                    if xpath_prefix:
+                        xpath_prefix += ' and '
+                    xpath_prefix += f"(tag/member = '{tag}')"
+            if key in ('disabled', 'nat-type'):
+                if xpath_prefix:
+                    xpath_prefix += ' and '
+                xpath_prefix += f"({key} = '{value}')"
+        _xpath = f"{_xpath}/rules/entry[{xpath_prefix}]"
+
     if element:
             _xpath = f"{_xpath}/{element}"
     return _xpath
 
 
-def get_pan_os_nat_rules(show_uncommited: bool, name: Optional[str] = None, pre_post: Optional[str] = None,
-                         disabled: str = None, nat_type: str = None, tags: list = None, query: str = None):
+def get_pan_os_nat_rules(show_uncommited: bool, name: Optional[str] = None, pre_post: Optional[str] = None, filters: dict = None, query: str = None):
 
     if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
         raise DemistoException(f'The pre_post argument must be provided for panorama instance')
@@ -11678,7 +11695,7 @@ def get_pan_os_nat_rules(show_uncommited: bool, name: Optional[str] = None, pre_
         'action': 'get' if show_uncommited else 'show',
         'key': API_KEY,
         # rulebase is for firewall instance.
-        'xpath': build_nat_xpath(name, 'rulebase' if VSYS else pre_post, disabled, nat_type, tags, query)  # type: ignore[arg-type]
+        'xpath': build_nat_xpath(name, 'rulebase' if VSYS else pre_post, filters=filters, query=query)  # type: ignore[arg-type]
     }
 
     return http_request(URL, 'POST', params=params)
@@ -11753,13 +11770,14 @@ def pan_os_list_nat_rules_command(args):
     name = args.get('name')
     pre_post = args.get('pre_post')
     show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
-    disabled = args.get('disabled')
-    nat_type = args.get('nat_type')
-    tags = argToList(args.get('tags'))
+    filters = {
+        'disabled': args.get('disabled'),
+        'nat-type': args.get('nat_type'),
+        'tags': argToList(args.get('tags')),
+    }
     query = args.get('query')
 
-    raw_response = get_pan_os_nat_rules(name=name, pre_post=pre_post, show_uncommited=show_uncommitted,
-                                        disabled=disabled, nat_type=nat_type, tags=tags, query=query)
+    raw_response = get_pan_os_nat_rules(name=name, pre_post=pre_post, show_uncommited=show_uncommitted, filters=filters, query=query)
     result = raw_response.get('response', {}).get('result', {})
 
     # the 'entry' key could be a single dict as well.
@@ -12422,16 +12440,20 @@ def pan_os_delete_redistribution_profile_command(args):
     )
 
 
-def build_pbf_xpath(name, pre_post, element_to_change=None):
+def build_pbf_xpath(name, pre_post, element_to_change=None, filters: dict = None, query: str = None):
     _xpath = f'{XPATH_RULEBASE}{pre_post}/pbf'
-    if name:
-        _xpath = f"{_xpath}/rules/entry[@name='{name}']"
+
+    if query:
+        _xpath = f"{_xpath}/rules/entry[{query}]"
+    else:
+        _xpath = f"{_xpath}/rules/entry[{build_xpath_filter(name, filters)}]"
+
     if element_to_change:
         _xpath = f'{_xpath}/{element_to_change}'
     return _xpath
 
 
-def pan_os_list_pbf_rules(name, pre_post, show_uncommitted):
+def pan_os_list_pbf_rules(name, pre_post, show_uncommitted, filters, query):
 
     if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
         raise DemistoException(f'The pre_post argument must be provided for panorama instance')
@@ -12441,7 +12463,7 @@ def pan_os_list_pbf_rules(name, pre_post, show_uncommitted):
         'action': 'get' if show_uncommitted else 'show',
         'key': API_KEY,
         # rulebase is for firewall instance.
-        'xpath': build_pbf_xpath(name, 'rulebase' if VSYS else pre_post)  # type: ignore[arg-type]
+        'xpath': build_pbf_xpath(name, 'rulebase' if VSYS else pre_post, filters=filters, query=query)  # type: ignore[arg-type]
     }
 
     return http_request(URL, 'GET', params=params)
@@ -12503,8 +12525,14 @@ def pan_os_list_pbf_rules_command(args):
     name = args.get('rulename')
     pre_post = args.get('pre_post')
     show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
+    filters = assign_params(
+        tags=argToList(args.get('tags')),
+        disabled=args.get('disabled'),
+        action=args.get('action')
+    )
+    query = args.get('query')
 
-    raw_response = pan_os_list_pbf_rules(name=name, pre_post=pre_post, show_uncommitted=show_uncommitted)
+    raw_response = pan_os_list_pbf_rules(name=name, pre_post=pre_post, show_uncommitted=show_uncommitted, filters=filters, query=query)
     result = raw_response.get('response', {}).get('result', {})
 
     # the 'entry' key could be a single dict as well.
