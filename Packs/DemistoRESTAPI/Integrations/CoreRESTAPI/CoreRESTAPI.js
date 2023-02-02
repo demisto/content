@@ -4,7 +4,7 @@ if (serverURL.slice(-1) === '/') {
 }
 
 if (params.auth_id || (params.creds_apikey && params.creds_apikey.identifier)) {
-    if !serverURL.endsWith('/xsoar'){
+    if (!serverURL.endsWith('/xsoar')){
         serverURL = serverURL + '/xsoar'
     }
 }
