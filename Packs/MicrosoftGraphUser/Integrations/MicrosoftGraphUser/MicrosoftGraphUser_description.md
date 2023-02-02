@@ -19,7 +19,7 @@ In order to use the ***msgraph-user-change-password*** command, you must use wit
 
 **Note:** When using the Authorization Code flow, make sure the user you authenticate with has the relevant roles in Azure AD in order to execute the operation.
 
-### Self deployed configuration
+### Self-Deployed configuration
 - [Client Credentials flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)
 - [Authorization Code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorize-on-behalf-of-a-user)
 
