@@ -91,7 +91,7 @@ class BoxEventsRequestConfig(IntegrationHTTPRequest):
     # Endpoint: https://developer.box.com/reference/get-events/
     url = parse_obj_as(AnyUrl, 'https://api.box.com/2.0/events')
     method = Method.GET
-    params: BoxEventsParams
+    params: BoxEventsParams   # type: ignore[assignment]
     verify: Optional[bool] = Field(True, alias='insecure')  # type: ignore[assignment]
 
     # validators

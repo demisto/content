@@ -21,6 +21,7 @@ DBOT_SCORE_DICT: Dict[str, int] = {'malicious': Common.DBotScore.BAD,
                                    'suspicious': Common.DBotScore.SUSPICIOUS,
                                    'no specific threat': Common.DBotScore.GOOD}
 OUTPUTS_PREFIX = 'csfalconx.resource'
+ONE_MINUTE = 60
 
 
 def convert_environment_id_string_to_int(
@@ -58,7 +59,7 @@ class Client:
         self._username = username
         self._password = password
         self._session = requests.Session()
-        self._token = self._generate_token()
+        self._token = self._get_access_token()
         self._headers = {'Authorization': 'bearer ' + self._token}
         self.reliability = reliability
         if not proxy:
@@ -213,10 +214,35 @@ class Client:
                 .format(err_type, exception.errno, exception.strerror)
             raise DemistoException(err_msg, exception)
 
-    def _generate_token(self) -> str:
+    def _get_access_token(self) -> str:
         """Generate an Access token using the user name and password
         :return: valid token
         """
+        integration_context = get_integration_context()
+        access_token = integration_context.get('access_token')
+        token_initiate_time = integration_context.get('token_initiate_time')
+        token_expiration_seconds = integration_context.get('token_expiration_seconds')
+
+        if access_token and not is_token_expired(
+            token_initiate_time=float(token_initiate_time),
+            token_expiration_seconds=float(token_expiration_seconds)
+        ):
+            demisto.info('access token from integration context is still valid')
+            return access_token
+
+        # there's no token or it is expired
+        access_token, token_expiration_seconds = self._get_token_request()
+        integration_context = {
+            'access_token': access_token,
+            'token_expiration_seconds': token_expiration_seconds,
+            'token_initiate_time': time.time()
+        }
+        demisto.info('Updating new access token to the integration context...')
+        set_integration_context(context=integration_context)
+
+        return access_token
+
+    def _get_token_request(self):
         body = {
             'client_id': self._username,
             'client_secret': self._password
@@ -227,8 +253,8 @@ class Client:
         headers = {
             'Authorization': f'Basic {base64.b64encode(byte_creds).decode()}'
         }
-        token_res = self._http_request('POST', '/oauth2/token', data=body, headers=headers)
-        return token_res.get('access_token')
+        token_response = self._http_request('POST', '/oauth2/token', data=body, headers=headers)
+        return token_response.get('access_token'), token_response.get('expires_in')
 
     def upload_file(
             self,
@@ -451,6 +477,24 @@ class Client:
             "sort": sort,
         }
         return self._http_request('Get', '/falconx/queries/submissions/v1', params=params)
+
+
+def is_token_expired(token_initiate_time: float, token_expiration_seconds: float) -> bool:
+    """
+    Check whether a token has expired. a token considered expired if it has been reached to its expiration date in
+    seconds minus a minute to be on the safe side.
+
+    for example ---> time.time() = 300, token_initiate_time = 240, token_expiration_seconds = 120
+    300.0001 - 240 < 120 - 60
+
+    Args:
+        token_initiate_time (float): the time in which the token was initiated in seconds.
+        token_expiration_seconds (float): the time in which the token should be expired in seconds.
+
+    Returns:
+        bool: True if token has expired, False if not.
+    """
+    return time.time() - token_initiate_time >= token_expiration_seconds - ONE_MINUTE
 
 
 def filter_dictionary(dictionary: dict, fields_to_keep: Optional[tuple], sort_by_field_list: bool = False) -> dict:
