@@ -11,7 +11,7 @@ This pack contains all of the integrations, automations, and playbooks necessary
 - Keeps human analysts in the loop to direct the desired remediation action depending on the type of risk and discovered context.
 - Includes automated notification and ticket creation workflows for delegating remediation tasks to the appropriate service owners.
 - Includes full automated remediation options for automatically removing risky services from the public internet.
-- Supports validation rescanning to ensure that remediation efforts have been applied successfully.
+- Supports validation re-scanning to ensure that remediation efforts have been applied successfully.
 - Includes PDF reporting capabilities for preserving and communicating the investigation summary.
 
 ### Automated Remediation requirements
@@ -128,7 +128,7 @@ This automation helps generate an ASM alert summary report with important inform
 
 #### SnmpDetection
 
-This automation checka if SNMP is enabled or not and gets the running version on the remote server.
+This automation checks if SNMP is enabled or not and gets the running version on the remote server.
 ![SnmpDetection](https://raw.githubusercontent.com/demisto/content/bf435b470c2ed192b2d6c65c98ce488012d51636/Packs/CortexAttackSurfaceManagement/doc_files/SnmpDetection.png)
 
 #### InferWhetherServiceIsDev
