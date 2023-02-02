@@ -1041,8 +1041,6 @@ def alert_update_state(client, data_args) -> Tuple[str, dict, Union[list, dict]]
         :rtype: ``tuple``
 
     """
-    # alert_ids = int(data_args.get('alert_ids'))
-    # alert_ids = argToList(data_args.get('alert_ids'))
     alert_ids = [int(alert) for alert in argToList(data_args.get('alert_ids'))]
     state = data_args.get('state')
 
@@ -1050,17 +1048,14 @@ def alert_update_state(client, data_args) -> Tuple[str, dict, Union[list, dict]]
         'state': state.lower()
     }
     if client.api_version == "4.x":
-        url_suffix = '/plugin/products/threat-response/api/v1/alerts/'
         if len(alert_ids) == 1:
-            url_suffix = urljoin(url_suffix, str(alert_ids[0]))
+            client.do_request('PUT', f'/plugin/products/threat-response/api/v1/alerts/{str(alert_ids[0])}', data=body)
         else:
-            body['id'] = alert_ids
+            client.do_request('PUT', '/plugin/products/threat-response/api/v1/alerts/',
+                              data=body, params={'id': alert_ids})
+
     else:
-        url_suffix = '/plugin/products/detect3/api/v1/alerts/'
-        body['id'] = alert_ids
-    # client.do_request('PUT', url_suffix, params=body) if client.api_version == '4.x'\
-    #     else client.do_request('PUT', url_suffix, data=body)      # todo: check whats right?
-    client.do_request('PUT', url_suffix, data=body)
+        client.do_request('PUT', '/plugin/products/detect3/api/v1/alerts/', data=body.update({'id': alert_ids}))
 
     return f'Alert state updated to {state}.', {}, {}
 
@@ -2147,7 +2142,7 @@ def main():
 
         'tanium-tr-event-evidence-list': list_evidence,
         'tanium-tr-event-evidence-get-properties': event_evidence_get_properties,
-        'tanium-tr-get-evidence-by-id': get_evidence_by_id,  # todo: error: not found for existing one
+        'tanium-tr-get-evidence-by-id': get_evidence_by_id,
         'tanium-tr-create-evidence': create_evidence,
         'tanium-tr-delete-evidence': delete_evidence,
 
