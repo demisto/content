@@ -9,13 +9,15 @@ You need to configure Corelight Sensor to forward Zeek Syslog messages.
     * Under "Syslog Format"- Pick the "Default" option.
     * Under "Syslog Facility"- Set your Syslog Facility, E.g. Local0.
     * Under "Syslog Severity"- Select the severity for the logs you will sent, E.g. Info.
-3. << Dreaft >> Monitor - Configure default settings (avilable in diffrent tabs)
+3. Open the "Maintain" tab.
+4. Under "Performance Monitoring", enable the "Reporting to Syslog (UDP-Only)" option and set a time interval (E.g. 1min).
+5. Under "Performance Monitoring", enable the "Reporting Through Zeek Log Streams" option and set a time interval (E.g. 1min).
 ## Collect Events from Vendor
 
-In order to use the collector, use the [Broker VM](#broker-vm) option. << Update id Needed >>
+In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
-To create or configure the Broker VM, use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/broker-vm/set-up-broker-vm/configure-your-broker-vm). << Update if needed >>
+To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 You can configure the specific vendor and product for this instance.
 
