@@ -530,23 +530,24 @@ def test_search_submission_command(requests_mock, mock_client):
     assert result.outputs[0].get('filename') == 'data_filename'
 
 
-@pytest.mark.parametrize('args', [({
+@pytest.mark.parametrize('args,outputs_key_field', [({
     'command_name': 'ip',
     'ip': 'ip'
-}), ({
+}, 'ip'), ({
     'command_name': 'url',
     'url': 'url'
-}), ({
+}, 'url'), ({
     'command_name': 'domain',
     'domain': 'domain'
-}), ({
+}, 'domain'), ({
     'command_name': 'file',
     'file': 'file'
-})])
+}, 'md5')])
 def test_reputation_command(
     requests_mock,
     mock_client,
     args,
+    outputs_key_field,
 ):
     """
     Scenario: Search threat grid submissions.
@@ -575,7 +576,7 @@ def test_reputation_command(
     args.update({'reliability': DBotScoreReliability.B})
     result = reputation_command(mock_client, args)
 
-    assert result.entry_type == 1
+    assert result[0].outputs_key_field == outputs_key_field
 
 
 @pytest.mark.parametrize('date, output', [

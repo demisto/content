@@ -1008,8 +1008,8 @@ def reputation_command(
         )
         if response["data"]["current_item_count"] == 0:
             score = 0
-            sample_details = None
-            sample_id = None
+            sample_details = {}
+            sample_id = ''
         else:
             sample_details = response["data"]["items"][0]["item"]
             sample_analysis_date = dict_safe_get(
@@ -1020,9 +1020,8 @@ def reputation_command(
 
             if not is_day_diff_valid(sample_analysis_date):
                 score = 0
-                sample_details = None
-                sample_id = None
-
+                sample_details = {}
+                sample_id = ''
 
         dbot_score = get_dbotscore(score, generic_command_name, command_arg, reliability)
         reputation_helper_command: Callable = REPUTATION_TYPE_TO_FUNCTION[generic_command_name]
@@ -1123,7 +1122,7 @@ def parse_domain_indicator(
 
 def parse_file_indicator(
     dbot_score: Common.DBotScore,
-    sample_details: dict = None,
+    sample_details: dict,
     **kwargs,
 ) -> CommandResults:
     """Build outputs for generic command reputation.
@@ -1172,7 +1171,7 @@ def parse_ip_indicator(
     client: Client,
     command_arg: str,
     dbot_score: Common.DBotScore,
-    sample_id: str = None,
+    sample_id: str,
     **kwargs,
 ) -> CommandResults:
     """Build outputs for generic command reputation.
