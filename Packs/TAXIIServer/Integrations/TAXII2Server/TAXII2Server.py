@@ -92,14 +92,6 @@ STIX2_TYPES_TO_XSOAR: dict[str, Union[str, tuple[str, ...]]] = {
                   FeedIndicatorType.URL, FeedIndicatorType.File, FeedIndicatorType.Registry)
 }
 
-HASH_TYPE_TO_STIX_HASH_TYPE = {
-    'md5': 'MD5',
-    'sha1': 'SHA-1',
-    'sha256': 'SHA-256',
-    'sha512': 'SHA-512',
-}
-
-
 ''' TAXII2 Server '''
 
 
@@ -715,8 +707,8 @@ def convert_sco_to_indicator_sdo(stix_object: dict, xsoar_indicator: dict) -> di
 
     pattern = ''
     if object_type == 'file':
-        hash_type = HASH_TYPE_TO_STIX_HASH_TYPE.get(get_hash_type(indicator_value), 'Unknown')
-        pattern = f"[file:hashes.'{hash_type}' = '{indicator_pattern_value}']"
+        hash_type = get_hash_type(indicator_value)
+        pattern = f"[file:hash.'{hash_type}' = '{indicator_pattern_value}']"
     else:
         pattern = f"[{object_type}:value = '{indicator_pattern_value}']"
 
@@ -806,34 +798,56 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str, extensions_dict: 
     extension_definition = {}
 
     if SERVER.has_extension and object_type not in SERVER.types_for_indicator_sdo:
-        if object_type in extensions_dict:
-            extension_id = extensions_dict.get(object_type, {}).get('extension_id')
-            xsoar_indicator_to_return = extensions_dict.get(object_type, {}).get('xsoar_indicator_to_return')
-        else:
-            xsoar_indicator_to_return['extension_type'] = 'property_extension'
-            extension_id = f'extension-definition--{uuid.uuid4()}'
-            extension_definition = {
-                'id': extension_id,
-                'type': 'extension-definition',
-                'spec_version': SERVER.version,
-                'name': f'Cortex XSOAR TIM {xsoar_type}',
-                'description': 'This schema adds TIM data to the object',
-                'created': created_parsed,
-                'modified': modified_parsed,
-                'created_by_ref': f'identity--{str(PAWN_UUID)}',
-                'schema':
-                    'https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/'
-                    'Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json',
-                'version': '1.0',
-                'extension_types': ['property-extension']
-            }
-            extensions_dict[object_type] = {'extension_id': extension_id, 'xsoar_indicator_to_return': xsoar_indicator_to_return}
-        stix_object['extensions'] = {
-            extension_id: xsoar_indicator_to_return,
-        }
+        stix_object, extension_definition, extensions_dict = create_extension_definition(object_type, extensions_dict, xsoar_type,
+                                                                                         created_parsed, modified_parsed,
+                                                                                         stix_object)
 
     if is_sdo:
         stix_object['description'] = xsoar_indicator.get('CustomFields', {}).get('description', "")
+    return stix_object, extension_definition, extensions_dict
+
+
+def create_extension_definition(object_type, extensions_dict, xsoar_type, created_parsed, modified_parsed, stix_object):
+    """
+    Args:
+        object_type: the type of the stix_object.
+        xsoar_type: type of indicator in xsoar system.
+        extensions_dict: dict contains all object types that already have their extension defined.
+        created_parsed: the stix object creation time.
+        modified_parsed: the stix object last modified time.
+        stix_object: Stix object entry.
+        
+    Create an extension definition and update the stix object and extensions dict accordingly.
+        
+    Returns:
+        the updated Stix object, its extension and updated extensions_dict.
+    """
+    extension_definition = {}
+    if object_type in extensions_dict:
+        extension_id = extensions_dict.get(object_type, {}).get('extension_id')
+        xsoar_indicator_to_return = extensions_dict.get(object_type, {}).get('xsoar_indicator_to_return')
+    else:
+        xsoar_indicator_to_return['extension_type'] = 'property_extension'
+        extension_id = f'extension-definition--{uuid.uuid4()}'
+        extension_definition = {
+            'id': extension_id,
+            'type': 'extension-definition',
+            'spec_version': SERVER.version,
+            'name': f'Cortex XSOAR TIM {xsoar_type}',
+            'description': 'This schema adds TIM data to the object',
+            'created': created_parsed,
+            'modified': modified_parsed,
+            'created_by_ref': f'identity--{str(PAWN_UUID)}',
+            'schema':
+                'https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/'
+                'Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json',
+            'version': '1.0',
+            'extension_types': ['property-extension']
+        }
+        extensions_dict[object_type] = {'extension_id': extension_id, 'xsoar_indicator_to_return': xsoar_indicator_to_return}
+    stix_object['extensions'] = {
+        extension_id: xsoar_indicator_to_return
+    }
     return stix_object, extension_definition, extensions_dict
 
 
