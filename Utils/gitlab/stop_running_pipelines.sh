@@ -11,18 +11,18 @@ echo $2
 echo $3
 
 if [ -z "$1" ]; then
-  CI_COMMIT_BRANCH=$1
-else
   echo "No commit branch. Aborting."
   exit 1
+else
+  CI_COMMIT_BRANCH=$1
 fi
 
 
 if [ -z "$2" ]; then
-  CI_PIPELINE_ID=$2
-else
   echo "No pipeline number. Aborting."
   exit 1
+else
+  CI_PIPELINE_ID=$2
 fi
 
 # Helper functions
