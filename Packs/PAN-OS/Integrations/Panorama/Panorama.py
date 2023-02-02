@@ -3722,11 +3722,26 @@ def panorama_edit_rule_command(args: dict):
     if behaviour != 'replace':
         panorama_edit_rule_items(rulename, element_to_change, argToList(element_value), behaviour)
     else:
+        # if args.get('element_to_change') == 'audit-comment':
+        #     audit_comment = args.get('element_to_change')
+        #     params = {
+        #         'cmd': f'<set><audit-comment>{element_value}</audit-comment></set',
+        #         'xpath': XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']',
+        #         'type': 'op'
+        #     }
+        #
+        #     result = http_request(URL, 'POST', body=params)
+        #     print()
+
         params = {
             'type': 'config',
             'action': 'edit',
             'key': API_KEY
         }
+
+        if audit_comment := args.get('audit_comment'):
+            params['audit-comment'] = audit_comment
+
         if element_to_change in ['action', 'description', 'log-setting']:
             params['element'] = add_argument_open(element_value, element_to_change, False)
         elif element_to_change in ['source', 'destination', 'application', 'category', 'source-user', 'service', 'tag']:
@@ -3748,6 +3763,9 @@ def panorama_edit_rule_command(args: dict):
         else:
             params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
         params['xpath'] += '/' + element_to_change
+
+        if args.get('element_to_change') == 'audit-comment':
+            params['audit-comment'] = 'blabla'
 
         result = http_request(URL, 'POST', body=params)
 
