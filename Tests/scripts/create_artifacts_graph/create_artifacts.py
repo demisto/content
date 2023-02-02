@@ -34,7 +34,7 @@ def create_dependencies(content_dto: ContentDTO, is_bucket_upload: bool, output:
                     "author": dependency.content_item_to.author,
                 }
             if dependency.is_direct:
-                first_level_dependencies[dependency.content_item.object_id] = {
+                first_level_dependencies[dependency.content_item_to.object_id] = {
                     "display_name": dependency.content_item_to.name,
                     "mandatory": dependency.mandatorily,
                     "is_test": dependency.is_test,
