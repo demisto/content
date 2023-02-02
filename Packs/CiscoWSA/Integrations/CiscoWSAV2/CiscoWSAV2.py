@@ -82,7 +82,7 @@ class Client(BaseClient):
         policy_name: str,
         policy_status: str,
         identification_profile_name: str,
-        policy_order: int,
+        policy_order: Optional[int],
         policy_description: Optional[str] = None,
         policy_expiry: Optional[str] = None,
     ):
@@ -295,7 +295,7 @@ class Client(BaseClient):
         policy_name: str,
         application: str,
         action: str,
-        values: List[str],
+        values: Dict[str, Any],
     ) -> Response:
         """
         Update access policy's applications settings.
@@ -304,7 +304,7 @@ class Client(BaseClient):
             policy_name (str): Policy name to update.
             application (str): Application to update.
             action (str): Action to perform on values.
-            values (List[str]): Values to perform action on.
+            values (Dict[str, Any]): Values to perform action on.
 
         Returns:
             Response: API response from Cisco WSA.
@@ -487,7 +487,7 @@ class Client(BaseClient):
         )
 
     def domain_map_create_request(
-        self, domain_name: str, ip_addresses: List[str], order: int
+        self, domain_name: str, ip_addresses: List[str], order: Optional[int]
     ) -> Dict[str, Any]:
         """
         Create domain mapping.
@@ -513,7 +513,7 @@ class Client(BaseClient):
         domain_name: str,
         new_domain_name: Optional[str] = None,
         ip_addresses: Optional[str] = None,
-        order: Optional[str] = None,
+        order: Optional[int] = None,
     ) -> Dict[str, Any]:
         """
         Update domain map.
@@ -561,7 +561,8 @@ class Client(BaseClient):
         )
 
     def identification_profiles_list_request(
-        profile_names: Optional[str] = None,
+        self,
+        profile_names: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """
         Get identification profiles.
@@ -572,7 +573,9 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Cisco WSA.
         """
-        params = assign_params(profile_names=",".join(profile_names))
+        params = assign_params(
+            profile_names=",".join(profile_names) if profile_names else None
+        )
 
         return self._http_request(
             "GET", f"{V3_PREFIX}/web_security/identification_profiles", params=params
@@ -705,15 +708,17 @@ class Client(BaseClient):
         )
 
 
-def pagination(response: Dict[str, Any], args: Dict[str, Any]) -> Dict[str, Any]:
+def pagination(
+    response: List[Dict[str, Any]], args: Dict[str, Any]
+) -> List[Dict[str, Any]]:
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size"))
     limit = arg_to_number(args.get("limit", 50))
 
     if page and page_size:
         offset = (page - 1) * page_size
-        return response[offset : offset + page_size]
-    elif limit:
+        return response[offset: offset + page_size]
+    else:
         return response[:limit]
 
 
@@ -738,7 +743,7 @@ def organize_policy_object_data(
         http_or_https_max_object_size_mb (Optional[int], optional): HTTP(S) max object size MB. Defaults to None.
         ftp_max_object_size_mb (Optional[int], optional): FTP max object size MB. Defaults to None.
     """
-    if all([object_type, object_action, object_values]):
+    if object_type and object_action and object_values:
         original_obj_actions = objects["object_type"][object_type]
         for original_obj_action in original_obj_actions:
             if original_obj_action == object_action:
@@ -783,7 +788,7 @@ def access_policy_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     """
     policy_names = args.get("policy_names")
     response = client.access_policy_list_request(policy_names=policy_names).get(
-        "access_policies"
+        "access_policies", []
     )
 
     paginated_response = pagination(response=response, args=args)
@@ -1219,7 +1224,9 @@ def domain_map_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
     return CommandResults(readable_output=readable_output, raw_response=response)
 
 
-def domain_map_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def domain_map_delete_command(
+    client: Client, args: Dict[str, Any]
+) -> Union[List[CommandResults], CommandResults]:
     """
     Delete domain mappings.
 
@@ -1383,7 +1390,7 @@ def identification_profiles_update_command(
 
 def identification_profiles_delete_command(
     client: Client, args: Dict[str, Any]
-) -> CommandResults:
+) -> Union[List[CommandResults], CommandResults]:
     """
     Delete identification profiles.
 
