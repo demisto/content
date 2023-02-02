@@ -2141,6 +2141,48 @@ script:
       name: exclusion_type
     description: Remove an item from the SentinelOne exclusion list
     name: sentinelone-remove-item-from-whitelist
+  - arguments:
+    - name: account_ids
+      required: true
+      description: A comma-separated list of Account IDs.
+      isArray: true
+    - name: output_destination
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - DataSetCloud
+      - Local
+      - None
+      - SentinelCloud
+      description: 'Output Destination : DataSetCloud/Local/None/SentinelCloud'
+    - name: task_description
+      required: true
+      description: Task description
+    - name: script_id
+      required: true
+      description: script ID
+    - name: output_directory
+      required: true
+      description: Output directory
+    - name: agent_ids
+      required: true
+      description: A comma-separated list of Agent IDs on which script should run.
+      isArray: true
+    outputs:
+    - contextPath: SentinelOne.RunRemoteScript.pendingExecutionId
+      description: ID of created pending execution, present only if pending flag is true
+      type: string
+    - contextPath: SentinelOne.RunRemoteScript.pending
+      description: Flag indicating if requested script execution requires approval and is created as pending execution
+      type: boolean
+    - contextPath: SentinelOne.RunRemoteScript.affected
+      description: Number of entities affected by the requested operation
+      type: number
+    - contextPath: SentinelOne.RunRemoteScript.parentTaskId
+      description: The parent task id of the script execution task, null in case of pending execution
+      type: string
+    description: Run a remote script that was uploaded to the SentinelOne Script Library.
+    name: sentinelone-run-remote-script
   - arguments: []
     description: Returns the list of fields for an incident type.
     name: get-mapping-fields

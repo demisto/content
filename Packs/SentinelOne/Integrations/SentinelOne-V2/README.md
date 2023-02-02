@@ -2715,3 +2715,27 @@ Removes inputted item from the SentinelOne whitelist.
 
 #### Command Example
 ```!sentinelone-remove-item-from-whitelist item="31cb594e8f688521a24dd6f95b95508de42d870d" exclusion_type="white_hash" os_type="windows"```
+
+### sentinelone-run-remote-script
+***
+Run a remote script that was uploaded to the SentinelOne Script Library.
+#### Base Command
+`sentinelone-run-remote-script`
+#### Input
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| output_destination | Output Destination : DataSetCloud/Local/None/SentinelCloud | Required | 
+| task_description | Task description | Required |
+| script_id | script ID | Required |
+| output_directory | Output Directory | Required |
+| account_ids | A comma-separated list of Account IDs. | Required |
+| agent_ids | A comma-separated list of Agent IDs on which script should run. | Required |
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.RunRemoteScript.pendingExecutionId | String | ID of created pending execution, present only if pending flag is true. | 
+| SentinelOne.RunRemoteScript.pending | Boolean | Flag indicating if requested script execution requires approval and is created as pending execution. |
+| SentinelOne.RunRemoteScript.affected | Number | Number of entities affected by the requested operation |
+| SentinelOne.RunRemoteScript.parentTaskId | String | The parent task id of the script execution task, null in case of pending execution.|
+#### Command Example
+```!sentinelone-run-remote-script account_ids="1431991147831493698" output_destination="None" task_description="a test" script_id="1235462642391383844" output_directory="file" agent_ids="1508658407921320788"```

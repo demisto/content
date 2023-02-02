@@ -829,6 +829,23 @@ class Client(BaseClient):
         response = self._http_request(method="GET", url_suffix="threats", params=params)
         return response.get("data", [])
 
+    def run_remote_script_request(self, account_ids, script_id, output_destination, task_description, output_directory, agent_ids):
+        endpoint_url = "remote-scripts/execute"
+        payload = {
+            "filter": {
+                "accountIds": account_ids,
+                "ids": agent_ids
+            },
+            "data": {
+                "taskDescription": task_description,
+                "outputDestination": output_destination,
+                "scriptId": script_id,
+                "outputDirectory": output_directory
+            }
+        }
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+
 
 """ COMMANDS + REQUESTS FUNCTIONS """
 
@@ -3215,6 +3232,38 @@ def download_fetched_file(client: Client, args: dict) -> List[CommandResults]:
     ]
 
 
+def run_remote_script_command(client: Client, args: dict) -> CommandResults:
+    """
+    Run a remote script that was uploaded to the SentinelOne Script Library
+    """
+
+    context = {}
+    # Get arguments
+    account_ids = argToList(args.get("account_ids"))
+    script_id = args.get("script_id")
+    output_destination = args.get("output_destination")
+    task_description = args.get("task_description")
+    output_directory = args.get("output_directory")
+    agent_ids = argToList(args.get("agent_ids"))
+
+    run_remote_script = client.run_remote_script_request(
+        account_ids, script_id, output_destination, task_description, output_directory, agent_ids)
+
+    if run_remote_script:
+        context = {
+            "pendingExecutionId": run_remote_script.get("pendingExecutionId"),
+            "pending": run_remote_script.get("pending"),
+            "affected": run_remote_script.get("affected"),
+            "parentTaskId": run_remote_script.get("parentTaskId")
+        }
+
+    return CommandResults(
+        readable_output=tableToMarkdown("Sentinel One - Run Remote Script", context, removeNull=True),
+        outputs_prefix="SentinelOne.RunRemoteScript",
+        outputs=context,
+        raw_response=run_remote_script)
+
+
 def get_mappping_fields_command():
     """
     Returns the list of fields to map in outgoing mirroring, for incidents.
@@ -3589,6 +3638,7 @@ def main():
             "sentinelone-update-alerts-status": update_alert_status,
             "sentinelone-get-alerts": get_alerts,
             "sentinelone-remove-item-from-whitelist": remove_item_from_whitelist,
+            "sentinelone-run-remote-script": run_remote_script_command,
         },
     }
 
