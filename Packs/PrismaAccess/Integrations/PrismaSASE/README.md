@@ -248,9 +248,10 @@ Push the candidate configuration.
 #### Context Output
 
 | **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PrismaSase.CandidateConfig.job_id | String | Configuration job ID. | 
-| PrismaSase.CandidateConfig.result | Boolean | The configuration push result. | 
+| --- |----------| --- |
+| PrismaSase.CandidateConfig.job_id | String   | Configuration job ID. | 
+| PrismaSase.CandidateConfig.result | String   | The configuration push result. | 
+| PrismaSase.CandidateConfig.details | String   | The configuration push details. | 
 
 #### Command example
 ```!prisma-sase-candidate-config-push folders="Mobile Users"```
@@ -436,6 +437,8 @@ Lists all configuration jobs.
 | --- | --- | --- |
 | job_id | A specific config job to return. If not specified, all config jobs will be returned. | Optional | 
 | limit | The maximum number of results to return. Default is 50. Default is 50. | Optional | 
+| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
+| page_size | Number of results per page to display. | Optional | 
 | tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 
 

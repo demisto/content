@@ -376,7 +376,10 @@ script:
       type: String
     - contextPath: PrismaSase.CandidateConfig.result
       description: The configuration push result.
-      type: Boolean
+      type: String
+    - contextPath: PrismaSase.CandidateConfig.details
+      description: The configuration push details.
+      type: String
   - arguments:
     - default: false
       description: ID of the rule to be changed.
