@@ -816,9 +816,9 @@ def create_extension_definition(object_type, extensions_dict, xsoar_type, create
         created_parsed: the stix object creation time.
         modified_parsed: the stix object last modified time.
         stix_object: Stix object entry.
-        
+
     Create an extension definition and update the stix object and extensions dict accordingly.
-        
+  
     Returns:
         the updated Stix object, its extension and updated extensions_dict.
     """
