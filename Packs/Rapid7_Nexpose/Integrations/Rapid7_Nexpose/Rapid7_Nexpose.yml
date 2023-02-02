@@ -191,6 +191,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '10'
       description: A number of records to limit the response to.
       isArray: false
       name: limit
@@ -398,7 +399,7 @@ script:
       description: The name of the user who started the scan.
       type: string
     - contextPath: Nexpose.Scan.Assets
-      description: 'The number of assets found in the scan'
+      description: The number of assets found in the scan
       type: number
     - contextPath: Nexpose.Scan.TotalTime
       description: The duration of the scan in minutes.
@@ -435,7 +436,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: "Returns details and possible remediations for an asset's vulnerability."
+    description: Returns details and possible remediations for an asset's vulnerability.
     execution: false
     name: nexpose-get-asset-vulnerability
     outputs:
@@ -742,7 +743,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: "Site's description."
+      description: Site's description.
       isArray: false
       name: description
       required: false
@@ -759,19 +760,19 @@ script:
       name: scanTemplateId
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Site importance. Defaults to "normal" if not specified.
       isArray: false
       name: importance
-      required: false
-      secret: false
-      auto: PREDEFINED
       predefined:
       - very_low
       - low
       - normal
       - high
       - very_high
+      required: false
+      secret: false
     deprecated: false
     description: Creates a new site with the specified configuration.
     execution: false
@@ -780,11 +781,7 @@ script:
     - contextPath: Nexpose.Site.Id
       description: ID of the created site.
       type: number
-  - deprecated: false
-    description: Create a new vulnerability exception.
-    execution: false
-    name: nexpose-create-vulnerability-exception
-    arguments:
+  - arguments:
     - default: false
       description: The date and time the vulnerability exception is set to expire in ISO 8601 date format.
       isArray: false
@@ -847,21 +844,25 @@ script:
       name: scope_id
       required: false
       secret: false
+    deprecated: false
+    description: Create a new vulnerability exception.
+    execution: false
+    name: nexpose-create-vulnerability-exception
     outputs:
     - contextPath: Nexpose.VulnerabilityException.id
       description: ID of the generated vulnerability exception.
       type: number
-  - arguments:
+  - deprecated: false
+    description: Delete an asset.
+    execution: false
+    name: nexpose-delete-asset
+    arguments:
     - default: false
       description: ID of the asset to delete.
       isArray: false
       name: id
       required: true
       secret: false
-    deprecated: false
-    description: Delete an asset.
-    execution: false
-    name: nexpose-delete-asset
   - arguments:
     - default: false
       description: ID of the site to delete
@@ -882,7 +883,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: "Delete a scheduled scan."
+    description: Delete a scheduled scan.
     execution: false
     name: nexpose-delete-scan-schedule
   - arguments:
@@ -947,33 +948,7 @@ script:
     description: Delete a vulnerability exception.
     execution: false
     name: nexpose-delete-vulnerability-exception
-  - deprecated: false
-    description: Retrieves accessible sites.
-    execution: false
-    name: nexpose-get-sites
-    outputs:
-    - contextPath: Nexpose.Site.Id
-      description: The identifier of the site.
-      type: number
-    - contextPath: Nexpose.Site.Name
-      description: The site name.
-      type: string
-    - contextPath: Nexpose.Site.Assets
-      description: The number of assets that belong to the site.
-      type: number
-    - contextPath: Nexpose.Site.Type
-      description: The type of the site. Valid values are agent, dynamic, static
-      type: string
-    - contextPath: Nexpose.Site.Vulnerabilities
-      description: The total number of vulnerabilities.
-      type: number
-    - contextPath: Nexpose.Site.Risk
-      description: The risk score (with criticality adjustments) of the site.
-      type: number
-    - contextPath: Nexpose.Site.LastScan
-      description: The date and time of the site's last scan.
-      type: date
-    arguments:
+  - arguments:
     - default: false
       description: Number of records to retrieve in each API call when pagination is used.
       isArray: false
@@ -999,6 +974,32 @@ script:
       name: sort
       required: false
       secret: false
+    deprecated: false
+    description: Retrieves accessible sites.
+    execution: false
+    name: nexpose-get-sites
+    outputs:
+    - contextPath: Nexpose.Site.Id
+      description: The identifier of the site.
+      type: number
+    - contextPath: Nexpose.Site.Name
+      description: The site name.
+      type: string
+    - contextPath: Nexpose.Site.Assets
+      description: The number of assets that belong to the site.
+      type: number
+    - contextPath: Nexpose.Site.Type
+      description: The type of the site. Valid values are agent, dynamic, static
+      type: string
+    - contextPath: Nexpose.Site.Vulnerabilities
+      description: The total number of vulnerabilities.
+      type: number
+    - contextPath: Nexpose.Site.Risk
+      description: The risk score (with criticality adjustments) of the site.
+      type: number
+    - contextPath: Nexpose.Site.LastScan
+      description: The date and time of the site's last scan.
+      type: date
   - deprecated: false
     description: Returns all available report templates.
     execution: false
@@ -1041,10 +1042,10 @@ script:
       name: ip
       required: true
       secret: false
-    - description: Hostname of the asset.
-      name: host_name
-      default: false
+    - default: false
+      description: Hostname of the asset.
       isArray: false
+      name: host_name
       required: false
       secret: false
     - auto: PREDEFINED
@@ -1070,46 +1071,49 @@ script:
     - contextPath: Nexpose.Asset.id
       description: ID of the newly created asset.
       type: string
-  - name: nexpose-create-assets-report
-    arguments:
-    - name: assets
-      required: true
+  - arguments:
+    - default: false
       description: Asset IDs to create the report on. Can be a comma-separated list.
-      default: false
       isArray: true
+      name: assets
+      required: true
       secret: false
-    - name: template
-      required: false
+    - default: false
       description: Report template ID to create the report with. If not provided, the first available template will be used.
-      default: false
       isArray: false
+      name: template
+      required: false
       secret: false
-    - name: name
+    - default: false
       description: Report name.
-      default: false
       isArray: false
+      name: name
       required: false
       secret: false
-    - name: format
+    - auto: PREDEFINED
+      default: false
       description: Report format (uses PDF by default).
-      default: false
       isArray: false
-      required: false
-      secret: false
-      auto: PREDEFINED
+      name: format
       predefined:
       - pdf
       - rtf
       - xml
       - html
       - text
+      required: false
+      secret: false
     - auto: PREDEFINED
+      defaultValue: 'true'
       description: Whether to download the report immediately after the report is generated. Defaults to "true". If the report takes longer than 10 seconds to generate, set to "false".
       name: download_immediately
       predefined:
       - 'true'
       - 'false'
-      defaultValue: 'true'
+    deprecated: false
+    description: Generates a new report on given assets according to a template and arguments.
+    execution: false
+    name: nexpose-create-assets-report
     outputs:
     - contextPath: InfoFile.EntryId
       description: Entry ID of the report file.
@@ -1141,9 +1145,6 @@ script:
     - contextPath: Nexpose.Report.Format
       description: The report format.
       type: string
-    description: Generates a new report on given assets according to a template and arguments.
-    deprecated: false
-    execution: false
   - name: nexpose-create-sites-report
     arguments:
     - name: sites
@@ -1158,35 +1159,35 @@ script:
       default: false
       isArray: true
       secret: false
-    - default: false
+    - name: template
       description: Report template ID to use for report's creation. If not provided, the first available template will be used.
+      default: false
       isArray: false
-      name: template
       required: false
       secret: false
-    - default: false
+    - name: name
       description: Report name
+      default: false
       isArray: false
-      name: name
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Report format (uses PDF by default).
       isArray: false
       name: format
-      required: false
-      secret: false
-      auto: PREDEFINED
       predefined:
       - pdf
       - rtf
       - xml
       - html
       - text
-    - description: If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false".
-      name: download_immediately
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
       defaultValue: 'true'
+      description: If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false".
+      name: download_immediately
       predefined:
       - 'true'
       - 'false'
@@ -1221,21 +1222,22 @@ script:
     - contextPath: Nexpose.Report.Format
       description: The report format.
       type: string
-    description: "Generates a new report on given sites according to a template and arguments."
+    description: Generates a new report on given sites according to a template and arguments.
     deprecated: false
     execution: false
-  - arguments:
-    - default: false
+  - name: nexpose-create-site-scan-credential
+    arguments:
+    - name: site_id
+      required: false
       description: ID of the site.
+      default: false
       isArray: false
-      name: site_id
-      required: false
       secret: false
-    - default: false
-      description: Name of the site (can be used instead of `site_id`)
-      isArray: false
-      name: site_name
+    - name: site_name
       required: false
+      description: Name of the site (can be used instead of `site_id`)
+      default: false
+      isArray: false
       secret: false
     - default: false
       description: Name of the credential.
@@ -1271,10 +1273,10 @@ script:
       - Telnet
       required: true
       secret: false
-    - description: Database name.
-      name: database
-      default: false
+    - default: false
+      description: Database name.
       isArray: false
+      name: database
       required: false
       secret: false
     - default: false
@@ -1432,14 +1434,13 @@ script:
       isArray: false
       name: username
       required: false
-    deprecated: false
-    description: "Beta Command\n\nCreate a new site scan credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSiteCredential"
-    execution: false
-    name: nexpose-create-site-scan-credential
     outputs:
     - contextPath: Nexpose.SiteScanCredential.id
       description: ID of the generated credential.
       type: number
+    description: "Beta Command\n\nCreate a new site scan credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSiteCredential"
+    deprecated: false
+    execution: false
   - arguments:
     - default: false
       description: ID of the scan to create a report about.
@@ -1472,15 +1473,15 @@ script:
       - text
       required: false
       secret: false
-    - description: If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false".
-      name: download_immediately
-      auto: PREDEFINED
+    - auto: PREDEFINED
       defaultValue: 'true'
+      description: If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false".
+      name: download_immediately
       predefined:
       - 'true'
       - 'false'
     deprecated: false
-    description: "Generates a new report for a specified scan."
+    description: Generates a new report for a specified scan.
     execution: false
     name: nexpose-create-scan-report
     outputs:
@@ -1527,17 +1528,17 @@ script:
       name: site_name
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: 'True'
       description: Whether to enable the scheduled scan after creation.
       isArray: false
       name: enabled
-      required: false
-      secret: false
-      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
+      required: false
+      secret: false
     - auto: PREDEFINED
       default: false
       description: The desired behavior of a repeating scheduled scan when the previous scan was paused due to reaching its maximum duration.
@@ -1654,12 +1655,12 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '10'
       description: The number of records to limit the response to.
       isArray: false
       name: limit
       required: false
       secret: false
-      defaultValue: '10'
     deprecated: false
     description: Retrieve information about shared credentials for a specific site.
     execution: false
@@ -1710,7 +1711,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: "Retrieve information about all or a specific vulnerability."
+    description: Retrieve information about all or a specific vulnerability.
     execution: false
     name: nexpose-list-vulnerability
     outputs:
@@ -1922,14 +1923,14 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '10'
       description: A number of records to limit the response to.
       isArray: false
       name: limit
       required: false
       secret: false
-      defaultValue: '10'
     deprecated: false
-    description: "Retrieve information about all or a specific shared credential."
+    description: Retrieve information about all or a specific shared credential.
     execution: false
     name: nexpose-list-shared-credential
     outputs:
@@ -2038,7 +2039,7 @@ script:
       secret: false
     - default: true
       defaultValue: '10'
-      description: 'A number of records to limit the response to.'
+      description: A number of records to limit the response to.
       isArray: false
       name: limit
       required: false
@@ -2058,19 +2059,19 @@ script:
       description: Database name.
       type: string
     - contextPath: Nexpose.SiteScanCredential.account.domain
-      description: 'Domain address.'
+      description: Domain address.
       type: string
     - contextPath: Nexpose.SiteScanCredential.account.enumerateSids
-      description: 'Whether the scan engine should attempt to enumerate SIDs from the environment.'
+      description: Whether the scan engine should attempt to enumerate SIDs from the environment.
       type: boolean
     - contextPath: Nexpose.SiteScanCredential.account.notesIDPassword
-      description: 'Password for the notes account that will be used for authenticating.'
+      description: Password for the notes account that will be used for authenticating.
       type: string
     - contextPath: Nexpose.SiteScanCredential.account.ntlmHash
       description: NTLM password hash.
       type: string
     - contextPath: Nexpose.SiteScanCredential.account.oracleListenerPassword
-      description: 'The Oracle Net Listener password. Used to enumerate SIDs from the environment.'
+      description: The Oracle Net Listener password. Used to enumerate SIDs from the environment.
       type: string
     - contextPath: Nexpose.SiteScanCredential.account.password
       description: Password for the credential.
@@ -2082,7 +2083,7 @@ script:
       description: Elevation type to use for scans.
       type: string
     - contextPath: Nexpose.SiteScanCredential.account.permissionElevationPassword
-      description: 'Password to use for elevation.'
+      description: Password to use for elevation.
       type: string
     - contextPath: Nexpose.SiteScanCredential.account.permissionElevationUserName
       description: Username to use for elevation.
@@ -2146,12 +2147,12 @@ script:
       required: false
       secret: false
     - default: true
+      defaultValue: submit.date,ASC
       description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC".'
       isArray: false
       name: sort
       required: false
       secret: false
-      defaultValue: submit.date,ASC
     - default: false
       defaultValue: '10'
       description: A number of records to limit the response to.
@@ -2357,17 +2358,17 @@ script:
     execution: false
     name: nexpose-resume-scan
   - arguments:
-    - default: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
       description: Whether to return only active scans.
       isArray: false
       name: active
-      required: false
-      secret: false
-      auto: PREDEFINED
-      defaultValue: 'true'
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
     - default: false
       description: Number of records to retrieve in each API call when pagination is used.
       isArray: false
@@ -2393,10 +2394,10 @@ script:
       name: sort
       required: false
       secret: false
-    name: nexpose-get-scans
-    description: "Return a list of scans. Returns only active scans by default (active=true)."
     deprecated: false
+    description: Return a list of scans. Returns only active scans by default (active=true).
     execution: false
+    name: nexpose-get-scans
     outputs:
     - contextPath: Nexpose.Scan.Id
       description: The identifier of the scan.
@@ -2420,35 +2421,35 @@ script:
       description: The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating.
       type: string
   - arguments:
-    - name: site_id
-      required: false
+    - default: false
       description: ID of the site.
-      default: false
       isArray: false
-      secret: false
-    - name: site_name
+      name: site_id
       required: false
-      description: Name of the site (can be used instead of `site_id`).
-      default: false
-      isArray: false
       secret: false
-    - name: credential_id
-      description: ID of the scan schedule to update.
-      default: false
+    - default: false
+      description: Name of the site (can be used instead of `site_id`).
       isArray: false
+      name: site_name
+      required: false
+      secret: false
+    - default: false
+      description: ID of the scan schedule to update.
+      isArray: false
+      name: credential_id
       required: true
       secret: false
     name: nexpose-disable-shared-credential
     description: "Beta Command\n\nDisable an assigned shared credential."
   - arguments:
-    - description: ID of the report.
-      name: report_id
+    - name: report_id
       required: true
-    - description: ID of the report instance. Supports a "latest" value.
-      name: instance_id
+      description: ID of the report.
+    - name: instance_id
       required: true
-    - description: Report name.
-      name: name
+      description: ID of the report instance. Supports a "latest" value.
+    - name: name
+      description: Report name.
     - name: format
       auto: PREDEFINED
       predefined:
@@ -2461,7 +2462,6 @@ script:
       description: Report format (uses PDF by default).
       defaultValue: pdf
     name: nexpose-download-report
-    description: "Returns the generated report."
     outputs:
     - contextPath: InfoFile.EntryId
       description: Entry ID of the report file.
@@ -2481,18 +2481,19 @@ script:
     - contextPath: InfoFile.Type
       description: Type of the report file.
       type: string
+    description: Returns the generated report.
   - arguments:
-    - name: site_id
-      required: false
+    - default: false
       description: ID of the site.
-      default: false
       isArray: false
-      secret: false
-    - name: site_name
+      name: site_id
       required: false
+      secret: false
+    - default: false
       description: Name of the site (can be used instead of `site_id`).
-      default: false
       isArray: false
+      name: site_name
+      required: false
       secret: false
     - default: false
       description: ID of the scan schedule to update.
@@ -2503,13 +2504,12 @@ script:
     name: nexpose-enable-shared-credential
     description: "Beta Command\n\nEnable an assigned shared credential."
   - arguments:
-    - description: ID of the report.
-      name: report_id
+    - name: report_id
       required: true
-    - description: ID of the report instance. Supports a "latest" value.
-      name: instance_id
+      description: ID of the report.
+    - name: instance_id
       required: true
-    description: "Returns the status of a report generation process."
+      description: ID of the report instance. Supports a "latest" value.
     name: nexpose-get-report-status
     outputs:
     - contextPath: Nexpose.Report.ID
@@ -2521,6 +2521,7 @@ script:
     - contextPath: Nexpose.Report.Status
       description: 'The status of the report generation process. Valid values: "aborted", "failed", "complete", "running", "unknown".'
       type: string
+    description: Returns the status of a report generation process.
   - arguments:
     - default: false
       description: ID of the site.
@@ -2540,17 +2541,17 @@ script:
       name: schedule_id
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
       description: A flag indicating whether the scheduled scan is enabled.
       isArray: false
       name: enabled
-      required: false
-      secret: false
-      auto: PREDEFINED
-      defaultValue: 'True'
       predefined:
       - 'True'
       - 'False'
+      required: false
+      secret: false
     - auto: PREDEFINED
       default: false
       description: The desired behavior of a repeating scheduled scan when the previous scan was paused due to reaching its maximum duration.
@@ -2609,18 +2610,18 @@ script:
       name: duration_minutes
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: How frequently should the schedule repeat (Every...).
       isArray: false
       name: frequency
-      required: false
-      secret: false
-      auto: PREDEFINED
       predefined:
       - Hour
       - Day
       - Week
       - Date-of-month
+      required: false
+      secret: false
     - default: false
       description: The interval time the schedule should repeat. This depends on the value set in `frequency`. For example, if the value of `frequency` is set to "Day" and `interval` is set to 2, then the schedule will repeat every 2 days. Required only if frequency is used.
       isArray: false
@@ -2891,17 +2892,17 @@ script:
       name: id
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: A status to update the vulnerability exception to.
       isArray: false
       name: status
       required: true
-      secret: false
-      auto: PREDEFINED
       predefined:
       - Recall
       - Approve
       - Reject
+      secret: false
     deprecated: false
     description: Update an existing vulnerability exception.
     execution: false
