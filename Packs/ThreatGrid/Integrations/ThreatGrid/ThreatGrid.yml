@@ -5,6 +5,13 @@ name: Threat Grid
 display: Cisco Threat Grid (Deprecated)
 category: Forensics & Malware Analysis
 description: Deprecated. Use Cisco Threat Grid v2 instead.
+detaileddescription: |-
+  1. In your threat grid instance, click your user name at the right top corner.
+  2. Select my account.
+  3. Under the API Key section in the left you will see your API.
+
+  ---
+  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/threat-grid)
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -1040,11 +1047,4 @@ script:
 tests:
 - ThreatGridTest
 fromversion: 5.0.0
-detaileddescription: |-
-  1. In your threat grid instance, click your user name at the right top corner.
-  2. Select my account.
-  3. Under the API Key section in the left you will see your API.
-
-  ---
-  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/threat-grid)
 deprecated: true

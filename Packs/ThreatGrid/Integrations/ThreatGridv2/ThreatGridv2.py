@@ -963,10 +963,9 @@ def get_dbotscore(
     Returns:
         Common.DBotScore: DBot Score according to the disposition.
     """
-    score = 0
-    if not api_score:
-        score = Common.DBotScore.NONE
-    elif api_score >= 85:
+    score = Common.DBotScore.NONE
+
+    if api_score >= 85:
         score = Common.DBotScore.BAD
     elif api_score >= 50:
         score = Common.DBotScore.SUSPICIOUS
@@ -1008,20 +1007,24 @@ def reputation_command(
             sort_by="analyzed_at",
         )
         if response["data"]["current_item_count"] == 0:
-            return CommandResults(readable_output="Unknown")
+            score = 0
+            sample_details = None
+            sample_id = None
+        else:
+            sample_details = response["data"]["items"][0]["item"]
+            sample_analysis_date = dict_safe_get(
+                sample_details, ["analysis", "metadata", "sandcastle_env", "analysis_end"])
 
-        sample_details = response["data"]["items"][0]["item"]
-        sample_analysis_date = dict_safe_get(
-            sample_details, ["analysis", "metadata", "sandcastle_env", "analysis_end"])
+            sample_id = sample_details["sample"]
+            score = sample_details["analysis"]["threat_score"]
 
-        if not is_day_diff_valid(sample_analysis_date):
-            return CommandResults(readable_output="Unknown")
+            if not is_day_diff_valid(sample_analysis_date):
+                score = 0
+                sample_details = None
+                sample_id = None
 
-        sample_id = sample_details["sample"]
-        score = sample_details["analysis"]["threat_score"]
 
         dbot_score = get_dbotscore(score, generic_command_name, command_arg, reliability)
-
         reputation_helper_command: Callable = REPUTATION_TYPE_TO_FUNCTION[generic_command_name]
         kwargs = {
             'client': client,
@@ -1120,7 +1123,7 @@ def parse_domain_indicator(
 
 def parse_file_indicator(
     dbot_score: Common.DBotScore,
-    sample_details: dict,
+    sample_details: dict = None,
     **kwargs,
 ) -> CommandResults:
     """Build outputs for generic command reputation.
@@ -1169,7 +1172,7 @@ def parse_ip_indicator(
     client: Client,
     command_arg: str,
     dbot_score: Common.DBotScore,
-    sample_id: str,
+    sample_id: str = None,
     **kwargs,
 ) -> CommandResults:
     """Build outputs for generic command reputation.
@@ -1185,8 +1188,7 @@ def parse_ip_indicator(
         Tuple: Return command_indicator, outputs_prefix, outputs_key_field, and outputs.
     """
 
-    response = client.analysis_sample(sample_id=sample_id, analysis_type="annotations")
-
+    response = client.analysis_sample(sample_id=sample_id, analysis_type="annotations") if sample_id else None
     command_indicator = Common.IP(
         ip=command_arg,
         asn=dict_safe_get(response, ["data", "items", "network", command_arg, "asn"]),
@@ -1467,7 +1469,7 @@ def test_module(client: Client):
         e: Authorization Error.
 
     Returns:
-        _type_: Authorization message.
+        str: Authorization message.
     """
     client.whoami()
     return "ok"
@@ -1538,11 +1540,12 @@ def main() -> None:
         elif command in commands:
             return_results(commands[command](client, args))
         else:
-            raise NotImplementedError(f"{command} command is not implemented.")
+            raise NotImplementedError(f"The {command} command is not implemented.")
 
     except Exception as exc:
-        return_error(
-            f"One or more of the specified fields are invalid. Please validate them. \n{exc}")
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute {command} command.'
+                     f'\nError:\n{str(exc)}')
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

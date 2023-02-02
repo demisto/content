@@ -3064,7 +3064,7 @@
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar - Get Offense Logs Test",
-            "timeout": 600,
+            "timeout" : 600,
             "fromversion": "6.0.0"
         },
         {
@@ -5584,7 +5584,9 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "AttackIQFireDrill": "License issues #29774",
-        "LogRhythm": "The integration is deprecated"
+        "LogRhythm": "The integration is deprecated",
+        "ThreatGrid": "No instance & Depreceated, replaced by ThreatGridv2",
+        "ThreatGridv2": "No instance - developed by Qmasters"
     },
     "nightly_integrations": [],
     "nightly_packs": [
