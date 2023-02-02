@@ -124,7 +124,7 @@
           "agentVersion": "22.2.3.402",
           "cloudProviders": {},
           "externalIp": "2.2.2.2",
-          "groupId": "1503807552767955570",
+          "groupId": "555555",
           "groupName": "Default Group",
           "siteId": "151515",
           "siteName": "Default site"
@@ -148,11 +148,11 @@
           "agentOsType": "windows",
           "agentUuid": "abcd1234",
           "agentVersion": "22.2.3.402",
-          "groupId": "1503807552767955570",
+          "groupId": "555555",
           "groupName": "Default Group",
           "networkInterfaces": [
             {
-              "id": "1559342436298473311",
+              "id": "666666",
               "inet": [
                 "1.1.1.1"
               ],
@@ -235,7 +235,7 @@
             "agentSupportsReport": true,
             "groupNotFound": false,
             "lastUpdate": "2022-12-20T13:54:58.398638Z",
-            "latestReport": "/threats/mitigation-report/1579706574114254272",
+            "latestReport": "/threats/mitigation-report/777777",
             "mitigationEndedAt": "2022-12-20T13:54:57.522000Z",
             "mitigationStartedAt": "2022-12-20T13:54:57.522000Z",
             "status": "success"

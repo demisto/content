@@ -30,6 +30,7 @@ def mock_send_events_to_xsiam(events, vendor, product):
 
 @freeze_time('2022-01-07 00:00:00Z')
 def test_test_module():
+
     from SentinelOneEventCollector import Client, test_module
     client = Client('https://test.com/web/api/v2.1')
 
@@ -46,16 +47,16 @@ def test_test_module():
 @freeze_time('2022-01-07 00:00:00Z')
 def test_get_events_command():
     """
-    Tests helloworld-say-hello command function.
+    Tests get-events command function.
 
         Given:
-            - No mock is needed here because the say_hello_command does not call any external API.
+            - Few events in SentinelOne.
 
         When:
-            - Running the 'say_hello_command'.
+            - Running the 'get_events_command'.
 
         Then:
-            - Checks the output of the command function with the expected output.
+            - Ensures the outputs of the command function match the expected outputs.
 
     """
     from SentinelOneEventCollector import Client, get_events_command
@@ -74,6 +75,20 @@ def test_get_events_command():
 
 @freeze_time('2022-01-07 00:00:00Z')
 def test_fetch_events():
+    """
+    Tests fetch-events command function.
+
+        Given:
+            - Few events in SentinelOne.
+            - fetch-events is limited to 2 events per fetch and to all 3 event types.
+             (which mean actually 6 events per fetch since we are fetching from 3 endpoints).
+        When:
+            - Running the 'fetch-events' command.
+
+        Then:
+            - Ensures the outputs of the command function match the expected outputs.
+
+    """
     from SentinelOneEventCollector import Client, fetch_events, first_run
     client = Client(base_url='https://test.com/web/api/v2.1')
     last_run = first_run(arg_to_datetime('3 days'))
@@ -102,16 +117,16 @@ def test_fetch_events():
 @freeze_time('2022-01-07 00:00:00Z')
 def test_main(mocker):
     """
-    Tests helloworld-say-hello command function.
+    Tests the main function. (the whole flow).
 
         Given:
-            - No mock is needed here because the say_hello_command does not call any external API.
+            - Few events in SentinelOne.
 
         When:
-            - Running the 'say_hello_command'.
+            - Running the 'main' function.
 
         Then:
-            - Checks the output of the command function with the expected output.
+            - Ensures the outputs of the main function match the expected outputs.
 
     """
     from SentinelOneEventCollector import main, VENDOR, PRODUCT
