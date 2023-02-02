@@ -133,7 +133,7 @@ def get_statistic_search_report_soap_request(token, report_guid, max_results):
     # Add the sessionToken, reportIdOrGuid and pageNumber elements
     ET.SubElement(execute_statistic_search, "sessionToken").text = token
     ET.SubElement(execute_statistic_search, "reportIdOrGuid").text = report_guid
-    ET.SubElement(execute_statistic_search, "pageNumber").text = max_results
+    ET.SubElement(execute_statistic_search, "pageNumber").text = str(max_results)
 
     return ET.tostring(root)
 
@@ -195,16 +195,17 @@ def search_records_soap_request(
     execute_search = ET.SubElement(body, "ExecuteSearch", {"xmlns": "http://archer-tech.com/webservices/"})
     ET.SubElement(execute_search, "sessionToken").text = token
     # create the searchOptions element
-    search_options = ET.SubElement(execute_search, "searchOptions").text = ET.CDATA("<SearchReport>")
-    ET.SubElement(search_options, "PageSize").text = max_results
-    ET.SubElement(search_options, "PageNumber").text = "1"
-    ET.SubElement(search_options, "MaxRecordCount").text = max_results
-    ET.SubElement(search_options, "ShowStatSummaries").text = "false"
-    ET.SubElement(search_options, "DisplayFields").text = display_fields
+    search_options = ET.SubElement(execute_search, "searchOptions")
+    search_report = ET.SubElement(search_options, "SearchReport")
+    ET.SubElement(search_report, "PageSize").text = str(max_results)
+    ET.SubElement(search_report, "PageNumber").text = "1"
+    ET.SubElement(search_report, "MaxRecordCount").text = str(max_results)
+    ET.SubElement(search_report, "ShowStatSummaries").text = "false"
+    ET.SubElement(search_report, "DisplayFields").text = display_fields
     # create the Criteria element
-    criteria = ET.SubElement(search_options, "Criteria")
+    criteria = ET.SubElement(search_report, "Criteria")
     module_criteria = ET.SubElement(criteria, "ModuleCriteria")
-    ET.SubElement(module_criteria, "Module", {"name": "appname"}).text = app_id
+    ET.SubElement(module_criteria, "Module", {"name": "appname"}).text = str(app_id)
 
     if search_value:
         # create the Filter element
@@ -227,13 +228,14 @@ def search_records_soap_request(
 
             if field_to_search_by_id and field_to_search_by_id.lower() == field_name.lower():
                 content_filter_condition = ET.SubElement(conditions, "ContentFilterCondition")
-                ET.SubElement(content_filter_condition, "Level").text = level_id
+                ET.SubElement(content_filter_condition, "Level").text = str(level_id)
                 ET.SubElement(content_filter_condition, "Operator").text = 'Equals'
                 values = ET.SubElement(content_filter_condition, "Values")
                 ET.SubElement(values, "Value").text = search_value
             else:
                 text_filter_condition = ET.SubElement(conditions, "TextFilterCondition")
                 ET.SubElement(text_filter_condition, "Operator").text = 'Contains'
+                ET.SubElement(text_filter_condition, "Field", {"name": field_name}).text = field_id
                 ET.SubElement(text_filter_condition, "Value").text = search_value
 
     if date_operator:  # Fetch incidents must present date_operator
