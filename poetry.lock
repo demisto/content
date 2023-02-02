@@ -438,7 +438,7 @@ tests = ["nose"]
 
 [[package]]
 name = "dateparser"
-version = "1.1.6"
+version = "1.1.7"
 description = "Date parsing library designed to parse dates from HTML pages"
 category = "dev"
 optional = false
@@ -613,8 +613,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "f3aa872a56df2e0465f32a53dd356f1195718921"
-resolved_reference = "f3aa872a56df2e0465f32a53dd356f1195718921"
+reference = "2eb4876d4e087704c5986c3985d3c36a90fa307c"
+resolved_reference = "2eb4876d4e087704c5986c3985d3c36a90fa307c"
 
 [[package]]
 name = "deprecated"
@@ -3450,7 +3450,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "082f01e78ed882d515838a1cf6f0343ce49bbe0dd27b6dd0aa80cab9434f1bfa"
+content-hash = "10ef3674e37462f55deb7c028388e7d5d1e71f572dfa6c039817a2cf8876f913"
 
 [metadata.files]
 aiodns = [
@@ -3843,8 +3843,8 @@ cymruwhois = [
     {file = "cymruwhois-1.6.tar.gz", hash = "sha256:b6c085e50e33133cd3718504521c780ed4d6b1e18e12c3bda6a0c949df7df254"},
 ]
 dateparser = [
-    {file = "dateparser-1.1.6-py2.py3-none-any.whl", hash = "sha256:c47b6e4b8c4b2b2a21690111b6571b6991295ba327ec6503753abeebf5e80696"},
-    {file = "dateparser-1.1.6.tar.gz", hash = "sha256:e703db1815270c020552f4b3e3a981937b48b2cbcfcef5347071b74788dd9214"},
+    {file = "dateparser-1.1.7-py2.py3-none-any.whl", hash = "sha256:fbed8b738a24c9cd7f47c4f2089527926566fe539e1a06125eddba75917b1eef"},
+    {file = "dateparser-1.1.7.tar.gz", hash = "sha256:ff047d9cffad4d3113ead8ec0faf8a7fc43bab7d853ac8715e071312b53c465a"},
 ]
 datetime = [
     {file = "DateTime-5.0-py3-none-any.whl", hash = "sha256:22d3622eec9cfe73b16e5c5ff5f05d8c1154e32f01e56560f3d20b834ceea2d7"},
