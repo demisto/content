@@ -1268,7 +1268,7 @@ def get_remote_data_command(service: client.Service, args: dict,
             entries = [{
                 'Type': EntryType.NOTE,
                 'Contents': {
-                'dbotIncidentClose': True,
+                    'dbotIncidentClose': True,
                     'closeReason': f'Notable event was closed on Splunk with status \"{status_label}\".'
                 },
                 'ContentsFormat': EntryFormat.JSON
