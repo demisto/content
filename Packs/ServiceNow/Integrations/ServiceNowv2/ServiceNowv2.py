@@ -2481,7 +2481,7 @@ def converts_state_close_reason(ticket_state: Optional[str], server_close_custom
     Returns:
         The XSOAR state
     """
-    
+
     # check if server_close_custom_state parameter is set, and if so, try to parse it, and use it to return a custom close reason
     custom_label = ''
     if server_close_custom_state and ticket_state:
