@@ -5626,7 +5626,7 @@ script:
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
     - description: The tag to filter the rules.
-      name: tags
+      name: tag
       isArray: true
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target

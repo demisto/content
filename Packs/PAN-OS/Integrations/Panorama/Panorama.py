@@ -3425,6 +3425,8 @@ def prettify_rule(rule: dict):
         pretty_rule['Tags'] = rule['tag']['member']
     if isinstance(rule.get('log-setting'), dict) and '#text' in rule['log-setting']:
         pretty_rule['LogForwardingProfile'] = rule['log-setting']['#text']
+    if disabled := rule.get('disabled'):
+        pretty_rule['Disabled'] = disabled
 
     return pretty_rule
 
@@ -3471,7 +3473,7 @@ def panorama_list_rules(xpath: str, name: str = None, filters: dict = None, quer
     }
 
     if query:
-        params["xpath"] = f'{params["xpath"]}{query}'
+        params["xpath"] = f'{params["xpath"]}[{query}]'
     else:
         params["xpath"] = f'{params["xpath"]}[{build_xpath_filter(name, filters)}]'
 
@@ -3496,11 +3498,11 @@ def panorama_list_rules_command(args: dict):
     else:
         xpath = XPATH_SECURITY_RULES
 
-    filters = {
-        'tags': argToList(args.get('tags')),
-        'disabled': args.get('disabled'),
-        'action': args.get('action'),
-    }
+    filters = assign_params(
+        tags=argToList(args.get('tag')),
+        disabled=args.get('disabled'),
+        action=args.get('action')
+    )
     name = args.get('rulename')
     query = args.get('query')
     target = args.get('target')
@@ -3515,7 +3517,7 @@ def panorama_list_rules_command(args: dict):
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Security Rules:', pretty_rules,
                                          ['Name', 'Location', 'Action', 'From', 'To',
-                                          'CustomUrlCategory', 'Service', 'Tags'],
+                                          'CustomUrlCategory', 'Service', 'Tags', 'Disabled'],
                                          removeNull=True),
         'EntryContext': {
             "Panorama.SecurityRule(val.Name == obj.Name)": pretty_rules
@@ -11667,26 +11669,15 @@ def pan_os_list_templates_command(args):
 
 def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] = None, filters: dict = None, query: str = None):
     _xpath = f"{XPATH_RULEBASE}{pre_post}/nat"
+
     if query:
         _xpath = f"{_xpath}/rules/entry[{query}]"
     else:
-        xpath_prefix = ''
-        if name:
-            xpath_prefix += f"@name = '{name}'"
-        for key, value in filters.items():
-            if key == 'tags':
-                for tag in value:
-                    if xpath_prefix:
-                        xpath_prefix += ' and '
-                    xpath_prefix += f"(tag/member = '{tag}')"
-            if key in ('disabled', 'nat-type'):
-                if xpath_prefix:
-                    xpath_prefix += ' and '
-                xpath_prefix += f"({key} = '{value}')"
-        _xpath = f"{_xpath}/rules/entry[{xpath_prefix}]"
+        _xpath = f"{_xpath}/rules/entry[{build_xpath_filter(name, filters)}]"
 
     if element:
-            _xpath = f"{_xpath}/{element}"
+        _xpath = f"{_xpath}/{element}"
+
     return _xpath
 
 
@@ -11775,11 +11766,12 @@ def pan_os_list_nat_rules_command(args):
     name = args.get('name')
     pre_post = args.get('pre_post')
     show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
-    filters = {
-        'disabled': args.get('disabled'),
-        'nat-type': args.get('nat_type'),
-        'tags': argToList(args.get('tags')),
-    }
+    filters = assign_params(
+        tags=argToList(args.get('tags')),
+        disabled=args.get('disabled'),
+        nat_type=args.get('nat_type')
+    )
+    filters['nat-type'] = filters.pop('nat_type')  # Replace the key name.
     query = args.get('query')
 
     raw_response = get_pan_os_nat_rules(name=name, pre_post=pre_post, show_uncommited=show_uncommitted, filters=filters, query=query)
@@ -12490,6 +12482,7 @@ def parse_pan_os_list_pbf_rules(entries, show_uncommitted):
         source_address = extract_objects_info_by_key(entry, 'source')
         source_user = extract_objects_info_by_key(entry, 'source-user')
         destination_address = extract_objects_info_by_key(entry, 'destination')
+        disabled = extract_objects_info_by_key(entry, 'disabled')
 
         human_readable.append(
             {
@@ -12501,7 +12494,8 @@ def parse_pan_os_list_pbf_rules(entries, show_uncommitted):
                 'Source Address': source_address,
                 'Source User': source_user,
                 'Destination Address': destination_address,
-                'Action': list(entry['action'].keys())[0] if entry.get('action') else None
+                'Action': list(entry['action'].keys())[0] if entry.get('action') else None,
+                'Disabled': disabled
             }
         )
 
