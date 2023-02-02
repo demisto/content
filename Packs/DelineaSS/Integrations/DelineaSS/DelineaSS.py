@@ -482,16 +482,18 @@ def get_credentials(client,secret_id):
     obj={}
     secret = client.getSecret(secret_id)
     items = secret.get('items')
+    username = None
+    password = None
     for item in items:
         if item.get('fieldName') == 'Username':
             username = item.get('itemValue')
         if item.get('fieldName') == 'Password':
             password = item.get('itemValue')
-            obj = {
-                "user": username,
-                "password": password,
-                "name": str(secret.get('id'))
-            }
+        obj = {
+            "user": username,
+            "password": password,
+            "name": str(secret.get('id'))
+        }
     return obj
 
 
