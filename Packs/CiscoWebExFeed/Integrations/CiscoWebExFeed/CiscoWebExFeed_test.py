@@ -1,8 +1,10 @@
 from bs4 import BeautifulSoup
+import bs4
 import pytest
 import CiscoWebExFeed
 import io
 import json
+from CommonServerPython import *  # noqa: F401
 
 
 def util_load_json(path):
@@ -15,6 +17,7 @@ def MockedClient(Client):
     return client
 
 
+__BASE_URL = "https://help.webex.com/en-us/WBX264/How-Do-I-Allow-Webex-Meetings-Traffic-on-My-Network"
 DOMAIN_TABLE = [['Client Type', 'Domain(s)'],
                 ['domain1', '*.d1.com\t\t\t*.d5.com'],
                 ['domain2', '*.d2.com'],
@@ -173,3 +176,49 @@ def test_fetch_indicators_command__different_sizes_of_inputs(mocker, input, expe
                         return_value=input)
     expected_result = expected
     assert fetch_indicators_command(client=client, tags=("very_good", "very_bad"), tlp_color="very_yellow") == expected_result
+
+
+def test_parse_indicators_from_response__fail_to_parse(mocker, requests_mock):
+    """
+    Given:
+        - a response from the website that is not in the expected format
+    When:
+        - parse_indicators_from_response is called
+    Then:
+        - the function should return the expected error message
+    """
+    from CiscoWebExFeed import parse_indicators_from_response
+
+    mocker.patch.object(bs4, ('BeautifulSoup'))
+    mocker.patch.object(CiscoWebExFeed, 'grab_domain_table')
+    mocker.patch.object(CiscoWebExFeed, 'grab_ip_table')
+    mocker.patch.object(CiscoWebExFeed, 'grab_CIDR_ips')
+    mocker.patch.object(CiscoWebExFeed, 'grab_domains', side_effect=DemistoException('No domains to grab'))
+    mocked_response = requests_mock.get({__BASE_URL}, json={'name': 'awesome-mock'})
+    mocked_response.text = 'mocked text'
+    with pytest.raises(DemistoException) as e:
+        parse_indicators_from_response(mocked_response)
+    assert e.value.message == 'Failed to parse the response from the website. Error: No domains to grab'
+
+
+def test_parse_indicators_from_response__ip_indicators_are_None(mocker, requests_mock):
+    """
+    Given:
+        - a response from the website with only domains
+    When:
+        - parse_indicators_from_response is called
+    Then:
+        - the function should return the expected error message
+    """
+    from CiscoWebExFeed import parse_indicators_from_response
+
+    mocker.patch.object(bs4, ('BeautifulSoup'))
+    mocker.patch.object(CiscoWebExFeed, 'grab_domain_table')
+    mocker.patch.object(CiscoWebExFeed, 'grab_ip_table')
+    mocker.patch.object(CiscoWebExFeed, 'grab_CIDR_ips', return_value=None)
+    mocker.patch.object(CiscoWebExFeed, 'grab_domains', return_value="domainmock")
+    mocked_response = requests_mock.get({__BASE_URL}, json={'name': 'awesome-mock'})
+    mocked_response.text = 'mocked text'
+    with pytest.raises(DemistoException) as e:
+        parse_indicators_from_response(mocked_response)
+    assert e.value.message == 'Did not find the exepted indicators in the response from the website.'
