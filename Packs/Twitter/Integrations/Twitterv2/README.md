@@ -2,7 +2,7 @@ Twitter integration provides access to searching recent Tweets (in last 7 days) 
 This integration was integrated and tested with version v2 of Twitter API.
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---twitter-v2).
+If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-twitter-v2).
 
 ## Configure Twitter v2 on Cortex XSOAR
 
@@ -12,7 +12,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Your server URL |  | True |
+    | Server URL |  | True |
     | Bearer Token | The Bearer Token to use for connection | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -23,7 +23,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### twitter-tweet-search
 ***
-This command will search for Tweets posted over the past week and return all information available.
+This command will search for Tweets from the last 7 days and return all information available.
 
 
 #### Base Command
@@ -34,8 +34,8 @@ This command will search for Tweets posted over the past week and return all inf
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Search query to submit to the recent search endpoint. | Required | 
-| start_time | The oldest UTC timestamp (from most recent seven days) from which the Tweets will be provided. Date format will be in ISO 8601 format or relational expressions like “7 days ago”. | Optional | 
-| end_time | The most recent UTC timestamp to which the Tweets will be provided. Date format will be in ISO 8601 format or relational expressions like “7 days ago”. | Optional | 
+| start_time | The oldest UTC timestamp (from most recent seven days) from which the Tweets will be provided. Date format will be in ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ) or relational expressions like “7 days ago”. | Optional | 
+| end_time | The most recent UTC timestamp to which the Tweets will be provided. Date format will be in ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ) or relational expressions like “7 days ago”. | Optional | 
 | limit | Maximum number of results to return. Value can be between 10 and 100. Default is 50. | Optional | 
 | next_token | When you request a list of objects with a MaxResults setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Twitter returns a NextToken value in the response. To retrieve the next batch of objects, use the token returned from the prior request in your next request. | Optional | 
 
@@ -62,7 +62,7 @@ This command will search for Tweets posted over the past week and return all inf
 | Twitter.Tweet.TweetList.author.username | String | The Twitter screen name, handle, or alias that this user identifies themselves with. | 
 | Twitter.Tweet.TweetList.media.type | String | Type of content \(animated_gif, photo, video\). | 
 | Twitter.Tweet.TweetList.media.url | String | A direct URL to the media file on Twitter. | 
-| Twitter.Tweet.TweetList.media.media_key | String | Unique identifier of the expanded media content. | 
+| Twitter.Tweet.TweetList.media.media_key | String | Unique identifier of the expanded media content | 
 | Twitter.Tweet.TweetList.media.alt_text | String | A description of an image to enable and support accessibility. Can be up to 1000 characters long. | 
 | Twitter.Tweet.NextToken.next_token | String | A value that encodes the next 'page' of results that can be requested, via the next_token request parameter. | 
 
@@ -71,32 +71,85 @@ This command will search for Tweets posted over the past week and return all inf
 #### Context Example
 ```json
 {
-    "Twitter": {
+        "Twitter": {
         "Tweet": {
+            "NextToken": {
+                "next_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
             "TweetList": [
                 {
                     "author": {
-                        "created_at": "2006-03-21T06:33:38.000Z",
+                        "created_at": "2023-01-18T23:35:28.000Z",
                         "description": "some_description",
-                        "id": "1111111111",
+                        "id": "2929292929292929292",
                         "name": "some_name_1",
                         "username": "some_username_1",
                         "verified": false
                     },
                     "conversation_id": "2323232323232323232",
-                    "created_at": "2024-01-19T12:58:27.000Z",
+                    "created_at": "2023-04-05T08:49:23.000Z",
                     "edit_history_tweet_ids": [
                         "2323232323232323232"
                     ],
                     "id": "2323232323232323232",
-                    "media": {
-                        "media_key": "3_3333333333333333333",
-                        "type": "photo",
-                        "url": "https://url.jpg"
-                    },
                     "public_metrics": {
-                        "impression_count": 59,
-                        "like_count": 2,
+                        "impression_count": 0,
+                        "like_count": 0,
+                        "quote_count": 0,
+                        "reply_count": 0,
+                        "retweet_count": 5822
+                    },
+                    "text": "some_text_twitter"
+                },
+                {
+                    "author": {
+                        "created_at": "2017-10-19T18:40:34.000Z",
+                        "description": "some_description",
+                        "id": "2020202020202020202",
+                        "name": "some_name_2",
+                        "username": "some_username_2",
+                        "verified": false
+                    },
+                    "conversation_id": "1010101010101010101",
+                    "created_at": "2023-04-05T08:49:23.000Z",
+                    "edit_history_tweet_ids": [
+                        "1010101010101010101"
+                    ],
+                    "id": "1010101010101010101",
+                    "public_metrics": {
+                        "impression_count": 0,
+                        "like_count": 0,
+                        "quote_count": 0,
+                        "reply_count": 0,
+                        "retweet_count": 20
+                    },
+                    "text": "some_text_twitter"
+                },
+                {
+                    "author": {
+                        "created_at": "2023-02-02T07:40:50.000Z",
+                        "description": "some_description",
+                        "id": "1313131313131313131",
+                        "name": "some_name_3",
+                        "username": "some_username_3",
+                        "verified": false
+                    },
+                    "conversation_id": "1515151515151515151",
+                    "created_at": "2023-04-05T08:49:23.000Z",
+                    "edit_history_tweet_ids": [
+                        "1515151515151515151"
+                    ],
+                    "id": "1515151515151515151",
+                    "media": [
+                        {
+                            "media_key": "4_4444444444444444444",
+                            "type": "photo",
+                            "url": "https://url.jpg"
+                        }
+                    ],
+                    "public_metrics": {
+                        "impression_count": 1,
+                        "like_count": 0,
                         "quote_count": 0,
                         "reply_count": 0,
                         "retweet_count": 0
@@ -105,15 +158,149 @@ This command will search for Tweets posted over the past week and return all inf
                 },
                 {
                     "author": {
-                        "created_at": "2006-02-12T12:12:07.000Z",
+                        "created_at": "2017-03-25T01:59:34.000Z",
                         "description": "some_description",
-                        "id": "2222222222",
-                        "name": "some_name_2",
-                        "username": "some_username_2",
+                        "id": "845455085635293184",
+                        "name": "some_name_5",
+                        "username": "some_username_5",
+                        "verified": false
+                    },
+                    "conversation_id": "1212121212121212121",
+                    "created_at": "2023-04-05T08:49:23.000Z",
+                    "edit_history_tweet_ids": [
+                        "1212121212121212121"
+                    ],
+                    "id": "1212121212121212121",
+                    "public_metrics": {
+                        "impression_count": 0,
+                        "like_count": 0,
+                        "quote_count": 0,
+                        "reply_count": 0,
+                        "retweet_count": 114
+                    },
+                    "text": "some_text_twitter"
+                },
+                {
+                    "author": {
+                        "created_at": "2014-04-21T09:26:32.000Z",
+                        "description": "some_description",
+                        "id": "2456260950",
+                        "name": "some_name_4",
+                        "username": "some_username_4",
+                        "verified": false
+                    },
+                    "conversation_id": "0808080808080808080",
+                    "created_at": "2023-04-05T08:49:23.000Z",
+                    "edit_history_tweet_ids": [
+                        "0808080808080808080"
+                    ],
+                    "id": "0808080808080808080",
+                    "media": [
+                        {
+                            "media_key": "5_5555555555555555555",
+                            "type": "photo",
+                            "url": "https://url.jpg"
+                        }
+                    ],
+                    "public_metrics": {
+                        "impression_count": 0,
+                        "like_count": 0,
+                        "quote_count": 0,
+                        "reply_count": 0,
+                        "retweet_count": 846
+                    },
+                    "text": "some_text_twitter"
+                },
+                {
+                    "author": {
+                        "created_at": "2017-07-18T14:56:15.000Z",
+                        "description": "some_description",
+                        "id": "2424242424242424242",
+                        "name": "some_name_6",
+                        "username": "some_username_6",
+                        "verified": false
+                    },
+                    "conversation_id": "0707070707070707070",
+                    "created_at": "2023-04-05T08:49:23.000Z",
+                    "edit_history_tweet_ids": [
+                        "0707070707070707070"
+                    ],
+                    "id": "0707070707070707070",
+                    "media": [
+                        {
+                            "media_key": "3_3333333333333333333",
+                            "type": "photo",
+                            "url": "https://url.jpg"
+                        }
+                    ],
+                    "public_metrics": {
+                        "impression_count": 0,
+                        "like_count": 0,
+                        "quote_count": 0,
+                        "reply_count": 0,
+                        "retweet_count": 0
+                    },
+                    "text": "some_text_twitter"
+                },
+                {
+                    "author": {
+                        "created_at": "2022-05-08T07:49:51.000Z",
+                        "description": "some_description",
+                        "id": "6060606060606006060",
+                        "name": "some_name_7",
+                        "username": "some_username_7",
+                        "verified": false
+                    },
+                    "conversation_id": "5050505050505050505",
+                    "created_at": "2023-04-05T08:49:23.000Z",
+                    "edit_history_tweet_ids": [
+                        "5050505050505050505"
+                    ],
+                    "id": "5050505050505050505",
+                    "public_metrics": {
+                        "impression_count": 0,
+                        "like_count": 0,
+                        "quote_count": 0,
+                        "reply_count": 0,
+                        "retweet_count": 73
+                    },
+                    "text": "some_text_twitter"
+                },
+                {
+                    "author": {
+                        "created_at": "2022-10-11T11:11:10.000Z",
+                        "description": "some_description",
+                        "id": "4040404040404040404",
+                        "name": "some_name_8",
+                        "username": "some_username_8",
+                        "verified": false
+                    },
+                    "conversation_id": "3030303030303030303",
+                    "created_at": "2023-04-05T08:49:23.000Z",
+                    "edit_history_tweet_ids": [
+                        "3030303030303030303"
+                    ],
+                    "id": "3030303030303030303",
+                    "public_metrics": {
+                        "impression_count": 0,
+                        "like_count": 0,
+                        "quote_count": 0,
+                        "reply_count": 0,
+                        "retweet_count": 37
+                    },
+                    "text": "some_text_twitter"
+                },
+                {
+                    "author": {
+                        "created_at": "2020-07-09T13:06:54.000Z",
+                        "description": "",
+                        "id": "2727272727272727272",
+                        "name": "some_name_9",
+                        "username": "some_username_9",
                         "verified": false
                     },
                     "conversation_id": "2626262626262626262",
-                    "created_at": "2024-01-18T23:37:11.000Z",
+                    "created_at": "2023-04-05T08:49:23.000Z",
                     "edit_history_tweet_ids": [
                         "2626262626262626262"
                     ],
@@ -123,84 +310,35 @@ This command will search for Tweets posted over the past week and return all inf
                         "like_count": 0,
                         "quote_count": 0,
                         "reply_count": 0,
-                        "retweet_count": 2
+                        "retweet_count": 4273
                     },
                     "text": "some_text_twitter"
                 },
                 {
                     "author": {
-                        "created_at": "2006-09-29T19:59:28.000Z",
+                        "created_at": "2017-01-15T11:11:11.000Z",
                         "description": "some_description",
-                        "id": "3333333333",
-                        "name": "some_name_3",
-                        "username": "some_username_3",
+                        "id": "2828282828282828282",
+                        "name": "some_name_10",
+                        "username": "some_username_10",
                         "verified": false
                     },
-                    "conversation_id": "2828282828282828282",
-                    "created_at": "2024-01-19T16:45:42.000Z",
-                    "edit_history_tweet_ids": [
-                        "2828282828282828282"
-                    ],
-                    "id": "2828282828282828282",
-                    "public_metrics": {
-                        "impression_count": 0,
-                        "like_count": 0,
-                        "quote_count": 0,
-                        "reply_count": 0,
-                        "retweet_count": 2
-                    },
-                    "text": "some_text_twitter"
-                },
-                {
-                    "author": {
-                        "created_at": "2006-04-24T20:56:19.000Z",
-                        "description": "some_description",
-                        "id": "4444444444",
-                        "name": "some_name_4",
-                        "username": "some_username_4",
-                        "verified": false
-                    },
-                    "conversation_id": "4040404040404040404",
-                    "created_at": "2024-01-17T15:30:22.000Z",
+                    "conversation_id": "2525252525252525252",
+                    "created_at": "2023-04-05T08:49:23.000Z",
                     "edit_history_tweet_ids": [
                         "2525252525252525252"
                     ],
                     "id": "2525252525252525252",
                     "public_metrics": {
-                        "impression_count": 1402,
-                        "like_count": 27,
-                        "quote_count": 0,
-                        "reply_count": 1,
-                        "retweet_count": 2
-                    },
-                    "text": "some_text_twitter"
-                },
-                {
-                    "author": {
-                        "created_at": "2006-05-14T08:59:05.000Z",
-                        "description": "some_description",
-                        "id": "5555555555",
-                        "name": "some_name_5",
-                        "username": "some_username_5",
-                        "verified": false
-                    },
-                    "conversation_id": "2424242424242424242",
-                    "created_at": "2024-01-20T20:54:50.000Z",
-                    "edit_history_tweet_ids": [
-                        "2424242424242424242"
-                    ],
-                    "id": "2424242424242424242",
-                    "public_metrics": {
-                        "impression_count": 43,
-                        "like_count": 2,
+                        "impression_count": 0,
+                        "like_count": 0,
                         "quote_count": 0,
                         "reply_count": 0,
-                        "retweet_count": 0
+                        "retweet_count": 22741
                     },
                     "text": "some_text_twitter"
                 }
-            ],
-            "next_token":  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            ]
         }
     }
 }
@@ -208,23 +346,28 @@ This command will search for Tweets posted over the past week and return all inf
 
 #### Human Readable Output
 
->### Tweets search results:
->|Tweet ID|Text|Created At|Author Name|Author Username|Likes Count|Attachments URL|
->|---|---|---|---|---|---|---|
->| 2323232323232323232 | some_text_twitter | 2024-01-19T12:58:27.000Z | some_name_1 | some_username_1 | 2 | https:<span>//</span>url.jpg |
->| 2626262626262626262 | some_text_twitter | 2024-01-18T23:37:11.000Z | some_name_2 | some_username_2 | 0 |  |
->| 2828282828282828282 | some_text_twitter | 2024-01-19T16:45:42.000Z | some_name_3 | some_username_3 | 0 |  |
->| 2525252525252525252 | some_text_twitter | 2024-01-17T15:30:22.000Z | some_name_4 | some_username_4 | 27 |  |
->| 2424242424242424242 | some_text_twitter | 2024-01-20T20:54:50.000Z | some_name_5 | some_username_5 | 2 |  |
-
 >### Tweet Next Token:
 >|Next Token|
 >|---|
 >| xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
+>### Tweets search results:
+>|Tweet ID|Text|Created At|Author Name|Author Username|Likes Count|Attachments URL|
+>|---|---|---|---|---|---|---|
+>| 2323232323232323232 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_1 | some_username_1 | 0 |  |
+>| 1010101010101010101 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_2 | some_username_2 | 0 |  |
+>| 1515151515151515151 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_3 | some_username_3 | 0 | https://url.jpg |
+>| 1212121212121212121 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_5 | some_username_5 | 0 |  |
+>| 0808080808080808080 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_4 | some_username_4 | 0 | https://url.jpg |
+>| 0707070707070707070 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_6 | some_username_6 | 0 | https://url.jpg |
+>| 5050505050505050505 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_7 | some_username_7 | 0 |  |
+>| 3030303030303030303 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_8 | some_username_8 | 0 |  |
+>| 2626262626262626262 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_9 | some_username_9 | 0 |  |
+>| 2525252525252525252 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_10 | some_username_10 | 0 |  |
+
 
 ### twitter-user-get
 ***
-Lookup users by name to display information about them. Search multiple users simultaneously by separating them by commas. Ex: 'name='user1,user2,user3'.
+Lookup users by name to display information about them. Search multiple users simultaneously by separating them by commas. Ex: 'name='user1,user2,user3'
 
 
 #### Base Command
@@ -267,7 +410,7 @@ Lookup users by name to display information about them. Search multiple users si
 | Twitter.User.pinned_tweets.created_at | Date | Creation time of the Tweet. | 
 | Twitter.User.pinned_tweets.edit_history_tweet_ids | String | Unique identifiers indicating all versions of an edited Tweet. | 
 | Twitter.User.pinned_tweets.retweet_count | Number | Number of times this Tweet has been Retweeted. | 
-| Twitter.User.pinned_tweets.reply_count | Number | Number of replies to this Tweet. | 
+| Twitter.User.pinned_tweets.reply_count | Number | Number of Replies to this Tweet. | 
 | Twitter.User.Pinned_tweets.like_count | Number | Number of Likes to this Tweet. | 
 | Twitter.User.pinned_tweets.quote_count | Number | Number of times this Tweet has been Retweeted with a comment. | 
 
@@ -312,7 +455,6 @@ Lookup users by name to display information about them. Search multiple users si
 >|Name|User name|Created At|Description|Followers Count|Tweet Count|verified|
 >|---|---|---|---|---|---|---|
 >| Twitter | Twitter | 2006-06-15T14:35:54.000Z | description | 11111111 | 15046 | true |
-
 
 
 ## Breaking changes from the previous version of this integration - Twitter v2
