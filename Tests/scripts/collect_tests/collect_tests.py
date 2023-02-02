@@ -905,7 +905,7 @@ class BranchTestCollector(TestCollector):
             return self._collect_yml(path)
 
         elif file_type == FileType.REPUTATION:
-            tests = DEFAULT_REPUTATION_TESTS
+            tests = self.conf['reputation_tests']
             reason = CollectionReason.DEFAULT_REPUTATION_TESTS
 
         elif file_type in {FileType.MAPPER, FileType.CLASSIFIER}:
