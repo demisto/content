@@ -1308,14 +1308,18 @@ def run_polling_command(client: CoreClient,
                         polling_value: List,
                         stop_polling: bool = False) -> CommandResults:
     """
-    args: demito args
-    cmd: the command to schedule by after the current command
-    command_function: the function which is runs the actual command
-    command_decision_field: the field in the response based on it what the command status and if the command occurred
-    results_function: the function which we are polling on and retrieves the status of the command_function
-    polling_field: the field which from the result of the results_function which we are interested in its value
-    polling_value: list of values of the polling_field we want to check
-    stop_polling: yes - polling_value is stopping, not - polling_value not stopping
+    Arguments:
+    args: args
+    cmd: the scheduled command's name(as appears in the yml file) to run in the following polling
+    command_function: the pythonic function that executes the command.
+    command_decision_field: the field that being retrieved from the command_function's response that indicates the command_function status.
+    results_function: the pythonic result function which we want to poll on.
+    polling_field: the field that being retrieved from the results_function's response and indicates polling status.
+    polling_value: list of values of the polling_field we want to check. the list can contain values to stop or continue polling on, not both.
+    stop_polling: True - polling_value is stopping the polling, False - polling_value not stopping the polling
+
+    Return:
+    command_results(CommandResults)
     """
 
     ScheduledCommand.raise_error_if_not_supported()
