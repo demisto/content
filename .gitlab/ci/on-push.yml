@@ -50,8 +50,6 @@ stop-running-pipelines:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   script:
     - section_start "Stop running piplines on current branch"
-    - echo $CI_COMMIT_BRANCH
-    - echo "here"
     - Utils/gitlab/stop_running_pipelines.sh $CI_COMMIT_BRANCH $CI_PIPELINE_ID
     - section_end "Stop running piplines on current branch"
 
