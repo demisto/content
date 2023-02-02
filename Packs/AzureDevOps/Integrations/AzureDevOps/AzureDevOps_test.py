@@ -787,7 +787,7 @@ def test_generate_login_url(mocker):
     Given:
         - Self-deployed are true and auth code are the auth flow
     When:
-        - Calling function azure-log-analytics-generate-login-url
+        - Calling function azure-devops-generate-login-url
     Then:
         - Ensure the generated url are as expected.
     """
