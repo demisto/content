@@ -2078,25 +2078,17 @@ def main():
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
 
-    api_token = password if '_token' in username else None
-
-    # Remove trailing slash to prevent wrong URL path to service
-    server = params['url'].strip('/')
-    # Should we use SSL
-    use_ssl = not params.get('insecure', False)
-    api_version = params.get('api_version', '4.x')
-
     # Remove proxy if not set to true in params
     handle_proxy()
     command = demisto.command()
 
     client = Client(
-        server,
+        params.get('url').strip('/'),
         username,
         password,
-        api_token=api_token,
-        verify=use_ssl,
-        api_version=api_version
+        api_token=password if '_token' in username else None,
+        verify=not params.get('insecure', False),
+        api_version=params.get('api_version', '4.x')
     )
 
     demisto.info(f'Command being called is {command}')
@@ -2117,7 +2109,7 @@ def main():
 
         'tanium-tr-list-alerts': get_alerts,
         'tanium-tr-get-alert-by-id': get_alert,
-        'tanium-tr-alert-update-state': alert_update_state,     # when multiple it does not work
+        'tanium-tr-alert-update-state': alert_update_state,
 
         'tanium-tr-create-snapshot': create_snapshot,
         'tanium-tr-delete-snapshot': delete_snapshot,
