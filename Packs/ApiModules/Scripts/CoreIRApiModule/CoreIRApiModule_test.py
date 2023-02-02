@@ -16,14 +16,6 @@ test_client = CoreClient(
 )
 
 
-def test_client_update_incident():
-    with pytest.raises(ValueError, match="Can't provide both assignee_email/assignee_name and unassign_user"):
-        test_client.update_incident(incident_id='1',
-                                    status='new',
-                                    unassign_user="user",
-                                    assigned_user_mail="user")
-
-
 Core_URL = 'https://api.xdrurl.com'
 
 ''' HELPER FUNCTIONS '''
@@ -66,26 +58,6 @@ def return_extra_data_result(*args):
     else:
         incident_from_extra_data_command = load_test_data('./test_data/incident_example_from_extra_data_command.json')
         return {}, {}, {"incident": incident_from_extra_data_command}
-
-
-def test_update_incident(requests_mock):
-    from CoreIRApiModule import update_incident_command, CoreClient
-
-    update_incident_response = load_test_data('./test_data/update_incident.json')
-    requests_mock.post(f'{Core_URL}/public_api/v1/incidents/update_incident/', json=update_incident_response)
-
-    client = CoreClient(
-        base_url=f'{Core_URL}/public_api/v1', headers={}
-    )
-    args = {
-        'incident_id': '1',
-        'status': 'new',
-        'add_comment': 'new comment',
-    }
-    readable_output, outputs, _ = update_incident_command(client, args)
-
-    assert outputs is None
-    assert readable_output == 'Incident 1 has been updated'
 
 
 def test_get_endpoints(requests_mock):

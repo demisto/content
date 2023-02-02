@@ -793,3 +793,33 @@ def test_replace_featured_field_command(requests_mock):
 
     assert response.outputs == expected_response
     assert len(response.outputs.get('fields')) == 2
+
+
+def test_failure_to_update_incident():
+    from CortexXDRIR import update_incident_command, Client
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+
+    with pytest.raises(ValueError, match="Can't provide both assignee_email/assignee_name and unassign_user"):
+        update_incident_command(client=client, args={'unassign_user': 'true', 'assigned_user_mail': 'user', 'status': 'new'})
+
+
+def test_update_incident(requests_mock):
+    from CortexXDRIR import update_incident_command, Client
+
+    update_incident_response = load_test_data('./test_data/update_incident.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/update_incident/', json=update_incident_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'incident_id': '1',
+        'status': 'new',
+        'add_comment': 'new comment',
+    }
+    readable_output, outputs, _ = update_incident_command(client, args)
+
+    assert outputs is None
+    assert readable_output == 'Incident 1 has been updated'

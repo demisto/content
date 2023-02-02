@@ -147,45 +147,6 @@ class CoreClient(BaseClient):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
 
-    def update_incident(self, incident_id, status=None, assigned_user_mail=None, assigned_user_pretty_name=None, severity=None,
-                        resolve_comment=None, unassign_user=None, add_comment=None):
-        update_data: dict[str, Any] = {}
-
-        if unassign_user and (assigned_user_mail or assigned_user_pretty_name):
-            raise ValueError("Can't provide both assignee_email/assignee_name and unassign_user")
-        if unassign_user:
-            update_data['assigned_user_mail'] = 'none'
-
-        if assigned_user_mail:
-            update_data['assigned_user_mail'] = assigned_user_mail
-
-        if assigned_user_pretty_name:
-            update_data['assigned_user_pretty_name'] = assigned_user_pretty_name
-
-        if status:
-            update_data['status'] = status
-
-        if severity:
-            update_data['manual_severity'] = severity
-
-        if resolve_comment:
-            update_data['resolve_comment'] = resolve_comment
-
-        if add_comment:
-            update_data['comment'] = {'comment_action': 'add', 'value': add_comment}
-
-        request_data = {
-            'incident_id': incident_id,
-            'update_data': update_data,
-        }
-
-        self._http_request(
-            method='POST',
-            url_suffix='/incidents/update_incident/',
-            json_data={'request_data': request_data},
-            timeout=self.timeout
-        )
-
     def get_endpoints(self,
                       endpoint_id_list=None,
                       dist_name=None,
@@ -2332,30 +2293,6 @@ def get_indicators_context(incident):
     return file_context, process_context, domain_context, ip_context
 
 
-def update_incident_command(client, args):
-    incident_id = args.get('incident_id')
-    assigned_user_mail = args.get('assigned_user_mail')
-    assigned_user_pretty_name = args.get('assigned_user_pretty_name')
-    status = args.get('status')
-    severity = args.get('manual_severity')
-    unassign_user = args.get('unassign_user') == 'true'
-    resolve_comment = args.get('resolve_comment')
-    add_comment = args.get('add_comment')
-
-    client.update_incident(
-        incident_id=incident_id,
-        assigned_user_mail=assigned_user_mail,
-        assigned_user_pretty_name=assigned_user_pretty_name,
-        unassign_user=unassign_user,
-        status=status,
-        severity=severity,
-        resolve_comment=resolve_comment,
-        add_comment=add_comment,
-    )
-
-    return f'Incident {incident_id} has been updated', None, None
-
-
 def endpoint_command(client, args):
     endpoint_id_list = argToList(args.get('id'))
     endpoint_ip_list = argToList(args.get('ip'))
@@ -2608,33 +2545,6 @@ def get_update_args(remote_args):
     handle_outgoing_incident_owner_sync(remote_args.delta)
     handle_user_unassignment(remote_args.delta)
     return remote_args.delta
-
-
-def update_remote_system_command(client, args):
-    remote_args = UpdateRemoteSystemArgs(args)
-
-    if remote_args.delta:
-        demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
-                      f'incident {remote_args.remote_incident_id}')
-    try:
-        if remote_args.incident_changed:
-            update_args = get_update_args(remote_args)
-
-            update_args['incident_id'] = remote_args.remote_incident_id
-            demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
-            update_incident_command(client, update_args)
-
-        else:
-            demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
-                          f'as it is not new nor changed')
-
-        return remote_args.remote_incident_id
-
-    except Exception as e:
-        demisto.debug(f"Error in outgoing mirror for incident {remote_args.remote_incident_id} \n"
-                      f"Error message: {str(e)}")
-
-        return remote_args.remote_incident_id
 
 
 def get_distribution_versions_command(client, args):
