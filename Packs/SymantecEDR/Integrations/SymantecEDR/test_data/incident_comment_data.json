@@ -1,12 +1,12 @@
 {
-    "next": "MSwyMDIyLTEyLTI1VDIzOjIwOjMxLjgwMVo=",
+    "next": "MSwyMDIzLTAyLTAyVDE4OjM4OjU3LjIyOFo=",
     "result": [
         {
-            "comment": "added as part of testing xsoar command examples",
-            "time": "2022-12-25T20:16:17.630Z",
-            "user_id": 100011,
+            "comment": "Add comment API Testing",
+            "time": "2022-11-25T07:00:37.304Z",
+            "user_id": 100000,
             "incident_responder_name": "SEDR API"
         }
     ],
-    "total": 28
+    "total": 23
 }

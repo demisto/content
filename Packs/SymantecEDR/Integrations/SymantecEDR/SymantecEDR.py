@@ -2,7 +2,6 @@
 Symantec Endpoint Detection and Response (EDR) On-Prem integration with Symantec-EDR 4.6
 """
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-# from CommonServerUserPython import *  # noqa
 import dateparser
 import requests
 import urllib3
@@ -17,14 +16,13 @@ DEFAULT_INTERVAL = 30
 DEFAULT_TIMEOUT = 600
 
 # Symantec TOKEN timeout 60 mins
-SESSION_TIMEOUT_SEC = 3480
+SESSION_TIMEOUT_SEC = 3600
 SYMANTEC_ISO_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 INTEGRATION_CONTEXT_NAME = 'SymantecEDR'
-DEFAULT_PAGE = 0
+DEFAULT_OFFSET = 0
 DEFAULT_PAGE_SIZE = 50
 PAGE_NUMBER_ERROR_MSG = 'Invalid Input Error: page number should be greater than zero. ' \
                         'Note: Page must be used along with page_size'
-
 PAGE_SIZE_ERROR_MSG = 'Invalid Input Error: page size should be greater than zero. ' \
                       'Note: Page must be used along with page_size'
 
@@ -150,7 +148,8 @@ class Client(BaseClient):
         Returns:
             Returns Set access_token
         """
-        if last_access_token := get_last_access_token_from_context():
+        global_context = demisto.getIntegrationContext()
+        if last_access_token := get_access_token_from_context(global_context):
             self.access_token = last_access_token
             demisto.debug(f"Last login access token still active. Return token {last_access_token}")
         else:
@@ -166,18 +165,18 @@ class Client(BaseClient):
 
                 new_access_token = response.json().get("access_token")
                 self.access_token = new_access_token
-                timestamp_string = int(time.time() * 1000)
+                timestamp_string = int(time.time())
                 demisto.debug(f"login: success, saving access token {new_access_token}\n,"
                               f"Created Timestamp : {timestamp_string}")
 
                 if global_integration_context := demisto.getIntegrationContext():
                     global_integration_context['access_token'] = new_access_token
-                    global_integration_context['created_timestamp_access_token'] = timestamp_string
+                    global_integration_context['access_token_timestamp'] = timestamp_string
                     demisto.setIntegrationContext(global_integration_context)
                 else:
                     demisto.setIntegrationContext({
                         'access_token': new_access_token,
-                        'created_timestamp_access_token': timestamp_string
+                        'access_token_timestamp': timestamp_string
                     })
 
             except requests.exceptions.HTTPError as err:
@@ -264,21 +263,28 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_last_access_token_from_context():
-    if token := demisto.getIntegrationContext().get('access_token'):
-        last_datetime = demisto.getIntegrationContext().get('created_timestamp_access_token')
-        now_datetime = int(time.time() * 1000)  # Convert to Millisecond
+def get_access_token_from_context(global_context: dict[str, Any]):
+    """
+    Symantec EDR on-premise get previous access token from global integration context
+    Args:
+        global_context(dict): Integration Context data
+    Returns:
+        return token or None
+    """
+    if save_timestamp := global_context.get('access_token_timestamp'):
+        now_timestamp = int(time.time())
+        time_diff = int(now_timestamp - save_timestamp)
 
-        if last_datetime is None:
-            raise ValueError('No Value identified for Last Datatime')
-
-        time_diff = int(now_datetime - last_datetime)
-        demisto.debug(
-            f"Last token: {token}, Last datetime: {last_datetime}, now_datetime: {now_datetime}, time_diff: {time_diff}.")
-        return token if time_diff <= SESSION_TIMEOUT_SEC * 1000 else None
-
-    demisto.debug("No last token found in Context.")
-    return None
+        if token := global_context.get('access_token'):
+            if time_diff <= SESSION_TIMEOUT_SEC:
+                LOG(f'Access token not expired ..{token}')
+                return token
+            elif time_diff > SESSION_TIMEOUT_SEC:
+                LOG('Access token expired')
+                return None
+    else:
+        LOG('Access Token not found, Going to be generate new access token')
+        return None
 
 
 def iso_creation_date(date: str):
@@ -316,7 +322,7 @@ def get_headers_from_summary_data(summary_data: list[dict]):
 
 def get_data_of_current_page(offset: int, limit: int, data_list: list[dict[str, Any]]):
     """
-    Symantec EDR on-premise pagination
+    Retrieve list element based on offset and limit
     Args:
         offset (int): Offset
         limit (int): Page Limit
@@ -326,10 +332,9 @@ def get_data_of_current_page(offset: int, limit: int, data_list: list[dict[str, 
         Return List of object from the response according to the limit, page and page_size.
 
     """
-    # limit = limit if limit else DEFAULT_PAGE_SIZE
     if offset >= 0 and limit >= 0:
         return data_list[offset:(offset + limit)]
-    return data_list[0:limit]
+    return data_list[:limit]
 
 
 def pagination(page: int | None, page_size: int | None):
@@ -343,11 +348,10 @@ def pagination(page: int | None, page_size: int | None):
         offset (int): The number of records to be skipped.
     """
     if page is None:
-        page = DEFAULT_PAGE
+        # Default OFFSET value is 0
+        page = DEFAULT_OFFSET
     elif page <= 0:
         raise DemistoException(PAGE_NUMBER_ERROR_MSG)
-    else:
-        page = page - 1
 
     if page_size is None:
         page_size = DEFAULT_PAGE_SIZE
@@ -355,13 +359,13 @@ def pagination(page: int | None, page_size: int | None):
         raise DemistoException(PAGE_SIZE_ERROR_MSG)
 
     limit = page_size
-    offset = page * page_size
+    offset = (page - 1) * page_size if page > 0 else page
 
     return limit, offset
 
 
-def get_command_title_string(context_name: str, page: int | None, page_size: int | None,
-                             total_record: int | None) -> str:
+def compile_command_title_string(context_name: str, page: int | None, page_size: int | None, total_record: int | None) \
+        -> str:
     """
     Symantec EDR on-premise display title and pagination
     Args:
@@ -784,7 +788,7 @@ def extract_raw_data(data: list | dict, ignore_key: list[str] = [], prefix: str 
     """
      Retrieve Json data according and mapping field Name and value
      Args:
-         data (Dict or list): Data ``dict`` or ``list``
+         data (dict or list): Data ``dict`` or ``list``
          ignore_key (List): Ignore Key List
          prefix (str): Optional Added prefix in field name
      Returns:
@@ -951,12 +955,12 @@ def get_association_filter_query(args: dict) -> str:
     return query_condition
 
 
-def post_request_body(args: dict, p_limit: int = 1) -> dict:
+def post_request_body(args: dict, page_limit: int = 1) -> dict:
     """
     This function creates a default payload based on the demisto.args().
     Args:
         args: demisto.args()
-        p_limit: Page Limit (int)
+        page_limit: Page Limit (int)
     Returns:
         Return arguments dict.
     """
@@ -966,11 +970,11 @@ def post_request_body(args: dict, p_limit: int = 1) -> dict:
     max_limit = args.get('limit', DEFAULT_PAGE_SIZE)
 
     if page_size:
-        if p_limit >= max_limit:
+        if page_limit >= max_limit:
             # in case user pass the page_size or limit is less than page_size
-            payload['limit'] = p_limit
+            payload['limit'] = page_limit
     else:
-        payload['limit'] = p_limit if p_limit != DEFAULT_PAGE_SIZE else max_limit
+        payload['limit'] = page_limit if page_limit != DEFAULT_PAGE_SIZE else max_limit
 
     from_time = iso_creation_date(args.get('start_time', ''))
     to_time = iso_creation_date(args.get('end_time', ''))
@@ -984,12 +988,12 @@ def post_request_body(args: dict, p_limit: int = 1) -> dict:
     return payload
 
 
-def get_params_query(args: dict, p_limit: int = 0) -> dict:
+def get_params_query(args: dict, page_limit: int = 0) -> dict:
     """
     This function creates a query param based on the demisto.args().
     Args:
         args: demisto.args()
-        p_limit: Page Limit (int)
+        page_limit: Page Limit (int)
     Returns:
         Return arguments dict.
     """
@@ -1011,11 +1015,11 @@ def get_params_query(args: dict, p_limit: int = 0) -> dict:
     max_limit = args.get('limit', DEFAULT_PAGE_SIZE)
     page_size = args.get('page_size')
 
-    if page_size and (p_limit > max_limit):
+    if page_size and (page_limit > max_limit):
         # in case user pass the page_size or limit, limit will ignore
-        query_param['limit'] = p_limit
+        query_param['limit'] = page_limit
     else:
-        query_param['limit'] = p_limit if p_limit != DEFAULT_PAGE_SIZE else max_limit
+        query_param['limit'] = page_limit if page_limit != DEFAULT_PAGE_SIZE else max_limit
 
     query_param['ip'] = ip
     query_param['url'] = url
@@ -1031,30 +1035,26 @@ def check_valid_indicator_value(indicator_type: str, indicator_value: str) -> bo
     Check the validity of indicator values
     Args:
         indicator_type: Indicator type provided in the command
-            Possible Indicator type are : sha256, urls, domain, ip, md5
+            Possible Indicator type are : sha256, urls, ip, md5
         indicator_value: Indicator value provided in the command
     Returns:
         True if the provided indicator values are valid
     """
-    if indicator_type == 'sha256':
-        if not re.match(sha256Regex, indicator_value):
-            raise ValueError(f'SHA256 value"{indicator_value}" is invalid')
-
-    elif indicator_type == 'urls':
-        if not re.match(urlRegex, indicator_value):
-            raise ValueError(
-                f'URL {indicator_value} is invalid')
-
-    elif indicator_type == 'ip':
+    if indicator_type == 'ip':
         if not is_ip_valid(indicator_value):
-            raise ValueError(f'IP "{indicator_value}" is invalid')
+            raise ValueError(f'"{indicator_value}" is not a valid IP')
+        return True
 
-    elif indicator_type == 'md5':
-        if not re.match(md5Regex, indicator_value):
-            raise ValueError(
-                f'MD5 value {indicator_value} is invalid')
+    hash_to_regex: dict[str, Any] = {
+        'sha256': sha256Regex,
+        'urls': urlRegex,
+        'md5': md5Regex
+    }
+    if indicator_type in hash_to_regex:
+        if not re.match(hash_to_regex[indicator_type], indicator_value):
+            raise ValueError(f'{indicator_value} is not a valid {indicator_type}')
     else:
-        raise ValueError('Kindly provide indicator type. Possible Indicator type are : sha256, urls, domain, ip, md5')
+        raise ValueError(f'Indicator {indicator_type} type does not support')
 
     return True
 
@@ -1178,7 +1178,7 @@ def get_domain_file_association_list_command(client: Client, args: dict[str, Any
 
     payload, limit, offset, page_size = get_request_payload(args, 'association')
     raw_response: dict[str, Any] = client.query_request_api(method='POST', url_suffix=endpoint, params={}, json_data=payload)
-    title = get_command_title_string(
+    title = compile_command_title_string(
         'Domain File Association',
         arg_to_number(args.get('page', 0)),
         page_size,
@@ -1216,7 +1216,7 @@ def get_endpoint_domain_association_list_command(client: Client, args: dict[str,
 
     payload, limit, offset, page_size = get_request_payload(args, 'association')
     raw_response: dict[str, Any] = client.query_request_api(method='POST', url_suffix=endpoint, params={}, json_data=payload)
-    title = get_command_title_string(
+    title = compile_command_title_string(
         "Endpoint Domain Association",
         arg_to_number(args.get('page', 0)),
         page_size,
@@ -1254,7 +1254,7 @@ def get_endpoint_file_association_list_command(client: Client, args: dict[str, A
 
     payload, limit, offset, page_size = get_request_payload(args, 'association')
     raw_response: dict[str, Any] = client.query_request_api(method='POST', url_suffix=endpoint, params={}, json_data=payload)
-    title = get_command_title_string(
+    title = compile_command_title_string(
         "Endpoint File Association",
         arg_to_number(args.get('page', 0)),
         page_size,
@@ -1293,7 +1293,7 @@ def get_audit_event_command(client: Client, args: dict[str, Any]) -> CommandResu
     payload, limit, offset, page_size = get_request_payload(args, 'event')
     raw_response = client.query_request_api(method='POST', url_suffix=endpoint, params={}, json_data=payload)
 
-    title = get_command_title_string(
+    title = compile_command_title_string(
         "Audit Event",
         arg_to_number(args.get('page', 0)),
         page_size,
@@ -1331,7 +1331,7 @@ def get_event_list_command(client: Client, args: dict[str, Any]) -> CommandResul
     payload, limit, offset, page_size = get_request_payload(args, 'event')
     raw_response = client.query_request_api(method='POST', url_suffix=endpoint, params={}, json_data=payload)
 
-    title = get_command_title_string(
+    title = compile_command_title_string(
         "Event",
         arg_to_number(args.get('page', 0)),
         page_size,
@@ -1369,7 +1369,7 @@ def get_system_activity_command(client: Client, args: dict[str, Any]) -> Command
     payload, limit, offset, page_size = get_request_payload(args, 'event')
     raw_response = client.query_request_api(method='POST', url_suffix=endpoint, params={}, json_data=payload)
 
-    title = get_command_title_string(
+    title = compile_command_title_string(
         "System Activities",
         arg_to_number(args.get('page', 0)),
         page_size,
@@ -1407,7 +1407,7 @@ def get_event_for_incident_list_command(client: Client, args: dict[str, Any]) ->
     payload, limit, offset, page_size = get_request_payload(args, 'event')
     raw_response = client.query_request_api(method='POST', url_suffix=endpoint, params={}, json_data=payload)
 
-    title = get_command_title_string(
+    title = compile_command_title_string(
         'Event for Incident',
         arg_to_number(args.get('page', 0)),
         page_size,
@@ -1446,7 +1446,7 @@ def get_incident_list_command(client: Client, args: dict[str, Any]) -> CommandRe
     payload, limit, offset, page_size = get_request_payload(args, 'incident')
     demisto.debug(f'Incident Payload: {payload}')
     raw_response = client.query_request_api(method='POST', url_suffix=endpoint, params={}, json_data=payload)
-    title = get_command_title_string(
+    title = compile_command_title_string(
         'Incident',
         arg_to_number(args.get('page', 0)),
         page_size,
@@ -1489,7 +1489,7 @@ def get_incident_comments_command(client: Client, args: dict[str, Any]) -> Comma
     incident_id = args.pop("incident_id", None)
     payload, limit, offset, page_size = get_request_payload(args, 'incident')
     raw_response = client.query_request_api(method='POST', url_suffix=endpoint, params={}, json_data=payload)
-    title = get_command_title_string(
+    title = compile_command_title_string(
         'Incident Comment',
         arg_to_number(args.get('page', 0)),
         page_size,
@@ -1611,7 +1611,7 @@ def get_file_instance_command(client: Client, args: dict[str, Any]) -> CommandRe
     payload, limit, offset, page_size = get_request_payload(args)
     raw_response: dict[str, Any] = client.query_request_api(method='POST', url_suffix=endpoint, params={}, json_data=payload)
 
-    title = get_command_title_string(
+    title = compile_command_title_string(
         'File Instances',
         arg_to_number(args.get('page', 0)),
         page_size,
@@ -1651,7 +1651,7 @@ def get_domain_instance_command(client: Client, args: dict[str, Any]) -> Command
 
     raw_response: dict[str, Any] = client.query_request_api(method='POST', url_suffix=endpoint, params={}, json_data=payload)
 
-    title = get_command_title_string(
+    title = compile_command_title_string(
         'Domain Instances',
         arg_to_number(args.get('page', 0)),
         page_size,
@@ -1690,7 +1690,7 @@ def get_endpoint_instance_command(client: Client, args: dict[str, Any]) -> Comma
     payload, limit, offset, page_size = get_request_payload(args)
 
     raw_response: dict[str, Any] = client.query_request_api(method='POST', url_suffix=endpoint, params={}, json_data=payload)
-    title = get_command_title_string(
+    title = compile_command_title_string(
         'Endpoint Instances',
         arg_to_number(args.get('page', 0)),
         page_size,
@@ -1728,7 +1728,7 @@ def get_allow_list_command(client: Client, args: dict[str, Any]) -> CommandResul
     payload, limit, offset, page_size = get_request_payload(args, 'allow_list')
     raw_response = client.query_request_api(method='GET', url_suffix=endpoint, params=payload, json_data={})
 
-    title = get_command_title_string(
+    title = compile_command_title_string(
         'Allow List Policy',
         arg_to_number(args.get('page', 0)),
         page_size,
@@ -1767,7 +1767,7 @@ def get_deny_list_command(client: Client, args: dict[str, Any]) -> CommandResult
 
     raw_response = client.query_request_api(method='GET', url_suffix=endpoint, params=payload, json_data={})
 
-    title = get_command_title_string(
+    title = compile_command_title_string(
         "Deny List Policy",
         arg_to_number(args.get('page', 0)),
         page_size,
@@ -2281,7 +2281,7 @@ def main() -> None:
 
         client.get_access_token_or_login()
 
-        demisto.debug(f'Command being called is {demisto.command()}')
+        demisto.info(f'Command being called is {demisto.command()}')
 
         commands = {
 
