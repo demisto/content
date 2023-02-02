@@ -23,7 +23,7 @@ fi
 # Helper functions
 
 function get_branch_pipelines(){
-  local resp = $1
+  local resp=$1
   echo $(echo "${resp}" | jq -c '.[]')
 }
 
