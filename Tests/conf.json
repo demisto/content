@@ -5301,6 +5301,10 @@
             "instance_names": "Microsoft SQL Server - MS ODBC Driver",
             "fromversion": "5.0.0",
             "has_api": false
+        },
+        {
+            "integrations": "Microsoft Teams via Webhook",
+            "playbookID": "Microsoft Teams Webhook - Test"
         }
     ],
     "skipped_tests": {
@@ -5448,6 +5452,7 @@
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
         "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
+        "Archer v2 - Test": "Test doesn't pass in the builds because of the creds, but creds seems ok, need to debug further",
         "AD v2 - debug-mode": "No credentials",
         "Google-KMS-test": "No instance",
         "hashicorp_test": "No instance",
@@ -5756,7 +5761,8 @@
         "RSA Archer v2": "cannot connect to proxy",
         "Anomali ThreatStream v3": "recording is not working",
         "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked.",
-        "Cortex XDR - IR": "internal product, no need to mock"
+        "Cortex XDR - IR": "internal product, no need to mock",
+        "Microsoft Teams via Webhook": "message sent contains random hostname of server"
     },
     "parallel_integrations": [
         "AWS - ACM",
