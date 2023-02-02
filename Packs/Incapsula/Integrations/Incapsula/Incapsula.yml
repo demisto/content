@@ -8,10 +8,12 @@ description: Uses incapsula to manage sites and IPs
 configuration:
 - display: API ID
   name: apiid
+  defaultvalue: ""
   type: 0
   required: true
 - display: API key
   name: apikey
+  defaultvalue: ""
   type: 4
   required: true
 - display: Use system proxy settings
@@ -1325,6 +1327,7 @@ script:
     arguments: []
     description: Use this operation to retrieve a list of all the client applications
   # Infrastructure Protection Test Alerts
+    system: true
   - arguments:
     - description: The customer's IP range.
       name: ip_range
@@ -1375,7 +1378,6 @@ script:
       required: true
     description: '(SCE) Use this operation to view the highest peak values and highest average values for a protected IP range during a selected time period. '
     name: incap-get-infra-protection-top-items-table
-  runonce: false
 tests:
 - No test
 fromversion: 5.0.0
