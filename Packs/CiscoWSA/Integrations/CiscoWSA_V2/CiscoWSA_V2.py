@@ -1240,13 +1240,17 @@ def domain_map_delete_command(client: Client, args: Dict[str, Any]) -> CommandRe
         command_results_list = []
         for domain_map in dict_safe_get(response, ["res_data", "delete_success"]):
             readable_output = f'Domain "{domain_map}" mapping deleted successfully.'
-            command_results_list.append(CommandResults(readable_output=readable_output, raw_response=response))
+            command_results_list.append(
+                CommandResults(readable_output=readable_output, raw_response=response)
+            )
 
         readable_output = dict_safe_get(
             response, ["res_data", "delete_failure", "error_msg"]
         )
         if readable_output:
-            command_results_list.append(CommandResults(readable_output=readable_output, raw_response=response))
+            command_results_list.append(
+                CommandResults(readable_output=readable_output, raw_response=response)
+            )
         return command_results_list
     else:
         raise DemistoException(response)
@@ -1325,7 +1329,9 @@ def identification_profiles_create_command(
     )
 
     if response.status_code == 204:
-        readable_output = f"Created profile {profile_name} successfully."
+        readable_output = (
+            f'Created identification profile "{profile_name}" successfully.'
+        )
     else:
         raise DemistoException(response.json())
 
@@ -1362,7 +1368,7 @@ def identification_profiles_update_command(
     )
 
     if response.status_code == 204:
-        readable_output = f"Updated profile {profile_name} successfully."
+        readable_output = f'Updated identification profile "{profile_name}" successfully.'
     else:
         raise DemistoException(response.json())
 
@@ -1387,7 +1393,7 @@ def identification_profiles_delete_command(
     response = client.identification_profiles_delete_request(profile_names)
 
     if response.status_code == 204:
-        return CommandResults(readable_output=f"Deleted profiles successfully.")
+        return CommandResults(readable_output=f"Deleted identification profiles successfully.")
     elif response.status_code == 207:
         response = response.json()
         command_results_list = []

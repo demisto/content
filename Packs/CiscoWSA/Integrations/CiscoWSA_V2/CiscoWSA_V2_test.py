@@ -118,9 +118,8 @@ def test_domain_map_create_command(
     When:
     - cisco-wsa-domain-map-create command called.
     Then:
-    - Ensure outputs prefix is correct.
-    - Ensure number of items is correct.
-    - Validate outputs' fields.
+    - Ensure readable output is correct.
+    - Ensure response code is correct.
     """
     from CiscoWSA_V2 import domain_map_create_command
 
@@ -154,9 +153,8 @@ def test_domain_map_update_command(
     When:
     - cisco-wsa-domain-map-update command called.
     Then:
-    - Ensure outputs prefix is correct.
-    - Ensure number of items is correct.
-    - Validate outputs' fields.
+    - Ensure readable output is correct.
+    - Ensure response code is correct.
     """
     from CiscoWSA_V2 import domain_map_update_command
 
@@ -191,9 +189,8 @@ def test_domain_map_delete_command(
     When:
     - cisco-wsa-domain-map-delete command called.
     Then:
-    - Ensure outputs prefix is correct.
-    - Ensure number of items is correct.
-    - Validate outputs' fields.
+    - Ensure readable output is correct.
+    - Ensure response code is correct.
     """
     from CiscoWSA_V2 import domain_map_delete_command
 
@@ -208,6 +205,189 @@ def test_domain_map_delete_command(
 
     assert result.readable_output == 'Domain "test.com" deleted successfully.'
     assert result.raw_response["res_code"] == 200
+
+
+@pytest.mark.parametrize(
+    "response_file_name,command_arguments,expected_outputs_len",
+    [
+        (
+            "identification_profiles_list.json",
+            {
+                "page": 1,
+                "page_size": 3,
+            },
+            3,
+        ),
+        (
+            "identification_profiles_list.json",
+            {
+                "limit": 5,
+            },
+            5,
+        ),
+    ],
+)
+def test_identification_profiles_list_command(
+    response_file_name,
+    command_arguments,
+    expected_outputs_len,
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Identification profiles list.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-identification-profiles-list command called.
+    Then:
+    - Ensure outputs prefix is correct.
+    - Ensure number of items is correct.
+    - Validate outputs' fields.
+    """
+    from CiscoWSA_V2 import identification_profiles_list_command
+
+    mock_response = load_mock_response(response_file_name)
+    url = f"{BASE_URL}/{V3_PREFIX}/web_security/identification_profiles"
+    requests_mock.get(url=url, json=mock_response)
+
+    result = identification_profiles_list_command(mock_client, command_arguments)
+
+    assert result.outputs_prefix == "CiscoWSA.IdentificationProfile"
+    assert len(result.outputs) == expected_outputs_len
+
+
+def test_identification_profiles_create_command(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Identification profile create.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-identification-profiles-create command called.
+    Then:
+    - Ensure readable output is correct.
+    """
+    from CiscoWSA_V2 import identification_profiles_create_command
+
+    url = f"{BASE_URL}/{V3_PREFIX}/web_security/identification_profiles"
+    requests_mock.post(url=url, status_code=204)
+
+    result = identification_profiles_create_command(
+        mock_client,
+        {
+            "profile_name": "test",
+            "status": "enable",
+            "order": 1,
+            "description": 'test',
+            "protocols": 'HTTPS',
+        },
+    )
+
+    assert result.readable_output == 'Created identification profile "test" successfully.'
+
+
+def test_identification_profiles_update_command(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Identification profile update.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-identification-profiles-update command called.
+    Then:
+    - Ensure readable output is correct.
+    """
+    from CiscoWSA_V2 import identification_profiles_update_command
+
+    url = f"{BASE_URL}/{V3_PREFIX}/web_security/identification_profiles"
+    requests_mock.put(url=url, status_code=204)
+
+    result = identification_profiles_update_command(
+        mock_client,
+        {
+            "profile_name": "test",
+            "new_profile_name": "test1",
+            "order": 2,
+            "description": 'test description',
+            "protocols": 'SOCKS',
+        },
+    )
+
+    assert result.readable_output == 'Updated identification profile "test" successfully.'
+
+
+def test_identification_profiles_delete_command(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Identification profile delete.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-identification-profiles-delete command called.
+    Then:
+    - Ensure readable output is correct.
+    """
+    from CiscoWSA_V2 import identification_profiles_delete_command
+
+    url = f"{BASE_URL}/{V3_PREFIX}/web_security/identification_profiles"
+    requests_mock.delete(url=url, status_code=204)
+
+    result = identification_profiles_delete_command(
+        mock_client,
+        {
+            "profile_names": "test",
+        },
+    )
+
+    assert result.readable_output == 'Deleted identification profiles successfully.'
+
+
+def test_url_categories_list_command(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: URL categories list.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-url-categories-list command called.
+    Then:
+    - Ensure outputs prefix is correct.
+    - Ensure number of items is correct.
+    - Validate outputs' fields.
+    """
+    from CiscoWSA_V2 import url_categories_list_command
+
+    mock_response = load_mock_response("url_categories_list.json")
+    url = f"{BASE_URL}/{V3_PREFIX}/generic_resources/url_categories"
+    requests_mock.get(url=url, json=mock_response)
+
+    result = url_categories_list_command(
+        mock_client,
+        {}
+    )
+
+    assert result.outputs_prefix == "CiscoWSA.UrlCategory"
+    assert len(result.outputs['predefined']) == 106
+    assert len(result.outputs['custom']) == 1
 
 
 """ TESTING HELPER FUNCTIONS"""
