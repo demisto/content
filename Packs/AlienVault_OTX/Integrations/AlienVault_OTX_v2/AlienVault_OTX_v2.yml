@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: AlienVault OTX v2
   version: -1
@@ -8,28 +11,35 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - name: credentials
   type: 9
   displaypassword: API Token
   hiddenusername: true
+  section: Connect
 - display: API Token
   name: api_token
   required: false
   type: 4
   hidden: true
+  section: Connect
 - defaultvalue: '2'
   display: Indicator Threshold. The minimum number of pulses to consider the indicator as malicious.
   name: default_threshold
   required: false
   type: 0
-- additionalinfo: If not provided, no relationships will be added. This field is relevant only for url, file hash and ip / domain indicators.
-  defaultvalue: '10'
+  section: Collect
+  advanced: true
+- defaultvalue: '10'
   display: Maximum number of relationships for indicators
   name: max_indicator_relationships
   required: false
   type: 0
-- defaultvalue: 'C - Fairly reliable'
-  additionalinfo: Reliability of the source providing the intelligence data.
+  additionalinfo: If not provided, no relationships will be added. This field is relevant only for url, file hash and ip / domain indicators.
+  section: Collect
+  advanced: true
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
   display: Source Reliability
   name: integrationReliability
   required: true
@@ -42,20 +52,27 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-- display: Create relationships
+  section: Collect
+- defaultvalue: 'true'
+  additionalinfo: Create relationships between indicators as part of Enrichment.
+  display: Create relationships
   name: create_relationships
   required: false
   type: 8
-  defaultvalue: 'true'
-  additionalinfo: Create relationships between indicators as part of Enrichment.
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Query Indicators of Compromise in AlienVault OTX.
 display: AlienVault OTX v2
 name: AlienVault OTX v2

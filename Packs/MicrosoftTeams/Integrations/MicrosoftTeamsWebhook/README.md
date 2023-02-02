@@ -1,4 +1,5 @@
-Integration for sending notifications to a Microsoft Teams channel via and incoming webhook. 
+Integration for sending notifications to a Microsoft Teams channel via an incoming webhook. For information on how to create an incoming webhook, see the [Microsoft Create an Incoming Webhook Documentation](https://docs.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook).
+
 ## Configure Microsoft Teams via Webhook on Cortex XSOAR
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Microsoft Teams via Webhook.
@@ -8,6 +9,8 @@ Integration for sending notifications to a Microsoft Teams channel via and incom
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Microsoft Webhook URL | The webhook URL in the Teams Channel | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

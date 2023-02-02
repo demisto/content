@@ -6673,7 +6673,7 @@ script:
       description: Troubleshooting information.
       type: String
     polling: true
-  dockerimage: demisto/crypto:1.0.0.42817
+  dockerimage: demisto/crypto:1.0.0.45575
   feed: false
   isfetch: true
   longRunning: false
@@ -6685,4 +6685,7 @@ script:
 defaultmapperin: Microsoft Defender For Endpoint Mapper
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- Microsoft Defender Advanced Threat Protection - Test
+- Microsoft Defender Advanced Threat Protection - Test dev
+- Microsoft Defender Advanced Threat Protection - Test self deployed
+- Microsoft Defender Advanced Threat Protection - Test prod

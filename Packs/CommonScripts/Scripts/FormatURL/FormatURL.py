@@ -402,17 +402,22 @@ class URLCheck(object):
 
         elif char in self.brackets:
             # char is a type of bracket or quotation mark
-            if char in self.bracket_pairs:
-                # If the char is an opening bracket set `inside_brackets` flag to True
-                self.inside_brackets = True
-                self.opening_bracket = char
-                self.output += char
-                part += char
-                index += 1
+
+            if index == len(self.modified_url) - 1 and not self.inside_brackets:
+                # Edge case of a bracket or quote at the end of the URL but not part of it
+                return len(self.modified_url), part
 
             elif self.inside_brackets and char == self.bracket_pairs[self.opening_bracket]:
                 # If the char is a closing bracket check that it matches the opening one.
                 self.inside_brackets = False
+                self.output += char
+                part += char
+                index += 1
+
+            elif char in self.bracket_pairs:
+                # If the char is an opening bracket set `inside_brackets` flag to True
+                self.inside_brackets = True
+                self.opening_bracket = char
                 self.output += char
                 part += char
                 index += 1
@@ -650,6 +655,7 @@ class URLFormatter(object):
 
         schemas = re.compile("(meow|hxxp)", re.IGNORECASE)
         url = url.replace("[.]", ".")
+        url = url.replace("[:]", ":")
         url = re.sub(schemas, "http", url)
 
         def fix_scheme(match: Match) -> str:
