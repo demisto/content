@@ -23,7 +23,8 @@ fi
 # Helper functions
 
 function get_branch_pipelines(){
-  echo $(echo "${$1}" | jq -c '.[]')
+  local resp=$1
+  echo $(echo "${resp}" | jq -c '.[]')
 }
 
 function stop_pipeline_by_id(){
