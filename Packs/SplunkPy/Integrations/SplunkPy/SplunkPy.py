@@ -31,6 +31,14 @@ FETCH_TIME = demisto.params().get('fetch_time')
 PROXIES = handle_proxy()
 TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
                         'year': 365 * 24 * 60}
+DEFAULT_DISPOSITIONS = {
+    'True Positive - Suspicious Activity': 'disposition:1',
+    'Benign Positive - Suspicious But Expected': 'disposition:2',
+    'False Positive - Incorrect Analytic Logic': 'disposition:3',
+    'False Positive - Inaccurate Data': 'disposition:4',
+    'Other': 'disposition:5',
+    'Undetermined': 'disposition:6'
+}
 
 # =========== Mirroring Mechanism Globals ===========
 MIRROR_DIRECTION = {
@@ -1257,14 +1265,14 @@ def get_remote_data_command(service: client.Service, args: dict,
         if status_label == "Closed" or (status_label in close_extra_labels) \
                 or (close_end_statuses and argToBoolean(updated_notable.get('status_end', 'false'))):
             demisto.info(f'Closing incident related to notable {notable_id} with status_label: {status_label}')
-            entries = [{
-                'Type': EntryType.NOTE,
-                'Contents': {
-                    'dbotIncidentClose': True,
+        entries = [{
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentClose': True,
                     'closeReason': f'Notable event was closed on Splunk with status \"{status_label}\".'
-                },
-                'ContentsFormat': EntryFormat.JSON
-            }]
+            },
+            'ContentsFormat': EntryFormat.JSON
+        }]
 
     else:
         demisto.debug('"status_label" key could not be found on the returned data, '
@@ -2269,10 +2277,17 @@ def splunk_edit_notable_event_command(base_url: str, token: str, auth_token: str
     if args.get('status'):
         status = int(args['status'])
 
+    # Map the label to the disposition id
+    disposition = args.get('disposition', '')
+    if disposition:
+        if disposition in DEFAULT_DISPOSITIONS:
+            disposition = DEFAULT_DISPOSITIONS[disposition]
+
     response_info = update_notable_events(baseurl=base_url,
                                           comment=args.get('comment'), status=status,
                                           urgency=args.get('urgency'),
                                           owner=args.get('owner'), eventIDs=event_ids,
+                                          disposition=disposition,
                                           auth_token=auth_token, sessionKey=session_key)
 
     if 'success' not in response_info or not response_info['success']:
