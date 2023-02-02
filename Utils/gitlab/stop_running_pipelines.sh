@@ -13,7 +13,6 @@ else
   CI_COMMIT_BRANCH=$1
 fi
 
-
 if [ -z "$2" ]; then
   echo "No pipeline number. Aborting."
   exit 1
