@@ -6,3 +6,6 @@ ignore=IM111
 
 [file:Intel471WatcherAlerts_image.png]
 ignore=IM111
+
+[file:Intel471Malware_image.png]
+ignore=IM111

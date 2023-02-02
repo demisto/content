@@ -75,6 +75,14 @@ TAEGIS_PLAYBOOK_EXECUTION_ID = "UGxheWJvb2tFeGVjdXRpb246M2NiM2FmYWItYTZiNy00ZWNm
 
 TAEGIS_PLAYBOOK_INSTANCE_ID = "UGxheWJvb2tJbnN0YW5jZTphZDNmNzBlZi1mN2U0LTQ0OWYtODJiMi1hYWQwMjQzZTA2NTg="
 
+TAEGIS_USER = {
+    "email": "testuser@email.com",
+    "given_name": "John",
+    "family_name": "Smith",
+    "user_id": "auth0|123456",
+    "status": "Registered",
+}
+
 EXECUTE_PLAYBOOK_RESPONSE = {
     "data": {
         "executePlaybookInstance": {
@@ -95,6 +103,8 @@ EXECUTE_PLAYBOOK_BAD_RESPONSE = {
         }
     ]
 }
+
+
 
 FETCH_ALERTS_RESPONSE = {
     "data": {
@@ -234,6 +244,62 @@ UPDATE_INVESTIGATION_RESPONSE = {
     "data": {
         "updateInvestigation": {
             "id": "593fa115-abad-4a52-9fc4-2ec403a8a1e4",
+        }
+    }
+}
+
+FETCH_USER_RESPONSE = {
+    "data": {
+        "tdrusersByIDs": [TAEGIS_USER],
+    }
+}
+
+FETCH_USERS_BAD_RESPONSE = {
+    "data": {},
+    "errors": [
+        {
+            "message": "invalid format",
+            "path": [
+                "variables",
+                "id"
+            ]
+        }
+    ]
+}
+
+FETCH_USERS_RESPONSE = {
+    "data": {
+        "tdrUsersSearch": {
+            "results": [TAEGIS_USER],
+        }
+    }
+}
+
+INVESTIGATION_ARCHIVE_RESPONSE = {
+    "data": {
+        "archiveInvestigation": {
+            "id": TAEGIS_INVESTIGATION["id"],
+        }
+    }
+}
+
+INVESTIGATION_ARCHIVE_ALREADY_COMPLETE = {
+    "data": {},
+    "errors": [
+        {
+            "message": "sql: no rows in result set"
+        }
+    ]
+}
+
+INVESTIGATION_NOT_ARCHIVED_RESPONSE = {
+    'data': None, 'errors': [{'Offset': 182}]
+}
+
+INVESTIGATION_UNARCHIVE_RESPONSE = {
+    "data": {
+        "unArchiveInvestigation": {
+            "id": TAEGIS_INVESTIGATION["id"],
         }
     }
 }

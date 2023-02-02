@@ -1,6 +1,8 @@
 Use the Microsoft Teams integration to send messages and notifications to your team members and create meetings.
 This integration was integrated and tested with version 1.0 of Microsoft Teams.
 
+**Note:** For use cases where it is only need to send messages to a specific channel, we recommend checking the [Microsoft Teams via Webhook Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams-via-webhook), which has a simpler setup.
+
 ## Integration Architecture
 Data is passed between Microsoft Teams and Cortex XSOAR through the bot that you will configure in Microsoft Teams. A webhook (that you will configure) receives the data from Teams and passes it to the messaging endpoint. The web server on which the integration runs in Cortex XSOAR listens to the messaging endpoint and processes the data from Teams. You can use an engine for communication between Teams and the Cortex XSOAR server. In order to mirror messages from Teams to Cortex XSOAR, the bot must be mentioned, using the @ symbol, in the message.
 - *Note* - In order to avoid mentioning the bot, if this was previously configured without adding the Bot ID, repeat the authentication flow and pay particular attention to the following steps:
@@ -269,6 +271,10 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
 4. In the search box, type the name of the team to which to add the bot.
 5. Click **Set up** and configure the new app.
 
+
+## Known Limitations
+---
+In some cases, you might encounter a problem, where no communication is created between Teams and the messaging endpoint, when adding a bot to the team. You can workaround this problem by adding any member to the team the bot was added to. It's supposed to trigger a communication and solve the issue.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

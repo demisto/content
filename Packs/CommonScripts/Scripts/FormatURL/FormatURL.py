@@ -38,6 +38,14 @@ class URLCheck(object):
     url_code_points = ("!", "$", "&", "\"", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "=", "?", "@",
                             "_", "~")
 
+    bracket_pairs = {
+        '{': '}',
+        '(': ')',
+        '[': ']',
+        '"': '"',
+        '\'': '\'',
+    }
+
     def __init__(self, original_url: str):
         """
         Args:
@@ -63,6 +71,7 @@ class URLCheck(object):
         self.output = ''
 
         self.inside_brackets = False
+        self.opening_bracket = ''
         self.port = False
         self.query = False
         self.fragment = False
@@ -392,7 +401,30 @@ class URLCheck(object):
                 index += 1
 
         elif char in self.brackets:
-            return len(self.modified_url), part
+            # char is a type of bracket or quotation mark
+
+            if index == len(self.modified_url) - 1 and not self.inside_brackets:
+                # Edge case of a bracket or quote at the end of the URL but not part of it
+                return len(self.modified_url), part
+
+            elif self.inside_brackets and char == self.bracket_pairs[self.opening_bracket]:
+                # If the char is a closing bracket check that it matches the opening one.
+                self.inside_brackets = False
+                self.output += char
+                part += char
+                index += 1
+
+            elif char in self.bracket_pairs:
+                # If the char is an opening bracket set `inside_brackets` flag to True
+                self.inside_brackets = True
+                self.opening_bracket = char
+                self.output += char
+                part += char
+                index += 1
+
+            else:
+                # The char is a closing bracket but there was no opening one.
+                return len(self.modified_url), part
 
         elif char == '\\':
             # Edge case of the url ending with quotes and an escape char before them
@@ -486,23 +518,16 @@ class URLCheck(object):
         Will remove all leading chars of the following ("\"", "'", "[", "]", "{", "}", "(", ")", ",")
         from the URL.
         """
-        bracket_pairs = {
-            '{': '}',
-            '(': ')',
-            '[': ']',
-            '"': '"',
-            '\'': '\'',
-        }
 
-        beggining = 0
+        beginning = 0
         end = -1
 
         in_brackets = True
 
         while in_brackets:
             try:
-                if bracket_pairs[self.modified_url[beggining]] == self.modified_url[end]:
-                    beggining += 1
+                if self.bracket_pairs[self.modified_url[beginning]] == self.modified_url[end]:
+                    beginning += 1
                     end -= 1
 
                 else:
@@ -511,14 +536,14 @@ class URLCheck(object):
             except KeyError:
                 in_brackets = False
 
-        while self.modified_url[beggining] in self.brackets:
-            beggining += 1
+        while self.modified_url[beginning] in self.brackets:
+            beginning += 1
 
         if end == -1:
-            self.modified_url = self.modified_url[beggining:]
+            self.modified_url = self.modified_url[beginning:]
 
         else:
-            self.modified_url = self.modified_url[beggining:end + 1]
+            self.modified_url = self.modified_url[beginning:end + 1]
 
 
 class URLFormatter(object):
@@ -526,7 +551,8 @@ class URLFormatter(object):
     # URL Security Wrappers
     ATP_regex = re.compile('https://.*?\.safelinks\.protection\.outlook\.com/\?url=(.*?)&', re.I)
     fireeye_regex = re.compile('.*?fireeye[.]com.*?&u=(.*)', re.I)
-    proofpoint_regex = re.compile('(?:v[1-2]/(?:url\?u=)?(.*?)(?:&amp|&d|$)|v3/__(.*?)(?:_|$))', re.I)
+    proofpoint_regex = re.compile('(?i)(?:proofpoint.com/v[1-2]/(?:url\?u=)?(.*?)(?:&amp|&d|$)|'
+                                  'urldefense[.]\w{2,3}/v3/__(.*?)(?:__;|$))')
     trendmicro_regex = re.compile('https://.*?trendmicro\.com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&', re.I)
 
     # Scheme slash fixer
@@ -629,6 +655,7 @@ class URLFormatter(object):
 
         schemas = re.compile("(meow|hxxp)", re.IGNORECASE)
         url = url.replace("[.]", ".")
+        url = url.replace("[:]", ":")
         url = re.sub(schemas, "http", url)
 
         def fix_scheme(match: Match) -> str:

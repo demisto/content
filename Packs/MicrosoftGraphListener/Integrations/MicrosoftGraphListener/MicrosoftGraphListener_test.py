@@ -4,6 +4,7 @@ import json
 from MicrosoftGraphListener import MsGraphClient
 from MicrosoftGraphListener import add_second_to_str_date
 import requests_mock
+from unittest.mock import mock_open
 from CommonServerPython import *
 
 
@@ -948,3 +949,56 @@ class TestCommandsWithLargeAttachments:
         assert ec['MicrosoftGraph.Draft(val.ID && val.ID == obj.ID)']['ID'] == '123'
         assert create_draft_mail_mocker.called
         assert create_draft_mail_mocker.last_request.json()
+
+    @pytest.mark.parametrize('command_args, expected_http_params',
+                             [(
+                                 {
+                                     "exclude_ids": [], "last_fetch": "2022-12-31T09:38:15Z", "folder_id": "XYZ",
+                                     "overwrite_rate_limit_retry": True, "fetch_mail_body_as_text": True
+                                 },
+                                 {
+                                     "method": 'GET',
+                                     "url_suffix":
+                                     "/users/dummy@mailbox.com/mailFolders/XYZ/messages",
+                                         "params": {
+                                             "$filter": "receivedDateTime ge 2022-12-31T09:38:16Z",
+                                             "$orderby": "receivedDateTime asc",
+                                             "select": "*",
+                                             "$top": 50,
+                                         },
+                                     "headers": {"Prefer": "outlook.body-content-type='text'"},
+                                     "overwrite_rate_limit_retry": True,
+                                 }
+                             ),
+                             ])
+    def test_get_emails(self, mocker, command_args: dict, expected_http_params: dict):
+        """
+        Given: Command arguments and expected http request parameters.
+        When: Running the `get_emails` command.
+        Then: Ensure the expected http params are sent to the API.
+        """
+        client = oproxy_client()
+        http_mock = mocker.patch.object(client.ms_client, 'http_request')
+        client.get_emails(**command_args)
+
+        http_mock.assert_called_with(**expected_http_params)
+
+
+def test_special_chars_in_attachment_name(mocker):
+    """
+    Given: A attachment file name containing special characters.
+    When: Running the `_get_email_attachments` function.
+    Then: Ensure the file name was decoded correctly.
+    """
+    client = oproxy_client()
+    attachment_file_name = 'Moving_Form_ชั้น_26_แผงหลัง.xlsx'
+    mocker.patch.object(client.ms_client, 'http_request', return_value={'value': [{
+        '@odata.type': '#microsoft.graph.fileAttachment',
+        'name': attachment_file_name,
+        'contentBytes': 'contentBytes'}]})
+    mocker.patch.object(demisto, 'uniqueFile')
+    mocker.patch("builtins.open", mock_open())
+
+    res = client._get_email_attachments('message_id')
+
+    assert res[0].get('name') == attachment_file_name

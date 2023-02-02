@@ -54,7 +54,6 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.IMAGE,
     FileType.DESCRIPTION,
     FileType.METADATA,
-    FileType.RELEASE_NOTES_CONFIG,
     FileType.INCIDENT_TYPE,
     FileType.INCIDENT_FIELD,
     FileType.INDICATOR_FIELD,
@@ -64,6 +63,7 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.REPORT,
     FileType.PARSING_RULE,
     FileType.MODELING_RULE,
+    FileType.MODELING_RULE_TEST_DATA,
     FileType.MODELING_RULE_XIF,
     FileType.CORRELATION_RULE,
     FileType.XSIAM_DASHBOARD,
@@ -76,7 +76,6 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.PRE_PROCESS_RULES,
     FileType.JOB,
     FileType.CONNECTION,
-    FileType.RELEASE_NOTES_CONFIG,
     FileType.XSOAR_CONFIG,
     FileType.AUTHOR_IMAGE,
     FileType.CHANGELOG,
@@ -106,6 +105,20 @@ IGNORED_FILE_TYPES: set[FileType] = {
     FileType.XDRC_TEMPLATE_YML,
     FileType.XSIAM_DASHBOARD_IMAGE,
     FileType.XSIAM_REPORT_IMAGE,
+    FileType.PIPFILE,
+    FileType.PIPFILE_LOCK,
+    FileType.TXT,
+    FileType.PYLINTRC,
+    FileType.INI,
+    FileType.PEM,
+    FileType.LICENSE,
 }
 
 NON_CONTENT_FOLDERS: set[str] = set(TESTS_AND_DOC_DIRECTORIES) | {SAMPLES_DIR}
+
+MODELING_RULE_COMPONENT_FILES: set[FileType] = {
+    FileType.MODELING_RULE,  # the modeling rule yml file
+    FileType.MODELING_RULE_XIF,
+    FileType.MODELING_RULE_SCHEMA,
+    FileType.MODELING_RULE_TEST_DATA,
+}

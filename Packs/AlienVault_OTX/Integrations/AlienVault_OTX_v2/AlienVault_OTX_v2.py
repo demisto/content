@@ -872,7 +872,7 @@ def main():
     proxy = params.get('proxy')
     default_threshold = int(params.get('default_threshold', 2))
     max_indicator_relationships = arg_to_number(params.get('max_indicator_relationships', 0))
-    token = params.get('api_token')
+    token = params.get('credentials', {}).get('password', '') or params.get('api_token', '')
     reliability = params.get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.C
     if DBotScoreReliability.is_valid_type(reliability):

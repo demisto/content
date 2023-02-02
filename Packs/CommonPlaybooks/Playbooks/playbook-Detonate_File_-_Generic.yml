@@ -708,9 +708,9 @@ tasks:
     task:
       id: eacb2317-3f4c-4677-81ea-2870527bab0d
       version: -1
-      name: Detonate File - CrowdStrike Falcon X
+      name: Detonate File - CrowdStrike Falcon Intelligence Sandbox
       description: |-
-        Detonates a File using CrowdStrike Falcon X sandbox.
+        Detonates a File using CrowdStrike Falcon Intelligence Sandbox sandbox.
         Accepted file formats:
         Portable executables: .exe, .scr, .pif, .dll, .com, .cpl, etc.
         Office documents: .doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub
@@ -731,7 +731,7 @@ tasks:
         Python: .py
         Linux ELF executables
         Email files: MIME RFC 822 .eml, Outlook .msg.
-      playbookName: Detonate File - CrowdStrike Falcon X
+      playbookName: Detonate File - CrowdStrike Falcon Intelligence Sandbox
       type: playbook
       iscommand: false
       brand: ""
