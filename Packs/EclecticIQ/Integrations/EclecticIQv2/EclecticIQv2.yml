@@ -12,9 +12,11 @@ configuration:
   type: 0
   required: true
 - display: API Key
+  displaypassword: API Key
   name: apikey
   type: 9
   required: true
+  hiddenusername: true
 - display: Use system proxy settings
   name: proxy
   type: 8
