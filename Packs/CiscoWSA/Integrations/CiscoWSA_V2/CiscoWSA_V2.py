@@ -867,7 +867,7 @@ def access_policy_update_command(
     )
 
     if response.status_code == 204:
-        readable_output = f'"{policy_name}" access policy updated successfully.'
+        readable_output = f'Updated "{policy_name}" access policy successfully.'
     else:
         raise DemistoException(response.json())
 
@@ -1103,7 +1103,10 @@ def access_policy_delete_command(
     response = client.access_policy_delete_request(policy_names)
 
     if response.status_code == 204:
-        readable_output = f"{policy_names} access policy deleted successfully."
+        readable_output = (
+            f'Access polic{"ies" if len(policy_names) > 1 else "y"} '
+            f'"{", ".join(policy_names)}" deleted successfully.'
+        )
     else:
         raise DemistoException(response.json())
 
@@ -1368,7 +1371,9 @@ def identification_profiles_update_command(
     )
 
     if response.status_code == 204:
-        readable_output = f'Updated identification profile "{profile_name}" successfully.'
+        readable_output = (
+            f'Updated identification profile "{profile_name}" successfully.'
+        )
     else:
         raise DemistoException(response.json())
 
@@ -1393,7 +1398,9 @@ def identification_profiles_delete_command(
     response = client.identification_profiles_delete_request(profile_names)
 
     if response.status_code == 204:
-        return CommandResults(readable_output=f"Deleted identification profiles successfully.")
+        return CommandResults(
+            readable_output=f"Deleted identification profiles successfully."
+        )
     elif response.status_code == 207:
         response = response.json()
         command_results_list = []

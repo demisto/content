@@ -49,6 +49,169 @@ def mock_client():
     "response_file_name,command_arguments,expected_outputs_len",
     [
         (
+            "access_policy_list.json",
+            {
+                "policy_names": "test,test2",
+            },
+            2,
+        ),
+        (
+            "access_policy_list.json",
+            {
+                "page": 1,
+                "page_size": 2,
+            },
+            2,
+        ),
+        (
+            "access_policy_list.json",
+            {
+                "limit": 2,
+            },
+            2,
+        ),
+    ],
+)
+def test_access_policy_list_command(
+    response_file_name,
+    command_arguments,
+    expected_outputs_len,
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Access policies list.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-access-policy-list command called.
+    Then:
+    - Ensure outputs prefix is correct.
+    - Ensure number of items is correct.
+    - Validate outputs' fields.
+    """
+    from CiscoWSA_V2 import access_policy_list_command
+
+    mock_response = load_mock_response(response_file_name)
+    url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
+    requests_mock.get(url=url, json=mock_response)
+
+    result = access_policy_list_command(mock_client, command_arguments)
+
+    assert result.outputs_prefix == "CiscoWSA.AccessPolicy"
+    assert len(result.outputs) == expected_outputs_len
+
+
+def test_access_policy_create_command(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Access policies create.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-access-policy-create command called.
+    Then:
+    - Ensure outputs prefix is correct.
+    - Ensure number of items is correct.
+    - Validate outputs' fields.
+    """
+    from CiscoWSA_V2 import access_policy_create_command
+
+    url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
+    requests_mock.post(url=url, status_code=204)
+    result = access_policy_create_command(
+        mock_client,
+        {
+            "policy_name": "test",
+            "policy_status": "enable",
+            "identification_profile_name": "global_identification_profile",
+            "policy_order": "1",
+            "policy_description": "test",
+        },
+    )
+
+    assert result.readable_output == 'Created "test" access policy successfully.'
+
+
+def test_access_policy_update_command(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Access policies update.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-access-policy-update command called.
+    Then:
+    - Ensure outputs prefix is correct.
+    - Ensure number of items is correct.
+    - Validate outputs' fields.
+    """
+    from CiscoWSA_V2 import access_policy_update_command
+
+    url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
+    requests_mock.put(url=url, status_code=204)
+    result = access_policy_update_command(
+        mock_client,
+        {
+            "policy_name": "test",
+            "new_policy_name": "test",
+            "policy_status": "enable",
+            "identification_profile_name": "global_identification_profile",
+            "policy_order": "2",
+            "policy_description": "test description",
+        },
+    )
+
+    assert result.readable_output == 'Updated "test" access policy successfully.'
+
+
+def test_access_policy_delete_command(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Access policies delete.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-access-policy-delete command called.
+    Then:
+    - Ensure outputs prefix is correct.
+    - Ensure number of items is correct.
+    - Validate outputs' fields.
+    """
+    from CiscoWSA_V2 import access_policy_delete_command
+
+    url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
+    requests_mock.delete(url=url, status_code=204)
+    result = access_policy_delete_command(
+        mock_client,
+        {
+            "policy_names": "test,test2",
+        },
+    )
+
+    assert (
+        result.readable_output == 'Access policies "test, test2" deleted successfully.'
+    )
+
+
+@pytest.mark.parametrize(
+    "response_file_name,command_arguments,expected_outputs_len",
+    [
+        (
             "domain_map_list.json",
             {
                 "domain_names": "test.com",
@@ -285,12 +448,14 @@ def test_identification_profiles_create_command(
             "profile_name": "test",
             "status": "enable",
             "order": 1,
-            "description": 'test',
-            "protocols": 'HTTPS',
+            "description": "test",
+            "protocols": "HTTPS",
         },
     )
 
-    assert result.readable_output == 'Created identification profile "test" successfully.'
+    assert (
+        result.readable_output == 'Created identification profile "test" successfully.'
+    )
 
 
 def test_identification_profiles_update_command(
@@ -319,12 +484,14 @@ def test_identification_profiles_update_command(
             "profile_name": "test",
             "new_profile_name": "test1",
             "order": 2,
-            "description": 'test description',
-            "protocols": 'SOCKS',
+            "description": "test description",
+            "protocols": "SOCKS",
         },
     )
 
-    assert result.readable_output == 'Updated identification profile "test" successfully.'
+    assert (
+        result.readable_output == 'Updated identification profile "test" successfully.'
+    )
 
 
 def test_identification_profiles_delete_command(
@@ -354,7 +521,7 @@ def test_identification_profiles_delete_command(
         },
     )
 
-    assert result.readable_output == 'Deleted identification profiles successfully.'
+    assert result.readable_output == "Deleted identification profiles successfully."
 
 
 def test_url_categories_list_command(
@@ -380,14 +547,11 @@ def test_url_categories_list_command(
     url = f"{BASE_URL}/{V3_PREFIX}/generic_resources/url_categories"
     requests_mock.get(url=url, json=mock_response)
 
-    result = url_categories_list_command(
-        mock_client,
-        {}
-    )
+    result = url_categories_list_command(mock_client, {})
 
     assert result.outputs_prefix == "CiscoWSA.UrlCategory"
-    assert len(result.outputs['predefined']) == 106
-    assert len(result.outputs['custom']) == 1
+    assert len(result.outputs["predefined"]) == 106
+    assert len(result.outputs["custom"]) == 1
 
 
 """ TESTING HELPER FUNCTIONS"""
@@ -397,20 +561,20 @@ def test_url_categories_list_command(
     "response,arguments,paginated_response",
     [
         (
-            ['test.com', 'test1.com', 'test2.com', 'test3.com', 'test4.com'],
+            ["test.com", "test1.com", "test2.com", "test3.com", "test4.com"],
             {
                 "page": 2,
                 "page_size": 2,
             },
-            ['test2.com', 'test3.com']
+            ["test2.com", "test3.com"],
         ),
-            (
-            ['test.com', 'test1.com', 'test2.com', 'test3.com', 'test4.com'],
+        (
+            ["test.com", "test1.com", "test2.com", "test3.com", "test4.com"],
             {
                 "limit": 3,
             },
-            ['test.com', 'test1.com', 'test2.com']
-        )
+            ["test.com", "test1.com", "test2.com"],
+        ),
     ],
 )
 def test_pagination_function(response, arguments, paginated_response):
