@@ -23,8 +23,7 @@ fi
 # Helper functions
 
 function get_branch_pipelines(){
-  local resp=$1
-  echo $(echo "${resp}" | jq -c '.[]')
+  echo $(echo "${$1}" | jq -c '.[]')
 }
 
 function stop_pipeline_by_id(){
@@ -35,7 +34,7 @@ function stop_pipeline_by_id(){
 RESP=$(curl -v -H "Content-Type: application/json" -H "PRIVATE-TOKEN: $GITLAB_CANCEL_TOKEN" $CONTENT_PIPELINES_API_URL\?ref\=$CI_COMMIT_BRANCH)
 if [ "$RESP" != "[]" ]; then
   echo "found resp"
-  PIPELINES=$(get_branch_pipelines RESP)
+  PIPELINES=$(get_branch_pipelines "$RESP")
   echo "$PIPELINES"
   for pipeline in ${PIPELINES}
   do
@@ -45,7 +44,7 @@ if [ "$RESP" != "[]" ]; then
     id=$(echo $pipeline | jq -r ".id")
     if [ "$status" = "running" ] && [ "$source" = "push" ] && [ "$id" != $CI_PIPELINE_ID ]; then
       echo "Found running pipeline with id $id, and status $status. Stoping it."
-      stop_pipeline_by_id id
+      stop_pipeline_by_id "$id"
     fi
   done
 fi
