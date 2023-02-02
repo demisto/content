@@ -8,10 +8,7 @@ from Tests.configure_and_test_integration_instances import MARKET_PLACE_CONFIGUR
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
-from Tests.Marketplace.marketplace_constants import GCPConfig
-
-XSIAM = "marketplacev2"
-XSOAR = "xsoar"
+from Tests.Marketplace.marketplace_constants import GCPConfig, XSIAM_MP
 
 
 def options_handler():
@@ -49,10 +46,11 @@ def install_packs_from_content_packs_to_install_path(servers, pack_ids, hostname
     install_packs_one_by_one = False
 
     for server in servers:
-        if server.marketplace_tag_name == XSIAM:
+        if server.marketplace_tag_name == XSIAM_MP:
             install_packs_one_by_one = True
         logging.info(f'Starting to install all content packs in {hostname if hostname else server.internal_ip}')
-        _, success = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname, install_packs_one_by_one)
+        _, success = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname,
+                                                                     install_packs_one_by_one)
         if not success:
             raise Exception('Failed to search and install packs and their dependencies.')
 
@@ -140,7 +138,7 @@ def main():
         branch_name: str = options.branch
         build_number: str = options.build_number
 
-        if options.ami_env == XSIAM:
+        if options.ami_env == "XSIAM":
             xsiam_configure_and_install_flow(options, branch_name, build_number)
         else:
             xsoar_configure_and_install_flow(options, branch_name, build_number)
