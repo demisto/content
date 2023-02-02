@@ -11,7 +11,7 @@ You need to configure Corelight Sensor to forward Zeek Syslog messages.
     * Under **Syslog Severity**- Select the severity for the logs you will sent, e.g., Info.
 3. Open the **Maintain** tab.
 4. Under **Performance Monitoring**, enable the **Reporting to Syslog (UDP-Only)** option and set a time interval (e.g., 1min).
-5. Under "Performance Monitoring", enable the "Reporting Through Zeek Log Streams" option and set a time interval (E.g. 1min).
+5. Under **Performance Monitoring**, enable the **Reporting Through Zeek Log Streams** option and set a time interval (e.g., 1min).
 ## Collect Events from Vendor
 
 In order to use the collector, use the [Broker VM](#broker-vm) option.
