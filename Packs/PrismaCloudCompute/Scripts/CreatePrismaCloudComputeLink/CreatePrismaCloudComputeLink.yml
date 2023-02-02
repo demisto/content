@@ -1,21 +1,24 @@
 args:
 - name: type
   required: true
+  description: The type of WaaS alert.
 - name: imageName
   required: true
+  description: The image name to investigate alerts for.
 commonfields:
-  id: 1c969de3-c684-4977-872b-295ad7be3f0b
+  id: CreatePrismaCloudComputeLink
   version: -1
-dockerimage: demisto/python3:3.10.5.31928
+dockerimage: demisto/python3:3.10.9.46032
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: CreatePrismaCloudComputeLink
-pswd: ''
 runas: DBotWeakRole
 runonce: false
 script: ''
+comment: This script creates a link back to the Prisma Cloud Compute instance.
 scripttarget: 0
 subtype: python3
 tags: []
 type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

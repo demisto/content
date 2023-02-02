@@ -1,17 +1,17 @@
 args:
 - name: Indicators
   required: true
+  description: The csv list of indicators to tag.
 - name: Tags
   required: true
+  description: The tags to add to the indicators.
 commonfields:
-  id: 5adcc0b4-c7db-4579-8049-4857568bfb4f
+  id: TagIndicatorButton
   version: -1
-dockerimage: demisto/python3:3.10.5.31797
+dockerimage: demisto/python3:3.10.9.46032
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
+comment: This is a wrapper around the setIndicators script
 name: TagIndicatorButton
-pswd: ''
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -19,3 +19,6 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

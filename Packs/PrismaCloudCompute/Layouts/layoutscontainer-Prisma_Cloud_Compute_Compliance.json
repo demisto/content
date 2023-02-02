@@ -2,7 +2,6 @@
     "id": "Prisma Cloud Compute Compliance",
     "group": "incident",
     "name": "Prisma Cloud Compute Compliance Incident",
-    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {
@@ -216,5 +215,8 @@
             }
         ]
     },
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ],
+    "description": ""
 }

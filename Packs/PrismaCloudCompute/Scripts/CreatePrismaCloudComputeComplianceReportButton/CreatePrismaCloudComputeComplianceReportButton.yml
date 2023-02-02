@@ -2,24 +2,27 @@ args:
 - isArray: true
   name: table
   required: true
+  description: The table of data.
 - name: title
   required: true
+  description: The title of the report.
 - description: The to email
   name: to
   required: true
 commonfields:
-  id: 27a08129-1f06-4b12-8a24-e585fc2d4fd8
+  id: CreatePrismaCloudComputeComplianceReportButton
   version: -1
-dockerimage: demisto/python3:3.10.5.31797
+dockerimage: demisto/python3:3.10.9.46032
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: CreatePrismaCloudComputeComplianceReportButton
-pswd: ''
 runas: DBotWeakRole
 runonce: false
 script: ''
+comment: Generate a compliance report via button.
 scripttarget: 0
 subtype: python3
 tags: []
 type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
