@@ -695,16 +695,17 @@ def build_xpath_filter(rule_name: str = None, filters: dict = None) -> str:
     xpath_prefix = ''
     if rule_name:
         xpath_prefix = f"@name = '{rule_name}'"
-    for key, value in filters.items():
-        if key in RULE_FILTERS:
-            if xpath_prefix:
-                xpath_prefix += ' and '
-            xpath_prefix += f"({key} = '{value}')"
-        if key == 'tags':
-            for tag in value:
+    if filters:
+        for key, value in filters.items():
+            if key in RULE_FILTERS:
                 if xpath_prefix:
                     xpath_prefix += ' and '
-                xpath_prefix += f"(tag/member = '{tag}')"
+                xpath_prefix += f"({key} = '{value}')"
+            if key == 'tags':
+                for tag in value:
+                    if xpath_prefix:
+                        xpath_prefix += ' and '
+                    xpath_prefix += f"(tag/member = '{tag}')"
     return xpath_prefix
 
 
