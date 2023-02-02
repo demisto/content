@@ -11,6 +11,8 @@ from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.Marketplace.marketplace_constants import GCPConfig
 
+XSIAM = "marketplacev2"
+XSOAR = "xsoar"
 
 def options_handler():
     # disable-secrets-detection-start
@@ -28,8 +30,6 @@ def options_handler():
     parser.add_argument('--cloud_machine', help='cloud machine to use, if it is cloud build.')
     parser.add_argument('--cloud_servers_path', help='Path to the secret cloud server metadata file.')
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.')
-    parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
-                        type=str2bool, default=False, required=True)
     parser.add_argument('--cloud_servers_api_keys', help='Path to the file with cloud Servers api keys.')
     options = parser.parse_args()
     # disable-secrets-detection-end
@@ -46,51 +46,15 @@ def install_packs_from_content_packs_to_install_path(servers, pack_ids, hostname
         pack_ids: the pack IDs to install.
         servers: XSIAM or XSOAR Servers to install packs on it.
     """
+    install_packs_one_by_one = False
+
     for server in servers:
+        if server.marketplace_tag_name == XSIAM:
+            install_packs_one_by_one = True
         logging.info(f'Starting to install all content packs in {hostname if hostname else server.internal_ip}')
-        _, success = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname)
+        _, success = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname, install_packs_one_by_one)
         if not success:
             raise Exception('Failed to search and install packs and their dependencies.')
-
-
-def xsoar_configure_and_install_all_packs(options, branch_name: str, build_number: str):
-    """
-    Args:
-        options: script arguments.
-        branch_name(str): name of the current branch.
-        build_number(str): number of the current build flow
-    """
-    # Get the host by the ami env
-    server_to_port_mapping, server_version = XSOARBuild.get_servers(ami_env=options.ami_env)
-
-    logging.info('Retrieving the credentials for Cortex XSOAR server')
-    secret_conf_file = get_json(file_path=options.secret)
-    username: str = secret_conf_file.get('username')
-    password: str = secret_conf_file.get('userPassword')
-
-    # Configure the Servers
-    for server_url, port in server_to_port_mapping.items():
-        server = XSOARServer(internal_ip=server_url, port=port, user_name=username, password=password)
-        logging.info(f'Adding Marketplace configuration to {server_url}')
-        error_msg: str = 'Failed to set marketplace configuration.'
-        server.add_server_configuration(config_dict=MARKET_PLACE_CONFIGURATION, error_msg=error_msg)
-        XSOARBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
-
-        # Acquire the server's host and install all content packs (one threaded execution)
-        logging.info(f'Starting to install all content packs in {server_url}')
-        server_host: str = server.client.api_client.configuration.host
-        success_flag = install_all_content_packs_from_build_bucket(
-            client=server.client, host=server_host, server_version=server_version,
-            bucket_packs_root_path=GCPConfig.BUILD_BUCKET_PACKS_ROOT_PATH.format(branch=branch_name,
-                                                                                 build=build_number,
-                                                                                 marketplace='xsoar'),
-            service_account=options.service_account, extract_destination_path=options.extract_path
-        )
-        if success_flag:
-            logging.success(f'Finished installing all content packs in {server_url}')
-        else:
-            logging.error('Failed to install all packs.')
-            sys.exit(1)
 
 
 def xsoar_configure_and_install_flow(options, branch_name: str, build_number: str):
@@ -176,10 +140,8 @@ def main():
         branch_name: str = options.branch
         build_number: str = options.build_number
 
-        if options.ami_env == "XSIAM":
+        if options.ami_env == XSIAM:
             xsiam_configure_and_install_flow(options, branch_name, build_number)
-        elif options.override_all_packs:
-            xsoar_configure_and_install_all_packs(options, branch_name, build_number)
         else:
             xsoar_configure_and_install_flow(options, branch_name, build_number)
 

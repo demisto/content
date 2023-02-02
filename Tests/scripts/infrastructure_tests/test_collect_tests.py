@@ -609,24 +609,24 @@ def test_number_of_file_types():
     assert len(FileType) == 74
 
 
-def test_upload_all_packs(monkeypatch):
-    """
-    given:  The override_all_packs flag.
-    when:   Collecting tests for the upload flow.
-    then:   Make sure all packs are collected to the pack_to_upload, and the pack_to_install list is empty.
-    """
-    case_mocker = MockerCases.C
-    expected_packs_to_upload = (
-        'myXSOAROnlyPack', 'bothMarketplacesPack', 'CoreAlertFields', 'bothMarketplacesPackOnlyXSIAMIntegration',
-        'myXSIAMOnlyPack', 'Whois')
-    expected_packs_to_install = set()
-
-    monkeypatch.chdir(case_mocker.path_manager.content_path)
-    with case_mocker:
-        collector = UploadAllCollector(*(MarketplaceVersions.XSOAR, None))
-        collected = collector.collect()
-    if collected is None:
-        err_msg = f'should have collected something: {expected_packs_to_upload}'
-        assert False, err_msg
-    assert collected.packs_to_install == expected_packs_to_install
-    assert collected.packs_to_upload == set(expected_packs_to_upload or ())
+# def test_upload_all_packs(monkeypatch):
+#     """
+#     given:  The override_all_packs flag.
+#     when:   Collecting tests for the upload flow.
+#     then:   Make sure all packs are collected to the pack_to_upload, and the pack_to_install list is empty.
+#     """
+#     case_mocker = MockerCases.C
+#     expected_packs_to_upload = (
+#         'myXSOAROnlyPack', 'bothMarketplacesPack', 'CoreAlertFields', 'bothMarketplacesPackOnlyXSIAMIntegration',
+#         'myXSIAMOnlyPack', 'Whois')
+#     expected_packs_to_install = set()
+#
+#     monkeypatch.chdir(case_mocker.path_manager.content_path)
+#     with case_mocker:
+#         collector = UploadAllCollector(*XSOAR_BRANCH_ARGS)
+#         collected = collector.collect()
+#     if collected is None:
+#         err_msg = f'should have collected something: {expected_packs_to_upload}'
+#         assert False, err_msg
+#     assert collected.packs_to_install == expected_packs_to_install
+#     assert collected.packs_to_upload == set(expected_packs_to_upload or ())

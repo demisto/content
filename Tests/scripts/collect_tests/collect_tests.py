@@ -423,7 +423,7 @@ class TestCollector(ABC):
             only_to_install=True,
         )
 
-    def _collect_all_marketplace_compatible_packs(self, only_to_upload=False) -> Optional[CollectionResult]:
+    def _collect_all_marketplace_compatible_packs(self, is_nightly) -> Optional[CollectionResult]:
         result = []
         for pack_metadata in PACK_MANAGER.iter_pack_metadata():
             try:
@@ -432,8 +432,7 @@ class TestCollector(ABC):
                     reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
                     reason_description=self.marketplace.value,
                     allow_incompatible_marketplace=False,
-                    is_nightly=True,
-                    collect_only_to_upload=only_to_upload
+                    is_nightly=is_nightly,
                 ))
             except (NothingToCollectException, NonXsoarSupportedPackException) as e:
                 logger.debug(str(e))
@@ -505,9 +504,9 @@ class TestCollector(ABC):
             allow_incompatible_marketplace: bool = False,
             is_nightly: bool = False,
             only_to_install: bool = False,
-            collect_only_to_upload: bool = False,
     ) -> Optional[CollectionResult]:
         pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
+        collect_only_to_upload: bool = False
 
         try:
             self._validate_content_item_compatibility(pack_metadata, is_integration=False)
@@ -1101,7 +1100,7 @@ class NightlyTestCollector(TestCollector, ABC):
 
 class UploadAllCollector(TestCollector):
     def _collect(self) -> Optional[CollectionResult]:
-        return self._collect_all_marketplace_compatible_packs(only_to_upload=True)
+        return self._collect_all_marketplace_compatible_packs(is_nightly=False)
 
 
 class XSIAMNightlyTestCollector(NightlyTestCollector):
@@ -1191,7 +1190,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
     def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((
             self._id_set_tests_matching_marketplace_value(),
-            self._collect_all_marketplace_compatible_packs(),
+            self._collect_all_marketplace_compatible_packs(is_nightly=True),
             self._collect_packs_of_content_matching_marketplace_value(),
             self._collect_modeling_rule_packs(),
             self.sanity_tests,  # XSIAM nightly always collects its sanity test(s)
@@ -1205,7 +1204,7 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
     def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((
             self._id_set_tests_matching_marketplace_value(),
-            self._collect_all_marketplace_compatible_packs(),
+            self._collect_all_marketplace_compatible_packs(is_nightly=True),
         ))
 
 
@@ -1261,7 +1260,7 @@ if __name__ == '__main__':
                         default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
     parser.add_argument('--graph', '-g', type=str2bool, help='Should use graph', default=False, required=False)
-    parser.add_argument('--override_all_packs', '-a', type=str2bool, help='Upload all packs', default=False,
+    parser.add_argument('--override_all_packs', '-a', type=str2bool, help='Collect all packs if override upload', default=False,
                         required=False)
     args = parser.parse_args()
     args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())
@@ -1281,7 +1280,7 @@ if __name__ == '__main__':
 
     elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
         if args.override_all_packs:
-            collector = UploadAllCollector(marketplace, graph)
+            collector = UploadAllCollector(marketplace, service_account, graph)
         else:
             collector = UploadBranchCollector(branch_name, marketplace, service_account, graph=graph)
 
