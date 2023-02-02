@@ -78,7 +78,7 @@ Create a new security rule.
 | PrismaSase.SecurityRule.to | String | Security rule to field \(destination zone\(s\)\). | 
 
 #### Command example
-```!prisma-sase-security-rule-create name="somename" action="allow"```
+```!prisma-sase-security-rule-create name="somename11" action="allow"```
 #### Context Example
 ```json
 {
@@ -98,8 +98,8 @@ Create a new security rule.
             "from": [
                 "any"
             ],
-            "id": "id",
-            "name": "somename",
+            "id": "Id",
+            "name": "somename11",
             "position": "pre",
             "service": [
                 "any"
@@ -123,7 +123,7 @@ Create a new security rule.
 >### Security Rule Created
 >|Action|Application|Category|Destination|Folder|From|Id|Name|Position|Service|Source|Source User|To|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| allow | any | any | any | Shared | any | a1f60c27-b877-4a18-b5d6-50c1c447e9c9 | somename | pre | any | any | any | any |
+>| allow | any | any | any | Shared | any | 0ea9e47c-6db2-46fe-88dc-0130fb27946c | somename11 | pre | any | any | any | any |
 
 
 ### prisma-sase-security-rule-list
@@ -192,7 +192,7 @@ Lists all security rules.
             "from": [
                 "any"
             ],
-            "id": "id",
+            "id": "Id",
             "log_setting": "Cortex Data Lake",
             "name": "Drop Traffic to Potential High Risk IP Addresses",
             "negate_destination": false,
@@ -222,7 +222,7 @@ Lists all security rules.
 >### Security Rules
 >|Id|Name|Description|Action|Destination|Folder|
 >|---|---|---|---|---|---|
->| bfc2caa7-42c4-4eb3-ae8e-0fb76ec20265 | Drop Traffic to Potential High Risk IP Addresses | Rule to block traffic to IP addresses that have recently been featured in threat activity advisories distributed by high-trust organizations | drop | panw-highrisk-ip-list | Shared |
+>| Id | Drop Traffic to Potential High Risk IP Addresses | Rule to block | drop | panw-highrisk-ip-list | Shared |
 
 
 ### prisma-sase-candidate-config-push
@@ -251,6 +251,12 @@ Push the candidate configuration.
 | --- | --- | --- |
 | PrismaSase.CandidateConfig.job_id | String | Configuration job ID. | 
 | PrismaSase.CandidateConfig.result | Boolean | The configuration push result. | 
+
+#### Command example
+```!prisma-sase-candidate-config-push folders="Mobile Users"```
+#### Human Readable Output
+
+>Waiting for all data to push for job id 201
 
 ### prisma-sase-security-rule-update
 ***
@@ -309,6 +315,56 @@ Update an existing security rule.
 | PrismaSase.SecurityRule.source_user | String | Security rule source user. | 
 | PrismaSase.SecurityRule.to | String | Security rule to field \(destination zone\(s\)\). | 
 
+#### Command example
+```!prisma-sase-security-rule-update rule_id="Id" position="pre" action="deny"```
+#### Context Example
+```json
+{
+    "PrismaSase": {
+        "SecurityRule": {
+            "action": "deny",
+            "application": [
+                "any"
+            ],
+            "category": [
+                "Moishy Api"
+            ],
+            "description": "strivhjfjfjng",
+            "destination": [
+                "any"
+            ],
+            "folder": "Shared",
+            "from": [
+                "any"
+            ],
+            "id": "Id",
+            "name": "somename",
+            "position": "pre",
+            "service": [
+                "any"
+            ],
+            "source": [
+                "any"
+            ],
+            "source_user": [
+                "any"
+            ],
+            "to": [
+                "any"
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Security Rule Updated
+>|Action|Application|Category|Description|Destination|Folder|From|Id|Name|Position|Service|Source|Source User|To|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| deny | any | test | test | any | Shared | any | Id | name | pre | any | any | any | any |
+
+
 ### prisma-sase-address-object-update
 ***
 Update an existing address object.
@@ -341,6 +397,31 @@ Update an existing address object.
 | PrismaSase.Address.type | String | Address type. | 
 | PrismaSase.Address.name | String | Address name. | 
 
+#### Command example
+```!prisma-sase-address-object-update object_id="Id" address_value="8.8.8.4/32"```
+#### Context Example
+```json
+{
+    "PrismaSase": {
+        "Address": {
+            "address_value": "8.8.8.4/32",
+            "folder": "Shared",
+            "id": "Id",
+            "name": "name",
+            "type": "ip_netmask"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Address Object updated
+>|Address Value|Folder|Id|Name|Type|
+>|---|---|---|---|---|
+>| 8.8.8.4/32 | Shared | Id | name | ip_netmask |
+
+
 ### prisma-sase-config-job-list
 ***
 Lists all configuration jobs.
@@ -354,7 +435,7 @@ Lists all configuration jobs.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | job_id | A specific config job to return. If not specified, all config jobs will be returned. | Optional | 
-| limit | The maximum number of results to return. Default is 50. Default is 200. | Optional | 
+| limit | The maximum number of results to return. Default is 50. Default is 50. | Optional | 
 | tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 
 
@@ -377,42 +458,6 @@ Lists all configuration jobs.
 | PrismaSase.ConfigJob.type_str | String | Configuration job type string. | 
 | PrismaSase.ConfigJob.uname | String | Configuration job uname. | 
 
-#### Command example
-```!prisma-sase-config-job-list limit=1```
-#### Context Example
-```json
-{
-    "PrismaSase": {
-        "ConfigJob": [
-            {
-                "description": "Remote Networks configuration pushed to cloud",
-                "end_ts": "2023-02-01 12:57:54",
-                "id": "200",
-                "job_result": "2",
-                "job_status": "2",
-                "job_type": "22",
-                "parent_id": "199",
-                "percent": "100",
-                "result_str": "OK",
-                "start_ts": "2023-02-01 12:55:31",
-                "status_str": "FIN",
-                "summary": "Configuration push finished",
-                "type_str": "CommitAll",
-                "uname": "APIGateway@ProdInternal.com"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Config Job
->|Id|Type Str|Status Str|Result Str|Start Ts|End Ts|
->|---|---|---|---|---|---|
->| 200 | CommitAll | FIN | OK | 2023-02-01 12:55:31 | 2023-02-01 12:57:54 |
-
-
 ### prisma-sase-security-rule-delete
 ***
 Delete a specific security rule.
@@ -432,6 +477,12 @@ Delete a specific security rule.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!prisma-sase-security-rule-delete rule_id="Id"```
+#### Human Readable Output
+
+>Security Rule object with id Id and name name was deleted successfully
+
 ### prisma-sase-address-object-create
 ***
 Create a new address object.
@@ -465,6 +516,31 @@ Create a new address object.
 | PrismaSase.Address.address_value | String | Address value. | 
 | PrismaSase.Address.name | String | Address name. | 
 
+#### Command example
+```!prisma-sase-address-object-create name="somename11" type="ip_netmask" address_value="8.8.8.8/32"```
+#### Context Example
+```json
+{
+    "PrismaSase": {
+        "Address": {
+            "address_value": "8.8.8.8/32",
+            "folder": "Shared",
+            "id": "id",
+            "name": "somename11",
+            "type": "ip_netmask"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Address Object Created
+>|Address Value|Folder|Id|Name|Type|
+>|---|---|---|---|---|
+>| 8.8.8.8/32 | Shared | Id | somename11 | ip_netmask |
+
+
 ### prisma-sase-address-object-delete
 ***
 Delete a specific address object.
@@ -484,6 +560,12 @@ Delete a specific address object.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!prisma-sase-address-object-delete object_id="Id"```
+#### Human Readable Output
+
+>Address object with id Id and name name was deleted successfully
+
 ### prisma-sase-address-object-list
 ***
 Lists all addresses objects.
@@ -522,11 +604,11 @@ Lists all addresses objects.
 {
     "PrismaSase": {
         "Address": {
-            "address_value": "sinkhole.paloaltonetworks.com",
-            "description": "Palo Alto Networks sinkhole",
+            "address_value": "test.com",
+            "description": "description",
             "folder": "Shared",
-            "id": "id",
-            "name": "Palo Alto Networks Sinkhole",
+            "id": "Id",
+            "name": "name",
             "type": "fqdn"
         }
     }
@@ -538,7 +620,7 @@ Lists all addresses objects.
 >### Address Objects
 >|Id|Name|Description|Type|Address Value|Tag|
 >|---|---|---|---|---|---|
->| 28f8667c-e89c-403a-aa6d-e294bd08e7ba | Palo Alto Networks Sinkhole | Palo Alto Networks sinkhole | fqdn | sinkhole.paloaltonetworks.com |  |
+>| Id | Palo Alto Networks Sinkhole | Palo Alto Networks | fqdn | test.com |  |
 
 
 ### prisma-sase-tag-list
@@ -591,7 +673,7 @@ Lists all tags.
 >### Tags
 >|Id|Name|Folder|Color|Comments|
 >|---|---|---|---|---|
->|  | Sanctioned | predefined | Olive |  |
+>| Id | test | predefined | Olive |  |
 
 
 ### prisma-sase-tag-create
@@ -624,7 +706,7 @@ Create a new tag.
 | PrismaSase.Tag.comments | String | The tag momments. | 
 
 #### Command example
-```!prisma-sase-tag-create name="somename" color="Azure Blue"```
+```!prisma-sase-tag-create name="somename11" color="Azure Blue"```
 #### Context Example
 ```json
 {
@@ -632,8 +714,8 @@ Create a new tag.
         "Tag": {
             "color": "Azure Blue",
             "folder": "Shared",
-            "id": "id",
-            "name": "somename"
+            "id": "Id",
+            "name": "somename11"
         }
     }
 }
@@ -644,7 +726,7 @@ Create a new tag.
 >### Address Object Created
 >|Color|Folder|Id|Name|
 >|---|---|---|---|
->| Azure Blue | Shared | b6d9a8d8-5b6d-470b-981f-29bb664adb92 | somename |
+>| Azure Blue | Shared | Id | somename11 |
 
 
 ### prisma-sase-tag-update
@@ -676,6 +758,30 @@ Update an existing tag.
 | PrismaSase.Tag.color | String | The tag color. | 
 | PrismaSase.Tag.comments | String | The tag comments. | 
 
+#### Command example
+```!prisma-sase-tag-update tag_id="Id" color="Black"```
+#### Context Example
+```json
+{
+    "PrismaSase": {
+        "Tag": {
+            "color": "Black",
+            "folder": "Shared",
+            "id": "Id",
+            "name": "somename"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Tag Edited
+>|Color|Folder|Id|Name|
+>|---|---|---|---|
+>| Black | Shared | Id | somename |
+
+
 ### prisma-sase-tag-delete
 ***
 Delete a specific tag.
@@ -695,6 +801,12 @@ Delete a specific tag.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!prisma-sase-tag-delete tag_id="Id"```
+#### Human Readable Output
+
+>Tag with id Id and name somename was deleted successfully
+
 ### prisma-sase-address-group-list
 ***
 Lists all address groups.
@@ -733,10 +845,10 @@ Lists all address groups.
     "PrismaSase": {
         "AddressGroup": {
             "description": "test",
-            "dynamic_filter": "'test' or 'test2",
+            "dynamic_filter": "'test' or 'test1' and 'best-practice'",
             "folder": "Shared",
-            "id": "id",
-            "name": "name"
+            "id": "Id",
+            "name": "Test"
         }
     }
 }
@@ -747,7 +859,7 @@ Lists all address groups.
 >### Address Groups
 >|Id|Name|Description|Addresses|Dynamic Filter|
 >|---|---|---|---|---|
->| 4e0ba3d6-0961-4c64-935b-2388db661af0 | Moishy_Test | test |  | 'Api test' or 'Hamuzim' and 'best-practice' |
+>| Id | Moishy_Test | test |  | 'test' or 'test1' and 'best-practice' |
 
 
 ### prisma-sase-address-group-create
@@ -782,56 +894,6 @@ Create a new address group.
 | PrismaSase.AddressGroup.addresses | String | The address group addresses. | 
 | PrismaSase.AddressGroup.dynamic_filter | String | The address group filter. | 
 
-#### Command example
-```!prisma-sase-address-group-create type="dynamic" dynamic_filter="Hamuzim" name="somename"```
-#### Context Example
-```json
-{
-    "PrismaSase": {
-        "AddressGroup": {
-            "dynamic_filter": "test",
-            "folder": "Shared",
-            "id": "id",
-            "name": "somename"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Address Group Created
->|Dynamic Filter|Folder|Id|Name|
->|---|---|---|---|
->| Hamuzim | Shared | 4ac3f38c-f75d-4fe4-9a52-37389a45edbb | somename |
-
-
-#### Command example
-```!prisma-sase-address-group-create folder="Shared" type="static" static_addresses="shachar_test" name="somename1"```
-#### Context Example
-```json
-{
-    "PrismaSase": {
-        "AddressGroup": {
-            "addresses": [
-                "test"
-            ],
-            "folder": "Shared",
-            "id": "id",
-            "name": "somename1"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Address Group Created
->|Addresses|Folder|Id|Name|
->|---|---|---|---|
->| shachar_test | Shared | e5996528-9877-4693-a4ad-99f187d46ac7 | somename1 |
-
-
 ### prisma-sase-address-group-update
 ***
 Update an existing address group.
@@ -865,6 +927,30 @@ Update an existing address group.
 | PrismaSase.AddressGroup.addresses | String | The address group addresses. | 
 | PrismaSase.AddressGroup.dynamic_filter | String | The address group filter. | 
 
+#### Command example
+```!prisma-sase-address-group-update group_id="Id" dynamic_filter="and 'test2'" overwrite="false"```
+#### Context Example
+```json
+{
+    "PrismaSase": {
+        "AddressGroup": {
+            "dynamic_filter": "test and test2",
+            "folder": "Shared",
+            "id": "Id",
+            "name": "somename"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Address Group updated
+>|Dynamic Filter|Folder|Id|Name|
+>|---|---|---|---|
+>| test and test2 | Shared | Id | somename |
+
+
 ### prisma-sase-address-group-delete
 ***
 Delete a specific address group.
@@ -884,6 +970,12 @@ Delete a specific address group.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!prisma-sase-address-group-delete group_id="Id"```
+#### Human Readable Output
+
+>Address group with id Id and name somename was deleted successfully
+
 ### prisma-sase-custom-url-category-list
 ***
 Lists all custom URL categories.
@@ -923,10 +1015,10 @@ Lists all custom URL categories.
     "PrismaSase": {
         "CustomURLCategory": {
             "folder": "Shared",
-            "id": "id",
+            "id": "Id",
             "list": [
-                "www.youtube.com",
-                "www.google.com"
+                "www.test.com",
+                "www.test2.com"
             ],
             "name": "name",
             "type": "URL List"
@@ -940,7 +1032,7 @@ Lists all custom URL categories.
 >### Custom Url Categories
 >|Id|Name|Folder|Type|List|
 >|---|---|---|---|---|
->| c36a960a-8290-4dd2-82ac-a58082a76370 | Moishy Api | Shared | URL List | www.youtube.com,<br/>www.google.com |
+>| Id | name | Shared | URL List | www.test2.com,<br/>www.test.com |
 
 
 ### prisma-sase-custom-url-category-create
@@ -975,7 +1067,7 @@ Create a new url category.
 | PrismaSase.CustomURLCategory.description | String | The URL category description. | 
 
 #### Command example
-```!prisma-sase-custom-url-category-create type="Category Match" value="low-risk" name="somename"```
+```!prisma-sase-custom-url-category-create type="Category Match" value="low-risk" name="somename11"```
 #### Context Example
 ```json
 {
@@ -986,7 +1078,7 @@ Create a new url category.
             "list": [
                 "low-risk"
             ],
-            "name": "somename",
+            "name": "somename11",
             "type": "Category Match"
         }
     }
@@ -998,7 +1090,7 @@ Create a new url category.
 >### Custom URrl Category Created
 >|Folder|Id|List|Name|Type|
 >|---|---|---|---|---|
->| Shared | 107ca93c-cc4a-4573-b453-156737cc3900 | low-risk | somename | Category Match |
+>| Shared | Id | low-risk | somename11 | Category Match |
 
 
 ### prisma-sase-custom-url-category-update
@@ -1033,6 +1125,34 @@ Update an existing url category.
 | PrismaSase.CustomURLCategory.list | String | The URL category match list. | 
 | PrismaSase.CustomURLCategory.description | String | The URL category description. | 
 
+#### Command example
+```!prisma-sase-custom-url-category-update id="Id" value="high-risk" overwrite="false"```
+#### Context Example
+```json
+{
+    "PrismaSase": {
+        "CustomURLCategory": {
+            "folder": "Shared",
+            "id": "Id",
+            "list": [
+                "low-risk",
+                "high-risk"
+            ],
+            "name": "somename",
+            "type": "Category Match"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Custom Url Category updated
+>|Folder|Id|List|Name|Type|
+>|---|---|---|---|---|
+>| Shared | Id | low-risk,<br/>high-risk | somename | Category Match |
+
+
 ### prisma-sase-custom-url-category-delete
 ***
 Delete a specific url category.
@@ -1052,6 +1172,12 @@ Delete a specific url category.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!prisma-sase-custom-url-category-delete id="Id"```
+#### Human Readable Output
+
+>Custom Url Category with id Id and name somename was deleted successfully
+
 ### prisma-sase-external-dynamic-list-list
 ***
 Lists all external dynamic lists.
@@ -1091,8 +1217,8 @@ Lists all external dynamic lists.
 {
     "PrismaSase": {
         "ExternalDynamicList": {
-            "description": "IP addresses that are currently used almost exclusively by malicious actors for malware distribution, command-and-control, and for launching various attacks.",
-            "display_name": "Palo Alto Networks - Known malicious IP addresses",
+            "description": "description",
+            "display_name": "display name",
             "folder": "predefined",
             "name": "panw-known-ip-list",
             "source": "predefined",
@@ -1107,7 +1233,7 @@ Lists all external dynamic lists.
 >### External Dynamic Lists
 >|Id|Name|Type|Folder|Description|Source|Frequency|
 >|---|---|---|---|---|---|---|
->|  | panw-known-ip-list | predefined | predefined | IP addresses that are currently used almost exclusively by malicious actors for malware distribution, command-and-control, and for launching various attacks. | predefined |  |
+>|  | panw-known-ip-list | predefined | predefined | description | predefined |  |
 
 
 ### prisma-sase-external-dynamic-list-create
@@ -1150,7 +1276,7 @@ Create a new dynamic list.
 | PrismaSase.ExternalDynamicList.frequency | String | The external dynamic list frequency. | 
 
 #### Command example
-```!prisma-sase-external-dynamic-list-create name="somename" folder="Shared" type="predefined_ip" predefined_ip_list="panw-highrisk-ip-list"```
+```!prisma-sase-external-dynamic-list-create name="somename11" folder="Shared" type="predefined_ip" predefined_ip_list="panw-highrisk-ip-list"```
 #### Context Example
 ```json
 {
@@ -1160,8 +1286,8 @@ Create a new dynamic list.
             "exception_list": null,
             "folder": "Shared",
             "frequency": null,
-            "id": "id",
-            "name": "somename",
+            "id": "Id",
+            "name": "somename11",
             "source": "panw-highrisk-ip-list",
             "type": "predefined_ip"
         }
@@ -1174,11 +1300,11 @@ Create a new dynamic list.
 >### External Dynamic List Created
 >|Id|Name|Type|Folder|Description|Source|Frequency|
 >|---|---|---|---|---|---|---|
->| 10359e8c-7981-46cc-b36e-7d5962dab0bd | somename | predefined_ip | Shared |  | panw-highrisk-ip-list |  |
+>| Id | somename11 | predefined_ip | Shared |  | panw-highrisk-ip-list |  |
 
 
 #### Command example
-```!prisma-sase-external-dynamic-list-create name="somename1" folder="Shared" type="domain" source_url="domain.com" frequency="monthly" frequency_hour="09" day_of_month="1"```
+```!prisma-sase-external-dynamic-list-create name="somename111" folder="Shared" type="domain" source_url="test.com" frequency="monthly" frequency_hour="09" day_of_month="1"```
 #### Context Example
 ```json
 {
@@ -1193,9 +1319,9 @@ Create a new dynamic list.
                     "day_of_month": 1
                 }
             },
-            "id": "id",
-            "name": "somename1",
-            "source": "domain.com",
+            "id": "Id",
+            "name": "somename111",
+            "source": "test.com",
             "type": "domain"
         }
     }
@@ -1207,7 +1333,7 @@ Create a new dynamic list.
 >### External Dynamic List Created
 >|Id|Name|Type|Folder|Description|Source|Frequency|
 >|---|---|---|---|---|---|---|
->| 5f5b45a3-ae8b-452b-8df0-14b45f76f8aa | somename1 | domain | Shared |  | domain.com | **monthly**:<br/>	***at***: 09<br/>	***day_of_month***: 1 |
+>| Id | somename111 | domain | Shared |  | test.com | **monthly**:<br/>	***at***: 09<br/>	***day_of_month***: 1 |
 
 
 ### prisma-sase-external-dynamic-list-update

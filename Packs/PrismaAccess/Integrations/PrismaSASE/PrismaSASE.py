@@ -287,7 +287,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def list_config_jobs(self, tsg_id: str | None) -> dict:  # pragma: no cover
+    def list_config_jobs(self, tsg_id: str | None, query_params: dict) -> dict:  # pragma: no cover
         """List config jobs
         Args:
              tsg_id: Target Prisma SASE tenant ID
@@ -299,7 +299,8 @@ class Client(BaseClient):
         return self.http_request(
             method="GET",
             url_suffix=uri,
-            tsg_id=tsg_id
+            tsg_id=tsg_id,
+            params=query_params
         )
 
     def get_address_by_id(self, query_params: dict, address_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
