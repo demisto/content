@@ -1,4 +1,4 @@
-from MicrosoftTeamsWebhook import (Client, send_teams_message_command)
+from MicrosoftTeamsWebhook import (Client, send_teams_message_command, create_teams_message)
 
 WEBHOOK = "https://readywebookone"
 MESSAGE = "Hello from XSOAR"
@@ -12,7 +12,7 @@ fake_client = Client(base_url=WEBHOOK, verify=True, proxy=False)
 
 
 def test_create_teams_message():
-    message = fake_client.create_teams_message(MESSAGE, TITLE, SERVERURLS["investigation"])
+    message = create_teams_message(MESSAGE, TITLE, SERVERURLS["investigation"])
     assert message
     assert message["sections"][0]["activitySubtitle"] == MESSAGE
     assert message["potentialAction"][0]["name"] == TITLE

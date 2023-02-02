@@ -18,38 +18,7 @@ class Client(BaseClient):
         """
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
 
-    def create_teams_message(self, message: str, title: str, serverurls: str) -> dict:
-        """
-        Creates the Teams message using the messageCard format, and returns the card
-
-        Args:
-            message (str): The message to send in the message card to Teams.
-            title (str): The title of the message card.
-            serverurls (str): The URL to send in the message card.
-
-         Returns:
-            messagecard (dict): dict the adaptive card to send to Teams.
-        """
-        messagecard = {
-            "@type": "MessageCard",
-            "@context": "http://schema.org/extensions",
-            "themeColor": "0076D7",
-            "summary": "Cortex XSOAR Notification",
-            "sections": [{
-                "activityTitle": "Cortex XSOAR Notification",
-                "activitySubtitle": message,
-                "markdown": True
-            }],
-            "potentialAction": [{
-                "@type": "OpenUri",
-                "name": title,
-                "targets": [{"os": "default", "uri": serverurls}]
-            }]
-        }
-
-        return messagecard
-
-    def send_teams_message(self, messagecard: dict) -> Dict[str, Any]:
+    def send_teams_message(self, messagecard: dict):
         """
         Sends the Teams Message to the provided webhook.
 
@@ -57,11 +26,45 @@ class Client(BaseClient):
             messagecard (dict): dict the adaptive card to send to Teams.
         """
 
-        return self._http_request(
+        res = self._http_request(
             method='POST',
             json_data=messagecard,
-            raise_on_status=True
+            raise_on_status=True,
+            resp_type='text'
         )
+        demisto.info(f'completed post of message. response text: {res}')
+
+
+def create_teams_message(message: str, title: str, serverurls: str) -> dict:
+    """
+    Creates the Teams message using the messageCard format, and returns the card
+
+    Args:
+        message (str): The message to send in the message card to Teams.
+        title (str): The title of the message card.
+        serverurls (str): The URL to send in the message card.
+
+        Returns:
+        messagecard (dict): dict the adaptive card to send to Teams.
+    """
+    messagecard = {
+        "@type": "MessageCard",
+        "@context": "http://schema.org/extensions",
+        "themeColor": "0076D7",
+        "summary": "Cortex XSOAR Notification",
+        "sections": [{
+            "activityTitle": "Cortex XSOAR Notification",
+            "activitySubtitle": message,
+            "markdown": True
+        }],
+        "potentialAction": [{
+            "@type": "OpenUri",
+            "name": title,
+            "targets": [{"os": "default", "uri": serverurls}]
+        }]
+    }
+
+    return messagecard
 
 
 def test_module(client: Client, serverurls: str) -> str:
@@ -78,12 +81,12 @@ def test_module(client: Client, serverurls: str) -> str:
     try:
         message = "Successful test message from Cortex XSOAR"
         title = "Cortex XSOAR Notification"
-        test_message = client.create_teams_message(message, title, serverurls)
+        test_message = create_teams_message(message, title, serverurls)
         client.send_teams_message(test_message)
+        return 'ok'
     except DemistoException as e:
         return f'Error: {e}'
-    return 'ok'
-
+    
 
 def send_teams_message_command(client: Client, message: str, title: str, serverurls: str) -> CommandResults:
     """
@@ -100,7 +103,7 @@ def send_teams_message_command(client: Client, message: str, title: str, serveru
         which contains the readable_output indicating the message was sent.
     """
 
-    messagecard = client.create_teams_message(message, title, serverurls)
+    messagecard = create_teams_message(message, title, serverurls)
     client.send_teams_message(messagecard)
     return CommandResults(readable_output='message sent successfully')
 
@@ -119,7 +122,6 @@ def main() -> None:    # pragma: no cover
     proxy = params.get('proxy', False)
 
     serverurls = demisto.demistoUrls()
-    args = demisto.args()
 
     if args.get('alternative_url'):
         serverurls = args.get('alternative_url')
