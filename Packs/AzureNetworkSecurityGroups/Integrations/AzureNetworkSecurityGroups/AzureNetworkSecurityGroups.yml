@@ -56,7 +56,7 @@ configuration:
   required: true
   defaultvalue: Device Code
   type: 15
-  additionalinfo: Type of authentication - could be Authorization Code flow (recommended), Device Code flow or Azure Managed Identities.
+  additionalinfo: Type of authentication - can be Authorization Code Flow (recommended), Device Code Flow or Azure Managed Identities.
   options:
   - Authorization Code
   - Device Code
