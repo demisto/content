@@ -5295,7 +5295,7 @@
                 "UnpublishThreatIntelReport"
             ]
         },
-        {
+        {            
             "integrations": "Generic SQL",
             "playbookID": "generic-sql",
             "instance_names": "Microsoft SQL Server - MS ODBC Driver",
