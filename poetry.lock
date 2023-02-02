@@ -383,18 +383,18 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.26.61"
+version = "1.26.62"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "boto3-1.26.61-py3-none-any.whl", hash = "sha256:5194c16e1f2371c25ee038e8291faf99117b4f2d272d70f48851ba47bcea44b4"},
-    {file = "boto3-1.26.61.tar.gz", hash = "sha256:78d75f6a08c33618d9ce37acca78e4f80e316a8ce3ac040c562f8054afe6451e"},
+    {file = "boto3-1.26.62-py3-none-any.whl", hash = "sha256:0a0171c648da81916e6f5badebfefdbd15280118f69462eb9425f7bff4c1323f"},
+    {file = "boto3-1.26.62.tar.gz", hash = "sha256:0271e05cf962de53deb4ee5c6e37433c8284584a26f45275cf43de3f99410aa4"},
 ]
 
 [package.dependencies]
-botocore = ">=1.29.61,<1.30.0"
+botocore = ">=1.29.62,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -403,14 +403,14 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.61"
+version = "1.29.62"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "botocore-1.29.61-py3-none-any.whl", hash = "sha256:c7a7133d02c5e9a8fcc9e5a238bf15bde2d5369366553520332a88bc05b7358a"},
-    {file = "botocore-1.29.61.tar.gz", hash = "sha256:22ead51f900e3465d0e4e670d02d091e613c88be8b333c47bfda727f8988eef3"},
+    {file = "botocore-1.29.62-py3-none-any.whl", hash = "sha256:11730086c8acc33372f438dd9ae3e960e6fc1c0dfa2801768b0585c8c874977e"},
+    {file = "botocore-1.29.62.tar.gz", hash = "sha256:8c7fdc6b14d9ef48ee8d1070700ab4204c121bc04ee57874e8419a9cdbe51144"},
 ]
 
 [package.dependencies]
@@ -829,14 +829,14 @@ tests = ["nose"]
 
 [[package]]
 name = "dateparser"
-version = "1.1.6"
+version = "1.1.7"
 description = "Date parsing library designed to parse dates from HTML pages"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "dateparser-1.1.6-py2.py3-none-any.whl", hash = "sha256:c47b6e4b8c4b2b2a21690111b6571b6991295ba327ec6503753abeebf5e80696"},
-    {file = "dateparser-1.1.6.tar.gz", hash = "sha256:e703db1815270c020552f4b3e3a981937b48b2cbcfcef5347071b74788dd9214"},
+    {file = "dateparser-1.1.7-py2.py3-none-any.whl", hash = "sha256:fbed8b738a24c9cd7f47c4f2089527926566fe539e1a06125eddba75917b1eef"},
+    {file = "dateparser-1.1.7.tar.gz", hash = "sha256:ff047d9cffad4d3113ead8ec0faf8a7fc43bab7d853ac8715e071312b53c465a"},
 ]
 
 [package.dependencies]
@@ -1029,8 +1029,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "5c7c188a41dc2eefb74319e92b52706d38940d45"
-resolved_reference = "5c7c188a41dc2eefb74319e92b52706d38940d45"
+reference = "dc7212c13e63af429743ce3d25e0c446705861ce"
+resolved_reference = "dc7212c13e63af429743ce3d25e0c446705861ce"
 
 [[package]]
 name = "deprecated"
@@ -1597,14 +1597,14 @@ six = "*"
 
 [[package]]
 name = "google-cloud-bigquery"
-version = "3.4.2"
+version = "3.5.0"
 description = "Google BigQuery API client library"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google-cloud-bigquery-3.4.2.tar.gz", hash = "sha256:224dc329bc5ad09d614db765c95f0bb8b24f0881b3d2a4854062ca346f8896f0"},
-    {file = "google_cloud_bigquery-3.4.2-py2.py3-none-any.whl", hash = "sha256:2d9f59f4e23cb796877ed89cb626013eae437457dc5b268b67072f3bdc6255cb"},
+    {file = "google-cloud-bigquery-3.5.0.tar.gz", hash = "sha256:dd3ca84e5be6fa9e0570fb21665a902cc5651cbd045842fb714164c99a2639c4"},
+    {file = "google_cloud_bigquery-3.5.0-py2.py3-none-any.whl", hash = "sha256:358f54c473938b2d022335118b4e56cdcdaf22a5a112fa0cfeb888fd8814ba62"},
 ]
 
 [package.dependencies]
@@ -3186,14 +3186,14 @@ resolved_reference = "6493798ceba8089345d970f71be4a896eb6b081d"
 
 [[package]]
 name = "parse-emails"
-version = "0.1.5"
+version = "0.1.6"
 description = "Parses an email message file and extracts the data from it."
 category = "dev"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "parse_emails-0.1.5-py3-none-any.whl", hash = "sha256:3df2734a3e010184175222741a4271752b3c2467ded26a9ff52461434c4e2959"},
-    {file = "parse_emails-0.1.5.tar.gz", hash = "sha256:5f2fb71c3c8b8aaf00274f9ce2ae1306b38c5c982088b1adc5ab5d538c30fa1c"},
+    {file = "parse_emails-0.1.6-py3-none-any.whl", hash = "sha256:f4a69dd3b36b6a3e200535437682cff42d4a0c9f102471621d9c24fa91d95668"},
+    {file = "parse_emails-0.1.6.tar.gz", hash = "sha256:ee3b9786bf25c14cbdf16763786dee274b6466ed9473a702e311a1262a16bde5"},
 ]
 
 [package.dependencies]
@@ -5643,14 +5643,14 @@ types-urllib3 = "<1.27"
 
 [[package]]
 name = "types-setuptools"
-version = "65.7.0.3"
+version = "65.7.0.4"
 description = "Typing stubs for setuptools"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "types-setuptools-65.7.0.3.tar.gz", hash = "sha256:c00f2dd1e6dcbb893faea4a57dbae80bb96d826b865d9ade8ae250a830cba10c"},
-    {file = "types_setuptools-65.7.0.3-py3-none-any.whl", hash = "sha256:b823969ea92a6d41d35933881d4c732248df834062e0d6f044c3eb36c446254e"},
+    {file = "types-setuptools-65.7.0.4.tar.gz", hash = "sha256:147809433301fe7e0f4ef5c0782f9a0453788960575e1efb6da5fe8cb2493c9f"},
+    {file = "types_setuptools-65.7.0.4-py3-none-any.whl", hash = "sha256:522067dfd8e1771f8d7e047e451de2740dc4e0c9f48a22302a6cc96e6c964a13"},
 ]
 
 [package.dependencies]
@@ -6323,4 +6323,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "fbe192cd3b2d8f66cd5de16250cddbc5e14a24d99e178b76f30ff38288a59bea"
+content-hash = "244f506a6a23d85722da8a6cb6946f621095ea97fa8b6e846d62d9e9de01fed8"
