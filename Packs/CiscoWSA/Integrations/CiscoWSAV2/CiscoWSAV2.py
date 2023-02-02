@@ -1,3 +1,4 @@
+from requests import Response
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -295,7 +296,7 @@ class Client(BaseClient):
         application: str,
         action: str,
         values: List[str],
-    ):
+    ) -> Response:
         """
         Update access policy's applications settings.
 
@@ -560,7 +561,7 @@ class Client(BaseClient):
         )
 
     def identification_profiles_list_request(
-        self, profile_names: Optional[str] = None
+        profile_names: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Get identification profiles.
@@ -788,7 +789,7 @@ def access_policy_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     paginated_response = pagination(response=response, args=args)
 
     readable_output = tableToMarkdown(
-        name=f"Access Policies",
+        name="Access Policies",
         t=paginated_response,
         headers=[
             "policy_name",
@@ -1142,7 +1143,7 @@ def domain_map_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
     paginated_response = pagination(response=response, args=args)
 
     readable_output = tableToMarkdown(
-        name=f"Domain Map",
+        name="Domain Map",
         t=paginated_response,
         headers=["domain_name", "IP_addresses", "order"],
         headerTransform=string_to_table_header,
@@ -1281,7 +1282,7 @@ def identification_profiles_list_command(
     paginated_response = pagination(response, args)
 
     readable_output = tableToMarkdown(
-        name=f"Identification Profiles",
+        name="Identification Profiles",
         t=paginated_response,
         headers=[
             "order",
@@ -1399,7 +1400,7 @@ def identification_profiles_delete_command(
 
     if response.status_code == 204:
         return CommandResults(
-            readable_output=f"Deleted identification profiles successfully."
+            readable_output="Deleted identification profiles successfully."
         )
     elif response.status_code == 207:
         response = response.json()
@@ -1436,7 +1437,7 @@ def url_categories_list_command(client: Client, args: Dict[str, Any]) -> Command
     response = client.url_categories_list_request()
 
     readable_output = tableToMarkdown(
-        name=f"URL categories",
+        name="URL categories",
         t=response,
         headerTransform=string_to_table_header,
         removeNull=True,

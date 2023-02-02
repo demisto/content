@@ -1,0 +1,18 @@
+!cisco-wsa-access-policy-list page=1 page_size=3 
+!cisco-wsa-access-policy-create policy_name=test policy_status=enable policy_description=test policy_order=1 identification_profile_name=global_identification_profile
+!cisco-wsa-access-policy-update policy_name=test policy_order=2 policy_expiry="12/30/2023 09:00" policy_description=testtest 
+!cisco-wsa-access-policy-protocols-user-agents-update policy_name=test block_custom_user_agents=??? allow_connect_ports=??? block_protocols=??? 
+!cisco-wsa-access-policy-url-filtering-update policy_name=test predefined_categories_action=??? predefined_categories=??? custom_categories_action=??? custom_categories=???  
+!cisco-wsa-access-policy-applications-update policy_name=test application=??? action=??? values=??? 
+!cisco-wsa-access-policy-objects-update policy_name=test object_type=??? object_action=??? object_values=??? block_custom_mime_types=??? http_or_https_max_object_size_mb=??? ftp_max_object_size_mb=??? 
+!cisco-wsa-access-policy-anti-malware-update policy_name=test web_reputation_status=??? file_reputation_filtering_status=??? file_reputation_action=??? anti_malware_scanning_status=??? suspect_user_agent_scanning=??? block_malware_categories=??? block_other_categories=??? 
+!cisco-wsa-access-policy-delete policy_names=??? 
+!cisco-wsa-domain-map-list domain_names=test.com page=??? page_size=??? limit=??? 
+!cisco-wsa-domain-map-create domain_name=??? order=??? ip_addresses=??? 
+!cisco-wsa-domain-map-update domain_name=??? new_domain_name=??? order=??? ip_addresses=??? 
+!cisco-wsa-domain-map-delete domain_names=??? 
+!cisco-wsa-identification-profiles-list profile_names=??? page=??? page_size=??? limit=??? 
+!cisco-wsa-identification-profiles-create profile_name=??? status=??? description=??? protocols=??? order=??? 
+!cisco-wsa-identification-profiles-update profile_name=??? new_profile_name=??? status=??? description=??? protocols=??? order=??? 
+!cisco-wsa-identification-profiles-delete profile_names=??? 
+!cisco-wsa-url-categories-list 

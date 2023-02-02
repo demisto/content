@@ -32,12 +32,12 @@ def mock_access_token(client):
 
 
 @pytest.fixture(autouse=True)
-@patch("CiscoWSA_V2.Client.handle_request_headers", mock_access_token)
+@patch("CiscoWSAV2.Client.handle_request_headers", mock_access_token)
 def mock_client():
     """
     Mock client
     """
-    from CiscoWSA_V2 import Client
+    from CiscoWSAV2 import Client
 
     return Client(BASE_URL, USERNAME, PASSWORD, verify=False, proxy=False)
 
@@ -92,7 +92,7 @@ def test_access_policy_list_command(
     - Ensure number of items is correct.
     - Validate outputs' fields.
     """
-    from CiscoWSA_V2 import access_policy_list_command
+    from CiscoWSAV2 import access_policy_list_command
 
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
@@ -121,7 +121,7 @@ def test_access_policy_create_command(
     - Ensure number of items is correct.
     - Validate outputs' fields.
     """
-    from CiscoWSA_V2 import access_policy_create_command
+    from CiscoWSAV2 import access_policy_create_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
     requests_mock.post(url=url, status_code=204)
@@ -156,7 +156,7 @@ def test_access_policy_update_command(
     - Ensure number of items is correct.
     - Validate outputs' fields.
     """
-    from CiscoWSA_V2 import access_policy_update_command
+    from CiscoWSAV2 import access_policy_update_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
     requests_mock.put(url=url, status_code=204)
@@ -192,7 +192,7 @@ def test_access_policy_delete_command(
     - Ensure number of items is correct.
     - Validate outputs' fields.
     """
-    from CiscoWSA_V2 import access_policy_delete_command
+    from CiscoWSAV2 import access_policy_delete_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
     requests_mock.delete(url=url, status_code=204)
@@ -256,7 +256,7 @@ def test_domain_map_list_command(
     - Ensure number of items is correct.
     - Validate outputs' fields.
     """
-    from CiscoWSA_V2 import domain_map_list_command
+    from CiscoWSAV2 import domain_map_list_command
 
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/{V2_PREFIX}/configure/web_security/domain_map"
@@ -284,7 +284,7 @@ def test_domain_map_create_command(
     - Ensure readable output is correct.
     - Ensure response code is correct.
     """
-    from CiscoWSA_V2 import domain_map_create_command
+    from CiscoWSAV2 import domain_map_create_command
 
     mock_response = load_mock_response("domain_map_create.json")
     url = f"{BASE_URL}/{V2_PREFIX}/configure/web_security/domain_map"
@@ -319,7 +319,7 @@ def test_domain_map_update_command(
     - Ensure readable output is correct.
     - Ensure response code is correct.
     """
-    from CiscoWSA_V2 import domain_map_update_command
+    from CiscoWSAV2 import domain_map_update_command
 
     mock_response = load_mock_response("domain_map_update.json")
     url = f"{BASE_URL}/{V2_PREFIX}/configure/web_security/domain_map"
@@ -355,7 +355,7 @@ def test_domain_map_delete_command(
     - Ensure readable output is correct.
     - Ensure response code is correct.
     """
-    from CiscoWSA_V2 import domain_map_delete_command
+    from CiscoWSAV2 import domain_map_delete_command
 
     mock_response = load_mock_response("domain_map_delete.json")
     url = f"{BASE_URL}/{V2_PREFIX}/configure/web_security/domain_map"
@@ -410,7 +410,7 @@ def test_identification_profiles_list_command(
     - Ensure number of items is correct.
     - Validate outputs' fields.
     """
-    from CiscoWSA_V2 import identification_profiles_list_command
+    from CiscoWSAV2 import identification_profiles_list_command
 
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/identification_profiles"
@@ -437,7 +437,7 @@ def test_identification_profiles_create_command(
     Then:
     - Ensure readable output is correct.
     """
-    from CiscoWSA_V2 import identification_profiles_create_command
+    from CiscoWSAV2 import identification_profiles_create_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/identification_profiles"
     requests_mock.post(url=url, status_code=204)
@@ -473,7 +473,7 @@ def test_identification_profiles_update_command(
     Then:
     - Ensure readable output is correct.
     """
-    from CiscoWSA_V2 import identification_profiles_update_command
+    from CiscoWSAV2 import identification_profiles_update_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/identification_profiles"
     requests_mock.put(url=url, status_code=204)
@@ -509,7 +509,7 @@ def test_identification_profiles_delete_command(
     Then:
     - Ensure readable output is correct.
     """
-    from CiscoWSA_V2 import identification_profiles_delete_command
+    from CiscoWSAV2 import identification_profiles_delete_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/identification_profiles"
     requests_mock.delete(url=url, status_code=204)
@@ -541,7 +541,7 @@ def test_url_categories_list_command(
     - Ensure number of items is correct.
     - Validate outputs' fields.
     """
-    from CiscoWSA_V2 import url_categories_list_command
+    from CiscoWSAV2 import url_categories_list_command
 
     mock_response = load_mock_response("url_categories_list.json")
     url = f"{BASE_URL}/{V3_PREFIX}/generic_resources/url_categories"
@@ -587,7 +587,7 @@ def test_pagination_function(response, arguments, paginated_response):
     Then:
     - Ensure result is correct.
     """
-    from CiscoWSA_V2 import pagination
+    from CiscoWSAV2 import pagination
 
     result = pagination(response, arguments)
 

@@ -5,6 +5,7 @@ name: CiscoWSA
 display: Cisco WSA
 category: Network Security
 description: Cisco Secure Web Appliance protects your organisation by automatically blocking risky sites and testing unknown sites before allowing users to click on them.
+fromversion: 6.2.0
 configuration:
 - name: base_url
   display: Server URL
@@ -18,12 +19,12 @@ configuration:
   displaypassword: Password
   hiddenusername: false
 - name: proxy
-  display: Use system proxy
+  display: Use system proxy settings
   defaultvalue: 'false'
   type: 8
   required: false
 - name: insecure
-  display: Trust any certificate
+  display: Trust any certificate (not secure)
   defaultvalue: 'false'
   type: 8
   required: false
@@ -31,7 +32,7 @@ script:
   type: python
   subtype: python3
   script: '-'
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.9.46032
   isfetch: false
   commands:
   - name: cisco-wsa-access-policy-list
@@ -162,7 +163,7 @@ script:
       required: true
       isArray: false
     - name: block_custom_user_agents
-      description: |- 
+      description: |-
         Custom user agents to block, in regular expression format.
         Pattern examples:
         All Firefox versions: "Mozilla/.* Gecko/.* Firefox/"	
