@@ -287,9 +287,10 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def list_config_jobs(self, tsg_id: str | None, query_params: dict) -> dict:  # pragma: no cover
+    def list_config_jobs(self, tsg_id: str | None, query_params: dict | None = None) -> dict:  # pragma: no cover
         """List config jobs
         Args:
+             query_params: limit and offset param
              tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -1979,9 +1980,12 @@ def run_push_jobs_polling_command(client: Client, args: dict):
         args['job_id'] = job_id
         # The push job creates sub processes once done. at this point, the parent job hasn't finished.
         args['parent_finished'] = False
+        polling_timeout = arg_to_number(args.get('polling_timeout_in_seconds')) or 600
         return CommandResults(
-            scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push', args=args,
-                                               next_run_in_seconds=polling_interval),
+            scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push',
+                                               args=args,
+                                               next_run_in_seconds=polling_interval,
+                                               timeout_in_seconds=polling_timeout),
             readable_output=f'Waiting for all data to push for job id {job_id}')
 
     job_id = args.get('job_id', '')
@@ -1993,7 +1997,8 @@ def run_push_jobs_polling_command(client: Client, args: dict):
             return CommandResults(
                 scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push',
                                                    args=args,
-                                                   next_run_in_seconds=polling_interval))
+                                                   next_run_in_seconds=polling_interval,
+                                                   timeout_in_seconds=polling_timeout))
 
         # From testing (as this is not documented) the status returns only as OK if the job succeeded
         job_result = res.get('result_str')
@@ -2016,7 +2021,8 @@ def run_push_jobs_polling_command(client: Client, args: dict):
                 return CommandResults(
                     scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push',
                                                        args=args,
-                                                       next_run_in_seconds=polling_interval))
+                                                       next_run_in_seconds=polling_interval,
+                                                       timeout_in_seconds=polling_timeout))
             job_result = job.get('result_str')
             if job_result != 'OK':
                 outputs['result'] = job_result

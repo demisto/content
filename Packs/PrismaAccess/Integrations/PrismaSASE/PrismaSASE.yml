@@ -348,6 +348,9 @@ script:
       description: interval for polling command. Default is 30.
       name: interval_in_seconds
       required: false
+    - description: Polling timeout in seconds.
+      name: polling_timeout_in_seconds
+      defaultValue: '600'
     - default: false
       description: For polling use.
       isArray: false
@@ -644,6 +647,14 @@ script:
       isArray: false
       name: limit
       required: false
+    - default: false
+      isArray: false
+      name: page
+      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+    - default: false
+      isArray: false
+      name: page_size
+      description: Number of results per page to display.
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     deprecated: false
@@ -1463,7 +1474,7 @@ script:
       isArray: false
       name: value
       required: false
-      description: ''
+      description: The custom URL category's value.
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
