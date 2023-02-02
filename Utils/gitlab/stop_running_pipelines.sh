@@ -34,15 +34,18 @@ function stop_pipeline_by_id(){
 # Stopping pipelines
 RESP=$(curl -v -H "Content-Type: application/json" -H "PRIVATE-TOKEN: $GITLAB_CANCEL_TOKEN" $CONTENT_PIPELINES_API_URL\?ref\=$CI_COMMIT_BRANCH)
 if [ "$RESP" != "[]" ]; then
-    PIPELINES=$(get_branch_pipelines RESP)
-    for pipeline in ${PIPELINES}
-    do
-        source=$(echo $pipeline | jq -r ".source")
-        status=$(echo $pipeline | jq -r ".status")
-        id=$(echo $pipeline | jq -r ".id")
-        if [ "$status" = "running" ] && [ "$source" = "push" ] && [ "$id" != $CI_PIPELINE_ID ]; then
-            echo "Found running pipeline with id $id, and status $status. Stoping it."
-            stop_pipeline_by_id id
-        fi
-    done
+  echo "found resp"
+  PIPELINES=$(get_branch_pipelines RESP)
+  echo "$PIPELINES"
+  for pipeline in ${PIPELINES}
+  do
+    echo "found pipeline"
+    source=$(echo $pipeline | jq -r ".source")
+    status=$(echo $pipeline | jq -r ".status")
+    id=$(echo $pipeline | jq -r ".id")
+    if [ "$status" = "running" ] && [ "$source" = "push" ] && [ "$id" != $CI_PIPELINE_ID ]; then
+      echo "Found running pipeline with id $id, and status $status. Stoping it."
+      stop_pipeline_by_id id
+    fi
+  done
 fi
