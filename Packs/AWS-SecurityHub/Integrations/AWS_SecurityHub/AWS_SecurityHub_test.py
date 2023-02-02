@@ -127,8 +127,10 @@ FINDINGS = [{
     'CreatedAt': '2020-03-22T13:22:13.933Z',
     'Id': 'Id',
     'Severity': {
+        'Product': 0,
+        'Label': 'INFORMATIONAL',
         'Normalized': 0,
-    },
+        'Original': 'INFORMATIONAL'},
 }]
 
 
@@ -166,7 +168,7 @@ def test_fetch_incidents(mocker):
     """
     mocker.spy(demisto, 'setLastRun')
     client = MockClient()
-    fetch_incidents(client, 'Low', False, None)
+    fetch_incidents(client, 'Low', False, None, 'Both', None, None, None)
     assert demisto.setLastRun.call_args[0][0]['lastRun'] == '2020-03-22T13:22:13.934000+00:00'
 
 
