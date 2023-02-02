@@ -1,7 +1,6 @@
 {
     "id": "incident_sentinelonethreatanalystverdict",
     "version": -1,
-    "modified": "2023-01-25T15:55:38.707229339+05:30",
     "itemVersion": "",
     "toServerVersion": "",
     "name": "SentinelOne Threat Analyst Verdict",
