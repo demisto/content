@@ -145,9 +145,18 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
                                                   params=query_params)
         return res
 
+    # Board Requests
+    @abstractmethod
+    def issues_from_sprint_to_backlog(self, json_data: Dict[str, Any]) -> requests.Response:
+        pass
+
     # Issue Fields Requests
     @abstractmethod
     def get_issue_fields(self) -> List[Dict[str, Any]]:
+        pass
+
+    @abstractmethod
+    def get_custom_fields_name(self) -> List[Dict[str, Any]]:
         pass
 
     # Issue Requests
@@ -195,10 +204,6 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
     def create_issue(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
         pass
 
-    @ abstractmethod
-    def get_custom_fields_name(self) -> List[Dict[str, Any]]:
-        pass
-
     # Attachments Requests
     @ abstractmethod
     def add_attachment(self, issue_id_or_key: str, files: Dict[str, Any] = None) -> List[Dict[str, Any]]:
@@ -226,7 +231,13 @@ class JiraCloudClient(JiraBaseClient):
         self.client_secret = client_secret
         self.cloud_id = cloud_id
         # TODO Need to add the scopes in the documentation (README and description)
-        self.scopes = ['read:jira-work', 'read:jira-user', 'write:jira-work', 'offline_access']
+        self.scopes = [
+            # Jira Cloud
+            'read:jira-work', 'read:jira-user', 'write:jira-work',
+            # Jira Software
+            'write:board-scope:jira-software',
+            # For refresh token
+            'offline_access']
         super().__init__(proxy=proxy, verify=verify, callback_url=callback_url,
                          base_url=f'https://api.atlassian.com/ex/jira/{cloud_id}')
 
@@ -329,6 +340,31 @@ class JiraCloudClient(JiraBaseClient):
         }
         integration_context |= new_authorization_context
         set_integration_context(integration_context)
+
+    # Board Requests
+    def issues_from_sprint_to_backlog(self, json_data: Dict[str, Any]) -> requests.Response:
+        res = self.http_request_with_access_token(method='POST',
+                                                  url_suffix='rest/agile/1.0/backlog/issue',
+                                                  json_data=json_data,
+                                                  resp_type='response'
+                                                  )
+        return res
+
+    def issues_to_backlog(self, board_id, json_data: Dict[str, Any]) -> requests.Response:
+        res = self.http_request_with_access_token(method='POST',
+                                                  url_suffix=f'rest/agile/1.0/backlog/{board_id}/issue',
+                                                  json_data=json_data,
+                                                  resp_type='response'
+                                                  )
+        return res
+
+    def issues_to_board(self, board_id, json_data: Dict[str, Any]) -> requests.Response:
+        res = self.http_request_with_access_token(method='POST',
+                                                  url_suffix=f'rest/agile/1.0/board/{board_id}/issue',
+                                                  json_data=json_data,
+                                                  resp_type='response'
+                                                  )
+        return res
 
     # Issue Fields Requests
     def get_issue_fields(self) -> List[Dict[str, Any]]:
@@ -1250,13 +1286,55 @@ def get_id_by_attribute_command(client: JiraBaseClient, args: Dict[str, str]) ->
         readable_output=f'The account ID that holds the attribute `{attribute}`: {outputs["AccountId"]}'
     )
 
-    # Board Commands
 
-    # ...
+# Board Commands
+def issues_to_backlog_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    issues = argToList(args.get('issues', ''))
+    board_id = args.get('board_id', '')
+    rank_before_issue = args.get('rank_before_issue', '')
+    rank_after_issue = args.get('rank_after_issue', '')
+    if((rank_after_issue or rank_before_issue) and not board_id):
+        raise DemistoException(('Please supply the board_id argument when supplying the rank_after_issue, and'
+                                ' rank_before_issue arguments'))
+    json_data = {'issues': issues}
+    if board_id:
+        # The endpoint that accepts the board id is only supported by Jira Cloud and not Jira Server API.
+        if isinstance(client, JiraCloudClient):
 
-    # Fetch
+            json_data |= assign_params(
+                rankBeforeIssue=rank_before_issue,
+                rankAfterIssue=rank_after_issue
+            )
+            client.issues_to_backlog(board_id=board_id, json_data=json_data)
+        else:
+            raise DemistoException('This argument is not supported for a Jira OnPrem instance.')
+    else:
+        client.issues_from_sprint_to_backlog(json_data=json_data)
+    return CommandResults(readable_output='Issues were moved to Backlog successfully')
 
-    # Polling
+
+def issues_to_board_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    if isinstance(client, JiraCloudClient):
+        # This command is only supported by a Jira Cloud instance
+        issues = argToList(args.get('issues', ''))
+        board_id = args.get('board_id', '')
+        rank_before_issue = args.get('rank_before_issue', '')
+        rank_after_issue = args.get('rank_after_issue', '')
+        json_data = assign_params(
+            issues=issues,
+            rankBeforeIssue=rank_before_issue,
+            rankAfterIssue=rank_after_issue
+        )
+        client.issues_to_board(board_id=board_id, json_data=json_data)
+        return CommandResults(readable_output='Issues were moved to Board successfully')
+    raise DemistoException('This command is not supported by a Jira OnPrem instance.')
+
+
+def board_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    pass
+# Fetch
+
+# Polling
 
 
 def ouath_start_command(client: JiraBaseClient, args: Dict[str, Any] = None) -> CommandResults:
@@ -1339,7 +1417,10 @@ def main() -> None:
         'jira-issue-get-attachment': issue_get_attachment_command,
         'jira-issue-delete-comment': delete_comment_command,
         'jira-issue-edit-comment': edit_comment_command,
-        'jira-issue-list-fields': list_fields_command
+        'jira-issue-list-fields': list_fields_command,
+        'jira-issue-to-backlog': issues_to_backlog_command,
+        'jira-issue-to-board': issues_to_board_command,
+        'jira-board-list': board_list_command,
     }
     try:
         client: JiraBaseClient

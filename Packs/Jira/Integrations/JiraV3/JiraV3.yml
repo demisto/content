@@ -989,6 +989,147 @@ script:
     - contextPath: Jira.IssueField.schema.configuration
       description: If the field is a custom field, the configuration of the field.
       type: object
+  - arguments:
+    - default: false
+      description: The issues to move to backlog.
+      isArray: false
+      name: issues
+      required: true
+      secret: false
+    - default: false
+      description: The board ID, can be only used with a Jira Cloud instance.
+                  This argument is required when the issues supplied are NOT part of a board with sprints.
+      isArray: false
+      name: board_id
+      required: false
+      secret: false
+    - default: false
+      description: To rank the issues before the stated issue (supports issue key and ID). This argument can be used when supplying the board ID.
+      isArray: false
+      name: rank_before_issue
+      required: false
+      secret: false
+    - default: false
+      description: To rank the issues after the stated issue (supports issue key and ID). This argument can be used when supplying the board ID.
+      isArray: false
+      name: rank_after_issue
+      required: false
+      secret: false
+    deprecated: false
+    description: Moves issues to backlog. At most 50 issues may be moved at once.
+    execution: false
+    name: jira-issue-to-backlog
+  - arguments:
+    - default: false
+      description: The issues to move to board.
+      isArray: false
+      name: issues
+      required: true
+      secret: false
+    - default: false
+      description: The board ID.
+      isArray: false
+      name: board_id
+      required: true
+      secret: false
+    - default: false
+      description: To rank the issues before the stated issue (supports issue key and ID).
+      isArray: false
+      name: rank_before_issue
+      required: false
+      secret: false
+    - default: false
+      description: To rank the issues after the stated issue (supports issue key and ID).
+      isArray: false
+      name: rank_after_issue
+      required: false
+      secret: false
+    deprecated: false
+    description: Moves issues from backlog to board, the command does not work with boards with sprints. At most 50 issues may be moved at once. This command is only supported for Jira Cloud instance.
+    execution: false
+    name: jira-issue-to-board
+  - arguments:
+    - default: false
+      description: The name of the board.
+      isArray: false
+      name: board_name
+      required: true
+      secret: false
+    - default: false
+      description: The board ID.
+      isArray: false
+      name: board_id
+      required: true
+      secret: false
+    - default: false
+      description: The project key or ID.
+      isArray: false
+      name: project_key_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of the board
+      isArray: false
+      name: type
+      required: false
+      secret: false
+      predefined:
+      - 'scrum'
+      - 'kanban'
+      - 'simple'
+    - default: false
+      description: Add description
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+      defaultValue: '50'
+    - default: false
+      description: Add description
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Add description
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+      defaultValue: '50'
+    deprecated: false
+    description: 
+    execution: false
+    name: jira-board-list
+    outputs:
+    - contextPath: Jira.Board.id
+      description: The ID of the board.
+      type: number
+    - contextPath: Jira.Board.self
+      description: The URL of the board.
+      type: string
+    - contextPath: Jira.Board.name
+      description: The name of the board.
+      type: string
+    - contextPath: Jira.Board.type
+      description: The type the board.
+      type: string
+    - contextPath: Jira.Board.admins
+      description: The type the board.
+      type: object
+    - contextPath: Jira.Board.location
+      description: The container that the board is located in.
+      type: object
+    - contextPath: Jira.Board.canEdit
+      description: Whether the board can be edited.
+      type: string
+    - contextPath: Jira.Board.isPrivate
+      description: Whether the board is private.
+      type: string
+    - contextPath: Jira.Board.favourite
+      description: Whether the board is selected as a favorite.
+      type: string
   dockerimage: demisto/btfl-soup:1.0.1.45563
   script: ''
   type: python
