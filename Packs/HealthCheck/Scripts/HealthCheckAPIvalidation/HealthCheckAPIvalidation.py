@@ -5,11 +5,10 @@ from CommonServerPython import *  # noqa: F401
 
 def isDemistoAPIIntegrationAvailable():
 
-    brandNames = ["Demisto REST API", "Core REST API"]
+    brandName = "Demisto REST API"
     allInstances = demisto.getModules()
     brandInstances = [
-        instanceName for instanceName in allInstances 
-        if allInstances[instanceName]['brand'].lower() in [brandName.lower() for brandName in brandNames]
+        instanceName for instanceName in allInstances if allInstances[instanceName]['brand'].lower() == brandName.lower()
         and demisto.get(allInstances[instanceName], 'state') and allInstances[instanceName]['state'] == 'active'
     ]
 
