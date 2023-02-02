@@ -14,6 +14,7 @@ DEFAULT_LIMIT = 50
 PA_OUTPUT_PREFIX = "PrismaSase."
 CONFIG_URI_PREFIX = "/sse/config/v1/"
 DEFAULT_POLLING_INTERVAL = 30
+DEFAULT_POLLING_TIMEOUT = 600
 DEFAULT_POSITION = 'pre'
 DEFAULT_FOLDER = 'Shared'
 FREQUENCY_HOUR_REGEX = '[01][0-9]|2[0-3]'
@@ -1969,6 +1970,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
     the next 'results' function, until the polling is complete.
     """
     polling_interval = args.get('interval_in_seconds') or DEFAULT_POLLING_INTERVAL
+    polling_timeout = arg_to_number(args.get('polling_timeout_in_seconds')) or DEFAULT_POLLING_TIMEOUT
     tsg_id = args.get('tsg_id')
     if folders := argToList(args.get('folders')):
         # first call, folder in args. We make the first push
@@ -1980,7 +1982,6 @@ def run_push_jobs_polling_command(client: Client, args: dict):
         args['job_id'] = job_id
         # The push job creates sub processes once done. at this point, the parent job hasn't finished.
         args['parent_finished'] = False
-        polling_timeout = arg_to_number(args.get('polling_timeout_in_seconds')) or 600
         return CommandResults(
             scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push',
                                                args=args,
