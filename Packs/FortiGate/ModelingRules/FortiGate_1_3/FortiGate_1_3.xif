@@ -33,4 +33,4 @@ alter
     xdm.event.operation_sub_type = FTNTFGTsubtype,
     xdm.alert.severity = coalesce(FTNTFGTlevel, cefSeverity),
     xdm.source.user.domain = FTNTFGTvd,
-    xdm.alert.subcategory = FTNTFGTlogdesc;
+    xdm.alert.subcategory = FTNTFGTlogdescg;
