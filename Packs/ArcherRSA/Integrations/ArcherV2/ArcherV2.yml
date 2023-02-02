@@ -3,8 +3,7 @@ commonfields:
   id: RSA Archer v2
   version: -1
 configuration:
-- display: Server URL (e.g., https://192.168.0.1/rsaarcher or https://192.168.0.1/
-    or https://192.168.0.1/archer)
+- display: Server URL (e.g., https://192.168.0.1/rsaarcher or https://192.168.0.1/ or https://192.168.0.1/archer)
   name: url
   required: true
   type: 0
@@ -49,8 +48,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days,
-    3 months, 1 year)
+  display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
   required: false
   type: 0
@@ -77,15 +75,13 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-description: The RSA Archer GRC platform provides a common foundation for managing
-  policies, controls, risks, assessments, and deficiencies across lines of business.
+description: The RSA Archer GRC platform provides a common foundation for managing policies, controls, risks, assessments, and deficiencies across lines of business.
 display: RSA Archer v2
 name: RSA Archer v2
 script:
   commands:
   - arguments:
-    - description: The application ID to get details for. Leave empty to get a list
-        of all applications.
+    - description: The application ID to get details for. Leave empty to get a list of all applications.
       name: applicationId
     - defaultValue: '20'
       description: The maximum number of applications to return.
@@ -166,6 +162,10 @@ script:
       description: The field level ID.
       type: Number
   - arguments:
+    - description: In case of nesting, to which level to go in the depth of the recursion.
+      name: depth
+      required: false
+      defaultValue: 3
     - description: The record ID.
       name: contentId
       required: true
@@ -182,12 +182,10 @@ script:
     - description: The application ID.
       name: applicationId
       required: true
-    - description: 'Record fields in JSON format: { "Name1": Value1, "Name2": Value2
-        }. Field names are case sensitive.'
+    - description: 'Record fields in JSON format: { "Name1": Value1, "Name2": Value2 }. Field names are case sensitive.'
       name: fieldsToValues
       required: true
-    - description: The Level ID to use to create the record. If empty, the command
-        by default takes the first level ID.
+    - description: The Level ID to use to create the record. If empty, the command by default takes the first level ID.
       name: levelId
     description: Creates a new content record in the given application.
     name: archer-create-record
@@ -205,15 +203,13 @@ script:
     - description: The application ID.
       name: applicationId
       required: true
-    - description: 'Record fields in JSON format: { "Name1": Value1, "Name2": Value2
-        }. Field names are case sensitive.'
+    - description: 'Record fields in JSON format: { "Name1": Value1, "Name2": Value2 }. Field names are case sensitive.'
       name: fieldsToValues
       required: true
     - description: The ID of the record to update.
       name: contentId
       required: true
-    - description: The Level ID to use to update the record. If empty, the command
-        by default takes the first level ID.
+    - description: The Level ID to use to update the record. If empty, the command by default takes the first level ID.
       name: levelId
     description: Updates an existing content record in the given application.
     name: archer-update-record
@@ -237,15 +233,17 @@ script:
     description: Returns search criteria by report GUID.
     name: archer-get-search-options-by-guid
   - arguments: []
-    description: Resets Archer's integration cache. Run this command if you change
-      the fields of your Archer application.
+    description: Resets Archer's integration cache. Run this command if you change the fields of your Archer application.
     name: archer-reset-cache
   - arguments:
     - description: The field ID.
       name: fieldID
       required: true
-    description: Returns a list of values for a specified field, for example, fieldID=16114.
-      This command only works for value list fields (type 4).
+    - description: In case of nesting, to which level to go in the depth of the recursion.
+      name: depth
+      required: false
+      defaultValue: 0
+    description: Returns a list of values for a specified field, for example, fieldID=16114. This command only works for value list fields (type 4).
     name: archer-get-valuelist
     outputs:
     - contextPath: Archer.ApplicationField.ValuesList.Id
@@ -257,6 +255,12 @@ script:
     - contextPath: Archer.ApplicationField.ValuesList.Name
       description: The field value name.
       type: String
+    - contextPath: Archer.ApplicationField.ValuesList.Parent
+      description: The field value parent.
+      type: String
+    - contextPath: Archer.ApplicationField.ValuesList.Depth
+      description: The field value depth.
+      type: Number
   - arguments:
     - description: The entry ID of the file in Cortex XSOAR context.
       name: entryId
@@ -305,12 +309,10 @@ script:
       description: 'The file extension. For example: "xls".'
       type: String
     - contextPath: File.Type
-      description: The file type as determined by libmagic (same as displayed in file
-        entries).
+      description: The file type as determined by libmagic (same as displayed in file entries).
       type: String
   - arguments:
-    - description: The ID of the user to get details for. Leave empty to get a list
-        of all users.
+    - description: The ID of the user to get details for. Leave empty to get a list of all users.
       name: userId
     description: Gets details for a user or a list of all users.
     name: archer-list-users
@@ -343,23 +345,19 @@ script:
     - description: The ID of the application in which to search for records.
       name: applicationId
       required: true
-    - description: The name of the field on which to search. Leave empty to search
-        on all fields.
+    - description: The name of the field on which to search. Leave empty to search on all fields.
       name: fieldToSearchOn
-    - description: The name of the primary Id field on which to search. Used instead
-        of the fieldToSearchOn argument for searching by the application primary field.
+    - description: The name of the primary Id field on which to search. Used instead of the fieldToSearchOn argument for searching by the application primary field.
       name: fieldToSearchById
     - description: Search value. Leave empty to search for all.
       name: searchValue
     - defaultValue: '10'
       description: Maximum number of results to return from the search.
       name: maxResults
-    - description: Fields to display in the search results (in array format). For
-        example "Title,Incident Summary".
+    - description: Fields to display in the search results (in array format). For example "Title,Incident Summary".
       name: fieldsToDisplay
     - auto: PREDEFINED
-      description: Numeric search operator. Can be "Equals", "NotEqual", "GreaterThan",
-        or "LessThan".
+      description: Numeric search operator. Can be "Equals", "NotEqual", "GreaterThan", or "LessThan".
       name: numericOperator
       predefined:
       - Equals
@@ -367,8 +365,7 @@ script:
       - GreaterThan
       - LessThan
     - auto: PREDEFINED
-      description: Date search operator. Can be "Equals", "DoesNotEqual", "GreaterThan",
-        or "LessThan".
+      description: Date search operator. Can be "Equals", "DoesNotEqual", "GreaterThan", or "LessThan".
       name: dateOperator
       predefined:
       - Equals
@@ -379,8 +376,7 @@ script:
       name: fieldsToGet
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Whether to get extended responses with all of the data regarding
-        this search. For example, "fullData=true".
+      description: Whether to get extended responses with all of the data regarding this search. For example, "fullData=true".
       name: fullData
       predefined:
       - 'True'
@@ -392,8 +388,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: The Level ID to use for searching. This argument is relevant when
-        fullData is True. If empty, the command by default takes the first level ID.
+    - description: The Level ID to use for searching. This argument is relevant when fullData is True. If empty, the command by default takes the first level ID.
       name: levelId
     description: Searches for records in the given application.
     name: archer-search-records
@@ -423,7 +418,7 @@ script:
   - arguments: []
     description: Prints the Archer's integration cache.
     name: archer-print-cache
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3-deb:3.10.9.46022
   isfetch: true
   runonce: false
   script: ''
