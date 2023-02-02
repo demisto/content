@@ -280,7 +280,7 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      alert-id:
+      alert_id:
         simple: "1"
     separatecontext: false
     view: |-
@@ -312,7 +312,7 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      alert-id:
+      alert_ids:
         simple: "1"
       state:
         simple: Resolved
@@ -384,7 +384,7 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
-      alert-id:
+      alert_ids:
         simple: "1"
       state:
         simple: Unresolved
@@ -418,7 +418,7 @@ tasks:
       '#none#':
       - "18"
     scriptarguments:
-      label-id:
+      label_id:
         simple: "1"
     separatecontext: false
     view: |-
