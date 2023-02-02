@@ -2,17 +2,17 @@ import argparse
 import sys
 import traceback
 
-from demisto_sdk.commands.common.tools import get_json, str2bool
+from demisto_sdk.commands.common.tools import get_json
 from Tests.configure_and_test_integration_instances import MARKET_PLACE_CONFIGURATION, \
     XSOARBuild, XSOARServer, CloudBuild, CloudServer, Build, get_packs_with_higher_min_version
-from Tests.Marketplace.search_and_install_packs import install_all_content_packs_from_build_bucket, \
-    search_and_install_packs_and_their_dependencies
+from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.Marketplace.marketplace_constants import GCPConfig
 
 XSIAM = "marketplacev2"
 XSOAR = "xsoar"
+
 
 def options_handler():
     # disable-secrets-detection-start

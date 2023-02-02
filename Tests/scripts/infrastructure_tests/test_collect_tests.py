@@ -623,7 +623,8 @@ def test_number_of_file_types():
 
             (MockerCases.C, None, ('myXSIAMOnlyPack', 'CoreAlertFields'), None, None,
              (MarketplaceVersions.MarketplaceV2, None), (), (), (
-             'myXSIAMOnlyPack', 'CoreAlertFields', 'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration','Whois')),
+                     'myXSIAMOnlyPack', 'CoreAlertFields', 'bothMarketplacesPack',
+                     'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois')),
     ), ids=('install_and_upload_all_xsoar', 'install_and_upload_all_xsiam'))
 def test_upload_all_packs(monkeypatch, case_mocker, expected_tests: Optional[set[str]],
                           expected_packs: Optional[tuple[str, ...]],
