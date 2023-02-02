@@ -250,7 +250,7 @@ def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> List[C
             client: client -  A Twitter client.
             args: Dict - The function arguments.
         Returns:
-            A CommandResult object with Tweets data according to to the reqest.
+            A list of CommandResults with Tweets data according to to the reqest.
     """
     headers = ['Tweet ID', 'Text', 'Created At', 'Author Name', 'Author Username', 'Likes Count', 'Attachments URL']
     query = argToList(args.get('query'))
