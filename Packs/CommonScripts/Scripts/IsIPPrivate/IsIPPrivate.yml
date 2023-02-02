@@ -11,7 +11,7 @@ comment: |-
   - 10.0.0.0/8 (range: 10.0.0.0 to 10.255.255.255)
   - 172.16.0.0/12 (range: 172.16.0.0 to 172.31.255.255)
   - 192.168.0.0/16 (range: 192.168.0.0 to 192.168.255.255)
-  In addition to ranges, it's also possible to add specific IP addresses to the list.
+  In addition to ranges, it's also possible to add specific IP addresses to the list. You may also tag IPs or IP ranges by adding a comma after the IP or range, and then write the tag that you want to tag the corresponding IP indicators with.
 enabled: true
 args:
 - name: PrivateIPsListName
@@ -26,13 +26,15 @@ outputs:
   description: The IPv4 Address.
   type: string
 - contextPath: IP.Private
-  description: Whether the IP address is private or public, according to the ranges defined in the XSOAR list, which is provided in the PrivateIPsListName argument.
+  description: Whether the IP address is private or public, according to the ranges defined in the XSOAR list, which is provided in the PrivateIPRangeList argument.
   type: boolean
+- contextPath: IP.Tag
+  description: Any tags that were added to the indicator. The tags are added by this script if they were specified for the IP or IP range in the XSOAR list.
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.9.46032
+dockerimage: demisto/python3:3.10.9.44472
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:
-- IsIPPrivate - Test
+- No tests (auto formatted)
