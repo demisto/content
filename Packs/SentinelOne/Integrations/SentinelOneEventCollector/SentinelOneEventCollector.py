@@ -100,6 +100,16 @@ class Client(BaseClient):
 
 def get_events(client: Client, event_type: list[str],
                from_time: str = str(arg_to_datetime('3 days'))) -> list[dict[str, Any]]:
+    """
+    Returns SentinelOne events (activities, threats, alerts).
+
+    Args:
+        client (Client): SentinelOne client to make the API requests.
+        event_type (list): A list of evnet types to retrieve possible value are: [activities, threats, alerts].
+        from_time (str): The time the first event we retrieve was created.
+    Returns:
+        list: The events.
+    """
     events = []
     if 'activities' in event_type:
         events.extend(client.get_activities(from_time))
@@ -112,6 +122,13 @@ def get_events(client: Client, event_type: list[str],
 
 
 def first_run(from_time: str = str(arg_to_datetime('3 days'))) -> dict[str, str]:
+    """
+    Returns a dictionary for each event type from which time to retrieve the events.
+    Args:
+        from_time (str): From what time to retrieve events.
+    Returns:
+        dict: The time when the first event we retrieve was created for each event type.
+    """
     return {
         'last_activity_created': from_time,
         'last_threat_created': from_time,
@@ -119,11 +136,11 @@ def first_run(from_time: str = str(arg_to_datetime('3 days'))) -> dict[str, str]
     }
 
 
-def add_time_key_to_events(events: list[dict[str, Any]] | None):
+def add_keys_to_events(events: list[dict[str, Any]] | None):
     """
-    Adds the _time key to the events.
+    Adds the _time and eventType keys to the events.
     Args:
-        events: list, the events to add the time key to.
+        events (list): The events to add the time key to.
     """
     for event in events or []:
         if alert_info := event.get('alertInfo'):
@@ -149,7 +166,7 @@ def test_module(client: Client, event_type: list[str]) -> str:
 
     Args:
         client (Client): SentinelOne client to use.
-        event_type (list): Integration parameters.
+        event_type (list): A list of evnet types to retrieve possible value are: [activities, threats, alerts].
 
     Returns:
         str: 'ok' if test passed, Anything else will raise an exception and will fail the test.
@@ -167,6 +184,17 @@ def test_module(client: Client, event_type: list[str]) -> str:
 
 def get_events_command(client: Client, first_fetch_time: str,
                        event_type: list[str]) -> tuple[list[dict[str, Any]], CommandResults]:
+    """
+    Returns SentinelOne events (activities, threats, alerts).
+
+    Args:
+        client (Client): SentinelOne client to make the API requests.
+        first_fetch_time (str): The time the first event we retrieve was created.
+        event_type (list): A list of evnet types to retrieve possible value are: [activities, threats, alerts].
+    Returns:
+        list: The events returned from SentinelOne.
+        CommandResults: The CommandResults.
+    """
     events = get_events(client, from_time=first_fetch_time, event_type=event_type)
     hr = tableToMarkdown(name='Test Event', t=events)
     return events, CommandResults(readable_output=hr)
@@ -178,8 +206,8 @@ def fetch_events(client: Client, last_run: dict[str, str],
     Args:
         client (Client): SentinelOne client to use.
         last_run (dict): A dict containing the latest event (for each event type) created time we got from last fetch.
-            For example: {'last_activity_created': '2023-01-01T00:00:00', 'last_threat_created': '2023-01-01T00:00:00'}
-        event_type (list): Event type to be fetched ['ACTIVITIES', 'THREATS', 'ALERTS']
+            For example: {'last_activity_created': '2023-01-01T00:00:00', 'last_threat_created': '2023-01-01T00:00:00'}.
+        event_type (list): Event type to be fetched possible value are: [activities, threats, alerts].
     Returns:
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: list of events that will be created in XSIAM.
@@ -260,7 +288,7 @@ def main() -> None:
                 demisto.setLastRun(next_run)
 
             if should_push_events:
-                add_time_key_to_events(events)
+                add_keys_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
     # Log exceptions and return errors
