@@ -107,12 +107,12 @@ script:
     - default: false
       defaultValue: any
       description: A comma-separated list of destination networks.
-      isArray: false
+      isArray: true
       name: destination
       required: false
     - default: false
       description: A comma-separated list of destination HIPs.
-      isArray: false
+      isArray: true
       name: destination_hip
       required: false
     - default: false
@@ -134,7 +134,7 @@ script:
       required: false
     - default: false
       description: A comma-separated list of source HIPs.
-      isArray: false
+      isArray: true
       name: source_hip
       required: false
     - default: false
@@ -255,7 +255,7 @@ script:
       - pre
       - post
     - defaultValue: '50'
-      description: The maximum number of results to return. Default is 50.
+      description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -352,13 +352,13 @@ script:
       name: polling_timeout_in_seconds
       defaultValue: '600'
     - default: false
-      description: For polling use.
+      description: For polling use - the job id of the push job.
       isArray: false
       name: job_id
       required: false
       deprecated: true
     - default: false
-      description: For polling use.
+      description: For polling use - wether the paret process finished and child processes were creted.
       isArray: false
       name: parent_finished
       required: false
@@ -433,7 +433,7 @@ script:
       required: false
     - default: false
       description: A comma-separated list of applications.
-      isArray: false
+      isArray: true
       name: application
       required: false
     - default: false
@@ -443,12 +443,12 @@ script:
       required: false
     - default: false
       description: A comma-separated list of destination networks.
-      isArray: false
+      isArray: true
       name: destination
       required: false
     - default: false
       description: A comma-separated list of destination HIPs.
-      isArray: false
+      isArray: true
       name: destination_hip
       required: false
     - default: false
@@ -468,7 +468,7 @@ script:
       required: false
     - default: false
       description: A comma-separated list of source HIPs.
-      isArray: false
+      isArray: true
       name: source_hip
       required: false
     - default: false
@@ -646,7 +646,7 @@ script:
       required: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to return. Default is 50.
+      description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -828,7 +828,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: '50'
-      description: The maximum number of results to return. Default is 50.
+      description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -886,7 +886,7 @@ script:
       - Mobile Users Explicit Proxy
       required: false
     - defaultValue: '50'
-      description: The maximum number of results to return. Default is 50.
+      description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -989,7 +989,7 @@ script:
       - Chestnut
       required: false
     - default: false
-      description: Tag comments
+      description: Tag comments.
       isArray: false
       name: comments
       required: false
@@ -1001,7 +1001,7 @@ script:
     name: prisma-sase-tag-create
     outputs:
     - contextPath: PrismaSase.Tag.id
-      description: The tag id.
+      description: The tag ID.
       type: String
     - contextPath: PrismaSase.Tag.name
       description: The tag name.
@@ -1013,7 +1013,7 @@ script:
       description: The tag color.
       type: String
     - contextPath: PrismaSase.Tag.comments
-      description: The tag momments.
+      description: The tag comments.
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -1031,7 +1031,7 @@ script:
       - Mobile Users Explicit Proxy
       required: false
     - default: false
-      description: The tag ID
+      description: The tag ID.
       isArray: false
       name: tag_id
       required: true
@@ -1096,7 +1096,7 @@ script:
     name: prisma-sase-tag-update
     outputs:
     - contextPath: PrismaSase.Tag.id
-      description: The tag id.
+      description: The tag ID.
       type: String
     - contextPath: PrismaSase.Tag.name
       description: The tag name.
@@ -1145,7 +1145,7 @@ script:
     - default: false
       isArray: false
       name: limit
-      description: The maximum number of results to return. Default is 50.
+      description: The maximum number of results to return.
     - default: false
       isArray: false
       name: page
@@ -1162,7 +1162,7 @@ script:
     name: prisma-sase-address-group-list
     outputs:
     - contextPath: PrismaSase.AddressGroup.id
-      description: The address group id.
+      description: The address group ID.
       type: String
     - contextPath: PrismaSase.AddressGroup.name
       description: The address group name.
@@ -1228,7 +1228,7 @@ script:
     name: prisma-sase-address-group-create
     outputs:
     - contextPath: PrismaSase.AddressGroup.id
-      description: The address group id.
+      description: The address group ID.
       type: String
     - contextPath: PrismaSase.AddressGroup.name
       description: The address group name.
@@ -1249,7 +1249,7 @@ script:
     - default: false
       isArray: false
       name: group_id
-      description: The id of the address group.
+      description: The ID of the address group.
       required: true
     - auto: PREDEFINED
       default: false
@@ -1303,7 +1303,7 @@ script:
     name: prisma-sase-address-group-update
     outputs:
     - contextPath: PrismaSase.AddressGroup.id
-      description: The address group id.
+      description: The address group ID.
       type: String
     - contextPath: PrismaSase.AddressGroup.name
       description: The address group name.
@@ -1334,7 +1334,7 @@ script:
     name: prisma-sase-address-group-delete
   - arguments:
     - default: false
-      description: A specific url category to return. If not specified, all url categories will be returned.
+      description: A specific URL category to return. If not specified, all URL categories will be returned.
       isArray: false
       name: id
       required: false
@@ -1355,7 +1355,7 @@ script:
     - default: false
       isArray: false
       name: limit
-      description: The maximum number of results to return. Default is 50.
+      description: The maximum number of results to return.
     - default: false
       isArray: false
       name: page
@@ -1372,7 +1372,7 @@ script:
     name: prisma-sase-custom-url-category-list
     outputs:
     - contextPath: PrismaSase.CustomURLCategory.id
-      description: The URL category id.
+      description: The URL category ID.
       type: String
     - contextPath: PrismaSase.CustomURLCategory.name
       description: The URL category name.
@@ -1436,7 +1436,7 @@ script:
     name: prisma-sase-custom-url-category-create
     outputs:
     - contextPath: PrismaSase.CustomURLCategory.id
-      description: The URL category id.
+      description: The URL category ID.
       type: String
     - contextPath: PrismaSase.CustomURLCategory.name
       description: The URL category name.
@@ -1458,7 +1458,7 @@ script:
       isArray: false
       name: id
       required: true
-      description: The custom URL category id.
+      description: The custom URL category ID.
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
@@ -1507,7 +1507,7 @@ script:
     name: prisma-sase-custom-url-category-update
     outputs:
     - contextPath: PrismaSase.CustomURLCategory.id
-      description: The URL category id.
+      description: The URL category ID.
       type: String
     - contextPath: PrismaSase.CustomURLCategory.name
       description: The URL category name.
@@ -1529,12 +1529,12 @@ script:
       isArray: false
       name: id
       required: true
-      description: The custom URL category id.
+      description: The custom URL category ID.
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     deprecated: false
     execution: false
-    description: Delete a specific url category.
+    description: Delete a specific URL category.
     name: prisma-sase-custom-url-category-delete
   - arguments:
     - default: false
@@ -1559,7 +1559,7 @@ script:
     - default: false
       isArray: false
       name: limit
-      description: The maximum number of results to return. Default is 50.
+      description: The maximum number of results to return.
     - default: false
       isArray: false
       name: page
@@ -1576,7 +1576,7 @@ script:
     name: prisma-sase-external-dynamic-list-list
     outputs:
     - contextPath: PrismaSase.ExternalDynamicList.id
-      description: The external dynamic list id.
+      description: The external dynamic list ID.
       type: String
     - contextPath: PrismaSase.ExternalDynamicList.name
       description: The external dynamic list name.
@@ -1696,7 +1696,7 @@ script:
     name: prisma-sase-external-dynamic-list-create
     outputs:
     - contextPath: PrismaSase.ExternalDynamicList.id
-      description: The external dynamic list id.
+      description: The external dynamic list ID.
       type: String
     - contextPath: PrismaSase.ExternalDynamicList.name
       description: The external dynamic list name.
@@ -1721,7 +1721,7 @@ script:
       isArray: false
       name: id
       required: true
-      description: The external dynamic list id.
+      description: The external dynamic list ID.
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
@@ -1795,12 +1795,12 @@ script:
     - default: false
       isArray: false
       name: frequency_hour
-      description: The frequency hour
+      description: The frequency hour.
     - auto: PREDEFINED
       isArray: false
       name: day_of_week
       required: false
-      description: The day of the week
+      description: The day of the week.
       predefined:
       - monday
       - tuesday
@@ -1825,7 +1825,7 @@ script:
     name: prisma-sase-external-dynamic-list-update
     outputs:
     - contextPath: PrismaSase.ExternalDynamicList.id
-      description: The external dynamic list id.
+      description: The external dynamic list ID.
       type: String
     - contextPath: PrismaSase.ExternalDynamicList.name
       description: The external dynamic list name.
@@ -1850,7 +1850,7 @@ script:
       isArray: false
       name: id
       required: true
-      description: The external dynamic list id.
+      description: The external dynamic list ID.
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     deprecated: false

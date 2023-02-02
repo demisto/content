@@ -140,7 +140,7 @@ Lists all security rules.
 | --- | --- | --- |
 | folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | position | Security rule position. Possible values are: pre, post. Default is pre. | Optional | 
-| limit | The maximum number of results to return. Default is 50. Default is 50. | Optional | 
+| limit | The maximum number of results to return. Default is 50.  | Optional | 
 | page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
 | page_size | Number of results per page to display. | Optional | 
 | rule_id | A specific security rule to return. If not specified, all security rules will be returned. | Optional | 
@@ -436,7 +436,7 @@ Lists all configuration jobs.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | job_id | A specific config job to return. If not specified, all config jobs will be returned. | Optional | 
-| limit | The maximum number of results to return. Default is 50. Default is 50. | Optional | 
+| limit | The maximum number of results to return. Default is 50.  | Optional | 
 | page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
 | page_size | Number of results per page to display. | Optional | 
 | tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
@@ -583,7 +583,7 @@ Lists all addresses objects.
 | --- | --- | --- |
 | object_id | The specific address object to return. If not specified, all addresses will be returned. | Optional | 
 | folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
-| limit | The maximum number of results to return. Default is 50. Default is 50. | Optional | 
+| limit | The maximum number of results to return. Default is 50.  | Optional | 
 | page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
 | page_size | Number of results per page to display. | Optional | 
 | tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
@@ -640,7 +640,7 @@ Lists all tags.
 | --- | --- | --- |
 | tag_id | A specific tag to return. If not specified, all tags will be returned. | Optional | 
 | folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
-| limit | The maximum number of results to return. Default is 50. Default is 50. | Optional | 
+| limit | The maximum number of results to return. Default is 50.  | Optional | 
 | page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
 | page_size | Number of results per page to display. | Optional | 
 | tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
