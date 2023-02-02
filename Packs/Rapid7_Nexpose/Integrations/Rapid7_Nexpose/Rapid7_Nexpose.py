@@ -939,7 +939,7 @@ class Client(BaseClient):
             url_suffix=f"/assets/{asset_id}/tags",
             method="GET",
             resp_type="json",
-        ).get("resources", [])
+        )
 
     def get_asset_vulnerability_solution(self, asset_id: str, vulnerability_id: str) -> dict:
         """
@@ -3445,14 +3445,14 @@ def get_asset_tags_command(client: Client, asset_id: str) -> CommandResults | li
     except DemistoException as e:
         if e.res is not None and e.res.status_code is not None and e.res.status_code == 404:
             return CommandResults(readable_output="Asset not found.")
-    for tag in tag_raw_data:
+    for tag in tag_raw_data.get("resources", []):
         tag_output = generate_new_dict(
             data=tag,
             name_mapping={
-                "type": "type",
-                "riskModifier": "risk_modifier",
-                "name": "name",
-                "created": "created_time",
+                "type": "Type",
+                "riskModifier": "Risk Modifier",
+                "name": "Name",
+                "created": "Created Time",
             },
             include_none=True,
         )
@@ -3461,7 +3461,7 @@ def get_asset_tags_command(client: Client, asset_id: str) -> CommandResults | li
     readable_output = tableToMarkdown(
         name=f"Nexpose Asset Tags for Asset {asset_id}",
         t=tags,
-        headers=["type", "name", "risk_modifier", "created_time"],
+        headers=["Type", "Name", "Risk Modifier", "Created Time"],
     )
 
     result = CommandResults(
@@ -5414,7 +5414,7 @@ def main():  # pragma: no cover
         elif command == "nexpose-get-asset":
             results = get_asset_command(client=client, asset_id=args.pop("id"))
         elif command == "nexpose-get-asset-tags":
-            results = get_asset_tags_command(client=client, asset_id=args.pop("id"))
+            results = get_asset_tags_command(client=client, asset_id=args.pop("asset_id"))
         elif command == "nexpose-get-asset-vulnerability":
             results = get_asset_vulnerability_command(client=client, asset_id=args.pop("id"),
                                                       vulnerability_id=args.pop("vulnerabilityId"))

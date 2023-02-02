@@ -151,7 +151,7 @@ script:
     - default: false
       description: Asset ID.
       isArray: false
-      name: id
+      name: asset_id
       required: true
       secret: false
     deprecated: false

@@ -81,7 +81,7 @@ Returns the specified asset.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Asset ID. | Required |
+| asset_id | Asset ID. | Required |
 
 #### Context Output
 
