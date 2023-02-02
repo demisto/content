@@ -2,6 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Anomali ThreatStream v2
   version: -1
+deprecated: true
 configuration:
 - defaultvalue: https://api.threatstream.com
   display: Server URL (e.g., https://www.test.com)
@@ -57,8 +58,8 @@ configuration:
   required: false
   type: 8
 defaultclassifier: 'null'
-description: Use Anomali ThreatStream to query and submit threats.
-display: Anomali ThreatStream v2
+description: Deprecated. Use Anomali ThreatStream v3 integration instead.
+display: Anomali ThreatStream v2 (Deprecated)
 name: Anomali ThreatStream v2
 script:
   commands:

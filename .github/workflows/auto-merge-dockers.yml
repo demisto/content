@@ -1,8 +1,7 @@
 name: Docker Update Auto Merge
 on:
-  pull_request:
   schedule:
-    - cron: '00 11 * * *'
+    - cron: '30 10 * * *'
 
 permissions:
   pull-requests: write
