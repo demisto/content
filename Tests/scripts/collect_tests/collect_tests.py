@@ -1210,6 +1210,7 @@ def output(result: Optional[CollectionResult]):
     tests = sorted(result.tests, key=lambda x: x.lower()) if result else ()
     packs_to_install = sorted(result.packs_to_install, key=lambda x: x.lower()) if result else ()
     packs_to_install.append('DemistoRESTAPI')
+    packs_to_install.append('Phishing')
     packs_to_upload = sorted(result.packs_to_upload, key=lambda x: x.lower()) if result else ()
     modeling_rules_to_test = sorted(
         result.modeling_rules_to_test, key=lambda x: x.casefold() if isinstance(x, str) else x.as_posix().casefold()
