@@ -123,7 +123,7 @@ Create a new security rule.
 >### Security Rule Created
 >|Action|Application|Category|Destination|Folder|From|Id|Name|Position|Service|Source|Source User|To|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| allow | any | any | any | Shared | any | 0ea9e47c-6db2-46fe-88dc-0130fb27946c | somename11 | pre | any | any | any | any |
+>| allow | any | any | any | Shared | any | Id | somename11 | pre | any | any | any | any |
 
 
 ### prisma-sase-security-rule-list
@@ -184,7 +184,7 @@ Lists all security rules.
             "category": [
                 "any"
             ],
-            "description": "Rule to block traffic to IP addresses that have recently been featured in threat activity advisories distributed by high-trust organizations",
+            "description": "Rule to block",
             "destination": [
                 "panw-highrisk-ip-list"
             ],
@@ -194,7 +194,7 @@ Lists all security rules.
             ],
             "id": "Id",
             "log_setting": "Cortex Data Lake",
-            "name": "Drop Traffic to Potential High Risk IP Addresses",
+            "name": "name",
             "negate_destination": false,
             "position": "pre",
             "service": [
@@ -222,7 +222,7 @@ Lists all security rules.
 >### Security Rules
 >|Id|Name|Description|Action|Destination|Folder|
 >|---|---|---|---|---|---|
->| Id | Drop Traffic to Potential High Risk IP Addresses | Rule to block | drop | panw-highrisk-ip-list | Shared |
+>| Id | Name | Rule to block | drop | panw-highrisk-ip-list | Shared |
 
 
 ### prisma-sase-candidate-config-push
@@ -327,9 +327,9 @@ Update an existing security rule.
                 "any"
             ],
             "category": [
-                "Moishy Api"
+                "test"
             ],
-            "description": "strivhjfjfjng",
+            "description": "test",
             "destination": [
                 "any"
             ],
@@ -894,6 +894,31 @@ Create a new address group.
 | PrismaSase.AddressGroup.addresses | String | The address group addresses. | 
 | PrismaSase.AddressGroup.dynamic_filter | String | The address group filter. | 
 
+
+#### Command example
+```!prisma-sase-address-group-create name="somename" dynamic_filter="test" overwrite="false"```
+#### Context Example
+```json
+{
+    "PrismaSase": {
+        "AddressGroup": {
+            "dynamic_filter": "test",
+            "folder": "Shared",
+            "id": "Id",
+            "name": "somename"
+        }
+    }
+}
+
+```
+
+#### Human Readable Output
+
+>### Address Group created
+>|Dynamic Filter|Folder|Id|Name|
+>|---|---|---|---|
+>| test | Shared | Id | somename |
+
 ### prisma-sase-address-group-update
 ***
 Update an existing address group.
@@ -1376,6 +1401,36 @@ Update an existing dynamic list.
 | PrismaSase.ExternalDynamicList.source | String | The external dynamic list source. | 
 | PrismaSase.ExternalDynamicList.frequency | String | The external dynamic list frequency. | 
 
+
+
+#### Command example
+```!prisma-sase-external-dynamic-list-update id'"Id"" predefined_ip_list="panw-lowrisk-ip-list"```
+#### Context Example
+```json
+{
+    "PrismaSase": {
+        "ExternalDynamicList": {
+            "description": null,
+            "exception_list": null,
+            "folder": "Shared",
+            "frequency": null,
+            "id": "Id",
+            "name": "somename11",
+            "source": "panw-lowrisk-ip-list",
+            "type": "predefined_ip"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### External Dynamic List Updated
+>|Id|Name|Type|Folder|Description|Source|Frequency|
+>|---|---|---|---|---|---|---|
+>| Id | somename11 | predefined_ip | Shared |  | panw-lowrisk-ip-list |  |
+
+
 ### prisma-sase-external-dynamic-list-delete
 ***
 Delete a specific dynamic list.
@@ -1395,6 +1450,13 @@ Delete a specific dynamic list.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!prisma-sase-external-dynamic-list-delete id="Id"```
+#### Human Readable Output
+
+>External Dynamic List with id Id and name name was deleted successfully
+
+
 ### prisma-sase-url-category-list
 ***
 Get all predefined URL categories.
