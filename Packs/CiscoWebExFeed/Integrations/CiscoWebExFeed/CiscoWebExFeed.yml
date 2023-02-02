@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Cisco WebEx Feed Dev
+  id: Cisco WebEx Feed
   version: -1
 configuration:
   - defaultvalue: "true"
@@ -83,8 +83,8 @@ configuration:
     required: false
     type: 8
 description: Use the Cisco Webex Feed integration to fetch indicators from Webex.
-display: Cisco Webex Feed Dev
-name: Cisco WebEx Feed Dev
+display: Cisco Webex Feed
+name: Cisco WebEx Feed
 script:
   commands:
     - arguments:

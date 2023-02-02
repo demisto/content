@@ -50,9 +50,9 @@ There is no context output for this command.
 >### Indicators from Webex:
 >|value|type|
 >|---|---|
->| 23.89.0.0/16 | CIDR |
->| 62.109.192.0/18 | CIDR |
->| 64.68.96.0/19 | CIDR |
+>| 1.1.1.1/1 | CIDR |
+>| 1.2.3.4/5 | CIDR |
+>| 8.8.8.8/8 | CIDR |
 >| *.wbx2.com | DomainGlob |
 >| *.ciscospark.com | DomainGlob |
 >| *.webexcontent.com | DomainGlob |

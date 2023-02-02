@@ -33,7 +33,7 @@ def grab_domains(data: list) -> List:
         return a list of all the domains only
     """
     domainList: List = []
-    # skip the last line as it is not a domain
+    # skip the last line of the table, it's a message and not a domain
     for lines in data[:-1]:
         domains = lines[1].split(' ')
         cleanDomain = " ".join(re.findall(DOMAIN_REGEX, domains[0]))
