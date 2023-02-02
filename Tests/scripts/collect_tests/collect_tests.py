@@ -434,7 +434,7 @@ class TestCollector(ABC):
                     allow_incompatible_marketplace=False,
                     is_nightly=is_nightly,
                 ))
-            except (NothingToCollectException, NonXsoarSupportedPackException) as e:
+            except (NothingToCollectException, NonXsoarSupportedPackException, IncompatibleMarketplaceException) as e:
                 logger.debug(str(e))
         return CollectionResult.union(result)
 
@@ -514,7 +514,7 @@ class TestCollector(ABC):
             # we do want to install packs in this case (tests are not collected in this case anyway)
             logger.info(f'pack {pack_id} has support level {e.support_level} (not xsoar), '
                         f'collecting to make sure it is installed properly.')
-        except IncompatibleMarketplaceException:
+        except IncompatibleMarketplaceException as e:
             is_xsoar_and_xsiam_pack = MarketplaceVersions.XSOAR in (pack_metadata.marketplaces or ()) and \
                 MarketplaceVersions.MarketplaceV2 in (pack_metadata.marketplaces or ())
 
@@ -530,7 +530,7 @@ class TestCollector(ABC):
             # But still need to avoid collecting packs that belongs to one marketplace when collecting to the other marketplace.
             if (not allow_incompatible_marketplace or (allow_incompatible_marketplace and not is_xsoar_and_xsiam_pack)) \
                     and not collect_only_to_upload:
-                raise
+                raise e
 
         version_range = content_item_range \
             if pack_metadata.version_range.is_default \
@@ -1280,7 +1280,7 @@ if __name__ == '__main__':
 
     elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
         if args.override_all_packs:
-            collector = UploadAllCollector(marketplace, service_account, graph)
+            collector = UploadAllCollector(marketplace, graph)
         else:
             collector = UploadBranchCollector(branch_name, marketplace, service_account, graph=graph)
 
