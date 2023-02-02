@@ -35,7 +35,6 @@ XDR_INCIDENT_FIELDS = {
                         "xsoar_field_name": "severity"},
 }
 
-
 MIRROR_DIRECTION = {
     'None': None,
     'Incoming': 'In',
