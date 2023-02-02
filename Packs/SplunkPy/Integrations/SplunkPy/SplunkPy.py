@@ -1265,14 +1265,14 @@ def get_remote_data_command(service: client.Service, args: dict,
         if status_label == "Closed" or (status_label in close_extra_labels) \
                 or (close_end_statuses and argToBoolean(updated_notable.get('status_end', 'false'))):
             demisto.info(f'Closing incident related to notable {notable_id} with status_label: {status_label}')
-        entries = [{
-            'Type': EntryType.NOTE,
-            'Contents': {
+            entries = [{
+                'Type': EntryType.NOTE,
+                'Contents': {
                 'dbotIncidentClose': True,
                     'closeReason': f'Notable event was closed on Splunk with status \"{status_label}\".'
-            },
-            'ContentsFormat': EntryFormat.JSON
-        }]
+                },
+                'ContentsFormat': EntryFormat.JSON
+            }]
 
     else:
         demisto.debug('"status_label" key could not be found on the returned data, '
