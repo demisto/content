@@ -2448,20 +2448,21 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
 
     # Handle closing ticket/incident in XSOAR
     close_incident = params.get('close_incident')
-    server_close_custom_state = params.get('server_close_custom_state', None)
+    if close_incident != 'None':
+        server_close_custom_state = params.get('server_close_custom_state')
 
-    if server_close_custom_state or ticket.get('closed_at') and close_incident == 'closed' \
-            or ticket.get('resolved_at') and close_incident == 'resolved':
-        demisto.debug(f'ticket is closed: {ticket}')
-        entries.append({
-            'Type': EntryType.NOTE,
-            'Contents': {
-                'dbotIncidentClose': True,
-                'closeNotes': f'From ServiceNow: {ticket.get("close_notes")}',
-                'closeReason': converts_state_close_reason(ticket.get("state"), server_close_custom_state)
-            },
-            'ContentsFormat': EntryFormat.JSON
-        })
+        if server_close_custom_state or (ticket.get('closed_at') and close_incident == 'closed') \
+                or (ticket.get('resolved_at') and close_incident == 'resolved'):
+            demisto.debug(f'ticket is closed: {ticket}')
+            entries.append({
+                'Type': EntryType.NOTE,
+                'Contents': {
+                    'dbotIncidentClose': True,
+                    'closeNotes': f'From ServiceNow: {ticket.get("close_notes")}',
+                    'closeReason': converts_state_close_reason(ticket.get("state"), server_close_custom_state)
+                },
+                'ContentsFormat': EntryFormat.JSON
+            })
 
     demisto.debug(f'Pull result is {ticket}')
     return [ticket] + entries
@@ -2473,24 +2474,32 @@ def converts_state_close_reason(ticket_state: Optional[str], server_close_custom
     if 'Mirrored XSOAR Ticket custom close state code' parameter is set, the function will try to use it to
     determine the close reason (should be corresponding to a user-defined list of close reasons in the server configuration).
     then it will try using 'closed' or 'resolved' state, if set using 'Mirrored XSOAR Ticket closure method' parameter.
-    otherwise, it will use the 'out of the box' server incident close reason.
+    otherwise, it will use the default 'out of the box' server incident close reason.
     Args:
         ticket_state: Service now ticket state
         server_close_custom_state: server close custom state parameter
     Returns:
         The XSOAR state
     """
+    
+    # check if server_close_custom_state parameter is set, and if so, try to parse it, and use it to return a custom close reason
+    custom_label = ''
     if server_close_custom_state and ticket_state:
-        demisto.debug(f'trying to close XSOAR incident using custom states: {server_close_custom_state}')
+        demisto.debug(f'trying to close XSOAR incident using custom states: {server_close_custom_state}, with \
+            received state code: {ticket_state}')
         server_close_custom_state_dict = dict(item.split("=") for item in server_close_custom_state.split(","))
-        if ticket_state in server_close_custom_state_dict.keys():
+        if ticket_state in server_close_custom_state_dict:
             if custom_state_label := server_close_custom_state_dict.get(ticket_state):
-                demisto.debug(f'incident is closed using custom state. State Code: {ticket_state}, Label: {custom_state_label}')
-                return custom_state_label
-        return 'Other'
+                custom_label = custom_state_label
+
+    if custom_label:
+        demisto.debug(f'incident is closed using custom state. State Code: {ticket_state}, Label: {custom_label}')
+        return custom_label
     elif ticket_state in ['6', '7']:
+        demisto.debug(f'incident is closed using default state. State Code: {ticket_state}')
         return 'Resolved'
     else:
+        demisto.debug(f'incident is closed using default close reason "Other". State Code: {ticket_state}')
         return 'Other'
 
 
