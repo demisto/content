@@ -1,0 +1,21 @@
+args:
+- name: type
+  required: true
+- name: imageName
+  required: true
+commonfields:
+  id: 1c969de3-c684-4977-872b-295ad7be3f0b
+  version: -1
+dockerimage: demisto/python3:3.10.5.31928
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: CreatePrismaCloudComputeLink
+pswd: ''
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python

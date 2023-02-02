@@ -1,0 +1,21 @@
+args:
+- name: Indicators
+  required: true
+- name: Tags
+  required: true
+commonfields:
+  id: 5adcc0b4-c7db-4579-8049-4857568bfb4f
+  version: -1
+dockerimage: demisto/python3:3.10.5.31797
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: TagIndicatorButton
+pswd: ''
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python

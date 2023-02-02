@@ -1,0 +1,25 @@
+args:
+- isArray: true
+  name: table
+  required: true
+- name: title
+  required: true
+- description: The to email
+  name: to
+  required: true
+commonfields:
+  id: 27a08129-1f06-4b12-8a24-e585fc2d4fd8
+  version: -1
+dockerimage: demisto/python3:3.10.5.31797
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: CreatePrismaCloudComputeComplianceReportButton
+pswd: ''
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
