@@ -312,7 +312,7 @@ def create_relationships(field: str, indicator: dict, resource: dict) -> list:
     relationships = []
     for relation in resource[field]:
         if field == 'relations' and not CROWDSTRIKE_TO_XSOAR_TYPES.get(relation.get('type')):
-            demisto.debug(f"The related indicator type {relation.get('type')} deos not support for XSOAR.")
+            demisto.debug(f"The related indicator type {relation.get('type')} is not supported in XSOAR.")
             continue
         related_indicator_type = CROWDSTRIKE_TO_XSOAR_TYPES[field] if field != 'relations' else \
             CROWDSTRIKE_TO_XSOAR_TYPES[relation['type']]
