@@ -35,12 +35,6 @@ XDR_INCIDENT_FIELDS = {
                         "xsoar_field_name": "severity"},
 }
 
-XSOAR_RESOLVED_STATUS_TO_XDR = {
-    'Other': 'resolved_other',
-    'Duplicate': 'resolved_duplicate',
-    'False Positive': 'resolved_false_positive',
-    'Resolved': 'resolved_true_positive',
-}
 
 MIRROR_DIRECTION = {
     'None': None,
