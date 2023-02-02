@@ -39,7 +39,7 @@ if [ "$RESP" != "[]" ]; then
   echo "$PIPELINES"
   for pipeline in ${PIPELINES}
   do
-    echo "found pipeline"
+    echo "found pipelineto stop"
     source=$(echo $pipeline | jq -r ".source")
     status=$(echo $pipeline | jq -r ".status")
     id=$(echo $pipeline | jq -r ".id")
