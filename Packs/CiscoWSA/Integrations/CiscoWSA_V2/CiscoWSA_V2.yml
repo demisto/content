@@ -10,7 +10,6 @@ configuration:
   display: Server URL
   required: true
   type: 0
-  additionalinfo: Base URL, e.g., https://XXX.eu.iphmx.com
 - name: credentials
   display: Username
   required: true
@@ -488,7 +487,6 @@ script:
       - Encrypted File
       - Outbreak Heuristics
       - Unscannable
-
   - name: cisco-wsa-access-policy-delete
     description: Delete access policy.
     arguments:
@@ -503,6 +501,12 @@ script:
     arguments:
     - name: domain_names
       description: Comma separated domain names to retrieve.
+      required: false
+      isArray: true
+    - name: ip_addresses
+      description: |-
+        Comma separated IP addresses to search for.
+        This argument will retrieve the domain map record if one of the IP addresses specified is mapped to the domain. 
       required: false
       isArray: true
     - name: page
@@ -561,7 +565,9 @@ script:
       required: false
       isArray: false
     - name: ip_addresses
-      description: IP addresses to map for the domain.
+      description: |-
+        IP addresses to map for the domain.
+        Updating this will overwrite the existing IP addresses.
       required: false
       isArray: true
   - name: cisco-wsa-domain-map-delete

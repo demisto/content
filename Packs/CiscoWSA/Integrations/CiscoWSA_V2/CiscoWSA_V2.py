@@ -314,7 +314,9 @@ class Client(BaseClient):
                     "policy_name": policy_name,
                     "avc": {
                         "applications": {
-                            application: {action: {value: {} for value in values}},
+                            application: {action: values}
+                            if action == "block"
+                            else {action: {value: {} for value in values}},
                         },
                         "state": "custom",
                     },
@@ -705,7 +707,7 @@ class Client(BaseClient):
 def pagination(response: Dict[str, Any], args: Dict[str, Any]) -> Dict[str, Any]:
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size"))
-    limit = arg_to_number(args.get("limit"))
+    limit = arg_to_number(args.get("limit", 50))
 
     if page and page_size:
         offset = (page - 1) * page_size
@@ -1122,12 +1124,16 @@ def domain_map_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
         CommandResults: readable outputs for XSOAR.
     """
     domain_names = argToList(args.get("domain_names"))
+    ip_addresses = argToList(args.get("ip_addresses"))
 
     response = client.domain_map_list_request().get("res_data", [])
 
-    if domain_names:
+    if domain_names or ip_addresses:
         response = [
-            domain for domain in response if domain.get("domain_name") in domain_names
+            domain
+            for domain in response
+            if domain.get("domain_name") in domain_names
+            or any(address in domain.get("IP_addresses") for address in ip_addresses)
         ]
 
     paginated_response = pagination(response=response, args=args)
@@ -1175,7 +1181,7 @@ def domain_map_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
     else:
         raise DemistoException(response)
 
-    return CommandResults(readable_output=readable_output)
+    return CommandResults(readable_output=readable_output, raw_response=response)
 
 
 def domain_map_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1206,7 +1212,7 @@ def domain_map_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
     else:
         raise DemistoException(response)
 
-    return CommandResults(readable_output=readable_output)
+    return CommandResults(readable_output=readable_output, raw_response=response)
 
 
 def domain_map_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1226,21 +1232,21 @@ def domain_map_delete_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     if response.get("res_code") == 200:
         readable_output = (
-            f'Domain{"s" if len(domain_name) else ""} {", ".join(domain_name)} '
-            "successfully deleted."
+            f'Domain{"s" if len(domain_name) > 1 else ""} "{", ".join(domain_name)}" '
+            "deleted successfully."
         )
-        return CommandResults(readable_output=readable_output)
+        return CommandResults(readable_output=readable_output, raw_response=response)
     elif response.get("res_code") == 206:
         command_results_list = []
         for domain_map in dict_safe_get(response, ["res_data", "delete_success"]):
-            readable_output = f'Domain "{domain_map}" mapping successfully deleted.'
-            command_results_list.append(CommandResults(readable_output=readable_output))
+            readable_output = f'Domain "{domain_map}" mapping deleted successfully.'
+            command_results_list.append(CommandResults(readable_output=readable_output, raw_response=response))
 
         readable_output = dict_safe_get(
             response, ["res_data", "delete_failure", "error_msg"]
         )
         if readable_output:
-            command_results_list.append(CommandResults(readable_output=readable_output))
+            command_results_list.append(CommandResults(readable_output=readable_output, raw_response=response))
         return command_results_list
     else:
         raise DemistoException(response)
