@@ -44,13 +44,10 @@ class Client(BaseClient):
                         'start_time': start_time,
                         'end_time': end_time,
                         'next_token': next_token}
-        try:
-            response = self._http_request(method="GET", url_suffix='/tweets/search/recent',
-                                          headers=self._headers, params=query_params,
-                                          ok_codes=[200])
-            result, next_token = create_context_data_search_tweets(response)
-        except Exception as e:
-            raise e
+        response = self._http_request(method="GET", url_suffix='/tweets/search/recent',
+                                      headers=self._headers, params=query_params,
+                                      ok_codes=[200])
+        result, next_token = create_context_data_search_tweets(response)
         return response, result, next_token
 
     def twitter_user_get(self, users_names: list[str], return_pinned_tweets: str) -> tuple[dict, list[dict]]:
@@ -66,19 +63,18 @@ class Client(BaseClient):
                 dict: context data.
         """
         result = []
+        response = {}
         query_params = {'usernames': ','.join(f'{item}' for item in users_names),
                         'user.fields': 'created_at,description,entities,id,location,name,pinned_tweet_id,profile_image_url'
                         ',protected,public_metrics,url,username,verified,withheld'}
         if return_pinned_tweets == 'true':
             query_params['expansions'] = 'pinned_tweet_id'
             query_params['tweet.fields'] = 'id,text,attachments,conversation_id,created_at,public_metrics'
-        try:
-            response = self._http_request(method="GET", url_suffix='/users/by',
-                                          headers=self._headers, params=query_params,
-                                          ok_codes=[200])
-            result = create_context_data_get_user(response, return_pinned_tweets)
-        except Exception as e:
-            raise e
+        response = self._http_request(method="GET", url_suffix='/users/by',
+                                      headers=self._headers, params=query_params,
+                                      ok_codes=[200])
+        result = create_context_data_get_user(response, return_pinned_tweets)
+
         return response, result
 
 
@@ -205,15 +201,19 @@ def test_module(client: Client) -> str:
     return message
 
 
-def date_to_iso_format(date: str) -> str:
+def date_to_iso_format(date: Optional[str]) -> Optional[str]:
     """ Retrieves date string or relational expression to iso format date.
         Args:
             date: str - date or relational expression.
         Returns:
-            A str in ISO format.
+            A str in ISO format or None.
     """
-    date = dateparser.parse(date)
-    date = date.strftime("%Y-%m-%dT%H:%M:%SZ") if date else ''
+    if date:
+        datetime = dateparser.parse(date)
+        if datetime:
+            date = datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
+        else:
+            raise DemistoException('Twitter: Date format is invalid')
     return date
 
 
@@ -238,7 +238,7 @@ def create_human_readable_search(dict_list: list[dict]) -> list[dict]:
                     item.get("url", "") for item in dict_value.get("media", [])
                 ]
                 if dict_value.get("media", [])
-                else dict_value.get("media", []),
+                else [],
             }
         )
     return list_dict_response
@@ -250,12 +250,12 @@ def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> List[C
             client: client -  A Twitter client.
             args: Dict - The function arguments.
         Returns:
-            A CommandResult object with Tweets data according to to the reqest.
+            A CommandResult list with Tweets data according to to the reqest.
     """
     headers = ['Tweet ID', 'Text', 'Created At', 'Author Name', 'Author Username', 'Likes Count', 'Attachments URL']
     query = argToList(args.get('query'))
-    start_time = date_to_iso_format(args.get('start_time', '')) if args.get('start_time', None) else None
-    end_time = date_to_iso_format(args.get('end_time', '')) if args.get('end_time', None) else None
+    start_time = date_to_iso_format(args.get('start_time', None))
+    end_time = date_to_iso_format(args.get('end_time', None))
     limit = arg_to_number(args.get('limit', 50))
     next_token = args.get('next_token', None)
     raw_response, result, next_token = client.tweet_search(query, start_time, end_time, limit, next_token)
@@ -263,6 +263,12 @@ def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> List[C
     human_readable = tableToMarkdown("Tweets search results:", dict_to_tableToMarkdown,
                                      headers=headers, removeNull=False)
     command_results = []
+    command_results.append(CommandResults(
+        outputs_prefix='Twitter.Tweet.TweetList',
+        outputs_key_field='id',
+        outputs=result,
+        readable_output=human_readable,
+        raw_response=raw_response))
     if next_token:
         readable_output_next_token = tableToMarkdown("Tweet Next Token:", {'next_token': next_token},
                                                      headers=['next_token'], removeNull=False)
@@ -270,12 +276,6 @@ def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> List[C
             outputs={'Twitter.Tweet.NextToken(val.next_token)': {'next_token': next_token}},
             readable_output=readable_output_next_token,
         ))
-    command_results.append(CommandResults(
-        outputs_prefix='Twitter.Tweet.TweetList',
-        outputs_key_field='id',
-        outputs=result,
-        readable_output=human_readable,
-        raw_response=raw_response))
 
     return command_results
 
@@ -286,16 +286,16 @@ def twitter_user_get_command(client: Client, args: Dict[str, Any]) -> CommandRes
             client: client -  A Twitter client.
             args: Dict - The function arguments.
         Returns:
-            A CommandResult object with users' data according to to the reqest.
+            A CommandResult object with users' data according to the request.
     """
     headers = ['Name', 'User name', 'Created At', 'Description', 'Followers Count',
                'Tweet Count', 'Verified']
     user_name = argToList(args.get('user_name'))
     return_pinned_tweets = args.get('return_pinned_tweets', 'false')
     raw_response, result = client.twitter_user_get(user_name, return_pinned_tweets)
-    list_dict_to_tableToMarkdown: list = []
+    contents: list = []
     for dict_value in result:
-        list_dict_to_tableToMarkdown.append({
+        contents.append({
             'Name': dict_value.get('name'),
             'User name': dict_value.get('username'),
             'Created At': dict_value.get('created_at'),
@@ -304,7 +304,7 @@ def twitter_user_get_command(client: Client, args: Dict[str, Any]) -> CommandRes
             'Tweet Count': dict_value.get('public_metrics', {}).get('tweet_count'),
             'Verified': dict_value.get('verified'),
         })
-    human_readable = tableToMarkdown("Twitter user get results:", list_dict_to_tableToMarkdown,
+    human_readable = tableToMarkdown("Twitter user get results:", contents,
                                      headers=headers, removeNull=False)
     return CommandResults(
         outputs_prefix='Twitter.User',

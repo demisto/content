@@ -2,15 +2,14 @@ import json
 import io
 import freezegun
 import pytest
+from CommonServerPython import DemistoException
 
 
-class ResponseMock:
-    def __init__(self, _json={}):
-        self.status_code = 200
-        self._json = _json
+expected_hr_twitter_user_get = '### Twitter user get results:'\
+                               '\n|Name|User name|Created At|Description|Followers Count|Tweet Count|Verified|\n'\
+                               '|---|---|---|---|---|---|---|\n|'\
+                               ' Some_name | Some_user_name | 2024-11-09T09:55:45.000Z | Some_description | 12 | 15 | True |\n'\
 
-    def json(self):
-        return self._json
 
 
 def util_load_json(path):
@@ -21,18 +20,50 @@ def util_load_json(path):
 test_data = util_load_json('test_data/test_data.json')
 
 
-@pytest.mark.parametrize('response, expected_output, expected_human_readable, expected_raw', [
-                         (test_data['search_tweets_response'], test_data['search_tweet_output'],
-                          test_data['search_tweets_human_readable'], test_data['search_tweets_response'])])
-def test_twitter_tweet_search_command(mocker, response, expected_output, expected_human_readable, expected_raw):
+def side_effect_twitter_tweet_search(method, url_suffix, headers, params, ok_codes):
+    if int(params.get('max_results')) and (
+        int(params.get('max_results')) < 10 or int(params.get('max_results')) > 100
+    ):
+        raise DemistoException(
+            message=f"The max_results query parameter value [{params.get('max_results')}] is not between 10 and 100",
+            res={
+                "errors": [
+                    {
+                        "parameters": {"max_results": f"[{params.get('max_results')}]"},
+                        "message": f"The max_results query parameter value [{params.get('max_results')}] "
+                        "is not between 10 and 100",
+                    }
+                ],
+                "title": "Invalid Request",
+                "detail": "One or more parameters to your request was invalid.",
+                "type": "invalid-request",
+            }
+        )
+    if params.get('start_time') and params.get('end_time'):
+        return test_data["search_tweets_response_dates"]
+    return test_data["search_tweets_response"]
+
+
+@pytest.mark.parametrize('limit, start_time, end_time ,expected_output\
+                         ,expected_human_readable, expected_raw', [
+                         (10, '', '', test_data['search_tweet_output'],
+                          test_data['search_tweets_human_readable'], test_data['search_tweets_response']),
+                         (3, '', '', test_data['search_tweet_output'],
+                          test_data['search_tweets_human_readable'], test_data['search_tweets_response']),
+                         (200, '', '', test_data['search_tweet_output'],
+                          test_data['search_tweets_human_readable'], test_data['search_tweets_response']),
+                         (10, '2020-11-10T00:00:00Z', '2020-11-17T00:00:00Z',
+                          test_data['expected_output_dates'],
+                          test_data['search_tweets_human_readable_dates'], test_data['search_tweets_response_dates'])])
+def test_twitter_tweet_search_command(mocker, limit, start_time, end_time, expected_output,
+                                      expected_human_readable, expected_raw):
     """
     Given:
-        - script_results
+        - API response from twitter.
     When:
-        - after running a script on the XDRIR integration
+        - twitter-tweet-search command is executed.
     Then:
-        - choose the last script that is related to the process list.
-        (contains the Name,CPU,Memory in the entry).
+        - Validate readable output, outputs and raw response.
     """
     from Twitterv2 import Client, twitter_tweet_search_command
 
@@ -40,30 +71,33 @@ def test_twitter_tweet_search_command(mocker, response, expected_output, expecte
                     headers={'Authorization': 'Bearer 000'})
     args = {
         'query': 'some_tweet_text',
-        'start_time': '',
-        'end_time': '',
-        'limit': '10',
+        'start_time': start_time,
+        'end_time': end_time,
+        'limit': limit,
         'next_token': '',
     }
-    mocker.patch.object(Client, '_http_request', return_value=response)
-    result = twitter_tweet_search_command(client, args)
-    assert result[1].outputs == expected_output
-    assert result[1].readable_output == expected_human_readable
-    assert result[1].raw_response == expected_raw
+    mocker.patch.object(Client, '_http_request', side_effect=side_effect_twitter_tweet_search)
+    if limit < 10 or limit > 100:
+        with pytest.raises(DemistoException):
+            result = twitter_tweet_search_command(client, args)
+    else:
+        result = twitter_tweet_search_command(client, args)
+        assert result[0].outputs == expected_output
+        assert result[0].readable_output == expected_human_readable
+        assert result[0].raw_response == expected_raw
 
 
-@pytest.mark.parametrize('response, expected_output, expected_human_readable, expected_raw', [
+@pytest.mark.parametrize('response, expected_output, expected_raw', [
                          (test_data['user_get_response'], test_data['result_user_get_response'],
-                          test_data['user_get_human_readable'], test_data['user_get_response'])])
-def test_twitter_user_get_command(mocker, response, expected_output, expected_human_readable, expected_raw):
+                          test_data['user_get_response'])])
+def test_twitter_user_get_command(mocker, response, expected_output, expected_raw):
     """
     Given:
-        - script_results
+        - API response from twitter.
     When:
-        - after running a script on the XDRIR integration
+        - twitter-user-get command is executed.
     Then:
-        - choose the last script that is related to the process list.
-        (contains the Name,CPU,Memory in the entry).
+        - Validate readable output, outputs and raw response.
     """
     from Twitterv2 import Client, twitter_user_get_command
 
@@ -72,14 +106,12 @@ def test_twitter_user_get_command(mocker, response, expected_output, expected_hu
     args = {
         'user_name': 'some_username',
         'return_pinned_tweets': 'True',
-        'limit': '100',
+        'limit': '10',
     }
     mocker.patch.object(Client, '_http_request', return_value=response)
     result = twitter_user_get_command(client, args)
 
-    mocker.patch.object(Client, '_http_request', return_value=response)
-
-    assert result.readable_output == expected_human_readable
+    assert result.readable_output == expected_hr_twitter_user_get
     assert result.outputs == expected_output
     assert result.raw_response == expected_raw
 
