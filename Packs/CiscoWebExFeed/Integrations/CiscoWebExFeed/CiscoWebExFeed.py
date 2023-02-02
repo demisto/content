@@ -81,20 +81,25 @@ def parse_indicators_from_response(response: requests.Response) -> Dict[str, Lis
     Parses the page, and returns a dict with two keys: DOMAIN and CIDR(ip ranges),
     while the value is a list of the related indicators.
     """
-    soup = BeautifulSoup(response.text, "html.parser")
+    try:
+        soup = BeautifulSoup(response.text, "html.parser")
 
-    # Get the IP and Domain Sections from the html
-    ipsSection = soup.find("div", {"id": "id_135011"})
-    domainsSection = soup.find("div", {"id": "id_135010"})
+        # Get the IP and Domain Sections from the html
+        ipsSection = soup.find("div", {"id": "id_135011"})
+        domainsSection = soup.find("div", {"id": "id_135010"})
 
-    # Get Domains
-    domainTable = grab_domain_table(domainsSection)
-    all_domains_lst = grab_domains(domainTable)
+        # Get Domains
+        domainTable = grab_domain_table(domainsSection)
+        all_domains_lst = grab_domains(domainTable)
 
-    # Get IPS
-    ipTable = grab_ip_table(ipsSection)
-    all_IPs_lst = grab_CIDR_ips(ipTable)
+        # Get IPS
+        ipTable = grab_ip_table(ipsSection)
+        all_IPs_lst = grab_CIDR_ips(ipTable)
+    except Exception as e:
+        raise DemistoException(f'Failed to parse the response from the website. Error: {str(e)}')
 
+    if not all_IPs_lst or not all_domains_lst:
+        raise DemistoException('Did not find the exepted indicators in the response from the website.')
     all_info_dict = {CIDR: all_IPs_lst, DOMAIN: all_domains_lst}
     return all_info_dict
 
@@ -153,15 +158,17 @@ def get_indicators_command(client: Client, **args) -> CommandResults:
     client = client
     limit = arg_to_number(args.get('limit', 20))
     requested_indicator_type = args.get('indicator_type', 'Both')
+    if requested_indicator_type not in ['Both', 'CIDR', 'DOMAIN']:
+        raise DemistoException('indicator_type argument must be one of the following: Both, CIDR, DOMAIN')
 
     res = client.all_raw_data()
-    # parse the data from an html page to a list of dicts with ips and domains
     clean_res = parse_indicators_from_response(res)
 
+    # parse the data from an html page to a list of dicts with ips and domains
     if requested_indicator_type != 'Both':
-        indicators = clean_res.get(requested_indicator_type)[:limit]  # type: ignore
+        indicators = clean_res[requested_indicator_type][:limit]
     else:
-        indicators = clean_res.get(CIDR)[:limit] + clean_res.get(DOMAIN)[:limit]  # type: ignore
+        indicators = clean_res[CIDR][:limit] + clean_res[DOMAIN][:limit]
     final_indicators_lst = []
     for value in indicators:
         type_ = check_indicator_type(value)
@@ -193,7 +200,7 @@ def fetch_indicators_command(client: Client, tags: tuple = None, tlp_color: str 
     clean_res = parse_indicators_from_response(res)
     results = []
     indicator_mapping_fields = {'tags': tags, 'trafficlightprotocol': tlp_color}
-    for indicator in clean_res.get(CIDR) + clean_res.get(DOMAIN):   # type: ignore
+    for indicator in clean_res[CIDR] + clean_res[DOMAIN]:
         results.append({
             'value': indicator,
             'type': check_indicator_type(indicator),
