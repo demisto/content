@@ -86,7 +86,7 @@ def test_module(client: Client, serverurls: str) -> str:
         return 'ok'
     except DemistoException as e:
         return f'Error: {e}'
-    
+
 
 def send_teams_message_command(client: Client, message: str, title: str, serverurls: str) -> CommandResults:
     """
