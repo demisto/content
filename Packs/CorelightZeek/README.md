@@ -3,7 +3,7 @@ This pack includes Cortex XSIAM content.
 ## Configuration on Server Side
 You need to configure Corelight Sensor to forward Zeek Syslog messages.
 
-1. Open Corelight Sensor UI, at the left bar choose "Configuration".
+1. Open the Corelight Sensor UI, and on the left menu bar click **Configuration**.
 2. Open the **Export** tab and scroll down to **Export to Syslog**.
     * Under "Syslog Server"- Set your XSIAM IP and Port numbers.
     * Under "Syslog Format"- Pick the "Default" option.
