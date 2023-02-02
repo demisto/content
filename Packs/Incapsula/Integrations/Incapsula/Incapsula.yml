@@ -1186,7 +1186,7 @@ script:
     description: Use this operation to get Infrastructure Protection statistics for an account or IP range.
     outputs:
     - contextPath: Imperva.EventStats.stats.payload.ipPrefix
-      description: SCE IP prefix
+      description: IP prefix
       type: string
     - contextPath: Imperva.EventStats.stats.payload.ipPrefixType
       description: IP prefix type
@@ -1376,7 +1376,7 @@ script:
       - PEAK
       - AVERAGE
       required: true
-    description: '(SCE) Use this operation to view the highest peak values and highest average values for a protected IP range during a selected time period. '
+    description: 'Use this operation to view the highest peak values and highest average values for a protected IP range during a selected time period. '
     name: incap-get-infra-protection-top-items-table
 tests:
 - No test
