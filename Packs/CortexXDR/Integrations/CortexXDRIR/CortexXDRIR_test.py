@@ -825,44 +825,19 @@ def test_update_incident(requests_mock):
     assert readable_output == 'Incident 1 has been updated'
 
 
-def test_get_update_args_when_getting_close_reason():
-    """
-    Given:
-        - closingUserId from update_remote_system
-    When
-        - An incident in XSOAR was closed with "Duplicate" as a close reason.
-    Then
-        - The status that the incident is getting to be mirrored out is "resolved_duplicate"
-    """
-    from CoreIRApiModule import get_update_args
-    from CommonServerPython import UpdateRemoteSystemArgs
-    remote_args = UpdateRemoteSystemArgs({
-        'delta': {
-            'closeReason': 'Duplicate', 'closeNote': 'Closed as Duplicate.',
-            'closingUserId': 'Admin'},
-        'data': {'status': 'new'},
-        'status': 2}
+@pytest.mark.parametrize('incident_changed, delta',
+                         [(True, {'CortexXDRIRstatus': 'investigating'}),
+                          (False, {})])
+def test_update_remote_system_command(incident_changed, delta):
+    from CortexXDRIR import update_remote_system_command, Client
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
-    update_args = get_update_args(remote_args)
-    assert update_args.get('status') == 'resolved_duplicate'
-    assert update_args.get('closeNote') == 'Closed as Duplicate.'
-
-
-def test_get_update_args_when_not_getting_closing_user_id():
-    """
-    Given:
-        - delta from update_remote_system
-    When
-        - An incident in XSOAR was closed and update_remote_system has occurred.
-    Then
-        - Because There is no change in the "closingUserId" value, the status should not change.
-    """
-    from CoreIRApiModule import get_update_args
-    from CommonServerPython import UpdateRemoteSystemArgs
-    remote_args = UpdateRemoteSystemArgs({
-        'delta': {'someChange': '1234'},
-        'data': {'status': 'new'},
-        'status': 2}
-    )
-    update_args = get_update_args(remote_args)
-    assert update_args.get('status') == 'resolved_other'
+    data = {'CortexXDRIRstatus': 'uninvestigated'}
+    expected_remote_id = 'remote_id'
+    args = {'remoteId': expected_remote_id, 'data': data, 'entries': [], 'incidentChanged': incident_changed,
+            'delta': delta,
+            'status': 2,
+            }
+    actual_remote_id = update_remote_system_command(client, args)
+    assert actual_remote_id == expected_remote_id
