@@ -19,9 +19,5 @@ xdm.network.dns.is_response=to_boolean(if(ResponseRequest="R",1,0)),
 xdm.network.ip_protocol= if(protocol="ICMP", XDM_CONST.IP_PROTOCOL_ICMP, protocol="TCP", XDM_CONST.IP_PROTOCOL_TCP, protocol="UDP", XDM_CONST.IP_PROTOCOL_UDP, to_string(protocol)),
 xdm.session_context_id=Context,
 xdm.target.ipv4="",
-xdm.target.agent.identifier = "",
-xdm.observer.content_version = "",
-xdm.target.host.device_id = "",
 xdm.network.dns.dns_resource_record.type = answerType,
-xdm.network.dns.dns_resource_record.value = answerValue,
-xdm.network.dns.dns_resource_record.name = "";
+xdm.network.dns.dns_resource_record.value = answerValue;
