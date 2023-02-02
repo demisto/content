@@ -52,7 +52,6 @@ FETCH_INDICATORS_UOTPUT_2 = [{'value': 'ipmock1', 'type': 'Domain', 'fields': {'
                                                                                    'trafficlightprotocol': 'very_yellow'}}]
 
 
-
 def test_grab_domains():
     """
     Given:
