@@ -57,7 +57,6 @@ else:
 # Create list of IPs with private property and tag
 ip_list = [{"Address": ip, "Private": check_ip_internal(ip, private_ranges), "Tag": get_ip_tag(
     ip, private_ranges)} for ip in ip_addresses_to_check]
-demisto.log(f"IP list: {ip_list}")
 
 # Create entry context and human-readable results
 entry_context = {"IP(val.Address == obj.Address)": ip_list}
