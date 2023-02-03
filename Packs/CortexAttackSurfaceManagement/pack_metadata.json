@@ -55,6 +55,7 @@
         "ServiceNow",
         "Nmap",
         "Tenable_io",
+        "Azure-Enrichment-Remediation",
         "AWS-Enrichment-Remediation",
         "GCP-Enrichment-Remediation",
         "CommonScripts"
