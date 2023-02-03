@@ -923,7 +923,7 @@ inputs:
 - key: RemoteIP
   value:
     complex:
-      root: alert
+      root: inputs
       accessor: remoteip
   required: false
   description: IP address of service
