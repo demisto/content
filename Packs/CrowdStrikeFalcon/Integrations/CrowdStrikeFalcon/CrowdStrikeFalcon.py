@@ -4232,7 +4232,7 @@ def get_filevantage_changes_details_command(args: dict):
 
         :param change_id: The change ID to get details
     """
-    change_id = args.get('change_id')
+    change_id = str(args.get('change_id'))
     try:
         raw_res = get_filevantage_changes_details(change_id)
         if raw_res:
@@ -4308,7 +4308,7 @@ def get_spotlight_vulnerabilities_details_command(args: dict):
 
         :param vul_id: The vulnerability ID to get details
     """
-    vul_id = args.get('vul_id')
+    vul_id = str(args.get('vul_id'))
     try:
         raw_res = get_spotlight_vulnerabilities_details(vul_id)
         if raw_res:

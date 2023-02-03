@@ -2960,7 +2960,7 @@ script:
       name: time_range
       required: false
     description: Retrieve Get a list of changes from File Vantage.
-    name: get_spotlight_vulnerabilities_list_command
+    name: cs-falcon-spotlight-get-vulnerabilities-list
     outputs:
     - contextPath: CrowdStrike.Spotlight.VulnerabilitiesList.trace_id
       description: Unique system-assigned ID of the search batch.
@@ -2976,7 +2976,7 @@ script:
       name: change_id
       required: true
     description: Get the full list of properties about the vulnerability using its ID.
-    name: get_spotlight_vulnerabilities_details_command
+    name: cs-falcon-spotlight-get-vulnerability-detail
     outputs:
     - contextPath: CrowdStrike.Spotlight.VulnerabilityDetails.id
       description: Unique vulnerability ID.
