@@ -5433,6 +5433,7 @@
         "EWS_O365_send_mail_test": "Issue 44200",
         "Cisco Umbrella Test": "Issue 24338",
         "Unit42 Intel Objects Feed - Test": "Issue 44100",
+        "Fetch Indicators Test": "Issue 45490",
         "FormattedDateToEpochTest": "Issue 26724",
         "CrowdstrikeFalconSandbox2 Test": "Issue 46845",
         "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)": "Issue 44543",
