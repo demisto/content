@@ -808,14 +808,14 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str, extensions_dict: 
     if SERVER.has_extension and object_type not in SERVER.types_for_indicator_sdo:
         stix_object, extension_definition, extensions_dict = create_extension_definition(object_type, extensions_dict, xsoar_type,
                                                                                          created_parsed, modified_parsed,
-                                                                                         stix_object)
+                                                                                         stix_object, xsoar_indicator_to_return)
 
     if is_sdo:
         stix_object['description'] = xsoar_indicator.get('CustomFields', {}).get('description', "")
     return stix_object, extension_definition, extensions_dict
 
 
-def create_extension_definition(object_type, extensions_dict, xsoar_type, created_parsed, modified_parsed, stix_object):
+def create_extension_definition(object_type, extensions_dict, xsoar_type, created_parsed, modified_parsed, stix_object, xsoar_indicator_to_return):
     """
     Args:
         object_type: the type of the stix_object.
@@ -824,6 +824,7 @@ def create_extension_definition(object_type, extensions_dict, xsoar_type, create
         created_parsed: the stix object creation time.
         modified_parsed: the stix object last modified time.
         stix_object: Stix object entry.
+        xsoar_indicator_to_return: the xsoar indicator to return.
 
     Create an extension definition and update the stix object and extensions dict accordingly.
 
