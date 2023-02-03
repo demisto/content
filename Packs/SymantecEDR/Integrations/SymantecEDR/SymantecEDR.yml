@@ -1800,7 +1800,7 @@ script:
     execution: false
     name: file
     polling: true
-  dockerimage: demisto/python3:3.10.9.46032
+  dockerimage: demisto/python3:3.10.9.46807
   feed: false
   isfetch: true
   longRunning: false

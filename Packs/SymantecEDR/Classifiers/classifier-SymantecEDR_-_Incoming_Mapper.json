@@ -42,7 +42,7 @@
                 "External ID": {
                     "simple": "incident.incident_id"
                 },
-                "Symantec EDR Detection Type": {
+                "SymantecEDR Detection Type": {
                     "complex": {
                         "accessor": "detection_type",
                         "filters": [],
@@ -50,7 +50,7 @@
                         "transformers": []
                     }
                 },
-                "Symantec EDR Enriched Data": {
+                "SymantecEDR Enriched Data": {
                     "complex": {
                         "accessor": "enriched_data",
                         "filters": [],
@@ -62,7 +62,7 @@
                         ]
                     }
                 },
-                "Symantec EDR Event Actor": {
+                "SymantecEDR Event Actor": {
                     "complex": {
                         "filters": [],
                         "root": "events.event_actor",
@@ -73,7 +73,7 @@
                         ]
                     }
                 },
-                "Symantec EDR Event Actor File": {
+                "SymantecEDR Event Actor File": {
                     "complex": {
                         "accessor": "file",
                         "filters": [],
@@ -85,7 +85,7 @@
                         ]
                     }
                 },
-                "Symantec EDR Event Actor User": {
+                "SymantecEDR Event Actor User": {
                     "complex": {
                         "accessor": "user",
                         "filters": [],
@@ -97,7 +97,7 @@
                         ]
                     }
                 },
-                "Symantec EDR Event Process": {
+                "SymantecEDR Event Process": {
                     "complex": {
                         "accessor": "process",
                         "filters": [],
@@ -109,14 +109,14 @@
                         ]
                     }
                 },
-                "Symantec EDR Incident Comments": {
+                "SymantecEDR Incident Comments": {
                     "complex": {
                         "filters": [],
                         "root": "comments",
                         "transformers": []
                     }
                 },
-                "Symantec EDR Incident Events": {
+                "SymantecEDR Incident Events": {
                     "complex": {
                         "filters": [],
                         "root": "events",
@@ -127,7 +127,7 @@
                         ]
                     }
                 },
-                "Symantec EDR Process File": {
+                "SymantecEDR Process File": {
                     "complex": {
                         "accessor": "file",
                         "filters": [],
@@ -139,7 +139,7 @@
                         ]
                     }
                 },
-                "Symantec EDR Process User": {
+                "SymantecEDR Process User": {
                     "complex": {
                         "accessor": "user",
                         "filters": [],
@@ -151,7 +151,7 @@
                         ]
                     }
                 },
-                "Symantec EDR Recommended Action": {
+                "SymantecEDR Recommended Action": {
                     "complex": {
                         "accessor": "recommended_action",
                         "filters": [],
@@ -159,7 +159,7 @@
                         "transformers": []
                     }
                 },
-                "Symantec EDR Rule ID": {
+                "SymantecEDR Rule ID": {
                     "complex": {
                         "accessor": "atp_rule_id",
                         "filters": [],
@@ -167,7 +167,7 @@
                         "transformers": []
                     }
                 },
-                "Symantec EDR attacks": {
+                "SymantecEDR attacks": {
                     "complex": {
                         "accessor": "attacks",
                         "filters": [],

@@ -3,7 +3,6 @@ version: -1
 name: Symantec EDR Incident Playbook
 description: Symantec EDR Incident Status playbook
 starttaskid: "0"
-fromversion: 6.8.0
 tasks:
   "0":
     id: "0"
@@ -333,12 +332,11 @@ view: |-
   }
 inputs:
 - key: incident
-  value:
-    simple: ${incident.externalid}
+  value: {}
   required: false
   description: ""
   playbookInputQuery:
-outputs:
-- contextPath: incident.status
-  description: Incident Status
-  type: string
+outputs: []
+tests:
+- No tests
+fromversion: 6.8.0
