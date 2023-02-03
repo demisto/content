@@ -2677,17 +2677,15 @@ def get_behavior_command():
         :return: EntryObject of get behavior command
     """
     behavior_id = demisto.args().get('behavior_id')
-    detections_ids = demisto.get(get_detections(behavior_id=behavior_id), 'resources')
-    raw_res = get_detections_entities(detections_ids)
+    body = {'ids': [behavior_id]}
+    response = http_request('POST', '/incidents/entities/behaviors/GET/v1',data=body)
     entries = []
-    if "resources" in raw_res:
-        for resource in demisto.get(raw_res, "resources"):
-            for behavior in demisto.get(resource, 'behaviors'):
-                entries.append(behavior_to_entry_context(behavior))
-    hr = tableToMarkdown('Behavior ID: {}'.format(behavior_id), entries, headerTransform=pascalToSpace)
-    # no dt since behavior vary by more than their ID
-    ec = {'CrowdStrike.Behavior': entries}
-    return create_entry_object(contents=raw_res, ec=ec, hr=hr)
+    if "resources" in response:
+        for resource in demisto.get(response, "resources"):
+            entries.append(behavior_to_entry_context(resource))
+    readable_output = tableToMarkdown(f'CrowdStrike Behavior {behavior_id}', response)
+    ec = {'CrowdStrike.Behavior': response}
+    return create_entry_object(contents=response, ec=ec, hr=readable_output)
 
 
 def search_detections_command():
