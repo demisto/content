@@ -3450,9 +3450,9 @@ def get_asset_tags_command(client: Client, asset_id: str) -> CommandResults | li
             data=tag,
             name_mapping={
                 "type": "Type",
-                "riskModifier": "Risk Modifier",
+                "riskModifier": "RiskModifier",
                 "name": "Name",
-                "created": "Created Time",
+                "created": "CreatedTime",
             },
             include_none=True,
         )
