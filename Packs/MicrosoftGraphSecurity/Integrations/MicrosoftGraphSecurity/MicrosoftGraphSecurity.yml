@@ -1,7 +1,4 @@
 category: Analytics & SIEM
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Microsoft Graph
   version: -1
@@ -223,30 +220,30 @@ script:
       description: Alert provider
       type: string
   - arguments:
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: When the alert was last modified in the following string format - YYYY-MM-DD
       isArray: false
       name: last_modified
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - Last24Hours
       - Last48Hours
       - LastWeek
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Alert severity - set by vendor/provider.
+    - default: false
+      description: 'Alert severity - set by vendor/provider.'
       isArray: false
       name: severity
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - unknown
       - informational
       - low
       - medium
       - high
-      required: false
-      secret: false
     - default: false
       description: The start time (creation time of alert) for the search in the following string format - YYYY-MM-DD
       isArray: false
@@ -305,12 +302,12 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: All
       description: 'Fields to fetch for specified Alert apart from the basic properties, given as comma separated values, e.g. NetworkConnections,Processes. Optional values: All,NetworkConnections,Processes,RegistryKeys,UserStates,HostStates,FileStates,CloudAppStates,MalwareStates,CustomerComment,Triggers,VendorInformation,VulnerabilityStates'
       isArray: false
       name: fields_to_include
       required: false
       secret: false
+      defaultValue: All
     deprecated: true
     description: Get details for a specific alert.
     execution: false
@@ -343,14 +340,7 @@ script:
     - contextPath: MsGraph.Alert.Provider
       description: Alert provider
       type: Unknown
-  - arguments:
-    - default: true
-      description: The Alert ID - Provider-generated GUID/unique identifier.
-      isArray: false
-      name: alert_id
-      required: true
-      secret: false
-    deprecated: false
+  - deprecated: false
     description: Get details for a specific alert.
     execution: false
     name: msg-get-alert-details-v2
@@ -382,6 +372,13 @@ script:
     - contextPath: MsGraph.Alert.Provider
       description: Alert provider
       type: Unknown
+    arguments:
+    - default: true
+      description: The Alert ID - Provider-generated GUID/unique identifier.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
   - arguments:
     - default: false
       description: The Alert ID. Provider-generated GUID/unique identifier.
@@ -501,7 +498,7 @@ script:
     - contextPath: MsGraph.User.Name
       description: User name
       type: string
-  dockerimage: demisto/crypto:1.0.0.45575
+  dockerimage: demisto/crypto:1.0.0.47103
   feed: false
   isfetch: true
   longRunning: false
@@ -514,3 +511,6 @@ tests:
 - Microsoft Graph Security Test dev
 - Microsoft Graph Security Test prod
 fromversion: 5.0.0
+sectionOrder:
+- Connect
+- Collect
