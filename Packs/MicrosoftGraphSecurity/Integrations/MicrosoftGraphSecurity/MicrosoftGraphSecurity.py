@@ -228,7 +228,7 @@ def search_alerts_v2_command(client: MsGraphClient, args):
     ec = {
         'MsGraph.Alert(val.ID && val.ID === obj.ID)': outputs
     }
-    table_headers = ['ID', 'Provider', 'Title', 'Category', 'Severity', 'CreatedDate', 'EventDate', 'Status']
+    table_headers = ['ID', 'Provider', 'Title', 'Category', 'Severity', 'CreatedDate', 'FirstActivityDateTime', 'LastActivityDateTime', 'Status']
     human_readable = tableToMarkdown('Microsoft Security Graph Alerts', outputs, table_headers, removeNull=True)
     return human_readable, ec, alerts
 
@@ -480,7 +480,7 @@ def get_alert_details_v2_command(client: MsGraphClient, args):
     if alert_details['comments']:
         comments = alert_details['comments']
         if comments:
-            comments_hr = '### Customer Provided Comments for Alert\n'
+            comments_hr = '### Comments provided for Alert\n'
             for comment in comments:
                 comments_hr += '- {}\n'.format(comment['comment'])
             hr += comments_hr
