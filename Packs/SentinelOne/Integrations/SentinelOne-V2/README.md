@@ -19,9 +19,30 @@ This integration was integrated and tested with versions 2.0 and 2.1 of Sentinel
     | Site IDs | Comma-separated list of site IDs to fetch incidents for. Leave blank to fetch all sites. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
+    | Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from SentinelOne to XSOAR\), Outgoing \(from XSOAR to SentinelOne\), or Incoming and Outgoing \(to/from SentinelOne and XSOAR\). | False |
     | API Token (Deprecated) | Use the "API Token \(Recommended\)" parameter instead. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+### Incident Mirroring
+ 
+You can enable incident mirroring between Cortex XSOAR incidents and SentinelOne incidents (available from Cortex XSOAR version 6.0.0).
+
+To setup the mirroring follow these instructions:
+1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+2. Search for **SentinelOne** and select your integration instance.
+3. Enable **Fetches incidents**.
+4. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+    - Incoming - Any changes in SentinelOne incidents (`Analyst verdict`, `Threat status`) will be reflected in XSOAR incidents.
+    - Outgoing - Any changes in XSOAR incidents will be reflected in SentinelOne incidents (`SentinelOne Threat Analyst Verdict`, `SentinelOne Threat Status`).
+    - Incoming And Outgoing - Changes in XSOAR incidents and SentinelOne incidents  will be reflected in both directions.
+    - None - Turns off incident mirroring.
+
+Newly fetched incidents  will be mirrored in the chosen direction.  However, this selection does not affect existing incidents.
+
+**Important Notes**
+ - To ensure the mirroring works as expected, `mappers` and `Incident type` are required, both for incoming and outgoing, to map the expected fields in XSOAR and SentinelOne.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
