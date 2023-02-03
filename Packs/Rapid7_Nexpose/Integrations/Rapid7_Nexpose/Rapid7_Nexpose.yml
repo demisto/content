@@ -197,7 +197,6 @@ script:
       name: limit
       required: false
       secret: false
-      defaultValue: '10'
     deprecated: false
     description: Returns all assets for which you have access.
     execution: false
