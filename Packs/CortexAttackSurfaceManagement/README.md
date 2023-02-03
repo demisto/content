@@ -42,6 +42,7 @@ Automated remediation is only possible when the right conditions are met.  These
 
 ### Playbooks
 
+- [Cortex ASM - ASM Alert](#cortex-asm---asm-alert)
 - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
 - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
 - [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
