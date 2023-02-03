@@ -92,6 +92,45 @@ Returns the specified asset.
 | Nexpose.AssetTag.name | string | The value of the tag |
 | Nexpose.AssetTag.risk_modifier | string | The risk modifier value associated with criticality tag type |
 
+#### Command example
+
+```!nexpose-get-asset-tags asset_id=1```
+
+#### Context Example
+
+```json
+{
+    "Nexpose":{
+        "AssetTag":[
+                {
+                    "created_time": "2023-00-00T00:00:00.000Z",
+                    "name": "Low",
+                    "risk_modifier": "0.75",
+                    "type": "criticality"
+                },
+                {
+                    "created_time": "2023-00-00T00:00:00.000Z",
+                    "name": "FAKELOCATION",
+                    "risk_modifier": null,
+                    "type": "location"
+                },
+                {
+                    "created_time": "2023-00-00T00:00:00.000Z",
+                    "name": "FAKEOWNER",
+                    "risk_modifier": null,
+                    "type": "owner"
+                },
+                {
+                    "created_time": "2023-00-00T00:00:00.000Z",
+                    "name": "AWS",
+                    "risk_modifier": null,
+                    "type": "custom"
+                }
+            ]
+    }
+}
+```
+
 ### nexpose-get-assets
 ***
 Returns all assets for which you have access.
