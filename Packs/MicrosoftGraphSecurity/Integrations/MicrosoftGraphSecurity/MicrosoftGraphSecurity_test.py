@@ -108,6 +108,174 @@ EXPECTED_ALERTS_OUTPUT = {'MsGraph.Alert(val.ID && val.ID === obj.ID)': [
      'CreatedDate': '2020-04-16T09:58:19.4253561Z', 'EventDate': '2020-04-15T15:27:53.8499648Z', 'Status': 'resolved',
      'Vendor': 'Microsoft', 'Provider': 'Microsoft Defender ATP'}]}
 
+# msg-search-alerts-v2 data:
+ALERTS_V2_RAW_RESPONSE = {"value": [{
+    "@odata.type": "#microsoft.graph.security.alert",
+    "id": "da637551227677560813_-961444813",
+    "providerAlertId": "da637551227677560813_-961444813",
+    "incidentId": "28282",
+    "status": "new",
+    "severity": "low",
+    "classification": "unknown",
+    "determination": "unknown",
+    "serviceSource": "microsoftDefenderForEndpoint",
+    "detectionSource": "antivirus",
+    "detectorId": "e0da400f-affd-43ef-b1d5-afc2eb6f2756",
+    "tenantId": "b3c1b5fc-828c-45fa-a1e1-10d74f6d6e9c",
+    "title": "Suspicious execution of hidden file",
+    "description": "A hidden file has been launched. This activity could indicate a compromised host. Attackers often hide"
+    " files associated with malicious tools to evade file system inspection and defenses.",
+    "recommendedActions": "Collect artifacts and determine scope\n�\tReview the machine timeline for suspicious activities"
+    " that may have occurred before and after the time of the alert, and record additional related artifacts (files, IPs/URLs)"
+    " \n�\tLook for the presence of relevant artifacts on other systems. Identify commonalities and differences between "
+    "potentially compromised systems.\n�\tSubmit relevant files for deep analysis and review resulting detailed behavioral "
+    "information.\n�\tSubmit undetected files to the MMPC malware portal\n\nInitiate containment & mitigation \n�\tContact "
+    "the user to verify intent and initiate local remediation actions as needed.\n�\tUpdate AV signatures and run a full scan."
+    " The scan might reveal and remove previously-undetected malware components.\n�\tEnsure that the machine has the latest "
+    "security updates. In particular, ensure that you have installed the latest software, web browser, and Operating System "
+    "versions.\n�\tIf credential theft is suspected, reset all relevant users passwords.\n�\tBlock communication with relevant"
+    " URLs or IPs at the organization�s perimeter.",
+    "category": "DefenseEvasion",
+    "assignedTo": None,
+    "alertWebUrl": "https://security.microsoft.com/alerts/da637551227677560813_-961444813?tid=b3c1b5fc-828c-45fa-a1e1-"
+    "10d74f6d6e9c",
+    "incidentWebUrl": "https://security.microsoft.com/incidents/28282?tid=b3c1b5fc-828c-45fa-a1e1-10d74f6d6e9c",
+    "actorDisplayName": None,
+    "threatDisplayName": None,
+    "threatFamilyName": None,
+    "mitreTechniques": [
+        "T1564.001"
+    ],
+    "createdDateTime": "2021-04-27T12:19:27.7211305Z",
+    "lastUpdateDateTime": "2021-05-02T14:19:01.3266667Z",
+    "resolvedDateTime": None,
+    "firstActivityDateTime": "2021-04-26T07:45:50.116Z",
+    "lastActivityDateTime": "2021-05-02T07:56:58.222Z",
+    "comments": [],
+    "evidence": [
+        {
+            "@odata.type": "#microsoft.graph.security.deviceEvidence",
+            "createdDateTime": "2021-04-27T12:19:27.7211305Z",
+            "verdict": "unknown",
+            "remediationStatus": "none",
+            "remediationStatusDetails": None,
+            "firstSeenDateTime": "2020-09-12T07:28:32.4321753Z",
+            "mdeDeviceId": "73e7e2de709dff64ef64b1d0c30e67fab63279db",
+            "azureAdDeviceId": None,
+            "deviceDnsName": "tempDns",
+            "osPlatform": "Windows10",
+            "osBuild": 22424,
+            "version": "Other",
+            "healthStatus": "active",
+            "riskScore": "medium",
+            "rbacGroupId": 75,
+            "rbacGroupName": "UnassignedGroup",
+            "onboardingStatus": "onboarded",
+            "defenderAvStatus": "unknown",
+            "loggedOnUsers": [],
+            "roles": [
+                "compromised"
+            ],
+            "tags": [
+                "Test Machine"
+            ],
+            "vmMetadata": {
+                "vmId": "ca1b0d41-5a3b-4d95-b48b-f220aed11d78",
+                "cloudProvider": "azure",
+                "resourceId": "/subscriptions/8700d3a3-3bb7-4fbe-a090-488a1ad04161/resourceGroups/WdatpApi-EUS-STG/providers/"
+                "Microsoft.Compute/virtualMachines/NirLaviTests",
+                "subscriptionId": "8700d3a3-3bb7-4fbe-a090-488a1ad04161"
+            }
+        },
+        {
+            "@odata.type": "#microsoft.graph.security.fileEvidence",
+            "createdDateTime": "2021-04-27T12:19:27.7211305Z",
+            "verdict": "unknown",
+            "remediationStatus": "none",
+            "remediationStatusDetails": None,
+            "detectionStatus": "detected",
+            "mdeDeviceId": "73e7e2de709dff64ef64b1d0c30e67fab63279db",
+            "roles": [],
+            "tags": [],
+            "fileDetails": {
+                "sha1": "5f1e8acedc065031aad553b710838eb366cfee9a",
+                "sha256": "8963a19fb992ad9a76576c5638fd68292cffb9aaac29eb8285f9abf6196a7dec",
+                "fileName": "MsSense.exe",
+                "filePath": "C:\\Program Files\\temp",
+                "fileSize": 6136392,
+                "filePublisher": "Microsoft Corporation",
+                "signer": None,
+                "issuer": None
+            }
+        },
+        {
+            "@odata.type": "#microsoft.graph.security.processEvidence",
+            "createdDateTime": "2021-04-27T12:19:27.7211305Z",
+            "verdict": "unknown",
+            "remediationStatus": "none",
+            "remediationStatusDetails": None,
+            "processId": 4780,
+            "parentProcessId": 668,
+            "processCommandLine": "\"MsSense.exe\"",
+            "processCreationDateTime": "2021-08-12T12:43:19.0772577Z",
+            "parentProcessCreationDateTime": "2021-08-12T07:39:09.0909239Z",
+            "detectionStatus": "detected",
+            "mdeDeviceId": "73e7e2de709dff64ef64b1d0c30e67fab63279db",
+            "roles": [],
+            "tags": [],
+            "imageFile": {
+                "sha1": "5f1e8acedc065031aad553b710838eb366cfee9a",
+                "sha256": "8963a19fb992ad9a76576c5638fd68292cffb9aaac29eb8285f9abf6196a7dec",
+                "fileName": "MsSense.exe",
+                "filePath": "C:\\Program Files\\temp",
+                "fileSize": 6136392,
+                "filePublisher": "Microsoft Corporation",
+                "signer": None,
+                "issuer": None
+            },
+            "parentProcessImageFile": {
+                "sha1": None,
+                "sha256": None,
+                "fileName": "services.exe",
+                "filePath": "C:\\Windows\\System32",
+                "fileSize": 731744,
+                "filePublisher": "Microsoft Corporation",
+                "signer": None,
+                "issuer": None
+            },
+            "userAccount": {
+                "accountName": "SYSTEM",
+                "domainName": "NT AUTHORITY",
+                "userSid": "S-1-5-18",
+                "azureAdUserId": None,
+                "userPrincipalName": None
+            }
+        },
+        {
+            "@odata.type": "#microsoft.graph.security.registryKeyEvidence",
+            "createdDateTime": "2021-04-27T12:19:27.7211305Z",
+            "verdict": "unknown",
+            "remediationStatus": "none",
+            "remediationStatusDetails": None,
+            "registryKey": "SYSTEM\\CONTROLSET001\\CONTROL\\WMI\\AUTOLOGGER\\SENSEAUDITLOGGER",
+            "registryHive": "HKEY_LOCAL_MACHINE",
+            "roles": [],
+            "tags": [],
+        }
+    ]
+}]}
+EXPECTED_ALERTS_V2_OUTPUT = {'MsGraph.Alert(val.ID && val.ID === obj.ID)': [{
+    'ID': 'da637551227677560813_-961444813',
+    'Title': 'Suspicious execution of hidden file',
+    'Category': 'DefenseEvasion',
+    'Severity': 'low',
+    'CreatedDate': '2021-04-27T12:19:27.7211305Z',
+    'FirstActivityDateTime': '2021-04-26T07:45:50.116Z',
+    'LastActivityDateTime': '2021-05-02T07:56:58.222Z',
+    'Status': 'new',
+    'Provider': 'microsoftDefenderForEndpoint'
+}]}
+
 # msg-get-alert-details data:
 RAW_ALERT_DETAILS = {
     '@odata.context': 'https://graph.microsoft.com/v1.0/$metadata#Security/alerts/$entity',
@@ -187,6 +355,175 @@ EXPECTED_ALERT_DETAILS_HR_FILE_STATE = \
     "|---|---|---|\n" \
     "| f809b926576cab647125a3907ef9265bdb130a0a | <file_name> | <file_path> |\n"
 
+# msg-get-alert-details-v2 data:
+RAW_ALERT_DETAILS_V2 = {
+    "@odata.type": "#microsoft.graph.security.alert",
+    "id": "da637578995287051192_756343937",
+    "providerAlertId": "da637578995287051192_756343937",
+    "incidentId": "28282",
+    "status": "new",
+    "severity": "low",
+    "classification": "unknown",
+    "determination": "unknown",
+    "serviceSource": "microsoftDefenderForEndpoint",
+    "detectionSource": "antivirus",
+    "detectorId": "e0da400f-affd-43ef-b1d5-afc2eb6f2756",
+    "tenantId": "b3c1b5fc-828c-45fa-a1e1-10d74f6d6e9c",
+    "title": "Suspicious execution of hidden file",
+    "description": "A hidden file has been launched. This activity could indicate a compromised host. Attackers often hide files"
+    " associated with malicious tools to evade file system inspection and defenses.",
+    "recommendedActions": "Collect artifacts and determine scope\n�\tReview the machine timeline for suspicious activities that "
+    "may have occurred before and after the time of the alert, and record additional related artifacts (files, IPs/URLs) \n�\t"
+    "Look for the presence of relevant artifacts on other systems. Identify commonalities and differences between potentially "
+    "compromised systems.\n�\tSubmit relevant files for deep analysis and review resulting detailed behavioral information.\n�\t"
+    "Submit undetected files to the MMPC malware portal\n\nInitiate containment & mitigation \n�\tContact the user to verify "
+    "intent and initiate local remediation actions as needed.\n�\tUpdate AV signatures and run a full scan. The scan might "
+    "reveal and remove previously-undetected malware components.\n�\tEnsure that the machine has the latest security updates. In"
+    " particular, ensure that you have installed the latest software, web browser, and Operating System versions.\n�\tIf "
+    "credential theft is suspected, reset all relevant users passwords.\n�\tBlock communication with relevant URLs or IPs at the"
+    " organization�s perimeter.",
+    "category": "DefenseEvasion",
+    "assignedTo": None,
+    "alertWebUrl": "https://security.microsoft.com/alerts/da637578995287051192_756343937?tid=b3c1b5fc-828c-45fa-a1e1-"
+    "10d74f6d6e9c",
+    "incidentWebUrl": "https://security.microsoft.com/incidents/28282?tid=b3c1b5fc-828c-45fa-a1e1-10d74f6d6e9c",
+    "actorDisplayName": None,
+    "threatDisplayName": None,
+    "threatFamilyName": None,
+    "mitreTechniques": [
+        "T1564.001"
+    ],
+    "createdDateTime": "2021-04-27T12:19:27.7211305Z",
+    "lastUpdateDateTime": "2021-05-02T14:19:01.3266667Z",
+    "resolvedDateTime": None,
+    "firstActivityDateTime": "2021-04-26T07:45:50.116Z",
+    "lastActivityDateTime": "2021-05-02T07:56:58.222Z",
+    "comments": [],
+    "evidence": [
+        {
+            "@odata.type": "#microsoft.graph.security.deviceEvidence",
+            "createdDateTime": "2021-04-27T12:19:27.7211305Z",
+            "verdict": "unknown",
+            "remediationStatus": "none",
+            "remediationStatusDetails": None,
+            "firstSeenDateTime": "2020-09-12T07:28:32.4321753Z",
+            "mdeDeviceId": "73e7e2de709dff64ef64b1d0c30e67fab63279db",
+            "azureAdDeviceId": None,
+            "deviceDnsName": "tempDns",
+            "osPlatform": "Windows10",
+            "osBuild": 22424,
+            "version": "Other",
+            "healthStatus": "active",
+            "riskScore": "medium",
+            "rbacGroupId": 75,
+            "rbacGroupName": "UnassignedGroup",
+            "onboardingStatus": "onboarded",
+            "defenderAvStatus": "unknown",
+            "loggedOnUsers": [],
+            "roles": [
+                "compromised"
+            ],
+            "tags": [
+                "Test Machine"
+            ],
+            "vmMetadata": {
+                "vmId": "ca1b0d41-5a3b-4d95-b48b-f220aed11d78",
+                "cloudProvider": "azure",
+                "resourceId": "/subscriptions/8700d3a3-3bb7-4fbe-a090-488a1ad04161/resourceGroups/WdatpApi-EUS-STG/providers/"
+                "Microsoft.Compute/virtualMachines/NirLaviTests",
+                "subscriptionId": "8700d3a3-3bb7-4fbe-a090-488a1ad04161"
+            }
+        },
+        {
+            "@odata.type": "#microsoft.graph.security.fileEvidence",
+            "createdDateTime": "2021-04-27T12:19:27.7211305Z",
+            "verdict": "unknown",
+            "remediationStatus": "none",
+            "remediationStatusDetails": None,
+            "detectionStatus": "detected",
+            "mdeDeviceId": "73e7e2de709dff64ef64b1d0c30e67fab63279db",
+            "roles": [],
+            "tags": [],
+            "fileDetails": {
+                "sha1": "5f1e8acedc065031aad553b710838eb366cfee9a",
+                "sha256": "8963a19fb992ad9a76576c5638fd68292cffb9aaac29eb8285f9abf6196a7dec",
+                "fileName": "MsSense.exe",
+                "filePath": "C:\\Program Files\\temp",
+                "fileSize": 6136392,
+                "filePublisher": "Microsoft Corporation",
+                "signer": None,
+                "issuer": None
+            }
+        },
+        {
+            "@odata.type": "#microsoft.graph.security.processEvidence",
+            "createdDateTime": "2021-04-27T12:19:27.7211305Z",
+            "verdict": "unknown",
+            "remediationStatus": "none",
+            "remediationStatusDetails": None,
+            "processId": 4780,
+            "parentProcessId": 668,
+            "processCommandLine": "\"MsSense.exe\"",
+            "processCreationDateTime": "2021-08-12T12:43:19.0772577Z",
+            "parentProcessCreationDateTime": "2021-08-12T07:39:09.0909239Z",
+            "detectionStatus": "detected",
+            "mdeDeviceId": "73e7e2de709dff64ef64b1d0c30e67fab63279db",
+            "roles": [],
+            "tags": [],
+            "imageFile": {
+                "sha1": "5f1e8acedc065031aad553b710838eb366cfee9a",
+                "sha256": "8963a19fb992ad9a76576c5638fd68292cffb9aaac29eb8285f9abf6196a7dec",
+                "fileName": "MsSense.exe",
+                "filePath": "C:\\Program Files\\temp",
+                "fileSize": 6136392,
+                "filePublisher": "Microsoft Corporation",
+                "signer": None,
+                "issuer": None
+            },
+            "parentProcessImageFile": {
+                "sha1": None,
+                "sha256": None,
+                "fileName": "services.exe",
+                "filePath": "C:\\Windows\\System32",
+                "fileSize": 731744,
+                "filePublisher": "Microsoft Corporation",
+                "signer": None,
+                "issuer": None
+            },
+            "userAccount": {
+                "accountName": "SYSTEM",
+                "domainName": "NT AUTHORITY",
+                "userSid": "S-1-5-18",
+                "azureAdUserId": None,
+                "userPrincipalName": None
+            }
+        },
+        {
+            "@odata.type": "#microsoft.graph.security.registryKeyEvidence",
+            "createdDateTime": "2021-04-27T12:19:27.7211305Z",
+            "verdict": "unknown",
+            "remediationStatus": "none",
+            "remediationStatusDetails": None,
+            "registryKey": "SYSTEM\\CONTROLSET001\\CONTROL\\WMI\\AUTOLOGGER\\SENSEAUDITLOGGER",
+            "registryHive": "HKEY_LOCAL_MACHINE",
+            "roles": [],
+            "tags": [],
+        }
+    ]
+}
+EXPECTED_ALERT_DETAILS_CONTEXT_V2 = {'MsGraph.Alert(val.ID && val.ID === obj.ID)': {
+    'ID': 'da637578995287051192_756343937',
+    'Title': 'Suspicious execution of hidden file',
+    'Category': 'DefenseEvasion',
+    'Severity': 'low',
+    'CreatedDate': '2021-04-27T12:19:27.7211305Z',
+    'FirstActivityDateTime': '2021-04-26T07:45:50.116Z',
+    'LastActivityDateTime': '2021-05-02T07:56:58.222Z',
+    'Status': 'new',
+    'Provider': 'microsoftDefenderForEndpoint'
+}}
+
+
 client_mocker = MsGraphClient(tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name',
                               base_url='url', verify='use_ssl', proxy='proxy', self_deployed='self_deployed')
 
@@ -213,6 +550,13 @@ def test_get_alert_details_command(mocker, args, expected_hr):
     assert ec == EXPECTED_ALERT_DETAILS_CONTEXT
 
 
+def test_get_alert_details_v2_command(mocker):
+    from MicrosoftGraphSecurity import get_alert_details_v2_command
+    mocker.patch.object(client_mocker, 'get_alert_details', return_value=RAW_ALERT_DETAILS_V2)
+    _, ec, _ = get_alert_details_v2_command(client_mocker, {'alert_id': 'alert_id'})
+    assert ec == EXPECTED_ALERT_DETAILS_CONTEXT_V2
+
+
 def test_search_alerts_command(mocker):
     """
     Unit test
@@ -230,6 +574,25 @@ def test_search_alerts_command(mocker):
     mocker.patch.object(client_mocker, 'search_alerts', return_value=ALERTS_RAW_RESPONSE)
     _, ec, _ = search_alerts_command(client_mocker, {'severity': 'medium'})
     assert ec == EXPECTED_ALERTS_OUTPUT
+
+
+def test_search_alerts_v2_command(mocker):
+    """
+    Unit test
+    Given
+    - search-alerts-v2 command
+    - command args
+    - command raw response
+    When
+    - mock the Client's search_alerts command.
+    Then
+    - run the search alerts command using the Client.
+    Validate the contents of the output.
+    """
+    from MicrosoftGraphSecurity import search_alerts_v2_command
+    mocker.patch.object(client_mocker, 'search_alerts_v2', return_value=ALERTS_V2_RAW_RESPONSE)
+    _, ec, _ = search_alerts_v2_command(client_mocker, {})
+    assert ec == EXPECTED_ALERTS_V2_OUTPUT
 
 
 def test_fetch_incidents_command(mocker):

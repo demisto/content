@@ -60,8 +60,27 @@ class MsGraphClient:
         response = self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
         return response
 
-    def get_alert_details(self, alert_id):
-        cmd_url = f'security/alerts/{alert_id}'
+    def search_alerts_v2(self, last_modified, severity, time_from, time_to, filter_query):
+        filters = []
+        if last_modified:
+            filters.append("lastUpdateDateTime gt {}".format(get_timestamp(last_modified)))
+        if severity:
+            filters.append("severity eq '{}'".format(severity))
+        if time_from:  # changed to ge and le in order to solve issue #27884
+            filters.append("createdDateTime ge {}".format(time_from))
+        if time_to:
+            filters.append("createdDateTime le {}".format(time_to))
+        if filter_query:
+            filters.append("{}".format(filter_query))
+        filters = " and ".join(filters)
+        cmd_url = 'security/alerts_v2'
+        params = {'$filter': filters}
+        demisto.debug(f'Fetching MS Graph Security incidents with params: {params}')
+        response = self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+        return response
+
+    def get_alert_details(self, alert_id, use_alerts_v2=False):
+        cmd_url = f'security/alerts_v2/{alert_id}' if use_alerts_v2 else f'security/alerts/{alert_id}'
         response = self.ms_client.http_request(method='GET', url_suffix=cmd_url)
         return response
 
@@ -182,6 +201,34 @@ def search_alerts_command(client: MsGraphClient, args):
         'MsGraph.Alert(val.ID && val.ID === obj.ID)': outputs
     }
     table_headers = ['ID', 'Vendor', 'Provider', 'Title', 'Category', 'Severity', 'CreatedDate', 'EventDate', 'Status']
+    human_readable = tableToMarkdown('Microsoft Security Graph Alerts', outputs, table_headers, removeNull=True)
+    return human_readable, ec, alerts
+
+
+def search_alerts_v2_command(client: MsGraphClient, args):
+    last_modified = args.get('last_modified')
+    severity = args.get('severity')
+    time_from = args.get('time_from')
+    time_to = args.get('time_to')
+    filter_query = args.get('filter')
+    alerts = client.search_alerts_v2(last_modified, severity, time_from, time_to, filter_query)['value']
+    outputs = []
+    for alert in alerts:
+        outputs.append({
+            'ID': alert['id'],
+            'Title': alert['title'],
+            'Category': alert['category'],
+            'Severity': alert['severity'],
+            'CreatedDate': alert['createdDateTime'],
+            'FirstActivityDateTime': alert['firstActivityDateTime'],
+            'LastActivityDateTime': alert['lastActivityDateTime'],
+            'Status': alert['status'],
+            'Provider': alert['serviceSource']
+        })
+    ec = {
+        'MsGraph.Alert(val.ID && val.ID === obj.ID)': outputs
+    }
+    table_headers = ['ID', 'Provider', 'Title', 'Category', 'Severity', 'CreatedDate', 'EventDate', 'Status']
     human_readable = tableToMarkdown('Microsoft Security Graph Alerts', outputs, table_headers, removeNull=True)
     return human_readable, ec, alerts
 
@@ -403,6 +450,58 @@ def get_alert_details_command(client: MsGraphClient, args):
     return hr, ec, alert_details
 
 
+def get_alert_details_v2_command(client: MsGraphClient, args):
+    alert_id = args.get('alert_id')
+    alerts_v2 = True
+
+    alert_details = client.get_alert_details(alert_id, alerts_v2)
+
+    hr = '## Microsoft Security Graph Alert Details - {}\n'.format(alert_id)
+
+    basic_properties_title = 'Basic Properties'
+    basic_properties = {
+        'ActorDisplayName': alert_details['actorDisplayName'],
+        'AssignedTo': alert_details['assignedTo'],
+        'TenantID': alert_details['tenantId'],
+        'Category': alert_details['category'],
+        'ClosedDate': alert_details['lastUpdateDateTime'] if alert_details['status'] == 'resolved' else None,
+        'CreatedDate': alert_details['createdDateTime'],
+        'Description': alert_details['description'],
+        'RecommendedAction': alert_details['recommendedActions'],
+        'FirstActivityDateTime': alert_details['firstActivityDateTime'],
+        'LastActivityDateTime': alert_details['lastActivityDateTime'],
+        'LastModifiedDate': alert_details['lastUpdateDateTime'],
+        'Severity': alert_details['severity'],
+        'Status': alert_details['status'],
+        'Title': alert_details['title']
+    }
+    hr += tableToMarkdown(basic_properties_title, basic_properties, removeNull=True)
+
+    if alert_details['comments']:
+        comments = alert_details['comments']
+        if comments:
+            comments_hr = '### Customer Provided Comments for Alert\n'
+            for comment in comments:
+                comments_hr += '- {}\n'.format(comment['comment'])
+            hr += comments_hr
+
+    context = {
+        'ID': alert_details['id'],
+        'Title': alert_details['title'],
+        'Category': alert_details['category'],
+        'Severity': alert_details['severity'],
+        'CreatedDate': alert_details['createdDateTime'],
+        'FirstActivityDateTime': alert_details['firstActivityDateTime'],
+        'LastActivityDateTime': alert_details['lastActivityDateTime'],
+        'Status': alert_details['status'],
+        'Provider': alert_details['serviceSource']
+    }
+    ec = {
+        'MsGraph.Alert(val.ID && val.ID === obj.ID)': context
+    }
+    return hr, ec, alert_details
+
+
 def update_alert_command(client: MsGraphClient, args):
     alert_id = args.get('alert_id')
     vendor_information = args.get('vendor_information')
@@ -532,6 +631,8 @@ def main():
         'test-module': test_function,
         'msg-search-alerts': search_alerts_command,
         'msg-get-alert-details': get_alert_details_command,
+        'msg-search-alerts-v2': search_alerts_v2_command,
+        'msg-get-alert-details-v2': get_alert_details_v2_command,
         'msg-update-alert': update_alert_command,
         'msg-get-users': get_users_command,
         'msg-get-user': get_user_command
