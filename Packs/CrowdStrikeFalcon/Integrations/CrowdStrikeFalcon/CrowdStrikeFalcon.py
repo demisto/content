@@ -1710,6 +1710,82 @@ def get_detections_by_behaviors(behaviors_id):
         return {}
 
 
+def get_filevantage_changes_list(offset=0, limit=100, time_range='now-1m'):
+    """
+        Get a list of changes from File Vantage
+
+        :param time_range: The time when the change was reported to the CrowdStrike cloud. Define with FQL.
+        :param offset: The list item to start fetching.
+        :param limit: The maximum number of result to return.
+        :return: Response json of the changes list
+    """
+    endpoint_url = '/filevantage/queries/changes/v2'
+    params = {
+        'sort': 'ingestion_timestamp.desc',
+        'offset': offset,
+        'limit': limit,
+        'filter': 'ingestion_timestamp:>=' + time_range
+    }
+
+    response = http_request('GET', endpoint_url, params)
+    return response
+
+
+def get_filevantage_changes_details(change_id: str):
+    """
+        Get the full list of properties about one or more changes using the ID of each change
+
+        :param change_id: The change ID to get details
+        :return: Response json of the change ID details
+    """
+    endpoint_url = '/filevantage/entities/changes/v2'
+    params = {
+        'ids': change_id
+    }
+
+    response = http_request('GET', endpoint_url, params)
+    return response
+
+
+def get_spotlight_vulnerabilities_list(after=None, limit=1000, time_range='now-1m'):
+    """
+        Get a list of vulnerability IDs from Spotlight
+
+        :param after:   On your first request, don't provide an after token. On subsequent requests, 
+                        provide the after token from the previous response to continue from that place in the results.
+        :param limit: The maximum number of result to return.
+        :param time_range: The time when the change was reported to the CrowdStrike cloud. Define with FQL.
+        :return: Response json of the vulnerability ids list
+    """
+    endpoint_url = '/filevantage/queries/changes/v2'
+    params = {
+        'sort': 'created_timestamp.desc',
+        'limit': limit,
+        'filter': 'created_timestamp:>=' + time_range
+    }
+    if after:
+        params['after'] = after
+
+    response = http_request('GET', endpoint_url, params)
+    return response
+
+
+def get_spotlight_vulnerabilities_details(vul_id: str):
+    """
+        Get the full list of properties about one or more changes using the ID of each change
+
+        :param vul_id: The vulnerability ID to get details
+        :return: Response json of the vulnerability details
+    """
+    endpoint_url = '/spotlight/entities/vulnerabilities/v2'
+    params = {
+        'ids': vul_id
+    }
+
+    response = http_request('GET', endpoint_url, params)
+    return response
+
+
 ''' MIRRORING COMMANDS '''
 
 
@@ -4114,6 +4190,157 @@ def get_cve_command(args: dict) -> list[CommandResults]:
     return command_results_list
 
 
+def get_filevantage_changes_list_command(args: dict):
+    """
+        Get a list of changes from File Vantage
+
+        :param time_range: The time when the change was reported to the CrowdStrike cloud. Define with FQL.
+        :param offset: The list item to start fetching.
+        :param limit: The maximum number of result to return.
+    """
+    offset = args.get('offset', 0)
+    limit = args.get('limit', 100)
+    time_range = args.get('time_range', 'now-1m')
+    try:
+        raw_res = get_filevantage_changes_list(offset, limit, time_range)
+        if raw_res:
+            resources = raw_res.get('resources', [])
+            if resources:
+                hr = tableToMarkdown('Change IDs list', resources, headers=["Change IDs"])
+            else:
+                hr = "### No Change IDs available within the time range (default is last 1 minute)"
+            return CommandResults(
+                outputs_prefix='CrowdStrike.FileVantage.ChangeList',
+                outputs_key_field='trace_id',
+                outputs={
+                    "trace_id": raw_res.get('meta').get('trace_id'),
+                    "total": raw_res.get('meta').get('total'),
+                    "resources": raw_res.get('resources')
+                },
+                readable_output=hr,
+                raw_response=raw_res
+            )
+        else:
+            return "### No Change IDs available within the time range (default is last 1 minute)"
+    except Exception as e:
+        return str(e)
+
+
+def get_filevantage_changes_details_command(args: dict):
+    """
+        Get the full list of properties about one or more changes using the ID of each change
+
+        :param change_id: The change ID to get details
+    """
+    change_id = args.get('change_id')
+    try:
+        raw_res = get_filevantage_changes_details(change_id)
+        if raw_res:
+            resources = raw_res.get('resources', [])
+            if resources:
+                returned_data = {
+                    "id": resources[0].get('id'),
+                    "platform_name": resources[0].get('platform_name'),
+                    "entity_path": resources[0].get('entity_path'),
+                    "action_timestamp": resources[0].get('action_timestamp'),
+                    "ingestion_timestamp": resources[0].get('ingestion_timestamp'),
+                    "severity": resources[0].get('severity'),
+                    "user_name": resources[0].get('user_name'),
+                    "command_line": resources[0].get('command_line'),
+                    "entity_type": resources[0].get('entity_type')
+                }
+                hr = tableToMarkdown(f'Change ID {change_id} details', returned_data)
+            else:
+                hr = "### No Change ID details found"
+
+            return CommandResults(
+                outputs_prefix='CrowdStrike.FileVantage.ChangeDetails',
+                outputs_key_field='id',
+                outputs=raw_res.get('resources')[0],
+                readable_output=hr,
+                raw_response=raw_res
+            )
+        else:
+            return "### No Change ID details found"
+    except Exception as e:
+        return str(e)
+
+
+def get_spotlight_vulnerabilities_list_command(args: dict):
+    """
+        Get a list of vulnerability IDs from Spotlight
+        :param after:   On your first request, don't provide an after token. On subsequent requests, 
+                        provide the after token from the previous response to continue from that place in the results.
+        :param limit: The maximum number of result to return.
+        :param time_range: The time when the change was reported to the CrowdStrike cloud. Define with FQL.
+    """
+    after = args.get('after')
+    limit = args.get('limit', 1000)
+    time_range = args.get('time_range', 'now-1m')
+    try:
+        raw_res = get_spotlight_vulnerabilities_list(after=None, limit=1000, time_range='now-1m')
+        if raw_res:
+            resources = raw_res.get('resources', [])
+            if resources:
+                hr = tableToMarkdown('Vulnerability IDs list', resources, headers=["Vulnerability IDs"])
+            else:
+                hr = "### No Vulnerability IDs available within the time range (default is last 1 minute)"
+            return CommandResults(
+                outputs_prefix='CrowdStrike.Spotlight.VulnerabilitiesList',
+                outputs_key_field='trace_id',
+                outputs={
+                    "trace_id": raw_res.get('meta').get('trace_id'),
+                    "total": raw_res.get('meta').get('pagination').get('total'),
+                    "resources": raw_res.get('resources')
+                },
+                readable_output=hr,
+                raw_response=raw_res
+            )
+        else:
+            return "### No Vulnerability IDs available within the time range (default is last 1 minute)"
+    except Exception as e:
+        return str(e)
+
+
+def get_spotlight_vulnerabilities_details_command(args: dict):
+    """
+        Get the full list of properties about one or more changes using the ID of each change
+
+        :param vul_id: The vulnerability ID to get details
+    """
+    vul_id = args.get('vul_id')
+    try:
+        raw_res = get_spotlight_vulnerabilities_details(vul_id)
+        if raw_res:
+            resources = raw_res.get('resources', [])
+            if resources:
+                returned_data = {
+                    "id": resources[0].get('id'),
+                    "status": resources[0].get('status'),
+                    "app": resources[0].get('app').get('product_name_version'),
+                    "created_timestamp": resources[0].get('created_timestamp'),
+                    "updated_timestamp": resources[0].get('updated_timestamp'),
+                    "cve": resources[0].get('cve').get('id'),
+                    "host": resources[0].get('host_info').get('hostname'),
+                    "remediation": resources[0].get('remediation').get('entities')[0].get('action'),
+                }
+                hr = tableToMarkdown(f'Vulnerability ID {vul_id} details', returned_data)
+            else:
+                hr = "### No Vulnerability ID details found"
+
+            return CommandResults(
+                outputs_prefix='CrowdStrike.Spotlight.VulnerabilityDetails',
+                outputs_key_field='id',
+                outputs=raw_res.get('resources')[0],
+                readable_output=hr,
+                raw_response=raw_res
+            )
+        else:
+            return "### No Vulnerability ID details found"
+    except Exception as e:
+        return str(e)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -4280,6 +4507,14 @@ def main():
             return_results(cs_falcon_spotlight_list_host_by_vulnerability_command(args))
         elif command == 'cve':
             return_results(get_cve_command(args))
+        elif command == 'cs-falcon-filevantage-get-changes-list':
+            return_results(get_filevantage_changes_list_command(args))
+        elif command == 'cs-falcon-filevantage-get-change-detail':
+            return_results(get_filevantage_changes_details_command(args))
+        elif command == 'cs-falcon-spotlight-get-vulnerabilities-list':
+            return_results(get_spotlight_vulnerabilities_list_command(args))
+        elif command == 'cs-falcon-spotlight-get-vulnerability-detail':
+            return_results(get_spotlight_vulnerabilities_details_command(args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')

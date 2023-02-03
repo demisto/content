@@ -4291,3 +4291,325 @@ def test_cs_falcon_spotlight_search_vulnerability_host_by_command(mocker):
 
     outputs = cs_falcon_spotlight_list_host_by_vulnerability_command(args)
     assert outputs.readable_output == expected_hr
+
+
+def get_filevantage_changes_list_command(mocker):
+    """
+    Test get_filevantage_changes_list_command,
+        with a the argument:  offset, limit and time_range
+    Given
+     - There is a change that is found
+    When
+     - The user is running get_filevantage_changes_list_command
+    Then
+     - Return a CrowdStrike Falcon FileVantage change ID list
+     - Return an Endpoint context output
+     """
+    from CrowdStrikeFalcon import get_filevantage_changes_list_command
+
+    result_key_json = {
+        "meta": {
+            "query_time": 0.017272646,
+            "pagination": {
+                "offset": 0,
+                "limit": 100,
+                "total": 5
+            },
+            "powered_by": "filevantage-api",
+            "trace_id": "41a13dfa-8c49-46bf-8cd8-21c4c297c161"
+        },
+        "resources": [
+            "7cfce76a153e11ec95aa0296f1642b21",
+            "fc98cb7514ad11ecbfc106fa418f432a",
+            "fc7ad54b14ad11ecbfc106fa418f441e",
+            "bcd9d250153e11ec95aa0296f1642b21",
+            "bd1ce20e153e11ec95aa0296f1642b42"
+        ],
+        "errors": []
+    }
+    expected_hr = """
+### Change IDs list
+|Change IDs|
+|---|
+| 7cfce76a153e11ec95aa0296f1642b21 |
+| fc98cb7514ad11ecbfc106fa418f432a |
+| fc7ad54b14ad11ecbfc106fa418f441e |
+| bcd9d250153e11ec95aa0296f1642b21 |
+| bd1ce20e153e11ec95aa0296f1642b42 |
+    """
+    args = {'offset': 0, 'limit': 100, 'time_range': 'now-1m'}
+    mocker.patch("CrowdStrikeFalcon.http_request", return_value=result_key_json)
+
+    outputs = get_filevantage_changes_list_command(args)
+    assert outputs.readable_output == expected_hr
+
+
+def get_filevantage_changes_details_command(mocker):
+    """
+    Test get_filevantage_changes_details_command,
+        with a the argument: change_id
+    Given
+     - There is a change that is found
+    When
+     - The user is running get_filevantage_changes_details_command
+    Then
+     - Return a CrowdStrike Falcon FileVantage change ID details
+     - Return an Endpoint context output
+     """
+    from CrowdStrikeFalcon import get_filevantage_changes_details_command
+
+    result_key_json = {
+    "meta":{
+        "query_time":0.047041125,
+        "powered_by":"filevantage-api",
+        "trace_id":"af254e3c-1ffe-4c1e-a96f-77d00f32fcd1"
+    },
+    "resources":[
+        {
+            "id":"020db4acf63f455f95114908e36ee1e1",
+            "cid":"0123456789ABCDEFGHIJKLMNOPQRSTUV-WX",
+            "aid":"85ae98xxxxxxd9a8f2",
+            "platform_name":"Windows",
+            "entity_type":"FILE",
+            "entity_path":"C:\\Documents and Settings\\All Users\\Start Menu\\Programs\\Startup\\ransomware1.exe",
+            "action_type":"CREATE",
+            "action_timestamp":"2021-09-01T10:00:00Z",
+            "ingestion_timestamp":"2021-09-01T10:00:10Z",
+            "severity":"HIGH",
+            "process_id":"83bcxxdexxxxxxxxxxxxxxxxxxxxa110",
+            "process_image_file_name":"\\Device\\HarddiskVolume2\\temp\\Cloud_MachineLearning.exe",
+            "user_id":"1234567890abc098def",
+            "user_name":"Aminah Grant",
+            "command_line":"C:\\temp\\Cloud_MachineLearning.exe",
+            "diff":{
+                "after":{
+                "hash":{
+                    "sha256":"abc456xxxxxxxxxxxxxxxxdef789"
+                }
+                }
+            },
+            "host":{
+                "name":"ProductsDB01",
+                "os_version":"Windows Server 2008 R2",
+                "local_ip":"192.0.2.10",
+                "external_ip":"192.0.2.71",
+                "agent_version":"5.25.10701.0",
+                "containment_status":"normal",
+                "groups":[
+                {
+                    "name":"DB servers"
+                },
+                {
+                    "name":"Los Angeles Data Center"
+                }
+                ]
+            },
+            "policy":{
+                "name":"Server Machines Integrity Monitoring",
+                "rule_group":{
+                "name":"General windows filesystem monitoring",
+                "rule":{
+                    "base_path":"C:\\Documents and Settings\\All Users\\Start Menu\\Programs\\Startup\\"
+                }
+                }
+            },
+            "is_suppressed":False
+        },
+        {
+            "id":"d8295352153e11ecbf19060a7be6e37d",
+            "cid":"0123456789ABCDEFGHIJKLMNOPQRSTUV-WX",
+            "aid":"5bf4fbxxxxxx4b8026",
+            "is_suppressed":False
+        }
+    ]
+    }
+    expected_hr = """
+### Change ID d8295352153e11ecbf19060a7be6e37d details
+|action_timestamp|command_line|entity_path|entity_type|id|ingestion_timestamp|platform_name|severity|user_name|
+|---|---|---|---|---|---|---|---|---|
+| 2021-09-01T10:00:00Z | C:\temp\Cloud_MachineLearning.exe | C:\Documents and Settings\All Users\Start Menu\Programs\Startup\ransomware1.exe | FILE | 020db4acf63f455f95114908e36ee1e1 | 2021-09-01T10:00:10Z | Windows | HIGH | Aminah Grant |
+    """
+    args = {'offset': 0, 'limit': 100, 'time_range': 'now-1m'}
+    mocker.patch("CrowdStrikeFalcon.http_request", return_value=result_key_json)
+
+    outputs = get_filevantage_changes_details_command(args)
+    assert outputs.readable_output == expected_hr
+
+
+def test_get_spotlight_vulnerabilities_list_command(mocker):
+    """
+    Test get_spotlight_vulnerabilities_list_command,
+        with a the argument:  after, limit and time_range
+    Given
+     - There is a vulnerability that is found
+    When
+     - The user is running get_spotlight_vulnerabilities_list_command
+    Then
+     - Return a CrowdStrike Falcon Spotlight vul ID list
+     - Return an Endpoint context output
+     """
+    from CrowdStrikeFalcon import get_spotlight_vulnerabilities_list_command
+
+    result_key_json = {
+        "meta":{
+            "query_time":0.14778743,
+            "pagination":{
+                "limit":5,
+                "total":1222115,
+                "after":"WzE2MjMwNzU0MjUwMDAsIjZiMWUxxxxxxxxxxxxxxyN2RmYzg0YmJkNWU2X2ZmY2RlYTBlZGJiYjNlMzliM2YxN2VjNjkyNTI2OThjIl0="
+            },
+            "powered_by":"spapi",
+            "trace_id":"cbe930e5-621f-4cc7-affb-4f99209513e6"
+        },
+        "resources":[
+            "ca4944397d82410b8f8768dxxxxxxxx_de93270830eadc97b9e1796734af034c",
+            "ca4944397d82410b8f8768xxxxxxxxx_5a35144501893ba4dd0e91140ed20f0a",
+            "ca4944397d82410b8f8768xxxxxxxxx_08a58806ded70ff53ba7916a0ed85072",
+            "6b1e3f1c387e4107aca27xxxxxxxxxxx_ffde3ae1b90f0500e363d2a6021c1003",
+            "6b1e3f1c387e4107aca27xxxxxxxxxxx_ffcdeabb3e39b3f17ec690edb252698c"
+        ]
+    }
+    expected_hr = "### Vulnerability IDs list\n|Vulnerability IDs|\n|---|\n| ca4944397d82410b8f8768dxxxxxxxx_de93270830eadc97b9e1796734af034c |\n| ca4944397d82410b8f8768xxxxxxxxx_5a35144501893ba4dd0e91140ed20f0a |\n| ca4944397d82410b8f8768xxxxxxxxx_08a58806ded70ff53ba7916a0ed85072 |\n| 6b1e3f1c387e4107aca27xxxxxxxxxxx_ffde3ae1b90f0500e363d2a6021c1003 |\n| 6b1e3f1c387e4107aca27xxxxxxxxxxx_ffcdeabb3e39b3f17ec690edb252698c |\n"
+    args = {'limit': 5, 'time_range': 'now-1m'}
+    mocker.patch("CrowdStrikeFalcon.http_request", return_value=result_key_json)
+
+    outputs = get_spotlight_vulnerabilities_list_command(args)
+    assert outputs.readable_output == expected_hr
+
+
+def test_get_spotlight_vulnerabilities_details_command(mocker):
+    """
+    Test get_spotlight_vulnerabilities_details_command,
+        with a the argument: vul_id
+    Given
+     - There is a change that is found
+    When
+     - The user is running get_spotlight_vulnerabilities_details_command
+    Then
+     - Return a CrowdStrike Falcon Spotlight vul ID details
+     - Return an Endpoint context output
+     """
+    from CrowdStrikeFalcon import get_spotlight_vulnerabilities_details_command
+
+    result_key_json = {
+        "meta":{
+            "query_time":0.17553106,
+            "powered_by":"spapi",
+            "trace_id":"14daf0a6-38b0-419d-a8f4-2bf95afbe964"
+        },
+        "resources":[
+            {
+                "id":"ca4944397d82410b8f8768dxxxxxxxxx_de93270830eadc97b9e1796734af034c",
+                "cid":"abc123def456ghi789jkl012mno345pq",
+                "aid":"abc123def456ghi789jkl012mno345pq",
+                "created_timestamp":"2021-10-18T01:36:01Z",
+                "updated_timestamp":"2021-10-19T01:22:48Z",
+                "status":"reopen",
+                "apps":[
+                    {
+                    "product_name_version":"VLC media player 1.0.5 1.0.5",
+                    "sub_status":"open",
+                    "remediation":{
+                        "ids":[
+                            "2362cc534bdbe053866191594531136f"
+                        ]
+                    }
+                    }
+                ],
+                "app":{
+                    "product_name_version":"VLC media player 1.0.5 1.0.5"
+                },
+                "cve":{
+                    "id":"CVE-2013-0000",
+                    "base_score":7.5,
+                    "severity":"HIGH",
+                    "exploit_status":60,
+                    "exprt_rating":"HIGH",
+                    "description":"The parseRTSPRequestString function in Live Networks Live555 Streaming Media fix for CVE-2013-XXXX.",
+                    "published_date":"2014-01-23T21:55:00Z",
+                    "vendor_advisory":[
+                    "http://www.live.com/liveMedia/public/changelog.txt"
+                    ],
+                    "references":[
+                    "http://isecpartners.github.io/fuzz/vulnerabilities/2013/12/30/vlc-vulnerability.html",
+                    "http://www.securityfocus.com/bid/00000"
+                    ],
+                    "exploitability_score":10,
+                    "impact_score":6.4,
+                    "vector":"AV:N/AC:L/Au:N/I:P/A:P",
+                    "remediation_level":"O",
+                    "cisa_info":{
+                    "is_cisa_kev":True,
+                    "due_date":"2022-18-09T20:15:00Z"
+                    },
+                    "spotlight_published_date":"2022-08-09T20:00:00Z",
+                    "actors":[
+                    "GOBLIN PANDA",
+                    "STARDUST CHOLLIMA"
+                    ],
+                    "name":"Dejablue"
+                },
+                "host_info":{
+                    "hostname":"CSTEST_Spotlight_hostname",
+                    "local_ip":"192.000.0.2",
+                    "machine_domain":"machine-domain.com",
+                    "os_version":"Windows 10",
+                    "ou":"ouname",
+                    "site_name":"45.sitename.com",
+                    "system_manufacturer":"Manufacturer, Inc.",
+                    "instance_id":"i-2sxxxxxxxx32",
+                    "service_provider_account_id":"123456789012",
+                    "service_provider":"AWS",
+                    "os_build":"19H2190",
+                    "product_type_desc":"Server",
+                    "groups":[
+                    {
+                        "id":"abc123def456ghi789jkl012mno345pq",
+                        "name":"host group 1"
+                    },
+                    {
+                        "name":"host group 2"
+                    },
+                    {
+                        "id":"abc123def456ghi789jkl012mno345pq",
+                        "name":"host group 3"
+                    },
+                    {
+                        "id":"abc123def456ghi789jkl012mno345pq",
+                        "id":"abc123def456ghi789jkl012mno345pq",
+                        "name":"host group 4"
+                    }
+                    ],
+                    "tags":[
+                    "search",
+                    "app/app",
+                    "posts/posts/main",
+                    "blog/posts",
+                    "main"
+                    ],
+                    "platform":"Windows"
+                },
+                "remediation":{
+                    "ids":[
+                    "2362cc534bdbe086619531594531136f"
+                    ],
+                    "entities":[
+                    {
+                        "id":"86619c534bdbe052362c31594531136f",
+                        "reference":"3.8.92",
+                        "title":"Update Videolan Vlc Media Player",
+                        "action":"Update Videolan Vlc Media Player to version 3.8.92 or newer",
+                        "link":""
+                    }
+                    ]
+                }
+            }
+        ]
+    }
+    expected_hr = "### Vulnerability ID None details\n|app|created_timestamp|cve|host|id|remediation|status|updated_timestamp|\n|---|---|---|---|---|---|---|---|\n| VLC media player 1.0.5 1.0.5 | 2021-10-18T01:36:01Z | CVE-2013-0000 | CSTEST_Spotlight_hostname | ca4944397d82410b8f8768dxxxxxxxxx_de93270830eadc97b9e1796734af034c | Update Videolan Vlc Media Player to version 3.8.92 or newer | reopen | 2021-10-19T01:22:48Z |\n"
+    args = {'offset': 0, 'limit': 100, 'time_range': 'now-1m'}
+    mocker.patch("CrowdStrikeFalcon.http_request", return_value=result_key_json)
+
+    outputs = get_spotlight_vulnerabilities_details_command(args)
+    assert outputs.readable_output == expected_hr
+

@@ -2896,6 +2896,107 @@ script:
     - contextPath: CrowdStrike.VulnerabilityHost.cve.id
       description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD).
       type: String
+  - arguments:
+    - description: Maximum number of items to return (1-5000).
+      defaultValue: '100'
+      name: limit
+      required: false
+    - description: Item index to start with.
+      defaultValue: '0'
+      name: offset
+      required: false
+    - description: Time range to get the list, default to 1 minute from now
+      defaultValue: 'now-1m'
+      name: time_range
+      required: false
+    description: Retrieve Get a list of changes from File Vantage.
+    name: cs-falcon-filevantage-get-changes-list
+    outputs:
+    - contextPath: CrowdStrike.FileVantage.ChangeList.trace_id
+      description: Unique system-assigned ID of the search batch.
+      type: String
+    - contextPath: CrowdStrike.FileVantage.ChangeList.total
+      description: Total results
+      type: String 
+    - contextPath: CrowdStrike.FileVantage.ChangeList.resources
+      description: List of results
+      type: List 
+  - arguments:
+    - description: The File Vantage change ID to get details.
+      name: change_id
+      required: true
+    description: Get the full list of properties about change using its ID.
+    name: cs-falcon-filevantage-get-change-detail
+    outputs:
+    - contextPath: CrowdStrike.FileVantage.ChangeDetails.id
+      description: Unique change ID.
+      type: String
+    - contextPath: CrowdStrike.FileVantage.ChangeDetails.platform_name
+      description: Platform name.
+      type: String 
+    - contextPath: CrowdStrike.FileVantage.ChangeDetails.entity_path
+      description: Path to the changed entity.
+      type: String
+    - contextPath: CrowdStrike.FileVantage.ChangeDetails.action_timestamp
+      description: Timestamp when change happened.
+      type: String
+    - contextPath: CrowdStrike.FileVantage.ChangeDetails.command_line
+      description: Triggered command line.
+      type: String
+    - contextPath: CrowdStrike.FileVantage.ChangeDetails.user_name
+      description: Username of the person who made the change.
+      type: String
+  - arguments:
+    - description: Maximum number of items to return (1-5000).
+      defaultValue: '100'
+      name: limit
+      required: false
+    - description: ID of the item from the last search batch.
+      defaultValue: '0'
+      name: after
+      required: false
+    - description: Time range to get the list, default to 1 minute from now
+      defaultValue: 'now-1m'
+      name: time_range
+      required: false
+    description: Retrieve Get a list of changes from File Vantage.
+    name: get_spotlight_vulnerabilities_list_command
+    outputs:
+    - contextPath: CrowdStrike.Spotlight.VulnerabilitiesList.trace_id
+      description: Unique system-assigned ID of the search batch.
+      type: String
+    - contextPath: CrowdStrike.Spotlight.VulnerabilitiesList.total
+      description: Total results
+      type: String 
+    - contextPath: CrowdStrike.Spotlight.VulnerabilitiesList.resources
+      description: List of results
+      type: List 
+  - arguments:
+    - description: The Spotlight vulnerability ID to get details.
+      name: change_id
+      required: true
+    description: Get the full list of properties about the vulnerability using its ID.
+    name: get_spotlight_vulnerabilities_details_command
+    outputs:
+    - contextPath: CrowdStrike.Spotlight.VulnerabilityDetails.id
+      description: Unique vulnerability ID.
+      type: String
+    - contextPath: CrowdStrike.Spotlight.VulnerabilityDetails.status
+      description: Vulnerability status.
+      type: String 
+    - contextPath: CrowdStrike.Spotlight.VulnerabilityDetails.app
+      description: The vulnerable application.
+      type: String
+    - contextPath: CrowdStrike.Spotlight.VulnerabilityDetails.created_timestamp
+      description: Timestamp when the vulnerability was detected.
+      type: String
+    - contextPath: CrowdStrike.Spotlight.VulnerabilityDetails.cve
+      description: CVE Number.
+      type: String
+    - contextPath: CrowdStrike.Spotlight.VulnerabilityDetails.remediation
+      description: The remediation method.
+      type: String
+    
   dockerimage: demisto/python3:3.10.9.44472
   isfetch: true
   ismappable: true
