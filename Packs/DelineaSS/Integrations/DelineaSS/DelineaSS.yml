@@ -1094,7 +1094,7 @@ script:
     - contextPath: Delinea.Secret.ChangePassword
       description: Secret summary
       type: String
-  dockerimage: demisto/python3:3.10.9.42008
+  dockerimage: demisto/python3:3.10.9.46807
   feed: false
   isfetch: false
   longRunning: false
