@@ -259,7 +259,7 @@ view: |-
 inputs:
 - key: IP
   value:
-    simple: 10.0.101.203
+    simple:
   required: true
   description: IP used to search for asset information and tags
   playbookInputQuery:
