@@ -498,7 +498,7 @@ def get_credentials(client, secret_id):
 
 
 def fetch_credentials_command(client, secretids):
-    credentials:  List[Any] = []
+    credentials: List[Any] = []
     args: dict = demisto.args()
     credentials_name: Any = args.get('identifier')
 
