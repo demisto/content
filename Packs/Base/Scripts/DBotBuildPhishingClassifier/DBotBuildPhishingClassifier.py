@@ -15,7 +15,7 @@ def preprocess_incidents_field(incidents_field):
             incidents_field = incidents_field[len(prefix):]
     return incidents_field
 
-# comment test
+
 def get_phishing_map_labels(comma_values):
     if comma_values == ALL_LABELS:
         return comma_values
@@ -24,7 +24,7 @@ def get_phishing_map_labels(comma_values):
     for v in values:
         v = v.strip()
         if ":" in v:
-            splited = v.rsplit(":", maxsplit=1)
+            splited = v.split(":")
             labels_dict[splited[0].strip()] = splited[1].strip()
         else:
             labels_dict[v] = v
