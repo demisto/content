@@ -39,27 +39,19 @@ Automated remediation is only possible when the right conditions are met.  These
 - Indicators of a non-production host:
   - "dev" or related words found in environment-related tags associated with the asset (case insensitive)
   - Has an active "DevelopmentEnvironment" classification from processing of public data
-  
+
 ### Playbooks
 
-- [What does this pack do?](#what-does-this-pack-do)
-  - [Automated Remediation requirements](#automated-remediation-requirements)
-  - [Playbooks](#playbooks)
-  - [Cortex ASM - ASM Alert](#cortex-asm---asm-alert)
-    - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
-    - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
-    - [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
-    - [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
-    - [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
-    - [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
-    - [Cortex ASM - Remediation](#cortex-asm---remediation)
-    - [Cortex ASM - Azure Enrichment](#cortex-asm---azure-enrichment)
-    - [Cortex ASM - GCP Enrichment](#cortex-asm---gcp-enrichment)
-    - [Cortex ASM - SNMP Check](#cortex-asm---snmp-check)
-  - [Automation Scripts](#automation-scripts)
-    - [GenerateASMReport](#generateasmreport)
-    - [SnmpDetection](#snmpdetection)
-    - [InferWhetherServiceIsDev](#inferwhetherserviceisdev)
+- [Cortex ASM - Detect Service](#cortex-asm---detect-service)
+- [Cortex ASM - Enrichment](#cortex-asm---enrichment)
+- [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
+- [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
+- [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
+- [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
+- [Cortex ASM - Remediation](#cortex-asm---remediation)
+- [Cortex ASM - Azure Enrichment](#cortex-asm---azure-enrichment)
+- [Cortex ASM - GCP Enrichment](#cortex-asm---gcp-enrichment)
+- [Cortex ASM - SNMP Check](#cortex-asm---snmp-check)
 
 ### Cortex ASM - ASM Alert
 
@@ -104,7 +96,7 @@ Playbook that is used as a container folder for all remediation of ASM alerts.
 #### Cortex ASM - Azure Enrichment
 
 Playbook that given the IP address enriches Azure information relevant to ASM alerts.	
-![Cortex ASM - Azure Enrichment](https://raw.githubusercontent.com/demisto/content/23747a450237bb3762d7ec7788d5ff582c8576db/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Azure_Enrichment.png)
+![Cortex ASM - Azure Enrichment](https://raw.githubusercontent.com/demisto/content/69b67c9a2330cbe9002d6d0ec8f32dbccb0c6877/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Azure_Enrichment.png)
 
 #### Cortex ASM - GCP Enrichment
 
