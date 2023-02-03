@@ -1,11 +1,11 @@
 {
-    "id": "incident_symantecedrenricheddata",
+    "id": "incident_symantecedreventactor",
     "version": -1,
     "fromVersion": "6.8.0",
-    "modified": "2023-01-11T16:32:47.927803627+05:30",
-    "name": "Symantec EDR Enriched Data",
+    "modified": "2023-01-11T16:33:58.860907227+05:30",
+    "name": "SymantecEDR Event Actor",
     "ownerOnly": false,
-    "cliName": "symantecedrenricheddata",
+    "cliName": "symantecedreventactor",
     "type": "grid",
     "closeForm": true,
     "editForm": false,
@@ -28,8 +28,8 @@
     "caseInsensitive": true,
     "columns": [
         {
-            "key": "rule_name",
-            "displayName": "rule_name",
+            "key": "pid",
+            "displayName": "pid",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -40,8 +40,8 @@
             "selectValues": null
         },
         {
-            "key": "suspicion_score",
-            "displayName": "suspicion_score",
+            "key": "uid",
+            "displayName": "uid",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -52,8 +52,8 @@
             "selectValues": null
         },
         {
-            "key": "category_name",
-            "displayName": "category_name",
+            "key": "cmd_line",
+            "displayName": "cmd_line",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -64,8 +64,8 @@
             "selectValues": null
         },
         {
-            "key": "category_id",
-            "displayName": "category_id",
+            "key": "start_time",
+            "displayName": "start_time",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -76,8 +76,20 @@
             "selectValues": null
         },
         {
-            "key": "rule_description",
-            "displayName": "rule_description",
+            "key": "signature_level_id",
+            "displayName": "signature_level_id",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "integrity_id",
+            "displayName": "integrity_id",
             "type": "shortText",
             "required": false,
             "script": "",

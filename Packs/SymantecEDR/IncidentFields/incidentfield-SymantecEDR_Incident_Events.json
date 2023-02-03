@@ -1,11 +1,11 @@
 {
-    "id": "incident_symantecedrprocessfile",
+    "id": "incident_symantecedrincidentevents",
     "version": -1,
     "fromVersion": "6.8.0",
-    "modified": "2023-01-12T14:48:47.459952375+05:30",
-    "name": "Symantec EDR Process File",
+    "modified": "2023-01-11T16:30:45.188670787+05:30",
+    "name": "SymantecEDR Incident Events",
     "ownerOnly": false,
-    "cliName": "symantecedrprocessfile",
+    "cliName": "symantecedrincidentevents",
     "type": "grid",
     "closeForm": true,
     "editForm": false,
@@ -28,8 +28,8 @@
     "caseInsensitive": true,
     "columns": [
         {
-            "key": "name",
-            "displayName": "name",
+            "key": "log_time",
+            "displayName": "log_time",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -40,8 +40,8 @@
             "selectValues": null
         },
         {
-            "key": "sha2",
-            "displayName": "sha2",
+            "key": "type_id",
+            "displayName": "type_id",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -52,8 +52,8 @@
             "selectValues": null
         },
         {
-            "key": "md5",
-            "displayName": "md5",
+            "key": "severity_id",
+            "displayName": "severity_id",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -64,8 +64,8 @@
             "selectValues": null
         },
         {
-            "key": "path",
-            "displayName": "path",
+            "key": "device_name",
+            "displayName": "device_name",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -76,8 +76,8 @@
             "selectValues": null
         },
         {
-            "key": "modified",
-            "displayName": "modified",
+            "key": "device_ip",
+            "displayName": "device_ip",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -88,8 +88,8 @@
             "selectValues": null
         },
         {
-            "key": "signature_company_name",
-            "displayName": "signature_company_name",
+            "key": "user_name",
+            "displayName": "user_name",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -100,8 +100,8 @@
             "selectValues": null
         },
         {
-            "key": "signature_value_ids",
-            "displayName": "signature_value_ids",
+            "key": "user_domain",
+            "displayName": "user_domain",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -109,11 +109,35 @@
             "isDefault": true,
             "fieldCalcScript": "",
             "isReadOnly": false,
-            "selectValues": []
+            "selectValues": null
         },
         {
-            "key": "normalized_path",
-            "displayName": "normalized_path",
+            "key": "device_domain",
+            "displayName": "device_domain",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "ref_event_name",
+            "displayName": "ref_event_name",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "log_name",
+            "displayName": "log_name",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -125,6 +149,8 @@
         }
     ],
     "defaultRows": [
+        {},
+        {},
         {},
         {},
         {}

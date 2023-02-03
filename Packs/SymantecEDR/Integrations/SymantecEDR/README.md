@@ -1,5 +1,5 @@
 Symantec EDR (On Prem) endpoints help to detect threats in your network by filter endpoints data to find Indicators of Compromise (IoCs) and take actions to remediate the threat(s). EDR on-premise capabilities allow incident responders to quickly search, identify, and contain all impacted endpoints while investigating threats using a choice of on-premises.
-This integration was integrated and tested with version 4.6.8 of SymantecEDR
+This integration was integrated and tested with version 4.6 of SymantecEDR
 
 ## Configure Symantec Endpoint Detection and Response (EDR) - On Prem on Cortex XSOAR
 

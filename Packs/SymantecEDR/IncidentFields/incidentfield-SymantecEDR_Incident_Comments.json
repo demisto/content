@@ -3,7 +3,7 @@
     "version": -1,
     "fromVersion": "6.8.0",
     "modified": "2023-01-11T16:35:21.356520756+05:30",
-    "name": "Symantec EDR Incident Comments",
+    "name": "SymantecEDR Incident Comments",
     "ownerOnly": false,
     "cliName": "symantecedrincidentcomments",
     "type": "grid",

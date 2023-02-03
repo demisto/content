@@ -1,5 +1,5 @@
 """
-Symantec Endpoint Detection and Response (EDR) On-Prem integration with Symantec-EDR 4.6
+Symantec Endpoint Detection and Response (EDR) On-Prem integration with Symantec-EDR
 """
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 import dateparser
@@ -296,7 +296,9 @@ def iso_creation_date(date: str):
         Return the ISO Date
     """
     if date:
-        return dateparser.parse(date).strftime(SYMANTEC_ISO_DATE_FORMAT)[:23] + "Z"  # type: ignore
+        return dateparser.parse(date).strftime(SYMANTEC_ISO_DATE_FORMAT)[:23] + "Z"  # type: ignore[union-attr]
+    else:
+        LOG('Unable to convert the w ISO 8601 date stamp standard format (i.e., yyyy-MM-dd’T’HH:mm:ss.SSSXXX)')
 
     return None
 
@@ -508,7 +510,7 @@ def parse_event_object_data(data: dict[str, Any]) -> dict:
         ('edr_data_protocols', convert_list_to_str),
     ):
         if values := data.get(key):
-            result |= func(values)  # type: ignore
+            result |= func(values)  # type: ignore[operator]
 
     for item in ['edr_data_protocols', 'edr_files', 'source_port', 'target_port']:
         if values := data.get(item):
@@ -803,12 +805,15 @@ def extract_raw_data(data: list | dict, ignore_key: list[str] = [], prefix: str 
 
     elif isinstance(data, list):
         cnt = 0
-        for d in data:
-            for key, val in d.items():
-                if key not in ignore_key:
-                    field_name = f'{prefix}_{key}_{cnt}' if prefix else f'{key}_{cnt}'
-                    dataset[field_name] = val
-            cnt = cnt + 1
+        for element in data:
+            if type(element) is dict:
+                for key, val in element.items():
+                    if key not in ignore_key:
+                        field_name = f'{prefix}_{key}_{cnt}' if prefix else f'{key}_{cnt}'
+                        dataset[field_name] = val
+                cnt = cnt + 1
+            else:
+                raise ValueError('Not identified Dictionary object')
     else:
         raise ValueError('Unable to determined "data" argument type. Data must be either list or dict')
 
@@ -1155,14 +1160,12 @@ def test_module(client: Client) -> str:
     Returns:
         Connection ok
     """
-    message: str = ''
-    try:
-        res = get_incident_list_command(client, {'limit': 1})
-        message = 'ok' if res else ''
-    except Exception as err:
-        raise DemistoException(f'Failed to execute. Error {err}')
-
-    return message
+    # get_incident_list_command(client, {'limit': 1})
+    client.query_request_api(method='POST',
+                             url_suffix='/atpapi/v2/incidents',
+                             params={},
+                             json_data={"verb": "query", 'limit': 1})
+    return 'ok'
 
 
 def get_domain_file_association_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1185,7 +1188,7 @@ def get_domain_file_association_list_command(client: Client, args: dict[str, Any
         arg_to_number(raw_response.get('total'))
     )
 
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -1223,7 +1226,7 @@ def get_endpoint_domain_association_list_command(client: Client, args: dict[str,
         arg_to_number(raw_response.get('total'))
     )
 
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -1261,7 +1264,7 @@ def get_endpoint_file_association_list_command(client: Client, args: dict[str, A
         arg_to_number(raw_response.get('total'))
     )
 
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -1300,7 +1303,7 @@ def get_audit_event_command(client: Client, args: dict[str, Any]) -> CommandResu
         arg_to_number(raw_response.get('total'))
     )
 
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
     if page_result:
         readable_output, context_data = audit_event_readable_output(page_result, title)
     else:
@@ -1338,7 +1341,7 @@ def get_event_list_command(client: Client, args: dict[str, Any]) -> CommandResul
         arg_to_number(raw_response.get('total'))
     )
 
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
     if page_result:
         readable_output, context_data = incident_event_readable_output(page_result, title)
     else:
@@ -1376,7 +1379,7 @@ def get_system_activity_command(client: Client, args: dict[str, Any]) -> Command
         arg_to_number(raw_response.get('total'))
     )
 
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
     if page_result:
         readable_output, context_data = system_activity_readable_output(page_result, title)
     else:
@@ -1414,7 +1417,7 @@ def get_event_for_incident_list_command(client: Client, args: dict[str, Any]) ->
         arg_to_number(raw_response.get('total'))
     )
 
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
     if page_result:
         readable_output, context_data = incident_event_readable_output(page_result, title)
     else:
@@ -1453,7 +1456,7 @@ def get_incident_list_command(client: Client, args: dict[str, Any]) -> CommandRe
         arg_to_number(raw_response.get('total'))
     )
 
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
     if page_result:
         readable_output, context_data = incident_readable_output(page_result, title)
     else:
@@ -1496,7 +1499,7 @@ def get_incident_comments_command(client: Client, args: dict[str, Any]) -> Comma
         arg_to_number(raw_response.get('total'))
     )
 
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
 
     if page_result:
         readable_output, context_data = incident_comment_readable_output(page_result, title, incident_id)
@@ -1618,7 +1621,7 @@ def get_file_instance_command(client: Client, args: dict[str, Any]) -> CommandRe
         arg_to_number(raw_response.get('total'))
     )
 
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -1658,7 +1661,7 @@ def get_domain_instance_command(client: Client, args: dict[str, Any]) -> Command
         arg_to_number(raw_response.get('total'))
     )
 
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
 
     if page_result:
         readable_output, context_data = domain_instance_readable_output(page_result, title)
@@ -1697,7 +1700,7 @@ def get_endpoint_instance_command(client: Client, args: dict[str, Any]) -> Comma
         arg_to_number(raw_response.get('total'))
     )
 
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
 
     if page_result:
         readable_output = endpoint_instance_readable_output(page_result, title)
@@ -1735,7 +1738,7 @@ def get_allow_list_command(client: Client, args: dict[str, Any]) -> CommandResul
         arg_to_number(raw_response.get('total'))
     )
 
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -1774,7 +1777,7 @@ def get_deny_list_command(client: Client, args: dict[str, Any]) -> CommandResult
         arg_to_number(raw_response.get('total'))
     )
 
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -1912,10 +1915,10 @@ def fetch_incidents(client: Client) -> list:
     rev_incident_state = {v: k for k, v in INCIDENT_STATUS.items()}
 
     seperator = ' OR '
-    priority_list = [rev_incident_priority.get(i) for i in client.fetch_priority]  # type: ignore
+    priority_list = [rev_incident_priority.get(i) for i in client.fetch_priority]  # type: ignore[union-attr]
     priority = priority_list[0] if len(priority_list) == 1 else seperator.join(map(str, priority_list))
 
-    state_list = [rev_incident_state.get(i) for i in client.fetch_status]  # type: ignore
+    state_list = [rev_incident_state.get(i) for i in client.fetch_status]  # type: ignore[union-attr]
     state = state_list[0] if len(state_list) == 1 else seperator.join(map(str, state_list))
 
     last_run = demisto.getLastRun()

@@ -1,17 +1,17 @@
 {
-    "id": "incident_symantecedreventactorfile",
+    "id": "incident_symantecedrenricheddata",
     "version": -1,
     "fromVersion": "6.8.0",
-    "modified": "2023-01-12T14:41:27.351337181+05:30",
-    "name": "Symantec EDR Event Actor File",
+    "modified": "2023-01-11T16:32:47.927803627+05:30",
+    "name": "SymantecEDR Enriched Data",
     "ownerOnly": false,
-    "cliName": "symantecedreventactorfile",
+    "cliName": "symantecedrenricheddata",
     "type": "grid",
     "closeForm": true,
     "editForm": false,
     "required": false,
     "neverSetAsRequired": false,
-    "isReadOnly": false,
+    "isReadOnly": true,
     "useAsKpi": false,
     "locked": false,
     "system": false,
@@ -28,8 +28,8 @@
     "caseInsensitive": true,
     "columns": [
         {
-            "key": "name",
-            "displayName": "name",
+            "key": "rule_name",
+            "displayName": "rule_name",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -40,8 +40,8 @@
             "selectValues": null
         },
         {
-            "key": "sha2",
-            "displayName": "sha2",
+            "key": "suspicion_score",
+            "displayName": "suspicion_score",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -52,8 +52,8 @@
             "selectValues": null
         },
         {
-            "key": "md5",
-            "displayName": "md5",
+            "key": "category_name",
+            "displayName": "category_name",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -64,8 +64,8 @@
             "selectValues": null
         },
         {
-            "key": "path",
-            "displayName": "path",
+            "key": "category_id",
+            "displayName": "category_id",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -76,44 +76,8 @@
             "selectValues": null
         },
         {
-            "key": "modified",
-            "displayName": "modified",
-            "type": "shortText",
-            "required": false,
-            "script": "",
-            "width": 150,
-            "isDefault": true,
-            "fieldCalcScript": "",
-            "isReadOnly": false,
-            "selectValues": null
-        },
-        {
-            "key": "signature_company_name",
-            "displayName": "signature_company_name",
-            "type": "shortText",
-            "required": false,
-            "script": "",
-            "width": 150,
-            "isDefault": true,
-            "fieldCalcScript": "",
-            "isReadOnly": false,
-            "selectValues": null
-        },
-        {
-            "key": "signature_value_ids",
-            "displayName": "signature_value_ids",
-            "type": "shortText",
-            "required": false,
-            "script": "",
-            "width": 150,
-            "isDefault": true,
-            "fieldCalcScript": "",
-            "isReadOnly": false,
-            "selectValues": []
-        },
-        {
-            "key": "normalized_path",
-            "displayName": "normalized_path",
+            "key": "rule_description",
+            "displayName": "rule_description",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -125,6 +89,7 @@
         }
     ],
     "defaultRows": [
+        {},
         {},
         {},
         {}

@@ -5,6 +5,7 @@ Symantec EDR (On-prem) Integration - Unit Tests file
 import pytest
 import json
 import time
+import datetime
 import os
 from CommonServerPython import DemistoException
 from SymantecEDR import Client, get_file_instance_command, get_domain_instance_command, get_endpoint_instance_command, \
@@ -48,6 +49,10 @@ ENDPOINT_COMMAND_ISOLATE = util_load_json('test_data/endpoint_command_isolate_en
 ENDPOINT_COMMAND_REJOIN = util_load_json('test_data/endpoint_command_rejoin.json')
 ENDPOINT_COMMAND_CANCEL = util_load_json('test_data/endpoint_command_cancel.json')
 ENDPOINT_COMMAND_DELETE = util_load_json('test_data/endpoint_command_delete_endpoint_file.json')
+
+
+today = datetime.datetime.now(datetime.timezone.utc)
+now_iso = today.isoformat()[:23] + "Z"
 
 
 @pytest.mark.parametrize('raw_response, expected', [(FILE_INSTANCE_RESPONSE, FILE_INSTANCE_RESPONSE)])

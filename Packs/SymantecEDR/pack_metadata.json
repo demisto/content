@@ -18,5 +18,8 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
+    ],
+    "itemPrefix": [
+        "SymantecEDR"
     ]
 }
