@@ -33,4 +33,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Enrichment - Nexpose - Rapid7](../doc_files/Enrichment_-_Nexpose_-_Rapid7.png)
+![Enrichment - Nexpose - Rapid7](../doc_files/Rapid7_-_Nexpose_-_Enrichment.png)
