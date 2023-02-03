@@ -478,8 +478,8 @@ def secret_rpc_changepassword_command(client, secret_id: str = '', newpassword: 
     )
 
 
-def get_credentials(client,secret_id):
-    obj={}
+def get_credentials(client, secret_id):
+    obj = {}
     secret = client.getSecret(secret_id)
     items = secret.get('items')
     username = None
@@ -498,9 +498,9 @@ def get_credentials(client,secret_id):
 
 
 def fetch_credentials_command(client, secretids):
-    credentials = []
+    credentials:  List[Any] = []
     args: dict = demisto.args()
-    credentials_name: str = args.get('identifier')
+    credentials_name: Any = args.get('identifier')
 
     try:
         secretsid = argToList(secretids)
@@ -520,13 +520,13 @@ def fetch_credentials_command(client, secretids):
     else:
         if credentials_name:
             try:
-                credentials: str = [get_credentials(client,credentials_name)]
+                credentials = [get_credentials(client, credentials_name)]
             except Exception as e:
                 demisto.debug(f"Could not fetch credentials: {credentials_name}. Error: {e}")
                 credentials = []
         else:
             for secret_id in secretsid:
-                obj = get_credentials(client,secret_id)
+                obj = get_credentials(client, secret_id)
                 credentials.append(obj)
 
     demisto.credentials(credentials)
@@ -539,6 +539,7 @@ def fetch_credentials_command(client, secretids):
         raw_response=credentials,
         outputs=credentials
     )
+
 
 def main():
     params = demisto.params()
