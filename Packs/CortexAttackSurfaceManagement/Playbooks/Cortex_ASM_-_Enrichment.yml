@@ -701,7 +701,7 @@ tasks:
     scriptarguments:
       RemoteIP:
         complex:
-          root: inputs.RemoteIp
+          root: inputs.RemoteIP
     separatecontext: true
     continueonerrortype: ""
     loop:
