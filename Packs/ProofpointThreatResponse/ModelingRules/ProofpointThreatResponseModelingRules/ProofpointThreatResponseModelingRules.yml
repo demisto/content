@@ -4,3 +4,4 @@ id: proofpoint_threat_response_modeling_rule
 tags: proofpoint
 rules: ''
 schema: ''
+toversion: 6.9.9

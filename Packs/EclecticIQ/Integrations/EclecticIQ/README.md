@@ -1,602 +1,1227 @@
-Note: Support for this Pack will be moved to the Partner on NOV, 01, 2022
-# EclecticIQ Cortex XSOAR User Manual
-## Introduction
-### EclecticIQ Platform
-* EclecticIQ platform is a Threat Intelligence Platform (TIP) that sits at the center of an organization’s Cyber Threat Intelligence practice, collecting intelligence from open sources, commercial suppliers, and industry partnerships into a single workspace.
-* Using EclecticIQ Platform, intelligence analysts can deliver actionable intelligence and support detection, prevention, and incident response through existing security infrastructure. This approach improves security operations and leadership through a comprehensive yet cost-effective system.
-* EclecticIQ Platform is uniquely designed to improve an organization’s security posture and intelligence analysts' efficiency, speed, accuracy, and capacity, allowing organizations to continue operations unimpeded by cyber threats.
-
-### EclecticIQ Cortex App
-* Get the EIQ data in Cortex XSOAR by integrating both using API Key and URL of EclecticIQ.
-* Using scripts
-  * Create a command to get the lookup observables 
-  * Create a command to create observables 
-  * Create a command to create sighting for EIQ data in the EIQ platform.
-
-### Prerequisites
-* EIQ will provide access to APIs 
-
-### Installation of Cortex XSOAR
-* For downloading the Cortex XSOAR fill up the partner form by using this link  [https://www.google.com/url?q=https://start.paloaltonetworks.com/sign-up-for-community-edition.html&sa=D&source=docs&ust=1661255332217603&usg=AOvVaw0bHAEbEMQbqeJs6EoiMi7I] and submit.
-* In an email (from 	dbot@demisto.work), get an installation script and a free license will be sent by Palo Alto Networks.
-
-##### Follow the below instructions after receiving the email
-1. Run the chmod +x demisto.sh command to convert the .sh file to an executable file
-2. Execute the .sh file, by running the following command-sudo ./demisto.sh 
-3. Accept the EULA and add the information when prompted
-    i. The Server HTTPS port (default is 443)
-    ii. If you want to use Elasticsearch, enter the Elasticsearch details, such as the URL, timeout, etc
-    iii. Type the name of the Admin user (default is admin)
-    iv. Type the password (default is admin)
-4. Confirm that the Cortex XSOAR server status is active, by running the command- systemctl status demisto
-    i. f the server is not active, run the following command to start the server-systemctl start demisto 
-    ii. Confirm that the Docker service status is active, by running the command- systemctl status docker
-    iii. In a web browser, go to the https://serverURL:port to verify that Cortex XSOAR was successfully installed
-5. Add the license when you open Cortex XSOAR for the first time
-
-## Working
-The user needs to perform the following after Cortex XSOAR installation.
-#### Steps to upload the Integration
-1. Login to Cortex XSOAR
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/1.png)
-2. Go to settings (left-hand side down corner) and click on it
-3. Click on the Upload integration icon (right-hand side up corner) 
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/2.png)
-4. Select the file and it will be uploaded
-5. Click on the Save icon (beside the Save Version button)
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/3.png)
-
-#### Steps to Add instance to the Integration
-1. Login to Cortex XSOAR
-2. Go to settings (left-hand side down corner) and click on it
-3. Go to Integrations 
-4. Search for the uploaded integration by entering the integration name in the given search field on the Settings page
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/4.png)
-5. Click on "Add instance" (right-hand side)
-6. Pass the valid API key
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/5.png)
-7. Click on the "Test" button and get a success message
-8. Click on the "Save & exit" button
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/6.png)
-
-#### Steps to create Incident
-1. Login to Cortex XSOAR
-2. Go to "Incidents" (left-hand side down) and click on it
-3. Click on the "New Incident" button (right-hand side)
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/7.png)
-4. New Incident page will be displayed
-5. Enter the Incident Name and required details
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/8.png)
-6. Click on the "Create New Incident" button
-
-##  1. Command Line Interface(CLI)
-### Lookup Observable
-* For lookup observables, the user has to execute the lookup observables command in the CLI
-* Below arguments will be passed along with the lookup observables command
-  * Type:Type of value to search (ipv4,ipv6,domain,uri,email,hash-md5,hash-sha1,hash-sha256,hash-sha512)
-  * Value: Value of the entity to search
-* Once the command is executed,
-  * If successful, the “Command executed successfully” message will be displayed in the war room with data, and the observables found will be added in the context of the incident
-  * If unsuccessful, the failure message will be displayed in the war room
- 
-
-#### Steps to execute the lookup_observable command
-1. Login to Cortex XSOAR
-2. Go to "Incidents" (left-hand side down) and click on it
-3. Click on the created Incident from the Table
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/9.png)
-4. Click on War room
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/10.png)
-5. Pass the command in CLI and press enter button
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/11.png)
-6. User gets the success message
-7. Output Data will be stored in Context Data, to view the that click on a button(i.e, right shoulder button) that is beside the "Actions" button 
-8. Click on "Context Data" to view the stored Output Data
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/12.png)
-
-## Command
-```http
- lookup_observable
-```
-## 1.1 Get the reputation of an IP address observable
-Gets the reputation of an IP address observable.
-### Base command
-```http
-  ip
-```
-
-### Input
-| Argument Name |Type            | Required   | Description | 
-| :--------     | :-------       | :----------|--------     | 
-| `type`        | `string`       | Required   |IPv4 to get the reputation of |
-| `value`         | `string`       | Required   |  Value of the entity to search |
- 
-### Context Output
-| Path          |  Type        | Description      |
-| :--------     | :-------     |------|
-| `EclecticIQ.Entity.ID`       | `string`     | EclecticIQ  Entity ID|
-| `EclecticIQ.Entity.confidence`       | `string`     | EclecticIQ Entity confidence|
-| `EclecticIQ.Entity.observables`       | `string`     | EclecticIQ Entity related observables|
-| `EclecticIQ.Entity.threat_start_time`       | `date`     | EclecticIQ Threat start time|
-| `EclecticIQ.Entity.title`       | `string`     | EclecticIQ Entity Title|
-
-### Command example
-```http
-  ip ipv4=172.168.156.115
-```
-##### Human Readable Output
-#### EclecticIQ observable reputation - 172.168.156.115 
-|confidence	|description|	observables|	source_name|	tags	|threat_start_time|title| 
-|:--------     |:-------     |------|------|---------|--------|------|
-|`low`	|creationofsighting|	{'type': 'ipv4', 'value': '172.168.156.115, 'classification': 'low'}|   |   |	2022-08-25T04:50:56+00:00|sighting|
-
-## 1.2 Get the reputation of an IP address observable
-Gets the reputation of an IP address observable.
-
-### Base command
-```http
-  ip
-```
-### Input
-| Argument Name |Type            | Required   | Description | 
-| :--------     | :-------       | :----------|--------     | 
-| `type`        | `string`       | Required   |IPv6 to get the reputation of |
-| `value`         | `string`       | Required   |  Value of the entity to search |
- 
-### Context Output
-
-| Path          |  Type        | Description      |
-| :--------     | :-------     |------|
-| `EclecticIQ.Entity.ID`       | `string`     | EclecticIQ  Entity ID|
-| `EclecticIQ.Entity.confidence`       | `string`     | EclecticIQ Entity confidence|
-| `EclecticIQ.Entity.observables`       | `string`     | EclecticIQ Entity related observables|
-| `EclecticIQ.Entity.threat_start_time`       | `date`     | EclecticIQ Threat start time|
-| `EclecticIQ.Entity.title`       | `string`     | EclecticIQ Entity Title|
-
-### Command example
-```http
-  ip ipv6=2001:0000:3238:DFE1:0063:0000:0000:FEFB
-```
-##### Human Readable Output
-#### EclecticIQ observable reputation - 2001:0000:3238:DFE1:0063:0000:0000:FEFB
-|confidence	|description|	observables|	source_name|	tags	|threat_start_time|title| 
-|:--------     |:-------     |------|------|---------|--------|------|
-|`unknown`	|             |{'type': 'ipv6', 'value': '2001:0000:3238:DFE1:0063:0000:0000:FEFB', 'classification': 'low'}|   |   |	2022-08-19T06:56:40.755381+00:00|
-
-## 1.3 Get the reputation of an email observable
-Gets the reputation of an email observable.
-
-### Base command
-```http
-  email
-```
-### Input
-| Argument Name |Type            | Required   | Description | 
-| :--------     | :-------       | :----------|--------     | 
-| `type`        | `string`       | Required   |Email address observable to get the reputation of |
-| `value`         | `string`       | Required   |  Value of the entity to search |
- 
-### Context Output
-
-| Path          |  Type        | Description      |
-| :--------     | :-------     |------|
-| `EclecticIQ.Entity.ID`       | `string`     | EclecticIQ  Entity ID|
-| `EclecticIQ.Entity.confidence`       | `string`     | EclecticIQ Entity confidence|
-| `EclecticIQ.Entity.observables`       | `string`     | EclecticIQ Entity related observables|
-| `EclecticIQ.Entity.threat_start_time`       | `date`     | EclecticIQ Threat start time|
-| `EclecticIQ.Entity.title`       | `string`     | EclecticIQ Entity Title|
-
-### Command example
-```http
-  email email=abc@gmail.com
-```
-##### Human Readable Output
-#### EclecticIQ observable reputation - abc@gmail.com
-|confidence	|description|	observables|	source_name|	tags	|threat_start_time|title| 
-|:--------     |:-------     |------|------|---------|--------|------|
-|`medium`	|   Splunk created Sighting.  |{'type': 'email', 'value': 'abc@gmail.com', 'classification': 'unknown'}|   |   |	2022-07-26T18:00:58.623610+00:00| Sighting of : abc@gmail.com|
-
-## 1.4 Get the reputation of a domain observable
-Gets the reputation of a domain observable.
-
-### Base command
-```http
-  domain
-```
-### Input
-| Argument Name |Type            | Required   | Description | 
-| :--------     | :-------       | :----------|--------     | 
-| `type`        | `string`       | Required   |Domain observable to get the reputation of |
-| `value`         | `string`       | Required   |  Value of the entity to search |
- 
-### Context Output
-
-| Path          |  Type        | Description      |
-| :--------     | :-------     |------|
-| `EclecticIQ.Entity.ID`       | `string`     | EclecticIQ  Entity ID|
-| `EclecticIQ.Entity.confidence`       | `string`     | EclecticIQ Entity confidence|
-| `EclecticIQ.Entity.observables`       | `string`     | EclecticIQ Entity related observables|
-| `EclecticIQ.Entity.threat_start_time`       | `date`     | EclecticIQ Threat start time|
-| `EclecticIQ.Entity.title`       | `string`     | EclecticIQ Entity Title|
-
-### Command example
-```http
-  domain domain=abcd1.com
-```
-##### Human Readable Output
-#### EclecticIQ observable reputation - abcd1.com
-
-|confidence	|description|	observables|	source_name|	tags	|threat_start_time|title| 
-|:--------     |:-------     |------|------|---------|--------|------|
-|`unknown`	|     |{'type': 'domain', 'value': 'abcd1.com', 'classification': 'low'}|   |   |	2022-08-29T09:47:12.280914+00:00| |
-
-
-## 1.5 Get the reputation of hash-md5 observable
-Gets the reputation of hash-md5 observable.
-
-### Base command
-```http
-   hash-md5
-```
-### Input
-| Argument Name |Type            | Required   | Description | 
-| :--------     | :-------       | :----------|--------     | 
-| `type`        | `string`       | Required   | hash-md5 observable to get the reputation of |
-| `value`         | `string`       | Required   |  Value of the entity to search |
- 
-### Context Output
-
-| Path          |  Type        | Description      |
-| :--------     | :-------     |------|
-| `EclecticIQ.Entity.ID`       | `string`     | EclecticIQ  Entity ID|
-| `EclecticIQ.Entity.confidence`       | `string`     | EclecticIQ Entity confidence|
-| `EclecticIQ.Entity.observables`       | `string`     | EclecticIQ Entity related observables|
-| `EclecticIQ.Entity.threat_start_time`       | `date`     | EclecticIQ Threat start time|
-| `EclecticIQ.Entity.title`       | `string`     | EclecticIQ Entity Title|
-
-### Command example
-```http
-  hash hash-md5=e5dadf6524624f79c3127e247f04b541
-```
-##### Human Readable Output
-#### EclecticIQ observable reputation - e5dadf6524624f79c3127e247f04b541
-
-|confidence	|description|	observables|	source_name|	tags	|threat_start_time|title| 
-|:--------     |:-------     |------|------|---------|--------|------|
-|`low`	| sighting    |{'type': 'hash-md5', 'value': 'e5dadf6524624f79c3127e247f04b541', 'classification': 'unknown'}|   |   |	2022-08-26T08:06:11+00:00| |
-
-## 1.6 Get the reputation of hash-sha1 observable
-Gets the reputation of hash-sha1 observable.
-
-### Base command
-```http
-   hash-sha1
-```
-### Input
-| Argument Name |Type            | Required   | Description | 
-| :--------     | :-------       | :----------|--------     | 
-| `type`        | `string`       | Required   | hash-sha1 observable to get the reputation of |
-| `value`         | `string`       | Required   |  Value of the entity to search |
- 
-
-### Context Output
-
-| Path          |  Type        | Description      |
-| :--------     | :-------     |------|
-| `EclecticIQ.Entity.ID`       | `string`     | EclecticIQ  Entity ID|
-| `EclecticIQ.Entity.confidence`       | `string`     | EclecticIQ Entity confidence|
-| `EclecticIQ.Entity.observables`       | `string`     | EclecticIQ Entity related observables|
-| `EclecticIQ.Entity.threat_start_time`       | `date`     | EclecticIQ Threat start time|
-| `EclecticIQ.Entity.title`       | `string`     | EclecticIQ Entity Title|
-
-### Command example
-```http
-  hash hash-sha1=2aae6c35c94fcfb415dbe95f408b9ce91ee846ed
-```
-##### Human Readable Output
-#### EclecticIQ observable reputation - 2aae6c35c94fcfb415dbe95f408b9ce91ee846ed
-
-|confidence	|description|	observables|	source_name|	tags	|threat_start_time|title| 
-|:--------     |:-------     |------|------|---------|--------|------|
-|`unknown`	|    |{'type': 'hash-sha1', 'value': '2aae6c35c94fcfb415dbe95f408b9ce91ee846ed', 'classification': 'medium'}|   |   |	2022-08-26T07:54:37.838123+00:00| |
-
-## 1.7 Get the reputation of hash-sha256 observable
-Gets the reputation of hash-sha256 observable.
-
-### Base command
-```http
-   hash-sha256
-```
-### Input
-| Argument Name |Type            | Required   | Description | 
-| :--------     | :-------       | :----------|--------     | 
-| `type`        | `string`       | Required   | hash-sha256 observable to get the reputation of |
-| `value`         | `string`       | Required   |  Value of the entity to search |
- 
-### Context Output
-
-| Path          |  Type        | Description      |
-| :--------     | :-------     |------|
-| `EclecticIQ.Entity.ID`       | `string`     | EclecticIQ  Entity ID|
-| `EclecticIQ.Entity.confidence`       | `string`     | EclecticIQ Entity confidence|
-| `EclecticIQ.Entity.observables`       | `string`     | EclecticIQ Entity related observables|
-| `EclecticIQ.Entity.threat_start_time`       | `date`     | EclecticIQ Threat start time|
-| `EclecticIQ.Entity.title`       | `string`     | EclecticIQ Entity Title|
-
-### Command example
-```http
-  hash hash-sha256=ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
-```
-##### Human Readable Output
-#### EclecticIQ observable reputation - ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
-
-|confidence	|description|	observables|	source_name|	tags	|threat_start_time|title| 
-|:--------     |:-------     |------|------|---------|--------|------|
-|`unknown`	|    |{'type': 'hash-sha256', 'value': 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad', 'classification': 'medium'}|   |   |	2022-08-26T07:56:38.310292+00:00| |
-
-## 1.8 Get the reputation of hash-sha512 observable
-Gets the reputation of hash-sha512 observable.
-
-### Base command
-```http
-   hash-sha512
-```
-### Input
-| Argument Name |Type            | Required   | Description | 
-| :--------     | :-------       | :----------|--------     | 
-| `type`        | `string`       | Required   | hash-sha512 observable to get the reputation of |
-| `value`         | `string`       | Required   |  Value of the entity to search |
- 
-### Context Output
-
-| Path          |  Type        | Description      |
-| :--------     | :-------     |------|
-| `EclecticIQ.Entity.ID`       | `string`     | EclecticIQ  Entity ID|
-| `EclecticIQ.Entity.confidence`       | `string`     | EclecticIQ Entity confidence|
-| `EclecticIQ.Entity.observables`       | `string`     | EclecticIQ Entity related observables|
-| `EclecticIQ.Entity.threat_start_time`       | `date`     | EclecticIQ Threat start time|
-| `EclecticIQ.Entity.title`       | `string`     | EclecticIQ Entity Title|
-
-### Command example
-```http
-  hash hash-sha512=3b7fc7cc370707c1df045c35342f3d64ea7076abd84f8a8c046a7cca2b85901689f3cf4bdc1f5fc232a60456cb9d2f48702bf8f8f1064f9bcc7d70edad9f860e
-```
-##### Human Readable Output
-#### EclecticIQ observable reputation - 3b7fc7cc370707c1df045c35342f3d64ea7076abd84f8a8c046a7cca2b85901689f3cf4bdc1f5fc232a60456cb9d2f48702bf8f8f1064f9bcc7d70edad9f860e
-
-|confidence	|description|	observables|	source_name|	tags	|threat_start_time|title| 
-|:--------     |:-------     |------|------|---------|--------|------|
-|`unknown`	|    |{'type': 'hash-sha512', 'value': '3b7fc7cc370707c1df045c35342f3d64ea7076abd84f8a8c046a7cca2b85901689f3cf4bdc1f5fc232a60456cb9d2f48702bf8f8f1064f9bcc7d70edad9f860e', 'classification': 'medium'}|   |   |2022-08-26T07:52:30.565542+00:00| |
-
-## 1.9 Get the reputation of an uri observable
-Gets the reputation of uri observable.
-
-### Base command
-```http
-   uri
-```
-### Input
-| Argument Name |Type            | Required   | Description | 
-| :--------     | :-------       | :----------|--------     | 
-| `type`        | `string`       | Required   | uri observable to get the reputation of |
-| `value`         | `string`       | Required   |  Value of the entity to search |
- 
-### Context Output
-| Path          |  Type        | Description      |
-| :--------     | :-------     |------|
-| `EclecticIQ.Entity.ID`       | `string`     | EclecticIQ  Entity ID|
-| `EclecticIQ.Entity.confidence`       | `string`     | EclecticIQ Entity confidence|
-| `EclecticIQ.Entity.observables`       | `string`     | EclecticIQ Entity related observables|
-| `EclecticIQ.Entity.threat_start_time`       | `date`     | EclecticIQ Threat start time|
-| `EclecticIQ.Entity.title`       | `string`     | EclecticIQ Entity Title|
-
-### Command example
-```http
-  uri uri=https://goo.com
-```
-##### Human Readable Output
-#### EclecticIQ observable reputation - https://goo.com
-
-|confidence	|description|	observables|	source_name|	tags	|threat_start_time|title| 
-|:--------     |:-------     |------|------|---------|--------|------|
-|`unknown`	|    |{'type': 'uri', 'value': 'https://goo.com', 'classification': 'medium'}|   |   |2022-08-29T10:36:18.733576+00:00| |
-
-### Create Observable
-* To create observables, the user has to execute the create observables command in the CLI
-* Below arguments will be passed along with the create observables command
-  * Types:Type of observable (ipv4,ipv6,domain,Uri,email,hash-md5,hash-sha1,hash-sha256,hash-sha512)
-  * Value: Value of the observable
-  * Maliciousness: Maliciousness of the observable unknown, safe, low, medium, high
-* Once the command is executed,
-  * If successful, the “observable created successfully” message will be displayed in the war room with data
-  * If unsuccessful, the failure message will be displayed in the war room
-
-#### Steps to execute the create_observable command
-1. Login to Cortex XSOAR
-2. Go to "Incidents" (left-hand side down) and click on it
-3. Click on the created Incident from the Table
-4. Click on War room
-5. Pass the command in CLI and press enter button
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/13.png)
-6. User gets the success message
-7. Output Data will be stored in Context Data, to view the that click on a button(i.e, right shoulder button) that is beside the "Actions" button 
-8. Click on "Context Data" to view the stored Output Data
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/14.png)
-
-### Base command
-```http
-  create_observable
-```
-
-### Input
-| Argument Name |Type            | Required   | Description | 
-| :--------     | :-------       | :----------|--------     | 
-| `type`        | `string`       | Required   |Type of the observable from (ipv4,ipv6,domain,uri,email,hash-md5,hash-sha1,hash-sha256,hash-sha512) |
-| `value`         | `string`       | Required   | Value of the type of observable |
-|`maliciousness`|        `string`  |Required  | Maliciousness of the observable from (unknown, safe, low, medium, high)|
- 
-### Context Output
-| Path          |  Type        | Description      |
-| :--------     | :-------     |------|
-| `Observable.data.created_at`       | `date`     | Observable creation date|
-| `Observable.data.id`      | `string`     | EclecticIQ  Entity ID|
-| `Observable.data.last_updated_at` | `date`    |Observable last updated date|
-| `Observable.data.maliciousness`       | `string`     | Maliciousness confidence level|
-| `Observable.data.type`        | `string`     | Type of observable|
-| `Observable.data.value`  |`string`| Value of the observable|
-
-### Command example
-```http
-  ip ipv4=172.168.156.115
-```
-##### Human Readable Output
-#### Observables created successfully…!!
-|confidence	|description|
-| :--------     | :-------     |
-|`maliciousness`	|low|
-|`type`|	ipv4|
-|`value`|	172.168.156.115|
-
-### Create Sighting
-* For create sighting, the user has to execute the create sighting command in the CLI 
-* Below arguments will be passed along with the create sighting command
-  * Type:Type of the sighting (ipv4,ipv6,domain,Uri,email,hash-md5,hash-sha1,hash-sha256,hash-sha512)
-  * Value: Value of the sighting
-  * Title: Title of the sighting 
-  * Description: Description of the sighting
-  * Confidence: Confidence of the sighting from low, high, medium, unknown
-  * Tags: Tags attached with the sighting
-* Once the command is executed to create sightings,
-  * If successful, the “sighting created successfully” message will be displayed in the war room with data
-  * If unsuccessful, then the failure message will be displayed in the war room
-
-#### Steps to execute the create_sighting command
-1. Login to Cortex XSOAR
-2. Go to "Incidents" (left-hand side) and click on it
-3. Click on the created Incident from the Table
-4. Click on War room
-5. Pass the command in CLI and press enter button
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/15.png)
-6. User gets the success message
-7. Output Data will be stored in Context Data, to view the that click on a button(i.e, right shoulder button) that is beside the "Actions" button 
-8. Click on "Context Data" to view the stored Output Data
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/16.png)
-
-### Base command
-```http
-  create_sighting
-```
-### Input
-| Argument Name |Type            | Required   | Description | 
-| :--------     | :-------       | :----------|--------     | 
-| `type`        | `string`       | Required   |Type of the sighting from (ipv4,ipv6,domain,uri,email,hash-md5,hash-sha1,hash-sha256,hash-sha512) |
-| `value`         | `string`       | Required   | Value of the sighting  |
-|`title`|        `string`  |Required  | Title of the sighting |
-|`description`| `string`|Required|Description of the sighting|
-|`Confidence`|`string`|Required| Confidence of the sighting from (low,high,medium,unknown)|
-|`Tags`|`string`|Required| tags attached with the sighting|
- 
-### Context Output
-| Path          |  Type        | Description      |
-| :--------     | :-------     |------|
-| `Sighting.data.created_at`       | `date`     | Observable creation date|
-| `Sighting.data.estimated_threat_start_time`      | `string`     | EclecticIQ  Entity ID|
-| `Sighting.data.last_updated_at` | `date`    |Observable last updated date|
-| `Sighting.data.title`       | `string`     | Maliciousness confidence level|
-
-### Command example
-```http
-  ip ipv4=172.168.156.115
-```
-##### Human Readable Output
-#### !sighting created for- 172.168.156.115
-|confidence	|description|
-| :--------     | :-------     |
-|`Type`	|ipv4  |
-|`confidence_level`| low|
-|`description`|	creationofsighting|
-|`tags`|	XSOARsighting|
-|`title`|	sighting|
-|`value`|	172.168.156.115|
-
-##  2. Playbook
-### Lookup Observable
-#### Steps to create the Playbook for lookup_observable
-1. Login to Cortex XSOAR
-2. Go to Playbook (left-hand side) and click on  it
-3. Click on the New Playbook button (right-hand side up corner)
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/17.png)
-4. Enter the Playbook Name and click on Save
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/18.png)
-5. Go to EclecticIQ and expand it (which is displayed under Task Library-Automation)
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/19.png)
-6. Click on the "Add" button to add the Lookup Observable command to Playbook
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/20.png)
-7. Pass the inputs: type and value
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/21.png)
-8. Click on Ok
-9. Connect "Playbook Triggered" to the "lookup_observable" task
-10. Click on "Save Playbook"
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/22.png)
-11. Go to "Incidents" (left-hand side) and click on it
-12. Click on the created Incident from the Table
-13. Click on Work Plan
-14. Search the Playbook from the Default dropdown and click on that
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/23.png)
-15. Click on the "Yes I know what I am doing" button
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/24.png)
-16. Playbook will Run and user gets a success message
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/25.png)
-17. Click on a button(i.e, right shoulder button) that is beside the "Actions" button 
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/26.png)
-18. Click on "Context Data" to view the output of the Playbook
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/27.png)
-
-### Create Observable
-#### Steps to create the Playbook for create_observable
-1. Login to Cortex XSOAR
-2. Go to Playbook (left-hand side) and click on  it
-3. Click on the New Playbook button (right-hand side up corner)
-4. Enter the Playbook Name and click on Save
-5. Go to EclecticIQ and expand it (which is displayed under Task Library-Automation)
-6. Click on the "Add" button to add the Create Observable command to Playbook
-7. Pass the inputs: type, value, and maliciousness
-8. Click on Ok
-9. Connect "Playbook Triggered" to "cretae_observable" task
-10. Click on "Save Playbook"
-11. Go to "Incidents" (left-hand side) and click on it
-12. Click on the created Incident from the Table
-13. Click on Work Plan
-14. Search the Playbook from the Default dropdown
-15. Click on the "Yes I know what I am doing" button
-16. Playbook will Run and get a success message
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/28.png)
-17. Click on a button(i.e, right shoulder button) that is beside the "Actions" button 
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/29.png)
-18. Click on "Context Data" to view the output of the Playbook
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/30.png)
-
-### Create Sighting
-#### Steps to create the Playbook for create_sighting
-1. Login to Cortex XSOAR
-2. Go to Playbook (left-hand side) and click on  it
-3. Click on the New Playbook button (right-hand side up corner)
-4. Enter the Playbook Name and click on Save
-5. Go to EclecticIQ and expand it (which is displayed under Task Library-Automation)
-6. Click on the "Add" button to add the Create Sighting command to Playbook
-7. Pass the inputs:value,description,title,tags,type and confidence_level
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/31.png)
-8. Click on Ok
-9. Connect "Playbook Triggered" to the "create_sighting" task
-10. Click on "Save Playbook"
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/32.png)
-11. Go to "Incidents" (left-hand side) and click on it
-12. Click on the created Incident from the Table
-13. Click on Work Plan
-14. Search the Playbook from the Default dropdown
-15. Click on the "Yes I know what I am doing" button
-16. Playbook will Run and get a success message
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/33.png)
-17. Click on a button(i.e, right shoulder button) that is beside the "Actions" button 
-18. Click on "Context Data" to view the output of the Playbook
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/34.png)
+<!-- HTML_DOC -->
+<div class="cl-preview-section">
+<p>Deprecated. No available replacement.</p>
+</div>
+<div class="cl-preview-section">
+<h2 id="use-cases">Use Cases</h2>
+</div>
+<div class="cl-preview-section">
+<ol>
+<li>Get reputation of IOCs (observables).</li>
+<li>Get observables’ related entities.</li>
+</ol>
+</div>
+<div class="cl-preview-section">
+<h2 id="configure-eclecticiq-platform-on-demisto">Configure EclecticIQ Platform on Cortex XSOAR</h2>
+</div>
+<div class="cl-preview-section">
+<ol>
+<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
+<li>Search for integration-EclecticIQ_Platform.</li>
+<li>Click <strong>Add instance</strong> to create and configure a new integration instance.
+<ul>
+<li>
+<strong>Name</strong>: a textual name for the integration instance.</li>
+<li><strong>Server URL (e.g. <a href="https://192.168.0.1/">https://192.168.0.1</a>)</strong></li>
+<li><strong>Username</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
+<li><strong>Use system proxy</strong></li>
+<li><strong>IP threshold. Minimum maliciousness confidence level to consider the IP address malicious: High, Medium, Low, Safe, Unknown</strong></li>
+<li><strong>URL threshold. Minimum maliciousness confidence level to consider the URL malicious: High, Medium, Low, Safe, Unknown</strong></li>
+<li><strong>File threshold. Minimum maliciousness confidence level to consider the file malicious: High, Medium, Low, Safe, Unknown</strong></li>
+<li><strong>Email threshold. Minimum maliciousness confidence level to consider the email address malicious: High, Medium, Low, Safe, Unknown</strong></li>
+<li><strong>Domain threshold. Minimum maliciousness confidence level to consider the domain malicious: High, Medium, Low, Safe, Unknown</strong></li>
+</ul>
+</li>
+<li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
+</ol>
+</div>
+<div class="cl-preview-section">
+<h2 id="commands">Commands</h2>
+</div>
+<div class="cl-preview-section">
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+</div>
+<div class="cl-preview-section">
+<ol>
+<li><a href="#get-the-reputation-of-an-ip-address-observable">Get the reputation of an IP address observable: ip</a></li>
+<li><a href="#get-the-reputation-of-a-url-observable">Get the reputation of a URL observable: url</a></li>
+<li><a href="#get-the-reputation-of-a-file-observable">Get the reputation of a file observable: file</a></li>
+<li><a href="#get-related-entities-of-an-observable">Get related entities of an observable: eclecticiq-get-observable-related-entity</a></li>
+<li><a href="#get-the-reputation-of-an-email-observable-email">Get the reputation of an email observable: email</a></li>
+<li><a href="#get-the-reputation-of-a-domain-observable">Get the reputation of a domain observable: domain</a></li>
+</ol>
+</div>
+<div class="cl-preview-section">
+<h3 id="get-the-reputation-of-an-ip-address-observable">1. Get the reputation of an IP address observable</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Gets the reputation of an IP address observable.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="base-command">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>ip</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input">Input</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 230px;"><strong>Argument Name</strong></th>
+<th style="width: 377px;"><strong>Description</strong></th>
+<th style="width: 133px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 230px;">ip</td>
+<td style="width: 377px;">IPv4 to get the reputation of</td>
+<td style="width: 133px;">Required</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="context-output">Context Output</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 201px;"><strong>Path</strong></th>
+<th style="width: 69px;"><strong>Type</strong></th>
+<th style="width: 470px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 201px;">EclecticIQ.IP.Address</td>
+<td style="width: 69px;">String</td>
+<td style="width: 470px;">IP address that was tested</td>
+</tr>
+<tr>
+<td style="width: 201px;">EclecticIQ.IP.Created</td>
+<td style="width: 69px;">Date</td>
+<td style="width: 470px;">Observable creation date</td>
+</tr>
+<tr>
+<td style="width: 201px;">EclecticIQ.IP.LastUpdate</td>
+<td style="width: 69px;">Date</td>
+<td style="width: 470px;">Observable last updated date</td>
+</tr>
+<tr>
+<td style="width: 201px;">EclecticIQ.IP.ID</td>
+<td style="width: 69px;">Number</td>
+<td style="width: 470px;">Observable ID</td>
+</tr>
+<tr>
+<td style="width: 201px;">EclecticIQ.IP.Maliciousness</td>
+<td style="width: 69px;">String</td>
+<td style="width: 470px;">Maliciousness confidence level</td>
+</tr>
+<tr>
+<td style="width: 201px;">IP.Address</td>
+<td style="width: 69px;">String</td>
+<td style="width: 470px;">IP address that was tested</td>
+</tr>
+<tr>
+<td style="width: 201px;">IP.Malcious.Vendor</td>
+<td style="width: 69px;">String</td>
+<td style="width: 470px;">For malicious IPs, the vendor that made the decision</td>
+</tr>
+<tr>
+<td style="width: 201px;">IP.Malcious.Description</td>
+<td style="width: 69px;">String</td>
+<td style="width: 470px;">For malicious IPs, the reason that the vendor made the decision</td>
+</tr>
+<tr>
+<td style="width: 201px;">DBotScore.Type</td>
+<td style="width: 69px;">String</td>
+<td style="width: 470px;">Indicator type</td>
+</tr>
+<tr>
+<td style="width: 201px;">DBotScore.Vendor</td>
+<td style="width: 69px;">String</td>
+<td style="width: 470px;">Vendor used to calculate the score</td>
+</tr>
+<tr>
+<td style="width: 201px;">DBotScore.Score</td>
+<td style="width: 69px;">Number</td>
+<td style="width: 470px;">The actual score</td>
+</tr>
+<tr>
+<td style="width: 201px;">DBotScore.Indicator</td>
+<td style="width: 69px;">String</td>
+<td style="width: 470px;">The indicator that was tested</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="command-example">Command Example</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>ip ip=8.8.8.8</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="context-example">Context Example</h5>
+</div>
+<div class="cl-preview-section">
+<pre>{
+    "IP": [
+        {
+            "Address": "8.8.8.8"
+        }
+    ], 
+    "DBotScore": {
+        "Vendor": "EclecticIQ", 
+        "Indicator": "8.8.8.8", 
+        "Score": 1, 
+        "Type": "ip"
+    }, 
+    "EclecticIQ.IP": [
+        {
+            "Maliciousness": "safe", 
+            "Created": "2019-01-16T11:55:11.732145+00:00", 
+            "ID": 86, 
+            "LastUpdated": "2019-01-16T11:55:11.708640+00:00", 
+            "Address": "8.8.8.8"
+        }
+    ]
+}
+</pre>
+</div>
+<div class="cl-preview-section">
+<h5 id="human-readable-output">Human Readable Output</h5>
+</div>
+<div class="cl-preview-section">
+<h3 id="eclecticiq-ip-reputation---8.8.8.8">EclecticIQ IP reputation - 8.8.8.8</h3>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table>
+<thead>
+<tr>
+<th>Maliciousness</th>
+<th>Created</th>
+<th>ID</th>
+<th>LastUpdated</th>
+<th>Address</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>safe</td>
+<td>2019-01-16T11:55:11.732145+00:00</td>
+<td>86</td>
+<td>2019-01-16T11:55:11.708640+00:00</td>
+<td>8.8.8.8</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h3 id="get-the-reputation-of-a-url-observable">2. Get the reputation of a URL observable</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Gets the reputation of a URL observable.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="base-command-1">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>url</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input-1">Input</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 191px;"><strong>Argument Name</strong></th>
+<th style="width: 438px;"><strong>Description</strong></th>
+<th style="width: 111px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 191px;">url</td>
+<td style="width: 438px;">URL observable to get the reputation of</td>
+<td style="width: 111px;">Required</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="context-output-1">Context Output</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 199px;"><strong>Path</strong></th>
+<th style="width: 65px;"><strong>Type</strong></th>
+<th style="width: 476px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 199px;">EclecticIQ.URL.Data</td>
+<td style="width: 65px;">String</td>
+<td style="width: 476px;">URL that was tested</td>
+</tr>
+<tr>
+<td style="width: 199px;">EclecticIQ.URL.Created</td>
+<td style="width: 65px;">Date</td>
+<td style="width: 476px;">Observable creation date</td>
+</tr>
+<tr>
+<td style="width: 199px;">EclecticIQ.URL.LastUpdate</td>
+<td style="width: 65px;">Date</td>
+<td style="width: 476px;">Observable last updated date</td>
+</tr>
+<tr>
+<td style="width: 199px;">EclecticIQ.URL.ID</td>
+<td style="width: 65px;">Number</td>
+<td style="width: 476px;">Observable ID</td>
+</tr>
+<tr>
+<td style="width: 199px;">EclecticIQ.URL.Maliciousness</td>
+<td style="width: 65px;">String</td>
+<td style="width: 476px;">Maliciousness confidence level</td>
+</tr>
+<tr>
+<td style="width: 199px;">URL.Data</td>
+<td style="width: 65px;">String</td>
+<td style="width: 476px;">URL that was tested</td>
+</tr>
+<tr>
+<td style="width: 199px;">URL.Malcious.Vendor</td>
+<td style="width: 65px;">String</td>
+<td style="width: 476px;">For malicious URLs, the vendor that made the decision</td>
+</tr>
+<tr>
+<td style="width: 199px;">URL.Malcious.Description</td>
+<td style="width: 65px;">String</td>
+<td style="width: 476px;">For malicious URLs, the reason that the vendor made the decision</td>
+</tr>
+<tr>
+<td style="width: 199px;">DBotScore.Type</td>
+<td style="width: 65px;">String</td>
+<td style="width: 476px;">Indicator type</td>
+</tr>
+<tr>
+<td style="width: 199px;">DBotScore.Vendor</td>
+<td style="width: 65px;">String</td>
+<td style="width: 476px;">Vendor used to calculate the score</td>
+</tr>
+<tr>
+<td style="width: 199px;">DBotScore.Score</td>
+<td style="width: 65px;">Number</td>
+<td style="width: 476px;">The actual score</td>
+</tr>
+<tr>
+<td style="width: 199px;">DBotScore.Indicator</td>
+<td style="width: 65px;">String</td>
+<td style="width: 476px;">The indicator that was tested</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="command-example-1">Command Example</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>url url=http://chstarkeco.com</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="context-example-1">Context Example</h5>
+</div>
+<div class="cl-preview-section">
+<pre>{
+    "DBotScore": {
+        "Vendor": "OpenPhish", 
+        "Indicator": "http://chstarkeco.com", 
+        "Score": 0, 
+        "Type": "url"
+    }
+}{
+    "URL": {
+        "Data": "http://chstarkeco.com"
+    }, 
+    "DBotScore": {
+        "Vendor": "PhishTank", 
+        "Indicator": "http://chstarkeco.com", 
+        "Score": 0, 
+        "Type": "url"
+    }
+}{
+    "URL": [
+        {
+            "Data": "http://chstarkeco.com"
+        }
+    ], 
+    "DBotScore": {
+        "Vendor": "EclecticIQ", 
+        "Indicator": "http://chstarkeco.com", 
+        "Score": 2, 
+        "Type": "url"
+    }, 
+    "EclecticIQ.URL": [
+        {
+            "Maliciousness": "medium", 
+            "Data": "http://chstarkeco.com", 
+            "ID": 83, 
+            "LastUpdated": "2019-01-16T11:53:51.128167+00:00", 
+            "Created": "2019-01-16T11:52:49.993110+00:00"
+        }
+    ]
+}
+</pre>
+</div>
+<div class="cl-preview-section">
+<h5 id="human-readable-output-1">Human Readable Output</h5>
+</div>
+<div class="cl-preview-section">
+<h3 id="openphish-database---url-query">OpenPhish Database - URL Query</h3>
+</div>
+<div class="cl-preview-section">
+<h4 id="no-matches-for-url-httpchstarkeco.com">No matches for URL <a href="http://chstarkeco.com/">http://chstarkeco.com</a>
+</h4>
+</div>
+<div class="cl-preview-section">
+<h3 id="phishtank-database---url-query">PhishTank Database - URL Query</h3>
+</div>
+<div class="cl-preview-section">
+<h4 id="no-matches-for-url-httpchstarkeco.com-1">No matches for URL <a href="http://chstarkeco.com/">http://chstarkeco.com</a>
+</h4>
+</div>
+<div class="cl-preview-section">
+<h3 id="eclecticiq-url-reputation---httpchstarkeco.com">EclecticIQ URL reputation - <a href="http://chstarkeco.com/">http://chstarkeco.com</a>
+</h3>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table>
+<thead>
+<tr>
+<th>Maliciousness</th>
+<th>Data</th>
+<th>ID</th>
+<th>LastUpdated</th>
+<th>Created</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>medium</td>
+<td><a href="http://chstarkeco.com/">http://chstarkeco.com</a></td>
+<td>83</td>
+<td>2019-01-16T11:53:51.128167+00:00</td>
+<td>2019-01-16T11:52:49.993110+00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h3 id="get-the-reputation-of-a-file-observable">3. Get the reputation of a file observable</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Gets the reputation of a file hash observable.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="base-command-2">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>file</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input-2">Input</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 182px;"><strong>Argument Name</strong></th>
+<th style="width: 455px;"><strong>Description</strong></th>
+<th style="width: 103px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 182px;">file</td>
+<td style="width: 455px;">File hash observable to get the reputation of</td>
+<td style="width: 103px;">Required</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="context-output-2">Context Output</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 201px;"><strong>Path</strong></th>
+<th style="width: 63px;"><strong>Type</strong></th>
+<th style="width: 476px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 201px;">EclecticIQ.File.MD5</td>
+<td style="width: 63px;">String</td>
+<td style="width: 476px;">File MD5 hash that was tested</td>
+</tr>
+<tr>
+<td style="width: 201px;">EclecticIQ.File.SHA1</td>
+<td style="width: 63px;">String</td>
+<td style="width: 476px;">File SHA-1 hash that was tested</td>
+</tr>
+<tr>
+<td style="width: 201px;">EclecticIQ.File.SHA256</td>
+<td style="width: 63px;">String</td>
+<td style="width: 476px;">File SHA-256 hash that was tested</td>
+</tr>
+<tr>
+<td style="width: 201px;">EclecticIQ.File.SHA512</td>
+<td style="width: 63px;">String</td>
+<td style="width: 476px;">File SHA-512 hash that was tested</td>
+</tr>
+<tr>
+<td style="width: 201px;">EclecticIQ.File.Created</td>
+<td style="width: 63px;">Date</td>
+<td style="width: 476px;">Observable creation date</td>
+</tr>
+<tr>
+<td style="width: 201px;">EclecticIQ.File.LastUpdate</td>
+<td style="width: 63px;">Date</td>
+<td style="width: 476px;">Observable last updated date</td>
+</tr>
+<tr>
+<td style="width: 201px;">EclecticIQ.File.ID</td>
+<td style="width: 63px;">Number</td>
+<td style="width: 476px;">Observable ID</td>
+</tr>
+<tr>
+<td style="width: 201px;">EclecticIQ.File.Maliciousness</td>
+<td style="width: 63px;">String</td>
+<td style="width: 476px;">Maliciousness confidence level</td>
+</tr>
+<tr>
+<td style="width: 201px;">File.MD5</td>
+<td style="width: 63px;">String</td>
+<td style="width: 476px;">File MD5 hash that was tested</td>
+</tr>
+<tr>
+<td style="width: 201px;">File.SHA1</td>
+<td style="width: 63px;">String</td>
+<td style="width: 476px;">File SHA-1 hash that was tested</td>
+</tr>
+<tr>
+<td style="width: 201px;">File.SHA256</td>
+<td style="width: 63px;">String</td>
+<td style="width: 476px;">File SHA-256 hash that was tested</td>
+</tr>
+<tr>
+<td style="width: 201px;">File.SHA512</td>
+<td style="width: 63px;">String</td>
+<td style="width: 476px;">File SHA-512 hash that was tested</td>
+</tr>
+<tr>
+<td style="width: 201px;">File.Malcious.Vendor</td>
+<td style="width: 63px;">String</td>
+<td style="width: 476px;">For malicious files, the vendor that made the decision</td>
+</tr>
+<tr>
+<td style="width: 201px;">File.Malcious.Description</td>
+<td style="width: 63px;">String</td>
+<td style="width: 476px;">For malicious files, the reason that the vendor made the decision</td>
+</tr>
+<tr>
+<td style="width: 201px;">DBotScore.Type</td>
+<td style="width: 63px;">String</td>
+<td style="width: 476px;">Indicator type</td>
+</tr>
+<tr>
+<td style="width: 201px;">DBotScore.Vendor</td>
+<td style="width: 63px;">String</td>
+<td style="width: 476px;">Vendor used to calculate the score</td>
+</tr>
+<tr>
+<td style="width: 201px;">DBotScore.Score</td>
+<td style="width: 63px;">Number</td>
+<td style="width: 476px;">The actual score</td>
+</tr>
+<tr>
+<td style="width: 201px;">DBotScore.Indicator</td>
+<td style="width: 63px;">String</td>
+<td style="width: 476px;">The indicator that was tested</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="command-example-2">Command Example</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>file file=00112233445566778899aabbccddeeff</code></p>
+</div>
+<div class="cl-preview-section">
+<h3 id="get-related-entities-of-an-observable">4. Get related entities of an observable</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Returns related entities of a single observable.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="base-command-3">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>eclecticiq-get-observable-related-entity</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input-3">Input</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 137px;"><strong>Argument Name</strong></th>
+<th style="width: 532px;"><strong>Description</strong></th>
+<th style="width: 71px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 137px;">observable_id</td>
+<td style="width: 532px;">Observable ID to get entity information for (can be retrieved from one of the IOCs commands)</td>
+<td style="width: 71px;">Required</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="context-output-3">Context Output</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 748px;">
+<thead>
+<tr>
+<th style="width: 278px;"><strong>Path</strong></th>
+<th style="width: 71px;"><strong>Type</strong></th>
+<th style="width: 391px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 278px;">EclecticIQ.Entity.Analysis</td>
+<td style="width: 71px;">String</td>
+<td style="width: 391px;">Entity analysis description</td>
+</tr>
+<tr>
+<td style="width: 278px;">EclecticIQ.Entity.EstimatedObservedTime</td>
+<td style="width: 71px;">Date</td>
+<td style="width: 391px;">Entity estimated observed time</td>
+</tr>
+<tr>
+<td style="width: 278px;">EclecticIQ.Entity.EstimatedStartTime</td>
+<td style="width: 71px;">Date</td>
+<td style="width: 391px;">Entity estimated start time</td>
+</tr>
+<tr>
+<td style="width: 278px;">EclecticIQ.Entity.Exposure.Community</td>
+<td style="width: 71px;">Boolean</td>
+<td style="width: 391px;">Is entity in the community feed</td>
+</tr>
+<tr>
+<td style="width: 278px;">EclecticIQ.Entity.Exposure.Detection</td>
+<td style="width: 71px;">Boolean</td>
+<td style="width: 391px;">Is entity detected</td>
+</tr>
+<tr>
+<td style="width: 278px;">EclecticIQ.Entity.Exposure.Exposed</td>
+<td style="width: 71px;">Boolean</td>
+<td style="width: 391px;">Is entity exposed</td>
+</tr>
+<tr>
+<td style="width: 278px;">EclecticIQ.Entity.Exposure.Prevention</td>
+<td style="width: 71px;">Boolean</td>
+<td style="width: 391px;">Is entity in prevented feed</td>
+</tr>
+<tr>
+<td style="width: 278px;">EclecticIQ.Entity.Exposure.Sighting</td>
+<td style="width: 71px;">Boolean</td>
+<td style="width: 391px;">Is entity sighted</td>
+</tr>
+<tr>
+<td style="width: 278px;">EclecticIQ.Entity.HalfLife</td>
+<td style="width: 71px;">String</td>
+<td style="width: 391px;">The time it takes an entity to decay in intelligence value, expressed in the number of days until a 50% decay</td>
+</tr>
+<tr>
+<td style="width: 278px;">EclecticIQ.Entity.ID</td>
+<td style="width: 71px;">String</td>
+<td style="width: 391px;">Entity ID</td>
+</tr>
+<tr>
+<td style="width: 278px;">EclecticIQ.Entity.Source.Name</td>
+<td style="width: 71px;">String</td>
+<td style="width: 391px;">Entity source name</td>
+</tr>
+<tr>
+<td style="width: 278px;">EclecticIQ.Entity.Source.Reliability</td>
+<td style="width: 71px;">String</td>
+<td style="width: 391px;">Entity source reliability</td>
+</tr>
+<tr>
+<td style="width: 278px;">EclecticIQ.Entity.Title</td>
+<td style="width: 71px;">String</td>
+<td style="width: 391px;">Entity title</td>
+</tr>
+<tr>
+<td style="width: 278px;">EclecticIQ.Entity.Source.Type</td>
+<td style="width: 71px;">string</td>
+<td style="width: 391px;">Entity source type</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="command-example-3">Command Example</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>eclecticiq-get-observable-related-entity observable_id=63</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="context-example-3">Context Example</h5>
+</div>
+<div class="cl-preview-section">
+<pre>{
+    "EclecticIQ.Entity": [
+        {
+            "HalfLife": "30 Days", 
+            "Title": "Indicator containing malicious file hashes", 
+            "EstimatedObservedTime": "2018-11-21T13:34:35.890076+00:00", 
+            "Analysis": "Indicator that contains malicious file hashes.", 
+            "Source": [
+                {
+                    "Reliability": null, 
+                    "Type": "incoming_feed", 
+                    "Name": "TAXII Stand Samples"
+                }
+            ], 
+            "EstimatedStartTime": "2014-05-08T09:00:00+00:00", 
+            "ID": "56e218b0-3f6b-4237-beca-3b39ab8e96c2", 
+            "Exposure": {
+                "Detection": false, 
+                "Sighting": false, 
+                "Prevention": false, 
+                "Community": false, 
+                "Exposed": true
+            }
+        }
+    ]
+}
+</pre>
+</div>
+<div class="cl-preview-section">
+<h5 id="human-readable-output-3">Human Readable Output</h5>
+</div>
+<div class="cl-preview-section">
+<h3 id="observable-id-63-related-entities">Observable ID 63 related entities</h3>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table>
+<thead>
+<tr>
+<th>HalfLife</th>
+<th>Title</th>
+<th>EstimatedObservedTime</th>
+<th>Analysis</th>
+<th>EstimatedStartTime</th>
+<th>ID</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30 Days</td>
+<td>Indicator containing malicious file hashes</td>
+<td>2018-11-21T13:34:35.890076+00:00</td>
+<td>Indicator that contains malicious file hashes.</td>
+<td>2014-05-08T09:00:00+00:00</td>
+<td>56e218b0-3f6b-4237-beca-3b39ab8e96c2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h3 id="sources">Sources</h3>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>incoming_feed</td>
+<td>TAXII Stand Samples</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h3 id="exposure">Exposure</h3>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table>
+<thead>
+<tr>
+<th>Detection</th>
+<th>Sighting</th>
+<th>Community</th>
+<th>Prevention</th>
+<th>Exposed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+<td>true</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h3 id="get-the-reputation-of-an-email-observable-email">5. Get the reputation of an email observable: email</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Gets the reputation of an email address observable.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="base-command-4">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>email</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input-4">Input</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 165px;"><strong>Argument Name</strong></th>
+<th style="width: 478px;"><strong>Description</strong></th>
+<th style="width: 97px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 165px;">email</td>
+<td style="width: 478px;">Email address observable to get the reputation of</td>
+<td style="width: 97px;">Required</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="context-output-4">Context Output</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 240px;"><strong>Path</strong></th>
+<th style="width: 65px;"><strong>Type</strong></th>
+<th style="width: 435px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 240px;">EclecticIQ.Email.Address</td>
+<td style="width: 65px;">String</td>
+<td style="width: 435px;">Email that was tested</td>
+</tr>
+<tr>
+<td style="width: 240px;">EclecticIQ.Email.Created</td>
+<td style="width: 65px;">Date</td>
+<td style="width: 435px;">Observable creation date</td>
+</tr>
+<tr>
+<td style="width: 240px;">EclecticIQ.Email.LastUpdate</td>
+<td style="width: 65px;">Date</td>
+<td style="width: 435px;">Observable last updated date</td>
+</tr>
+<tr>
+<td style="width: 240px;">EclecticIQ.Email.ID</td>
+<td style="width: 65px;">Number</td>
+<td style="width: 435px;">Observable ID</td>
+</tr>
+<tr>
+<td style="width: 240px;">EclecticIQ.Email.Maliciousness</td>
+<td style="width: 65px;">String</td>
+<td style="width: 435px;">Maliciousness confidence level</td>
+</tr>
+<tr>
+<td style="width: 240px;">Account.Email.Address</td>
+<td style="width: 65px;">String</td>
+<td style="width: 435px;">Email that was tested</td>
+</tr>
+<tr>
+<td style="width: 240px;">Account.Email.Malcious.Vendor</td>
+<td style="width: 65px;">String</td>
+<td style="width: 435px;">For malicious email addresses, the vendor that made the decision</td>
+</tr>
+<tr>
+<td style="width: 240px;">Account.Email.Malcious.Description</td>
+<td style="width: 65px;">String</td>
+<td style="width: 435px;">For malicious email addresses, the reason that the vendor made the decision</td>
+</tr>
+<tr>
+<td style="width: 240px;">DBotScore.Type</td>
+<td style="width: 65px;">String</td>
+<td style="width: 435px;">Indicator type</td>
+</tr>
+<tr>
+<td style="width: 240px;">DBotScore.Vendor</td>
+<td style="width: 65px;">String</td>
+<td style="width: 435px;">Vendor used to calculate the score</td>
+</tr>
+<tr>
+<td style="width: 240px;">DBotScore.Score</td>
+<td style="width: 65px;">Number</td>
+<td style="width: 435px;">The actual score</td>
+</tr>
+<tr>
+<td style="width: 240px;">DBotScore.Indicator</td>
+<td style="width: 65px;">String</td>
+<td style="width: 435px;">The indicator that was tested</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="command-example-4">Command Example</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>email email=disco-team@stealthemail.com</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="context-example-4">Context Example</h5>
+</div>
+<div class="cl-preview-section">
+<pre>{
+    "EclecticIQ.Email": [
+        {
+            "Maliciousness": "unknown", 
+            "Created": "2018-11-21T13:34:31.126027+00:00", 
+            "ID": 42, 
+            "LastUpdated": "2018-11-21T13:34:31.126027+00:00", 
+            "Address": "disco-team@stealthemail.com"
+        }, 
+        {
+            "Maliciousness": "unknown", 
+            "Created": "2018-11-21T13:34:31.134425+00:00", 
+            "ID": 43, 
+            "LastUpdated": "2018-11-21T13:34:31.134425+00:00", 
+            "Address": "disco-team@stealthemail.com"
+        }
+    ], 
+    "DBotScore": {
+        "Vendor": "EclecticIQ", 
+        "Indicator": "disco-team@stealthemail.com", 
+        "Score": 0, 
+        "Type": "email"
+    }, 
+    "Account.Email": [
+        {
+            "Address": "disco-team@stealthemail.com"
+        }, 
+        {
+            "Address": "disco-team@stealthemail.com"
+        }
+    ]
+}
+</pre>
+</div>
+<div class="cl-preview-section">
+<h5 id="human-readable-output-4">Human Readable Output</h5>
+</div>
+<div class="cl-preview-section">
+<h3 id="eclecticiq-email-reputation---disco-teamstealthemail.com">EclecticIQ Email reputation - <a href="mailto:disco-team@stealthemail.com">disco-team@stealthemail.com</a>
+</h3>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table>
+<thead>
+<tr>
+<th>Maliciousness</th>
+<th>Created</th>
+<th>ID</th>
+<th>LastUpdated</th>
+<th>Address</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>unknown</td>
+<td>2018-11-21T13:34:31.126027+00:00</td>
+<td>42</td>
+<td>2018-11-21T13:34:31.126027+00:00</td>
+<td><a href="mailto:disco-team@stealthemail.com">disco-team@stealthemail.com</a></td>
+</tr>
+<tr>
+<td>unknown</td>
+<td>2018-11-21T13:34:31.134425+00:00</td>
+<td>43</td>
+<td>2018-11-21T13:34:31.134425+00:00</td>
+<td><a href="mailto:disco-team@stealthemail.com">disco-team@stealthemail.com</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h3 id="get-the-reputation-of-a-domain-observable">6. Get the reputation of a domain observable</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Gets the reputation of a domain observable.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="base-command-5">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>domain</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input-5">Input</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 179px;"><strong>Argument Name</strong></th>
+<th style="width: 456px;"><strong>Description</strong></th>
+<th style="width: 105px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 179px;">domain</td>
+<td style="width: 456px;">Domain observable to get the reputation of</td>
+<td style="width: 105px;">Required</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="context-output-5">Context Output</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 229px;"><strong>Path</strong></th>
+<th style="width: 62px;"><strong>Type</strong></th>
+<th style="width: 449px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 229px;">EclecticIQ.Domain.Name</td>
+<td style="width: 62px;">String</td>
+<td style="width: 449px;">Domain name that was tested</td>
+</tr>
+<tr>
+<td style="width: 229px;">EclecticIQ.Domain.Created</td>
+<td style="width: 62px;">Date</td>
+<td style="width: 449px;">Observable creation date</td>
+</tr>
+<tr>
+<td style="width: 229px;">EclecticIQ.Domain.LastUpdate</td>
+<td style="width: 62px;">Date</td>
+<td style="width: 449px;">Observable last updated date</td>
+</tr>
+<tr>
+<td style="width: 229px;">EclecticIQ.Domain.ID</td>
+<td style="width: 62px;">Number</td>
+<td style="width: 449px;">Observable ID</td>
+</tr>
+<tr>
+<td style="width: 229px;">EclecticIQ.Domain.Maliciousness</td>
+<td style="width: 62px;">String</td>
+<td style="width: 449px;">Maliciousness confidence level</td>
+</tr>
+<tr>
+<td style="width: 229px;">Domain.Name</td>
+<td style="width: 62px;">String</td>
+<td style="width: 449px;">Domain name that was tested</td>
+</tr>
+<tr>
+<td style="width: 229px;">Domain.Malcious.Vendor</td>
+<td style="width: 62px;">String</td>
+<td style="width: 449px;">For malicious domains, the vendor that made the decision</td>
+</tr>
+<tr>
+<td style="width: 229px;">Domain.Malcious.Description</td>
+<td style="width: 62px;">String</td>
+<td style="width: 449px;">For malicious domains, the reason that the vendor made the decision</td>
+</tr>
+<tr>
+<td style="width: 229px;">DBotScore.Type</td>
+<td style="width: 62px;">String</td>
+<td style="width: 449px;">Indicator type</td>
+</tr>
+<tr>
+<td style="width: 229px;">DBotScore.Vendor</td>
+<td style="width: 62px;">String</td>
+<td style="width: 449px;">Vendor used to calculate the score</td>
+</tr>
+<tr>
+<td style="width: 229px;">DBotScore.Score</td>
+<td style="width: 62px;">Number</td>
+<td style="width: 449px;">The actual score</td>
+</tr>
+<tr>
+<td style="width: 229px;">DBotScore.Indicator</td>
+<td style="width: 62px;">String</td>
+<td style="width: 449px;">The indicator that was tested</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="command-example-5">Command Example</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>domain domain=gooc.om</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="context-example-5">Context Example</h5>
+</div>
+<div class="cl-preview-section">
+<pre>{
+    "Domain": [
+        {
+            "Name": "gooc.om"
+        }
+    ], 
+    "DBotScore": {
+        "Vendor": "EclecticIQ", 
+        "Indicator": "gooc.om", 
+        "Score": 0, 
+        "Type": "domain"
+    }, 
+    "EclecticIQ.Domain": [
+        {
+            "Maliciousness": "unknown", 
+            "Name": "gooc.om", 
+            "ID": 74, 
+            "LastUpdated": "2018-11-21T13:34:38.964435+00:00", 
+            "Created": "2018-11-21T13:34:38.964435+00:00"
+        }
+    ]
+}
+</pre>
+</div>
+<div class="cl-preview-section">
+<h5 id="human-readable-output-5">Human Readable Output</h5>
+</div>
+<div class="cl-preview-section">
+<h3 id="eclecticiq-domain-reputation---gooc.om">EclecticIQ Domain reputation - gooc.om
+</h3>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Maliciousness</th>
+<th>Name</th>
+<th>LastUpdated</th>
+<th>Created</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>74</td>
+<td>unknown</td>
+<td>gooc.om</td>
+<td>2018-11-21T13:34:38.964435+00:00</td>
+<td>2018-11-21T13:34:38.964435+00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>

@@ -615,7 +615,7 @@ class TestFetchIncidentsWithLookBack:
         ]
     )
     def test_fetch_incidents_with_look_back_greater_than_zero(
-        self, mocker, start_incidents, phase2_incident, phase3_incident, look_back
+            self, mocker, start_incidents, phase2_incident, phase3_incident, look_back
     ):
         """
         Given
@@ -778,7 +778,7 @@ class TestFetchIncidentsWithLookBack:
         ]
     )
     def test_fetch_incidents_with_look_back_equals_zero(
-        self, mocker, incidents, phase2_incident, phase3_incident
+            self, mocker, incidents, phase2_incident, phase3_incident
     ):
         """
         Given
@@ -907,10 +907,10 @@ def test_file_tags_names_are_the_same_main_flow(mocker):
     )
     mocker.patch.object(ServiceNowv2, 'get_server_url', return_value='test')
     with pytest.raises(
-        Exception,
-        match=re.escape(
-            'File Entry Tag To ServiceNow and File Entry Tag From ServiceNow cannot be the same name [ServiceNow].'
-        )
+            Exception,
+            match=re.escape(
+                'File Entry Tag To ServiceNow and File Entry Tag From ServiceNow cannot be the same name [ServiceNow].'
+            )
     ):
         main()
 
@@ -1253,6 +1253,7 @@ def test_assigned_to_field_no_user():
     Then
         - Check that assign_to value is empty
     """
+
     class Client:
         def get(self, table, value):
             return {'results': {}}
@@ -1273,6 +1274,7 @@ def test_assigned_to_field_user_exists():
     Then
         - Check that assign_to value is filled with the right email
     """
+
     class Client:
         def get(self, table, value):
             return USER_RESPONSE
@@ -1307,7 +1309,7 @@ def test_get_remote_data_closing_incident(mocker):
                     ticket_type='sc_task', get_attachments=False, incident_name='description')
 
     args = {'id': 'sys_id', 'lastUpdate': 0}
-    params = {'close_incident': True}
+    params = {'close_incident': 'closed'}
     mocker.patch.object(client, 'get', return_value=RESPONSE_CLOSING_TICKET_MIRROR)
     mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
     mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
@@ -1729,7 +1731,7 @@ def test_get_ticket_attachment_entries_with_oauth_token(mocker):
     client.get_ticket_attachment_entries(ticket_id='id')
 
     # Validate Results are as expected:
-    assert requests_get_mocker.call_args.kwargs.get('auth') is None,\
+    assert requests_get_mocker.call_args.kwargs.get('auth') is None, \
         "When An OAuth 2.0 client is configured the 'auth' argument shouldn't be passed to 'requests.get' function"
     assert requests_get_mocker.call_args.kwargs.get('headers').get('Authorization') == \
            f"Bearer {mock_res_for_get_access_token}", "When An OAuth 2.0 client is configured the 'Authorization'" \
@@ -1820,3 +1822,82 @@ def test_converts_state_close_reason(ticket_state, expected_res):
         - return the matching XSOAR incident state.
     """
     assert converts_state_close_reason(ticket_state) == expected_res
+
+
+def ticket_fields_mocker(*args, **kwargs):
+    state = '88' if kwargs.get('ticket_type') == 'incident' else '90'
+    fields = {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+              'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
+              'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': state,
+              'work_start': '0001-01-01T00:00:00Z'}
+    assert fields == args[0]
+    return fields
+
+
+@pytest.mark.parametrize('file_name , expected',
+                         [('123.png', 'image/png'),
+                          ('123.gif', 'image/gif'),
+                          ('123.jpeg', 'image/jpeg'),
+                          ('123.pdf', 'application/pdf'),
+                          ('123', '*/*')])
+def test_upload_file_types(file_name, expected):
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    get_attachments=False, incident_name='description', ticket_type='incident')
+    assert client.get_content_type(file_name) == expected
+
+
+@pytest.mark.parametrize('ticket_type, ticket_state, close_custom_state, result_close_state, update_call_count',
+                         [
+                             # case 1 - SIR ticket closed by custom state
+                             ('sn_si_incident', '16', '90', '90', 1),
+                             # case 2 - custom state doesn't exist, closed by default state code - '3'
+                             ('sn_si_incident', '16', '90', '3', 2),
+                             # case 3 - ticket closed by custom state
+                             ('incident', '1', '88', '88', 1),
+                             # case 4 - custom state doesn't exist, closed by default state code - '7'
+                             ('incident', '1', '88', '7', 2),
+                         ], ids=['case - 1', 'case - 2', 'case - 3', 'case - 4'])
+def test_update_remote_data_custom_state(mocker, ticket_type, ticket_state, close_custom_state, result_close_state,
+                                         update_call_count):
+    """
+    Given:
+    -  ServiceNow client
+    -  ServiceNow ticket of type sn_si_incident
+    -  ServiceNow ticket of type incident
+    -  close_custom_state exist/not exist in ServiceNow
+    When
+        - running update_remote_system_command.
+    Then
+        - The state is changed accordingly
+    """
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type=ticket_type, get_attachments=False, incident_name='description')
+    params = {'ticket_type': ticket_type, 'close_ticket_multiple_options': 'None', 'close_ticket': True,
+              'close_custom_state': close_custom_state}
+
+    TICKET_FIELDS['state'] = ticket_state
+    args = {'remoteId': '1234', 'data': TICKET_FIELDS, 'entries': [], 'incidentChanged': True, 'delta': {},
+            'status': 2}
+
+    def update_ticket_mocker(*args):
+        # Represents only the response of the last call to client.update
+        # In case the custom state doesn't exist -
+        # in the first call will return the ticket's state as before (in case2 - '16', case4 - '1')
+        return {'result': {'short_description': 'Post parcel', 'close_notes': 'This is closed',
+                           'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3', 'priority': '4',
+                           'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - High - Low',
+                           'sla_due': '0001-01-01T00:00:00Z', 'state': result_close_state, 'urgency': '3',
+                           'work_start': '0001-01-01T00:00:00Z'}}
+
+    mocker.patch('ServiceNowv2.get_ticket_fields', side_effect=ticket_fields_mocker)
+    mocker_update = mocker.patch.object(client, 'update', side_effect=update_ticket_mocker)
+    update_remote_system_command(client, args, params)
+    # assert the state argument in the last call to client.update
+    assert mocker_update.call_args[0][2]['state'] == result_close_state
+    assert mocker_update.call_count == update_call_count

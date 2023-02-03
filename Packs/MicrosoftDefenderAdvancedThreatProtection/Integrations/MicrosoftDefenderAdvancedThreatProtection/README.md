@@ -1039,8 +1039,8 @@ Alert.ReadWrite.All
 | alert_id | The alert ID to update. | Required | 
 | status | The alert status to update. Possible values: "New", "InProgress", and "Resolved". | Optional | 
 | assigned_to | The owner of the alert. | Optional | 
-| classification | The specification of the alert. Possible values: "Unknown", "FalsePositive", "TruePositive". | Optional | 
-| determination | The determination of the alert. Possible values: "NotAvailable", "Apt", "Malware", "SecurityPersonnel", "SecurityTesting", "UnwantedSoftware", and "Other". | Optional | 
+| classification | The specification of the alert. Possible values: "Unknown", "FalsePositive", "TruePositive", "InformationalExpectedActivity". | Optional | 
+| determination | The determination of the alert. Possible values: "NotAvailable", "Malware", "SecurityTesting", "UnwantedSoftware", and "Other". | Optional | 
 | comment | The comment to be added to the alert. | Optional | 
 
 

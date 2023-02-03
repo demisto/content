@@ -2,7 +2,37 @@ function is_object(o) {
       return o instanceof Object && !(o instanceof Array);
 }
 
-function set_object_value(obj, path, value, append) {
+function merge_value(dst, src, key, conflict_strategy, overwrite_by_src, overwrite_by_dst) {
+    if (overwrite_by_src.indexOf(key) >= 0) {
+        return src;
+    } else if (overwrite_by_dst.indexOf(key) >= 0) {
+        return dst;
+    }
+    switch (conflict_strategy) {
+        case 'destination':
+            return dst;
+        case 'source':
+            return src;
+        case 'merge':
+            let dst_array = Array.isArray(dst) ? dst.concat() : (dst !== null ? [dst] : []);
+            let src_array = Array.isArray(src) ? src : (src !== null ? [src] : []);
+            src_array.forEach(v => {
+                if (dst_array.indexOf(v) < 0) {
+                    dst_array.push(v);
+                }
+            });
+            if (dst_array.length == 1 && (!Array.isArray(src) || !Array.isArray(dst))) {
+                return dst_array[0];
+            } else if (dst_array.length >= 1) {
+                return dst_array;
+            }
+            return dst !== null ? dst : src;
+        default:
+            throw 'Invalid conflict_strategy: ' + conflict_strategy;
+    }
+}
+
+function set_object_value(obj, path, value, append, conflict_strategy, overwrite_by_src, overwrite_by_dst) {
     const root = obj;
     path.split('.').forEach((key, i, keys) => {
         if (!key) {
@@ -10,10 +40,8 @@ function set_object_value(obj, path, value, append) {
         }else if (keys.length-1 === i) {
             if (!append || !(key in obj)) {
                 obj[key] = value;
-            } else if (Array.isArray(obj[key])) {
-                obj[key] = obj[key].concat(value);
             } else {
-                obj[key] = [obj[key], value];
+                obj[key] = merge_value(obj[key], value, key, conflict_strategy, overwrite_by_src, overwrite_by_dst);
             }
         } else {
             if (!is_object(obj[key])) {
@@ -72,7 +100,7 @@ function contains_object_value(dval, sval, kmap) {
     return true;
 }
 
-function merge_object_value(dst, src) {
+function merge_object_value(dst, src, conflict_strategy, overwrite_by_src, overwrite_by_dst) {
     if (!is_object(dst)) {
         throw 'Invalid object in destination value: ' + JSON.stringify(dst);
     }
@@ -83,15 +111,7 @@ function merge_object_value(dst, src) {
     for (const k in src) {
         if (k in dst) {
             for (const sval of Array.isArray(src[k]) ? src[k] : [src[k]]) {
-                if (Array.isArray(dst[k])) {
-                    if (dst[k].indexOf(sval) < 0) {
-                        out[k] = dst[k].concat(sval);
-                    }
-                } else {
-                    if (dst[k] != sval) {
-                        out[k] = [dst[k], sval];
-                    }
-                }
+                out[k] = merge_value(dst[k], sval, k, conflict_strategy, overwrite_by_src, overwrite_by_dst);
             }
         } else {
             out[k] = src[k];
@@ -100,7 +120,7 @@ function merge_object_value(dst, src) {
     return out;
 }
 
-function merge_array(dst, src, kmap, out_key, appendable) {
+function merge_array(dst, src, kmap, out_key, appendable, conflict_strategy, overwrite_by_src, overwrite_by_dst) {
     dst = dst.concat();
     src.forEach(sval => {
         let merged = false;
@@ -108,9 +128,11 @@ function merge_array(dst, src, kmap, out_key, appendable) {
             dst.forEach((dval, index) => {
                 if (contains_object_value(dval, sval, kmap)) {
                     if (out_key) {
-                        dst[index] = set_object_value(dval, out_key, sval, true);
+                        dst[index] = set_object_value(dval, out_key, sval, true,
+                                                      conflict_strategy, overwrite_by_src, overwrite_by_dst);
                     } else {
-                        dst[index] = merge_object_value(dval, sval);
+                        dst[index] = merge_object_value(dval, sval,
+                                                        conflict_strategy, overwrite_by_src, overwrite_by_dst);
                     }
                     merged = true;
                 }
@@ -127,25 +149,37 @@ let dst_value = args.value;
 const src_array = Array.isArray(args.merge_with) ? args.merge_with : [args.merge_with];
 const key_map = make_keymap(args.mapping);
 const appendable = args.appendable.toLowerCase() == 'true';
+const conflict_strategy = args.conflict_strategy ? args.conflict_strategy : 'merge';
+const overwrite_by_src = argToList(args.overwrite_by_source);
+const overwrite_by_dst = argToList(args.overwrite_by_destination);
+
+if (overwrite_by_src.filter((v) => overwrite_by_dst.indexOf(v) >= 0).length !==0 ){
+    throw 'A key is conflict in overwrite_by_source and overwrite_by_destination.';
+}
 if (src_array && args.merge_with !== null) {
     if (args.array_path) {
         dst_value.forEach(v => {
             let dst_array = dq(v, args.array_path);
             let new_array;
             if (!Array.isArray(dst_array)) {
-                new_array = merge_array([dst_array], src_array, key_map, args.out_key, appendable);
+                new_array = merge_array([dst_array], src_array, key_map, args.out_key, appendable,
+                                        conflict_strategy, overwrite_by_src, overwrite_by_dst);
                 if (new_array.length == 1) {
                     new_array = new_array[0];
                 }
             } else {
-                new_array = merge_array(dst_array, src_array, key_map, args.out_key, appendable);
+                new_array = merge_array(dst_array, src_array, key_map, args.out_key, appendable,
+                                        conflict_strategy, overwrite_by_src, overwrite_by_dst);
             }
-            set_object_value(v, args.out_path ? args.out_path : args.array_path, new_array, false);
+            set_object_value(v, args.out_path ? args.out_path : args.array_path, new_array, false,
+                                        conflict_strategy, overwrite_by_src, overwrite_by_dst);
         });
     } else {
-        dst_value = merge_array(dst_value, src_array, key_map, args.out_key, appendable);
+        dst_value = merge_array(dst_value, src_array, key_map, args.out_key, appendable,
+                                conflict_strategy, overwrite_by_src, overwrite_by_dst);
         if (args.out_path) {
-            dst_value = [set_object_value({}, args.out_path, dst_value, false)];
+            dst_value = [set_object_value({}, args.out_path, dst_value, false,
+                                          conflict_strategy, overwrite_by_src, overwrite_by_dst)];
         }
     }
 }

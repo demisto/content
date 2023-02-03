@@ -134,13 +134,17 @@ configuration:
   name: custom_fields
   required: false
   type: 12
-- additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR.
-  defaultvalue: 'false'
-  display: Close Mirrored XSOAR Incident
+- additionalinfo: Define how to close the mirrored tickets in XSOAR. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
+  defaultvalue: 'None'
+  display: Mirrored XSOAR Ticket closure method
   name: close_incident
   required: false
-  type: 8
-- additionalinfo: Define how to close the mirrored tickets, choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
+  type: 15
+  options:
+  - None
+  - closed
+  - resolved
+- additionalinfo: Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
   defaultvalue: None
   display: Mirrored ServiceNow Ticket closure method
   name: close_ticket_multiple_options
@@ -150,12 +154,18 @@ configuration:
   - resolved
   required: false
   type: 15
-- additionalinfo: When selected, closing the XSOAR incident is mirrored in ServiceNow.
-  defaultvalue: 'false'
+- additionalinfo: Define how to close the mirrored tickets in ServiceNow with a custom state. Enter here the custom closure state code (should be an integer) to override the default closure method. If the closure code does not exist, the default code will be used instead.
+  defaultvalue: ''
+  display: Mirrored ServiceNow Ticket custom close state code
+  name: close_custom_state
+  required: false
+  type: 0
+- defaultvalue: 'false'
   display: Close Mirrored ServiceNow Ticket
   name: close_ticket
   required: false
   type: 8
+  additionalinfo: When selected, closing the XSOAR incident is mirrored in ServiceNow.
   hidden: true
 - defaultvalue: 'false'
   display: Use system proxy settings
@@ -168,7 +178,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: '1'
-  display: Incidents Fetch Interval
+  display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
   required: false
   type: 19
@@ -1838,25 +1848,23 @@ script:
       isArray: false
       name: use_display_value
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
-        - incident
-        - problem
-        - change_request
-        - sc_request
-        - sc_task
-        - sc_req_item
-        - sn_si_incident
-    description: Gets notes from the specified ServiceNow ticket. Notes can be retrieved either by granting "Read permissions"
-      for the sys_journal_field table, or by setting the `use_display_value` parameter to true.
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+      - sc_req_item
+      - sn_si_incident
+    description: Gets notes from the specified ServiceNow ticket. Notes can be retrieved either by granting "Read permissions" for the sys_journal_field table, or by setting the `use_display_value` parameter to true.
     name: servicenow-get-ticket-notes
     outputs:
     - contextPath: ServiceNow.Ticket.ID
@@ -2144,7 +2152,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api
       type: string
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.9.46032
   isfetch: true
   ismappable: true
   isremotesyncin: true

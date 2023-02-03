@@ -3432,10 +3432,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.9.40422
 fromversion: 6.5.0
-marketplaces:
-- xsoar
 tests:
 - Test-GitLab-v2
-

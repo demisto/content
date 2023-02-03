@@ -1,679 +1,742 @@
-import json
-import re
-import traceback
-# import datetime
-from typing import Any, Dict, List, Mapping, Tuple
+''' IMPORTS '''
+from typing import Literal
 import demistomock as demisto
-import urllib3
 from CommonServerPython import *
-
-"""EclecticIQ Integration for Cortex XSOAR (aka Demisto)."""
+from CommonServerUserPython import *
+import json
+import requests
+import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+''' GLOBALS/PARAMS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+USERNAME = demisto.params().get('credentials', {}).get('identifier')
+PASSWORD = demisto.params().get('credentials', {}).get('password')
+URL = demisto.params().get('url', '')
+SERVER = URL[:-1] if (URL and URL.endswith('/')) else URL
+USE_SSL = not demisto.params().get('insecure', False)
+HEADERS = {}  # type: Dict[str, str]
+IP_THRESHOLD = demisto.params().get('ip_threshold', '').lower()
+URL_THRESHOLD = demisto.params().get('url_threshold', '').lower()
+FILE_THRESHOLD = demisto.params().get('file_threshold', '').lower()
+EMAIL_THRESHOLD = demisto.params().get('email_threshold', '').lower()
+DOMAIN_THRESHOLD = demisto.params().get('domain_threshold', '').lower()
+MALICOUS_LVL = Literal['unknown', 'safe', 'low', 'medium', 'high']
+MALICIOUSNESS = {
+    'unknown': 0,
+    'safe': 1,
+    'low': 2,
+    'medium': 2,
+    'high': 3
+}
+PROXIES = handle_proxy()
 
-''' CLIENT CLASS '''
-
-
-class Client(BaseClient):
-    """Client class to interact with the service API
-    This Client implements API calls, and does not contain any Demisto logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    """
-
-    def sighting(self, value: str, description: str,
-                 title: str, tags: str, type_eiq: str, confidence_level: str) -> Dict[str, Any]:
-        """Create the sighting using the '/entities' API endpoint
-        :param value: sighting value
-        :type value: str
-        :param description: sighting description
-        :type description: str
-        :param title: title for the sighting
-        :type title: str
-        :param tags: sighting tags
-        :type tags: str
-        :param type_eiq: sighting value type
-        :type type_eiq: str
-        :param confidence_level: maliciousness of the value
-        :type confidence_level : ``str``
-        :return: sighting payload
-        :rtype: ``Dict[str, Any]``
-        """
-        sighting_schema: Mapping[str, Any] = {
-            "data": {
-                "data": {
-                    "value": "value1",
-                    "confidence": "medium",
-                    "description": "test_desc",
-                    "type": "eclecticiq-sighting",
-                    "timestamp": "2022-03-10T05:37:42Z",
-                    "title": "title1",
-                    "security_control": {
-                            "type": "information-source",
-                            "identity": {
-                                "name": "EclecticIQ Platform App for cortex XSOAR",
-                                "type": "identity"
-                            },
-                        "time": {
-                                "type": "time",
-                                "start_time": "2022-03-10T05:37:42Z",
-                                "start_time_precision": "second"}
-                    }
-                },
-                "meta": {"tags": ["XSOAR Alert"], "ingest_time": "2022-03-10T05:37:42Z"}
-            }
-        }
-        sighting_schema["data"]["data"]["value"] = value
-        sighting_schema["data"]["data"]["confidence"] = confidence_level
-        sighting_schema["data"]["data"]["description"] = description
-        sighting_schema["data"]["data"]["title"] = title
-        sighting_schema["data"]["data"]["security_control"]["type"] = type_eiq
-        sighting_schema["data"]["meta"]["tags"] = tags.split(",")
-        sighting_schema["data"]["data"]["timestamp"] = datetime.strftime(
-            datetime.utcnow(), DATE_FORMAT)
-        return self._http_request(
-            method='POST',
-            url_suffix='/entities',
-            data=json.dumps(sighting_schema)
-        )
-
-    def lookup_obs(self, type_eiq: str, value: str) -> Dict[str, Any]:
-        """Get observables using the '/observables' API endpoint.
-        :param type_eiq: observable type
-        :type type_eiq: str
-        :param value: observable value
-        :type value: str
-        :return: observables
-        :rtype: Dict[str, Any]
-        """
-        return self._http_request(
-            method='GET',
-            url_suffix='observables',
-            params={"filter[type]": type_eiq, "filter[value]": value}
-        )
-
-    def fetch_entity(self, id: str) -> Dict[str, Any]:
-        """Get entity details by id.
-        :param id: entity id
-        :type: str
-        :return: id releted entity
-        :rtype: Dict[str, Any]
-        """
-        return self._http_request(
-            method='GET',
-            url_suffix='/entities/{}'.format(id),
-            params={}
-        )
-
-    def get_observable_by_id(self, id: str) -> Dict[str, Any]:
-        """Get observables by id.
-        :param id: observable id
-        :type id: str
-        :return: id related observable
-        :rtype: Dict[str, Any]
-        """
-        return self._http_request(
-            method='GET',
-            url_suffix=f'observables/{id}',
-            params={}
-        )
-
-    def observable(self, type_eiq: str, value: str, maliciousness: str) -> Dict[str, Any]:
-        """Create the observable using the '/observables' API endpoint
-        :param type_eiq: observable type
-        :type type_eiq: str
-        :param value: observable value
-        :type value: str
-        :param maliciousness: malciousness of the value
-        :type maliciousness: str
-        :return: observable payload
-        :rtype: ``Dict[str, Any]``
-        """
-        Body_paramas: Mapping[str, Any] = {
-            "data": {
-                "meta": {
-                    "maliciousness": "Unknown"
-                },
-                "type": "Unknown",
-                "value": "value1"
-            }
-        }
-        Body_paramas["data"]["type"] = type_eiq
-        Body_paramas["data"]["value"] = value
-        Body_paramas["data"]["meta"]["maliciousness"] = maliciousness
-        return self._http_request(
-            method='POST',
-            url_suffix='/observables',
-            data=json.dumps(Body_paramas)
-        )
-
-    def get_user_granted_permissions(self) -> Any:
-        """Get user granted permissions.
-        :param: self
-        :type: str
-        :return: user granted permissions
-        :rtype: Any
-        """
-        response = self._http_request(
-            method='GET',
-            url_suffix='users/self',
-            params={}
-        )
-        data = response.get("data")
-        if data:
-            return data.get("permissions")
-        return {}
-
-    def get_platform_permissions(self) -> Any:
-        """Get platform permissions for user.
-        :param: self
-        :type: str
-        :return: permissions data
-        :rtype: Any
-        """
-        response = self._http_request(
-            method='GET',
-            url_suffix='permissions',
-            params={}
-        )
-        data = response.get("data")
-        if data:
-            return data
-        return {}
+''' HELPER FUNCTIONS '''
 
 
-def get_platform_permission_ids(permissions_data: Any) -> List[Any]:
-    """Get permission ids required for user to authenticate.
-    :param feeds: permissions_data
-    :type response: list
-        [{"id": 1, "name": "read history-events"},{"id": 2,"name": "read discovery-rules"}...]
-    :return: List of permission ids
-        [33, 59, 66,78]
-    :rtype: list
-    """
-    wanted_permissions = [
-        "read entitites",
-        "modify entities",
-        "read extracts",
-        "read outgoing-feeds",
-    ]
-    ids_required_for_user = []
-    for value in permissions_data:
-        if value["name"] in wanted_permissions:
-            ids_required_for_user.append(value["id"])
+def http_request(method, url_suffix, headers=HEADERS, cmd_json=None):  # pragma: no cover
 
-    return ids_required_for_user
+    res = requests.request(
+        method,
+        SERVER + url_suffix,
+        headers=headers,
+        json=cmd_json,
+        proxies=PROXIES,
+        verify=USE_SSL
+    )
 
-
-def authenticate_user(ids_of_user: list, ids_required_for_user: list) -> Tuple[bool, List[int]]:
-    """Get user authentication and missing permission ids .
-    :param ids_of_user: permission ids user have
-    :type ids_of_user: list
-    :param ids_required_for_user: permission ids required for user to authenticate
-    :type ids_required_for_user: list
-    :return: is user authenticated , missing permissions ids
-    :rtype: boolean,list
-    """
-    user_authenticated = False
-    value = list(set(ids_required_for_user).difference(ids_of_user))
-
-    if not value:
-        user_authenticated = True
-    return user_authenticated, value
-
-
-def get_permission_name_from_id(permission_data: dict, permission_ids: list) -> Any:
-    """Get permission name from permission ids.
-    :param permission_data: permission data
-    :type permission_data: dict
-    :param permission_ids: permission id for authenticate
-    :type permission_ids: list
-    :return: permissions name
-    :rtype: Any
-    """
-    permissions_name = []
-    for data in permission_data:
-        for permission_id in permission_ids:
-            if data["id"] == permission_id:
-                permissions_name.append(data["name"])
-    return permissions_name
-
-
-def test_module(client: Client) -> Any:
-    """Tests API connectivity and authentication'
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-    :type client: ``Client``
-    :param Client: EclecticIQ client to use
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``Any``
-    """
-
-    # INTEGRATION DEVELOPER TIP
-    # Client class should raise the exceptions, but if the test fails
-    # the exception text is printed to the Cortex XSOAR UI.
-    # If you have some specific errors you want to capture (i.e. auth failure)
-    # you should catch the exception here and return a string with a more
-    # readable output (for example return 'Authentication Error, API Key
-    # invalid').
-    # Cortex XSOAR will print everything you return different than 'ok' as
-    # an error
-    try:
-        permissions_of_user = client.get_user_granted_permissions()
-    except Exception:
-        permissions_of_user = []
-        return "Please provide valid API Key."
-
-    permission_ids = []
-    missing_permissions = ""
-    for permission in permissions_of_user:
-        permission_ids.append(int(permission.split("/")[-1]))
-    try:
-        permissions_data = client.get_platform_permissions()
-    except Exception:
-        permissions_data = []
-        return "API Key does not have access to view permissions."
-    if permissions_data:
-        ids_required_for_user = get_platform_permission_ids(
-            permissions_data
-        )
-        user_authenticated, permission_ids = authenticate_user(
-            permission_ids, ids_required_for_user
-        )
-        if not user_authenticated:
-            # check for missing permissions
-            permissions_data = client.get_platform_permissions()
-            missing_permissions = get_permission_name_from_id(
-                permissions_data, permission_ids
+    if res.status_code not in {200}:
+        if res.status_code == 405:
+            return_error(
+                'Error in API call to EclecticIQ Integration: [405] - Not Allowed - Might occur cause of an invalid '
+                'URL. '
             )
-    else:
-        missing_permissions = "Read Permissions"
+        try:  # Parse the error message
+            errors = json.loads(res.text).get('errors', {})[0]
+            title = errors.get('title', '')
+            detail = errors.get('detail', '')
+            return_error(
+                f'Error in API call to EclecticIQ Integration: [{res.status_code}] - {title} - {detail}'
+            )
+        except Exception:  # In case error message is not in expected format
+            return_error(res.content)
 
-    if missing_permissions:
-        return "API Key is missing permissions {}".format(missing_permissions)
+    try:  # Verify we can generate json from the response
+        return res.json()
+    except ValueError:
+        return_error(res)
 
-    return 'ok'
 
+def maliciousness_to_dbotscore(maliciousness: MALICOUS_LVL, threshold: MALICOUS_LVL) -> int:
+    """
+    Translates EclecticIQ obversable maliciousness confidence level to DBotScore based on given threshold
 
-def maliciousness_to_dbotscore(maliciousness) -> int:
-    """Translates EclecticIQ obversable maliciousness confidence level to DBotScore based on given threshold
     Parameters
     ----------
     maliciousness : str
         EclecticIQ obversable maliciousness confidence level.
     threshold : str
         Minimum maliciousness confidence level to consider the IOC malicious.
+
     Returns
     -------
     number
         Translated DBot Score
     """
-    maliciousness_dictionary = {
-        'unknown': 0,
-        'safe': 1,
-        'low': 2,
-        'medium': 2,
-        'high': 3
+    if maliciousness not in MALICIOUSNESS:
+        raise ValueError(f'{maliciousness=} whereas acceptable values are only {MALICIOUSNESS.keys()}')
+    if threshold not in MALICIOUSNESS:
+        raise ValueError(f'{threshold=} whereas acceptable values are only {MALICIOUSNESS.keys()}')
+    if MALICIOUSNESS.get(maliciousness) >= MALICIOUSNESS.get(threshold):  # type: ignore
+        return MALICIOUSNESS.get('high')  # type: ignore
+    return MALICIOUSNESS.get(maliciousness)  # type: ignore
+
+
+''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+def test_module():  # pragma: no cover
+    """
+    The function which runs when clicking on Test in integration settings
+
+
+    Returns
+    -------
+    str
+        ok if getting observable successfully
+    """
+    get_observable('8.8.8.8')
+    demisto.results('ok')
+
+
+def login():  # pragma: no cover
+    """
+    Logins to EclecticIQ API with given credentials and sets the returned token in the headers
+    """
+    cmd_url = '/api/auth'
+    cmd_json = {
+        'password': PASSWORD,
+        'username': USERNAME
     }
-    return maliciousness_dictionary[maliciousness]
-
-
-def prepare_observable_data(data: Any) -> dict:
-    """Prepare Observable data to show on UI.
-    :param data: Observable data
-    :type data: dict
-    :return: Only selected fields dict
-    :rtype: dict
-    """
-    new_data = {}
-    new_data["type"] = data.get("type")
-    new_data["value"] = data.get("value")
-    new_data["classification"] = data.get("meta").get("maliciousness")
-    return new_data
-
-
-def get_entity_data(client, data_item: Any) -> List[Any]:
-    """Get entity data to show on UI.
-    :param data_item: Data from lookup obsrvables Dict
-    :type data_item: dict
-    :return: prepared data to show on UI
-    :rtype: List
-    """
-    entity_data_dict_list = []
-    for item in data_item.get("entities"):
-        entity_data_dict = {}
-        entity_data = client.fetch_entity(
-            str(item.split("/")[-1])
-        )
-        entity_data = entity_data.get("data")
-        observables = entity_data.get(
-            "observables") if entity_data.get("observables") else []
-        obs_data_list = []
-        for observable in observables:
-            obs_data = client.get_observable_by_id(
-                str(observable.split("/")[-1])
-            )
-            obs_data = obs_data.get("data")
-            append_data = prepare_observable_data(obs_data)
-
-            obs_data_list.append(append_data)
-
-        entity_data_dict.update(
-            prepare_entity_data(entity_data, obs_data_list))
-        entity_data_dict_list.append(entity_data_dict)
-    return entity_data_dict_list
-
-
-def prepare_entity_data(data: Any, obs_data: Any) -> dict[Any, Any]:
-    """Prepare entity data to show on UI.
-    :param data: Entity data
-    :type data: Any
-    :param obs_data: Observable data
-    :type data: Any
-    :return: Only selected fields dict
-    :rtype: dict
-    """
-    new_data = {}
-    if data.get("data"):
-        new_data["title"] = (
-            data.get("data").get("title") if data.get(
-                "data").get("title") else ""
-        )
-
-        new_data["description"] = (
-            data.get("data").get("description")
-            if data.get("data").get("description")
-            else ""
-        )
-        new_data["confidence"] = (
-            data.get("data").get("confidence")
-            if data.get("data").get("confidence")
-            else ""
-        )
-        new_data["tags"] = (
-            data.get("data").get("tags") if data.get(
-                "data").get("tags") else ""
-        )
-    if data.get("meta"):
-        new_data["threat_start_time"] = (
-            data.get("meta").get("estimated_threat_start_time")
-            if data.get("meta").get("estimated_threat_start_time")
-            else ""
-        )
-        if data.get("data").get("producer"):
-            new_data["source_name"] = (
-                data.get("data").get("producer").get("identity")
-                if data.get("data").get("producer").get("identity")
-                else ""
-            )
-        else:
-            new_data["source_name"] = ""
-        new_data["observables"] = obs_data
-
-    return new_data
-
-
-def validate_type(s_type: str, value: Any) -> Any:  # pylint: disable=R0911
-    """Get the type of the observable.
-    :param s_type :observable pattern type
-    :type s_type: str
-    :param value: observable value
-    :type value: Any
-    :return: type of the observable
-    :rtype: Any
-    """
-    if s_type == "ipv4":  # pylint: disable=R1705
-        return bool(re.match(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", value))
-    elif s_type == "ipv6":
-        return bool(
-            re.match(
-                r"^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|\
-                    ([0-9a-fA-F]{1,4}:){1,7}:|\
-                    ([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|\
-                    ([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|\
-                    ([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|\
-                    ([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|\
-                    ([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|\
-                    [0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|\
-                    :((:[0-9a-fA-F]{1,4}){1,7}|:)|\
-                    fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|\
-                    ::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|\
-                    1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|\
-                    1{0,1}[0-9]){0,1}[0-9])|\
-                    ([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|\
-                    1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|\
-                    (2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$",
-                value,   # pylint: disable=C0301
-            )
-        )
-    elif s_type == "email":
-        return bool(re.match(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+", value))
-    elif s_type == "uri":
-        return bool(re.match(r"[^\:]+\:\/\/[\S]+", value))
-    elif s_type == "domain":
-        return bool(
-            re.match(
-                r"^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$",
-                value,
-            )
-        )
-    elif s_type == "hash-md5":
-        return bool(re.match(r"^[a-f0-9A-F]{32}$", value))
-    elif s_type == "hash-sha256":
-        return bool(re.match(r"^[a-f0-9A-F]{64}$", value))
-    elif s_type == "hash-sha1":
-        return bool(re.match(r"\b[0-9a-f]{5,40}\b", value))
-    elif s_type == "hash-sha512":
-        return bool(re.match(r"^\w{128}$", value))
+    response = http_request('POST', cmd_url, cmd_json=cmd_json)
+    if 'token' in response:
+        token = response['token']
     else:
-        return False
+        return_error('Failed to retrieve token')
+    HEADERS['Authorization'] = f'Bearer {token}'
 
 
-def lookup_observables(client: Client, args: Any) -> CommandResults:
-    """lookup_observables command: Returns the observable
-    :type client: ``Client``
-    :param Client: EclecticIQ client to use
-    :type args: ``Any``
-    :param args: args {type, value}
-    :return: observable data
-    :rtype: ``CommandResults``
+def ip_command():  # pragma: no cover
     """
-    type_eiq = args.get("type")
-    value_eiq = args.get("value")
-    if not validate_type(type_eiq, value_eiq):
-        raise ValueError("Type does not match specified value")
-    data = client.lookup_obs(type_eiq, value_eiq)
-    if data.get("data"):
-        data = data["data"]
-    else:
-        return "No observable data found"  # type:ignore
-    data = client.lookup_obs(type_eiq, value_eiq)
-    data = data["data"] if data.get("data") else []
-    standard_observable_outputs = []
-    final_data = []
-    for observable in data:
-        maliciousness = observable["meta"]["maliciousness"]
-        score = maliciousness_to_dbotscore(maliciousness)
-        standard_observable_output = {
-            'data': observable
-        }
-        if score == 3:
-            standard_observable_output['Malicious'] = {
-                'Vendor': 'EclectiqIQ',
-                'Description': 'EclectiqIQ maliciousness confidence level: ' + maliciousness
-            }
-            standard_observable_outputs.append(standard_observable_output)
-        dbot_output = {
-            'Type': observable.get("type"),
-            'indicator': observable.get("type"),
+    Gets reputation of an EclecticIQ IPv4 observable
+
+    Parameters
+    ----------
+    ip : str
+        IPv4 to get reputation of
+
+    Returns
+    -------
+    entry
+        Reputation of given IPv4
+    """
+    ip = demisto.args()['ip']
+
+    response = get_observable(ip)
+
+    if 'total_count' in response and response['total_count'] == 0:
+        human_readable = 'No results found'
+
+    integration_outputs = []
+    standard_ip_outputs = []
+
+    observables = response.get('data')
+
+    score = 0
+
+    for observable in observables:
+        meta = observable.get('meta', {})
+        maliciousness = meta.get('maliciousness')
+        score = maliciousness_to_dbotscore(maliciousness, IP_THRESHOLD)
+
+        integration_outputs.append({
+            'Address': ip,
             'Created': observable.get('created_at'),
             'LastUpdated': observable.get('last_updated_at'),
             'ID': observable.get('id'),
-            'score': score
+            'Maliciousness': maliciousness
+        })
+
+        standard_ip_output = {
+            'Address': ip
         }
-        context = {
-            'DBotScore': dbot_output
-        }  # type: dict
-        if observable.get("entities"):
-            entity_data = get_entity_data(client, observable)
-            final_data = entity_data
-    human_readable_title = 'EclecticIQ observable reputation - {}'.format(
-        value_eiq)
-    human_readable = tableToMarkdown(human_readable_title, final_data)
-    context['Entity'] = createContext(
-        data=final_data, removeNull=True)
-    context[outputPaths['ip']] = standard_observable_outputs
-    return CommandResults(
-        readable_output=human_readable,
-        outputs_prefix='EclecticIQ',
-        outputs_key_field='value',
-        outputs=context
-    )
+        if score == 3:
+            standard_ip_output['Malicious'] = {
+                'Vendor': 'EclectiqIQ',
+                'Description': 'EclectiqIQ maliciousness confidence level: ' + maliciousness
+            }
+
+        standard_ip_outputs.append(standard_ip_output)
+
+    dbot_output = {
+        'Type': 'ip',
+        'Indicator': ip,
+        'Vendor': 'EclecticIQ',
+        'Score': score
+    }
+
+    context = {
+        'DBotScore': dbot_output
+    }  # type: dict
+
+    if observables:
+        human_readable_title = f'EclecticIQ IP reputation - {ip}'
+        human_readable = tableToMarkdown(human_readable_title, integration_outputs)
+        context['EclecticIQ.IP'] = createContext(data=integration_outputs, id='ID', removeNull=True)
+        context[outputPaths['ip']] = standard_ip_outputs
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': context
+    })
 
 
-def create_sighting(client: Client, args: Any) -> CommandResults:
-    """create_sighting command: Returns the sighting data
-    :type client: ``Client``
-    :param Client: EclecticIQ client to use
-    :type args: ``Any``
-    :param args: args {value, description, title, tags, type, confidence_level}
-    :return: sighting data
-    :rtype: ``CommandResults``
+def url_command():  # pragma: no cover
     """
-    value = args.get("value")
-    description = args.get("description")
-    title = args.get("title")
-    tags = args.get("tags")
-    type_eiq = args.get("type")
-    confidence_level = args.get("confidence_level")
-    if not validate_type(type_eiq, value):
-        raise ValueError("Type does not match specified value")
-    response = client.sighting(
-        value, description, title, tags, type_eiq, confidence_level)
-    context = {}
-    output = {'value': value,
-              'description': description,
-              'title': title,
-              'tags': tags,
-              'Type': type_eiq,
-              'confidence_level': confidence_level}
-    human_readable_title = '!sighting created for- {}'.format(
-        args.get("value"))
-    human_readable = tableToMarkdown(human_readable_title, t=output)
-    context['Sighting.Data'] = createContext(
-        data=response, removeNull=True)
-    return CommandResults(
-        readable_output=human_readable,
-        outputs_prefix='Sighting.Data',
-        outputs_key_field='value',
-        outputs=output
-    )
+    Gets reputation of an EclecticIQ URI observable
 
+    Parameters
+    ----------
+    url : str
+        URL to get reputation of
 
-def create_observable(client: Client, args: Any) -> CommandResults:
-    """create_observable command: Returns the observable data
-    :type client: ``Client``
-    :param Client: EclecticIQ client to use
-    :type args: ``Any``
-    :param args: args {type, value}
-    :return: observable data
-    :rtype: ``CommandResults``
+    Returns
+    -------
+    entry
+        Reputation of given URL
     """
-    type_eiq = args.get("type")
-    value = args.get("value")
-    maliciousness = args.get("maliciousness")
-    if not validate_type(type_eiq, value):
-        raise ValueError("Type does not match specified value")
-    response = client.observable(type_eiq, value, maliciousness)
-    context = {}
-    output = {'type': type_eiq,
-              'value': value,
-              'maliciousness': maliciousness
-              }
-    human_readable_title = "Observables created successfully..!!"
-    human_readable = tableToMarkdown(human_readable_title, t=output)
-    context['Observable.Data'] = createContext(
-        data=response, removeNull=True)
-    return CommandResults(
-        readable_output=human_readable,
-        outputs_prefix='Observables.Data',
-        outputs_key_field='value',
-        outputs=output
-    )
+    url = demisto.args()['url']
+
+    response = get_observable(url)
+
+    if 'total_count' in response and response['total_count'] == 0:
+        human_readable = 'No results found.'
+
+    integration_outputs = []
+    standard_url_outputs = []
+
+    observables = response.get('data')
+
+    score = 0
+
+    for observable in observables:
+        meta = observable.get('meta', {})
+        maliciousness = meta.get('maliciousness')
+        score = maliciousness_to_dbotscore(maliciousness, URL_THRESHOLD)
+
+        integration_outputs.append({
+            'Data': url,
+            'Created': observable.get('created_at'),
+            'LastUpdated': observable.get('last_updated_at'),
+            'ID': observable.get('id'),
+            'Maliciousness': maliciousness
+        })
+
+        standard_url_output = {
+            'Data': url
+        }
+        if score == 3:
+            standard_url_output['Malicious'] = {
+                'Vendor': 'EclectiqIQ',
+                'Description': 'EclectiqIQ maliciousness confidence level: ' + maliciousness
+            }
+
+        standard_url_outputs.append(standard_url_output)
+
+    dbot_output = {
+        'Type': 'url',
+        'Indicator': url,
+        'Vendor': 'EclecticIQ',
+        'Score': score,
+        'Reliability': demisto.params().get('integrationReliability')
+    }
+
+    context = {
+        'DBotScore': dbot_output
+    }  # type: dict
+
+    if observables:
+        human_readable_title = f'EclecticIQ URL reputation - {url}'
+        human_readable = tableToMarkdown(human_readable_title, integration_outputs)
+        context['EclecticIQ.URL'] = createContext(data=integration_outputs, id='ID', removeNull=True)
+        context[outputPaths['url']] = standard_url_outputs
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': context
+    })
 
 
-''' MAIN FUNCTION '''
-
-
-def main() -> None:
-    """main function, parses params and runs command functions
-    :return:
-    :rtype:
+def file_command():  # pragma: no cover
     """
-    api_key = demisto.params().get('apikey')
+    Gets reputation of an EclecticIQ hash observable
 
-    # get the service API url
-    base_url = demisto.params().get('url')
+    Parameters
+    ----------
+    file : str
+        File hash to get reputation of
 
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
+    Returns
+    -------
+    entry
+        Reputation of given file hash
+    """
+    file = demisto.args()['file']
 
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
+    hash_type = get_hash_type(file).upper()
 
-    # INTEGRATION DEVELOPER TIP
-    # You can use functions such as ``demisto.debug()``, ``demisto.info()``,
-    # etc. to print information in the XSOAR server log. You can set the log
-    # level on the server configuration
-    # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
+    response = get_observable(file)
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    if 'total_count' in response and response['total_count'] == 0:
+        human_readable = 'No results found.'
+
+    integration_outputs = []
+    standard_file_outputs = []
+
+    observables = response.get('data')
+
+    score = 0
+
+    for observable in observables:
+        meta = observable.get('meta', {})
+        maliciousness = meta.get('maliciousness')
+        score = maliciousness_to_dbotscore(maliciousness, FILE_THRESHOLD)
+
+        integration_outputs.append({
+            hash_type: file,
+            'Created': observable.get('created_at'),
+            'LastUpdated': observable.get('last_updated_at'),
+            'ID': observable.get('id'),
+            'Maliciousness': maliciousness
+        })
+
+        standard_file_output = {
+            hash_type: file
+        }
+        if score == 3:
+            standard_file_output['Malicious'] = {
+                'Vendor': 'EclectiqIQ',
+                'Description': 'EclectiqIQ maliciousness confidence level: ' + maliciousness
+            }
+
+        standard_file_outputs.append(standard_file_output)
+
+    dbot_output = {
+        'Type': 'file',
+        'Indicator': file,
+        'Vendor': 'EclecticIQ',
+        'Score': score,
+        'Reliability': demisto.params().get('integrationReliability')
+    }
+
+    context = {
+        'DBotScore': dbot_output
+    }  # type: dict
+
+    if observables:
+        human_readable_title = f'EclecticIQ File reputation - {file}'
+        human_readable = tableToMarkdown(human_readable_title, integration_outputs)
+        context['EclecticIQ.File'] = createContext(data=integration_outputs, id='ID', removeNull=True)
+        context[outputPaths['file']] = standard_file_outputs
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': context
+    })
+
+
+def email_command():  # pragma: no cover
+    """
+    Gets reputation of an EclecticIQ email address observable
+
+    Parameters
+    ----------
+    email : str
+        Email address to get reputation of
+
+    Returns
+    -------
+    entry
+        Reputation of given email address
+    """
+    email = demisto.args()['email']
+
+    response = get_observable(email)
+
+    if 'total_count' in response and response['total_count'] == 0:
+        human_readable = 'No results found.'
+
+    integration_outputs = []
+    standard_email_outputs = []
+
+    observables = response.get('data')
+
+    score = 0
+
+    for observable in observables:
+        meta = observable.get('meta', {})
+        maliciousness = meta.get('maliciousness')
+        score = maliciousness_to_dbotscore(maliciousness, EMAIL_THRESHOLD)
+
+        integration_outputs.append({
+            'Address': email,
+            'Created': observable.get('created_at'),
+            'LastUpdated': observable.get('last_updated_at'),
+            'ID': observable.get('id'),
+            'Maliciousness': maliciousness
+        })
+
+        standard_email_output = {
+            'Address': email
+        }
+        if score == 3:
+            standard_email_output['Malicious'] = {
+                'Vendor': 'EclectiqIQ',
+                'Description': 'EclectiqIQ maliciousness confidence level: ' + maliciousness
+            }
+
+        standard_email_outputs.append(standard_email_output)
+
+    dbot_output = {
+        'Type': 'email',
+        'Indicator': email,
+        'Vendor': 'EclecticIQ',
+        'Score': score,
+        'Reliability': demisto.params().get('integrationReliability')
+    }
+
+    context = {
+        'DBotScore': dbot_output
+    }  # type: dict
+
+    if observables:
+        human_readable_title = f'EclecticIQ Email reputation - {email}'
+        human_readable = tableToMarkdown(human_readable_title, integration_outputs)
+        context['EclecticIQ.Email'] = createContext(data=integration_outputs, id='ID', removeNull=True)
+        context[outputPaths['email']] = standard_email_outputs
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': context
+    })
+
+
+def domain_command():  # pragma: no cover
+    """
+    Gets reputation of an EclecticIQ domain observable
+
+    Parameters
+    ----------
+    domain : str
+        Domain address to get reputation of
+
+    Returns
+    -------
+    entry
+        Reputation of given domain address
+    """
+    domain = demisto.args()['domain']
+
+    response = get_observable(domain)
+
+    if 'total_count' in response and response['total_count'] == 0:
+        human_readable = 'No results found.'
+
+    integration_outputs = []
+    standard_domain_outputs = []
+
+    observables = response.get('data')
+
+    score = 0
+
+    for observable in observables:
+        meta = observable.get('meta', {})
+        maliciousness = meta.get('maliciousness')
+        score = maliciousness_to_dbotscore(maliciousness, DOMAIN_THRESHOLD)
+
+        integration_outputs.append({
+            'Name': domain,
+            'Created': observable.get('created_at'),
+            'LastUpdated': observable.get('last_updated_at'),
+            'ID': observable.get('id'),
+            'Maliciousness': maliciousness
+        })
+
+        standard_email_output = {
+            'Name': domain
+        }
+        if score == 3:
+            standard_email_output['Malicious'] = {
+                'Vendor': 'EclectiqIQ',
+                'Description': 'EclectiqIQ maliciousness confidence level: ' + maliciousness
+            }
+
+        standard_domain_outputs.append(standard_email_output)
+
+    dbot_output = {
+        'Type': 'domain',
+        'Indicator': domain,
+        'Vendor': 'EclecticIQ',
+        'Score': score,
+        'Reliability': demisto.params().get('integrationReliability')
+    }
+
+    context = {
+        'DBotScore': dbot_output
+    }  # type: dict
+
+    if observables:
+        human_readable_title = f'EclecticIQ Domain reputation - {domain}'
+        human_readable = tableToMarkdown(human_readable_title, integration_outputs)
+        context['EclecticIQ.Domain'] = createContext(data=integration_outputs, id='ID', removeNull=True)
+        context[outputPaths['domain']] = standard_domain_outputs
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': context
+    })
+
+
+def get_observable(ioc):  # pragma: no cover
+    """
+    Send API query to EclecticIQ to get reputation of an observable
+
+    Parameters
+    ----------
+    ioc : str
+        IOC to get reputation of
+
+    Returns
+    -------
+    response
+        Python requests response object
+    """
+    cmd_url = f'/api/observables?filter[value]={ioc}'
+    response = http_request('GET', cmd_url)
+    return response
+
+
+def get_observable_related_entity_command():  # pragma: no cover
+    """
+    Get EclecticIQ related entities to an observable
+
+    Parameters
+    ----------
+    observable_id : str
+        EclecticIQ observable ID to get related entites of
+
+    Returns
+    -------
+    entry
+        Observable related entities data
+    """
+    observable_id = demisto.args()['observable_id']
+
+    processed_extract_response = processed_extract(observable_id)
+
+    original_extract_response = original_extract(observable_id)
+
+    response = dict(processed_extract_response)
+    response['data'].extend(original_extract_response['data'])
+    response['total_count'] += original_extract_response['total_count']
+
+    if 'total_count' in response and response['total_count'] == 0:
+        demisto.results('No results found')
+        return
+
+    context_outputs = []
+    human_readable = ''
+
+    entities = response.get('data')
+
+    for entity in entities:  # type: ignore
+
+        entity_data = entity.get('data', {})
+        test_mechanisms = entity_data.get('test_mechanisms', {})
+        entity_meta = entity.get('meta', {})
+
+        context_output = {
+            'Title': entity_data.get('title'),
+            'ID': entity.get('id'),
+            'Analysis': entity_data.get('description'),
+            'EstimatedStartTime': entity_meta.get('estimated_threat_start_time'),
+            'EstimatedObservedTime': entity_meta.get('estimated_observed_time'),
+            'HalfLife': entity_meta.get('half_life')
+        }
+
+        if context_output['Analysis']:
+            # Removing unnecessary whitespaces from the string
+            context_output['Analysis'] = ' '.join(context_output['Analysis'].split())
+
+        if context_output['HalfLife']:
+            # API returns a number, we add the time format to it
+            context_output['HalfLife'] = str(context_output['HalfLife']) + ' Days'
+
+        human_readable += tableToMarkdown(f'Observable ID {observable_id} related entities', context_output)
+
+        test_mechanisms_output = []
+
+        for mechanism in test_mechanisms:
+
+            mechanism_output = {
+                'Type': mechanism.get('test_mechanism_type')
+            }
+
+            mechanism_rules = mechanism.get('rules')
+
+            mechanism_rules_outputs = []
+
+            for rule in mechanism_rules:
+
+                mechanism_rules_outputs.append(rule.get('value'))
+
+            mechanism_output['Rule'] = mechanism_rules_outputs
+
+            test_mechanisms_output.append(mechanism_output)
+
+        if test_mechanisms_output:
+
+            context_output['TestMechanism'] = test_mechanisms_output
+            human_readable += tableToMarkdown('Test mechanisms', test_mechanisms_output, removeNull=True)
+
+        sources = entity.get('sources')
+
+        sources_output = []
+
+        for source in sources:
+
+            sources_output.append({
+                'Name': source.get('name'),
+                'Type': source.get('source_type'),
+                'Reliability': source.get('source_reliability')
+            })
+
+        if sources_output:
+            context_output['Source'] = sources_output
+            human_readable += tableToMarkdown('Sources', sources_output, removeNull=True)
+
+        exposure = entity.get('exposure')
+
+        exposure_output = {
+            'Exposed': True if exposure.get('exposed') is True else False,
+            'Detection': True if exposure.get('detect_feed') is True else False,
+            'Prevention': True if exposure.get('prevent_feed') is True else False,
+            'Community': True if exposure.get('community_feed') is True else False,
+            'Sighting': True if exposure.get('sighted') is True else False
+        }
+
+        context_output['Exposure'] = exposure_output
+        human_readable += tableToMarkdown('Exposure', exposure_output, removeNull=True)
+
+        context_outputs.append(context_output)
+
+    context = {
+        'EclecticIQ.Entity': createContext(data=context_outputs, id='ID', removeNull=True)
+    }
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': context
+    })
+
+
+def processed_extract(observable_id):  # pragma: no cover
+    """
+    Send API query to EclecticIQ to get extracted processed data of an observable
+
+    Parameters
+    ----------
+    observable_id : str
+        EclecticIQ observable ID to get extracted processed data of of
+
+    Returns
+    -------
+    response
+        Python requests response object
+    """
+    cmd_url = f'/private/entities/processed-extract/{observable_id}'
+    response = http_request('GET', cmd_url)
+    return response
+
+
+def original_extract(observable_id):  # pragma: no cover
+    """
+    Send API query to EclecticIQ to get extracted orginial data of an observable
+
+    Parameters
+    ----------
+    observable_id : str
+        EclecticIQ observable ID to get extracted orginial data of of
+
+    Returns
+    -------
+    response
+        Python requests response object
+    """
+    cmd_url = f'/private/entities/original-extract/{observable_id}'
+    response = http_request('GET', cmd_url)
+    return response
+
+
+''' COMMANDS MANAGER / SWITCH PANEL '''
+
+COMMANDS = {
+    'test-module': test_module,
+    'url': url_command,
+    'ip': ip_command,
+    'email': email_command,
+    'file': file_command,
+    'domain': domain_command,
+    'eclecticiq-get-observable-related-entity': get_observable_related_entity_command
+}
+
+
+def main():  # pragma: no cover
     try:
-        headers = {
-            'Authorization': f'Bearer {api_key}'
-        }
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
-
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
-
-        elif demisto.command() == 'lookup_observables':
-            return_results(lookup_observables(client, demisto.args()))
-
-        elif demisto.command() == 'create_sighting':
-            return_results(create_sighting(client, demisto.args()))
-
-        elif demisto.command() == 'create_observable':
-            return_results(create_observable(client, demisto.args()))
-
-        else:
-            demisto.error(f'{demisto.command} command is not implemented.')
-            raise NotImplementedError(f'{demisto.command} command is not implemented.')
-
-    # Log exceptions and return errors
+        LOG(f'Command being called is {demisto.command()}')
+        login()
+        command_func = COMMANDS.get(demisto.command())
+        if command_func is not None:
+            command_func()
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(
-            f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Error has occurred in EclecticIQ integration: {type(e)}\n {e}')
 
 
-''' ENTRY POINT '''
-
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()

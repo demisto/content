@@ -3,7 +3,7 @@ from typing import Callable, Dict, Iterable, List, Tuple
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
+import mimetypes
 
 # disable insecure warnings
 import urllib3
@@ -73,6 +73,15 @@ TICKET_STATES = {
         '19': 'Eradicate'
     }
 }
+
+
+TICKET_TYPE_TO_CLOSED_STATE = {INCIDENT: '7',
+                               'problem': '4',
+                               'change_request': '3',
+                               'sc_task': '3',
+                               'sc_request': '3',
+                               SIR_INCIDENT: '3'}
+
 
 TICKET_APPROVAL = {
     'sc_req_item': {
@@ -692,16 +701,17 @@ class Client(BaseClient):
                     file_name = file['name']
                     shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
                     with open(file_name, 'rb') as f:
+                        file_info = (file_name, f, self.get_content_type(file_name))
                         if self.use_oauth:
                             access_token = self.snow_client.get_access_token()
                             headers.update({
                                 'Authorization': f'Bearer {access_token}'
                             })
                             res = requests.request(method, url, headers=headers, data=body, params=params,
-                                                   files={'file': f}, verify=self._verify, proxies=self._proxies)
+                                                   files={'file': file_info}, verify=self._verify, proxies=self._proxies)
                         else:
                             res = requests.request(method, url, headers=headers, data=body, params=params,
-                                                   files={'file': f}, auth=self._auth,
+                                                   files={'file': file_info}, auth=self._auth,
                                                    verify=self._verify, proxies=self._proxies)
                     shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
                 except Exception as err:
@@ -751,6 +761,22 @@ class Client(BaseClient):
             num_of_tries += 1
 
         return json_res
+
+    def get_content_type(self, file_name):
+        """Get the correct content type for the POST request.
+
+        Args:
+            file_name: file name
+
+        Returns:
+            the content type - image with right type for images , and general for other types..
+        """
+        file_type = None
+        if not file_name:
+            demisto.debug("file name was not supllied, uploading with general type")
+        else:
+            file_type, _ = mimetypes.guess_type(file_name)
+        return file_type or '*/*'
 
     def get_table_name(self, ticket_type: str = '') -> str:
         """Get the relevant table name from th client.
@@ -2420,34 +2446,35 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 'EntryContext': comments_context
             })
 
-    if ticket.get('closed_at'):
-        if params.get('close_incident'):
-            demisto.debug(f'ticket is closed: {ticket}')
-            entries.append({
-                'Type': EntryType.NOTE,
-                'Contents': {
-                    'dbotIncidentClose': True,
-                    'closeNotes': f'From ServiceNow: {ticket.get("close_notes")}',
-                    'closeReason': converts_state_close_reason(ticket.get("state"))
-                },
-                'ContentsFormat': EntryFormat.JSON
-            })
+    # Handle closing ticket/incident in XSOAR
+    close_incident = params.get('close_incident')
+    if ticket.get('closed_at') and close_incident == 'closed' \
+            or ticket.get('resolved_at') and close_incident == 'resolved':
+        demisto.debug(f'ticket is closed: {ticket}')
+        entries.append({
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentClose': True,
+                'closeNotes': f'From ServiceNow: {ticket.get("close_notes")}',
+                'closeReason': converts_state_close_reason(ticket.get("state"))
+            },
+            'ContentsFormat': EntryFormat.JSON
+        })
 
     demisto.debug(f'Pull result is {ticket}')
     return [ticket] + entries
 
 
-def converts_state_close_reason(ticket_state: str):
+def converts_state_close_reason(ticket_state: Optional[str]):
     """
-    converts between XSOAR and service now state.
+    determine the XSOAR closeReason based on the Service Now ticket state.
     Args:
-        ticket_state: Service now state
+        ticket_state: Service now ticket state
     Returns:
         The XSOAR state
     """
     if ticket_state in ['6', '7']:
         return 'Resolved'
-
     return 'Other'
 
 
@@ -2474,6 +2501,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
     closure_case = get_closure_case(params)
+    is_custom_close = False
+    close_custom_state = params.get('close_custom_state', None)
+
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
         if parsed_args.inc_status == IncidentStatus.DONE:
@@ -2484,13 +2514,23 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                 parsed_args.data['state'] = '7'  # Closing incident ticket.
             elif closure_case == 'resolved' and ticket_type == INCIDENT:
                 parsed_args.data['state'] = '6'  # resolving incident ticket.
-
+            if close_custom_state:  # Closing by custom state
+                demisto.debug(f'Closing by custom state = {close_custom_state}')
+                is_custom_close = True
+                parsed_args.data['state'] = close_custom_state
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
         if closure_case:
             fields = {key: val for key, val in fields.items() if key != 'closed_at' and key != 'resolved_at'}
 
         demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
         result = client.update(ticket_type, ticket_id, fields)
+
+        # Handle case of custom state doesn't exist, reverting to the original close state
+        if is_custom_close and demisto.get(result, 'result.state') != close_custom_state:
+            fields['state'] = TICKET_TYPE_TO_CLOSED_STATE[ticket_type]
+            demisto.debug(f'Given custom state doesn\'t exist - Sending second update request to server with '
+                          f'default closed state: {ticket_type}, {ticket_id}, {fields}')
+            result = client.update(ticket_type, ticket_id, fields)
 
         demisto.info(f'Ticket Update result {result}')
 

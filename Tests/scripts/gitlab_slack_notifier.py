@@ -127,7 +127,7 @@ def bucket_upload_results(bucket_artifact_folder):
     marketplace_name = os.path.basename(bucket_artifact_folder).upper()
 
     logging.info(f'retrieving upload data from "{pack_results_path}"')
-    successful_packs, failed_packs, successful_private_packs, _ = get_upload_data(
+    successful_packs, _, failed_packs, successful_private_packs, _ = get_upload_data(
         pack_results_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
     )
     if successful_packs:
@@ -255,7 +255,7 @@ def main():
     slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
     slack_client = WebClient(token=slack_token)
     slack_client.chat_postMessage(
-        channel=slack_channel, as_user=False, attachments=slack_msg_data, username=SLACK_USERNAME
+        channel=slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME
     )
 
 
