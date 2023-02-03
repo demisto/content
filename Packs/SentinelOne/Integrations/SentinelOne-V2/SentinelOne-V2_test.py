@@ -492,3 +492,66 @@ def test_get_events(mocker, requests_mock):
     call = sentinelone_v2.return_results.call_args_list
     context_outputs = call[0].args[0].outputs
     assert all(key in context_outputs.keys() for key in expected_context.keys())
+
+
+def test_run_remote_script(mocker, requests_mock):
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/remote-scripts/execute",
+                       json={"data": {"affected": 1}})
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-run-remote-script')
+    mocker.patch.object(demisto, 'args', return_value={
+        'account_ids': '1234567890',
+        'script_id': '1',
+        'output_destination': 'test',
+        'task_description': 'test',
+        'output_directory': 'file',
+        'agent_ids': '2'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs == {'affected': 1, 'parentTaskId': None, 'pending': None, 'pendingExecutionId': None}
+
+
+def test_initiate_endpoint_scan(mocker, requests_mock):
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/agents/actions/initiate-scan",
+                       json={"data": {"affected": 1}})
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-initiate-endpoint-scan')
+    mocker.patch.object(demisto, 'args', return_value={
+        'agent_ids': '123456'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs == [{'Agent ID': '123456', 'Initiated': True}]
+
+
+def test_get_installed_applications(mocker, requests_mock):
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/agents/applications",
+                      json={"data": [{"name": "test", "publisher": "abc", "size": 50,
+                            "version": "2.1", "installedDate": "2023-02-10"}]})
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-get-installed-applications')
+    mocker.patch.object(demisto, 'args', return_value={
+        'agent_ids': '123456'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs == [{'InstalledOn': '2023-02-10', 'Name': 'test', 'Publisher': 'abc', 'Size': 50, 'Version': '2.1'}] # noqa
