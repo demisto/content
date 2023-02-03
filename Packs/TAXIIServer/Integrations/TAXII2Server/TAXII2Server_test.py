@@ -583,9 +583,11 @@ def test_convert_sco_to_indicator_sdo_with_type_file(mocker):
         Then
             Validating the result
     """
+    xsoar_indicator = util_load_json('test_data/sco_indicator_file.json').get('objects', {})[0]
     ioc = util_load_json('test_data/objects21_file.json').get('objects', {})[0]
     mocker.patch('TAXII2Server.create_sdo_stix_uuid', return_value={})
 
-    output = convert_sco_to_indicator_sdo(ioc, ioc)
-    assert 'file:hash.' in output.get('pattern', '')
+    output = convert_sco_to_indicator_sdo(ioc, xsoar_indicator)
+    assert 'file:hashes.' in output.get('pattern', '')
+    assert 'MD5' in output.get('pattern', '')
     assert 'pattern_type' in output.keys()

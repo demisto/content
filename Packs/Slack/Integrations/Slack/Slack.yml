@@ -1,4 +1,5 @@
 category: Messaging
+deprecated: true
 sectionOrder:
 - Connect
 - Collect
@@ -126,8 +127,8 @@ configuration:
   additionalinfo: Only supported in Demisto V6.1 and above.
   section: Collect
   advanced: true
-description: Send messages and notifications to your Slack team.
-display: Slack v2
+description: Deprecated. Use SlackV3 instead.
+display: Slack v2 (Deprecated)
 name: SlackV2
 script:
   commands:
@@ -252,7 +253,7 @@ script:
       - 'false'
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Mirrors the investigation between Slack and the Demisto War Room.
     execution: false
     name: mirror-investigation
@@ -304,7 +305,7 @@ script:
       name: blocks
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Sends a message to a user, group, or channel.
     execution: false
     name: send-notification
@@ -375,7 +376,7 @@ script:
       name: channel
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Archives a Slack channel.
     execution: false
     name: close-channel
@@ -416,7 +417,7 @@ script:
       name: comment
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Sends a file to a user, channel, or group. If not specified, the file is sent to the mirrored investigation channel (if the channel exists).
     execution: false
     name: slack-send-file
@@ -433,7 +434,7 @@ script:
       name: topic
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Sets the topic for a channel.
     execution: false
     name: slack-set-channel-topic
@@ -461,7 +462,7 @@ script:
       name: users
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Creates a channel in Slack.
     execution: false
     name: slack-create-channel
@@ -478,7 +479,7 @@ script:
       name: channel
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Invites users to join a channel.
     execution: false
     name: slack-invite-to-channel
@@ -495,7 +496,7 @@ script:
       name: channel
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Removes users from the specified channel.
     execution: false
     name: slack-kick-from-channel
@@ -512,7 +513,7 @@ script:
       name: channel
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Renames a channel in Slack.
     execution: false
     name: slack-rename-channel
@@ -523,7 +524,7 @@ script:
       name: user
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Get details about a specified user.
     execution: false
     name: slack-get-user-details
@@ -597,7 +598,7 @@ script:
       name: limit
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns a list of channels matching criteria
     execution: false
     name: slack-filter-channels

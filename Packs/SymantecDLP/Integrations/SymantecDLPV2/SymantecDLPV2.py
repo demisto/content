@@ -3,12 +3,11 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 import dateparser
 
-import requests
 from typing import Dict, Any
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
-
+import urllib3
+urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
@@ -409,7 +408,7 @@ def get_common_incident_details(static_attributes: dict, editable_attributes: di
     static_attributes.pop('incidentId')
     editable_attributes.pop('incidentId')
     incident_info_map_editable.pop('severityId')
-    editable_attributes.pop('customAttributeGroups')
+    editable_attributes.pop('customAttributeGroups', [])
     incident_details.update(incident_info_map_static)
     incident_details.update(incident_info_map_editable)
 

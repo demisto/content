@@ -17,7 +17,7 @@ from six import string_types  # type: ignore
 from typing import Dict, List, Optional
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 SOURCE_NAME = "Alien Vault OTX TAXII"
 
@@ -690,7 +690,8 @@ def main():
     params = demisto.params()
     tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color')
-    client = Client(params.get('api_key'), params.get('collections'), params.get('insecure'), params.get('proxy'),
+    api_key = params.get('credentials', {}).get('password') or params.get('api_key')
+    client = Client(api_key, params.get('collections'), params.get('insecure'), params.get('proxy'),
                     params.get('all_collections'), tags=tags, tlp_color=tlp_color)
 
     command = demisto.command()

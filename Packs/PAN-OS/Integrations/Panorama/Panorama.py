@@ -2,6 +2,7 @@ from collections import defaultdict
 from dataclasses import dataclass, fields
 from types import SimpleNamespace
 import enum
+import html
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -29,7 +30,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union, Callable, ValuesView
 import re
 import requests
 import urllib3
-from urllib.parse import urlparse
+from urllib.parse import urlparse, quote
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -1170,7 +1171,8 @@ def panorama_push_to_device_group_command(args: dict):
                 'push_job_id': job_id,
                 'polling': argToBoolean(args.get('polling', False)),
                 'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
-                'description': description
+                'description': description,
+                'device-group': DEVICE_GROUP
             }
 
         return PollResult(
@@ -1923,6 +1925,11 @@ def panorama_edit_address_group_command(args: dict):
             addresses = list(set(element_to_add + address_group_list))
         else:
             addresses = [item for item in address_group_list if item not in element_to_remove]
+            if not addresses:
+                raise DemistoException(
+                    f'cannot remove {address_group_list} addresses from address group {address_group_name}, '
+                    f'address-group {address_group_name} must have at least one address in its configuration'
+                )
         addresses_param = add_argument_list(addresses, 'member', False)
         addresses_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/static"
 
@@ -2784,8 +2791,11 @@ def panorama_custom_url_category_add_items(custom_url_category_name: str, items:
 
     merged_items = list((set(items)).union(set(custom_url_category_items)))
 
+    # escape URLs with HTML escaping
+    sites = [html.escape(site) for site in merged_items]
+
     result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, type_,
-                                                                           merged_items, description)
+                                                                           sites, description)
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -2817,8 +2827,12 @@ def panorama_custom_url_category_remove_items(custom_url_category_name: str, ite
         raise Exception('Custom url category does not contain sites or categories.')
 
     subtracted_items = [item for item in custom_url_category_items if item not in items]
+
+    # escape URLs with HTML escaping
+    sites = [html.escape(site) for site in subtracted_items]
+
     result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, type_,
-                                                                           subtracted_items, description)
+                                                                           sites, description)
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
