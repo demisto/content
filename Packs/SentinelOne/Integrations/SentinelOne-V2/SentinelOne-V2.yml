@@ -1057,6 +1057,9 @@ script:
     - contextPath: Event.Type
       description: Event type.
       type: String
+    - contextPath: SentinelOne.Cursor.Event
+      description: cursor to recieve next page
+      type: String
   - arguments:
     - description: The query string for which to return events.
       name: query
@@ -2139,6 +2142,14 @@ script:
       - linux
     - description: 'Exclusion item type. The options are: file_type, path, white_hash, certificate, or browser.'
       name: exclusion_type
+    outputs:
+    - contextPath: SentinelOne.RemoveItemFromWhitelist.status
+      description: Status on if items were removed from whitelist or not found on
+        whitelist.
+      type: String
+    - contextPath: SentinelOne.RemoveItemFromWhitelist.item
+      description: Item removed fom whitelist.
+      type: String
     description: Remove an item from the SentinelOne exclusion list
     name: sentinelone-remove-item-from-whitelist
   - arguments:
@@ -2205,7 +2216,7 @@ script:
       command is used as part of a Mirroring feature, which is available from version
       6.1.
     name: get-modified-remote-data
-  dockerimage: demisto/python3:3.10.9.46032
+  dockerimage: demisto/python3:3.10.9.46807
   isfetch: true
   ismappable: true
   isremotesyncin: true

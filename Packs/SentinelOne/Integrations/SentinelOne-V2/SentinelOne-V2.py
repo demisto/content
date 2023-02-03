@@ -463,7 +463,6 @@ class Client(BaseClient):
         pagination = response.get('pagination')
         return events, pagination
 
-
     def get_processes_request(self, query_id=None, limit=None):
         endpoint_url = "dv/events/process"
         params = {"query_id": query_id, "limit": limit}
@@ -835,7 +834,9 @@ class Client(BaseClient):
         response = self._http_request(method="GET", url_suffix="threats", params=params)
         return response.get("data", [])
 
-    def run_remote_script_request(self, account_ids, script_id, output_destination, task_description, output_directory, agent_ids):
+    def run_remote_script_request(self,
+                                  account_ids, script_id, output_destination,
+                                  task_description, output_directory, agent_ids):
         endpoint_url = "remote-scripts/execute"
         payload = {
             "filter": {
