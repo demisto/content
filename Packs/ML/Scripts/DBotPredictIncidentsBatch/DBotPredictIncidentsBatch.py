@@ -15,7 +15,7 @@ def get_phishing_map_labels(comma_values):
     for v in values:
         v = v.strip()
         if ":" in v:
-            splited = v.split(":")
+            splited = v.rsplit(":", maxsplit=1)
             labels_dict[splited[0].strip()] = splited[1].strip()
         else:
             labels_dict[v] = v
