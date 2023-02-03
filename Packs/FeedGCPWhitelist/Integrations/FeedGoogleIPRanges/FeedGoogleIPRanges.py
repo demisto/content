@@ -32,6 +32,7 @@ feed_config = {
 
 
 def main():
+    demisto.log(f'{demisto.params()=}')
     params = {k: v for k, v in demisto.params().items() if v is not None}
     params['feed_name_to_config'] = feed_config.get(str(params.get('ip_ranges')))
     feed_main(params, 'Google IP Ranges Feed', 'google-ip-ranges')
