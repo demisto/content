@@ -86,6 +86,7 @@ SECURITY_RULE_ARGS = {
     'log-setting': 'LogForwarding',
     'tag': 'Tags',
     'profile-setting': 'ProfileSetting',
+    'audit-comment': 'AuditComment'
 }
 
 PAN_OS_ERROR_DICT = {
@@ -3704,6 +3705,18 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
     })
 
 
+def build_edit_audit_comment_policy_rules(name: str, audit_comment: str, pre_post: str) -> dict:
+    _xpath = f"{XPATH_RULEBASE}{pre_post}/security"
+    if name:
+        _xpath = f"{_xpath}/rules/entry[@name='{name}']"
+
+    return {
+        'type': 'op',
+        'cmd': f"<set><audit-comment><xpath>{_xpath}</xpath><comment>{audit_comment}</comment></audit-comment></set>",
+        'key': API_KEY
+    }
+
+
 @logger
 def panorama_edit_rule_command(args: dict):
     """
@@ -3722,50 +3735,41 @@ def panorama_edit_rule_command(args: dict):
     if behaviour != 'replace':
         panorama_edit_rule_items(rulename, element_to_change, argToList(element_value), behaviour)
     else:
-        # if args.get('element_to_change') == 'audit-comment':
-        #     audit_comment = args.get('element_to_change')
-        #     params = {
-        #         'cmd': f'<set><audit-comment>{element_value}</audit-comment></set',
-        #         'xpath': XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']',
-        #         'type': 'op'
-        #     }
-        #
-        #     result = http_request(URL, 'POST', body=params)
-        #     print()
-
-        params = {
-            'type': 'config',
-            'action': 'edit',
-            'key': API_KEY
-        }
-
-        if audit_comment := args.get('audit_comment'):
-            params['audit-comment'] = audit_comment
-
-        if element_to_change in ['action', 'description', 'log-setting']:
-            params['element'] = add_argument_open(element_value, element_to_change, False)
-        elif element_to_change in ['source', 'destination', 'application', 'category', 'source-user', 'service', 'tag']:
-            element_value = argToList(element_value)
-            params['element'] = add_argument_list(element_value, element_to_change, True)
-        elif element_to_change == 'target':
-            params['element'] = add_argument_target(element_value, 'target')
-        elif element_to_change == 'profile-setting':
-            params['element'] = add_argument_profile_setting(element_value, 'profile-setting')
-        else:
-            # element_to_change == 'disabled'
-            params['element'] = add_argument_yes_no(element_value, element_to_change)
-
-        if DEVICE_GROUP:
-            if not PRE_POST:
-                raise Exception('please provide the pre_post argument when editing a rule in Panorama instance.')
-            else:
-                params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + f'/security/rules/entry[@name=\'{rulename}\']'
-        else:
-            params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
-        params['xpath'] += '/' + element_to_change
+        pre_post = args.get('pre_post')
+        if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
+            raise Exception('please provide the pre_post argument when editing a rule in Panorama instance.')
 
         if args.get('element_to_change') == 'audit-comment':
-            params['audit-comment'] = 'blabla'
+            new_audit_comment = args.get('element_value')
+            params = build_edit_audit_comment_policy_rules(
+                rulename, new_audit_comment, pre_post='rulebase' if VSYS else pre_post
+            )
+        else:
+            params = {
+                'type': 'config',
+                'action': 'edit',
+                'key': API_KEY,
+            }
+
+            if element_to_change in ['action', 'description', 'log-setting']:
+                params['element'] = add_argument_open(element_value, element_to_change, False)
+            elif element_to_change in [
+                'source', 'destination', 'application', 'category', 'source-user', 'service', 'tag'
+            ]:
+                element_value = argToList(element_value)
+                params['element'] = add_argument_list(element_value, element_to_change, True)
+            elif element_to_change == 'target':
+                params['element'] = add_argument_target(element_value, 'target')
+            elif element_to_change == 'profile-setting':
+                params['element'] = add_argument_profile_setting(element_value, 'profile-setting')
+            else:
+                params['element'] = add_argument_yes_no(element_value, element_to_change)
+
+            if DEVICE_GROUP:
+                params['xpath'] = XPATH_SECURITY_RULES + pre_post + f'/security/rules/entry[@name=\'{rulename}\']'
+            else:
+                params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
+            params['xpath'] += '/' + element_to_change
 
         result = http_request(URL, 'POST', body=params)
 
