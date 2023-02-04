@@ -79,10 +79,10 @@ tasks:
       version: -1
       name: Get asset tags related to asset
       description: Returns the specified tags for an asset.
-      script: Rapid7 Nexpose - updated|||nexpose-get-asset-tags
+      script: Rapid7 Nexpose|||nexpose-get-asset-tags
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose - updated
+      brand: Rapid7 Nexpose
     nexttasks:
       '#none#':
       - "4"
