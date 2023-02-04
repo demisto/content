@@ -815,7 +815,8 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str, extensions_dict: 
     return stix_object, extension_definition, extensions_dict
 
 
-def create_extension_definition(object_type, extensions_dict, xsoar_type, created_parsed, modified_parsed, stix_object, xsoar_indicator_to_return):
+def create_extension_definition(object_type, extensions_dict, xsoar_type,
+                                created_parsed, modified_parsed, stix_object, xsoar_indicator_to_return):
     """
     Args:
         object_type: the type of the stix_object.
