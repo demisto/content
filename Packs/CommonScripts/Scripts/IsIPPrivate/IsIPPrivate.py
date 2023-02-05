@@ -1,9 +1,11 @@
 from ipaddress import IPv4Address, IPv4Network
+from time import sleep
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 DELIMETER = ","
+POLLING_TIME = 2  # Time in seconds to wait for indicator indexing
 
 
 def check_ip_internal(ip, ranges):
@@ -55,8 +57,8 @@ else:
     private_ranges = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]  # No ranges in list, use default ranges
 
 # Create list of IPs with private property and tag
-ip_list = [{"Address": ip, "Private": check_ip_internal(ip, private_ranges), "Tag": get_ip_tag(
-    ip, private_ranges)} for ip in ip_addresses_to_check]
+ip_list = [{"Address": ip, "Private": check_ip_internal(ip, private_ranges), "Tag": get_ip_tag(ip, private_ranges)} for
+           ip in ip_addresses_to_check]
 
 # Create entry context and human-readable results
 entry_context = {"IP(val.Address == obj.Address)": ip_list}
@@ -70,7 +72,6 @@ entry_to_return = {
     "Tags": ['IP_Private_Ranges']
 }
 
-
 for ip in ip_list:
     args_exists_check = {
         "indicator": ip.get("Address")
@@ -83,7 +84,7 @@ for ip in ip_list:
 
     args_set_existing_indicator = {
         "value": ip.get("Address"),
-        "internal": ip.get("Private"),
+        "internal": ip.get("Private")
     }
 
     args_append_tag = {
@@ -99,6 +100,10 @@ for ip in ip_list:
     # If indicator doesn't exist, create it:
     if not indicator_exists:
         demisto.executeCommand("createNewIndicator", args_create_new_indicator)
+        while not indicator_exists:  # Looping because it takes time for the indicator to be created
+            is_exist_res = demisto.executeCommand("CheckIndicatorValue", args_exists_check)
+            indicator_exists = is_exist_res[0].get("Contents", {})[0].get("Exists")
+            sleep(POLLING_TIME)
 
     # If indicator exists, update it:
     else:
