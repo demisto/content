@@ -1,4 +1,4 @@
-// Development container for Content. Poetry hash a890bf6f485c5d0249171c3f9cafabd7ea73568f4c5461803b12d23c28b9d2e9
+// Development container for Content. Poetry hash 98c800f10dbb7596668f4d57b8fcce6792186174db0c2e0ba1f5a1799110dd7c
 {
 	"name": "XSOAR Content",
 	"build": {
