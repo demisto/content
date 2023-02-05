@@ -1829,7 +1829,7 @@ def test_get_closure_case(params, expected):
                           ('6', '', 'Resolved'),
                           ('10', '10=Test', 'Test'),
                           ('10', '10=Test,11=Test2', 'Test'),
-                          ('6', '6=Test', 'Test'),
+                          ('6', '6=Test', 'Test'),  # If builtin state was override by custom state.
                           ('corrupt_state', '', 'Other'),
                           ('corrupt_state', 'custom_state=Test', 'Other'),
                           ('6', 'custom_state=Test', 'Resolved'),
