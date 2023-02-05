@@ -739,11 +739,11 @@ def panorama_test(fetch_params):
         # Test the topology functionality
         topology = get_topology()
         test_topology_connectivity(topology)
-        
+
         # Test fetch incidents parameters
         if fetch_params.get('isFetch'):
             test_fetch_incidents_parameters(fetch_params)
-        
+
     except DemistoException as e:
         raise e
     except Exception as exception_text:
@@ -5170,7 +5170,7 @@ def panorama_query_logs_command(args: dict):
 
     else:
         # Only used in subsequent polling executions
-        
+
         parsed: PanosResponse = PanosResponse(
             panorama_get_traffic_logs(job_id),
             illegal_chars=illegal_chars,
@@ -5185,10 +5185,10 @@ def panorama_query_logs_command(args: dict):
                 raise Exception(
                     f'Query logs failed.'
                 )
-        
+
         if not parsed.ns.response.result.job.id:
             raise Exception('Missing JobID status in response.')
-        
+
         query_logs_output = {
             'JobID': job_id,
             'LogType': log_type
@@ -12547,7 +12547,7 @@ def pan_os_list_pbf_rules_command(args):
         entries = do_pagination(entries, page=page, page_size=page_size, limit=limit)
 
     if action := args.get('action'):  # Due to API limitations, we need to filter the action manually.
-        entries = [entry for entry in entries if entry.get('action', {}).get(action)]
+        entries = list(filter(lambda x: x.get('action', {}).get(action), entries))
 
     table, pbf_rules = parse_pan_os_list_pbf_rules(entries, show_uncommitted=show_uncommitted)
 
@@ -12982,7 +12982,7 @@ def get_query_entries(log_type: str, query: str, max_fetch: int) -> List[Dict[An
             entries.append(result)
         else:
             raise DemistoException(f'Could not parse fetch results: {result}')
-    
+
     entries_log_info = {entry.get('seqno',''):entry.get('time_generated') for entry in entries}
     demisto.debug(f'{log_type} log type: {len(entries)} raw incidents (entries) found.')
     demisto.debug(f'fetched raw incidents (entries) are (ID:time_generated): {entries_log_info}')
@@ -13070,14 +13070,14 @@ def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[str 
     # calculate largest last fetch time for each log type query
     last_fetch_string = max({entry.get('time_generated', '') for entry in incident_entries})
     new_fetch_datetime = dateparser.parse(last_fetch_string, settings={'TIMEZONE': 'UTC'})
-    
+
     # calculate largest unique id for each log type query
     new_largest_id = max({entry.get('seqno', '') for entry in incident_entries})
 
     # convert incident entries to incident context and filter any empty incidents if exists
     parsed_incidents: List[Dict[str, Any]] = [incident_entry_to_incident_context(incident_entry) for incident_entry in incident_entries]
     filtered_parsed_incidents = list(filter(lambda incident: incident, parsed_incidents))
-        
+
     return new_largest_id, new_fetch_datetime, filtered_parsed_incidents
 
 
@@ -13239,11 +13239,11 @@ def test_fetch_incidents_parameters(fetch_params):
                 raise DemistoException(f"{log_type} Log Type Query parameter cannot contain 'time_generated' filter. Please remove it from the query.")
             if 'seqno' in log_type_query:
                 raise DemistoException(f"{log_type} Log Type Query parameter cannot contain 'seqno' filter. Please remove it from the query.")
-                
+
     else:
         raise DemistoException("fetch incidents is checked but no Log Types were selected to fetch from the dropdown menu.")
-    
-    
+
+
 def main(): # pragma: no cover
     try:
         args = demisto.args()
@@ -13267,9 +13267,9 @@ def main(): # pragma: no cover
             first_fetch = params.get('first_fetch') or FETCH_DEFAULT_TIME
             max_fetch = arg_to_number(params.get('max_fetch')) or MAX_INCIDENTS_TO_FETCH
             queries_dict = log_types_queries_to_dict(params)
-            
+
             last_fetch_dict, last_id_dict, incident_entries_list = fetch_incidents(last_run, first_fetch, queries_dict, max_fetch)
-            
+
             demisto.setLastRun({'last_fetch_dict': last_fetch_dict, 'last_id_dict': last_id_dict})
             demisto.incidents(incident_entries_list)
 
