@@ -1,0 +1,33 @@
+commonfields:
+  id: 3e74501b-4fdc-4d79-8cbb-095703b25f66
+  version: 11
+vcShouldKeepItemLegacyProdMachine: false
+name: CTF_2_BF
+script: ''
+type: python
+tags: []
+comment: This should provide answers to the CTF_2 ( RDP BruteForce)
+enabled: true
+args:
+- name: secret
+  description: Enter the needed secret
+- name: question_ID
+  auto: PREDEFINED
+  predefined:
+  - "01"
+  - "02"
+  - "03"
+  - "04"
+  - "05"
+  - "06"
+  - "07"
+  - "08"
+  isArray: true
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.10.9.42476
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
