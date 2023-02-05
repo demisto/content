@@ -12527,13 +12527,15 @@ def pan_os_list_pbf_rules_command(args):
     show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
     filters = assign_params(
         tags=argToList(args.get('tags')),
-        disabled=args.get('disabled'),
-        action=args.get('action')
+        disabled=args.get('disabled')
     )
     query = args.get('query')
 
     raw_response = pan_os_list_pbf_rules(name=name, pre_post=pre_post, show_uncommitted=show_uncommitted, filters=filters, query=query)
     result = raw_response.get('response', {}).get('result', {})
+
+    if action := args.get('action'):  # Due to API limitations, we need to filter the action manually.
+        result = [rule for rule in result if rule.get('entry', {}).get('action', {}).get(action)]
 
     # the 'entry' key could be a single dict as well.
     entries = dict_safe_get(result, ['pbf', 'rules', 'entry'], default_return_value=result.get('entry'))
