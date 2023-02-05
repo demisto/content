@@ -23,13 +23,18 @@ jobs:
             Packs/**/ReleaseNotes/**
           since_last_remote_commit: false
 
+      # TODO dev
+      - name: Print processes
+        run: |
+          ps -AFl
+
       # TODO delete after dev
       - name: Print changed files
         run: |
           if [ -z "${{ steps.changed-files.outputs.all_changed_files }}" ]
           then
                 echo "all_changed_files is empty"
-                return
+                exit 0
           else
                 echo "all_changed_files is NOT empty"
                 echo "${{ steps.changed-files.outputs.all_changed_files }}"
