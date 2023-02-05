@@ -99,7 +99,7 @@ def parse_indicators_from_response(response: requests.Response) -> Dict[str, Lis
         raise DemistoException(f'Failed to parse the response from the website. Error: {str(e)}')
 
     if not all_IPs_lst or not all_domains_lst:
-        raise DemistoException('Did not find the exepted indicators in the response from the website.')
+        raise DemistoException('Did not find the expected indicators in the response from the website')
     all_info_dict = {CIDR: all_IPs_lst, DOMAIN: all_domains_lst}
     return all_info_dict
 
@@ -159,7 +159,7 @@ def get_indicators_command(client: Client, **args) -> CommandResults:
     limit = arg_to_number(args.get('limit', 20))
     requested_indicator_type = args.get('indicator_type', 'Both')
     if requested_indicator_type not in ['Both', 'CIDR', 'DOMAIN']:
-        raise DemistoException('indicator_type argument must be one of the following: Both, CIDR, DOMAIN')
+        raise DemistoException('The indicator_type argument must be one of the following: Both, CIDR, DOMAIN')
 
     res = client.all_raw_data()
     clean_res = parse_indicators_from_response(res)

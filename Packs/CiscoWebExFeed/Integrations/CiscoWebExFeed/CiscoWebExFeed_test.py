@@ -223,4 +223,4 @@ def test_parse_indicators_from_response__ip_or_domain_indicators_are_None(mocker
     mocked_response.text = 'mocked text'
     with pytest.raises(DemistoException) as e:
         parse_indicators_from_response(mocked_response)
-    assert e.value.message == 'Did not find the exepted indicators in the response from the website.'
+    assert e.value.message == 'Did not find the expected indicators in the response from the website'
