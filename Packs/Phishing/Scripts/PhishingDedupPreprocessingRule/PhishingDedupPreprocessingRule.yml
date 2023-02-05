@@ -3,7 +3,7 @@ args:
   defaultValue: type
   description: The name of the incident field where its type is stored. Default is
     "type". Change this arguement only in case you use a custom field for specifying
-    incident type.
+    incident type. TEST
   isArray: false
   name: incidentTypeFieldName
   required: false
