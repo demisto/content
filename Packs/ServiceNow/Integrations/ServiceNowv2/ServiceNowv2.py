@@ -2482,20 +2482,22 @@ def converts_state_close_reason(ticket_state: Optional[str], server_close_custom
         The XSOAR state
     """
 
-    # check if server_close_custom_state parameter is set, and if so, try to parse it, and use it to return a custom close reason
     custom_label = ''
+    # if custom state parameter is set and ticket state is returned from incident is not empty
     if server_close_custom_state and ticket_state:
         demisto.debug(f'trying to close XSOAR incident using custom states: {server_close_custom_state}, with \
             received state code: {ticket_state}')
+        # parse custom state parameter into a dictionary of custom state codes and their names (label)
         server_close_custom_state_dict = dict(item.split("=") for item in server_close_custom_state.split(","))
         if ticket_state in server_close_custom_state_dict:
+            # check if state code is in the parsed dictionary
             if custom_state_label := server_close_custom_state_dict.get(ticket_state):
                 custom_label = custom_state_label
 
     if custom_label:
         demisto.debug(f'incident should be closed using custom state. State Code: {ticket_state}, Label: {custom_label}')
         return custom_label
-    elif ticket_state in ['6', '7']:
+    elif ticket_state in ['6', '7']:  # default states for closed (6) and resolved (7)
         demisto.debug(f'incident should be closed using default state. State Code: {ticket_state}')
         return 'Resolved'
     demisto.debug(f'incident is closed using default close reason "Other". State Code: {ticket_state}')
