@@ -22,7 +22,6 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "8"
       - "9"
       - "10"
       - "11"
@@ -90,7 +89,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 695,
           "y": 515
         }
       }
@@ -168,108 +167,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
-    quietmode: 0
-  "6":
-    id: "6"
-    taskid: 4e936a4c-b781-40a1-831a-be0c62a727d6
-    type: playbook
-    task:
-      id: 4e936a4c-b781-40a1-831a-be0c62a727d6
-      version: -1
-      name: Traps Blacklist File
-      playbookName: Traps Blacklist File
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-  "7":
-    id: "7"
-    taskid: de27dee3-4496-4589-8514-94db4642810f
-    type: playbook
-    task:
-      id: de27dee3-4496-4589-8514-94db4642810f
-      version: -1
-      name: Traps Quarantine Event
-      description: This playbook accepts a file hash and quarantines this file using
-        Traps.
-      playbookName: Traps Quarantine Event
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      EventId:
-        complex:
-          root: inputs.EventId
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 1770,
-          "y": 340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: e46175f0-26fc-4f24-87f7-d531354ca0dd
-    type: title
-    task:
-      id: e46175f0-26fc-4f24-87f7-d531354ca0dd
-      version: -1
-      name: Palo Alto Networks - Traps
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "6"
-      - "7"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1555,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
   "9":
     id: "9"
@@ -374,7 +271,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2240,
+          "x": 1340,
           "y": 195
         }
       }
@@ -413,7 +310,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2240,
+          "x": 1340,
           "y": 340
         }
       }
@@ -429,7 +326,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 530,
-        "width": 2570,
+        "width": 1670,
         "x": 50,
         "y": 50
       }
