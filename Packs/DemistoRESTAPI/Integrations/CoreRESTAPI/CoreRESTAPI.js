@@ -4,9 +4,12 @@ if (serverURL.slice(-1) === '/') {
 }
 
 if (params.auth_id || (params.creds_apikey && params.creds_apikey.identifier)) {
+    log("$$$$$$$")
+    log(serverURL)
     if (!serverURL.endsWith('/xsoar')){
         serverURL = serverURL + '/xsoar'
     }
+    log(serverURL)
 }
 
 var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://storage.googleapis.com/marketplace-dist/content/packs/'
