@@ -12,11 +12,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Cortex XDR - Block File
+* Block File - Cybereason
 * Block File - Cylance Protect v2
 * Block File - Carbon Black Response
-* Traps Quarantine Event
-* Traps Blacklist File
-* Block File - Cybereason
 
 ### Integrations
 This playbook does not use any integrations.
@@ -47,4 +45,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Block File - Generic v2](https://raw.githubusercontent.com/demisto/content/2cc17644cf3518afe6050b0eefb5786aeccd393a/Packs/CommonPlaybooks/doc_files/Block_File_-_Generic_v2.png)
+![Block File - Generic v2](../doc_files/Block_File_-_Generic_v2.png)
