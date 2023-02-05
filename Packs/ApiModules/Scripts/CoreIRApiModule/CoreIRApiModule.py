@@ -1312,7 +1312,7 @@ def run_polling_command(client: CoreClient,
     args: args
     cmd: the scheduled command's name (as appears in the yml file) to run in the following polling.
     command_function: the pythonic function that executes the command.
-    command_decision_field: the field that being retrieved from the command_function's response that indicates the command_function status.
+    command_decision_field: the field that is retrieved from the command_function's response that indicates the command_function status.
     results_function: the pythonic result function which we want to poll on.
     polling_field: the field that is retrieved from the results_function's response and indicates the polling status.
     polling_value: list of values of the polling_field we want to check. the list can contain values to stop or continue polling on, not both.
