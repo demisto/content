@@ -201,10 +201,12 @@ def test_parse_indicators_from_response__fail_to_parse(mocker, requests_mock):
     assert e.value.message == 'Failed to parse the response from the website. Error: No domains to grab'
 
 
-def test_parse_indicators_from_response__ip_indicators_are_None(mocker, requests_mock):
+@pytest.mark.parametrize('CIDR_results, domain_results', [("domainmock", None),
+                                                          (None, "domainmock")])
+def test_parse_indicators_from_response__ip_or_domain_indicators_are_None(mocker, requests_mock, CIDR_results, domain_results):
     """
     Given:
-        - a response from the website with only domains
+        - a response from the website, (CIDR or domains) with the value None, 
     When:
         - parse_indicators_from_response is called
     Then:
@@ -215,8 +217,8 @@ def test_parse_indicators_from_response__ip_indicators_are_None(mocker, requests
     mocker.patch.object(bs4, ('BeautifulSoup'))
     mocker.patch.object(CiscoWebExFeed, 'grab_domain_table')
     mocker.patch.object(CiscoWebExFeed, 'grab_ip_table')
-    mocker.patch.object(CiscoWebExFeed, 'grab_CIDR_ips', return_value=None)
-    mocker.patch.object(CiscoWebExFeed, 'grab_domains', return_value="domainmock")
+    mocker.patch.object(CiscoWebExFeed, 'grab_CIDR_ips', return_value=CIDR_results)
+    mocker.patch.object(CiscoWebExFeed, 'grab_domains', return_value=domain_results)
     mocked_response = requests_mock.get({__BASE_URL}, json={'name': 'awesome-mock'})
     mocked_response.text = 'mocked text'
     with pytest.raises(DemistoException) as e:
