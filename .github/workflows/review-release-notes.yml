@@ -24,11 +24,14 @@ jobs:
           since_last_remote_commit: false
 
       # TODO dev
-      - name: Print processes
+      - name: Print runner script contents
         run: |
-          ps -AFl
-
-          ls /home/runner/work/_temp/
+          for file in /home/runner/work/_temp//*; do
+            echo ""
+            echo "====$(basename "$file")===="
+            cat $file
+            echo ""
+          done
 
       # TODO delete after dev
       - name: Print changed files
