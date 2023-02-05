@@ -561,7 +561,7 @@ script:
   runonce: false
   script: ''
   type: powershell
-  dockerimage: demisto/pwsh-exchange:1.0.0.22307
+  dockerimage: demisto/pwsh-exchange:1.0.0.34118
 fromversion: 5.5.0
 tests:
 - 'EWS Extension: Powershell Online V2 Test'
