@@ -648,6 +648,11 @@ script:
     - contextPath: AzureSQL.DBThreatPolicy.serverName
       description: The name of server that the threat policy is related to.
       type: String
+  - description: Generate the login url used for Authorization code flow.
+    execution: false
+    name: azure-sql-generate-login-url
+    arguments:
+    -
   dockerimage: demisto/crypto:1.0.0.42817
   feed: false
   isfetch: false
