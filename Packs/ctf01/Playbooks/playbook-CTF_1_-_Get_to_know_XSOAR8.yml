@@ -1,42 +1,24 @@
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: eeaf4848-d8c4-420e-889a-c131c119a4b7
-    packName: CTF_01
-    prevname: ""
-    propagationLabels:
-    - all
-    toServerVersion: ""
 id: 66ada574-4035-4847-8e35-0d389b590916
-inputs: []
+version: 61
+vcShouldKeepItemLegacyProdMachine: false
 name: CTF 1 - Get to know XSOAR8
-outputs: []
 starttaskid: "0"
 tasks:
   "0":
-    continueonerrortype: ""
     id: "0"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: a8082770-25bd-470a-83ca-df7c04e22b4a
+    type: start
+    task:
+      id: a8082770-25bd-470a-83ca-df7c04e22b4a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "21"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: a8082770-25bd-470a-83ca-df7c04e22b4a
-      iscommand: false
-      name: ""
-      version: -1
-    taskid: a8082770-25bd-470a-83ca-df7c04e22b4a
-    timertriggers: []
-    type: start
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -44,77 +26,29 @@ tasks:
           "y": 210
         }
       }
-  "3":
-    continueonerrortype: ""
-    form:
-      description: "Sometimes reports can be very useful. Reports can contain widgets
-        and customized data that can assist in demonstrating good teamwork in XSOAR
-        and how efficient it can be. \nTherefore, we have a hidden flag in one of
-        the reports - try to find it :sunglasses:"
-      expired: false
-      questions:
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "0"
-        label: ""
-        labelarg:
-          simple: What is the report's flag?
-        options: []
-        optionsarg: []
-        placeholder: ""
-        readonly: false
-        required: false
-        tooltip: Try to generate the report to see it's content
-        type: shortText
-      sender: Your SOC team
-      title: Practicing with Reports
-      totalanswers: 0
-    formDisplay:
-      bodybackgroundcolor: ""
-      bodyfontcolor: ""
-      headerbackgroundcolor: ""
-      headerfontcolor: ""
-      isexternalrtl: false
-      sender: ""
-      submitbuttonbackgroundcolor: ""
-      submitbuttonfontcolor: ""
-      submittext: ""
-    id: "3"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
-    message:
-      bcc: null
-      body: null
-      cc: null
-      format: ""
-      methods: []
-      subject: null
-      timings:
-        completeafterreplies: 1
-        completeaftersla: false
-        completeafterv2: true
-        retriescount: 2
-        retriesinterval: 360
-      to: null
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 2ae219c1-1222-4c2a-8ce7-c6a7cbccabad
+    type: collection
+    task:
+      id: 2ae219c1-1222-4c2a-8ce7-c6a7cbccabad
+      version: -1
+      name: Check out the Reports
+      type: collection
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "23"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 2ae219c1-1222-4c2a-8ce7-c6a7cbccabad
-      iscommand: false
-      name: Check out the Reports
-      type: collection
-      version: -1
-    taskid: 2ae219c1-1222-4c2a-8ce7-c6a7cbccabad
-    timertriggers: []
-    type: collection
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -122,87 +56,82 @@ tasks:
           "y": 1740
         }
       }
-  "4":
-    continueonerrortype: ""
-    form:
-      description: Navigate to the newly downloaded playbook ("CTF-X") and check the
-        existing task
-      expired: false
-      questions:
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "0"
-        label: ""
-        labelarg:
-          simple: 'Can you find the flag in the playbook tasks? '
-        options: []
-        optionsarg: []
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: ""
-        type: shortText
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "1"
-        label: ""
-        labelarg:
-          simple: 'Advanced: In case this playbook runs, what will be the output of
-            the tasks?'
-        options: []
-        optionsarg:
-        - simple: se_summit_2023
-        - simple: <none>
-        placeholder: ""
-        readonly: false
-        required: false
-        tooltip: Check the advanced settings of the playbook.
-        type: singleSelect
-      sender: ""
-      title: Check the Playbooks
-      totalanswers: 0
-    id: "4"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     message:
-      bcc: null
-      body: null
-      cc: null
-      format: ""
-      methods: []
+      to: null
       subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
       timings:
-        completeafterreplies: 1
-        completeaftersla: false
-        completeafterv2: true
         retriescount: 2
         retriesinterval: 360
-      to: null
-    nexttasks:
-      '#none#':
-      - "17"
-      - "18"
-    note: false
-    quietmode: 0
-    separatecontext: false
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What is the report's flag?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Try to generate the report to see it's content
+        readonly: false
+      title: Practicing with Reports
+      description: "Sometimes reports can be very useful. Reports can contain widgets
+        and customized data that can assist in demonstrating good teamwork in XSOAR
+        and how efficient it can be. \nTherefore, we have a hidden flag in one of
+        the reports - try to find it :sunglasses:"
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    formDisplay:
+      headerbackgroundcolor: ""
+      headerfontcolor: ""
+      sender: ""
+      bodybackgroundcolor: ""
+      bodyfontcolor: ""
+      submitbuttonbackgroundcolor: ""
+      submitbuttonfontcolor: ""
+      submittext: ""
+      isexternalrtl: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: cad396d5-e91c-4439-8f64-9a2aafb02f00
+    type: collection
     task:
-      brand: ""
+      id: cad396d5-e91c-4439-8f64-9a2aafb02f00
+      version: -1
+      name: Check the pack's playbook
       description: |2+
 
 
 
-      id: cad396d5-e91c-4439-8f64-9a2aafb02f00
-      iscommand: false
-      name: Check the pack's playbook
       type: collection
-      version: -1
-    taskid: cad396d5-e91c-4439-8f64-9a2aafb02f00
-    timertriggers: []
-    type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -210,69 +139,82 @@ tasks:
           "y": 1040
         }
       }
-  "7":
-    continueonerrortype: ""
-    form:
-      description: "As it used to be, the main method to ingest incidents into the
-        system remains the 'Integrations'  in each pack. Each integration can support
-        multiple instances and be configured \nTo get you familiar with the system,
-        we have hidden a flag inside one of the integrations (customized it and brought
-        it to our MP). "
-      expired: false
-      questions:
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "0"
-        label: ""
-        labelarg:
-          simple: What is the flag?
-        options: []
-        optionsarg: []
-        placeholder: ""
-        readonly: false
-        required: false
-        tooltip: Try to check the integration's python. Oh and remember that the answer
-          isn't always on the wall.
-        type: shortText
-      sender: ""
-      title: Integration Settings
-      totalanswers: 0
-    id: "7"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     message:
-      bcc: null
-      body: null
-      cc: null
-      format: ""
-      methods: []
+      to: null
       subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
       timings:
-        completeafterreplies: 1
-        completeaftersla: false
-        completeafterv2: true
         retriescount: 2
         retriesinterval: 360
-      to: null
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Can you find the flag in the playbook tasks? '
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: 'Advanced: In case this playbook runs, what will be the output of
+            the tasks?'
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: se_summit_2023
+        - simple: <none>
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Check the advanced settings of the playbook.
+        readonly: false
+      title: Check the Playbooks
+      description: Navigate to the newly downloaded playbook ("CTF-X") and check the
+        existing task
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: a6ecccfd-6bf4-44b9-8130-b13921bdce13
+    type: collection
+    task:
+      id: a6ecccfd-6bf4-44b9-8130-b13921bdce13
+      version: -1
+      name: Check Integrations Settings
+      type: collection
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "24"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: a6ecccfd-6bf4-44b9-8130-b13921bdce13
-      iscommand: false
-      name: Check Integrations Settings
-      type: collection
-      version: -1
-    taskid: a6ecccfd-6bf4-44b9-8130-b13921bdce13
-    timertriggers: []
-    type: collection
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -280,66 +222,69 @@ tasks:
           "y": 2090
         }
       }
-  "8":
-    continueonerrortype: ""
-    form:
-      description: Now navigate to the Incident's fields section (located in the Settings
-        tab). let's see if you are truly worthy ;)
-      expired: false
-      questions:
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "0"
-        label: ""
-        labelarg:
-          simple: Which field wasn't installed by the system?
-        options: []
-        optionsarg: []
-        placeholder: ""
-        readonly: false
-        required: false
-        tooltip: 'hint: you probably can play with the filters'
-        type: shortText
-      sender: Your SOC team
-      title: Incident fields
-      totalanswers: 0
-    id: "8"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     message:
-      bcc: null
+      to: null
+      subject: null
       body: null
-      cc: null
-      format: ""
       methods: []
-      subject:
-        simple: Incident fields
+      format: ""
+      bcc: null
+      cc: null
       timings:
-        completeafterreplies: 1
-        completeaftersla: false
-        completeafterv2: true
         retriescount: 2
         retriesinterval: 360
-      to: null
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What is the flag?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Try to check the integration's python. Oh and remember that the answer
+          isn't always on the wall.
+        readonly: false
+      title: Integration Settings
+      description: "As it used to be, the main method to ingest incidents into the
+        system remains the 'Integrations'  in each pack. Each integration can support
+        multiple instances and be configured \nTo get you familiar with the system,
+        we have hidden a flag inside one of the integrations (customized it and brought
+        it to our MP). "
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: c582f51a-a886-4ded-8327-e29c66897cd7
+    type: collection
+    task:
+      id: c582f51a-a886-4ded-8327-e29c66897cd7
+      version: -1
+      name: Incident fields
+      type: collection
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "20"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: bb87921f-e1fa-4c68-8b78-1cbf5ca9b7e3
-      iscommand: false
-      name: Incident fields
-      type: collection
-      version: -1
-    taskid: bb87921f-e1fa-4c68-8b78-1cbf5ca9b7e3
-    timertriggers: []
-    type: collection
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -347,66 +292,66 @@ tasks:
           "y": 1390
         }
       }
-  "9":
-    continueonerrortype: ""
-    form:
-      description: |-
-        Go to the marketplace.
-        Search and download pack "CTF 2".
-      expired: false
-      questions:
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "0"
-        label: ""
-        labelarg:
-          simple: How many content items can you find in the pack?
-        options: []
-        optionsarg: []
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: You can see that information easily from pack's overview
-        type: shortText
-      sender: ""
-      title: Get to know the Marketplace
-      totalanswers: 0
-    id: "9"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     message:
-      bcc: null
+      to: null
+      subject:
+        simple: Incident fields
       body: null
-      cc: null
-      format: ""
       methods: []
-      subject: null
+      format: ""
+      bcc: null
+      cc: null
       timings:
-        completeafterreplies: 1
-        completeaftersla: false
-        completeafterv2: true
         retriescount: 2
         retriesinterval: 360
-      to: null
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What is the non-system incident field that exists on your tenant?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'hint: you probably can play with the filters'
+        readonly: false
+      title: Incident fields
+      description: Now navigate to the Incident's fields section (located in the Settings
+        tab). let's see if you are truly worthy ;)
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: f8d181f4-039c-4b62-8039-943073139861
+    type: collection
+    task:
+      id: f8d181f4-039c-4b62-8039-943073139861
+      version: -1
+      name: Check out the Marketplace
+      type: collection
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "15"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: f8d181f4-039c-4b62-8039-943073139861
-      iscommand: false
-      name: Check out the Marketplace
-      type: collection
-      version: -1
-    taskid: f8d181f4-039c-4b62-8039-943073139861
-    timertriggers: []
-    type: collection
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -414,26 +359,63 @@ tasks:
           "y": 675
         }
       }
-  "12":
-    continueonerrortype: ""
-    id: "12"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
-    quietmode: 0
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: How many content items can you find in the pack?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: You can see that information easily from pack's overview
+        readonly: false
+      title: Get to know the Marketplace
+      description: |-
+        Go to the marketplace.
+        Search and download pack "CTF 2".
+      sender: ""
+      expired: false
+      totalanswers: 0
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 56b12c9f-2bdd-45e6-822d-cb35c433de9a
+    type: title
     task:
-      brand: ""
       id: 56b12c9f-2bdd-45e6-822d-cb35c433de9a
-      iscommand: false
+      version: -1
       name: Done with CTF01
       type: title
-      version: -1
-    taskid: 56b12c9f-2bdd-45e6-822d-cb35c433de9a
-    timertriggers: []
-    type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -441,34 +423,34 @@ tasks:
           "y": 3110
         }
       }
-  "14":
-    continueonerrortype: ""
-    id: "14"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "12"
     note: false
-    quietmode: 0
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 001b4d4c-025c-4edf-8888-3e27c88642af
+    type: regular
     task:
-      brand: ""
+      id: 001b4d4c-025c-4edf-8888-3e27c88642af
+      version: -1
+      name: Create a new incident using the CTF incident type
       description: "Congrats! You finished with the first CTF! Well Done!!\n<Add gif
         here>\n\nLet's continue with the next challenge :) \n\nIn order to proceed
         to the following challenge, please create a new incident with the following
         parameter:\n1. Incident name should be your\n`<name  / student_id> - CTF02
         \ `\n2. incident type \"CTF_2\""
-      id: 001b4d4c-025c-4edf-8888-3e27c88642af
-      iscommand: false
-      name: Create a new incident using the CTF incident type
       type: regular
-      version: -1
-    taskid: 001b4d4c-025c-4edf-8888-3e27c88642af
-    timertriggers: []
-    type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -476,41 +458,41 @@ tasks:
           "y": 2935
         }
       }
-  "15":
-    continueonerrortype: ""
-    id: "15"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 581d4779-dcd7-4931-8dc9-7ba4bada5119
+    type: regular
+    task:
+      id: 581d4779-dcd7-4931-8dc9-7ba4bada5119
+      version: -1
+      name: 'Check your answer #Q1'
+      description: This should provide answers to the CTF_1
+      scriptName: CTF_1
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
-    note: false
-    quietmode: 0
     scriptarguments:
       question_ID:
         simple: "01"
       secret:
         complex:
-          accessor: "0"
           root: Get to know the Marketplace.Answers
+          accessor: "0"
           transformers:
           - operator: toLowerCase
           - operator: uniq
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: This should provide answers to the CTF_1
-      id: 581d4779-dcd7-4931-8dc9-7ba4bada5119
-      iscommand: false
-      name: 'Check your answer #Q1'
-      scriptName: CTF_1
-      type: regular
-      version: -1
-    taskid: 581d4779-dcd7-4931-8dc9-7ba4bada5119
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -518,41 +500,41 @@ tasks:
           "y": 850
         }
       }
-  "17":
-    continueonerrortype: ""
-    id: "17"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: cb94bb6e-5634-4426-8811-1df6b20a1e66
+    type: regular
+    task:
+      id: cb94bb6e-5634-4426-8811-1df6b20a1e66
+      version: -1
+      name: 'Check your answer #Q2'
+      description: This should provide answers to the CTF_1
+      scriptName: CTF_1
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
-    note: false
-    quietmode: 0
     scriptarguments:
       question_ID:
         simple: "02"
       secret:
         complex:
-          accessor: "0"
           root: Check the Playbooks.Answers
+          accessor: "0"
           transformers:
           - operator: toLowerCase
           - operator: uniq
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: This should provide answers to the CTF_1
-      id: cb94bb6e-5634-4426-8811-1df6b20a1e66
-      iscommand: false
-      name: 'Check your answer #Q2'
-      scriptName: CTF_1
-      type: regular
-      version: -1
-    taskid: cb94bb6e-5634-4426-8811-1df6b20a1e66
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -560,41 +542,41 @@ tasks:
           "y": 1215
         }
       }
-  "18":
-    continueonerrortype: ""
-    id: "18"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 7ec0afa3-8531-46d1-8165-0418fe0248bf
+    type: regular
+    task:
+      id: 7ec0afa3-8531-46d1-8165-0418fe0248bf
+      version: -1
+      name: 'Check your answer #Q3'
+      description: This should provide answers to the CTF_1
+      scriptName: CTF_1
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
-    note: false
-    quietmode: 0
     scriptarguments:
       question_ID:
         simple: "03"
       secret:
         complex:
-          accessor: "1"
           root: Check the Playbooks.Answers
+          accessor: "1"
           transformers:
           - operator: toLowerCase
           - operator: uniq
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: This should provide answers to the CTF_1
-      id: 7ec0afa3-8531-46d1-8165-0418fe0248bf
-      iscommand: false
-      name: 'Check your answer #Q3'
-      scriptName: CTF_1
-      type: regular
-      version: -1
-    taskid: 7ec0afa3-8531-46d1-8165-0418fe0248bf
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -602,71 +584,30 @@ tasks:
           "y": 1215
         }
       }
-  "19":
-    continueonerrortype: ""
-    form:
-      description: "It's pretty common to view logs and troubleshoot any strange issue
-        that the system produces, but in this version, the way of looking at the support
-        logs entirely changed... can you find a way to generate support logs :black_joker:?
-        \ \n\n"
-      expired: false
-      questions:
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "0"
-        label: ""
-        labelarg:
-          simple: What is the key on your keyboard that opens the "Download support
-            logs" section?
-        options: []
-        optionsarg:
-        - simple: Ctrl/Command
-        - simple: Alt/Option
-        placeholder: ""
-        readonly: false
-        required: false
-        tooltip: 'If you saw Harry Potter - it''s like the secret chamber but quite
-          not... '
-        type: singleSelect
-      sender: Your SOC team
-      title: View and download logs
-      totalanswers: 0
-    id: "19"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
-    message:
-      bcc: null
-      body: null
-      cc: null
-      format: ""
-      methods: []
-      subject: null
-      timings:
-        completeafterreplies: 1
-        completeaftersla: false
-        completeafterv2: true
-        retriescount: 2
-        retriesinterval: 360
-      to: null
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 9c588999-6ca8-4aa6-8e40-9cf842f92aad
+    type: collection
+    task:
+      id: 9c588999-6ca8-4aa6-8e40-9cf842f92aad
+      version: -1
+      name: 'View and download logs '
+      type: collection
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "25"
-    note: false
-    quietmode: 0
+      - "27"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 25e851bd-1ee9-46fd-8026-6877a3908e83
-      iscommand: false
-      name: 'View and download logs '
-      type: collection
-      version: -1
-    taskid: 25e851bd-1ee9-46fd-8026-6877a3908e83
-    timertriggers: []
-    type: collection
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -674,42 +615,98 @@ tasks:
           "y": 2440
         }
       }
-  "20":
-    continueonerrortype: ""
-    id: "20"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What is the key on your keyboard that opens the "Download support
+            logs" section?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Ctrl/Command
+        - simple: Alt/Option
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'If you saw Harry Potter - it''s like the secret chamber but quite
+          not... '
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: 'Advanced: What is the name of the 3rd folder in the hierarchy?'
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: In case you wonder - the password for the bundle is 'logsbundleprotect'
+        readonly: false
+      title: View and download logs
+      description: "It's pretty common to view logs and troubleshoot any strange issue
+        that the system produces, but in this version, the way of looking at the support
+        logs entirely changed... can you find a way to generate support logs :black_joker:?
+        \ \n\n"
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 044e772f-e954-4026-8bfd-c2cbc6638c89
+    type: regular
+    task:
+      id: 044e772f-e954-4026-8bfd-c2cbc6638c89
+      version: -1
+      name: 'Check your answer #Q4'
+      description: |+
+        This should provide answers to the CTF_1
+
+      scriptName: CTF_1
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
-    note: false
-    quietmode: 0
     scriptarguments:
       question_ID:
         simple: "04"
       secret:
         complex:
-          accessor: "0"
           root: Incident fields.Answers
+          accessor: "0"
           transformers:
           - operator: uniq
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: |+
-        This should provide answers to the CTF_1
-
-      id: 044e772f-e954-4026-8bfd-c2cbc6638c89
-      iscommand: false
-      name: 'Check your answer #Q4'
-      scriptName: CTF_1
-      type: regular
-      version: -1
-    taskid: 044e772f-e954-4026-8bfd-c2cbc6638c89
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -717,32 +714,32 @@ tasks:
           "y": 1565
         }
       }
-  "21":
-    continueonerrortype: ""
-    id: "21"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "22"
     note: false
-    quietmode: 0
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 0b7547d1-87de-4abc-8fe1-9d7f095fb547
+    type: regular
     task:
-      brand: ""
+      id: 0b7547d1-87de-4abc-8fe1-9d7f095fb547
+      version: -1
+      name: Welcome message
       description: "Welcome to the SE_Sumit_2023!\nWe are happy to have you and start
         the first challenge - CTF1!\nOnce you will proceed,  the SLA timer starts
         to count down your work :) \n\n![myfile](https://github.com/demisto/content/raw/8b7d8c69aad403ae2158cf9798ce2661f5ed08ba/Packs/EscapeRoomTier1/images/incident_Snooping.gif)"
-      id: 0b7547d1-87de-4abc-8fe1-9d7f095fb547
-      iscommand: false
-      name: Welcome message
       type: regular
-      version: -1
-    taskid: 0b7547d1-87de-4abc-8fe1-9d7f095fb547
-    timertriggers: []
-    type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -750,31 +747,29 @@ tasks:
           "y": 355
         }
       }
-  "22":
-    continueonerrortype: ""
-    id: "22"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 4127ebc9-13bd-45e8-8768-a177b7621602
+    type: title
+    task:
+      id: 4127ebc9-13bd-45e8-8768-a177b7621602
+      version: -1
+      name: SLA starts
+      type: title
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 4127ebc9-13bd-45e8-8768-a177b7621602
-      iscommand: false
-      name: SLA starts
-      type: title
-      version: -1
-    taskid: 4127ebc9-13bd-45e8-8768-a177b7621602
-    timertriggers:
-    - action: start
-      fieldname: ctf01
-    type: title
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -782,40 +777,42 @@ tasks:
           "y": 530
         }
       }
-  "23":
-    continueonerrortype: ""
-    id: "23"
+    note: false
+    timertriggers:
+    - fieldname: ctf01
+      action: start
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 7061ba29-d449-4a7d-8eac-ef0458c65442
+    type: regular
+    task:
+      id: 7061ba29-d449-4a7d-8eac-ef0458c65442
+      version: -1
+      name: 'Check your answer #Q5'
+      description: This should provide answers to the CTF_1
+      scriptName: CTF_1
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "7"
-    note: false
-    quietmode: 0
     scriptarguments:
       question_ID:
         simple: "05"
       secret:
         complex:
-          accessor: "0"
           root: Practicing with Reports.Answers
+          accessor: "0"
           transformers:
           - operator: uniq
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: This should provide answers to the CTF_1
-      id: 7061ba29-d449-4a7d-8eac-ef0458c65442
-      iscommand: false
-      name: 'Check your answer #Q5'
-      scriptName: CTF_1
-      type: regular
-      version: -1
-    taskid: 7061ba29-d449-4a7d-8eac-ef0458c65442
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -823,40 +820,40 @@ tasks:
           "y": 1915
         }
       }
-  "24":
-    continueonerrortype: ""
-    id: "24"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 7def5193-7afa-4e33-837e-d23c0f66dd5d
+    type: regular
+    task:
+      id: 7def5193-7afa-4e33-837e-d23c0f66dd5d
+      version: -1
+      name: 'Check your answer #Q6'
+      description: This should provide answers to the CTF_1
+      scriptName: CTF_1
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "19"
-    note: false
-    quietmode: 0
     scriptarguments:
       question_ID:
         simple: "06"
       secret:
         complex:
-          accessor: "0"
           root: Integration Settings.Answers
+          accessor: "0"
           transformers:
           - operator: uniq
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: This should provide answers to the CTF_1
-      id: 7def5193-7afa-4e33-837e-d23c0f66dd5d
-      iscommand: false
-      name: 'Check your answer #Q6'
-      scriptName: CTF_1
-      type: regular
-      version: -1
-    taskid: 7def5193-7afa-4e33-837e-d23c0f66dd5d
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -864,68 +861,70 @@ tasks:
           "y": 2265
         }
       }
-  "25":
-    continueonerrortype: ""
-    id: "25"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: ba505538-5ced-4298-8b25-1530786f7f6b
+    type: regular
+    task:
+      id: ba505538-5ced-4298-8b25-1530786f7f6b
+      version: -1
+      name: 'Check your answer #Q7'
+      description: This should provide answers to the CTF_1
+      scriptName: CTF_1
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "26"
-    note: false
-    quietmode: 0
     scriptarguments:
       question_ID:
         simple: "07"
       secret:
-        simple: ${View and download logs .Answers.0}
+        complex:
+          root: View and download logs.Answers
+          accessor: "0"
+          transformers:
+          - operator: uniq
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: This should provide answers to the CTF_1
-      id: b1ad6a2c-1037-4957-8fd9-e992ebfec02b
-      iscommand: false
-      name: 'Check your answer #Q7'
-      scriptName: CTF_1
-      type: regular
-      version: -1
-    taskid: b1ad6a2c-1037-4957-8fd9-e992ebfec02b
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2615
+          "x": 50,
+          "y": 2620
         }
       }
-  "26":
-    continueonerrortype: ""
-    id: "26"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 64094059-c9d4-4351-8f83-ac308f794a99
+    type: title
+    task:
+      id: 64094059-c9d4-4351-8f83-ac308f794a99
+      version: -1
+      name: SLA  Stop
+      type: title
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "14"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 64094059-c9d4-4351-8f83-ac308f794a99
-      iscommand: false
-      name: SLA  Stop
-      type: title
-      version: -1
-    taskid: 64094059-c9d4-4351-8f83-ac308f794a99
-    timertriggers:
-    - action: stop
-      fieldname: ctf01
-    type: title
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -933,16 +932,67 @@ tasks:
           "y": 2790
         }
       }
-version: -1
+    note: false
+    timertriggers:
+    - fieldname: ctf01
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 593caae4-958f-49d3-8f72-3588e418c7cc
+    type: regular
+    task:
+      id: 593caae4-958f-49d3-8f72-3588e418c7cc
+      version: -1
+      name: 'Check your answer #Q8'
+      description: This should provide answers to the CTF_1
+      scriptName: CTF_1
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      question_ID:
+        simple: "08"
+      secret:
+        complex:
+          root: View and download logs.Answers
+          accessor: "1"
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 2965,
-        "width": 810,
+        "width": 820,
         "x": 50,
         "y": 210
       }
     }
   }
+inputs: []
+outputs: []
