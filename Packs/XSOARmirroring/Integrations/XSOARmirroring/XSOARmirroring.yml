@@ -87,6 +87,14 @@ configuration:
   name: debug_mode
   type: 8
   required: false
+- display: Mirror Playbook ID
+  name: mirror_playbook_id
+  defaultvalue: "true"
+  type: 8
+  required: false
+  additionalinfo: 'A parameter integration that removes the playbookId field from incoming incidents.
+   Note: when set to true (default), the instance will attempt to run a playbook according to the incoming ID.
+    When set to false, the instance will run the default playbook for the incident type (if configured locally).'
 script:
   script: ''
   type: python
@@ -138,7 +146,7 @@ script:
   - name: get-mapping-fields
     arguments: []
     description: Retrieves the mapping schema from a remote incident.
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.9.46032
   isfetch: true
   runonce: false
   subtype: python3
