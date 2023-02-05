@@ -53,6 +53,8 @@ tasks:
       - "9"
       Port Scan:
       - "8"
+      RDP Brute-Force:
+      - "13"
     separatecontext: false
     conditions:
     - label: Malware
@@ -111,6 +113,28 @@ tasks:
           right:
             value:
               simple: Cloud Audit Log
+    - label: RDP Brute-Force
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.alert_id
+                      iscontext: true
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: Possible external RDP Brute-Force
     continueonerrortype: ""
     view: |-
       {
@@ -143,7 +167,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 720
+          "y": 1100
         }
       }
     note: false
@@ -204,8 +228,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 545
+          "x": 1360,
+          "y": 565
         }
       }
     note: false
@@ -246,8 +270,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 920,
+          "y": 565
         }
       }
     note: false
@@ -382,8 +406,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 545
+          "x": 480,
+          "y": 565
         }
       }
     note: false
@@ -441,8 +465,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 900
+          "x": -540,
+          "y": 920
         }
       }
     note: false
@@ -498,8 +522,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -400,
-          "y": 545
+          "x": -380,
+          "y": 565
         }
       }
     note: false
@@ -545,8 +569,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -400,
-          "y": 710
+          "x": -380,
+          "y": 730
         }
       }
     note: false
@@ -556,6 +580,150 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: f2999d13-c387-4ef3-8e20-c44109eec244
+    type: playbook
+    task:
+      id: f2999d13-c387-4ef3-8e20-c44109eec244
+      version: -1
+      name: Cortex XDR - Possible External RDP Brute-Force
+      description: "This playbook investigates a “Possible External RDP Brute Force” XDR Alert by gathering user, IP, and hostname information, and investigating if the following suspicious elements exists:\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - Connection from unusual country \n-  Related to campaign - IP address related to campaign, based on TIM module\n-  Hunting results - hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search -XDR Alerts related to the same username and endpoint\n\nSet verdict method:\n* Suspicious Element - The \"Suspicious Element\" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a \"True Positive\".\n\n* Final Verdict -  Each suspicious element is being added to an array called \"Suspicious Elements\", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive\".\n\n* User Engagement - The \"UserEngagementThreshold\" input allows you to set the number of suspicious elements that trigger user engagement. When this threshold is met, an email will be sent to the user and their manager asking for authorization of RDP activity. If the RDP activity is not authorized by the user, the investigation's final verdict will be deemed a \"True Positive\".\n\nUsed Sub-playbooks:\n* Account Enrichment - Generic v2.1\n* Block Indicators - Generic v3\n* Cortex XDR - Get entity alerts by MITRE tactics - Endpoint\n* Cortex XDR - Get entity alerts by MITRE tactics - user\n* User Investigation - Generic\n* TIM - Indicator Relationships Analysis\n* Threat Hunting - Generic\n* Cortex XDR - Possible External RDP Brute Force - Set Verdict\n* Cortex XDR - Isolate Endpoint\n"
+      playbookName: Cortex XDR - Possible External RDP Brute-Force
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      Alert_Name:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+          accessor: name
+      AlertDescription:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+          accessor: description
+      AutoRemediation:
+        simple: "false"
+      Country:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts.action_country
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+      EndpointID:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+          accessor: endpoint_id
+      ExternalIP:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+          accessor: action_local_ip
+      Final_Threshold:
+        simple: "3"
+      Hostname:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+          accessor: host_name
+      IsolateEndpoint:
+        simple: "false"
+      UserEngagementThreshold:
+        simple: "2"
+      Username:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+          accessor: user_name
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -566,9 +734,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1065,
-        "width": 1860,
-        "x": -560,
+        "height": 1095,
+        "width": 2280,
+        "x": -540,
         "y": 70
       }
     }
