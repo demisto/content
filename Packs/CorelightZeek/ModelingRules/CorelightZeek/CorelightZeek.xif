@@ -2,60 +2,40 @@
 // DNS Logs
 filter _path = "dns"
 | alter 
-    src_ip = json_extract_scalar(id, "$.orig_h"),
-    src_port = json_extract_scalar(id, "$.orig_p"),
-    tar_ip = json_extract_scalar(id, "$.resp_h"),
-    tar_port = json_extract_scalar(id, "$.resp_p")
-| alter
-    s_ip_v4 = if(src_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
-    s_ip_v6 = if(src_ip ~= ":", src_ip, null),
-    t_ip_v4 = if(tar_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", tar_ip, null),
-    t_ip_v6 = if(tar_ip ~= ":", tar_ip, null)
-| alter 
-    xdm.source.ipv4 = s_ip_v4,
-    xdm.source.ipv6 = s_ip_v6,
-    xdm.target.ipv4 = t_ip_v4,
-    xdm.target.ipv6 = t_ip_v6,
-    xdm.source.port = to_integer(src_port),
-    xdm.target.port = to_integer(tar_port),
+    xdm.source.ipv4 = if(id_orig_h ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", id_orig_h, null),
+    xdm.source.ipv6 = if(id_orig_h ~= ":", id_orig_h, null),
+    xdm.target.ipv4 = if(id_resp_h ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", id_resp_h, null),
+    xdm.target.ipv6 = if(id_resp_h ~= ":", id_resp_h, null),
+    xdm.source.port = to_integer(id_orig_p),
+    xdm.target.port = to_integer(id_resp_p),
     xdm.event.type = _path,
     xdm.event.id = uid,
     xdm.network.ip_protocol = if(proto="HOPOPT",XDM_CONST.IP_PROTOCOL_HOPOPT, proto="ICMP",XDM_CONST.IP_PROTOCOL_ICMP, proto="IGMP",XDM_CONST.IP_PROTOCOL_IGMP, proto="GGP",XDM_CONST.IP_PROTOCOL_GGP, proto="IP",XDM_CONST.IP_PROTOCOL_IP, proto="ST",XDM_CONST.IP_PROTOCOL_ST, proto="TCP",XDM_CONST.IP_PROTOCOL_TCP, proto="CBT",XDM_CONST.IP_PROTOCOL_CBT, proto="EGP",XDM_CONST.IP_PROTOCOL_EGP, proto="IGP",XDM_CONST.IP_PROTOCOL_IGP, proto="BBN_RCC_MON",XDM_CONST.IP_PROTOCOL_BBN_RCC_MON, proto="NVP_II",XDM_CONST.IP_PROTOCOL_NVP_II, proto="PUP",XDM_CONST.IP_PROTOCOL_PUP, proto="ARGUS",XDM_CONST.IP_PROTOCOL_ARGUS, proto="EMCON",XDM_CONST.IP_PROTOCOL_EMCON, proto="XNET",XDM_CONST.IP_PROTOCOL_XNET, proto="CHAOS",XDM_CONST.IP_PROTOCOL_CHAOS, proto="UDP",XDM_CONST.IP_PROTOCOL_UDP, proto="MUX",XDM_CONST.IP_PROTOCOL_MUX, proto="DCN_MEAS",XDM_CONST.IP_PROTOCOL_DCN_MEAS, proto="HMP",XDM_CONST.IP_PROTOCOL_HMP, proto="PRM",XDM_CONST.IP_PROTOCOL_PRM, proto="XNS_IDP",XDM_CONST.IP_PROTOCOL_XNS_IDP, proto="TRUNK_1",XDM_CONST.IP_PROTOCOL_TRUNK_1, proto="TRUNK_2",XDM_CONST.IP_PROTOCOL_TRUNK_2, proto="LEAF_1",XDM_CONST.IP_PROTOCOL_LEAF_1, proto="LEAF_2",XDM_CONST.IP_PROTOCOL_LEAF_2, proto="RDP",XDM_CONST.IP_PROTOCOL_RDP, proto="IRTP",XDM_CONST.IP_PROTOCOL_IRTP, proto="ISO_TP4",XDM_CONST.IP_PROTOCOL_ISO_TP4, proto="NETBLT",XDM_CONST.IP_PROTOCOL_NETBLT, proto="MFE_NSP",XDM_CONST.IP_PROTOCOL_MFE_NSP, proto="MERIT_INP",XDM_CONST.IP_PROTOCOL_MERIT_INP, proto="DCCP",XDM_CONST.IP_PROTOCOL_DCCP, proto="3PC",XDM_CONST.IP_PROTOCOL_3PC, proto="IDPR",XDM_CONST.IP_PROTOCOL_IDPR, proto="XTP",XDM_CONST.IP_PROTOCOL_XTP, proto="DDP",XDM_CONST.IP_PROTOCOL_DDP, proto="IDPR_CMTP",XDM_CONST.IP_PROTOCOL_IDPR_CMTP, proto="TP",XDM_CONST.IP_PROTOCOL_TP, proto="IL",XDM_CONST.IP_PROTOCOL_IL, proto="IPV6",XDM_CONST.IP_PROTOCOL_IPV6, proto="SDRP",XDM_CONST.IP_PROTOCOL_SDRP, proto="IPV6_ROUTE",XDM_CONST.IP_PROTOCOL_IPV6_ROUTE, proto="IPV6_FRAG",XDM_CONST.IP_PROTOCOL_IPV6_FRAG, proto="IDRP",XDM_CONST.IP_PROTOCOL_IDRP, proto="RSVP",XDM_CONST.IP_PROTOCOL_RSVP, proto="GRE",XDM_CONST.IP_PROTOCOL_GRE, proto="DSR",XDM_CONST.IP_PROTOCOL_DSR, proto="BNA",XDM_CONST.IP_PROTOCOL_BNA, proto="ESP",XDM_CONST.IP_PROTOCOL_ESP, proto="AH",XDM_CONST.IP_PROTOCOL_AH, proto="I_NLSP",XDM_CONST.IP_PROTOCOL_I_NLSP, proto="SWIPE",XDM_CONST.IP_PROTOCOL_SWIPE, proto="NARP",XDM_CONST.IP_PROTOCOL_NARP, proto="MOBILE",XDM_CONST.IP_PROTOCOL_MOBILE, proto="TLSP",XDM_CONST.IP_PROTOCOL_TLSP, proto="SKIP",XDM_CONST.IP_PROTOCOL_SKIP, proto="IPV6_ICMP",XDM_CONST.IP_PROTOCOL_IPV6_ICMP, proto="IPV6_NONXT",XDM_CONST.IP_PROTOCOL_IPV6_NONXT, proto="IPV6_OPTS",XDM_CONST.IP_PROTOCOL_IPV6_OPTS, proto="CFTP",XDM_CONST.IP_PROTOCOL_CFTP, proto="SAT_EXPAK",XDM_CONST.IP_PROTOCOL_SAT_EXPAK, proto="KRYPTOLAN",XDM_CONST.IP_PROTOCOL_KRYPTOLAN, proto="RVD",XDM_CONST.IP_PROTOCOL_RVD, proto="IPPC",XDM_CONST.IP_PROTOCOL_IPPC, proto="SAT_MON",XDM_CONST.IP_PROTOCOL_SAT_MON, proto="VISA",XDM_CONST.IP_PROTOCOL_VISA, proto="IPCV",XDM_CONST.IP_PROTOCOL_IPCV, proto="CPNX",XDM_CONST.IP_PROTOCOL_CPNX, proto="CPHB",XDM_CONST.IP_PROTOCOL_CPHB, proto="WSN",XDM_CONST.IP_PROTOCOL_WSN, proto="PVP",XDM_CONST.IP_PROTOCOL_PVP, proto="BR_SAT_MON",XDM_CONST.IP_PROTOCOL_BR_SAT_MON, proto="SUN_ND",XDM_CONST.IP_PROTOCOL_SUN_ND, proto="WB_MON",XDM_CONST.IP_PROTOCOL_WB_MON, proto="WB_EXPAK",XDM_CONST.IP_PROTOCOL_WB_EXPAK, proto="ISO_IP",XDM_CONST.IP_PROTOCOL_ISO_IP, proto="VMTP",XDM_CONST.IP_PROTOCOL_VMTP, proto="SECURE_VMTP",XDM_CONST.IP_PROTOCOL_SECURE_VMTP, proto="VINES",XDM_CONST.IP_PROTOCOL_VINES, proto="TTP",XDM_CONST.IP_PROTOCOL_TTP, proto="NSFNET_IGP",XDM_CONST.IP_PROTOCOL_NSFNET_IGP, proto="DGP",XDM_CONST.IP_PROTOCOL_DGP, proto="TCF",XDM_CONST.IP_PROTOCOL_TCF, proto="EIGRP",XDM_CONST.IP_PROTOCOL_EIGRP, proto="OSPFIGP",XDM_CONST.IP_PROTOCOL_OSPFIGP, proto="SPRITE_RPC",XDM_CONST.IP_PROTOCOL_SPRITE_RPC, proto="LARP",XDM_CONST.IP_PROTOCOL_LARP, proto="MTP",XDM_CONST.IP_PROTOCOL_MTP, proto="AX25",XDM_CONST.IP_PROTOCOL_AX25, proto="IPIP",XDM_CONST.IP_PROTOCOL_IPIP, proto="MICP",XDM_CONST.IP_PROTOCOL_MICP, proto="SCC_SP",XDM_CONST.IP_PROTOCOL_SCC_SP, proto="ETHERIP",XDM_CONST.IP_PROTOCOL_ETHERIP, proto="ENCAP",XDM_CONST.IP_PROTOCOL_ENCAP, proto="GMTP",XDM_CONST.IP_PROTOCOL_GMTP, proto="IFMP",XDM_CONST.IP_PROTOCOL_IFMP, proto="PNNI",XDM_CONST.IP_PROTOCOL_PNNI, proto="PIM",XDM_CONST.IP_PROTOCOL_PIM, proto="ARIS",XDM_CONST.IP_PROTOCOL_ARIS, proto="SCPS",XDM_CONST.IP_PROTOCOL_SCPS, proto="QNX",XDM_CONST.IP_PROTOCOL_QNX, proto="AN",XDM_CONST.IP_PROTOCOL_AN, proto="IPCOMP",XDM_CONST.IP_PROTOCOL_IPCOMP, proto="S",XDM_CONST.IP_PROTOCOL_SNP, proto="COMPAQ_PEER",XDM_CONST.IP_PROTOCOL_COMPAQ_PEER, proto="IPX_IN_IP",XDM_CONST.IP_PROTOCOL_IPX_IN_IP, proto="VRRP",XDM_CONST.IP_PROTOCOL_VRRP, proto="PGM",XDM_CONST.IP_PROTOCOL_PGM, proto="L2TP",XDM_CONST.IP_PROTOCOL_L2TP, proto="DDX",XDM_CONST.IP_PROTOCOL_DDX, proto="IATP",XDM_CONST.IP_PROTOCOL_IATP, proto="STP",XDM_CONST.IP_PROTOCOL_STP, proto="SRP",XDM_CONST.IP_PROTOCOL_SRP, proto="UTI",XDM_CONST.IP_PROTOCOL_UTI, proto="SMP",XDM_CONST.IP_PROTOCOL_SMP, proto="SM",XDM_CONST.IP_PROTOCOL_SM, proto="PTP",XDM_CONST.IP_PROTOCOL_PTP, proto="ISIS",XDM_CONST.IP_PROTOCOL_ISIS, proto="FIRE",XDM_CONST.IP_PROTOCOL_FIRE, proto="CRTP",XDM_CONST.IP_PROTOCOL_CRTP, proto="CRUDP",XDM_CONST.IP_PROTOCOL_CRUDP, proto="SSCOPMCE",XDM_CONST.IP_PROTOCOL_SSCOPMCE, proto="IPLT",XDM_CONST.IP_PROTOCOL_IPLT, proto="SPS",XDM_CONST.IP_PROTOCOL_SPS, proto="PIPE",XDM_CONST.IP_PROTOCOL_PIPE, proto="SCTP",XDM_CONST.IP_PROTOCOL_SCTP, proto="FC",XDM_CONST.IP_PROTOCOL_FC, proto="RSVP_E2E_IGNORE",XDM_CONST.IP_PROTOCOL_RSVP_E2E_IGNORE, proto="MOBILITY",XDM_CONST.IP_PROTOCOL_MOBILITY, proto="UDPLITE",XDM_CONST.IP_PROTOCOL_UDPLITE, proto="MPLS_IN_IP",XDM_CONST.IP_PROTOCOL_MPLS_IN_IP,to_string(proto)), 
     xdm.event.duration = to_integer(rtt),
     xdm.network.dns.is_response = if(rejected = "true", to_boolean("TRUE"), to_boolean("FALSE")),
     xdm.network.dns.dns_question.name = query,
-    xdm.network.dns.dns_question.type = if(qtype_name = "A", "A", qtype_name = "AAAA", "AAAA", qtype_name = "AFSDB", "AFSDB", qtype_name = "APL", "APL", qtype_name = "CAA", "CAA", qtype_name = "CDNSKEY", "CDNSKEY", qtype_name = "CDS", "CDS", qtype_name = "CERT", "CERT", qtype_name = "CNAME", "CNAME", qtype_name = "CSYNC", "CSYNC", qtype_name = "DHCID", "DHCID", qtype_name = "DLV", "DLV", qtype_name = "DNAME", "DNAME", qtype_name = "DNSKEY", "DNSKEY", qtype_name = "DS", "DS", qtype_name = "EUI48", "EUI48", qtype_name = "EUI64", "EUI64", qtype_name = "HINFO", "HINFO", qtype_name = "HIP", "HIP", qtype_name = "HTTPS", "HTTPS", qtype_name = "IPSECKEY", "IPSECKEY", qtype_name = "KEY", "KEY", qtype_name = "KX", "KX", qtype_name = "LOC", "LOC", qtype_name = "MX", "MX", qtype_name = "NAPTR", "NAPTR", qtype_name = "NS", "NS", qtype_name = "NSEC", "NSEC", qtype_name = "NSEC3", "NSEC3", qtype_name = "NSEC3PARAM", "NSEC3PARAM", qtype_name = "OPENPGPKEY", "OPENPGPKEY", qtype_name = "PTR", "PTR", qtype_name = "RRSIG", "RRSIG", qtype_name = "RP", "RP", qtype_name = "SIG", "SIG", qtype_name = "SMIMEA", "SMIMEA", qtype_name = "SOA", "SOA", qtype_name = "SRV", "SRV", qtype_name = "SSHFP", "SSHFP", qtype_name = "SVCB", "SVCB", qtype_name = "TA", "TA", qtype_name = "TKEY", "TKEY", qtype_name = "TLSA", "TLSA", qtype_name = "TSIG", "TSIG", qtype_name = "TXT", "TXT", qtype_name = "URI", "URI", qtype_name = "ZONEMD", "ZONEMD", qtype_name = null, null, "UNKNOWN"),
+    xdm.network.dns.dns_question.type = if(qtype_name="A",XDM_CONST.DNS_RECORD_TYPE_A, qtype_name="AAAA",XDM_CONST.DNS_RECORD_TYPE_AAAA, qtype_name="AFSDB",XDM_CONST.DNS_RECORD_TYPE_AFSDB, qtype_name="APL",XDM_CONST.DNS_RECORD_TYPE_APL, qtype_name="CAA",XDM_CONST.DNS_RECORD_TYPE_CAA, qtype_name="CDNSKEY",XDM_CONST.DNS_RECORD_TYPE_CDNSKEY, qtype_name="CDS",XDM_CONST.DNS_RECORD_TYPE_CDS, qtype_name="CERT",XDM_CONST.DNS_RECORD_TYPE_CERT, qtype_name="CNAME",XDM_CONST.DNS_RECORD_TYPE_CNAME, qtype_name="CSYNC",XDM_CONST.DNS_RECORD_TYPE_CSYNC, qtype_name="DHCID",XDM_CONST.DNS_RECORD_TYPE_DHCID, qtype_name="DLV",XDM_CONST.DNS_RECORD_TYPE_DLV, qtype_name="DNAME",XDM_CONST.DNS_RECORD_TYPE_DNAME, qtype_name="DNSKEY",XDM_CONST.DNS_RECORD_TYPE_DNSKEY, qtype_name="DS",XDM_CONST.DNS_RECORD_TYPE_DS, qtype_name="EUI48",XDM_CONST.DNS_RECORD_TYPE_EUI48, qtype_name="EUI64",XDM_CONST.DNS_RECORD_TYPE_EUI64, qtype_name="HINFO",XDM_CONST.DNS_RECORD_TYPE_HINFO, qtype_name="HIP",XDM_CONST.DNS_RECORD_TYPE_HIP, qtype_name="HTTPS",XDM_CONST.DNS_RECORD_TYPE_HTTPS, qtype_name="IPSECKEY",XDM_CONST.DNS_RECORD_TYPE_IPSECKEY, qtype_name="KEY",XDM_CONST.DNS_RECORD_TYPE_KEY, qtype_name="KX",XDM_CONST.DNS_RECORD_TYPE_KX, qtype_name="LOC",XDM_CONST.DNS_RECORD_TYPE_LOC, qtype_name="MX",XDM_CONST.DNS_RECORD_TYPE_MX, qtype_name="NAPTR",XDM_CONST.DNS_RECORD_TYPE_NAPTR, qtype_name="NS",XDM_CONST.DNS_RECORD_TYPE_NS, qtype_name="NSEC",XDM_CONST.DNS_RECORD_TYPE_NSEC, qtype_name="NSEC3",XDM_CONST.DNS_RECORD_TYPE_NSEC3, qtype_name="NSEC3PARAM",XDM_CONST.DNS_RECORD_TYPE_NSEC3PARAM, qtype_name="OPENPGPKEY",XDM_CONST.DNS_RECORD_TYPE_OPENPGPKEY, qtype_name="PTR",XDM_CONST.DNS_RECORD_TYPE_PTR, qtype_name="RRSIG",XDM_CONST.DNS_RECORD_TYPE_RRSIG, qtype_name="RP",XDM_CONST.DNS_RECORD_TYPE_RP, qtype_name="SIG",XDM_CONST.DNS_RECORD_TYPE_SIG, qtype_name="SMIMEA",XDM_CONST.DNS_RECORD_TYPE_SMIMEA, qtype_name="SOA",XDM_CONST.DNS_RECORD_TYPE_SOA, qtype_name="SRV",XDM_CONST.DNS_RECORD_TYPE_SRV, qtype_name="SSHFP",XDM_CONST.DNS_RECORD_TYPE_SSHFP, qtype_name="SVCB",XDM_CONST.DNS_RECORD_TYPE_SVCB, qtype_name="TA",XDM_CONST.DNS_RECORD_TYPE_TA, qtype_name="TKEY",XDM_CONST.DNS_RECORD_TYPE_TKEY, qtype_name="TLSA",XDM_CONST.DNS_RECORD_TYPE_TLSA, qtype_name="TSIG",XDM_CONST.DNS_RECORD_TYPE_TSIG, qtype_name="TXT",XDM_CONST.DNS_RECORD_TYPE_TXT, qtype_name="URI",XDM_CONST.DNS_RECORD_TYPE_URI, qtype_name="ZONEMD",XDM_CONST.DNS_RECORD_TYPE_ZONEMD, to_string(qtype_name)),
     xdm.network.dns.dns_resource_record.name = rcode,
-    xdm.network.dns.dns_resource_record.type = if(rcode_name = "A", "A", rcode_name = "AAAA", "AAAA", rcode_name = "AFSDB", "AFSDB", rcode_name = "APL", "APL", rcode_name = "CAA", "CAA", rcode_name = "CDNSKEY", "CDNSKEY", rcode_name = "CDS", "CDS", rcode_name = "CERT", "CERT", rcode_name = "CNAME", "CNAME", rcode_name = "CSYNC", "CSYNC", rcode_name = "DHCID", "DHCID", rcode_name = "DLV", "DLV", rcode_name = "DNAME", "DNAME", rcode_name = "DNSKEY", "DNSKEY", rcode_name = "DS", "DS", rcode_name = "EUI48", "EUI48", rcode_name = "EUI64", "EUI64", rcode_name = "HINFO", "HINFO", rcode_name = "HIP", "HIP", rcode_name = "HTTPS", "HTTPS", rcode_name = "IPSECKEY", "IPSECKEY", rcode_name = "KEY", "KEY", rcode_name = "KX", "KX", rcode_name = "LOC", "LOC", rcode_name = "MX", "MX", rcode_name = "NAPTR", "NAPTR", rcode_name = "NS", "NS", rcode_name = "NSEC", "NSEC", rcode_name = "NSEC3", "NSEC3", rcode_name = "NSEC3PARAM", "NSEC3PARAM", rcode_name = "OPENPGPKEY", "OPENPGPKEY", rcode_name = "PTR", "PTR", rcode_name = "RRSIG", "RRSIG", rcode_name = "RP", "RP", rcode_name = "SIG", "SIG", rcode_name = "SMIMEA", "SMIMEA", rcode_name = "SOA", "SOA", rcode_name = "SRV", "SRV", rcode_name = "SSHFP", "SSHFP", rcode_name = "SVCB", "SVCB", rcode_name = "TA", "TA", rcode_name = "TKEY", "TKEY", rcode_name = "TLSA", "TLSA", rcode_name = "TSIG", "TSIG", rcode_name = "TXT", "TXT", rcode_name = "URI", "URI", rcode_name = "ZONEMD", "ZONEMD", rcode_name = null, null, "UNKNOWN"),
+    xdm.network.dns.dns_resource_record.type = if(rcode_name="A",XDM_CONST.DNS_RECORD_TYPE_A, rcode_name="AAAA",XDM_CONST.DNS_RECORD_TYPE_AAAA, rcode_name="AFSDB",XDM_CONST.DNS_RECORD_TYPE_AFSDB, rcode_name="APL",XDM_CONST.DNS_RECORD_TYPE_APL, rcode_name="CAA",XDM_CONST.DNS_RECORD_TYPE_CAA, rcode_name="CDNSKEY",XDM_CONST.DNS_RECORD_TYPE_CDNSKEY, rcode_name="CDS",XDM_CONST.DNS_RECORD_TYPE_CDS, rcode_name="CERT",XDM_CONST.DNS_RECORD_TYPE_CERT, rcode_name="CNAME",XDM_CONST.DNS_RECORD_TYPE_CNAME, rcode_name="CSYNC",XDM_CONST.DNS_RECORD_TYPE_CSYNC, rcode_name="DHCID",XDM_CONST.DNS_RECORD_TYPE_DHCID, rcode_name="DLV",XDM_CONST.DNS_RECORD_TYPE_DLV, rcode_name="DNAME",XDM_CONST.DNS_RECORD_TYPE_DNAME, rcode_name="DNSKEY",XDM_CONST.DNS_RECORD_TYPE_DNSKEY, rcode_name="DS",XDM_CONST.DNS_RECORD_TYPE_DS, rcode_name="EUI48",XDM_CONST.DNS_RECORD_TYPE_EUI48, rcode_name="EUI64",XDM_CONST.DNS_RECORD_TYPE_EUI64, rcode_name="HINFO",XDM_CONST.DNS_RECORD_TYPE_HINFO, rcode_name="HIP",XDM_CONST.DNS_RECORD_TYPE_HIP, rcode_name="HTTPS",XDM_CONST.DNS_RECORD_TYPE_HTTPS, rcode_name="IPSECKEY",XDM_CONST.DNS_RECORD_TYPE_IPSECKEY, rcode_name="KEY",XDM_CONST.DNS_RECORD_TYPE_KEY, rcode_name="KX",XDM_CONST.DNS_RECORD_TYPE_KX, rcode_name="LOC",XDM_CONST.DNS_RECORD_TYPE_LOC, rcode_name="MX",XDM_CONST.DNS_RECORD_TYPE_MX, rcode_name="NAPTR",XDM_CONST.DNS_RECORD_TYPE_NAPTR, rcode_name="NS",XDM_CONST.DNS_RECORD_TYPE_NS, rcode_name="NSEC",XDM_CONST.DNS_RECORD_TYPE_NSEC, rcode_name="NSEC3",XDM_CONST.DNS_RECORD_TYPE_NSEC3, rcode_name="NSEC3PARAM",XDM_CONST.DNS_RECORD_TYPE_NSEC3PARAM, rcode_name="OPENPGPKEY",XDM_CONST.DNS_RECORD_TYPE_OPENPGPKEY, rcode_name="PTR",XDM_CONST.DNS_RECORD_TYPE_PTR, rcode_name="RRSIG",XDM_CONST.DNS_RECORD_TYPE_RRSIG, rcode_name="RP",XDM_CONST.DNS_RECORD_TYPE_RP, rcode_name="SIG",XDM_CONST.DNS_RECORD_TYPE_SIG, rcode_name="SMIMEA",XDM_CONST.DNS_RECORD_TYPE_SMIMEA, rcode_name="SOA",XDM_CONST.DNS_RECORD_TYPE_SOA, rcode_name="SRV",XDM_CONST.DNS_RECORD_TYPE_SRV, rcode_name="SSHFP",XDM_CONST.DNS_RECORD_TYPE_SSHFP, rcode_name="SVCB",XDM_CONST.DNS_RECORD_TYPE_SVCB, rcode_name="TA",XDM_CONST.DNS_RECORD_TYPE_TA, rcode_name="TKEY",XDM_CONST.DNS_RECORD_TYPE_TKEY, rcode_name="TLSA",XDM_CONST.DNS_RECORD_TYPE_TLSA, rcode_name="TSIG",XDM_CONST.DNS_RECORD_TYPE_TSIG, rcode_name="TXT",XDM_CONST.DNS_RECORD_TYPE_TXT, rcode_name="URI",XDM_CONST.DNS_RECORD_TYPE_URI, rcode_name="ZONEMD",XDM_CONST.DNS_RECORD_TYPE_ZONEMD, to_string(rcode_name)),
     xdm.network.dns.dns_resource_record.value = answers,
     xdm.target.agent.identifier = trans_id;
 // HTTP Logs
 filter _path = "http"
 | alter 
-    src_ip = json_extract_scalar(id, "$.orig_h"),
-    src_port = json_extract_scalar(id, "$.orig_p"),
-    tar_ip = json_extract_scalar(id, "$.resp_h"),
-    tar_port = json_extract_scalar(id, "$.resp_p")
-| alter
-    s_ip_v4 = if(src_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
-    s_ip_v6 = if(src_ip ~= ":", src_ip, null),
-    t_ip_v4 = if(tar_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", tar_ip, null),
-    t_ip_v6 = if(tar_ip ~= ":", tar_ip, null)
-| alter 
-    xdm.source.ipv4 = s_ip_v4,
-    xdm.source.ipv6 = s_ip_v6,
-    xdm.target.ipv4 = t_ip_v4,
-    xdm.target.ipv6 = t_ip_v6,
-    xdm.source.port = to_integer(src_port),
-    xdm.target.port = to_integer(tar_port),
+    xdm.source.ipv4 = if(id_orig_h ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", id_orig_h, null),
+    xdm.source.ipv6 = if(id_orig_h ~= ":", id_orig_h, null),
+    xdm.target.ipv4 = if(id_resp_h ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", id_resp_h, null),
+    xdm.target.ipv6 = if(id_resp_h ~= ":", id_resp_h, null),
+    xdm.source.port = to_integer(id_orig_p),
+    xdm.target.port = to_integer(id_resp_p),
     xdm.event.type = _path,
     xdm.event.id = uid,
     xdm.network.http.referrer = referrer,
     xdm.network.http.url = uri,
     xdm.observer.unique_identifier = tags,
     xdm.source.user_agent = user_agent,
-    xdm.network.http.method = if(method = "ACL", "ACL", method = "BASELINE_CONTROL", "BASELINE_CONTROL", method = "BIND", "BIND", method = "CHECKIN", "CHECKIN", method = "CHECKOUT", "CHECKOUT", method = "CONNECT", "CONNECT", method = "COPY", "COPY", method = "DELETE", "DELETE", method = "GET", "GET", method = "HEAD", "HEAD", method = "LABEL", "LABEL", method = "LINK", "LINK", method = "LOCK", "LOCK", method = "MERGE", "MERGE", method = "MKACTIVITY", "MKACTIVITY", method = "MKCALENDAR", "MKCALENDAR", method = "MKCOL", "MKCOL", method = "MKREDIRECTREF", "MKREDIRECTREF", method = "MKWORKSPACE", "MKWORKSPACE", method = "MOVE", "MOVE", method = "OPTIONS", "OPTIONS", method = "ORDERPATCH", "ORDERPATCH", method = "PATCH", "PATCH", method = "POST", "POST", method = "PRI", "PRI", method = "PROPFIND", "PROPFIND", method = "PROPPATCH", "PROPPATCH", method = "PUT", "PUT", method = "REBIND", "REBIND", method = "REPORT", "REPORT", method = "SEARCH", "SEARCH", method = "TRACE", "TRACE", method = "UNBIND", "UNBIND", method = "UNCHECKOUT", "UNCHECKOUT", method = "UNLINK", "UNLINK", method = "UNLOCK", "UNLOCK", method = "UPDATE", "UPDATE", method = "UPDATEREDIRECTREF", "UPDATEREDIRECTREF", method = "VERSION_CONTROL", "VERSION_CONTROL", method = null, null, "UNKNOWN"),
-    xdm.network.http.response_code = if(status_code = "100", "CONTINUE", status_code = "101", "SWITCHING_PROTOCOLS", status_code = "102", "PROCESSING", status_code = "103", "EARLY_HINTS", status_code = "200", "OK", status_code = "201", "CREATED", status_code = "202", "ACCEPTED", status_code = "203", "NON__AUTHORITATIVE_INFORMATION", status_code = "204", "NO_CONTENT", status_code = "205", "RESET_CONTENT", status_code = "206", "PARTIAL_CONTENT", status_code = "207", "MULTI__STATUS", status_code = "208", "ALREADY_REPORTED", status_code = "226", "IM_USED", status_code = "300", "MULTIPLE_CHOICES", status_code = "301", "MOVED_PERMANENTLY", status_code = "302", "FOUND", status_code = "303", "SEE_OTHER", status_code = "304", "NOT_MODIFIED", status_code = "305", "USE_PROXY", status_code = "307", "TEMPORARY_REDIRECT", status_code = "308", "PERMANENT_REDIRECT", status_code = "400", "BAD_REQUEST", status_code = "401", "UNAUTHORIZED", status_code = "402", "PAYMENT_REQUIRED", status_code = "403", "FORBIDDEN", status_code = "404", "NOT_FOUND", status_code = "405", "METHOD_NOT_ALLOWED", status_code = "406", "NOT_ACCEPTABLE", status_code = "407", "PROXY_AUTHENTICATION_REQUIRED", status_code = "408", "REQUEST_TIMEOUT", status_code = "409", "CONFLICT", status_code = "410", "GONE", status_code = "411", "LENGTH_REQUIRED", status_code = "412", "PRECONDITION_FAILED", status_code = "413", "CONTENT_TOO_LARGE", status_code = "414", "URI_TOO_LONG", status_code = "415", "UNSUPPORTED_MEDIA_TYPE", status_code = "416", "RANGE_NOT_SATISFIABLE", status_code = "417", "EXPECTATION_FAILED", status_code = "421", "MISDIRECTED_REQUEST", status_code = "422", "UNPROCESSABLE_CONTENT", status_code = "423", "LOCKED", status_code = "424", "FAILED_DEPENDENCY", status_code = "425", "TOO_EARLY", status_code = "426", "UPGRADE_REQUIRED", status_code = "428", "PRECONDITION_REQUIRED", status_code = "429", "TOO_MANY_REQUESTS", status_code = "431", "REQUEST_HEADER_FIELDS_TOO_LARGE", status_code = "451", "UNAVAILABLE_FOR_LEGAL_REASONS", status_code = "500", "INTERNAL_SERVER_ERROR", status_code = "501", "NOT_IMPLEMENTED", status_code = "502", "BAD_GATEWAY", status_code = "503", "SERVICE_UNAVAILABLE", status_code = "504", "GATEWAY_TIMEOUT", status_code = "505", "HTTP_VERSION_NOT_SUPPORTED", status_code = "506", "VARIANT_ALSO_NEGOTIATES", status_code = "507", "INSUFFICIENT_STORAGE", status_code = "508", "LOOP_DETECTED", status_code = "511", "NETWORK_AUTHENTICATION_REQUIRED", status_code = null, null, "UNKNOWN"),
+    xdm.network.http.method = if(method = "ACL", XDM_CONST.HTTP_METHOD_ACL, method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL , method = "BIND", XDM_CONST.HTTP_METHOD_BIND, method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, method = "COPY", XDM_CONST.HTTP_METHOD_COPY, method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, method = "GET", XDM_CONST.HTTP_METHOD_GET, method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, method = "LINK", XDM_CONST.HTTP_METHOD_LINK, method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, method = "POST", XDM_CONST.HTTP_METHOD_POST, method = "PRI", XDM_CONST.HTTP_METHOD_PRI, method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, method = "PUT", XDM_CONST.HTTP_METHOD_PUT, method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, method = null, null, to_string(method)),
+    xdm.network.http.response_code = if(status_code = "100", XDM_CONST.HTTP_RSP_CODE_CONTINUE, status_code = "101", XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, status_code = "102", XDM_CONST.HTTP_RSP_CODE_PROCESSING, status_code = "103", XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, status_code = "200", XDM_CONST.HTTP_RSP_CODE_OK, status_code = "201", XDM_CONST.HTTP_RSP_CODE_CREATED, status_code = "202", XDM_CONST.HTTP_RSP_CODE_ACCEPTED, status_code = "203", XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, status_code = "204", XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, status_code = "205", XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, status_code = "206", XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, status_code = "207", XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, status_code = "208", XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, status_code = "226", XDM_CONST.HTTP_RSP_CODE_IM_USED, status_code = "300", XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, status_code = "301", XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, status_code = "302", XDM_CONST.HTTP_RSP_CODE_FOUND, status_code = "303", XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, status_code = "304", XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, status_code = "305", XDM_CONST.HTTP_RSP_CODE_USE_PROXY, status_code = "307", XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, status_code = "308", XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, status_code = "400", XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, status_code = "401", XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, status_code = "402", XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, status_code = "403", XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, status_code = "404", XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, status_code = "405", XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, status_code = "406", XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, status_code = "407", XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, status_code = "408", XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, status_code = "409", XDM_CONST.HTTP_RSP_CODE_CONFLICT, status_code = "410", XDM_CONST.HTTP_RSP_CODE_GONE, status_code = "411", XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, status_code = "412", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, status_code = "413", XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, status_code = "414", XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, status_code = "415", XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, status_code = "416", XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, status_code = "417", XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, status_code = "421", XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, status_code = "422", XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, status_code = "423", XDM_CONST.HTTP_RSP_CODE_LOCKED, status_code = "424", XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, status_code = "425", XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, status_code = "426", XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, status_code = "428", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, status_code = "429", XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, status_code = "431", XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, status_code = "451", XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, status_code = "500", XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, status_code = "501", XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, status_code = "502", XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, status_code = "503", XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, status_code = "504", XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, status_code = "505", XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, status_code = "506", XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, status_code = "507", XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, status_code = "508", XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, status_code = "511", XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, status_code = null, null, to_string(status_code)),
     xdm.source.host.hostname = origin,
     xdm.source.sent_bytes = to_integer(request_body_len),
     xdm.target.host.hostname = host,
@@ -63,22 +43,12 @@ filter _path = "http"
 // NTLM Logs
 filter _path = "ntlm"
 | alter 
-    src_ip = json_extract_scalar(id, "$.orig_h"),
-    src_port = json_extract_scalar(id, "$.orig_p"),
-    tar_ip = json_extract_scalar(id, "$.resp_h"),
-    tar_port = json_extract_scalar(id, "$.resp_p")
-| alter
-    s_ip_v4 = if(src_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
-    s_ip_v6 = if(src_ip ~= ":", src_ip, null),
-    t_ip_v4 = if(tar_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", tar_ip, null),
-    t_ip_v6 = if(tar_ip ~= ":", tar_ip, null)
-| alter 
-    xdm.source.ipv4 = s_ip_v4,
-    xdm.source.ipv6 = s_ip_v6,
-    xdm.target.ipv4 = t_ip_v4,
-    xdm.target.ipv6 = t_ip_v6,
-    xdm.source.port = to_integer(src_port),
-    xdm.target.port = to_integer(tar_port),
+    xdm.source.ipv4 = if(id_orig_h ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", id_orig_h, null),
+    xdm.source.ipv6 = if(id_orig_h ~= ":", id_orig_h, null),
+    xdm.target.ipv4 = if(id_resp_h ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", id_resp_h, null),
+    xdm.target.ipv6 = if(id_resp_h ~= ":", id_resp_h, null),
+    xdm.source.port = to_integer(id_orig_p),
+    xdm.target.port = to_integer(id_resp_p),
     xdm.event.type = _path,
     xdm.event.id = uid,
     xdm.auth.ntlm.user_name = username,
@@ -90,22 +60,12 @@ filter _path = "ntlm"
 // Syslogs 
 filter _path = "syslog"
 | alter 
-    src_ip = json_extract_scalar(id, "$.orig_h"),
-    src_port = json_extract_scalar(id, "$.orig_p"),
-    tar_ip = json_extract_scalar(id, "$.resp_h"),
-    tar_port = json_extract_scalar(id, "$.resp_p")
-| alter
-    s_ip_v4 = if(src_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
-    s_ip_v6 = if(src_ip ~= ":", src_ip, null),
-    t_ip_v4 = if(tar_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", tar_ip, null),
-    t_ip_v6 = if(tar_ip ~= ":", tar_ip, null)
-| alter 
-    xdm.source.ipv4 = s_ip_v4,
-    xdm.source.ipv6 = s_ip_v6,
-    xdm.target.ipv4 = t_ip_v4,
-    xdm.target.ipv6 = t_ip_v6,
-    xdm.source.port = to_integer(src_port),
-    xdm.target.port = to_integer(tar_port),
+    xdm.source.ipv4 = if(id_orig_h ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", id_orig_h, null),
+    xdm.source.ipv6 = if(id_orig_h ~= ":", id_orig_h, null),
+    xdm.target.ipv4 = if(id_resp_h ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", id_resp_h, null),
+    xdm.target.ipv6 = if(id_resp_h ~= ":", id_resp_h, null),
+    xdm.source.port = to_integer(id_orig_p),
+    xdm.target.port = to_integer(id_resp_p),
     xdm.event.type = _path,
     xdm.event.id = uid,
     xdm.event.description = message,
@@ -115,22 +75,12 @@ filter _path = "syslog"
 // Conn Logs
 filter _path = "conn"
 | alter 
-    src_ip = json_extract_scalar(id, "$.orig_h"),
-    src_port = json_extract_scalar(id, "$.orig_p"),
-    tar_ip = json_extract_scalar(id, "$.resp_h"),
-    tar_port = json_extract_scalar(id, "$.resp_p")
-| alter
-    s_ip_v4 = if(src_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
-    s_ip_v6 = if(src_ip ~= ":", src_ip, null),
-    t_ip_v4 = if(tar_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", tar_ip, null),
-    t_ip_v6 = if(tar_ip ~= ":", tar_ip, null)
-| alter 
-    xdm.source.ipv4 = s_ip_v4,
-    xdm.source.ipv6 = s_ip_v6,
-    xdm.target.ipv4 = t_ip_v4,
-    xdm.target.ipv6 = t_ip_v6,
-    xdm.source.port = to_integer(src_port),
-    xdm.target.port = to_integer(tar_port),
+    xdm.source.ipv4 = if(id_orig_h ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", id_orig_h, null),
+    xdm.source.ipv6 = if(id_orig_h ~= ":", id_orig_h, null),
+    xdm.target.ipv4 = if(id_resp_h ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", id_resp_h, null),
+    xdm.target.ipv6 = if(id_resp_h ~= ":", id_resp_h, null),
+    xdm.source.port = to_integer(id_orig_p),
+    xdm.target.port = to_integer(id_resp_p),
     xdm.event.type = _path,
     xdm.event.id = uid,
     xdm.event.operation_sub_type = conn_state,
@@ -143,24 +93,15 @@ filter _path = "conn"
     xdm.target.sent_packets = to_integer(resp_pkts);
 // Kerberos
 filter _path = "kerberos"
-| alter 
-    src_ip = json_extract_scalar(id, "$.orig_h"),
-    src_port = json_extract_scalar(id, "$.orig_p"),
-    tar_ip = json_extract_scalar(id, "$.resp_h"),
-    tar_port = json_extract_scalar(id, "$.resp_p"),
-    lower_c_cipher = lowercase(cipher)
 | alter
-    s_ip_v4 = if(src_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
-    s_ip_v6 = if(src_ip ~= ":", src_ip, null),
-    t_ip_v4 = if(tar_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", tar_ip, null),
-    t_ip_v6 = if(tar_ip ~= ":", tar_ip, null)
+   lower_c_cipher = lowercase(cipher) 
 | alter 
-    xdm.source.ipv4 = s_ip_v4,
-    xdm.source.ipv6 = s_ip_v6,
-    xdm.target.ipv4 = t_ip_v4,
-    xdm.target.ipv6 = t_ip_v6,
-    xdm.source.port = to_integer(src_port),
-    xdm.target.port = to_integer(tar_port),
+    xdm.source.ipv4 = if(id_orig_h ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", id_orig_h, null),
+    xdm.source.ipv6 = if(id_orig_h ~= ":", id_orig_h, null),
+    xdm.target.ipv4 = if(id_resp_h ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", id_resp_h, null),
+    xdm.target.ipv6 = if(id_resp_h ~= ":", id_resp_h, null),
+    xdm.source.port = to_integer(id_orig_p),
+    xdm.target.port = to_integer(id_resp_p),
     xdm.event.type = _path,
     xdm.event.id = uid,
     xdm.event.outcome = if(success = "true", "SUCCESS", success = "false", "FAILED", success = null, null, "UNKNOWN"),
