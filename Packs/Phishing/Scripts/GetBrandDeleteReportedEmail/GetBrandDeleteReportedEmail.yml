@@ -7,7 +7,7 @@ name: GetBrandDeleteReportedEmail
 runas: DBotWeakRole
 runonce: false
 script: ''
-comment: Gets all the enabled instances of integrations that can be used by the DeleteReportedEmail script, in the output format of a single select field.
+comment: Gets all the enabled instances of integrations that can be used by the DeleteReportedEmail script, in the output format of a single select field. TEST
 scripttarget: 0
 subtype: python3
 tags:
