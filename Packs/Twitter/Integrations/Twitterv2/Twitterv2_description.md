@@ -1,4 +1,4 @@
-## Twitterv2 Integration Help
+## Twitter v2 Integration Help
 
 #### How to configure
 In order to configure Twitterv2 you will need a Bearer Token. To get your Bearer Token you need to: 

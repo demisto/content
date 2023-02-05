@@ -74,7 +74,6 @@ class Client(BaseClient):
                                       headers=self._headers, params=query_params,
                                       ok_codes=[200])
         result = create_context_data_get_user(response, return_pinned_tweets)
-
         return response, result
 
 
@@ -264,7 +263,7 @@ def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> List[C
                                      headers=headers, removeNull=False)
     command_results = []
     command_results.append(CommandResults(
-        outputs_prefix='Twitter.Tweet.TweetList',
+        outputs_prefix='Twitter.Tweet',
         outputs_key_field='id',
         outputs=result,
         readable_output=human_readable,
@@ -273,7 +272,7 @@ def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> List[C
         readable_output_next_token = tableToMarkdown("Tweet Next Token:", {'next_token': next_token},
                                                      headers=['next_token'], removeNull=False)
         command_results.append(CommandResults(
-            outputs={'Twitter.Tweet.NextToken(val.next_token)': {'next_token': next_token}},
+            outputs={'Twitter.TweetNextToken(val.next_token)': {"next_token": next_token}},
             readable_output=readable_output_next_token,
         ))
 

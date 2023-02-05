@@ -44,39 +44,35 @@ This command will search for Tweets from the last 7 days and return all informat
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Twitter.Tweet.TweetList.conversation_id | String | The Tweet ID of the original Tweet of the conversation \(which includes direct replies, replies of replies\). | 
-| Twitter.Tweet.TweetList.id | String | Unique identifier of this Tweet. | 
-| Twitter.Tweet.TweetList.created_at | Date | Creation time of the Tweet. | 
-| Twitter.Tweet.TweetList.text | String | The content of the Tweet. | 
-| Twitter.Tweet.TweetList.edit_history_tweet_ids | String | Unique identifiers indicating all versions of an edited Tweet. | 
-| Twitter.Tweet.TweetList.public_metrics.impression_count | Number | Number of times the Tweet has been seen. | 
-| Twitter.Tweet.TweetList.public_metrics.retweet_count | Number | Number of times this Tweet has been Retweeted. | 
-| Twitter.Tweet.TweetList.public_metrics.reply_count | Number | Number of replies to this Tweet. | 
-| Twitter.Tweet.TweetList.public_metrics.like_count | Number | Number of Likes to this Tweet. | 
-| Twitter.Tweet.TweetList.public_metrics.quote_count | Number | Number of times this Tweet has been Retweeted with a comment. | 
-| Twitter.Tweet.TweetList.author.name | String | The unique identifier of this user. | 
-| Twitter.Tweet.TweetList.author.verified | Boolean | Indicates if this user is a verified Twitter user. | 
-| Twitter.Tweet.TweetList.author.description | String | The text of this user's profile description \(also known as bio\), if the user provided one. | 
-| Twitter.Tweet.TweetList.author.id | String | The unique identifier of this user. | 
-| Twitter.Tweet.TweetList.author.created_at | Date | The UTC datetime when the user account was created on Twitter. | 
-| Twitter.Tweet.TweetList.author.username | String | The Twitter screen name, handle, or alias that this user identifies themselves with. | 
-| Twitter.Tweet.TweetList.media.type | String | Type of content \(animated_gif, photo, video\). | 
-| Twitter.Tweet.TweetList.media.url | String | A direct URL to the media file on Twitter. | 
-| Twitter.Tweet.TweetList.media.media_key | String | Unique identifier of the expanded media content | 
-| Twitter.Tweet.TweetList.media.alt_text | String | A description of an image to enable and support accessibility. Can be up to 1000 characters long. | 
-| Twitter.Tweet.NextToken.next_token | String | A value that encodes the next 'page' of results that can be requested, via the next_token request parameter. | 
+| Twitter.Tweet.conversation_id | String | The Tweet ID of the original Tweet of the conversation \(which includes direct replies, replies of replies\). | 
+| Twitter.Tweet.id | String | Unique identifier of this Tweet. | 
+| Twitter.Tweet.created_at | Date | Creation time of the Tweet. | 
+| Twitter.Tweet.text | String | The content of the Tweet. | 
+| Twitter.Tweet.edit_history_tweet_ids | String | Unique identifiers indicating all versions of an edited Tweet. | 
+| Twitter.Tweet.public_metrics.impression_count | Number | Number of times the Tweet has been seen. | 
+| Twitter.Tweet.public_metrics.retweet_count | Number | Number of times this Tweet has been Retweeted. | 
+| Twitter.Tweet.public_metrics.reply_count | Number | Number of replies to this Tweet. | 
+| Twitter.Tweet.public_metrics.like_count | Number | Number of Likes to this Tweet. | 
+| Twitter.Tweet.public_metrics.quote_count | Number | Number of times this Tweet has been Retweeted with a comment. | 
+| Twitter.Tweet.author.name | String | The unique identifier of this user. | 
+| Twitter.Tweet.author.verified | Boolean | Indicates if this user is a verified Twitter user. | 
+| Twitter.Tweet.author.description | String | The text of this user's profile description \(also known as bio\), if the user provided one. | 
+| Twitter.Tweet.author.id | String | The unique identifier of this user. | 
+| Twitter.Tweet.author.created_at | Date | The UTC datetime when the user account was created on Twitter. | 
+| Twitter.Tweet.author.username | String | The Twitter screen name, handle, or alias that this user identifies themselves with. | 
+| Twitter.Tweet.media.type | String | Type of content \(animated_gif, photo, video\). | 
+| Twitter.Tweet.media.url | String | A direct URL to the media file on Twitter. | 
+| Twitter.Tweet.media.media_key | String | Unique identifier of the expanded media content | 
+| Twitter.Tweet.media.alt_text | String | A description of an image to enable and support accessibility. Can be up to 1000 characters long. | 
+| Twitter.TweetNextToken.next_token | String | A value that encodes the next 'page' of results that can be requested, via the next_token request parameter. | 
 
 #### Command example
 ```!twitter-tweet-search query="twitter" limit="10"```
 #### Context Example
 ```json
 {
-        "Twitter": {
-        "Tweet": {
-            "NextToken": {
-                "next_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-            },
-            "TweetList": [
+    "Twitter": {
+        "Tweet":  [
                 {
                     "author": {
                         "created_at": "2023-01-18T23:35:28.000Z",
@@ -338,7 +334,9 @@ This command will search for Tweets from the last 7 days and return all informat
                     },
                     "text": "some_text_twitter"
                 }
-            ]
+            ],
+        "TweetNextToken": {
+            "next_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
         }
     }
 }
@@ -347,9 +345,10 @@ This command will search for Tweets from the last 7 days and return all informat
 #### Human Readable Output
 
 >### Tweet Next Token:
->|Next Token|
+>|next_token|
 >|---|
 >| xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
+
 >### Tweets search results:
 >|Tweet ID|Text|Created At|Author Name|Author Username|Likes Count|Attachments URL|
 >|---|---|---|---|---|---|---|
@@ -363,8 +362,6 @@ This command will search for Tweets from the last 7 days and return all informat
 >| 3030303030303030303 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_8 | some_username_8 | 0 |  |
 >| 2626262626262626262 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_9 | some_username_9 | 0 |  |
 >| 2525252525252525252 | some_text_twitter | 2023-04-05T08:49:23.000Z | some_name_10 | some_username_10 | 0 |  |
-
-
 ### twitter-user-get
 ***
 Lookup users by name to display information about them. Search multiple users simultaneously by separating them by commas. Ex: 'name='user1,user2,user3'
