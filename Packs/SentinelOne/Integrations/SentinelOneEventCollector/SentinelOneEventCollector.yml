@@ -48,12 +48,12 @@ configuration:
   section: Collect
 - defaultvalue: 1000
   display: The maximum number of events per fetch should be between 1-1000
-  additionalinfo: The limit is per event type for example if you will choose 3 event types (ACTIVITIES, THREATS, ALERTS) and limit of 100 the actually limit will be 300
+  additionalinfo: The limit is per event type. For example, if you choose 3 event types (ACTIVITIES, THREATS, ALERTS) with a limit of 100, the actually limit will be 300.
   name: fetch_limit
   required: false
   type: 0
   section: Collect
-description: This integration fetches Activities Threats and Alerts from SentinelOne.
+description: This integration fetches activities, threats, and alerts from SentinelOne.
 display: SentinelOne Event Collector
 name: SentinelOneEventCollector
 script:
@@ -61,7 +61,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: If true, the command will create events, otherwise it will only display them. Default value is false.
+      description: If true, the command will create events, otherwise it will only display them.
       isArray: false
       name: should_push_events
       predefined:
@@ -69,7 +69,7 @@ script:
       - 'false'
     - default: false
       defaultValue: 1000
-      description: Maximum results to return value should be between 1 - 1000. Default value is 1000.
+      description: Maximum number of results to return. Value should be between 1 - 1000.
       isArray: false
       name: limit
       required: false
