@@ -26,11 +26,19 @@ jobs:
       # TODO delete after dev
       - name: Print changed files
         run: |
-          echo "Changed files: ${{ steps.changed-files.outputs.all_changed_files }}""
-        
+          if [ -z "${{ steps.changed-files.outputs.all_changed_files }}" ]
+          then
+                echo "steps.changed-files.outputs.all_changed_files is empty"
+          else
+                echo "steps.changed-files.outputs.all_changed_files is NOT empty"
+                echo "${{ steps.changed-files.outputs.all_changed_files }}"
+          fi
 
       - name: Install SDK
-        if: steps.changed-files.outputs.all_changed_files == '' || steps.changed-files.outputs.all_changed_files == ' ' return
+        if: |
+          steps.changed-files.outputs.all_changed_files == '' || 
+          steps.changed-files.outputs.all_changed_files == ' ' 
+          && return
         run: |
           
           python3 -m pip install demisto-sdk
