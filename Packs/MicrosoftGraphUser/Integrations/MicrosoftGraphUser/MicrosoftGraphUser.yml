@@ -707,6 +707,11 @@ script:
       Permission: Directory.AccessAsUser.All(Delegated)
     execution: false
     name: msgraph-user-session-revoke
+  - description: Generate the login url used for Authorization code flow.
+    execution: false
+    name: msgraph-user-generate-login-url
+    arguments:
+    -
   dockerimage: demisto/crypto:1.0.0.45575
   feed: false
   isfetch: false
