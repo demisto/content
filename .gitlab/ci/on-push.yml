@@ -2,6 +2,10 @@
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
+.filter-non-nightly-docker-updates-rule:
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ ^(demisto/[^/])(?!.*-nightly).*$'
+      when: never
 
 trigger-private-build:
   tags:
@@ -61,6 +65,7 @@ validate-content-conf:
   stage: unittests-and-validations
   needs: []
   extends:
+    - .filter-non-nightly-docker-updates-rule
     - .default-job-settings
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
@@ -88,6 +93,7 @@ validate-content-conf:
   tags:
     - gke
   extends:
+    - .filter-non-nightly-docker-updates-rule
     - .default-job-settings
   rules:
     - if: "$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/"
