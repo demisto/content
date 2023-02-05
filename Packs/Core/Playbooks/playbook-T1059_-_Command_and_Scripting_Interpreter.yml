@@ -1190,7 +1190,7 @@ tasks:
       process_command_line:
         complex:
           root: commandline
-          accessor: decoded
+          accessor: original
     separatecontext: false
     continueonerrortype: ""
     view: |-
