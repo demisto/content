@@ -441,7 +441,7 @@ def test_validate_limit(limit):
        - a limit parameter which is not divisible by 100/negative limit.
 
     When -
-        executing the validate_limit function
+        executing the validate limit
 
     Then
       - make sure an exception is raised
