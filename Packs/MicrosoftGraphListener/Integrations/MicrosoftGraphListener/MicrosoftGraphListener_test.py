@@ -1002,3 +1002,23 @@ def test_special_chars_in_attachment_name(mocker):
     res = client._get_email_attachments('message_id')
 
     assert res[0].get('name') == attachment_file_name
+
+
+@pytest.mark.parametrize('attachment_file_name', ['1.png', 'file_example_JPG_100kB.jpg', 'sdsdagdsga.png'])
+def test_regular_chars_in_attachment_name(mocker, attachment_file_name):
+    """
+    Given: A attachment file name containing Latin alphabet + some other characters but not from some other alphabet.
+    When: Running the `_get_email_attachments` function.
+    Then: Ensure the file name remains the same (without decoding).
+    """
+    client = oproxy_client()
+    mocker.patch.object(client.ms_client, 'http_request', return_value={'value': [{
+        '@odata.type': '#microsoft.graph.fileAttachment',
+        'name': attachment_file_name,
+        'contentBytes': 'contentBytes'}]})
+    mocker.patch.object(demisto, 'uniqueFile')
+    mocker.patch("builtins.open", mock_open())
+
+    res = client._get_email_attachments('message_id')
+
+    assert res[0].get('name') == attachment_file_name
