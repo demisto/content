@@ -1,7 +1,6 @@
-id: 4e46e9da-78eb-4dad-8b20-daedaad59bc3
-version: 29
-vcShouldKeepItemLegacyProdMachine: false
-name: CTF 2 - Classify an incident (RDP Brute force)
+id: CTF 2 - Classify an incident - RDP Brute force
+version: -1
+name: CTF 2 - Classify an incident - RDP Brute force
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -41,15 +41,7 @@ tasks:
       id: a3e7be3c-ca70-4e4d-8d75-531934d646b0
       version: -1
       name: Find the XDR RDP Brute Force incident
-      description: "Welcome to the second CTF challenge! \nIn this section, we are
-        going to overview the XDR RDP Brute Force incident from an analyst's perspective.\n\nTo
-        complete the challenge, please complete all the tasks in this playbook.\nIn
-        order to complete the tasks you will need to find the XDR RDP Brute Force
-        incident in your environment.\n*Note*: do not change anything in the incident
-        itself since multiple students are working on the same one. \n\nOnce you find
-        the relevant incident to work on -> complete this task and proceed to the
-        questions. \n\nAs it was mentioned before, SLA for the answers will start
-        once you mark this task as completed.\n\n"
+      description: "Welcome to the second CTF challenge! \nIn this section, we are going to overview the XDR RDP Brute Force incident from an analyst's perspective.\n\nTo complete the challenge, please complete all the tasks in this playbook.\nIn order to complete the tasks you will need to find the XDR RDP Brute Force incident in your environment.\n*Note*: do not change anything in the incident itself since multiple students are working on the same one. \n\nOnce you find the relevant incident to work on -> complete this task and proceed to the questions. \n\nAs it was mentioned before, SLA for the answers will start once you mark this task as completed.\n\n"
       type: regular
       iscommand: false
       brand: ""
@@ -140,13 +132,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -172,17 +164,10 @@ tasks:
         - simple: False Positive
         fieldassociated: ""
         placeholder: ""
-        tooltip: 'Once you have ran the command, the output should be displayed immediately
-          . Remember to overwrite all missing params <> '
+        tooltip: 'Once you have ran the command, the output should be displayed immediately . Remember to overwrite all missing params <> '
         readonly: false
       title: Using EDLs to export indicators
-      description: "Once the incident has been classified, you might use the indicators
-        as you wish ( for blocking or approving them on your external systems).\nThe
-        Export Indicator Generic Service can be very useful to accomplish such a mission
-        but remember you have to configure that in advance. \n\nTo save you time we
-        have already configured that for you.\nCheck the command provided to you in
-        the questions themselves. Run it from your terminal on your machine (remember
-        that you will need \"Curl\" for running this command.\n"
+      description: "Once the incident has been classified, you might use the indicators as you wish ( for blocking or approving them on your external systems).\nThe Export Indicator Generic Service can be very useful to accomplish such a mission but remember you have to configure that in advance. \n\nTo save you time we have already configured that for you.\nCheck the command provided to you in the questions themselves. Run it from your terminal on your machine (remember that you will need \"Curl\" for running this command.\n"
       sender: ""
       expired: false
       totalanswers: 0
@@ -242,6 +227,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -271,9 +257,7 @@ tasks:
       id: 6b22d8b1-b558-47ca-81c0-a14b763b3bc7
       version: -1
       name: Hope you have enjoyed
-      description: "Thank you for participating in our workshop for the XSOAR. Hope
-        that you have enjoyed the challenge and also gained some knowledge. \n\nTill
-        next time :) \n\n "
+      description: "Thank you for participating in our workshop for the XSOAR. Hope that you have enjoyed the challenge and also gained some knowledge. \n\nTill next time :) \n\n "
       type: regular
       iscommand: false
       brand: ""
@@ -323,13 +307,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -355,10 +339,7 @@ tasks:
         tooltip: You can check the Work Plan entries or the Incident overview section
         readonly: false
       title: Check if there are any errors in the playbook?
-      description: Sometimes playbooks are stopped due to an issue whether it's because
-        of the integration or missing information.  No matter what - the playbook
-        should always run without errors so all the reliable information will be populated
-        to the analyst properly.
+      description: Sometimes playbooks are stopped due to an issue whether it's because of the integration or missing information.  No matter what - the playbook should always run without errors so all the reliable information will be populated to the analyst properly.
       sender: ""
       expired: false
       totalanswers: 0
@@ -435,13 +416,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -469,8 +450,7 @@ tasks:
       - id: "1"
         label: ""
         labelarg:
-          simple: How many relationships does the malicious indicator have within
-            existing indicators in your XSAOR?
+          simple: How many relationships does the malicious indicator have within existing indicators in your XSAOR?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -479,13 +459,10 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: You can see the relationship numbers in the on the relevant indicator
-          . Remember that existing indicators are highlighted  with link.
+        tooltip: You can see the relationship numbers in the on the relevant indicator . Remember that existing indicators are highlighted  with link.
         readonly: false
       title: Check the various indicators that are extracted from the incident
-      description: Indicators are our way to determine if the incident is malicious
-        or not even before we deep dive into the details. Indicator extraction can
-        be done in various ways.
+      description: Indicators are our way to determine if the incident is malicious or not even before we deep dive into the details. Indicator extraction can be done in various ways.
       sender: ""
       expired: false
       totalanswers: 0
@@ -603,13 +580,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -621,8 +598,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Based on the Campaign's Report, what was the year when this campaign
-            was first seen?
+          simple: Based on the Campaign's Report, what was the year when this campaign was first seen?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -647,8 +623,7 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: You can do that by searching the campaign name in the Threat Intel
-          Tab
+        tooltip: You can do that by searching the campaign name in the Threat Intel Tab
         readonly: false
       title: Threat Camping
       description: |-
@@ -713,6 +688,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -743,6 +719,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -773,6 +750,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -819,13 +797,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -848,15 +826,10 @@ tasks:
         - simple: False Positive
         fieldassociated: ""
         placeholder: ""
-        tooltip: 'Since you observed the Indicators, SandBox report and other related
-          incidents, you should have all the right information '
+        tooltip: 'Since you observed the Indicators, SandBox report and other related incidents, you should have all the right information '
         readonly: false
       title: Classification
-      description: "Now, once you covered the incident's details and more - you can
-        classify the incident through this playbook! \nSo what's it going to be? True
-        Or False Positive? \n\nSince you observed the Indicators, SandBox report,
-        and other related incidents, you should have all the information to accomplish
-        this mission."
+      description: "Now, once you covered the incident's details and more - you can classify the incident through this playbook! \nSo what's it going to be? True Or False Positive? \n\nSince you observed the Indicators, SandBox report, and other related incidents, you should have all the information to accomplish this mission."
       sender: ""
       expired: false
       totalanswers: 0
@@ -875,6 +848,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "37"
@@ -905,6 +879,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -978,6 +953,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1021,13 +997,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1050,14 +1026,10 @@ tasks:
         - simple: "No"
         fieldassociated: ""
         placeholder: ""
-        tooltip: You can check indicators information from the incident's indicator
-          quick view or through the Threat Intel section.
+        tooltip: You can check indicators information from the incident's indicator quick view or through the Threat Intel section.
         readonly: false
       title: Check the tag associated with the malicious indicator
-      description: Once we have classified the incident as true positive, we would
-        like to go and block all the relevant systems in our environment hence we
-        want to be able to identify those indicators that we want to block. Therefore,
-        we can tag our indicators with dedicated tags.
+      description: Once we have classified the incident as true positive, we would like to go and block all the relevant systems in our environment hence we want to be able to identify those indicators that we want to block. Therefore, we can tag our indicators with dedicated tags.
       sender: ""
       expired: false
       totalanswers: 0
@@ -1120,4 +1092,7 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: f55db132-511d-4136-8251-85ddeca01e53
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+description: ''
