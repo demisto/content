@@ -418,7 +418,7 @@ tasks:
       id: 001b4d4c-025c-4edf-8888-3e27c88642af
       version: -1
       name: Create a new incident using the CTF incident type
-      description: "Congrats! You finished with the first CTF! Well Done!!\n<Add gif here>\n\nLet's continue with the next challenge :) \n\nIn order to proceed to the following challenge, please create a new incident with the following parameter:\n1. Incident name should be your\n`<name  / student_id> - CTF02  `\n2. incident type \"CTF_2\""
+      description: "Congrats! You finished with the first CTF! Well Done!!\n<Add gif here>\n\nLet's continue with the next challenge :) \n\nIn order to proceed to the following challenge, please create a new incident with the following parameter:\n1. Incident name should be your\n`<name  / student_id> - CTF02  `\n2. incident type \"CTF02\""
       type: regular
       iscommand: false
       brand: ""
