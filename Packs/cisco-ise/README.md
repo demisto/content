@@ -1,7 +1,14 @@
 # Cisco ISE 
 This pack includes Cortex XSIAM content. 
 ## Configuration on Server Side
-Follow the below configuration to configure basic log syslog collection:
+
+Follow the below steps to configure basic log syslog collection:
+1. Go to **Administration** > **System** > **Logging** > **Remote Logging Targets**
+2. Click **Add** and then fill the required details.
+3. Click **Save**, and then verify the creation of the new target by going to **Remote Logging Targets** page. 
+
+More information on remote logging configuration can be found [here](https://www.cisco.com/c/en/us/td/docs/security/ise/2-7/admin_guide/b_ise_27_admin_guide/b_ISE_admin_27_maintain_monitor.html#ID58). 
+
 ## Collect Events from Vendor
 
 In order to use the collector, use the [Broker VM](#broker-vm) option.
