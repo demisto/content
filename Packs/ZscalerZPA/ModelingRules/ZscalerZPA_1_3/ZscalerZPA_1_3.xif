@@ -48,7 +48,7 @@ filter cat in ("Connector Status")
     xdm.event.type = cat,
     xdm.source.agent.version = Version,
     xdm.target.resource_before.name = Connector,
-    xdm.target.cloud.provider = ZEN,
+    xdm.target.host.hostname = ZEN,
     xdm.source.ipv4 = src,
     xdm.target.resource_before.parent_id = Customer,
     xdm.session_context_id = SessionID,
