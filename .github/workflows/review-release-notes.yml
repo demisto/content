@@ -23,12 +23,20 @@ jobs:
             Packs/**/ReleaseNotes/**
           since_last_remote_commit: false
 
+      # TODO delete after dev
+      - name: Print changed files
+        run: |
+          echo "Changed files: ${{ steps.changed-files.outputs.all_changed_files }}""
+        
+
       - name: Install SDK
-        if: steps.changed-files.outputs.all_changed_files != '' && steps.changed-files.outputs.all_changed_files != ' '
-        run: python3 -m pip install demisto-sdk
+        if: steps.changed-files.outputs.all_changed_files == '' || steps.changed-files.outputs.all_changed_files == ' ' return
+        run: |
+          
+          python3 -m pip install demisto-sdk
 
       - name: Review Release Notes
-        if: steps.changed-files.outputs.all_changed_files != '' && steps.changed-files.outputs.all_changed_files != ' '
+        # if: steps.changed-files.outputs.all_changed_files != '' && steps.changed-files.outputs.all_changed_files != ' '
         run: |
           release_notes="${{ steps.changed-files.outputs.all_changed_files }}"
           echo "Release notes found in PR: ${release_notes}. Starting docs review..."
