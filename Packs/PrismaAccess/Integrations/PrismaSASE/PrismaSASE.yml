@@ -44,7 +44,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma sase folder location.
+      description: The configuration folder group setting.
       isArray: false
       name: folder
       predefined:
@@ -234,7 +234,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma sase folder location.
+      description: The configuration folder group setting.
       isArray: false
       name: folder
       predefined:
@@ -389,7 +389,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma sase folder location.
+      description: The configuration folder group setting.
       isArray: false
       name: folder
       predefined:
@@ -576,7 +576,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma sase folder location.
+      description: The configuration folder group setting.
       isArray: false
       name: folder
       predefined:
@@ -723,7 +723,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma sase folder location.
+      description: The configuration folder group setting.
       isArray: false
       name: folder
       predefined:
@@ -814,7 +814,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma sase folder location.
+      description: The configuration folder group setting.
       isArray: false
       name: folder
       predefined:
@@ -874,7 +874,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma sase folder location.
+      description: The configuration folder group setting.
       isArray: false
       name: folder
       predefined:
@@ -924,7 +924,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma sase folder location.
+      description: The configuration folder group setting.
       isArray: false
       name: folder
       predefined:
@@ -1017,7 +1017,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: Prisma sase folder location.
+      description: The configuration folder group setting.
       default: false
       defaultValue: Shared
       isArray: false
@@ -1131,7 +1131,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma sase folder location.
+      description: The configuration folder group setting.
       isArray: false
       name: folder
       predefined:
@@ -1180,7 +1180,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma sase folder location.
+      description: The configuration folder group setting.
       isArray: false
       name: folder
       predefined:
@@ -1254,7 +1254,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma sase folder location.
+      description: The configuration folder group setting.
       isArray: false
       name: folder
       predefined:
@@ -1341,7 +1341,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma sase folder location.
+      description: The configuration folder group setting.
       isArray: false
       name: folder
       predefined:
@@ -1393,7 +1393,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma sase folder location.
+      description: The configuration folder group setting.
       isArray: false
       name: folder
       predefined:
@@ -1462,7 +1462,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma sase folder location.
+      description: The configuration folder group setting.
       isArray: false
       name: folder
       predefined:
@@ -1545,7 +1545,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma sase folder location.
+      description: The configuration folder group setting.
       isArray: false
       name: folder
       predefined:
@@ -1605,7 +1605,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma sase folder location.
+      description: The configuration folder group setting.
       isArray: false
       name: folder
       predefined:
@@ -1725,7 +1725,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma sase folder location.
+      description: The configuration folder group setting.
       isArray: false
       name: folder
       predefined:
@@ -1800,7 +1800,7 @@ script:
       isArray: false
       name: day_of_week
       required: false
-      description: The day of the week. If the frequency argument is weekly or monthly, value must be provided.
+      description: The day of the week. If the frequency argument is weekly or monthly, a value must be provided.
       predefined:
       - monday
       - tuesday
@@ -1812,7 +1812,7 @@ script:
     - default: false
       isArray: false
       name: day_of_month
-      description: The day of the month. If the frequency argument is monthly, value must be provided. Possible values are between 1 and 31.
+      description: The day of the month. If the frequency argument is monthly, a value must be provided. Possible values are between 1 and 31.
     - default: false
       isArray: false
       name: exception_list
@@ -1861,7 +1861,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma sase folder location.
+      description: The configuration folder group setting.
       isArray: false
       name: folder
       predefined:

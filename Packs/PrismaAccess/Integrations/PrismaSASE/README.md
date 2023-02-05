@@ -32,7 +32,7 @@ Create a new security rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| folder | The configuration folder group setting. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | position | Rule position. Possible values are: pre, post. Default is pre. | Optional | 
 | name | The name of the security rule. | Required | 
 | action | Rule action. Possible values are: deny, allow, drop, reset-client, reset-server, reset-both. | Required | 
@@ -138,7 +138,7 @@ Lists all security rules.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| folder | The configuration folder group setting. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | position | Security rule position. Possible values are: pre, post. Default is pre. | Optional | 
 | limit | The maximum number of results to return. Default is 50.  | Optional | 
 | page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
@@ -270,7 +270,7 @@ Update an existing security rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_id | ID of the rule to be changed. | Required | 
-| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| folder | The configuration folder group setting. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | position | Security rule position. Possible values are: pre, post. Default is pre. | Optional | 
 | action | Rule action. Possible values are: deny, allow, drop, reset-client, reset-server, reset-both. | Optional | 
 | description | The security rule's description. | Optional | 
@@ -377,7 +377,7 @@ Update an existing address object.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | object_id | ID of the address object to edit. | Required | 
-| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| folder | The configuration folder group setting. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | description | The address object's description. | Optional | 
 | type | The type of the address. Possible values are: ip_netmask, ip_range, ip_wildcard, fqdn. | Optional | 
 | address_value | The address value (should match the type). | Required | 
@@ -496,7 +496,7 @@ Create a new address object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| folder | The configuration folder group setting. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | name | The name of the address object. | Required | 
 | description | The address object's description. | Optional | 
 | type | The type of the address. Possible values are: ip_netmask, ip_range, ip_wildcard, fqdn. | Required | 
@@ -580,7 +580,7 @@ Lists all addresses objects.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | object_id | The specific address object to return. If not specified, all addresses will be returned. | Optional | 
-| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| folder | The configuration folder group setting. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | limit | The maximum number of results to return. Default is 50.  | Optional | 
 | page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
 | page_size | Number of results per page to display. | Optional | 
@@ -637,7 +637,7 @@ Lists all tags.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | tag_id | A specific tag to return. If not specified, all tags will be returned. | Optional | 
-| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| folder | The configuration folder group setting. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | limit | The maximum number of results to return. Default is 50.  | Optional | 
 | page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
 | page_size | Number of results per page to display. | Optional | 
@@ -689,7 +689,7 @@ Create a new tag.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| folder | The configuration folder group setting. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | name | The tag unique name. | Required | 
 | color | Tag color. Possible values are: Red, Green, Blue, Yellow, Copper, Orange, Purple, Gray, Light Green, Cyan, Light Gray, Blue Gray, Lime, Black, Gold, Brown, Olive, Maroon, Red-Orange, Yellow-Orange, Forest Green, Turquoise Blue, Azure Blue, Cerulean Blue, Midnight Blue, Medium Blue, Cobalt Blue, Violet Blue, Blue Violet, Medium Violet, Medium Rose, Lavender, Orchid, Thistle, Peach, Salmon, Magenta, Red Violet, Mahogany, Burnt Sienna, Chestnut. | Optional | 
 | comments | Tag comments. | Optional | 
@@ -742,7 +742,7 @@ Update an existing tag.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| folder | The configuration folder group setting. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | tag_id | The tag ID. | Required | 
 | color | Tag color. Possible values are: Red, Green, Blue, Yellow, Copper, Orange, Purple, Gray, Light Green, Cyan, Light Gray, Blue Gray, Lime, Black, Gold, Brown, Olive, Maroon, Red-Orange, Yellow-Orange, Forest Green, Turquoise Blue, Azure Blue, Cerulean Blue, Midnight Blue, Medium Blue, Cobalt Blue, Violet Blue, Blue Violet, Medium Violet, Medium Rose, Lavender, Orchid, Thistle, Peach, Salmon, Magenta, Red Violet, Mahogany, Burnt Sienna, Chestnut. | Optional | 
 | comments | Tag comments. | Optional | 
@@ -821,7 +821,7 @@ Lists all address groups.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_id | A specific address group to return. If not specified, all address groups will be returned. | Optional | 
-| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| folder | The configuration folder group setting. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | limit | The maximum number of results to return. Default is 50. | Optional | 
 | page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
 | page_size | Number of results per page to display. | Optional | 
@@ -875,7 +875,7 @@ Create a new address group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| folder | The configuration folder group setting. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | type | The address group type. Possible values are: static, dynamic. | Required | 
 | static_addresses | Static addresses for the address group. If the type is static, a value must be provided. | Optional | 
 | dynamic_filter | Dynamic filter for the address group. If the type is dynamic, a value must be provided. | Optional | 
@@ -933,7 +933,7 @@ Update an existing address group.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_id | The id of the address group. | Required | 
-| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| folder | The configuration folder group setting. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | static_addresses | Static addresses for the address group. If the type is static, a value must be provided. | Optional | 
 | dynamic_filter | Dynamic filter for the address group. If the type is dynamic, a value must be provided. | Optional | 
 | overwrite | Whether to overwrite the original address group values. Possible values are: true, false. Default is false. | Optional | 
@@ -1015,7 +1015,7 @@ Lists all custom URL categories.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | A specific url category to return. If not specified, all url categories will be returned. | Optional | 
-| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| folder | The configuration folder group setting. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | limit | The maximum number of results to return. Default is 50. | Optional | 
 | page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
 | page_size | Number of results per page to display. | Optional | 
@@ -1073,7 +1073,7 @@ Create a new URL category.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| folder | The configuration folder group setting. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | type | The custom URL category's type. Possible values are: URL List, Category Match. | Required | 
 | value | If the type is URL List, the value will be a comma-separated array of URL addresses. If the type is Category Match, the value will be a comma-separated array of category names. You can get the names by running the prisma-sase-url-access-profile-list command. | Required | 
 | description | The custom URL category's description. | Optional | 
@@ -1132,8 +1132,8 @@ Update an existing url category.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The custom URL category id. | Required | 
-| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
-| value | . | Optional | 
+| folder | The configuration folder group setting. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| value | The custom URL category's value. | Optional | 
 | overwrite | Whether to overwrite the original custom URL category values. Possible values are: true, false. Default is false. | Optional | 
 | description | The custom URL category's description. | Optional | 
 | type | The custom URL category's type. Possible values are: URL List, Category Match. | Optional | 
@@ -1217,7 +1217,7 @@ Lists all external dynamic lists.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | A specific external dynamic list to return. If not specified, all external dynamic lists will be returned. | Optional | 
-| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| folder | The configuration folder group setting. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | limit | The maximum number of results to return. Default is 50. | Optional | 
 | page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
 | page_size | Number of results per page to display. | Optional | 
@@ -1275,7 +1275,7 @@ Create a new dynamic list.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The external dynamic list name. | Required | 
-| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| folder | The configuration folder group setting. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | description | The dynamic list's description. | Optional | 
 | type | The dynamic list's type. Possible values are: predefined_ip, predefined_url, ip, domain, url. | Required | 
 | predefined_ip_list | The predefined IP list. If the type is predefined_ip, a value must be provided. Possible values are: panw-torexit-ip-list, panw-bulletproof-ip-list, panw-highrisk-ip-list, panw-known-ip-list. | Optional | 
@@ -1283,8 +1283,8 @@ Create a new dynamic list.
 | source_url | The source URL. If the type is ip, url or domain, a value must be provided. | Optional | 
 | frequency | Frequency to check for updates. Possible values are: five_minute, hourly, daily, weekly, monthly. | Optional | 
 | frequency_hour | The frequency hour. If the frequency argument is daily, weekly or monthly, value must be provided. Possible values are 00-23. | Optional | 
-| day_of_week | The day of the week. If the frequency argument is weekly or monthly, value must be provided. Possible values are: monday, tuesday, wednesday, thursday, friday, saturday, sunday. | Optional | 
-| day_of_month | The day of the month. If the frequency argument is monthly, value must be provided. Possible values are between 1 and 31. | Optional | 
+| day_of_week | The day of the week. If the frequency argument is weekly or monthly, a value must be provided. Possible values are: monday, tuesday, wednesday, thursday, friday, saturday, sunday. | Optional | 
+| day_of_month | The day of the month. If the frequency argument is monthly, a value must be provided. Possible values are between 1 and 31. | Optional | 
 | exception_list | The user can exclude certain addresses from the list depending on the type of list. | Optional | 
 | tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 
@@ -1375,7 +1375,7 @@ Update an existing dynamic list.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The external dynamic list id. | Required | 
-| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| folder | The configuration folder group setting. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | overwrite | Whether to overwrite the external dynamic list values. Possible values are: true, false. Default is false. | Optional | 
 | description | The dynamic list's description. | Optional | 
 | type | The dynamic list's type. Possible values are: predefined_ip, predefined_url, ip, domain, url. | Optional | 
@@ -1470,7 +1470,7 @@ Get all predefined URL categories.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
+| folder | The configuration folder group setting. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 
 
