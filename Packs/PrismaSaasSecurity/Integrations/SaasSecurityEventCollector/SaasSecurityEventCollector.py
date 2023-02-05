@@ -1,5 +1,6 @@
 import demistomock as demisto
 import urllib3
+import time
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from typing import Dict, Tuple
@@ -270,18 +271,23 @@ def main() -> None:  # pragma: no cover
             else:
                 events = integration_context.get('events')
                 demisto.info('fetching events from integration context')
-            try:
-                demisto.info(f'sending the following amount of events into XSIAM: {len(events)}')
-                send_events_to_xsiam(
-                    events=events,
-                    vendor=VENDOR,
-                    product=PRODUCT
-                )
-                demisto.setIntegrationContext({})
-            except Exception as e:
-                demisto.info(f'got error when trying to send events to XSIAM: [{e}]')
-                demisto.setIntegrationContext({'events': events})
-                demisto.info(f'set the following events into integration context: {events}')
+            for i in range(1, 4):
+                try:
+                    demisto.info(f'sending the following amount of events into XSIAM: {len(events)}, retry number {i}')
+                    send_events_to_xsiam(
+                        events=events,
+                        vendor=VENDOR,
+                        product=PRODUCT
+                    )
+                    demisto.setIntegrationContext({})
+                    break
+                except Exception as e:
+                    demisto.info(f'retry number {i}, got error when trying to send events to XSIAM: [{e}]')
+                    if i == 3:
+                        demisto.setIntegrationContext({'events': events})
+                        demisto.info(f'successfully added the following events into integration context: {events}')
+                    time.sleep(1)  # pylint: disable=sleep-exists
+
         elif command == 'saas-security-get-events':
             return_results(get_events_command(client, args, max_fetch=max_fetch, max_iterations=max_iterations))
         else:
