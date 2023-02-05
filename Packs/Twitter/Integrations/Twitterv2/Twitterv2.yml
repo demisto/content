@@ -29,7 +29,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description:  A comma-separated list of search queries to submit to the recent search endpoint.
+      description:  A comma-seperated list of keywords to submit to the recent search endpoint.
       isArray: true
       name: query
       required: true

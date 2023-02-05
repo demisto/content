@@ -33,7 +33,7 @@ This command will search for Tweets from the last 7 days and return all informat
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Search query to submit to the recent search endpoint. | Required | 
+| query | A comma-seperated list of keywords to submit to the recent search endpoint. | Required | 
 | start_time | The oldest UTC timestamp (from most recent seven days) from which the Tweets will be provided. Date format will be in ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ) or relational expressions like “7 days ago”. | Optional | 
 | end_time | The most recent UTC timestamp to which the Tweets will be provided. Date format will be in ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ) or relational expressions like “7 days ago”. | Optional | 
 | limit | Maximum number of results to return. Value can be between 10 and 100. Default is 50. | Optional | 
