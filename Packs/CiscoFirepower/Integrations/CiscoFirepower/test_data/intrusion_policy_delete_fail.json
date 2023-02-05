@@ -1,0 +1,11 @@
+{
+    "error": {
+        "category": "FRAMEWORK",
+        "messages": [
+            {
+                "description": "UUID cannot be null"
+            }
+        ],
+        "severity": "ERROR"
+    }
+}

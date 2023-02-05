@@ -1,0 +1,22 @@
+{
+    "results": [
+        {
+            "id": 1,
+            "can_view": 0,
+            "q_ref": 0,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "xcxz",
+            "sz_members": 0
+        },
+        {
+            "id": 2,
+            "can_view": 0,
+            "q_ref": 2,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "exception1",
+            "sz_members": 0
+        }
+    ]
+}

@@ -216,7 +216,7 @@ The equivalent `!pan-os` command is:
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-1. [Run any command supported in the Panorama API: panorama](#panorama)
+1. [Run any command supported in the Panorama API: pan-os](#pan-os)
 2. [Get pre-defined threats list from a Firewall or Panorama and stores as a JSON file in the context: panorama-get-predefined-threats-list](#pan-os-get-predefined-threats-list)
 3. [Commit a configuration: panorama-commit](#pan-os-commit)
 4. [Pushes rules from PAN-OS to the configured device group: panorama-push-to-device-group](#pan-os-push-to-device-group)
@@ -330,7 +330,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 
-### panorama
+### pan-os
 ***
 Run any command supported in the API.
 
@@ -359,7 +359,7 @@ Run any command supported in the API.
 | serialno | Specifies the device serial number. | Optional | 
 | reporttype | Chooses the report type, such as dynamic, predefined or custom. | Optional | 
 | reportname | Report name. | Optional | 
-| type | Request type (e.g. export, import, log, config). | Optional | 
+| type | Request type (e.g. export, import, log, config). Possible values are: keygen, config, commit, op, report, log, import, export, user-id, version. default is config. | Optional | 
 | search-time | The time that the PCAP was received on the firewall. Used for threat PCAPs. | Optional | 
 | target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 | job-id | Job ID. | Optional | 
