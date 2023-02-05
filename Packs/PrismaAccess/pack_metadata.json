@@ -1,6 +1,6 @@
 {
     "name": "Prisma SASE by Palo Alto Networks",
-    "description": "Integrate with Palo Alto Networks Prisma Access to query activity and take actions.",
+    "description": "Integrate with Palo Alto Networks Prisma SASE to query activity and take actions.",
     "support": "xsoar",
     "currentVersion": "2.0.0",
     "author": "Cortex XSOAR",

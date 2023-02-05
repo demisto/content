@@ -1,14 +1,15 @@
 id: PrismaSASE Test
 version: -1
 name: PrismaSASE Test
+description: Test playbook for Prisma SASE integration
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ea7a758a-3296-42b2-8e38-93bb0707411f
+    taskid: 93248e08-159e-4fbb-858b-3477513eaa7f
     type: start
     task:
-      id: ea7a758a-3296-42b2-8e38-93bb0707411f
+      id: 93248e08-159e-4fbb-858b-3477513eaa7f
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 282937d1-7b91-4096-8c73-4ffdc6ec3bbe
+    taskid: dc1743d8-bb04-4680-8e9e-931cae841199
     type: regular
     task:
-      id: 282937d1-7b91-4096-8c73-4ffdc6ec3bbe
+      id: dc1743d8-bb04-4680-8e9e-931cae841199
       version: -1
       name: prisma-sase-security-rule-create
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-security-rule-create
@@ -73,10 +74,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 0ccdce9b-1b2c-495f-8c53-87f6140bf474
+    taskid: 823e3add-e8c4-4134-8988-a52a78dbc426
     type: condition
     task:
-      id: 0ccdce9b-1b2c-495f-8c53-87f6140bf474
+      id: 823e3add-e8c4-4134-8988-a52a78dbc426
       version: -1
       name: Verify Outputs
       type: condition
@@ -171,10 +172,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 1cdc6bab-66e9-4a3e-8167-c24842d1e873
+    taskid: 56b64ac9-66a7-435e-8ca5-322f3631ab2d
     type: regular
     task:
-      id: 1cdc6bab-66e9-4a3e-8167-c24842d1e873
+      id: 56b64ac9-66a7-435e-8ca5-322f3631ab2d
       version: -1
       name: prisma-sase-security-rule-list
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-security-rule-list
@@ -209,10 +210,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: a5a635bd-3582-480b-8257-d01cd7809a2f
+    taskid: 242d5bc7-73f1-45ec-80f0-e6c429cd6619
     type: condition
     task:
-      id: a5a635bd-3582-480b-8257-d01cd7809a2f
+      id: 242d5bc7-73f1-45ec-80f0-e6c429cd6619
       version: -1
       name: Verify Outputs
       type: condition
@@ -309,10 +310,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 3edca214-94ea-411d-8e41-def803ca20b4
+    taskid: f17ac3ca-9378-470f-8d0d-8ded2c898814
     type: regular
     task:
-      id: 3edca214-94ea-411d-8e41-def803ca20b4
+      id: f17ac3ca-9378-470f-8d0d-8ded2c898814
       version: -1
       name: prisma-sase-candidate-config-push
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-candidate-config-push
@@ -321,11 +322,12 @@ tasks:
       brand: Palo Alto Networks - Prisma SASE
     nexttasks:
       '#none#':
-      - "49"
+      - "64"
     scriptarguments:
       folders:
         simple: Remote Networks
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -343,10 +345,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 665956f4-4dfb-44d3-8c46-094425f99b2b
+    taskid: 29174e7c-2122-4771-8d53-f4786c187356
     type: regular
     task:
-      id: 665956f4-4dfb-44d3-8c46-094425f99b2b
+      id: 29174e7c-2122-4771-8d53-f4786c187356
       version: -1
       name: prisma-sase-security-rule-update
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-security-rule-update
@@ -379,10 +381,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 4d77ecb6-db27-4725-8d83-b9b8f683abba
+    taskid: d5f132ad-16e4-4131-8108-f6e499dff0b3
     type: condition
     task:
-      id: 4d77ecb6-db27-4725-8d83-b9b8f683abba
+      id: d5f132ad-16e4-4131-8108-f6e499dff0b3
       version: -1
       name: Verify Outputs
       type: condition
@@ -472,10 +474,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 60ec33e9-4b40-476f-8d9b-132b6b0c7af7
+    taskid: d43f02db-d1d1-4310-8b3e-218dab24a401
     type: regular
     task:
-      id: 60ec33e9-4b40-476f-8d9b-132b6b0c7af7
+      id: d43f02db-d1d1-4310-8b3e-218dab24a401
       version: -1
       name: prisma-sase-address-object-update
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-address-object-update
@@ -510,10 +512,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 9d123f25-0332-4e39-87ec-0df4588a05af
+    taskid: f93f18a7-092b-4c15-8f96-457300cb1e46
     type: condition
     task:
-      id: 9d123f25-0332-4e39-87ec-0df4588a05af
+      id: f93f18a7-092b-4c15-8f96-457300cb1e46
       version: -1
       name: Verify Outputs
       type: condition
@@ -574,10 +576,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 9be3a247-bd17-44f7-85ec-8fd6fed55420
+    taskid: 06aa0137-4dba-4362-8fe5-a2a79aadbb96
     type: regular
     task:
-      id: 9be3a247-bd17-44f7-85ec-8fd6fed55420
+      id: 06aa0137-4dba-4362-8fe5-a2a79aadbb96
       version: -1
       name: prisma-sase-config-job-list
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-config-job-list
@@ -605,10 +607,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 9612ab84-e232-41e4-8fc1-71d3bb2bab17
+    taskid: 4b52058e-6cb8-44bd-8e7e-c55e65b30d7a
     type: condition
     task:
-      id: 9612ab84-e232-41e4-8fc1-71d3bb2bab17
+      id: 4b52058e-6cb8-44bd-8e7e-c55e65b30d7a
       version: -1
       name: Verify Outputs
       type: condition
@@ -643,10 +645,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 59750d01-105f-4da0-8923-9f2b8b1314da
+    taskid: 94a7c5d7-f722-4413-8538-288d858764e2
     type: regular
     task:
-      id: 59750d01-105f-4da0-8923-9f2b8b1314da
+      id: 94a7c5d7-f722-4413-8538-288d858764e2
       version: -1
       name: prisma-sase-security-rule-delete
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-security-rule-delete
@@ -677,10 +679,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 94e7080a-a6ae-41bd-8e52-cd8a4cb1846c
+    taskid: e5f4d223-3b63-431c-8369-89631a6b8a3a
     type: regular
     task:
-      id: 94e7080a-a6ae-41bd-8e52-cd8a4cb1846c
+      id: e5f4d223-3b63-431c-8369-89631a6b8a3a
       version: -1
       name: prisma-sase-address-object-create
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-address-object-create
@@ -717,10 +719,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 408ba00d-05ed-4295-8e56-4b248c2b1226
+    taskid: c590b019-7c3a-4bdf-8da3-ae21572d9539
     type: condition
     task:
-      id: 408ba00d-05ed-4295-8e56-4b248c2b1226
+      id: c590b019-7c3a-4bdf-8da3-ae21572d9539
       version: -1
       name: Verify Outputs
       type: condition
@@ -775,10 +777,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: c79da8a0-ac8c-4d53-8e31-555469221b2a
+    taskid: 704ba4ad-f695-407c-888a-b53e7365b39e
     type: regular
     task:
-      id: c79da8a0-ac8c-4d53-8e31-555469221b2a
+      id: 704ba4ad-f695-407c-888a-b53e7365b39e
       version: -1
       name: prisma-sase-address-object-delete
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-address-object-delete
@@ -809,10 +811,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: cf5ce2cd-0b63-4247-8719-fe3625449b92
+    taskid: 5f259292-4f86-44be-8477-58bfed2a7dd5
     type: regular
     task:
-      id: cf5ce2cd-0b63-4247-8719-fe3625449b92
+      id: 5f259292-4f86-44be-8477-58bfed2a7dd5
       version: -1
       name: prisma-sase-address-object-list
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-address-object-list
@@ -843,10 +845,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 3d9757d6-f310-4d18-8fd2-a447bc68d1b8
+    taskid: 62f33a34-f3b2-42e8-8126-c4671923b8a2
     type: condition
     task:
-      id: 3d9757d6-f310-4d18-8fd2-a447bc68d1b8
+      id: 62f33a34-f3b2-42e8-8126-c4671923b8a2
       version: -1
       name: Verify Outputs
       type: condition
@@ -901,10 +903,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 29fb61fa-33a1-4e7d-8bc8-51e9c5774bb6
+    taskid: acbca9cf-9ffd-4f37-8ee3-d845f70c84e8
     type: regular
     task:
-      id: 29fb61fa-33a1-4e7d-8bc8-51e9c5774bb6
+      id: acbca9cf-9ffd-4f37-8ee3-d845f70c84e8
       version: -1
       name: prisma-sase-tag-list
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-tag-list
@@ -935,10 +937,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 07e961c4-feba-47f5-8148-5eaac22fa6a1
+    taskid: ec66ab7a-68b4-430f-82ef-e2f2f6783677
     type: condition
     task:
-      id: 07e961c4-feba-47f5-8148-5eaac22fa6a1
+      id: ec66ab7a-68b4-430f-82ef-e2f2f6783677
       version: -1
       name: Verify Outputs
       type: condition
@@ -988,10 +990,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: e1dc559e-3bd5-46cc-830c-c7817b0929fc
+    taskid: 2703adff-b2e7-46ea-8a3f-5b3073d8d291
     type: regular
     task:
-      id: e1dc559e-3bd5-46cc-830c-c7817b0929fc
+      id: 2703adff-b2e7-46ea-8a3f-5b3073d8d291
       version: -1
       name: prisma-sase-tag-create
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-tag-create
@@ -1026,10 +1028,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 65fb9486-7f6e-4f83-896e-8943203f9a9a
+    taskid: 4a0447da-bcc1-4881-84e0-9a6c8bc801ca
     type: condition
     task:
-      id: 65fb9486-7f6e-4f83-896e-8943203f9a9a
+      id: 4a0447da-bcc1-4881-84e0-9a6c8bc801ca
       version: -1
       name: Verify Outputs
       type: condition
@@ -1079,10 +1081,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 01007c67-c52a-4028-824f-ccb3388ec648
+    taskid: a079b8b2-c948-4a66-8e0a-d8f8d077b5b3
     type: regular
     task:
-      id: 01007c67-c52a-4028-824f-ccb3388ec648
+      id: a079b8b2-c948-4a66-8e0a-d8f8d077b5b3
       version: -1
       name: prisma-sase-tag-update
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-tag-update
@@ -1115,10 +1117,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: efb26d26-2e98-4b3c-8479-a756a92ad186
+    taskid: 07b3dcaf-5b44-4396-88fb-2f16b7213267
     type: condition
     task:
-      id: efb26d26-2e98-4b3c-8479-a756a92ad186
+      id: 07b3dcaf-5b44-4396-88fb-2f16b7213267
       version: -1
       name: Verify Outputs
       type: condition
@@ -1173,10 +1175,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: aa554e14-ccf8-488b-85c6-d693fa07fb18
+    taskid: a7436a41-bf04-4a7c-81f4-b8d912561254
     type: regular
     task:
-      id: aa554e14-ccf8-488b-85c6-d693fa07fb18
+      id: a7436a41-bf04-4a7c-81f4-b8d912561254
       version: -1
       name: prisma-sase-tag-delete
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-tag-delete
@@ -1207,10 +1209,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 8c4dd21f-cad9-410f-8f2b-835fabf42493
+    taskid: dc3900c8-f574-409a-8ef1-d4b0942be5ef
     type: regular
     task:
-      id: 8c4dd21f-cad9-410f-8f2b-835fabf42493
+      id: dc3900c8-f574-409a-8ef1-d4b0942be5ef
       version: -1
       name: prisma-sase-address-group-list
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-address-group-list
@@ -1243,10 +1245,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: c22e6f61-c153-478b-84f2-4f1bb9b397f5
+    taskid: 6cd79b49-9448-4194-87ae-a6fceb4232c3
     type: condition
     task:
-      id: c22e6f61-c153-478b-84f2-4f1bb9b397f5
+      id: 6cd79b49-9448-4194-87ae-a6fceb4232c3
       version: -1
       name: Verify Outputs
       type: condition
@@ -1298,10 +1300,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: d55b86b3-1272-4cfc-83f1-29129d4b82af
+    taskid: 01a5196e-0059-4a41-824b-9569d4c2c456
     type: regular
     task:
-      id: d55b86b3-1272-4cfc-83f1-29129d4b82af
+      id: 01a5196e-0059-4a41-824b-9569d4c2c456
       version: -1
       name: prisma-sase-address-group-create
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-address-group-create
@@ -1338,10 +1340,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 23d052f8-1e0b-4847-836f-4c50a289f1ef
+    taskid: d9570684-9839-427e-8650-40076254f35b
     type: condition
     task:
-      id: 23d052f8-1e0b-4847-836f-4c50a289f1ef
+      id: d9570684-9839-427e-8650-40076254f35b
       version: -1
       name: Verify Outputs
       type: condition
@@ -1393,10 +1395,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 1fa200df-8b1a-4394-8547-ef31459bd4f6
+    taskid: ce678097-d935-4edf-848b-b8fda83ef313
     type: regular
     task:
-      id: 1fa200df-8b1a-4394-8547-ef31459bd4f6
+      id: ce678097-d935-4edf-848b-b8fda83ef313
       version: -1
       name: prisma-sase-address-group-update
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-address-group-update
@@ -1431,10 +1433,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 3e1fc9d6-1df4-4ee2-8093-d076d3288a73
+    taskid: 1979f15a-1674-4e5b-8957-f102e8d8b317
     type: condition
     task:
-      id: 3e1fc9d6-1df4-4ee2-8093-d076d3288a73
+      id: 1979f15a-1674-4e5b-8957-f102e8d8b317
       version: -1
       name: Verify Outputs
       type: condition
@@ -1491,10 +1493,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: b07eb01a-87a4-45ad-8cd0-1fbc7c635a5a
+    taskid: 82140cce-4aa6-478e-85a2-87b16e226637
     type: regular
     task:
-      id: b07eb01a-87a4-45ad-8cd0-1fbc7c635a5a
+      id: 82140cce-4aa6-478e-85a2-87b16e226637
       version: -1
       name: prisma-sase-address-group-delete
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-address-group-delete
@@ -1525,10 +1527,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 2cbcd30e-3fb0-4d24-8061-a924b7e56526
+    taskid: 153cbd09-0776-4ac8-8741-fc9eb39b3111
     type: regular
     task:
-      id: 2cbcd30e-3fb0-4d24-8061-a924b7e56526
+      id: 153cbd09-0776-4ac8-8741-fc9eb39b3111
       version: -1
       name: prisma-sase-custom-url-category-list
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-custom-url-category-list
@@ -1559,10 +1561,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: e5a62f81-37f7-47b0-81b4-981117c92640
+    taskid: 710f6f24-ece4-426a-8c89-8617de84f9d3
     type: condition
     task:
-      id: e5a62f81-37f7-47b0-81b4-981117c92640
+      id: 710f6f24-ece4-426a-8c89-8617de84f9d3
       version: -1
       name: Verify Outputs
       type: condition
@@ -1619,10 +1621,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: b965ec5e-299a-4db6-82bd-2e202f6b5324
+    taskid: 14419343-d7fc-404d-8106-9ce4ac233f39
     type: regular
     task:
-      id: b965ec5e-299a-4db6-82bd-2e202f6b5324
+      id: 14419343-d7fc-404d-8106-9ce4ac233f39
       version: -1
       name: prisma-sase-custom-url-category-create
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-custom-url-category-create
@@ -1659,10 +1661,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 9b705553-1b02-43ba-89bb-beffffbeb1d1
+    taskid: 4e601277-4c0b-479d-81c4-065d8ff4b422
     type: condition
     task:
-      id: 9b705553-1b02-43ba-89bb-beffffbeb1d1
+      id: 4e601277-4c0b-479d-81c4-065d8ff4b422
       version: -1
       name: Verify Outputs
       type: condition
@@ -1714,10 +1716,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 1af1d1dc-9172-489b-8556-651c3ac6fcab
+    taskid: e8cbf5f2-7ec0-4a4b-84e8-e6788c7f6bf4
     type: regular
     task:
-      id: 1af1d1dc-9172-489b-8556-651c3ac6fcab
+      id: e8cbf5f2-7ec0-4a4b-84e8-e6788c7f6bf4
       version: -1
       name: prisma-sase-custom-url-category-update
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-custom-url-category-update
@@ -1750,10 +1752,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: a6179368-4e9f-4b81-8411-8ae73a5c9f17
+    taskid: 8510535c-5465-4bc5-8b08-ec8e5acc26ad
     type: condition
     task:
-      id: a6179368-4e9f-4b81-8411-8ae73a5c9f17
+      id: 8510535c-5465-4bc5-8b08-ec8e5acc26ad
       version: -1
       name: Verify Outputs
       type: condition
@@ -1808,10 +1810,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: a89e645c-677e-47e9-8b2b-275afd773b96
+    taskid: 1b6e67de-efb8-4366-898e-f9d972a04fe6
     type: regular
     task:
-      id: a89e645c-677e-47e9-8b2b-275afd773b96
+      id: 1b6e67de-efb8-4366-898e-f9d972a04fe6
       version: -1
       name: prisma-sase-custom-url-category-delete
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-custom-url-category-delete
@@ -1842,10 +1844,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 4be7fcf0-9ada-4958-8d02-96a308dff581
+    taskid: 97995d38-0f13-41b3-88f9-faba15ce3c49
     type: regular
     task:
-      id: 4be7fcf0-9ada-4958-8d02-96a308dff581
+      id: 97995d38-0f13-41b3-88f9-faba15ce3c49
       version: -1
       name: prisma-sase-external-dynamic-list-list
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-external-dynamic-list-list
@@ -1876,10 +1878,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 03272864-8192-43d7-87f0-0aeae9583ecd
+    taskid: 260ea658-adcb-462d-8175-c581bf96ea9b
     type: condition
     task:
-      id: 03272864-8192-43d7-87f0-0aeae9583ecd
+      id: 260ea658-adcb-462d-8175-c581bf96ea9b
       version: -1
       name: Verify Outputs
       type: condition
@@ -1931,10 +1933,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 21f9cc38-2ac5-469d-8151-3346168a143b
+    taskid: 11ac61e3-80b6-4fa1-8d7b-fe971ea12f03
     type: regular
     task:
-      id: 21f9cc38-2ac5-469d-8151-3346168a143b
+      id: 11ac61e3-80b6-4fa1-8d7b-fe971ea12f03
       version: -1
       name: prisma-sase-external-dynamic-list-create predefined
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-external-dynamic-list-create
@@ -1969,10 +1971,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 573c766a-3d02-43a5-8126-9cd94cad0eb4
+    taskid: bfccbded-5f6b-485d-821b-7cb7dc18ffbf
     type: condition
     task:
-      id: 573c766a-3d02-43a5-8126-9cd94cad0eb4
+      id: bfccbded-5f6b-485d-821b-7cb7dc18ffbf
       version: -1
       name: Verify Outputs
       type: condition
@@ -2029,10 +2031,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: b3a486cc-61b8-42f5-8de2-897bba5f6eb2
+    taskid: d607d6c2-a725-42b8-8537-754f26a0a280
     type: regular
     task:
-      id: b3a486cc-61b8-42f5-8de2-897bba5f6eb2
+      id: d607d6c2-a725-42b8-8537-754f26a0a280
       version: -1
       name: prisma-sase-external-dynamic-list-update
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-external-dynamic-list-update
@@ -2067,10 +2069,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: ddfcade6-d28b-4eac-8fb4-5a05f3ad9fba
+    taskid: 237790fe-2819-4725-8c4e-19b24703cd5c
     type: condition
     task:
-      id: ddfcade6-d28b-4eac-8fb4-5a05f3ad9fba
+      id: 237790fe-2819-4725-8c4e-19b24703cd5c
       version: -1
       name: Verify Outputs
       type: condition
@@ -2125,10 +2127,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 2176541a-703f-4a02-8056-8a23d89bef14
+    taskid: 6c2d07a9-c965-4565-80b7-2f657b22c797
     type: regular
     task:
-      id: 2176541a-703f-4a02-8056-8a23d89bef14
+      id: 6c2d07a9-c965-4565-80b7-2f657b22c797
       version: -1
       name: prisma-sase-external-dynamic-list-delete
       script: Palo Alto Networks - Prisma SASE|||prisma-sase-external-dynamic-list-delete
@@ -2159,10 +2161,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 774a57f8-726f-435b-846d-93f62cd30393
+    taskid: 53274076-7bbd-44d1-883a-47ed007859c7
     type: title
     task:
-      id: 774a57f8-726f-435b-846d-93f62cd30393
+      id: 53274076-7bbd-44d1-883a-47ed007859c7
       version: -1
       name: Test Done
       type: title
@@ -2175,7 +2177,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9550
+          "y": 9725
         }
       }
     note: false
@@ -2187,10 +2189,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: d6f572f1-28a3-4364-81ee-980de0607387
+    taskid: 6d4ed277-448c-44fe-8f29-d11ecffa938a
     type: title
     task:
-      id: d6f572f1-28a3-4364-81ee-980de0607387
+      id: 6d4ed277-448c-44fe-8f29-d11ecffa938a
       version: -1
       name: Security Rules
       type: title
@@ -2218,10 +2220,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 84c2a8af-127a-4fcd-8d4e-e92468096f47
+    taskid: c5462050-8a12-4d53-8412-9378e6cdba9b
     type: title
     task:
-      id: 84c2a8af-127a-4fcd-8d4e-e92468096f47
+      id: c5462050-8a12-4d53-8412-9378e6cdba9b
       version: -1
       name: Address Objects
       type: title
@@ -2249,10 +2251,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: b7cdd0eb-bcc3-43a0-83d8-a35cbe4b32f6
+    taskid: e5f93cce-fdc0-4dce-8af4-f20a31f18a48
     type: regular
     task:
-      id: b7cdd0eb-bcc3-43a0-83d8-a35cbe4b32f6
+      id: e5f93cce-fdc0-4dce-8af4-f20a31f18a48
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -2283,10 +2285,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: b0d47fb4-6706-407e-8dca-ddd09089648a
+    taskid: e3518f28-84bf-4f2f-8e5c-25dc9434f98a
     type: title
     task:
-      id: b0d47fb4-6706-407e-8dca-ddd09089648a
+      id: e3518f28-84bf-4f2f-8e5c-25dc9434f98a
       version: -1
       name: Tags
       type: title
@@ -2314,10 +2316,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: b7d264ec-7d4a-4184-8898-33ab3229b87c
+    taskid: c2955b87-bcc5-4e81-8b95-fba8b3545d1e
     type: title
     task:
-      id: b7d264ec-7d4a-4184-8898-33ab3229b87c
+      id: c2955b87-bcc5-4e81-8b95-fba8b3545d1e
       version: -1
       name: Address Groups
       type: title
@@ -2345,10 +2347,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 11feb4c4-f15d-4a1d-8e8a-17678dcb35d7
+    taskid: 956aec02-ae12-4622-83c2-15610730bc43
     type: title
     task:
-      id: 11feb4c4-f15d-4a1d-8e8a-17678dcb35d7
+      id: 956aec02-ae12-4622-83c2-15610730bc43
       version: -1
       name: Custom URL Categories
       type: title
@@ -2376,10 +2378,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 04fe0d5e-810a-462f-88f8-5c01f377d1ef
+    taskid: 3aceec1b-1614-4fe8-81d5-cb2bb9386951
     type: title
     task:
-      id: 04fe0d5e-810a-462f-88f8-5c01f377d1ef
+      id: 3aceec1b-1614-4fe8-81d5-cb2bb9386951
       version: -1
       name: External Dynamic Lists
       type: title
@@ -2407,10 +2409,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: bf8c7e78-c7c8-47e6-868f-6aded9e52be5
+    taskid: 0ab8874e-1637-4614-829d-29cf2d0c66f2
     type: title
     task:
-      id: bf8c7e78-c7c8-47e6-868f-6aded9e52be5
+      id: 0ab8874e-1637-4614-829d-29cf2d0c66f2
       version: -1
       name: Delete all objects
       type: title
@@ -2438,10 +2440,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 68cf4b72-8a5a-40b5-807d-bd5764c05c17
+    taskid: c30d91ff-6b00-43b6-8346-d8e5a98ef651
     type: title
     task:
-      id: 68cf4b72-8a5a-40b5-807d-bd5764c05c17
+      id: c30d91ff-6b00-43b6-8346-d8e5a98ef651
       version: -1
       name: Config Job List
       type: title
@@ -2469,10 +2471,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 5c119a39-c45e-4ead-8e0a-b88dca12d2ef
+    taskid: fdcd4a31-6df0-459f-808e-bc3f27037deb
     type: title
     task:
-      id: 5c119a39-c45e-4ead-8e0a-b88dca12d2ef
+      id: fdcd4a31-6df0-459f-808e-bc3f27037deb
       version: -1
       name: Push Config - Polling
       type: title
@@ -2498,12 +2500,55 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 7a9adde4-e344-44a8-8616-e43a30dfb5df
+    type: condition
+    task:
+      id: 7a9adde4-e344-44a8-8616-e43a30dfb5df
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.CandidateConfig.result
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.CandidateConfig.job_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 9565,
+        "height": 9740,
         "width": 380,
         "x": 50,
         "y": 50
@@ -2513,4 +2558,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.5.0
-description: Test playbook for Prisma SASE integration

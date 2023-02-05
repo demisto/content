@@ -1,6 +1,6 @@
 This integration was integrated and tested with version 1.0 of Prisma SASE API.
 
-## Configure Prisma SASE on Cortex XSOAR
+## Create an account in Prisma SASE UI:
 
 1. Navigate to **Common Services** > **Identity & Access** > **Servers & Services**.
 2. Add or create a service account with the proper privileges.
