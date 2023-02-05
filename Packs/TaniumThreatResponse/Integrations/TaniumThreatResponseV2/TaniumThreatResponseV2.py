@@ -120,6 +120,9 @@ class Client(BaseClient):
     def login(self):
         return self.update_session()
 
+    def get_threat_response_endpoint(self):
+        return "threat-response" if self.api_version == "4.x" else "detect3"
+
 
 ''' GENERAL HELPER FUNCTIONS '''
 
@@ -255,6 +258,13 @@ def get_event_header(event_type):  # pragma: no cover
     return headers
 
 
+''' GENERAL HELPER FUNCTIONS'''
+
+
+def normalize_api_response(raw_response):
+    return raw_response.get('data', raw_response) if type(raw_response) is dict else raw_response
+
+
 ''' INTEL DOCS HELPER FUNCTIONS '''
 
 
@@ -382,7 +392,7 @@ def alarm_to_incident(client, alarm):  # pragma: no cover
     intel_doc = ''
     if intel_doc_id := alarm.get('intelDocId', ''):
         raw_response = client.do_request('GET', f'/plugin/products/'
-                                                f'{"threat-response" if client.api_version == "4.x" else "detect3"}'
+                                                f'{client.get_threat_response_endpoint()}'
                                                 f'/api/v1/intels/{intel_doc_id}')
         raw_response_data = raw_response.get('data', raw_response)
         intel_doc = raw_response_data.get('name')
@@ -390,11 +400,11 @@ def alarm_to_incident(client, alarm):  # pragma: no cover
         intel_doc_labels = []
         intel_doc_labels_resp =\
             client.do_request('GET', f'/plugin/products/'
-                                     f'{"threat-response" if client.api_version == "4.x" else "detect3"}'
+                                     f'{client.get_threat_response_endpoint()}'
                                      f'/api/v1/intels/{intel_doc_id}/labels')
 
-        labels_list = intel_doc_labels_resp.get('data', intel_doc_labels_resp) \
-            if type(intel_doc_labels_resp) is dict else intel_doc_labels_resp
+        labels_list = normalize_api_response(intel_doc_labels_resp)
+
         for label in labels_list:
             intel_doc_labels.append(label['name'])
         alarm['labels'] = intel_doc_labels
@@ -462,11 +472,11 @@ def fetch_incidents(client: Client, alerts_states_to_retrieve: str, label_name_t
         demisto.debug(f'Sending new alerts api request with offset: {offset}.')
         url_suffix = \
             f'/plugin/products/' \
-            f'{"threat-response" if client.api_version == "4.x" else "detect3"}/api/v1/alerts?' + \
+            f'{client.get_threat_response_endpoint()}/api/v1/alerts?' + \
             alerts_states_suffix + f'&sort=-createdAt&limit=500&offset={offset}' + label_name_suffix
 
         raw_response = client.do_request('GET', url_suffix)
-        raw_response_data = raw_response.get('data', raw_response) if type(raw_response) is dict else raw_response
+        raw_response_data = normalize_api_response(raw_response)
         if not raw_response_data:
             demisto.debug('Stop fetch loop, no incidents in raw response.')
             break
@@ -526,7 +536,7 @@ def get_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[lis
     id_ = data_args.get('intel_doc_id')
     try:
         raw_response = client.do_request('GET', f'/plugin/products/'
-                                                f'{"threat-response" if client.api_version == "4.x" else "detect3"}'
+                                                f'{client.get_threat_response_endpoint()}'
                                                 f'/api/v1/intels/{id_}')
     # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
     # with a "Not Found" message.
@@ -538,8 +548,7 @@ def get_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[lis
     # A more readable format for the human readable section.
     if intel_doc:
         intel_doc['LabelIds'] = str(intel_doc.get('LabelIds', [])).strip('[]')
-    context_data = format_context_data(raw_response.get('data', raw_response)
-                                       if type(raw_response) is dict else raw_response)
+    context_data = format_context_data(normalize_api_response(raw_response))
     context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
@@ -568,7 +577,7 @@ def get_intel_docs(client: Client, data_args: dict) -> Tuple[str, dict, Union[li
                            offset=convert_to_int(data_args.get('offset')), labelId=data_args.get('label_id'),
                            mitreTechniqueId=data_args.get('mitre_technique_id')) if data_args else {}
     raw_response = client.do_request('GET', f'/plugin/products/'
-                                            f'{"threat-response" if client.api_version == "4.x" else "detect3"}'
+                                            f'{client.get_threat_response_endpoint()}'
                                             f'/api/v1/intels/', params=params)
 
     intel_docs = []
@@ -611,14 +620,14 @@ def get_intel_docs_labels_list(client: Client, data_args: dict) -> Tuple[str, di
     try:
         raw_response = client.do_request('GET',
                                          f'/plugin/products/'
-                                         f'{"threat-response" if client.api_version == "4.x" else "detect3"}'
+                                         f'{client.get_threat_response_endpoint()}'
                                          f'/api/v1/intels/{id_}/labels')
     except requests.HTTPError as e:
         raise DemistoException(f'Check the intel doc ID and try again.\n({str(e)})')
 
     intel_docs_labels = []
     intel_doc_label = {}
-    raw_response_data = raw_response.get("data", raw_response) if type(raw_response) is dict else raw_response
+    raw_response_data = normalize_api_response(raw_response)
     # append raw response to a list in case raw_response is a dictionary
     tmp_list = [raw_response_data] if type(raw_response_data) is dict else raw_response_data
     for item in tmp_list:
@@ -652,7 +661,7 @@ def add_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict, Un
     try:
         raw_response = client.do_request('PUT',
                                          f'/plugin/products/'
-                                         f'{"threat-response" if client.api_version == "4.x" else "detect3"}'
+                                         f'{client.get_threat_response_endpoint()}'
                                          f'/api/v1/intels/{intel_doc_id}/labels', data=params)
     # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
     # with a "Not Found" message.
@@ -669,7 +678,7 @@ def add_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict, Un
 
     intel_docs_labels = []
     intel_doc_label = {}
-    raw_response_data = raw_response.get("data", raw_response) if type(raw_response) is dict else raw_response
+    raw_response_data = normalize_api_response(raw_response)
     tmp_list = [raw_response_data] if type(raw_response_data) is dict else raw_response_data
     for item in tmp_list:
         intel_doc_label = get_intel_doc_label_item(item)
@@ -702,7 +711,7 @@ def remove_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict,
     try:
         raw_response = client.do_request('DELETE',
                                          f'/plugin/products/'
-                                         f'{"threat-response" if client.api_version == "4.x" else "detect3"}'
+                                         f'{client.get_threat_response_endpoint()}'
                                          f'/api/v1/intels/{intel_doc_id}/labels/{label_id_to_delete}')
     # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
     # with a "Not Found" message.
@@ -719,7 +728,7 @@ def remove_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict,
 
     intel_docs_labels = []
     intel_doc_label = {}
-    raw_response_data = raw_response.get("data", raw_response) if type(raw_response) is dict else raw_response
+    raw_response_data = normalize_api_response(raw_response)
     tmp_list = [raw_response_data] if type(raw_response_data) is dict else raw_response_data
     for item in tmp_list:
         intel_doc_label = get_intel_doc_label_item(item)
@@ -759,7 +768,7 @@ def create_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
 
     raw_response = client.do_request('POST',
                                      f'/plugin/products/'
-                                     f'{"threat-response" if client.api_version == "4.x" else "detect3"}/api/v1/intels',
+                                     f'{client.get_threat_response_endpoint()}/api/v1/intels',
                                      headers={'Content-Disposition': f'filename=file.{file_extension}',
                                               'Content-Type': 'application/xml'}, body=file_content)
 
@@ -768,8 +777,7 @@ def create_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
     if intel_doc:
         intel_doc['LabelIds'] = str(intel_doc.get('LabelIds', [])).strip('[]')
 
-    context_data = format_context_data(raw_response.get("data", raw_response)
-                                       if type(raw_response) is dict else raw_response)
+    context_data = format_context_data(normalize_api_response(raw_response))
     context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
@@ -798,7 +806,7 @@ def update_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
     try:
         # get intel doc intrinsicId
         raw_response = client.do_request('GET', f'/plugin/products/'
-                                                f'{"threat-response" if client.api_version == "4.x" else "detect3"}'
+                                                f'{client.get_threat_response_endpoint()}'
                                                 f'/api/v1/intels/{id_}')
         raw_response_data = raw_response.get('data') if client.api_version == "4.x" else raw_response
         intrinsic_id = raw_response_data.get('intrinsicId')
@@ -827,7 +835,7 @@ def update_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
         content_disposition = f'filename={intrinsic_id}'
 
     raw_response = client.do_request('PUT', f'/plugin/products/'
-                                            f'{"threat-response" if client.api_version == "4.x" else "detect3"}'
+                                            f'{client.get_threat_response_endpoint()}'
                                             f'/api/v1/intels/{id_}',
                                      headers={'Content-Disposition': content_disposition,
                                               'Content-Type': 'application/xml'}, body=updated_content)
@@ -837,8 +845,7 @@ def update_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
     if intel_doc:
         intel_doc['LabelIds'] = str(intel_doc.get('LabelIds', [])).strip('[]')
 
-    context_data = format_context_data(raw_response.get("data", raw_response)
-                                       if type(raw_response) is dict else raw_response)
+    context_data = format_context_data(normalize_api_response(raw_response))
     context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
@@ -854,7 +861,7 @@ def delete_intel_doc(client, data_args):
         'id': data_args.get('intel_doc_id')
     }
     raw_response = client.do_request('DELETE', f'/plugin/products/'
-                                               f'{"threat-response" if client.api_version == "4.x" else "detect3"}'
+                                               f'{client.get_threat_response_endpoint()}'
                                                f'/api/v1/intels/', params=params)
 
     return 'Intel Doc deleted', {}, raw_response
@@ -983,7 +990,7 @@ def get_alerts(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
                            offset=offset, state=state.lower() if state else None)
 
     raw_response = client.do_request('GET', f'/plugin/products/'
-                                            f'{"threat-response" if client.api_version == "4.x" else "detect3"}'
+                                            f'{client.get_threat_response_endpoint()}'
                                             f'/api/v1/alerts/', params=params)
 
     alerts = []
@@ -1015,7 +1022,7 @@ def get_alert(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """
     alert_id = data_args.get('alert_id')
     raw_response = client.do_request('GET', f'/plugin/products/'
-                                            f'{"threat-response" if client.api_version == "4.x" else "detect3"}'
+                                            f'{client.get_threat_response_endpoint()}'
                                             f'/api/v1/alerts/{alert_id}')
     raw_response_data = raw_response.get("data", raw_response)
     alert = get_alert_item(raw_response_data)
@@ -1049,7 +1056,7 @@ def alert_update_state(client, data_args) -> Tuple[str, dict, Union[list, dict]]
     }
     if client.api_version == "4.x":
         if len(alert_ids) == 1:
-            client.do_request('PUT', f'/plugin/products/threat-response/api/v1/alerts/{str(alert_ids[0])}', data=body)
+            client.do_request('PUT', f'/plugin/products/threat-response/api/v1/alerts/{alert_ids[0]}', data=body)
         else:
             client.do_request('PUT', '/plugin/products/threat-response/api/v1/alerts/',
                               data=body, params={'id': alert_ids})
@@ -1358,10 +1365,10 @@ def get_labels(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     limit = arg_to_number(data_args.get('limit', 50))
     offset = arg_to_number(data_args.get('offset', 0))
     raw_response = client.do_request('GET', f'/plugin/products/'
-                                            f'{"threat-response" if client.api_version == "4.x" else "detect3"}'
+                                            f'{client.get_threat_response_endpoint()}'
                                             f'/api/v1/labels/')
     assert offset is not None
-    raw_response_data = raw_response.get("data", raw_response) if type(raw_response) is dict else raw_response
+    raw_response_data = normalize_api_response(raw_response)
     from_idx = min(offset, len(raw_response_data))
     to_idx = min(offset + limit, len(raw_response_data))  # type: ignore
 
@@ -1388,7 +1395,7 @@ def get_label(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """
     label_id = data_args.get('label_id')
     raw_response = client.do_request('GET', f'/plugin/products/'
-                                            f'{"threat-response" if client.api_version == "4.x" else "detect3"}'
+                                            f'{client.get_threat_response_endpoint()}'
                                             f'/api/v1/labels/{label_id}')
 
     raw_response_data = raw_response.get("data", raw_response)
@@ -2088,7 +2095,7 @@ def main():
         password,
         api_token=password if '_token' in username else None,
         verify=not params.get('insecure', False),
-        api_version=params.get('api_version', '4.x')
+        api_version=params.get('api_version', '3.x')
     )
 
     demisto.info(f'Command being called is {command}')
