@@ -24,7 +24,7 @@ def grab_domain_table(html_section: element.Tag) -> List:
     for row in rows:
         cols = row.find_all('td')
         cols = [ele.text.strip() for ele in cols]
-        data.append([ele for ele in cols if ele])
+        data.append([ele for ele in cols if ele])  # Get rid of empty values
     return data
 
 
