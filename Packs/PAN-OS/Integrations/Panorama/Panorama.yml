@@ -5625,7 +5625,7 @@ script:
       - post-rulebase
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
-    - description: The tag to filter the rules.
+    - description: A comma-separated list of tags by which to filter the rules.
       name: tag
       isArray: true
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
@@ -5636,7 +5636,7 @@ script:
       name: rulename
       required: false
     - auto: PREDEFINED
-      description: Whether to retrieve the disabled rules or not. If not mentioned will retrieve all the rules.
+      description: Whether to retrieve the disabled rules or not. If not mentioned, will retrieve all the rules.
       name: disabled
       isArray: false
       required: false
@@ -5644,7 +5644,7 @@ script:
       - yes
       - no
     - auto: PREDEFINED
-      description: The action of the rules to retrieve. If not mentioned will retrieve all the rules.
+      description: The action of the rules to retrieve. If not mentioned, will retrieve all the rules.
       name: action
       isArray: false
       required: false
@@ -5652,7 +5652,7 @@ script:
       - allow
       - deny
       - drop
-    - description: Free query to retrieve rules. If not mentioned will retrieve all the rules.
+    - description: Free query to retrieve rules. If not mentioned, will retrieve all the rules.
       name: query
       isArray: false
       required: false
@@ -8483,7 +8483,7 @@ script:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Whether to retrieve the disabled rules or not. If not mentioned will retrieve all the NAT rules.
+      description: Whether to retrieve the disabled rules. If not mentioned, will retrieve all the NAT rules.
       name: disabled
       isArray: false
       required: false
@@ -8491,7 +8491,7 @@ script:
       - yes
       - no
     - auto: PREDEFINED
-      description: The type of the NAT rules to retrieve. If not mentioned will retrieve all the NAT rules.
+      description: The type of the NAT rules to retrieve. If not mentioned, will retrieve all the NAT rules.
       name: nat_type
       isArray: false
       required: false
@@ -8499,11 +8499,11 @@ script:
       - ipv4
       - nat64
       - nptv6
-    - description: The tags of the NAT rules to retrieve. If not mentioned will retrieve all the NAT rules.
+    - description: A comma-separated list of tags of the NAT rules to retrieve. If not mentioned, will retrieve all the NAT rules.
       name: tags
       isArray: true
       required: false
-    - description: Free query to retrieve NAT rule. If not mentioned will retrieve all the NAT rules.
+    - description: Free query to retrieve NAT rule. If not mentioned, will retrieve all the NAT rules.
       name: query
       isArray: false
       required: false
@@ -9056,7 +9056,7 @@ script:
       name: show_uncommitted
       required: false
     - auto: PREDEFINED
-      description: Whether to retrieve the disabled rules or not. If not mentioned will retrieve all the PBF rules.
+      description: Whether to retrieve the disabled rules. If not mentioned, will retrieve all the PBF rules.
       name: disabled
       isArray: false
       required: false
@@ -9064,7 +9064,7 @@ script:
       - yes
       - no
     - auto: PREDEFINED
-      description: The action of the PBF rules to retrieve. If not mentioned will retrieve all the PBF rules.
+      description: The action of the PBF rules to retrieve. If not mentioned, will retrieve all the PBF rules.
       name: action
       isArray: false
       required: false
@@ -9072,11 +9072,11 @@ script:
       - discard
       - forward
       - no-pbf
-    - description: The tags of the PBF rules to retrieve. If not mentioned will retrieve all the PBF rules.
+    - description: A comma-separated list of tags of the PBF rules to retrieve. If not mentioned, will retrieve all the PBF rules.
       name: tags
       isArray: true
       required: false
-    - description: Free query to retrieve PBF rule. If not mentioned will retrieve all the PBF rules.
+    - description: Free query to retrieve PBF rule. If not mentioned, will retrieve all the PBF rules.
       name: query
       isArray: false
       required: false
