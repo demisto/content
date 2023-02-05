@@ -1,6 +1,7 @@
 import pytest
 import demistomock as demisto
 import datetime
+from CommonServerPython import IncidentStatus
 
 from AWS_SecurityHub import AWSClient, get_findings_command, fetch_incidents, list_members_command
 
@@ -139,6 +140,17 @@ class MockClient:
 
     def get_findings(self, **kwargs):
         return {'Findings': FINDINGS}
+
+    def batch_update_findings(self, **kwargs):
+        return {
+            "ResponseMetadata": {
+                "RequestId": "RequestId",
+                "HTTPStatusCode": 200,
+                "RetryAttempts": 0,
+            },
+            "ProcessedFindings": [{"Id": "ID", "ProductArn": "ProductArn"}],
+            "UnprocessedFindings": [],
+        }
 
 
 def test_aws_securityhub_get_findings_command():
@@ -319,7 +331,98 @@ def test_get_mapping_fields_command():
     assert result.extract_mapping() == expected_fields
 
 
-def test_update_remote_system_command(mocker):
+severity_update = ({'data': {'FindingIdentifiers.Id': 'ID',
+                             'FindingIdentifiers.ProductArn': 'ProductArn',
+                             'Note.UpdatedBy': '',
+                             'Severity.Label': 'LOW',
+                             'Workflow.Status': 'NEW'},
+                    'entries': [],
+                    'remoteId': 'ID',
+                    'status': IncidentStatus.ACTIVE,
+                    'delta': {'Severity.Label': 'LOW'},
+                    'incidentChanged': True}, 'ID',
+                   {'FindingIdentifiers': [{'Id': 'ID', 'ProductArn': 'ProductArn'}],
+                    'Severity': {'Label': 'LOW'}})
+
+confidence_update = ({'data': {'FindingIdentifiers.Id': 'ID',
+                               'FindingIdentifiers.ProductArn': 'ProductArn',
+                               'Note.UpdatedBy': '',
+                               'Severity.Label': 'LOW',
+                               'Workflow.Status': 'NEW',
+                               'Confidence': 2},
+                      'entries': [],
+                      'remoteId': 'ID',
+                      'status': IncidentStatus.ACTIVE,
+                      'delta': {'Confidence': 1},
+                      'incidentChanged': True}, 'ID',
+                     {'FindingIdentifiers': [{'Id': 'ID', 'ProductArn': 'ProductArn'}],
+                      'Confidence': 1})
+
+criticality_update = ({'data': {'FindingIdentifiers.Id': 'ID',
+                                'FindingIdentifiers.ProductArn': 'ProductArn',
+                                'Note.UpdatedBy': '',
+                                'Severity.Label': 'LOW',
+                                'Workflow.Status': 'NEW',
+                                'Criticality': 10},
+                       'entries': [],
+                       'remoteId': 'ID',
+                       'status': IncidentStatus.ACTIVE,
+                       'delta': {'Criticality': 10},
+                       'incidentChanged': True}, 'ID',
+                      {'FindingIdentifiers': [{'Id': 'ID', 'ProductArn': 'ProductArn'}],
+                       'Criticality': 10})
+
+comment_update = ({'data': {'FindingIdentifiers.Id': 'ID',
+                            'FindingIdentifiers.ProductArn': 'ProductArn',
+                            'Severity.Label': 'LOW',
+                            'Workflow.Status': 'NEW',
+                            'Note.Text': 'test',
+                            'Note.UpdatedBy': 'admin'},
+                   'entries': [],
+                   'remoteId': 'ID',
+                   'status': IncidentStatus.ACTIVE,
+                   'delta': {'Note.Text': 'test'},
+                   'incidentChanged': True}, 'ID',
+                  {'FindingIdentifiers': [{'Id': 'ID', 'ProductArn': 'ProductArn'}],
+                   'Note': {'Text': 'test', 'UpdatedBy': 'admin'}})
+
+verification_state_update = ({'data': {'FindingIdentifiers.Id': 'ID',
+                                       'FindingIdentifiers.ProductArn': 'ProductArn',
+                                       'Severity.Label': 'LOW',
+                                       'Workflow.Status': 'NEW',
+                                       'VerificationState': ['TRUE_POSITIVE'],
+                                       'Note.UpdatedBy': 'admin'},
+                              'entries': [],
+                              'remoteId': 'ID',
+                              'status': IncidentStatus.ACTIVE,
+                              'delta': {'VerificationState': ['TRUE_POSITIVE']},
+                              'incidentChanged': True}, 'ID',
+                             {'FindingIdentifiers': [{'Id': 'ID', 'ProductArn': 'ProductArn'}],
+                              'VerificationState': 'TRUE_POSITIVE'})
+
+workflow_status_update = ({'data': {'FindingIdentifiers.Id': 'ID',
+                                    'FindingIdentifiers.ProductArn': 'ProductArn',
+                                    'Severity.Label': 'LOW',
+                                    'Workflow.Status': 'NOTIFIED',
+                                    'Note.UpdatedBy': 'admin'},
+                           'entries': [],
+                           'remoteId': 'ID',
+                           'status': IncidentStatus.ACTIVE,
+                           'delta': {'Workflow.Status': 'NOTIFIED'},
+                           'incidentChanged': True}, 'ID',
+                          {'FindingIdentifiers': [{'Id': 'ID', 'ProductArn': 'ProductArn'}],
+                           'Workflow': {'Status': 'NOTIFIED'}})
+
+test_update_remote_system_command_params = [severity_update,
+                                            confidence_update,
+                                            criticality_update,
+                                            comment_update,
+                                            verification_state_update,
+                                            workflow_status_update]
+
+
+@pytest.mark.parametrize('args, remote_id, expected_kwargs', test_update_remote_system_command_params)
+def test_update_remote_system_command(mocker, args, remote_id, expected_kwargs):
     """
     Given:
         - A client and arguments that contain the incident data, entries, remote_incident_id, inc_status, delta,
@@ -327,5 +430,11 @@ def test_update_remote_system_command(mocker):
     When:
         - update_remote_system_command is executed
     Then:
-        - .
+        - Verify that the correct arguments were sent to AWS Security Hub.
     """
+    from AWS_SecurityHub import update_remote_system_command
+    client = MockClient()
+    batch_update_mock = mocker.patch.object(MockClient, 'batch_update_findings')
+    result = update_remote_system_command(client, args)
+    assert result == remote_id
+    batch_update_mock.assert_called_with(**expected_kwargs)

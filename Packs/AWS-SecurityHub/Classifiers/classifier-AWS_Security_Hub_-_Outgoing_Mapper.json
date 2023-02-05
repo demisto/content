@@ -7,7 +7,7 @@
             "dontMapEventToLabels": true,
             "internalMapping": {
                 "Confidence": {
-                    "simple": "externalconfidence"
+                    "simple": "awssecurityhubconfidence"
                 },
                 "Criticality": {
                     "simple": "riskscore"

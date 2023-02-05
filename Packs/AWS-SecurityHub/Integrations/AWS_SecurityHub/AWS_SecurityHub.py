@@ -773,15 +773,19 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
         filters['ProductName'] = create_filters_list_dictionaries(product_name, 'EQUALS')
     demisto.debug(f'The filters to the fetch are: {filters}')
     if next_token:
+        demisto.debug(f'{next_token=}')
         try:
             response = client.get_findings(NextToken=next_token)
+            demisto.debug('No problem with next token.')
         # In case a new request is made with another input the nextToken will be revoked
         except client.exceptions.InvalidInputException:
+            demisto.debug(f'In except of next token. {filters=}')
             response = client.get_findings(Filters=filters)
     else:
         response = client.get_findings(Filters=filters)
     findings = response['Findings']
     next_token = response.get('NextToken')
+    demisto.debug(f'The findings in the fetch_incidents are: {findings}')
     incidents = []
     for finding in findings:
         finding.update({
@@ -834,9 +838,9 @@ def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRe
     """
     remote_args = GetRemoteDataArgs(args)
     remote_incident_id = remote_args.remote_incident_id
-
+    last_update_time = int(dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'}).timestamp())
     demisto.debug(f'Performing get-remote-data command with incident id: {remote_incident_id} '
-                  f'and last_update: {remote_args.last_update}')
+                  f'and last_update: {remote_args.last_update} and int {last_update_time=}')
 
     filters = {
         'Id': [
@@ -850,10 +854,11 @@ def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRe
     demisto.debug(f'The response is: {response} \nEnd of response.')
     finding = response.get('Findings')[0]  # a list with one dict in it
     demisto.debug(f'The finding is: {finding} \nEnd of finding')
-    incident_last_update = finding.get('UpdatedAt')
-    demisto.debug(f'The incident last update time is: {incident_last_update}\n')
-    demisto.debug(f'if {remote_args.last_update=} < {incident_last_update=}')
-    if remote_args.last_update < incident_last_update:
+    incident_last_update = finding.get('UpdatedAt', '')
+    incident_last_update_time = int(dateparser.parse(incident_last_update, settings={'TIMEZONE': 'UTC'}).timestamp())
+    demisto.debug(f'The incident last update time is: {incident_last_update}\nAnd {incident_last_update_time=}')
+    demisto.debug(f'if {last_update_time} < {incident_last_update_time=}')
+    if last_update_time < incident_last_update_time:
         demisto.debug(f'Updated incident {remote_incident_id}')
         return GetRemoteDataResponse(mirrored_object=finding, entries=[{}])
     else:
@@ -919,7 +924,8 @@ def update_remote_system_command(client: boto3.client, args: Dict[str, Any]) -> 
             if delta.get('Note.Text') or delta.get('Note.UpdatedBy'):
                 kwargs['Note'] = {
                     "Text": delta.get('Note.Text') if delta.get('Note.Text') else data.get('Note.Text'),
-                    "UpdatedBy": delta.get('Note.UpdatedBy') if delta.get('Note.UpdatedBy') else data.get('Note.UpdatedBy')
+                    "UpdatedBy": delta.get('Note.UpdatedBy') if delta.get('Note.UpdatedBy') else data.get(
+                        'Note.UpdatedBy')
                 }
             kwargs = remove_empty_elements(kwargs)
             demisto.debug(f'{kwargs=}')
