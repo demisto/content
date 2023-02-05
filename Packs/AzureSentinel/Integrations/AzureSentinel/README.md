@@ -45,10 +45,10 @@ To get the *Subscription ID*, *Workspace Name* and *Resource Group* parameters, 
     | Incident type | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
-    | Fetch Incident Alerts | False |
-    | Fetch Incident Entities | False |
-    | Fetch Incident Comments | False |
-    | Fetch Incident Relations | False |
+    | Additional info to fetch | False |
+    | Mirroring Direction | False |
+    | Close Mirrored XSOAR Incident | False |
+    | Close Mirrored Microsoft Sentinel Ticket | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

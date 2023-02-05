@@ -82,24 +82,39 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Fetch Incident Alerts
-  additionalinfo: Note that this will increase the number of API calls.
-  name: fetch_incident_alerts
+- additionalinfo: |
+    Choose what additional info to fetch for each incident.
+    Note that this will increase the number of API calls.
+  display: Additional info to fetch
+  name: fetch_additional_info
+  required: false
+  type: 16
+  options:
+  - Alerts
+  - Entities
+  - Comments
+  - Relations
+- defaultvalue: None
+  display: Mirroring Direction
+  hidden: false
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
+- additionalinfo: When selected, closing the Microsoft Sentinel ticket is mirrored in Cortex XSOAR.
+  defaultvalue: 'false'
+  display: Close Mirrored XSOAR Incident
+  name: close_incident
   required: false
   type: 8
-- display: Fetch Incident Entities
-  additionalinfo: Note that this will increase the number of API calls.
-  name: fetch_incident_entities
-  required: false
-  type: 8
-- display: Fetch Incident Comments
-  additionalinfo: Note that this will increase the number of API calls.
-  name: fetch_incident_comments
-  required: false
-  type: 8
-- display: Fetch Incident Relations
-  additionalinfo: Note that this will increase the number of API calls.
-  name: fetch_incident_relations
+- additionalinfo: When selected, closing the XSOAR incident is mirrored in Microsoft Sentinel.
+  defaultvalue: 'false'
+  display: Close Mirrored Microsoft Sentinel Ticket
+  name: close_ticket
   required: false
   type: 8
 description: Use the Azure Sentinel integration to get and manage incidents and get related entity information for incidents.
@@ -2100,7 +2115,23 @@ script:
     - contextPath: AzureSentinel.ThreatIndicator.Types
       description: The threat types of the indicator.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.45575
+  - arguments:
+    - default: false
+      description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
+      name: lastUpdate
+      required: true
+    description: Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
+    name: get-modified-remote-data
+  - arguments:
+    - description: The remote incident ID.
+      name: id
+      required: true
+    - defaultValue: '0'
+      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
+      name: lastUpdate
+    description: Gets remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
+    name: get-remote-data
+  dockerimage: demisto/crypto:1.0.0.47103
   feed: false
   isfetch: true
   longRunning: false
@@ -2109,8 +2140,13 @@ script:
   script: '-'
   subtype: python3
   type: python
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
 tests:
 - TestAzureSentinelPlaybookV2
 - No test - Manual test playbook-TestAzureSentinelPlaybook is available in NonCircleTests folder
-defaultmapperin: Microsoft Sentinel - Incoming Mapper
 fromversion: 5.0.0
+defaultclassifier: Microsoft Sentinel - Classifier
+defaultmapperin: Microsoft Sentinel - Incoming Mapper
+defaultmapperout:

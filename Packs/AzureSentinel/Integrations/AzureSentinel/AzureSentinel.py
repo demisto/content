@@ -45,6 +45,32 @@ DEFAULT_SOURCE = 'Microsoft Sentinel'
 
 THREAT_INDICATORS_HEADERS = ['Name', 'DisplayName', 'Values', 'Types', 'Source', 'Confidence', 'Tags']
 
+# =========== Mirroring Mechanism Globals ===========
+
+MIRROR_DIRECTION_DICT = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Incoming And Outgoing': 'Both'
+}
+
+MIRROR_STATUS_DICT = {
+    'Undetermined': 'Other',
+    'TruePositive': 'Resolved',
+    'BenignPositive': 'Resolved',
+    'FalsePositive': 'False Positive',
+}
+
+MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
+INTEGRATION_INSTANCE = demisto.integrationInstance()
+
+INCOMING_MIRRORED_FIELDS: list = ['ID', 'Etag', 'Title', 'Description', 'Severity', 'Status', 'owner', 'Label',
+                                  'FirstActivityTimeUTC', 'LastActivityTimeUTC', 'LastModifiedTimeUTC', 'CreatedTimeUTC',
+                                  'IncidentNumber', 'AlertsCount', 'AlertProductNames', 'Tactics', 'relatedAnalyticRuleIds',
+                                  'IncidentUrl', 'classification', 'classificationComment', 'classificationReason', 'alerts',
+                                  'entities', 'comments', 'relations']
+OUTGOING_MIRRORED_FIELDS: list = []
+
 
 class AzureSentinelClient:
     def __init__(self, server_url: str, tenant_id: str, client_id: str,
@@ -174,11 +200,12 @@ def format_date(date):
     return dateparser.parse(date).strftime(DATE_FORMAT)  # type:ignore
 
 
-def incident_data_to_xsoar_format(inc_data):
+def incident_data_to_xsoar_format(inc_data, is_fetch_incidents=False):
     """
     Convert the incident data from the raw to XSOAR format.
 
     :param inc_data: (dict) The incident raw data.
+    :param is_fetch_incidents: (bool) Is it part of a fetch incidents command.
     """
     properties = inc_data.get('properties', {})
 
@@ -209,13 +236,16 @@ def incident_data_to_xsoar_format(inc_data):
         'FirstActivityTimeGenerated': format_date(properties.get('firstActivityTimeGenerated')),
         'LastActivityTimeGenerated': format_date(properties.get('lastActivityTimeGenerated')),
         'Etag': inc_data.get('etag'),
-        'Deleted': False,
-        'owner': properties.get('owner'),
-        'relatedAnalyticRuleIds': [rule_id.split('/')[-1] for rule_id in properties.get('relatedAnalyticRuleIds', [])],
-        "classification": properties.get('classification'),
-        "classificationComment": properties.get('classificationComment'),
-        "classificationReason": properties.get('classificationReason')
+        'Deleted': False
     }
+    if is_fetch_incidents:
+        formatted_data.update({
+            'owner': properties.get('owner'),
+            'relatedAnalyticRuleIds': [rule_id.split('/')[-1] for rule_id in properties.get('relatedAnalyticRuleIds', [])],
+            "classification": properties.get('classification'),
+            "classificationComment": properties.get('classificationComment'),
+            "classificationReason": properties.get('classificationReason')
+        })
     return formatted_data
 
 
@@ -446,6 +476,153 @@ def generic_list_incident_items(client, incident_id, items_kind, key_in_raw_resu
     )
 
 
+''' MIRRORING COMMANDS '''
+
+
+def add_mirroring_fields(incident: Dict):
+    """
+        Updates the given incident to hold the needed mirroring fields.
+    """
+    incident['mirror_direction'] = MIRROR_DIRECTION
+    incident['mirror_instance'] = INTEGRATION_INSTANCE
+
+
+def get_modified_remote_data_command(client: AzureSentinelClient, args: Dict[str, Any]):
+    """
+    Gets the modified remote incidents IDs.
+    Args:
+        args:
+            client: The client object.
+            args: The command arguments.
+
+    Returns:
+        GetModifiedRemoteDataResponse object, which contains a list of the modified incidents IDs.
+    """
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = remote_args.last_update
+    demisto.debug(f'Getting modified incidents from {last_update}')
+
+    raw_incidents = []
+
+    next_link = True
+    while next_link:
+        full_url = next_link if isinstance(next_link, str) else None
+        params = {'$filter': f'properties/lastModifiedTimeUtc ge {last_update}'} if not full_url else None
+
+        response = client.http_request('GET', 'incidents', full_url=full_url, params=params)
+        raw_incidents += response.get('value', [])
+        next_link = response.get('nextLink')
+
+    modified_ids_to_mirror = []
+    for raw_incident in raw_incidents:
+        incident_id = raw_incident.get('name')
+        modified_ids_to_mirror.append(incident_id)
+
+    demisto.debug(f'All ids to mirror in are: {modified_ids_to_mirror}')
+    return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
+
+
+def get_remote_incident_data(client: AzureSentinelClient, incident_id: str):
+    """
+    Gets the remote incident data.
+    Args:
+        client: The client object.
+        incident_id: The incident ID to retrieve.
+
+    Returns:
+        mirrored_data: The raw mirrored data.
+        updated_object: The updated object to set in the XSOAR incident.
+    """
+    mirrored_data = client.http_request('GET', f'incidents/{incident_id}')
+    incident_mirrored_data = incident_data_to_xsoar_format(mirrored_data, is_fetch_incidents=True)
+    fetch_incidents_additional_info(client, incident_mirrored_data)
+    updated_object: Dict[str, Any] = {}
+
+    for field in INCOMING_MIRRORED_FIELDS:
+        updated_object[field] = incident_mirrored_data.get(field)
+
+    return mirrored_data, updated_object
+
+
+def set_xsoar_incident_entries(updated_object: Dict[str, Any], entries: List, remote_incident_id: str) -> None:
+    """
+    Sets the XSOAR incident entries.
+    Args:
+        updated_object: The updated object to set in the XSOAR incident.
+        entries: The entries to set.
+        remote_incident_id: The remote incident ID.
+    Returns:
+        None.
+    """
+    if demisto.params().get('close_incident'):
+        if updated_object.get('Status') == 'Closed':
+            close_reason = updated_object.get('classification', '')
+            close_notes = updated_object.get('classificationComment', '')
+            close_in_xsoar(entries, remote_incident_id, close_reason, close_notes)
+        elif updated_object.get('Status') in ('New', 'Active'):
+            reopen_in_xsoar(entries, remote_incident_id)
+
+
+def close_in_xsoar(entries: List, remote_incident_id: str, close_reason: str, close_notes: str) -> None:
+    demisto.debug(f'incident is closed: {remote_incident_id}')
+    entries.append({
+        'Type': EntryType.NOTE,
+        'Contents': {
+            'dbotIncidentClose': True,
+            'closeReason': f'{MIRROR_STATUS_DICT.get(close_reason, close_reason)} - Closed on Microsoft Sentinel',
+            'closeNotes': close_notes
+        },
+        'ContentsFormat': EntryFormat.JSON
+    })
+
+
+def reopen_in_xsoar(entries: List, remote_incident_id: str):
+    demisto.debug(f'incident is reopened: {remote_incident_id}')
+    entries.append({
+        'Type': EntryType.NOTE,
+        'Contents': {
+            'dbotIncidentReopen': True
+        },
+        'ContentsFormat': EntryFormat.JSON
+    })
+
+
+def get_remote_data_command(client: AzureSentinelClient, args: Dict[str, Any]):
+    """
+    Args:
+        client: The client object.
+        args: The command arguments.
+    Returns:
+        GetRemoteDataResponse object, which contain the incident data to update.
+    """
+    remote_args = GetRemoteDataArgs(args)
+    remote_incident_id = remote_args.remote_incident_id
+
+    mirrored_data: Dict[str, Any] = {}
+    entries: list = []
+
+    try:
+        demisto.debug(f'Performing get-remote-data command with incident id: {remote_incident_id} '
+                      f'and last_update: {remote_args.last_update}')
+
+        mirrored_data, updated_object = get_remote_incident_data(client, remote_incident_id)
+        if updated_object:
+            demisto.debug(f'Update incident {remote_incident_id} with fields: {updated_object}')
+            set_xsoar_incident_entries(updated_object, entries, remote_incident_id)
+
+        return GetRemoteDataResponse(mirrored_object=updated_object, entries=entries)
+
+    except Exception as e:
+        demisto.debug(f"Error in Microsoft Sentinel incoming mirror for incident: {remote_incident_id}\n"
+                      f"Error message: {str(e)}")
+
+        if not mirrored_data:
+            mirrored_data = {'id': remote_incident_id}
+        mirrored_data['in_mirror_error'] = str(e)
+
+        return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
+
+
 ''' INTEGRATION COMMANDS '''
 
 
@@ -503,7 +680,7 @@ def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents
 
         result = client.http_request('GET', url_suffix, params=params)
 
-    incidents = [incident_data_to_xsoar_format(inc) for inc in result.get('value')]
+    incidents = [incident_data_to_xsoar_format(inc, is_fetch_incidents) for inc in result.get('value')]
 
     if is_fetch_incidents:
         return CommandResults(outputs=incidents, outputs_prefix='AzureSentinel.Incident')
@@ -891,24 +1068,32 @@ def update_next_link_in_context(result: dict, outputs: dict):
         outputs[f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")'] = next_link_item
 
 
-def fetch_incident_additional_info(client: AzureSentinelClient, incidents: list[dict], info_type: str,
-                                   method: str, results_key: str) -> list[dict]:
-    """Fetches additional info of an incident.
+def fetch_incidents_additional_info(client: AzureSentinelClient, incidents: List | Dict):
+    """Fetches additional info of an incidents array or a single incident.
 
     Args:
         client: An AzureSentinelClient client.
-        incidents: An incidents array to fetch its additional info.
-        info_type: The type of the additional info.
-        method: The method to use to fetch the additional info.
+        incidents: An incidents array or a single incident to fetch additional info for.
 
     Returns:
-        An array of the incident with its additional info.
+        None. Updates the incidents array with the additional info.
     """
-    for incident in incidents:
-        id_ = incident.get('ID')
-        incident[info_type] = client.http_request(method, f'incidents/{id_}/{info_type}').get(results_key)
+    additional_fetch = {'Alerts': {'method': 'POST', 'result_key': 'value'},
+                        'Entities': {'method': 'POST', 'result_key': 'entities'},
+                        'Comments': {'method': 'GET', 'result_key': 'value'},
+                        'Relations': {'method': 'GET', 'result_key': 'value'}}
 
-    return incidents
+    if isinstance(incidents, dict):
+        incidents = [incidents]
+
+    for incident in incidents:
+        for additional_info in demisto.params().get('fetch_additional_info'):
+            info_type = additional_info.lower()
+            method = additional_fetch[additional_info]['method']
+            results_key = additional_fetch[additional_info]['result_key']
+            id_ = incident.get('ID')
+
+            incident[info_type] = client.http_request(method, f'incidents/{id_}/{info_type}').get(results_key)
 
 
 def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_time: str, min_severity: int) -> tuple:
@@ -956,15 +1141,7 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
         }
         raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
 
-    additional_fetch = {'fetch_incident_alerts': {'method': 'POST', 'key': 'alerts', 'result_key': 'value'},
-                        'fetch_incident_entities': {'method': 'POST', 'key': 'entities', 'result_key': 'entities'},
-                        'fetch_incident_comments': {'method': 'GET', 'key': 'comments', 'result_key': 'value'},
-                        'fetch_incident_relations': {'method': 'GET', 'key': 'relations', 'result_key': 'value'}}
-    for fetch_incident in additional_fetch:
-        if demisto.params().get(fetch_incident):
-            raw_incidents = fetch_incident_additional_info(client, raw_incidents, additional_fetch[fetch_incident]['key'],
-                                                           additional_fetch[fetch_incident]['method'],
-                                                           additional_fetch[fetch_incident]['result_key'])
+    fetch_incidents_additional_info(client, raw_incidents)
 
     return process_incidents(raw_incidents, last_fetch_ids, min_severity,
                              latest_created_time, last_incident_number)  # type: ignore[attr-defined]
@@ -998,6 +1175,7 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
             incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
             current_fetch_ids.append(incident.get('ID'))
             if incident_severity >= min_severity:
+                add_mirroring_fields(incident)
                 xsoar_incident = {
                     'name': '[Azure Sentinel] ' + incident.get('Title'),
                     'occurred': incident.get('CreatedTimeUTC'),
@@ -1475,6 +1653,12 @@ def main():
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
+
+        elif demisto.command() == 'get-modified-remote-data':
+            return_results(get_modified_remote_data_command(client, args))
+
+        elif demisto.command() == 'get-remote-data':
+            return_results(get_remote_data_command(client, args))
 
         elif demisto.command() in commands:
             return_results(commands[demisto.command()](client, args))  # type: ignore
