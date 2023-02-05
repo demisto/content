@@ -13,18 +13,9 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Malware",
-        "Spam",
-        "Threat Intelligence",
-        "Email",
-        "Forensics"
+        "Threat Intelligence Management"
     ],
     "useCases": [
-        "Phishing",
-        "Threat Intelligence Management",
-        "Malware",
-        "Hunting",
-        "Incident Response"
     ],
     "keywords": [
         "cyren",
