@@ -3,7 +3,7 @@ commonfields:
   version: -1
 deprecated: true
 name: Exchange 2016 Compliance Search
-display: Exchange 2016 Compliance Search
+display: Exchange 2016 Compliance Search (Deprecated)
 category: Messaging
 description: Exchange Server 2016 Compliance Search enables you to search for and delete an email message from all mailboxes in your organization.
 configuration:
