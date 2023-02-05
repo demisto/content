@@ -4990,19 +4990,19 @@ class TestPanOSListPBFRulesCommand:
                     }
                 },
                 'EnforceSymmetricReturn': {'nexthop-address-list': {'entry': {'@name': '1.1.1.1'}}, 'enabled': 'yes'},
-                'Target': {'negate': 'no'}, 'Application': '3pc', 'Service': 'application-default'
+                'Target': {'negate': 'no'}, 'Application': '3pc', 'Service': 'application-default', 'Disabled': None
             },
             {
                 'Name': 'test2', 'Description': None, 'Tags': None, 'SourceZone': ['1.1.1.1', '2.2.2.2'],
                 'SourceInterface': None, 'SourceAddress': 'any', 'SourceUser': 'any', 'DestinationAddress': 'any',
                 'Action': {'no-pbf': {}}, 'EnforceSymmetricReturn': {'enabled': 'no'}, 'Target': {'negate': 'no'},
-                'Application': 'any', 'Service': 'any'
+                'Application': 'any', 'Service': 'any', 'Disabled': "yes"
             },
             {
                 'Name': 'test3', 'Description': None, 'Tags': None, 'SourceZone': None, 'SourceInterface': 'a2',
                 'SourceAddress': 'any', 'SourceUser': 'any', 'DestinationAddress': 'any',
                 'Action': {'discard': {}}, 'EnforceSymmetricReturn': {'enabled': 'no'}, 'Target': {'negate': 'no'},
-                'Application': 'any', 'Service': 'any'
+                'Application': 'any', 'Service': 'any', 'Disabled': "no"
             }
         ]
 
@@ -5059,8 +5059,8 @@ class TestPanOSListPBFRulesCommand:
         expected_context = [
             {
                 'Name': 'test', 'Description': 'this is a test description', 'Tags': ['test tag', 'dag_test_tag'],
-                'SourceZone': '1.1.1.1', 'SourceInterface': None, 'SourceAddress': '1.1.1.1', 'SourceUser': 'pre-logon',
-                'DestinationAddress': '1.1.1.1',
+                'SourceZone': '1.1.1.1', 'SourceInterface': None, 'Disabled': None, 'SourceAddress': '1.1.1.1',
+                'SourceUser': 'pre-logon', 'DestinationAddress': '1.1.1.1',
                 'Action': {
                     'forward': {
                         'nexthop': {'ip-address': '2.2.2.2'},
