@@ -65,6 +65,17 @@
 						]
 					}
 				},
+				"Last Update Time": {
+					"complex": {
+						"filters": [],
+						"root": "lastUpdated",
+						"transformers": [
+							{
+								"operator": "TimeStampToDate"
+							}
+						]
+					}
+				},
 				"Policy Deleted": {
 					"complex": {
 						"accessor": "deleted",
@@ -159,6 +170,9 @@
 						"root": "alertTime",
 						"transformers": []
 					}
+				},
+				"RRN": {
+					"simple": "resource.rrn"
 				},
 				"Region": {
 					"complex": {
@@ -412,6 +426,17 @@
 						]
 					}
 				},
+				"Last Update Time": {
+					"complex": {
+						"filters": [],
+						"root": "lastUpdated",
+						"transformers": [
+							{
+								"operator": "TimeStampToDate"
+							}
+						]
+					}
+				},
 				"Policy Deleted": {
 					"complex": {
 						"accessor": "deleted",
@@ -506,6 +531,9 @@
 						"root": "alertTime",
 						"transformers": []
 					}
+				},
+				"RRN": {
+					"simple": "resource.rrn"
 				},
 				"Region": {
 					"complex": {
@@ -759,6 +787,17 @@
 						]
 					}
 				},
+				"Last Update Time": {
+					"complex": {
+						"filters": [],
+						"root": "lastUpdated",
+						"transformers": [
+							{
+								"operator": "TimeStampToDate"
+							}
+						]
+					}
+				},
 				"Policy Deleted": {
 					"complex": {
 						"accessor": "deleted",
@@ -853,6 +892,9 @@
 						"root": "alertTime",
 						"transformers": []
 					}
+				},
+				"RRN": {
+					"simple": "resource.rrn"
 				},
 				"Region": {
 					"complex": {
@@ -1106,6 +1148,17 @@
 						]
 					}
 				},
+				"Last Update Time": {
+					"complex": {
+						"filters": [],
+						"root": "lastUpdated",
+						"transformers": [
+							{
+								"operator": "TimeStampToDate"
+							}
+						]
+					}
+				},
 				"Policy Deleted": {
 					"complex": {
 						"accessor": "deleted",
@@ -1200,6 +1253,9 @@
 						"root": "alertTime",
 						"transformers": []
 					}
+				},
+				"RRN": {
+					"simple": "resource.rrn"
 				},
 				"Region": {
 					"complex": {
@@ -1453,6 +1509,17 @@
 						]
 					}
 				},
+				"Last Update Time": {
+					"complex": {
+						"filters": [],
+						"root": "lastUpdated",
+						"transformers": [
+							{
+								"operator": "TimeStampToDate"
+							}
+						]
+					}
+				},
 				"Policy Deleted": {
 					"complex": {
 						"accessor": "deleted",
@@ -1547,6 +1614,9 @@
 						"root": "alertTime",
 						"transformers": []
 					}
+				},
+				"RRN": {
+					"simple": "resource.rrn"
 				},
 				"Region": {
 					"complex": {
@@ -1795,6 +1865,17 @@
 						]
 					}
 				},
+				"Last Update Time": {
+					"complex": {
+						"filters": [],
+						"root": "lastUpdated",
+						"transformers": [
+							{
+								"operator": "TimeStampToDate"
+							}
+						]
+					}
+				},
 				"Policy Deleted": {
 					"complex": {
 						"accessor": "deleted",
@@ -1889,6 +1970,9 @@
 						"root": "alertTime",
 						"transformers": []
 					}
+				},
+				"RRN": {
+					"simple": "resource.rrn"
 				},
 				"Region": {
 					"complex": {

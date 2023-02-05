@@ -5,7 +5,13 @@ API reference: [Prisma Cloud API reference](https://api.docs.prismacloud.io/refe
 
 ### Fetch Incidents Filtering
 The list of available names and possible values for fetch incidents filters can be retrieved by running ***prisma-cloud-alert-filter-list*** command.
-The possible values for rule names can be found under "alertRule.name" entry, for policy names under "policy.name" entry and for severities under "policy.severity" entry.
-Providing additional filters should be done in the following format: _filtername1=filtervalue1,filtername2=filtervalue2,etc_. For example: _cloud.type=gcp,policy.remediable=true,alert.status=snoozed_.
+The possible values for severities can be found under "policy.severity" entry. In order to add a severity, use the filter name "policy.severity"
+In order to add a rule name, use the filter name "alertRule.name"; in order to add a policy name, use the filter name "policy.name".
+
+In order to use multiple values for the same filter and get alerts that have one of the values, state them several time, for example: _policy.severity=high,policy.severity=medium_.
+The filtering works the same way as in Prisma Cloud UI, when providing several values for the same filter it gets only alerts that have one of these values, and when providing different values, it gets only alerts that have all the stated field values.
+
+Providing additional filters should be done in the following format: _filtername1=filtervalue1,filtername2=filtervalue2,etc_. For example: _alert.status=open,policy.severity=high,policy.severity=medium,cloud.type=gcp,policy.remediable=true_.
+
 
 By default, the integration fetches incidents in an open state.

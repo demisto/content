@@ -419,7 +419,8 @@ def test_permission_list_command_with_next_token(mocker, prisma_cloud_v2_client)
 @pytest.mark.parametrize('url_to_format, formatted_url', (('https://api.prismacloud.io', 'https://api.prismacloud.io/'),
                                                           ('https://app.prismacloud.io/', 'https://api.prismacloud.io/'),
                                                           ('https://other.prismacloud.io/', 'https://other.prismacloud.io/'),
-                                                          ('https://app.prismacloud.io/app', 'https://api.prismacloud.io/app/')))
+                                                          ('https://app.prismacloud.io/app', 'https://api.prismacloud.io/app/'),
+                                                          ))
 def test_format_url(url_to_format, formatted_url):
     """
     Given:
@@ -543,7 +544,8 @@ def test_convert_date_to_unix():
                           input_data.only_time_to,
                           input_data.time_from_and_time_to,
                           input_data.use_given_base_case,
-                          input_data.use_default_base_case))
+                          input_data.use_default_base_case,
+                          ))
 def test_handle_time_filter(base_case, unit_value, amount_value, time_from, time_to, expected_output):
     """
     Given:
@@ -564,7 +566,8 @@ def test_handle_time_filter(base_case, unit_value, amount_value, time_from, time
                           input_data.wrong_unit_value_to_now,
                           input_data.only_time_from,
                           input_data.unit_amount_and_time_to,
-                          input_data.unit_value_and_time_to))
+                          input_data.unit_value_and_time_to,
+                          ))
 def test_handle_time_filter_error(base_case, unit_value, amount_value, time_from, time_to, expected_error):
     """
     Given:
@@ -712,6 +715,23 @@ def test_remove_empty_values_from_dict():
                             }
 
     assert remove_empty_values_from_dict(dict_input) == dict_expected_output
+
+
+@pytest.mark.parametrize('page_size, page_number, offset', ((100, 1, 0),
+                                                            (2, 2, 2),
+                                                            (5, 3, 10),
+                                                            ))
+def test_calculate_offset(page_size, page_number, offset):
+    """
+    Given:
+        - 'page_size' and 'page_number' arguments
+    When:
+        - A command that has paging is executed
+    Then:
+        - Returns the right offset that will be sent to the request
+    """
+    from PrismaCloudV2 import calculate_offset
+    assert calculate_offset(page_size, page_number) == (page_size, offset)
 
 
 ''' FETCH HELPER FUNCTIONS TESTS '''

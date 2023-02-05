@@ -501,20 +501,6 @@ def calculate_offset(page_size: int, page_number: int) -> Tuple[int, int]:
 ''' FETCH HELPER FUNCTIONS '''
 
 
-def get_filters(params: Dict[str, Any]) -> List[str]:
-    filters = argToList(params.get('filters'))
-    filters.append('alert.status=open')
-
-    for rule_name in argToList(params.get('rule_names')):
-        filters.append(f'alertRule.name={rule_name}')
-    for policy_severity in argToList(params.get('policy_severities')):
-        filters.append(f'policy.severity={policy_severity}')
-    for policy_name in argToList(params.get('policy_names')):
-        filters.append(f'policy.name={policy_name}')
-
-    return filters
-
-
 def translate_severity(alert: Dict[str, Any]):
     """
     Translate alert severity to demisto
@@ -555,7 +541,7 @@ def expire_stored_ids(fetched_ids: Dict[str, int], updated_last_run_time: int, l
     return cleaned_cache
 
 
-def calculate_fetch_time_range(now: int, first_fetch: str, look_back: int, last_run_time: int = None):
+def calculate_fetch_time_range(now: int, first_fetch: str, look_back: int = 0, last_run_time: int = None):
     if last_run_time:
         last_run_time = add_look_back(int(last_run_time), look_back)
     else:  # first fetch
@@ -696,16 +682,17 @@ def alert_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
     headers = ['Alert ID', 'reason', 'status', 'alertTime', 'firstSeen', 'lastSeen', 'lastUpdated'] \
         + list(nested_headers.values())[1:]
     output = {
-        'PrismaCloud.Alert(val.nextPageToken)': {'nextPageToken': next_page_token},  # values are overridden
-        'PrismaCloud.Alert.Results(val.id && val.id == obj.id)': response_items  # values are appended to list based on id
+        'PrismaCloud.AlertPageToken(val.nextPageToken)': {'nextPageToken': next_page_token},  # values are overridden
+        'PrismaCloud.Alert(val.id && val.id == obj.id)': response_items  # values are appended to list based on id
     }
     command_results = CommandResults(
-        readable_output=tableToMarkdown('Alerts Details:',
-                                        readable_responses,
-                                        headers=headers,
-                                        removeNull=True,
-                                        headerTransform=pascalToSpace)
-        + f'### Next Page Token:\n{next_page_token}',
+        readable_output=f'Showing {len(readable_responses)} of {response.get("totalRows")} results:\n'
+                        + tableToMarkdown('Alerts Details:',
+                                          readable_responses,
+                                          headers=headers,
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace)
+                        + f'### Next Page Token:\n{next_page_token}',
         outputs=output,
         raw_response=response_items
     )
@@ -834,6 +821,7 @@ def remediation_command_list_command(client: Client, args: Dict[str, Any]) -> Co
                               'alertId': alert_id,
                               'CLIScript': cli_script}
                              for alert_id, cli_script in response.get('alertIdVsCliScript', {}).items()]
+        total_response_amount = len(readable_response)
         if not all_results and limit and readable_response:
             readable_response = readable_response[:limit]
 
@@ -848,10 +836,11 @@ def remediation_command_list_command(client: Client, args: Dict[str, Any]) -> Co
     command_results = CommandResults(
         outputs_prefix='PrismaCloud.Alert.Remediation',
         outputs_key_field='id',
-        readable_output=tableToMarkdown('Remediation Command List:',
-                                        readable_response,
-                                        removeNull=True,
-                                        headerTransform=pascalToSpace),
+        readable_output=f'Showing {len(readable_response)} of {total_response_amount} results:\n'
+                        + tableToMarkdown('Remediation Command List:',
+                                          readable_response,
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace),
         outputs=readable_response,
         raw_response=readable_response
     )
@@ -901,11 +890,12 @@ def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
     command_results = CommandResults(
         outputs_prefix='PrismaCloud.Config',
         outputs_key_field='id',
-        readable_output=tableToMarkdown('Configuration Details:',
-                                        response_items,
-                                        headers=headers,
-                                        removeNull=True,
-                                        headerTransform=pascalToSpace),
+        readable_output=f'Showing {len(response_items)} of {response.get("data", {}).get("totalRows")} results:\n'
+                        + tableToMarkdown('Configuration Details:',
+                                          response_items,
+                                          headers=headers,
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace),
         outputs=response_items,
         raw_response=response_items
     )
@@ -931,11 +921,12 @@ def event_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
     command_results = CommandResults(
         outputs_prefix='PrismaCloud.Event',
         outputs_key_field='id',
-        readable_output=tableToMarkdown('Event Details:',
-                                        response_items,
-                                        headers=headers,
-                                        removeNull=True,
-                                        headerTransform=pascalToSpace),
+        readable_output=f'Showing {len(response_items)} of {response.get("data", {}).get("totalRows")} results:\n'
+                        + tableToMarkdown('Event Details:',
+                                          response_items,
+                                          headers=headers,
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace),
         outputs=response_items,
         raw_response=response_items
     )
@@ -1020,6 +1011,7 @@ def error_file_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
                                               code_status, file_types, repository_id, search_options, search_text, search_title,
                                               severities, tags, statuses)
     response_items = response.get('data', [])
+    total_response_amount = len(response_items)
     if not all_results and limit and response_items:
         response_items = response_items[:limit]
 
@@ -1027,12 +1019,13 @@ def error_file_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
     command_results = CommandResults(
         outputs_prefix='PrismaCloud.ErrorFile',
         outputs_key_field='filePath',
-        readable_output=tableToMarkdown('Files Error Details:',
-                                        response_items,
-                                        headers=headers,
-                                        removeNull=True,
-                                        url_keys=['url'],
-                                        headerTransform=pascalToSpace),
+        readable_output=f'Showing {len(response_items)} of {total_response_amount} results:\n'
+                        + tableToMarkdown('Files Error Details:',
+                                          response_items,
+                                          headers=headers,
+                                          removeNull=True,
+                                          url_keys=['url'],
+                                          headerTransform=pascalToSpace),
         outputs=response_items,
         raw_response=response_items
     )
@@ -1069,6 +1062,7 @@ def account_list_command(client: Client, args: Dict[str, Any]) -> CommandResults
     all_results = argToBoolean(args.get('all_results', 'false'))
 
     response = client.account_list_request(exclude_account_group_details)
+    total_response_amount = len(response)
     if not all_results and limit and response:
         response = response[:limit]
     for response_item in response:
@@ -1079,11 +1073,12 @@ def account_list_command(client: Client, args: Dict[str, Any]) -> CommandResults
     command_results = CommandResults(
         outputs_prefix='PrismaCloud.Account',
         outputs_key_field='accountId',
-        readable_output=tableToMarkdown('Accounts Details:',
-                                        response,
-                                        headers=headers,
-                                        removeNull=True,
-                                        headerTransform=pascalToSpace),
+        readable_output=f'Showing {len(response)} of {total_response_amount} results:\n'
+                        + tableToMarkdown('Accounts Details:',
+                                          response,
+                                          headers=headers,
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace),
         outputs=response,
         raw_response=response
     )
@@ -1150,6 +1145,7 @@ def host_finding_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     validate_array_arg(risk_factors, 'Risk factors', RISK_FACTORS_OPTIONS)
 
     response = client.host_finding_list_request(str(rrn), finding_types, risk_factors)
+    total_response_amount = len(response)
     if not all_results and limit and response:
         response = response[:limit]
     for response_item in response:
@@ -1168,12 +1164,13 @@ def host_finding_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     command_results = CommandResults(
         outputs_prefix='PrismaCloud.HostFinding',
         outputs_key_field='findingId',
-        readable_output=tableToMarkdown('Host Finding Details:',
-                                        readable_responses,
-                                        headers=headers,
-                                        removeNull=True,
-                                        url_keys=['resourceUrl'],
-                                        headerTransform=pascalToSpace),
+        readable_output=f'Showing {len(readable_responses)} of {total_response_amount} results:\n'
+                        + tableToMarkdown('Host Finding Details:',
+                                          readable_responses,
+                                          headers=headers,
+                                          removeNull=True,
+                                          url_keys=['resourceUrl'],
+                                          headerTransform=pascalToSpace),
         outputs=response,
         raw_response=response
     )
@@ -1193,12 +1190,11 @@ def permission_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     if query:
         response = client.permission_list_request(query, limit, user_id)
-        response_items = response.get('data', {}).get('items', [])
-        next_page_token = response.get('data', {}).get('nextPageToken')
+        response = response.get('data', {})
     else:
         response = client.permission_list_next_page_request(str(next_token), limit)
-        response_items = response.get('items', [])
-        next_page_token = response.get('nextPageToken')
+    response_items = response.get('items', [])
+    next_page_token = response.get('nextPageToken')
 
     readable_responses = deepcopy(response_items)
     nested_headers = {'destCloudType': 'destinationCloudType',
@@ -1212,16 +1208,17 @@ def permission_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
                'grantedByCloudPolicyId', 'grantedByCloudPolicyName', 'grantedByCloudPolicyType', 'grantedByCloudPolicyRrn',
                'grantedByCloudEntityId', 'grantedByCloudEntityName', 'grantedByCloudEntityRrn']
     output = {
-        'PrismaCloud.Permission(val.nextPageToken)': {'nextPageToken': next_page_token},  # values are overridden
-        'PrismaCloud.Permission.Results(val.id && val.id == obj.id)': response_items  # values are appended to list based on id
+        'PrismaCloud.PermissionPageToken(val.nextPageToken)': {'nextPageToken': next_page_token},  # values are overridden
+        'PrismaCloud.Permission(val.id && val.id == obj.id)': response_items  # values are appended to list based on id
     }
     command_results = CommandResults(
-        readable_output=tableToMarkdown('Permissions Details:',
-                                        readable_responses,
-                                        headers=headers,
-                                        removeNull=True,
-                                        headerTransform=pascalToSpace)
-        + f'### Next Page Token:\n{next_page_token}',
+        readable_output=f'Showing {len(readable_responses)} of {response.get("totalRows")} results:\n'
+                        + tableToMarkdown('Permissions Details:',
+                                          readable_responses,
+                                          headers=headers,
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace)
+                        + f'### Next Page Token:\n{next_page_token}',
         outputs=output,
         raw_response=response_items
     )
@@ -1240,7 +1237,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, Any], params: Dict[str, 
 
     fetched_ids = last_run.get('fetched_ids', {})
     limit = arg_to_number(params.get('max_fetch', MAX_INCIDENTS_TO_FETCH)) or MAX_INCIDENTS_TO_FETCH
-    filters = get_filters(params)
+    filters = argToList(params.get('filters'))
 
     incidents, fetched_ids, updated_last_run_time = fetch_request(client, fetched_ids, filters, limit, now, time_range)
     updated_last_run_time = max(convert_date_to_unix(first_fetch), updated_last_run_time)
@@ -1252,13 +1249,31 @@ def fetch_incidents(client: Client, last_run: Dict[str, Any], params: Dict[str, 
 
 def test_module(client: Client, params: Dict[str, Any]) -> str:
     if params.get('isFetch'):
-        max_fetch = arg_to_number(params.get('max_fetch'))
+        max_fetch = arg_to_number(params.get('max_fetch'), arg_name='Maximum number of incidents to fetch')
         if max_fetch and (max_fetch > MAX_INCIDENTS_TO_FETCH or max_fetch <= 0):
             return f'Maximum number of incidents to fetch exceeds the limit (restricted to {MAX_INCIDENTS_TO_FETCH}), ' \
                    f'or is below zero.'
 
-        client.alert_search_request(time_range=ALERT_SEARCH_BASE_TIME_FILTER, filters=get_filters(params), detailed='true',
-                                    limit=max_fetch, sort_by=['alertTime:asc'])
+        filters = argToList(params.get('filters'))
+        # check the filters format
+        handle_filters(filters)
+
+        # check the filters names
+        filters_available_names = client.alert_filter_list_request().keys()
+        for filter_ in filters:
+            filter_name = filter_.split('=')[0]
+            if filter_name not in filters_available_names:
+                return f'Filter "{filter_name}" is not one of the available filters. ' \
+                       f'The available filters names can be found by running "prisma-cloud-alert-filter-list" command.'
+
+        arg_to_number(params.get('look_back'), arg_name='Time in minutes to look back when fetching incidents')
+        time_range = calculate_fetch_time_range(now=convert_date_to_unix('now'),
+                                                first_fetch=params.get('first_fetch', FETCH_DEFAULT_TIME))
+        alerts = client.alert_search_request(time_range=time_range, filters=filters, detailed='true',
+                                             limit=max_fetch, sort_by=['alertTime:asc']).get('items', [])
+        if not alerts:
+            return 'The connection succeeded, but no alerts were found for the provided filters and first fetch time. ' \
+                   'To pass the test, increase the first fetch time to a time when there were alerts at.'
 
     # Authorization is done in client.generate_auth_token
     return 'ok'

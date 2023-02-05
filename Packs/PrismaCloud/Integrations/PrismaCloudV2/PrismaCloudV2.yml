@@ -1,3 +1,6 @@
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: PrismaCloud v2
   version: -1
@@ -11,24 +14,32 @@ configuration:
   defaultvalue: https://api.prismacloud.io/
   type: 0
   required: true
-- display: Username
+  section: Connect
+- display: Username / Access Key ID
   name: credentials
   required: true
   type: 9
+  displaypassword: Password / Access Key Secret
+  section: Connect
 - name: proxy
   display: Use system proxy settings
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - name: insecure
   display: Trust any certificate (not secure)
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - additionalinfo: Maximum is limited to 200.
   defaultvalue: '50'
   display: Maximum number of incidents to fetch
@@ -37,12 +48,14 @@ configuration:
   required: false
   type: 0
   section: Collect
-- defaultvalue: 3 days
+- additionalinfo: Date or relative timestamp to start fetching incidents from, in the format of <number> <time unit>. For example, 2 minutes, 12 hours, 6 days, 2 weeks, 3 months, 1 year, ISO timestamp. Default is 3 days.
+  defaultvalue: 3 days
   display: First fetch time interval
   hidden: false
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. When choosing to increase this value, duplicate incidents might occur at increase time.
   defaultvalue: 20
   display: 'Advanced: Time in minutes to look back when fetching incidents'
@@ -50,32 +63,25 @@ configuration:
   required: false
   type: 0
   section: Collect
-- display: Fetch only incidents matching these rule names
-  name: rule_names
-  required: false
-  type: 0
-- display: Fetch only incidents matching these policy names
-  name: policy_names
-  required: false
-  type: 0
-- display: Fetch only incidents with these severities
-  name: policy_severities
-  required: false
-  type: 0
+  advanced: true
 - display: Fetch only incidents matching these filters
+  defaultvalue: 'alert.status=open'
   name: filters
   type: 0
   required: false
   additionalinfo: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running "prisma-cloud-alert-filter-list" command.'
+  section: Collect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.9.46032
+  dockerimage: demisto/python3:3.10.9.46807
   isfetch: true
   commands:
   - arguments:
@@ -491,76 +497,76 @@ script:
     execution: false
     name: prisma-cloud-alert-search
     outputs:
-    - contextPath: PrismaCloud.Alert.nextPageToken
+    - contextPath: PrismaCloud.AlertPageToken.nextPageToken
       description: Next page token
       type: String
-    - contextPath: PrismaCloud.Alert.Results.id
+    - contextPath: PrismaCloud.Alert.id
       description: The ID of the returned alert.
       type: String
-    - contextPath: PrismaCloud.Alert.Results.status
+    - contextPath: PrismaCloud.Alert.status
       description: The status of the returned alert.
       type: String
-    - contextPath: PrismaCloud.Alert.Results.reason
+    - contextPath: PrismaCloud.Alert.reason
       description: The reason of the returned alert.
       type: String
-    - contextPath: PrismaCloud.Alert.Results.lastSeen
+    - contextPath: PrismaCloud.Alert.lastSeen
       description: The time the returned alert was last seen.
       type: String
-    - contextPath: PrismaCloud.Alert.Results.firstSeen
+    - contextPath: PrismaCloud.Alert.firstSeen
       description: The time the returned alert was first seen.
       type: String
-    - contextPath: PrismaCloud.Alert.Results.lastUpdated
+    - contextPath: PrismaCloud.Alert.lastUpdated
       description: The time the returned was last updated.
       type: String
-    - contextPath: PrismaCloud.Alert.Results.alertTime
+    - contextPath: PrismaCloud.Alert.alertTime
       description: The time of the returned alert.
       type: String
-    - contextPath: PrismaCloud.Alert.Results.policy.policyId
+    - contextPath: PrismaCloud.Alert.policy.policyId
       description: The policy ID of the returned alert.
       type: String
-    - contextPath: PrismaCloud.Alert.Results.policy.name
+    - contextPath: PrismaCloud.Alert.policy.name
       description: The policy name of the returned alert.
       type: String
-    - contextPath: PrismaCloud.Alert.Results.policy.policyType
+    - contextPath: PrismaCloud.Alert.policy.policyType
       description: The policy type of the returned alert.
       type: String
-    - contextPath: PrismaCloud.Alert.Results.policy.severity
+    - contextPath: PrismaCloud.Alert.policy.severity
       description: The policy severity of the returned alert.
       type: String
-    - contextPath: PrismaCloud.Alert.Results.policy.remediable
+    - contextPath: PrismaCloud.Alert.policy.remediable
       description: Whether the policy is remediable.
       type: Boolean
-    - contextPath: PrismaCloud.Alert.Results.policy.description
+    - contextPath: PrismaCloud.Alert.policy.description
       description: The policy description of the returned alert.
       type: String
-    - contextPath: PrismaCloud.Alert.Results.policy.recommendation
+    - contextPath: PrismaCloud.Alert.policy.recommendation
       description: The policy recommendation of the returned alert.
       type: String
-    - contextPath: PrismaCloud.Alert.Results.policy.remediation.description
+    - contextPath: PrismaCloud.Alert.policy.remediation.description
       description: The policy remediation description of the returned alert.
       type: String
-    - contextPath: PrismaCloud.Alert.Results.policy.remediation.cliScriptTemplate
+    - contextPath: PrismaCloud.Alert.policy.remediation.cliScriptTemplate
       description: The policy cli script template description of the returned alert.
       type: String
-    - contextPath: PrismaCloud.Alert.Results.policy.systemDefault
+    - contextPath: PrismaCloud.Alert.policy.systemDefault
       description: Whether the policy is system default.
       type: Boolean
-    - contextPath: PrismaCloud.Alert.Results.policy.deleted
+    - contextPath: PrismaCloud.Alert.policy.deleted
       description: Whether the policy is deleted.
       type: Boolean
-    - contextPath: PrismaCloud.Alert.Results.resource.resourceType
+    - contextPath: PrismaCloud.Alert.resource.resourceType
       description: The resource type of the returned alert.
       type: String
-    - contextPath: PrismaCloud.Alert.Results.resource.name
+    - contextPath: PrismaCloud.Alert.resource.name
       description: The resource name of the returned alert.
       type: String
-    - contextPath: PrismaCloud.Alert.Results.resource.account
+    - contextPath: PrismaCloud.Alert.resource.account
       description: The resource account of the returned alert.
       type: String
-    - contextPath: PrismaCloud.Alert.Results.resource.cloudType
+    - contextPath: PrismaCloud.Alert.resource.cloudType
       description: The resource cloud type of the returned alert.
       type: String
-    - contextPath: PrismaCloud.Alert.Results.resource.rrn
+    - contextPath: PrismaCloud.Alert.resource.rrn
       description: The resource rrn of the returned alert.
       type: String
   - arguments:
@@ -1416,136 +1422,136 @@ script:
     execution: false
     name: prisma-cloud-permission-list
     outputs:
-    - contextPath: PrismaCloud.Permission.nextPageToken
+    - contextPath: PrismaCloud.PermissionPageToken.nextPageToken
       description: Next page token
       type: String
-    - contextPath: PrismaCloud.Permission.Results.id
+    - contextPath: PrismaCloud.Permission.id
       description: Permission ID
       type: String
-    - contextPath: PrismaCloud.Permission.Results.sourceCloudType
+    - contextPath: PrismaCloud.Permission.sourceCloudType
       description: Permission source cloud type
       type: String
-    - contextPath: PrismaCloud.Permission.Results.sourceCloudAccount
+    - contextPath: PrismaCloud.Permission.sourceCloudAccount
       description: Permission source cloud account
       type: String
-    - contextPath: PrismaCloud.Permission.Results.sourceResourceId
+    - contextPath: PrismaCloud.Permission.sourceResourceId
       description: Permission source resource Id
       type: String
-    - contextPath: PrismaCloud.Permission.Results.destCloudType
+    - contextPath: PrismaCloud.Permission.destCloudType
       description: Permission destination cloud type
       type: String
-    - contextPath: PrismaCloud.Permission.Results.destCloudServiceName
+    - contextPath: PrismaCloud.Permission.destCloudServiceName
       description: Permission destination cloud service name
       type: String
-    - contextPath: PrismaCloud.Permission.Results.destResourceType
+    - contextPath: PrismaCloud.Permission.destResourceType
       description: Permission destination resource type
       type: String
-    - contextPath: PrismaCloud.Permission.Results.effectiveActionName
+    - contextPath: PrismaCloud.Permission.effectiveActionName
       description: Permission effective action name
       type: String
-    - contextPath: PrismaCloud.Permission.Results.grantedByCloudType
+    - contextPath: PrismaCloud.Permission.grantedByCloudType
       description: Permission granted by cloud type
       type: String
-    - contextPath: PrismaCloud.Permission.Results.grantedByCloudPolicyId
+    - contextPath: PrismaCloud.Permission.grantedByCloudPolicyId
       description: Permission granted by cloud policy Id
       type: String
-    - contextPath: PrismaCloud.Permission.Results.grantedByCloudPolicyName
+    - contextPath: PrismaCloud.Permission.grantedByCloudPolicyName
       description: Permission granted by cloud policy name
       type: String
-    - contextPath: PrismaCloud.Permission.Results.grantedByCloudPolicyType
+    - contextPath: PrismaCloud.Permission.grantedByCloudPolicyType
       description: Permission granted by cloud policy type
       type: String
-    - contextPath: PrismaCloud.Permission.Results.grantedByCloudPolicyRrn
+    - contextPath: PrismaCloud.Permission.grantedByCloudPolicyRrn
       description: Permission granted by cloud policy rrn
       type: String
-    - contextPath: PrismaCloud.Permission.Results.grantedByCloudEntityId
+    - contextPath: PrismaCloud.Permission.grantedByCloudEntityId
       description: Permission granted by cloud entity Id
       type: String
-    - contextPath: PrismaCloud.Permission.Results.grantedByCloudEntityName
+    - contextPath: PrismaCloud.Permission.grantedByCloudEntityName
       description: Permission granted by cloud entity name
       type: String
-    - contextPath: PrismaCloud.Permission.Results.grantedByCloudEntityRrn
+    - contextPath: PrismaCloud.Permission.grantedByCloudEntityRrn
       description: Permission granted by cloud entity rrn
       type: String
-    - contextPath: PrismaCloud.Permission.Results.sourcePublic
+    - contextPath: PrismaCloud.Permission.sourcePublic
       description: Whether the permission source is public
       type: Boolean
-    - contextPath: PrismaCloud.Permission.Results.sourceCloudRegion
+    - contextPath: PrismaCloud.Permission.sourceCloudRegion
       description: Permission source cloud region
       type: String
-    - contextPath: PrismaCloud.Permission.Results.sourceCloudServiceName
+    - contextPath: PrismaCloud.Permission.sourceCloudServiceName
       description: Permission source cloud service name
       type: String
-    - contextPath: PrismaCloud.Permission.Results.sourceResourceName
+    - contextPath: PrismaCloud.Permission.sourceResourceName
       description: Permission source resource name
       type: String
-    - contextPath: PrismaCloud.Permission.Results.sourceResourceType
+    - contextPath: PrismaCloud.Permission.sourceResourceType
       description: Permission source resource type
       type: String
-    - contextPath: PrismaCloud.Permission.Results.sourceIdpService
+    - contextPath: PrismaCloud.Permission.sourceIdpService
       description: Permission source idp service
       type: String
-    - contextPath: PrismaCloud.Permission.Results.sourceIdpDomain
+    - contextPath: PrismaCloud.Permission.sourceIdpDomain
       description: Permission source idp domain
       type: String
-    - contextPath: PrismaCloud.Permission.Results.sourceIdpEmail
+    - contextPath: PrismaCloud.Permission.sourceIdpEmail
       description: Permission source idp email
       type: String
-    - contextPath: PrismaCloud.Permission.Results.sourceIdpUsername
+    - contextPath: PrismaCloud.Permission.sourceIdpUsername
       description: Permission source idp username
       type: String
-    - contextPath: PrismaCloud.Permission.Results.sourceIdpGroup
+    - contextPath: PrismaCloud.Permission.sourceIdpGroup
       description: Permission source idp group
       type: String
-    - contextPath: PrismaCloud.Permission.Results.sourceIdpRrn
+    - contextPath: PrismaCloud.Permission.sourceIdpRrn
       description: Permission source idp rrn
       type: String
-    - contextPath: PrismaCloud.Permission.Results.sourceCloudResourceRrn
+    - contextPath: PrismaCloud.Permission.sourceCloudResourceRrn
       description: Permission source cloud resource rrn
       type: String
-    - contextPath: PrismaCloud.Permission.Results.destCloudAccount
+    - contextPath: PrismaCloud.Permission.destCloudAccount
       description: Permission destination cloud account
       type: String
-    - contextPath: PrismaCloud.Permission.Results.destCloudRegion
+    - contextPath: PrismaCloud.Permission.destCloudRegion
       description: Permission destination cloud region
       type: String
-    - contextPath: PrismaCloud.Permission.Results.destResourceName
+    - contextPath: PrismaCloud.Permission.destResourceName
       description: Permission destination resource name
       type: String
-    - contextPath: PrismaCloud.Permission.Results.destResourceId
+    - contextPath: PrismaCloud.Permission.destResourceId
       description: Permission destination resource Id
       type: String
-    - contextPath: PrismaCloud.Permission.Results.destCloudResourceRrn
+    - contextPath: PrismaCloud.Permission.destCloudResourceRrn
       description: Permission destination cloud resource rrn
       type: String
-    - contextPath: PrismaCloud.Permission.Results.grantedByCloudEntityType
+    - contextPath: PrismaCloud.Permission.grantedByCloudEntityType
       description: Permission granted by cloud entity type
       type: String
-    - contextPath: PrismaCloud.Permission.Results.accessedResourcesCount
+    - contextPath: PrismaCloud.Permission.accessedResourcesCount
       description: Permission accessed resources count
       type: String
-    - contextPath: PrismaCloud.Permission.Results.lastAccessDate
+    - contextPath: PrismaCloud.Permission.lastAccessDate
       description: Permission last access date
       type: String
-    - contextPath: PrismaCloud.Permission.Results.lastAccessStatus
+    - contextPath: PrismaCloud.Permission.lastAccessStatus
       description: Permission last access status
       type: String
-    - contextPath: PrismaCloud.Permission.Results.isWildCardDestCloudResourceName
+    - contextPath: PrismaCloud.Permission.isWildCardDestCloudResourceName
       description: Whether the destination cloud resource name is wildcard
       type: Boolean
-    - contextPath: PrismaCloud.Permission.Results.exceptions
+    - contextPath: PrismaCloud.Permission.exceptions
       description: Permission exceptions
       type: Unknown
-    - contextPath: PrismaCloud.Permission.Results.grantedByLevelType
+    - contextPath: PrismaCloud.Permission.grantedByLevelType
       description: Permission granted by level type
       type: String
-    - contextPath: PrismaCloud.Permission.Results.grantedByLevelId
+    - contextPath: PrismaCloud.Permission.grantedByLevelId
       description: Permission granted by level Id
       type: String
-    - contextPath: PrismaCloud.Permission.Results.grantedByLevelName
+    - contextPath: PrismaCloud.Permission.grantedByLevelName
       description: Permission granted by level name
       type: String
-    - contextPath: PrismaCloud.Permission.Results.grantedByLevelRrn
+    - contextPath: PrismaCloud.Permission.grantedByLevelRrn
       description: Permission granted by level rrn
       type: String
 tests:
