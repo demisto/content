@@ -6,7 +6,7 @@ configuration:
   - name: base_url
     display: Server URL
     required: true
-    defaultvalue: https://example.com/
+    defaultvalue: https://example.com/api/v3.0/
     type: 0
     additionalinfo: null
   - display: Username
@@ -1267,7 +1267,7 @@ script:
         - contextPath: Endpoint.MACAddress
           description: The endpoint's MAC address.
           type: String
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.9.42476
   feed: false
   isfetch: true
   longRunning: false

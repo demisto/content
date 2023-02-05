@@ -1033,12 +1033,13 @@ Retrieve analytical features for specified entity value and model name.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| entityValue | Entity Value | Required | 
-| modelName | Model Name | Required | 
-| fromDate | From Date ( yyyy-MM-dd ) | Optional | 
-| toDate | To Date ( yyyy-MM-dd ) | Optional | 
+| **Argument Name** | **Description**                 | **Required** |
+|-------------------|---------------------------------| --- |
+| entityValue       | Entity Value                    | Required | 
+| modelName         | Model Name                      | Required | 
+| fromDate          | From Date ( yyyy-MM-dd )        | Optional | 
+| toDate            | To Date ( yyyy-MM-dd )          | Optional | 
+| entityTypeId      | Entity Type Id (defaulted to 1) | Optional |
 
 #### Context Output
 

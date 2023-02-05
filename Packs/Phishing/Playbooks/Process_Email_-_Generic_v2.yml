@@ -145,7 +145,7 @@ tasks:
       version: -1
       name: Extract email artifacts and attachments
       description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook.
-      scriptName: ParseEmailFiles
+      scriptName: ParseEmailFilesV2
       type: regular
       iscommand: false
       brand: ''
@@ -564,8 +564,17 @@ tasks:
           accessor: Keywords
       emailmessageid:
         complex:
-          root: Email
-          accessor: HeadersMap.Message-ID
+          root: incident.emailheaders
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident.emailheaders.headername
+                iscontext: true
+              right:
+                value:
+                  simple: Message-ID
+          accessor: headervalue
           transformers:
           - operator: uniq
       emailrecipientscount:
@@ -582,14 +591,32 @@ tasks:
           - operator: count
       emailreplyto:
         complex:
-          root: Email
-          accessor: HeadersMap.Reply-To
+          root: incident.emailheaders
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident.emailheaders.headername
+                iscontext: true
+              right:
+                value:
+                  simple: Reply-To
+          accessor: headervalue
           transformers:
           - operator: uniq
       emailreturnpath:
         complex:
-          root: Email
-          accessor: HeadersMap.Return-Path
+          root: incident.emailheaders
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident.emailheaders.headername
+                iscontext: true
+              right:
+                value:
+                  simple: Return-Path
+          accessor: headervalue
           transformers:
           - operator: uniq
       emailsenderip:
@@ -670,8 +697,17 @@ tasks:
           - operator: Stringify
       reportedemailmessageid:
         complex:
-          root: Email.HeadersMap
-          accessor: Message-ID
+          root: incident.emailheaders
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident.emailheaders.headername
+                iscontext: true
+              right:
+                value:
+                  simple: Message-ID
+          accessor: headervalue
           transformers:
           - operator: uniq
       reportedemailorigin:
@@ -2140,7 +2176,7 @@ tasks:
       version: -1
       name: Set incident attachments
       description: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
-      scriptName: DemistoUploadFileV2
+      scriptName: UploadFile
       type: regular
       iscommand: false
       brand: ''
@@ -2169,7 +2205,7 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
-      incidentID:
+      incID:
         complex:
           root: incident
           accessor: id

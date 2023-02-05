@@ -1,0 +1,801 @@
+id: Courses of Action - Discovery
+name: Courses of Action - Discovery
+description: "This playbook handles MITRE ATT&CK Techniques using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team. It utilizes each of the sub-playbooks for specific techniques that belong to this phase (tactic) according to the MITRE ATT&CK kill chain. The sub-playbook called depends on the technique input.\n \n***Disclaimer: This playbook does not simulate an attack using the specified techniques, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\n \nTactic:\n- TA0007: Discovery\n\nMITRE ATT&CK Description: \nThe adversary is trying to figure out your environment.\n\nDiscovery consists of techniques an adversary may use to gain knowledge about the system and internal network. These techniques help adversaries observe the environment and orient themselves before deciding how to act. They also allow adversaries to explore what they can control and what’s around their entry point in order to discover how it could benefit their current objective. Native operating system tools are often used toward this post-compromise information-gathering objective.\n\nPossible playbook triggers:\n- The playbook can be used as a part of the “Courses of Action - Collection” playbook to remediate techniques based on kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, that can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input.\n"
+inputs:
+- description: Mitre ATT&CK ID of a technique.
+  key: technique
+  playbookInputQuery:
+  required: false
+  value: {}
+outputs:
+- contextPath: Handled.Techniques
+  description: The techniques handled in this playbook
+  type: unknown
+- contextPath: Discovery.ProductList
+  description: Products used for remediation.
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+      - "10"
+      - "11"
+      - "12"
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7aeb7b35-80fe-4921-8e0b-add67c8850e5
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 7aeb7b35-80fe-4921-8e0b-add67c8850e5
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: T1083
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 69a4b4eb-dded-463d-81b4-1c055e074606
+      iscommand: false
+      name: File and Directory Discovery
+      description: ""
+      type: condition
+      version: -1
+    taskid: 69a4b4eb-dded-463d-81b4-1c055e074606
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 190
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2f7903d5-9320-4447-8fb6-0d9032f702dd
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 2f7903d5-9320-4447-8fb6-0d9032f702dd
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 1160
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c4abef86-56b3-43d2-883c-003ccaef8041
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1083 - File and Directory Discovery
+      playbookId: MITRE ATT&CK CoA - T1083 - File and Directory Discovery
+      type: playbook
+      version: -1
+      description: ''
+    taskid: c4abef86-56b3-43d2-883c-003ccaef8041
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 360
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d79970b4-16aa-43ec-88ae-bb3c2cbc0e98
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1135 - Network Share Discovery
+      playbookId: MITRE ATT&CK CoA - T1135 - Network Share Discovery
+      type: playbook
+      version: -1
+      description: ''
+    taskid: d79970b4-16aa-43ec-88ae-bb3c2cbc0e98
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 360
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dfd4bd2f-aad0-4140-8f06-7096d71f2887
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1057 - Process Discovery
+      playbookId: MITRE ATT&CK CoA - T1057 - Process Discovery
+      type: playbook
+      version: -1
+      description: ''
+    taskid: dfd4bd2f-aad0-4140-8f06-7096d71f2887
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 360
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fafb62ac-83d8-4995-8e62-f72c942db522
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1518 - Software Discovery
+      playbookId: MITRE ATT&CK CoA - T1518 - Software Discovery
+      type: playbook
+      version: -1
+      description: ''
+    taskid: fafb62ac-83d8-4995-8e62-f72c942db522
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 360
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 60732c78-f3c1-4b8f-85a1-b7cf642c1370
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1082 - System Information Discovery
+      playbookId: MITRE ATT&CK CoA - T1082 - System Information Discovery
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 60732c78-f3c1-4b8f-85a1-b7cf642c1370
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -580,
+          "y": 360
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: T1057
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 69e9c1bf-3cc3-403a-8eac-316cd590b970
+      iscommand: false
+      name: Process Discovery
+      description: ""
+      type: condition
+      version: -1
+    taskid: 69e9c1bf-3cc3-403a-8eac-316cd590b970
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 190
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: T1135
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f13cf9ec-0639-46fd-87e7-17e8b77a6d58
+      iscommand: false
+      name: Network Share Discovery
+      description: ""
+      type: condition
+      version: -1
+    taskid: f13cf9ec-0639-46fd-87e7-17e8b77a6d58
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 190
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: T1518
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2168cb53-3524-4b97-8078-46c50e3818c7
+      iscommand: false
+      name: Software Discovery
+      description: ""
+      type: condition
+      version: -1
+    taskid: 2168cb53-3524-4b97-8078-46c50e3818c7
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 190
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: T1082
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7b8a146e-3d53-4398-8b2e-955857fd8f91
+      iscommand: false
+      name: System Information Discovery
+      description: ""
+      type: condition
+      version: -1
+    taskid: 7b8a146e-3d53-4398-8b2e-955857fd8f91
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -580,
+          "y": 190
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Discovery.Products
+      value:
+        simple: Cortex XDR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 7c1e59c6-e08b-47fc-848e-d3127b3966dd
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: 7c1e59c6-e08b-47fc-848e-d3127b3966dd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 530
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Discovery.Products
+      value:
+        simple: Cortex XDR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: bd68cc4d-86b5-4fcd-8653-e2b9f867b5c8
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: bd68cc4d-86b5-4fcd-8653-e2b9f867b5c8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 530
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Discovery.Products
+      value:
+        simple: Cortex XDR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 3f167fa2-fdc8-4188-8fb6-e6a154a5963b
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: 3f167fa2-fdc8-4188-8fb6-e6a154a5963b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 530
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Discovery.Products
+      value:
+        simple: Cortex XDR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 02a59d28-ce80-4c7c-8e6d-52015c487997
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: 02a59d28-ce80-4c7c-8e6d-52015c487997
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 530
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Discovery.Products
+      value:
+        simple: Cortex XDR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: fe80d8bc-3930-42da-8333-7274e06736a2
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: fe80d8bc-3930-42da-8333-7274e06736a2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -580,
+          "y": 530
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      discoveryremediationproducts:
+        complex:
+          root: Discovery
+          transformers:
+          - args:
+              title: {}
+            operator: JsonToTable
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 0e9a364c-e49c-48bd-8919-58ad7d275b84
+      iscommand: true
+      name: Set Discovery Remediation products to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 0e9a364c-e49c-48bd-8919-58ad7d275b84
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 700
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4b369291-ca87-4120-8935-2a0a4ec834fb
+      iscommand: false
+      name: Set techniques information to the layout
+      description: ""
+      type: title
+      version: -1
+    taskid: 4b369291-ca87-4120-8935-2a0a4ec834fb
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 870
+        }
+      }
+  "21":
+    fieldMapping:
+    - incidentfield: Remediated Techniques
+      output:
+        complex:
+          root: Handled
+          transformers:
+          - args:
+              title: {}
+            operator: JsonToTable
+    - incidentfield: Techniques to Handle
+      output:
+        complex:
+          root: Unhandled
+          transformers:
+          - args:
+              title: {}
+            operator: JsonToTable
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Unhandled.Techniques
+      stringify: {}
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: TechniquesList
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: Handled.Techniques
+          root: TechniquesList
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      id: 5a19c8ee-225c-44d0-8a8a-01ec94bfc92f
+      iscommand: false
+      name: Set techniques information to the layout
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 5a19c8ee-225c-44d0-8a8a-01ec94bfc92f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 990
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_3_#default#": 0.5,
+      "11_3_#default#": 0.68,
+      "11_6_yes": 0.34,
+      "12_3_#default#": 0.28,
+      "13_3_#default#": 0.21,
+      "1_3_#default#": 0.22
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1175,
+        "width": 2050,
+        "x": -580,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2

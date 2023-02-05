@@ -1,31 +1,32 @@
+import logging
+
 import demistomock as demisto
 from CommonServerPython import *
 
 from typing import List, Dict, Set, Optional
 import json
-import requests
+import urllib3
 from stix2 import TAXIICollectionSource, Filter
 from taxii2client.v20 import Server, Collection, ApiRoot
 
 ''' CONSTANT VARIABLES '''
-
 MITRE_TYPE_TO_DEMISTO_TYPE = {
     "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
     "intrusion-set": ThreatIntel.ObjectsNames.INTRUSION_SET,
     "malware": ThreatIntel.ObjectsNames.MALWARE,
     "tool": ThreatIntel.ObjectsNames.TOOL,
+    "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
     "relationship": "Relationship"
 }
-
 INDICATOR_TYPE_TO_SCORE = {
     "Intrusion Set": ThreatIntel.ObjectsScore.INTRUSION_SET,
     "Attack Pattern": ThreatIntel.ObjectsScore.ATTACK_PATTERN,
     "Course of Action": ThreatIntel.ObjectsScore.COURSE_OF_ACTION,
     "Malware": ThreatIntel.ObjectsScore.MALWARE,
-    "Tool": ThreatIntel.ObjectsScore.TOOL
+    "Tool": ThreatIntel.ObjectsScore.TOOL,
+    "Campaign": ThreatIntel.ObjectsScore.CAMPAIGN
 }
-
 MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
     'build-capabilities': ThreatIntel.KillChainPhases.BUILD_CAPABILITIES,
     'privilege-escalation': ThreatIntel.KillChainPhases.PRIVILEGE_ESCALATION,
@@ -46,7 +47,6 @@ MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
     'act-on-objectives': ThreatIntel.KillChainPhases.ACT_ON_OBJECTIVES,
     'command-and-control': ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL
 }
-
 FILTER_OBJS = {
     "Technique": {"name": "attack-pattern", "filter": Filter("type", "=", "attack-pattern")},
     "Mitigation": {"name": "course-of-action", "filter": Filter("type", "=", "course-of-action")},
@@ -54,13 +54,17 @@ FILTER_OBJS = {
     "Malware": {"name": "malware", "filter": Filter("type", "=", "malware")},
     "Tool": {"name": "tool", "filter": Filter("type", "=", "tool")},
     "relationships": {"name": "relationships", "filter": Filter("type", "=", "relationship")},
+    "Campaign": {"name": "campaign", "filter": Filter("type", "=", "campaign")},
 }
-
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
+EXTRACT_TIMESTAMP_REGEX = r"\((.+)\)"
+
+# disable warnings coming from taxii2client - https://github.com/OTRF/ATTACK-Python-Client/issues/43#issuecomment-1016581436
+logging.getLogger("taxii2client.v20").setLevel(logging.ERROR)
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 class Client:
@@ -102,8 +106,11 @@ class Client:
         }
 
         indicator_obj['fields']['tags'].extend(self.tags)
+        tlp = indicator_obj['fields']['tlp']
+        if tlp != '':
+            indicator_obj['fields']['trafficlightprotocol'] = tlp
 
-        if self.tlp_color:
+        elif self.tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
 
         return indicator_obj
@@ -242,7 +249,8 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
         url = external_reference.get('url', '')
         description = external_reference.get('description')
         source_name = external_reference.get('source_name')
-        publications.append({'link': url, 'title': description, 'source': source_name})
+        time_stamp = extract_timestamp_from_description(description)
+        publications.append({'link': url, 'title': description, 'source': source_name, 'timestamp': time_stamp})
 
     mitre_id = [external.get('external_id') for external in indicator_json.get('external_references', [])
                 if external.get('source_name', '') == 'mitre-attack']
@@ -252,13 +260,16 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     if indicator_type in ['Tool', 'STIX Tool', 'Malware', 'STIX Malware']:
         tags.extend(indicator_json.get('labels', ''))
 
+    tlp = get_tlp(indicator_json)
+
     generic_mapping_fields = {
         'stixid': indicator_json.get('id'),
         'firstseenbysource': created,
         'modified': modified,
         'publications': publications,
         'mitreid': mitre_id,
-        'tags': tags
+        'tags': tags,
+        'tlp': tlp,
     }
 
     mapping_by_type = {
@@ -301,10 +312,32 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
             'stixaliases': indicator_json.get('x_mitre_aliases'),
             'stixdescription': indicator_json.get('description'),
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
+        },
+        "Campaign": {
+            'description': indicator_json.get('description'),
+            'aliases': indicator_json.get('aliases')
         }
     }
     generic_mapping_fields.update(mapping_by_type.get(indicator_type, {}))  # type: ignore
     return generic_mapping_fields
+
+
+def extract_timestamp_from_description(description: str) -> str:
+    if not description or 'Citation' in description or 'n.d' in description:
+        return ''
+    match = re.search(EXTRACT_TIMESTAMP_REGEX, description)
+    timestamp = match.group(1) if match else ''
+    return timestamp
+
+
+def get_tlp(indicator_json: dict) -> str:
+    object_marking_definition_list = indicator_json.get('object_marking_refs', '')
+    tlp_color: str = ''
+    for object_marking_definition in object_marking_definition_list:
+        if MARKING_DEFINITION_TO_TLP.get(object_marking_definition):
+            tlp_color = MARKING_DEFINITION_TO_TLP.get(object_marking_definition, '')
+            break
+    return tlp_color
 
 
 def create_relationship_list(mitre_relationships_list, id_to_name):
@@ -332,8 +365,7 @@ def create_relationship(item_json, id_to_name):
         'firstseenbysource': item_json.get('created')
     }
     if item_json.get('relationship_type') not in RELATIONSHIP_TYPES:
-        demisto.debug(f"Invalid relation type: {item_json.get('relationship_type')}")
-        return
+        demisto.debug(f"Unknown relationship name: {item_json.get('relationship_type')}")
 
     entity_a = id_to_name.get(item_json.get('source_ref'))
     entity_b = id_to_name.get(item_json.get('target_ref'))
@@ -440,8 +472,7 @@ def get_mitre_data_by_filter(client, mitre_filter):
         collection_data = Collection(collection_url, verify=client.verify, proxies=client.proxies)
 
         tc_source = TAXIICollectionSource(collection_data)
-        if tc_source.query(mitre_filter):
-            mitre_data = tc_source.query(mitre_filter)[0]
+        if mitre_data := tc_source.query(mitre_filter):
             return mitre_data
     return {}
 
@@ -477,28 +508,29 @@ def build_command_result(value, score, md, attack_obj):
 def attack_pattern_reputation_command(client, args):
     command_results: List[CommandResults] = []
 
+    filter_by_type = [Filter('type', '=', 'attack-pattern')]
+    mitre_data = get_mitre_data_by_filter(client, filter_by_type)
+
     mitre_names = argToList(args.get('attack_pattern'))
     for name in mitre_names:
         if ':' not in name:  # not sub-technique
-            filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', name)]
-            mitre_data = get_mitre_data_by_filter(client, filter_by_name)
-            if not mitre_data:
+            attack_pattern = get_attack_pattern_by_name(mitre_data, name=name)
+            if not attack_pattern:
                 continue
 
-            value = mitre_data.get('name')
+            value = attack_pattern.get('name')
 
         else:
             all_name = name.split(':')
             parent = all_name[0]
-            sub = all_name[1][1:]
+            sub = all_name[1][1:]  # removes the space before the name of the sub-technique
             mitre_id = ''
 
             # get parent MITRE ID
-            filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', parent)]
-            mitre_data = get_mitre_data_by_filter(client, filter_by_name)
-            if not mitre_data:
+            attack_pattern = get_attack_pattern_by_name(mitre_data, name=parent)
+            if not attack_pattern:
                 continue
-            indicator_json = json.loads(str(mitre_data))
+            indicator_json = json.loads(str(attack_pattern))
             parent_mitre_id = [external.get('external_id') for external in
                                indicator_json.get('external_references', [])
                                if external.get('source_name', '') == 'mitre-attack']
@@ -506,11 +538,10 @@ def attack_pattern_reputation_command(client, args):
             parent_name = indicator_json['name']
 
             # get sub MITRE ID
-            filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', sub)]
-            mitre_data = get_mitre_data_by_filter(client, filter_by_name)
-            if not mitre_data:
+            attack_pattern = get_attack_pattern_by_name(mitre_data, name=sub)
+            if not attack_pattern:
                 continue
-            indicator_json = json.loads(str(mitre_data))
+            indicator_json = json.loads(str(attack_pattern))
             sub_mitre_id = [external.get('external_id') for external in
                             indicator_json.get('external_references', [])
                             if external.get('source_name', '') == 'mitre-attack']
@@ -518,15 +549,16 @@ def attack_pattern_reputation_command(client, args):
             sub_mitre_id = sub_mitre_id[5:]
 
             mitre_id = f'{parent_mitre_id}{sub_mitre_id}'
-            mitre_filter = [Filter("external_references.external_id", "=", mitre_id),
-                            Filter("type", "=", "attack-pattern")]
-            mitre_data = get_mitre_data_by_filter(client, mitre_filter)
-            if not mitre_data:
+            attack_pattern = list(filter(lambda attack_pattern_obj:
+                                         filter_attack_pattern_object_by_attack_id(mitre_id, attack_pattern_obj),
+                                         mitre_data))
+            if not attack_pattern:
                 continue
 
-            value = f'{parent_name}: {mitre_data.get("name")}'
+            attack_pattern = attack_pattern[0]
+            value = f'{parent_name}: {attack_pattern.get("name")}'
 
-        attack_obj = map_fields_by_type('Attack Pattern', json.loads(str(mitre_data)))
+        attack_obj = map_fields_by_type('Attack Pattern', json.loads(str(attack_pattern)))
         custom_fields = attack_obj or {}
         score = INDICATOR_TYPE_TO_SCORE.get('Attack Pattern')
         md = f"## MITRE ATTACK \n ## Name: {value} - ID: " \
@@ -534,6 +566,33 @@ def attack_pattern_reputation_command(client, args):
         command_results.append(build_command_result(value, score, md, attack_obj))
 
     return command_results
+
+
+def get_attack_pattern_by_name(mitre_data, name):
+    """
+    Filter attack pattern objects by the attack name
+
+    Returns:
+        The attack pattern object with the name provided, if there is such one.
+    """
+    attack_pattern = [attack_pattern_obj
+                      for attack_pattern_obj in mitre_data
+                      if (attack_pattern_obj.get('name') == name)]
+    return attack_pattern[0] if attack_pattern else {}
+
+
+def filter_attack_pattern_object_by_attack_id(attack_id: str, attack_pattern_object):
+    """Filter attach pattern objects by the attack id
+
+    Returns:
+        True if the external_id matches the attack_id, else False
+    """
+    external_references_list = attack_pattern_object.get('external_references', [])
+    for external_reference in external_references_list:
+        if external_reference.get('external_id', '') == attack_id:
+            return True
+
+    return False
 
 
 def get_mitre_value_from_id(client, args):
@@ -546,17 +605,25 @@ def get_mitre_value_from_id(client, args):
         collection_data = Collection(collection_url, verify=client.verify, proxies=client.proxies)
 
         tc_source = TAXIICollectionSource(collection_data)
-        attack_pattern_obj = tc_source.query([
-            Filter("external_references.external_id", "=", attack_id),
+        attack_pattern_objects = tc_source.query(query=[
             Filter("type", "=", "attack-pattern")
         ])
-        attack_pattern_name = attack_pattern_obj[0]['name'] if attack_pattern_obj else None
+        if attack_pattern_objects:
+            attack_pattern = list(filter(lambda attack_pattern_obj:
+                                  filter_attack_pattern_object_by_attack_id(attack_id,
+                                                                            attack_pattern_obj), attack_pattern_objects))
+            attack_pattern_name = attack_pattern[0]['name']
 
         if attack_pattern_name and len(attack_id) > 5:  # sub-technique
-            parent_name = tc_source.query([
-                Filter("external_references.external_id", "=", attack_id[:5]),
+            parent_objects = tc_source.query([
                 Filter("type", "=", "attack-pattern")
-            ])[0]['name']
+            ])
+            sub_technique_attack_id = attack_id[:5]
+            parent_object = list(filter(lambda attack_pattern_obj:
+                                 filter_attack_pattern_object_by_attack_id(sub_technique_attack_id,
+                                                                           attack_pattern_obj), parent_objects))
+            parent_name = parent_object[0]['name']
+
             attack_pattern_name = f'{parent_name}: {attack_pattern_name}'
 
         if attack_pattern_name:
@@ -614,6 +681,8 @@ def main():
     except Exception as e:
         return_error(e)
 
+
+from TAXII2ApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

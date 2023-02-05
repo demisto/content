@@ -8,19 +8,10 @@
     "email": "support@slashnext.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Forensics & Malware Analysis"
     ],
-    "tags": [
-        "Threat Intelligence",
-        "Forensics",
-        "Email"
-    ],
-    "useCases": [
-        "Incident Response",
-        "Email Communication",
-        "Hunting",
-        "Phishing"
-    ],
+    "tags": [],
+    "useCases": ["Phishing"],
     "keywords": [
         "slashnext",
         "reputation",

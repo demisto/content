@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import json
-import requests
 import urllib3
 
 # Disable insecure warnings

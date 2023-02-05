@@ -1304,6 +1304,10 @@ def add_email_object(demisto_args: dict):
     entry_id = demisto_args.get('entry_id')
     event_id = demisto_args.get('event_id')
     email_path = demisto.getFilePath(entry_id).get('path')
+    name = demisto.getFilePath(entry_id).get('name', '')
+    if name.endswith(".msg"):
+        raise DemistoException(
+            'misp-add-email-object command does not support *.msg files, please use an *.eml file type instead.')
     obj = EMailObject(email_path)
     return add_object(event_id, obj)
 

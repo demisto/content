@@ -1,0 +1,45 @@
+{
+  "severe_issues": 0,
+  "domain_names": [
+    "localhost.example.com"
+  ],
+  "ip_addresses": [
+    "0.0.0.0",
+    "0.0.0.0",
+    "0.0.0.0",
+    "0.0.0.0",
+    "0.0.0.0"
+  ],
+  "id": "cert/st_",
+  "subject_organization": "vesta control panel",
+  "issuer_state": "",
+  "organizations": [
+    "Acme Corporation"
+  ],
+  "asset_type": "cert",
+  "subject_country": "us",
+  "issuer_country": "us",
+  "subject_common_name": "localhost.example.com",
+  "issuer_locality": "",
+  "subject_organization_unit": "it",
+  "first_seen": "2021-06-26T09:22:27.012Z",
+  "security_grade": "C",
+  "locations": [
+    "MYS"
+  ],
+  "domains": [
+    "domain/localhost.example.com"
+  ],
+  "signature_algorithm": "SHA256",
+  "last_seen": "2022-03-24T04:26:03.296Z",
+  "type": "cert",
+  "subject_locality": "",
+  "hosting_type": "owned",
+  "status": "normal",
+  "issuer_organization_unit": "it",
+  "expiration": "2022-03-22T02:07:00.000Z",
+  "issuer_organization": "vesta control panel",
+  "issuer_common_name": "localhost.example.com",
+  "subject_state": "",
+  "issues_count": 1
+}

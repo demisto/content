@@ -2,19 +2,20 @@
     "name": "Google Key Management Service",
     "description": "Use the Google Key Management Service API for CryptoKey management and encrypt/decrypt functionality.",
     "support": "xsoar",
-    "currentVersion": "1.0.13",
+    "currentVersion": "1.0.17",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Network Security"
+        "Cloud Services"
     ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "xpanse"
     ]
 }

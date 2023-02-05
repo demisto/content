@@ -172,7 +172,7 @@ def test_url(requests_mock):
 def test_url_not_found(requests_mock):
     from CTIX import Client, url_details_command
 
-    url_to_check = 'https://abc.com'
+    url_to_check = 'https://abc.com/path'
     mock_response = {"results": []}
     requests_mock.get(f'http://test.com/objects/indicator/?q={url_to_check}',
                       json=mock_response)

@@ -3,6 +3,10 @@ from pathlib import Path
 from typing import Iterable, Optional
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
+from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
+from demisto_sdk.commands.content_graph.common import ContentType
+from demisto_sdk.commands.content_graph.objects.content_item import ContentItem
+
 
 from Tests.scripts.collect_tests.constants import \
     SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK
@@ -36,6 +40,12 @@ class IdSetItem(DictBased):
         # hidden for pack_name_to_pack_metadata, deprecated for content items
         self.deprecated: Optional[bool] = \
             self.get('deprecated', warn_if_missing=False) or self.get('hidden', warn_if_missing=False)
+
+    @classmethod
+    def from_model(cls, model: ContentItem):
+        return cls(id_=model.object_id,
+                   dict_=model.to_id_set_entity(),
+                   )
 
     @property
     def integrations(self):
@@ -95,6 +105,7 @@ class IdSet(DictFileBased):
         self.id_to_integration: dict[str, IdSetItem] = self._parse_items('integrations')
         self.id_to_script: dict[str, IdSetItem] = self._parse_items('scripts')
         self.id_to_test_playbook: dict[str, IdSetItem] = self._parse_items('TestPlaybooks')
+        self.id_to_modeling_rule: dict[str, IdSetItem] = self._parse_items('ModelingRules')
 
         self.implemented_scripts_to_tests: dict[str, list] = defaultdict(list)
         self.implemented_playbooks_to_tests: dict[str, list] = defaultdict(list)
@@ -126,26 +137,74 @@ class IdSet(DictFileBased):
     def test_playbooks(self) -> Iterable[IdSetItem]:
         yield from self.id_to_test_playbook.values()
 
+    @property
+    def modeling_rules(self) -> Iterable[IdSetItem]:
+        yield from self.id_to_modeling_rule.values()
+
     def _parse_items(self, key: str) -> dict[str, IdSetItem]:
         result: dict[str, IdSetItem] = {}
-        for dict_ in self[key]:
-            for id_, values in dict_.items():
-                if isinstance(values, dict):
-                    values = (values,)
+        if self.get(key):
+            for dict_ in self[key]:
+                for id_, values in dict_.items():
+                    if isinstance(values, dict):
+                        values = (values,)
 
-                for value in values:  # may have multiple values for different from/to versions
-                    item = IdSetItem(id_, value)
+                    for value in values:  # may have multiple values for different from/to versions
+                        item = IdSetItem(id_, value)
 
-                    if item.pack_id in PackManager.skipped_packs:
-                        logger.debug(f'skipping {id_=} as the {item.pack_id} pack is skipped')
-                        continue
-
-                    if existing := result.get(id_):
-                        # Some content items have multiple copies, each supporting different versions. We use the newer.
-                        if item.to_version <= existing.to_version and item.from_version <= existing.from_version:
-                            logger.debug(f'skipping duplicate of {item.name} as its version range {item.version_range} '
-                                         f'is older than of the existing one, {existing.version_range}')
+                        if item.pack_id in PackManager.skipped_packs:
+                            logger.debug(f'skipping {id_=} as the {item.pack_id} pack is skipped')
                             continue
 
-                    result[id_] = item
+                        if existing := result.get(id_):
+                            # Some content items have multiple copies, each supporting different versions.
+                            # We use the newer.
+                            if item.to_version <= existing.to_version and item.from_version <= existing.from_version:
+                                logger.debug(f'skipping duplicate of {item.name} as its version range '
+                                             f'{item.version_range} is older than of the existing one, '
+                                             f'{existing.version_range}')
+                                continue
+
+                        result[id_] = item
         return result
+
+
+class Graph:
+    def __init__(self, marketplace: MarketplaceVersions) -> None:
+        self.marketplace = marketplace
+        with Neo4jContentGraphInterface() as content_graph_interface:
+            integrations = content_graph_interface.search(marketplace=marketplace,
+                                                          content_type=ContentType.INTEGRATION)
+            scripts = content_graph_interface.search(marketplace=marketplace,
+                                                     content_type=ContentType.SCRIPT)
+            test_playbooks = content_graph_interface.search(marketplace=marketplace,
+                                                            content_type=ContentType.TEST_PLAYBOOK)
+            playbooks = content_graph_interface.search(marketplace=marketplace,
+                                                       content_type=ContentType.PLAYBOOK)
+            modeling_rules = content_graph_interface.search(marketplace=marketplace,
+                                                            content_type=ContentType.MODELING_RULE)
+            # maps content_items to test playbook where they are used recursively
+
+            self.id_to_integration = {integration.object_id: IdSetItem.from_model(integration) for integration in integrations}
+            self.id_to_script = {script.object_id: IdSetItem.from_model(script) for script in scripts}
+            self.id_to_test_playbook = {
+                test_playbook.object_id: IdSetItem.from_model(test_playbook) for test_playbook in test_playbooks}
+            self.id_to_modeling_rule = {
+                modeling_rule.object_id: IdSetItem.from_model(modeling_rule) for modeling_rule in modeling_rules
+            }
+            self.implemented_playbooks_to_tests = {playbook.object_id: [IdSetItem.from_model(test) for test in playbook.tested_by]
+                                                   for playbook in playbooks}
+            self.implemented_scripts_to_tests = {script.object_id: [IdSetItem.from_model(test) for test in script.tested_by]
+                                                 for script in scripts}
+
+            self.test_playbooks = self.id_to_test_playbook.values()
+            self.modeling_rules = self.id_to_modeling_rule.values()
+
+    @property
+    def artifact_iterator(self) -> Iterable[IdSetItem]:
+        """ returns an iterator for all content items EXCLUDING PACKS """
+        with Neo4jContentGraphInterface() as content_graph_interface:
+            content_items = content_graph_interface.search(self.marketplace, content_type=ContentType.BASE_CONTENT)
+            for content_item in content_items:
+                if content_item.content_type not in {ContentType.COMMAND, ContentType.PACK}:
+                    yield IdSetItem.from_model(content_item)

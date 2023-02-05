@@ -91,3 +91,86 @@ def test_empty_first_fetch(mocker, requests_mock):
     from CrowdStrikeIndicatorFeed import main
     main()
     assert True
+
+
+@pytest.mark.parametrize(
+    'field, indicator, resource, expected_results',
+    [
+        (
+            'relations',
+            {"type": "hash_md5", "value": "1234567890"},
+            {"relations": [{"type": "password"}, {"type": 'username', 'indicator': 'abc'}]},
+            [{'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator', 'entityA': '1234567890',
+              'entityAFamily': 'Indicator', 'entityAType': 'hash_md5', 'entityB': 'abc', 'entityBFamily': 'Indicator',
+              'entityBType': 'Account', 'fields': {}}]
+        ),
+        (
+            'malware_families',
+            {"type": "type non support", "value": "1234567890"},
+            {"malware_families": {"relations": "Test indicator"}},
+            [{'name': 'type non support', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator',
+              'entityA': '1234567890', 'entityAFamily': 'Indicator', 'entityAType': 'type non support',
+              'entityB': 'relations', 'entityBFamily': 'Indicator',
+              'entityBType': 'Malware', 'fields': {}}]
+        )
+    ]
+)
+def test_create_relationships_unknown_key(field, indicator, resource, expected_results):
+    """
+        Given
+            - Field type, indicator and a resource with an unknown relation type.
+        When
+            - Calling `create_relationships` command.
+        Then
+            - validate that no Key Error exception was thrown, and that only 1 relationship was created.
+    """
+    from CrowdStrikeIndicatorFeed import create_relationships
+    rs_ls = create_relationships(field, indicator, resource)
+    assert rs_ls == expected_results
+    assert len(rs_ls) == 1
+
+
+def test_reset_last_run(mocker):
+    """
+        Given
+            - No inputs.
+        When
+            - Calling `reset_last_run` command.
+        Then
+            - Ensure that the integration context dict was cleared.
+    """
+    from CrowdStrikeIndicatorFeed import reset_last_run
+    demisto_set_context_mocker = mocker.patch.object(demisto, 'setIntegrationContext')
+    reset_last_run()
+    assert demisto_set_context_mocker.call_args.args == ({},)
+
+
+def test_fetch_no_indicators(mocker, requests_mock):
+    """
+    Given
+        - no indicators api response
+    When
+        - fetching indicators
+    Then
+        - Ensure empty list is returned and no exception is raised.
+    """
+    from CrowdStrikeIndicatorFeed import Client
+
+    mock_response = util_load_json('test_data/crowdstrike_indicators_list_command.json')
+    requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
+    requests_mock.get(url='https://api.crowdstrike.com/intel/combined/indicators/v1', json=mock_response)
+
+    feed_tags = ['Tag1', 'Tag2']
+    client = Client(base_url='https://api.crowdstrike.com/', credentials={'identifier': '123', 'password': '123'},
+                    type='Domain', include_deleted='false', limit=2, feed_tags=feed_tags)
+
+    mocker.patch.object(client, 'get_indicators', return_value={'resources': []})
+
+    assert client.fetch_indicators(limit=10, offset=5, fetch_command=True) == []
+
+
+def test_crowdstrike_to_xsoar_types():
+
+    from CrowdStrikeIndicatorFeed import CROWDSTRIKE_TO_XSOAR_TYPES
+
+    assert None not in CROWDSTRIKE_TO_XSOAR_TYPES

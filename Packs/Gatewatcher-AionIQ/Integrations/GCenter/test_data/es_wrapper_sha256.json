@@ -1,0 +1,39 @@
+{
+    "took": 14,
+    "timed_out": false,
+    "_shards": {
+        "total": 2,
+        "successful": 2,
+        "skipped": 0,
+        "failed": 0
+    },
+    "hits": {
+        "total": {
+            "value": 3279,
+            "relation": "eq"
+        },
+        "max_score": null,
+        "hits": []
+    },
+    "aggregations": {
+        "SHA256": {
+            "doc_count_error_upper_bound": 6,
+            "sum_other_doc_count": 1487,
+            "buckets": [
+                {
+                    "key": "636e3bf5bdb5d1c41d53dfb46d1781d32c71b331e165a56d678e0d8db4847eed",
+                    "doc_count": 30
+                },
+                {
+                    "key": "858f09d8580dcee14c2286c2859d0f5e5949412faf3d9df25caf76213d1db0da",
+                    "doc_count": 15
+                },
+                {
+                    "key": "e040336b9aef2dddf2dda700a7e91cd323365f7482c5c715a18a4fbb5d809833",
+                    "doc_count": 5
+                }
+            ]
+        }
+    }
+}
+

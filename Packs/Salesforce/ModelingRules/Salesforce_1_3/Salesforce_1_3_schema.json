@@ -1,0 +1,68 @@
+{
+  "salesforce_event_audit_raw": {
+      "user_name": {
+          "type": "string",
+          "is_array": false
+      },
+      "user_id": {
+          "type": "string",
+          "is_array": false
+      },
+      "client_ip": {
+          "type": "string",
+          "is_array": false
+      },
+      "organization_id": {
+          "type": "string",
+          "is_array": false
+      },
+      "request_status": {
+          "type": "string",
+          "is_array": false
+      },
+      "run_time": {
+          "type": "string",
+          "is_array": false
+      },
+      "session_key": {
+          "type": "string",
+          "is_array": false
+      },
+      "timestamp": {
+          "type": "string",
+          "is_array": false
+      },
+      "uri": {
+          "type": "string",
+          "is_array": false
+      },
+      "user_type": {
+          "type": "string",
+          "is_array": false
+      },
+      "authentication_method_reference": {
+          "type": "string",
+          "is_array": false
+      },
+      "event_type": {
+          "type": "string",
+          "is_array": false
+      },
+      "login_key": {
+          "type": "string",
+          "is_array": false
+      },
+      "login_status": {
+          "type": "string",
+          "is_array": false
+      },
+      "platform_type": {
+          "type": "string",
+          "is_array": false
+      },
+      "source_ip": {
+          "type": "string",
+          "is_array": false
+      }
+  }
+}

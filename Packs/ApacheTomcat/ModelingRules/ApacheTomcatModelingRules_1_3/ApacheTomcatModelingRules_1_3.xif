@@ -1,0 +1,24 @@
+[MODEL: dataset="apache_tomcat_raw"]
+filter _raw_log contains "GET" or _raw_log contains "HEAD" or _raw_log contains "POST" or _raw_log contains "DELETE" or _raw_log contains "CONNECT" or _raw_log contains "OPTIONS" or _raw_log contains "TRACE" or _raw_log contains "PATCH"
+| alter 
+    Request_time = arrayindex(regextract(_raw_log, "\[(\d+\/\w+\/\d+\:\S+)"), 0),
+    Username = arrayindex(regextract(_raw_log,"(\S+)\s\[\d+\/"),0),
+    url = arrayindex(regextract(_raw_log,"\"[A-Z]+\s(\S+)\sHTTP"), 0),
+    response_code = arrayindex(regextract(_raw_log,"\"\s(\d+)\s\d+"),0),
+    User_agent = arrayindex(regextract(_raw_log,"\"\s\"([^\"]+)"),0),
+    bytes_size = arrayindex(regextract(_raw_log,"\d\s(\d+)"),0),
+    method = arrayindex(regextract(_raw_log,"\"([A-Z]+)\s\S+\sHTTP"), 0)
+    // extract source_ip
+    | alter
+            sourceipv4 = arrayindex(regextract(_raw_log, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s)\-"),0),
+            sourceipv6 = arrayindex(regextract(_raw_log,"(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"),0)
+    // end extract source_ip
+    | alter
+    //    _time = parse_timestamp("%d/%b/%Y:%k:%M:%S", request_time),
+    xdm.source.user.username = username,
+    xdm.network.http.url = url,
+    xdm.target.sent_bytes = to_number(bytes_size),
+    xdm.source.ipv4 = sourceipv4,
+    xdm.source.ipv6 = sourceipv6,
+    xdm.network.http.response_code = response_code,
+    xdm.network.http.method = method;

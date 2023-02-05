@@ -43,8 +43,8 @@ For more information - click [here](https://training.threatconnect.com/learn/art
     | Active Indicators Only | Fetch active only indicators when true. Default is "True". | False |
     | Create Relationships | Fetch related indicators. Default is "False". | False |
     | Indicator Query | Filter results using ThreatConnect Query Language \(TQL\). For more information, see the ThreatConnect documentation https://training.threatconnect.com/learn/article/using-threatconnect-query-language-tql-kb-article | False |
-    | Confidence Threshold | Minimal confidence value to fetch indicators by \(an integer between 0 to 100\). | False |
-    | Threat Assess Score Threshold | Minimal threat assess score value to fetch indicators by \(an integer between 0 to 1000\). | False |
+    | Confidence Threshold | Minimal confidence value to fetch indicators by \(an integer between 0 to 100\). Note: this parameter is not relevant for groups. | False |
+    | Threat Assess Score Threshold | Minimal threat assess score value to fetch indicators by \(an integer between 0 to 1000\).  Note: this parameter is not relevant for groups. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

@@ -1,0 +1,335 @@
+id: Courses of Action - Collection
+name: Courses of Action - Collection
+description: "This playbook handles MITRE ATT&CK Techniques using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the specified techniques, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\n \nTechniques Handled:\n- T1005 - Data from Local System\n- Kill Chain phase:\n- Collection\n\nMITRE ATT&CK Description: \nThe adversary is attempting to gather data of interest to accomplish their goal.\n \nCollection consists of techniques adversaries may use to gather information and the sources information is collected from that are relevant to following through on the adversary’s objectives. Frequently, the next goal after collecting data is to steal (exfiltrate) the data. Common target sources include various drive types, browsers, audio, video, and email. Common collection methods include capturing screenshots and keyboard input.\n\nPossible playbook triggers:\n- The playbook can be used as a part of the “Courses of Action - Collection” playbook to remediate techniques based on kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, that can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input.\n"
+inputs:
+- description: Mitre ATT&CK ID of a technique.
+  key: technique
+  playbookInputQuery:
+  required: false
+  value: {}
+outputs:
+- contextPath: Handled.Techniques
+  description: The techniques handled in this playbook
+  type: unknown
+- contextPath: Collection.ProductList
+  description: Products used for remediation.
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 56f85db2-5a8e-4286-8020-e62df079f1d8
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 56f85db2-5a8e-4286-8020-e62df079f1d8
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: T1005
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4ef0ed1e-0213-49ef-8101-f3f430efc526
+      iscommand: false
+      name: Data from Local System
+      description: ""
+      type: condition
+      version: -1
+    taskid: 4ef0ed1e-0213-49ef-8101-f3f430efc526
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5fb4c985-4271-43ba-8775-531daf1972e4
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 5fb4c985-4271-43ba-8775-531daf1972e4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1225
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4efbb5ef-02c8-47b2-88a6-006d8ea24533
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1005 - Data from Local System
+      playbookId: MITRE ATT&CK CoA - T1005 - Data from Local System
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 4efbb5ef-02c8-47b2-88a6-006d8ea24533
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 370
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Collection.Products
+      value:
+        simple: Cortex XDR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: dcac4da1-e3e7-4891-8bf8-2f85318ef507
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: dcac4da1-e3e7-4891-8bf8-2f85318ef507
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 550
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      collectionremediationproducts:
+        complex:
+          root: Collection
+          transformers:
+          - args:
+              title: {}
+            operator: JsonToTable
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 24e9a54d-0c29-48bb-8d8e-76cfb57f16e0
+      iscommand: true
+      name: Set Collection Remediation products to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 24e9a54d-0c29-48bb-8d8e-76cfb57f16e0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 740
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 738b6960-9430-4047-8f97-ade5ec4f1cfb
+      iscommand: false
+      name: Set techniques information to the layout
+      description: ""
+      type: title
+      version: -1
+    taskid: 738b6960-9430-4047-8f97-ade5ec4f1cfb
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 910
+        }
+      }
+  "13":
+    fieldMapping:
+    - incidentfield: Remediated Techniques
+      output:
+        complex:
+          root: Handled
+          transformers:
+          - args:
+              title: {}
+            operator: JsonToTable
+    - incidentfield: Techniques to Handle
+      output:
+        complex:
+          root: Unhandled
+          transformers:
+          - args:
+              title: {}
+            operator: JsonToTable
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Unhandled.Techniques
+      stringify: {}
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: TechniquesList
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: Handled.Techniques
+          root: TechniquesList
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      id: cce8f4ba-f0ff-4421-80b8-835c499ff837
+      iscommand: false
+      name: Set techniques information to the layout
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: cce8f4ba-f0ff-4421-80b8-835c499ff837
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 1050
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_3_#default#": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1240,
+        "width": 827.5,
+        "x": 162.5,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2

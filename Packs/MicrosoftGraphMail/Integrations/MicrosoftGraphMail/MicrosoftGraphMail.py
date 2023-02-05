@@ -70,7 +70,7 @@ class MsGraphClient:
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key,
                  app_name, base_url, use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
                  emails_fetch_limit, timeout=10, endpoint='com', certificate_thumbprint=None, private_key=None,
-                 display_full_email_body=False, look_back=0):
+                 display_full_email_body=False, mark_fetched_read=False, look_back=0):
 
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
@@ -84,6 +84,7 @@ class MsGraphClient:
         self._emails_fetch_limit = emails_fetch_limit
         # whether to display the full email body for the fetch-incidents
         self.display_full_email_body = display_full_email_body
+        self.mark_fetched_read = mark_fetched_read
         self.look_back = look_back
 
     def pages_puller(self, response: dict, page_count: int) -> list:
@@ -165,13 +166,19 @@ class MsGraphClient:
         Returns:
             dict:
         """
-        no_folder = f'/users/{user_id}/messages/{message_id}/attachments/{attachment_id}' \
-                    f'/?$expand=microsoft.graph.itemattachment/item'
-        with_folder = (f'/users/{user_id}/{build_folders_path(folder_id)}/'  # type: ignore
-                       f'messages/{message_id}/attachments/{attachment_id}/'
-                       f'?$expand=microsoft.graph.itemattachment/item')
+        if attachment_id:
+            no_folder = f'/users/{user_id}/messages/{message_id}/attachments/{attachment_id}' \
+                        f'/?$expand=microsoft.graph.itemattachment/item'
+            with_folder = (f'/users/{user_id}/{build_folders_path(folder_id)}/'  # type: ignore
+                           f'messages/{message_id}/attachments/{attachment_id}/'
+                           f'?$expand=microsoft.graph.itemattachment/item')
+        else:
+            no_folder = f'/users/{user_id}/messages/{message_id}/attachments'
+            with_folder = (f'/users/{user_id}/{build_folders_path(folder_id)}/'  # type: ignore
+                           f'messages/{message_id}/attachments')
         suffix = with_folder if folder_id else no_folder
         response = self.ms_client.http_request('GET', suffix)
+        response = [response] if response and attachment_id else response.get('value', [])
         return response
 
     def get_message(self, user_id: str, message_id: str, folder_id: str = '', odata: str = '') -> dict:
@@ -689,7 +696,8 @@ class MsGraphClient:
             current_directory_level_folders = self._get_folder_children(user_id, found_folder.get('id', ''),
                                                                         overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
-    def get_emails(self, exclude_ids, last_fetch, folder_id, overwrite_rate_limit_retry=False):
+    def get_emails(self, exclude_ids, last_fetch, folder_id, overwrite_rate_limit_retry=False,
+                   mark_emails_as_read: bool = False):
 
         suffix_endpoint = f"/users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages"
         # If you add to the select filter the $ sign, The 'internetMessageHeaders' field not contained within the
@@ -712,6 +720,14 @@ class MsGraphClient:
         emails_as_text = self.ms_client.http_request(
             'GET', suffix_endpoint, params=params, overwrite_rate_limit_retry=overwrite_rate_limit_retry, headers=headers
         ).get('value') or []
+
+        if mark_emails_as_read:
+            for email in emails_as_html:
+                if email.get('id'):
+                    self.update_email_read_status(user_id=self._mailbox_to_fetch,
+                                                  message_id=email["id"],
+                                                  read=True,
+                                                  folder_id=folder_id)
 
         return self.get_emails_as_text_and_html(emails_as_html=emails_as_html, emails_as_text=emails_as_text)
 
@@ -758,7 +774,8 @@ class MsGraphClient:
         """
         demisto.debug(f'fetching emails since {last_fetch}')
         fetched_emails = self.get_emails(exclude_ids=exclude_ids, last_fetch=last_fetch,
-                                         folder_id=folder_id, overwrite_rate_limit_retry=True)
+                                         folder_id=folder_id, mark_emails_as_read=self.mark_fetched_read,
+                                         overwrite_rate_limit_retry=True)
 
         fetched_emails_ids = {email.get('id') for email in fetched_emails}
         exclude_ids_set = set(exclude_ids)
@@ -825,7 +842,7 @@ class MsGraphClient:
 
         return parsed_email
 
-    def _get_attachment_mime(self, message_id, attachment_id):
+    def _get_attachment_mime(self, message_id, attachment_id, overwrite_rate_limit_retry=False):
         """
         Gets attachment mime.
 
@@ -836,11 +853,12 @@ class MsGraphClient:
         :rtype: ``str``
         """
         suffix_endpoint = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/attachments/{attachment_id}/$value'
-        mime_content = self.ms_client.http_request('GET', suffix_endpoint, resp_type='text')
+        mime_content = self.ms_client.http_request('GET', suffix_endpoint, resp_type='text',
+                                                   overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
         return mime_content
 
-    def _get_email_attachments(self, message_id):
+    def _get_email_attachments(self, message_id, overwrite_rate_limit_retry=False):
         """
         Get email attachments  and upload to War Room.
 
@@ -853,7 +871,8 @@ class MsGraphClient:
 
         attachment_results = []  # type: ignore
         suffix_endpoint = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/attachments'
-        attachments = self.ms_client.http_request('Get', suffix_endpoint).get('value', [])
+        attachments = self.ms_client.http_request('Get', suffix_endpoint,
+                                                  overwrite_rate_limit_retry=overwrite_rate_limit_retry).get('value', [])
 
         for attachment in attachments:
             attachment_type = attachment.get('@odata.type', '')
@@ -866,7 +885,7 @@ class MsGraphClient:
                     continue
             elif attachment_type == self.ITEM_ATTACHMENT:
                 attachment_id = attachment.get('id', '')
-                attachment_content = self._get_attachment_mime(message_id, attachment_id)
+                attachment_content = self._get_attachment_mime(message_id, attachment_id, overwrite_rate_limit_retry)
                 attachment_name = f'{attachment_name}.eml'
             else:
                 # skip attachments that are not of the previous types (type referenceAttachment)
@@ -903,7 +922,7 @@ class MsGraphClient:
 
         return labels
 
-    def _parse_email_as_incident(self, email):
+    def _parse_email_as_incident(self, email, overwrite_rate_limit_retry=False):
         """
         Parses fetched emails as incidents.
 
@@ -916,7 +935,8 @@ class MsGraphClient:
         parsed_email = self._parse_item_as_dict(email)
 
         # handling attachments of fetched email
-        attachments = self._get_email_attachments(message_id=email.get('id', ''))
+        attachments = self._get_email_attachments(message_id=email.get('id', ''),
+                                                  overwrite_rate_limit_retry=overwrite_rate_limit_retry)
         if attachments:
             parsed_email['Attachments'] = attachments
 
@@ -989,7 +1009,7 @@ class MsGraphClient:
 
         # remove duplicate incidents which were already fetched
         incidents = filter_incidents_by_duplicates_and_limit(
-            incidents_res=list(map(self._parse_email_as_incident, fetched_emails)),
+            incidents_res=list(map(lambda email: self._parse_email_as_incident(email, True), fetched_emails)),
             last_run=last_run,
             fetch_limit=self._emails_fetch_limit,
             id_field='ID'
@@ -1238,6 +1258,32 @@ class MsGraphClient:
             email=email, draft_id=draft_id, attachments=attachments_more_than_3mb
         )
         self.send_draft(email=email, draft_id=draft_id)  # send the draft email
+
+    def update_email_read_status(self, user_id: str, message_id: str, read: bool,
+                                 folder_id: str | None = None) -> dict:
+        """
+        Update the status of an email to read / unread.
+
+        Args:
+            user_id (str): User id or mailbox address
+            message_id (str): Message id to mark as read/unread
+            folder_id (str): Folder id to update
+            read (bool): Whether to mark the email as read or unread. True for read, False for unread.
+
+        Returns:
+            dict: API response
+        """
+        if folder_id is not None:
+            suffix = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}'
+
+        else:
+            suffix = f'/users/{user_id}/messages/{message_id}'
+
+        return self.ms_client.http_request(
+            method='PATCH',
+            url_suffix=suffix,
+            json_data={'isRead': read},
+        )
 
 
 ''' HELPER FUNCTIONS '''
@@ -1580,8 +1626,10 @@ def get_attachment_command(client: MsGraphClient, args):
     folder_id = args.get('folder_id')
     attachment_id = args.get('attachment_id')
     raw_response = client.get_attachment(message_id, user_id, folder_id=folder_id, attachment_id=attachment_id)
-    attachment = create_attachment(raw_response, user_id)
-    return_results(attachment)
+    attachments = []
+    for attachment in raw_response:
+        attachments.append(create_attachment(attachment, user_id))
+    return attachments
 
 
 def get_message_command(client: MsGraphClient, args):
@@ -1988,6 +2036,27 @@ def send_draft_command(client: MsGraphClient, args):
     return_outputs(f'### Draft with: {draft_id} id was sent successfully.')
 
 
+def update_email_status_command(client: MsGraphClient, args) -> CommandResults:
+    user_id = args['user_id']
+    folder_id = args.get('folder_id')
+    message_ids = argToList(args['message_ids'])
+    status: str = args['status']
+    mark_as_read = (status.lower() == 'read')
+
+    raw_responses = []
+
+    for message_id in message_ids:
+        raw_responses.append(
+            client.update_email_read_status(user_id=user_id, message_id=message_id,
+                                            folder_id=folder_id, read=mark_as_read)
+        )
+
+    return CommandResults(
+        readable_output=f'Emails status has been updated to {status}.',
+        raw_response=raw_responses[0] if len(raw_responses) == 1 else raw_responses
+    )
+
+
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
     args: dict = demisto.args()
@@ -2004,10 +2073,12 @@ def main():
     endpoint = GRAPH_BASE_ENDPOINTS.get(server, 'com')
     app_name: str = 'ms-graph-mail'
     ok_codes: tuple = (200, 201, 202, 204)
-    use_ssl: bool = not params.get('insecure', False)
+    use_ssl: bool = not argToBoolean(params.get('insecure', False))
     proxy: bool = params.get('proxy', False)
-    certificate_thumbprint: str = params.get('certificate_thumbprint', '')
-    private_key: str = params.get('private_key', '')
+    certificate_thumbprint: str = params.get('creds_certificate', {}).get(
+        'identifier', '') or params.get('certificate_thumbprint', '')
+    private_key: str = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
+                        or params.get('private_key', ''))
 
     if not self_deployed and not enc_key:
         raise DemistoException('Key must be provided. For further information see '
@@ -2026,6 +2097,7 @@ def main():
     emails_fetch_limit = int(params.get('fetch_limit', '50'))
     timeout = arg_to_number(params.get('timeout', '10') or '10')
     display_full_email_body = argToBoolean(params.get("display_full_email_body", False))
+    mark_fetched_read = argToBoolean(params.get("mark_fetched_read", "false"))
     look_back = arg_to_number(params.get('look_back', 0))
 
     client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
@@ -2034,6 +2106,7 @@ def main():
                                           certificate_thumbprint=certificate_thumbprint,
                                           private_key=private_key,
                                           display_full_email_body=display_full_email_body,
+                                          mark_fetched_read=mark_fetched_read,
                                           look_back=look_back
                                           )
 
@@ -2057,7 +2130,7 @@ def main():
         elif command == 'msgraph-mail-list-attachments':
             list_attachments_command(client, args)
         elif command == 'msgraph-mail-get-attachment':
-            get_attachment_command(client, args)
+            return_results(get_attachment_command(client, args))
         elif command == 'msgraph-mail-list-folders':
             list_folders_command(client, args)
         elif command == 'msgraph-mail-list-child-folders':
@@ -2078,6 +2151,8 @@ def main():
             reply_to_command(client, args)  # pylint: disable=E1123
         elif command == 'msgraph-mail-send-draft':
             send_draft_command(client, args)  # pylint: disable=E1123
+        elif command == 'msgraph-mail-update-email-status':
+            update_email_status_command(client, args)
         elif command == 'send-mail':
             send_email_command(client, args)
         elif command == 'reply-mail':

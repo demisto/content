@@ -224,7 +224,8 @@ def main():
     if start or end:
         score = [str(i) for i in range(start, end)]  # type:ignore
     try:
-        client = OpenCTIApiClient(base_url, api_key, ssl_verify=params.get('insecure'), log_level='error')
+        client = OpenCTIApiClient(base_url, api_key, ssl_verify=params.get('insecure'), log_level='error',
+                                  proxies=handle_proxy())
         command = demisto.command()
         demisto.info(f"Command being called is {command}")
 

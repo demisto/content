@@ -299,3 +299,5 @@ view: |-
   }
 inputs: []
 outputs: []
+marketplaces:
+- xsoar

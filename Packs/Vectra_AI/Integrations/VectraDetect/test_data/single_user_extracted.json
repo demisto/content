@@ -1,0 +1,8 @@
+{
+    "Email": "dummy-dev@fake.local",
+    "ID": 123,
+    "LastLoginDate": "2022-10-01T12:34:56.000Z",
+    "Role": "Analyst",
+    "Type": "local",
+    "Username": "dummy-dev"
+}

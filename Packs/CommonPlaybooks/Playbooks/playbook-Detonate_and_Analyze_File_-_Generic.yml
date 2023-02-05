@@ -2,8 +2,7 @@ id: Detonate and Analyze File - Generic
 version: -1
 fromversion: 6.5.0
 name: Detonate and Analyze File - Generic
-description: 'This playbook uploads, detonates, and analyzes files for supported sandboxes.
-  Currently supported sandboxes are Falcon X and Wildfire. '
+description: 'This playbook uploads, detonates, and analyzes files for supported sandboxes. Currently supported sandboxes are Falcon Intelligence Sandbox and Wildfire. '
 starttaskid: "0"
 tasks:
   "0":
@@ -24,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 1590,
+          "y": 70
         }
       }
     note: false
@@ -35,6 +34,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
     taskid: 2d74acbf-eb10-4ede-8880-21e9afb7325a
@@ -42,9 +42,9 @@ tasks:
     task:
       id: 2d74acbf-eb10-4ede-8880-21e9afb7325a
       version: -1
-      name: 'FalconX Detonate and Analyze File'
-      description: Env ID - return to transformer
-      playbookName: FalconX Detonate and Analyze File
+      name: 'Falcon Intelligence Sandbox Detonate and Analyze File'
+      description: Env ID - return to transformer.
+      playbookName: CrowdStrike Falcon Intelligence Sandbox Detonate and Analyze File
       type: playbook
       iscommand: false
       brand: ""
@@ -64,8 +64,7 @@ tasks:
                   simple: Windows,Linux,Android
               mapped_values:
                 value:
-                  simple: '160: Windows 10,300: Linux Ubuntu 16.04,300: Linux Ubuntu
-                    16.04'
+                  simple: '160: Windows 10,300: Linux Ubuntu 16.04,300: Linux Ubuntu 16.04'
       File:
         simple: ${inputs.File}
     separatecontext: true
@@ -77,17 +76,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 80,
-          "y": 550
+          "x": 920,
+          "y": 580
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
     taskid: a10b7555-36b7-444e-874c-20c10a692311
@@ -116,17 +116,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": 550
+          "x": 1350,
+          "y": 580
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
     taskid: bd46d172-dfb1-43e4-8904-643571582a5d
@@ -143,8 +144,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1250
+          "x": 1590,
+          "y": 1630
         }
       }
     note: false
@@ -154,6 +155,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
     taskid: 1e2efc1c-d878-46c7-835f-ea5c802dd878
@@ -161,8 +163,8 @@ tasks:
     task:
       id: 1e2efc1c-d878-46c7-835f-ea5c802dd878
       version: -1
-      name: Is FalconX enabled?
-      description: Returns 'yes' if the Falcon X integration is available. 
+      name: Is CrowdStrike Falcon Intelligence Sandbox enabled?
+      description: Returns 'yes' if the CrowdStrike Falcon Intelligence Sandbox integration is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -181,8 +183,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 360
+          "x": 920,
+          "y": 390
         }
       }
     note: false
@@ -192,6 +194,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
     taskid: 5257b87f-910c-4b92-814a-5a478d777ae8
@@ -203,13 +206,14 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: Is there a file?
     nexttasks:
       '#default#':
       - "3"
       "yes":
       - "4"
       - "6"
+      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -224,8 +228,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 190
+          "x": 1590,
+          "y": 210
         }
       }
     note: false
@@ -235,6 +239,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
     taskid: e64d0590-3e6c-4b99-8ded-da01909d2195
@@ -262,8 +267,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": 360
+          "x": 1350,
+          "y": 390
         }
       }
     note: false
@@ -273,6 +278,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "9":
     id: "9"
     taskid: 50b29f08-f3b1-4b2b-8722-20a7656c61ef
@@ -284,7 +290,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: Are there MITRE findings?
     nexttasks:
       '#default#':
       - "3"
@@ -311,8 +317,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 80,
-          "y": 730
+          "x": 920,
+          "y": 760
         }
       }
     note: false
@@ -322,6 +328,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "11":
     id: "11"
     taskid: 9392e375-e991-4914-8db3-0bf4a52f77bc
@@ -365,14 +372,427 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 80,
-          "y": 1080
+          "x": 920,
+          "y": 925
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "12":
+    id: "12"
+    taskid: e0390fd8-4e73-42bc-8fdb-8480bf9af4d9
+    type: condition
+    task:
+      id: e0390fd8-4e73-42bc-8fdb-8480bf9af4d9
+      version: -1
+      name: Is JoeSecurity sandbox enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "20"
+    scriptarguments:
+      brandname:
+        simple: JoeSecurityV2
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 46faec6e-c540-45a8-8025-a118cab9357c
+    type: regular
+    task:
+      id: 46faec6e-c540-45a8-8025-a118cab9357c
+      version: -1
+      name: Get a full report from Joe Sandbox - JSON
+      description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc. See integration README for the full supported report types.
+      script: '|||joe-download-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      type:
+        simple: json
+      webid:
+        complex:
+          root: Joe.Analysis
+          accessor: webid
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 925
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Joe Sandbox report - Json Format
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 4924f70b-3356-41b7-8264-8f944bfc2585
+    type: condition
+    task:
+      id: 4924f70b-3356-41b7-8264-8f944bfc2585
+      version: -1
+      name: Any results from the Joe search?
+      description: Any results from the Joe search?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "14"
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Joe.Analysis
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 0176d511-3e34-44ea-8f79-518314ddca71
+    type: regular
+    task:
+      id: 0176d511-3e34-44ea-8f79-518314ddca71
+      version: -1
+      name: Get a full report from Joe Sandbox - PDF
+      description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc. See integration README for the full supported report types.
+      script: '|||joe-download-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      type:
+        simple: pdf
+      webid:
+        complex:
+          root: Joe.Analysis
+          accessor: webid
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 925
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Joe Sandbox report - PDF Format
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 0084c14e-9249-4b06-88e8-f20622097744
+    type: regular
+    task:
+      id: 0084c14e-9249-4b06-88e8-f20622097744
+      version: -1
+      name: Rasterize PDF
+      description: Converts a PDF file to an image file.
+      script: '|||rasterize-pdf'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: InfoFile
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: InfoFile.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: pdf
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1450
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Joe Security Sandbox report
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: d4b713f1-b7b9-4689-8964-f70d44dec5dd
+    type: regular
+    task:
+      id: d4b713f1-b7b9-4689-8964-f70d44dec5dd
+      version: -1
+      name: Extract Indicators from the Report
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      entryID:
+        complex:
+          root: InfoFile
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: InfoFile.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: json
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1085
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 0a8ff382-630f-486b-8daf-a9d9dd9521a1
+    type: regular
+    task:
+      id: 0a8ff382-630f-486b-8daf-a9d9dd9521a1
+      version: -1
+      name: Enrich Mitre Attack Techniques information.
+      description: Looks up the reputation of the indicator.
+      script: '|||attack-pattern'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      attack_pattern:
+        complex:
+          root: ExtractedIndicators.Attack_Pattern
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ExtractedIndicators.Attack_Pattern
+                iscontext: true
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 59b9b222-8339-41b5-88f5-410d11ad9a20
+    type: playbook
+    task:
+      id: 59b9b222-8339-41b5-88f5-410d11ad9a20
+      version: -1
+      name: Detonate and Analyze File - JoeSecurity
+      description: |-
+        Detonates one or more files using the Joe Security - Joe Sandbox integration.
+        Returns relevant reports to the War Room and file reputations to the context data.
+        All file types are supported.
+      playbookName: Detonate and Analyze File - JoeSecurity
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      File:
+        complex:
+          root: inputs.File
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: baac5ee9-b37f-4ad7-80fe-b7021e116faf
+    type: condition
+    task:
+      id: baac5ee9-b37f-4ad7-80fe-b7021e116faf
+      version: -1
+      name: Are there MITRE findings?
+      description: Are there MITRE findings?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ExtractedIndicators.Attack_Pattern
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: ExtractedIndicators.Attack_Pattern
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -383,10 +803,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1265,
-        "width": 1120,
-        "x": 80,
-        "y": 50
+        "height": 1625,
+        "width": 1900,
+        "x": 70,
+        "y": 70
       }
     }
   }
@@ -404,13 +824,13 @@ outputs:
   description: The SHA256 hash of the scanned file.
   type: string
 - contextPath: csfalconx.resource.file_name
-  description: 'The name of the uploaded file. '
+  description: The name of the uploaded file. 
   type: string
 - contextPath: csfalconx.resource.sandbox
-  description: The Falcon X findings.
+  description: The Falcon Intelligence Sandbox findings.
   type: string
 - contextPath: csfalconx.resource.intel
-  description: The Falcon X intelligence results.
+  description: The Falcon Intelligence Sandbox intelligence results.
   type: string
 - contextPath: WildFire.Report
   description: The Wildfire findings.
@@ -421,5 +841,14 @@ outputs:
 - contextPath: MITREATTACK
   description: Full MITRE data for the attack pattern.
   type: unknown
+- contextPath: DBotScore
+  description: DBotScore object.
+  type: unknown
+- contextPath: Joe.Analysis
+  description: Joe Analysis object.
+  type: unknown
 tests:
- -  No tests
+- No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

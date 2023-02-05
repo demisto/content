@@ -3,12 +3,13 @@ import emoji
 import demistomock as demisto
 from CommonServerPython import *
 import traceback
+import urllib3
 
 REPUTATION_COMMANDS = ['ip', 'domain', 'file', 'url', 'threatstream-email-reputation']
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
@@ -1177,17 +1178,18 @@ def file_name_to_valid_string(file_name):
     return file_name
 
 
-def submit_report(client: Client, submission_type, submission_value, submission_classification="private",
-                  report_platform="WINDOWS7",
+def submit_report(client: Client, submission_type, submission_value, import_indicators=True,
+                  submission_classification="private", report_platform="WINDOWS7",
                   premium_sandbox="false", detail=None):
     """
         Detonates URL or file that was uploaded to war room to ThreatStream sandbox.
     """
-
+    import_indicators = argToBoolean(import_indicators)
     data = {
         'report_radio-classification': submission_classification,
         'report_radio-platform': report_platform,
         'use_premium_sandbox': premium_sandbox,
+        'import_indicators': import_indicators
     }
     if detail:
         data['detail'] = detail

@@ -26,11 +26,11 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| File | File hash \(MD5, SHA\-1, SHA\-256\) from Darkfeed | File.None | Optional |
-| URL | URL from Darkfeed | URL.None | Optional |
+| File | File hash \(MD5, SHA\-1, SHA\-256\) from Darkfeed | File | Optional |
+| URL | URL from Darkfeed | URL | Optional |
 | Maximum number of IOCs | Set value to the maximum number of IOCs you would like returned in searches for items from the same source and same actor | 50 | Optional |
 | Query time lookup | Set value to the number of days back in searches for IOCs with the same source and same actor | 3 day ago | Optional |
-| IP | IP address from Darkfeed | IP.None | Optional |
+| IP | IP address from Darkfeed | IP | Optional |
 | Is automated endpoint isolation activated? | Set "yes" if you would like to automatically isolate endpoints on which malicious indicators were detected | no | Optional |
 | Is automated blocking activated? | Set "yes" if you would like to automatically block discovered malicious indicators. | no | Optional |
 | Domain | Domain from Darkfeed | Domain.Name | Optional |

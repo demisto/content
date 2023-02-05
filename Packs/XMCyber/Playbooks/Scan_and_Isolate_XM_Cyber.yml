@@ -465,7 +465,7 @@ outputs:
   description: The total number of vulnerabilities.
   type: number
 - contextPath: XMCyber.Entity.isAsset
-  description: Is Entity a Critical Asset
+  description: Entity is a critical asset
   type: boolean
 - contextPath: XMCyber.Entity.averageComplexityLevel
   description: Level of the average complexity to compromise this entity

@@ -1,0 +1,50 @@
+{
+    "count": 6,
+    "next": "https://www.example.com/api/extras/journal-entries/?id__gte=0&limit=2&offset=2&ordering=",
+    "previous": null,
+    "results": [
+        {
+            "id": 5,
+            "url": "https://www.example.com/api/extras/journal-entries/5/",
+            "display": "2022-12-04 14:33 ()",
+            "assigned_object_type": "dcim.device",
+            "assigned_object_id": 4,
+            "assigned_object": {
+                "id": 4,
+                "url": "https://www.example.com/api/dcim/devices/4/",
+                "display": "test3",
+                "name": "test3"
+            },
+            "created": "2022-12-04T14:33:49.437636Z",
+            "created_by": 1,
+            "kind": null,
+            "comments": "",
+            "tags": [],
+            "custom_fields": {},
+            "last_updated": "2022-12-04T14:33:49.437656Z"
+        },
+        {
+            "id": 6,
+            "url": "https://www.example.com/api/extras/journal-entries/6/",
+            "display": "2022-12-04 14:33 (Info)",
+            "assigned_object_type": "dcim.device",
+            "assigned_object_id": 4,
+            "assigned_object": {
+                "id": 4,
+                "url": "https://www.example.com/api/dcim/devices/4/",
+                "display": "test3",
+                "name": "test3"
+            },
+            "created": "2022-12-04T14:33:52.067484Z",
+            "created_by": 1,
+            "kind": {
+                "value": "info",
+                "label": "Info"
+            },
+            "comments": "",
+            "tags": [],
+            "custom_fields": {},
+            "last_updated": "2022-12-07T08:19:57.807055Z"
+        }
+    ]
+}

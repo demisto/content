@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: checkpoint_firewall_collection
+name: CheckPoint Firewall Collection
+rules: ''
+schema: ''
+tags: CheckPoint Firewall Event Collection

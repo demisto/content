@@ -1,3 +1,4 @@
+"""Unit test cases."""
 import io
 import json
 
@@ -87,6 +88,7 @@ client = Client(
 
 
 def util_load_json(path):
+    """Return json data from given file path."""
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
@@ -113,13 +115,15 @@ def test_reputation_commands_threshold_when_invalid_values_provided(threshold, e
 
 def test_threats_analysis():
     """
-        Given:
-            - an indicator to search and a threats array  from cofense search
-        When:
-            - Running threat_analysis
-        Then:
-            - Verify md table data
-            - Verify dbot score
+    Test case scenario for threat_analysis.
+
+    Given:
+        - an indicator to search and a threats array  from cofense search
+    When:
+        - Running threat_analysis
+    Then:
+        - Verify md table data
+        - Verify dbot score
     """
     indicator = 'email1'
     threshold = 'Major'
@@ -133,14 +137,15 @@ def test_threats_analysis():
 
 def test_create_threat_md_row():
     """
-        Given:
-            - a threats from cofense search raw response
-        When:
-            - run create_threat_md_row
-        Then:
-            - Verify md row data
-    """
+    Test case scenario for create_threat_md_row.
 
+    Given:
+        - a threats from cofense search raw response
+    When:
+        - run create_threat_md_row
+    Then:
+        - Verify md row data
+    """
     threat = util_load_json('test_data/test_threats.json').get('threats')[0]
     severity_level = util_load_json('test_data/test_threats.json').get('mock_dbot_score')
     threat_md_row = create_threat_md_row(threat, severity_level)
@@ -150,15 +155,16 @@ def test_create_threat_md_row():
 
 def test_extracted_string(mocker):
     """
-        Given:
-            - extracted string command args
-        When:
-            - run extracted_string_command
-        Then:
-            - Verify response outputs
-            - verify response readable output
-    """
+    Test case scenario for string_search_response.
 
+    Given:
+        - extracted string command args
+    When:
+        - run extracted_string_command
+    Then:
+        - Verify response outputs
+        - verify response readable output
+    """
     mock_args = {'str': 'str', 'limit': '10'}
     test_data = util_load_json('test_data/test_extracted_string.json')
 
@@ -173,15 +179,16 @@ def test_extracted_string(mocker):
 
 def test_search_url_command(mocker):
     """
-        Given:
-            - url command args
-        When:
-            - run check_url_command
-        Then:
-            - Verify response outputs
-            - verify response readable output
-    """
+    Test case scenario for url command.
 
+    Given:
+        - url command args
+    When:
+        - run check_url_command
+    Then:
+        - Verify response outputs
+        - verify response readable output
+    """
     mock_args = {'url': 'url'}
     test_data = util_load_json('test_data/test_search_url.json')
     return_value = test_data.get('url_search_response')
@@ -196,15 +203,16 @@ def test_search_url_command(mocker):
 
 def test_check_email_command(mocker):
     """
-        Given:
-            - email command args
-        When:
-            - run check_email_command
-        Then:
-            - Verify response outputs
-            - verify response readable output
-    """
+    Test case scenario for email command.
 
+    Given:
+        - email command args
+    When:
+        - run check_email_command
+    Then:
+        - Verify response outputs
+        - verify response readable output
+    """
     mock_args = {'email': 'email@email.com'}
     test_data = util_load_json('test_data/test_search_email.json')
     return_value = test_data.get('email_search_response')
@@ -217,15 +225,16 @@ def test_check_email_command(mocker):
 
 def test_check_ip_command(mocker):
     """
-        Given:
-            - ip command args
-        When:
-            - run check_ip_command
-        Then:
-            - Verify response outputs
-            - verify response readable output
-    """
+    Test case scenario for ip command.
 
+    Given:
+        - ip command args
+    When:
+        - run check_ip_command
+    Then:
+        - Verify response outputs
+        - verify response readable output
+    """
     mock_args = {'ip': '127.0.0.1'}
     test_data = util_load_json('test_data/test_search_ip.json')
     return_value = test_data.get('ip_search_response')
@@ -240,15 +249,16 @@ def test_check_ip_command(mocker):
 
 def test_check_md5_command(mocker):
     """
-        Given:
-            - file command args
-        When:
-            - run check_md5_command
-        Then:
-            - Verify response outputs
-            - verify response readable output
-    """
+    Test case scenario for file command.
 
+    Given:
+        - file command args
+    When:
+        - run check_md5_command
+    Then:
+        - Verify response outputs
+        - verify response readable output
+    """
     mock_args = {'file': 'md5'}
     test_data = util_load_json('test_data/test_search_file.json')
     return_value = test_data.get('file_search_response')
@@ -263,15 +273,16 @@ def test_check_md5_command(mocker):
 
 def test_check_domain_command(mocker):
     """
-        Given:
-            - domain command args
-        When:
-            - run check_domain_command
-        Then:
-            - Verify response outputs
-            - verify response readable output
-    """
+    Test case scenario for domain command.
 
+    Given:
+        - domain command args
+    When:
+        - run check_domain_command
+    Then:
+        - Verify response outputs
+        - verify response readable output
+    """
     mock_args = {'domain': 'domain'}
     test_data = util_load_json('test_data/test_search_domain.json')
     return_value = test_data.get('domain_search_response')
@@ -287,12 +298,14 @@ def test_check_domain_command(mocker):
 
 def test_when_domain_not_specified():
     """
-        Given:
-            - invalid domain command args
-        When:
-            - run check_domain_command
-        Then:
-            - Returns the response message of invalid input arguments
+    Test case scenario where domain is not provided.
+
+    Given:
+        - invalid domain command args
+    When:
+        - run check_domain_command
+    Then:
+        - Returns the response message of invalid input arguments
     """
     with pytest.raises(ValueError) as de:
         check_domain_command(client, {'domain': []}, mock_params)
@@ -301,6 +314,8 @@ def test_when_domain_not_specified():
 
 def test_dummy_is_safe_domain_even_though_abc_dummy_is_malicious(mocker):
     """
+    Test case scenario where domain is malicious and similar domain with different severity present in resposne.
+
     Given:
         - Domain dummy.com with Minor and abc.dummy.com with Major impact
           are present in the response.
@@ -326,6 +341,8 @@ def test_dummy_is_safe_domain_even_though_abc_dummy_is_malicious(mocker):
 
 def test_check_whether_dbot_score_is_updated_for_every_instance_present_in_response(mocker):
     """
+    Test case to check updated dbot score.
+
     Given:
         - Domain dummy.com with Minor and abc.dummy.com with Major impact
           are present in the response.
@@ -345,6 +362,8 @@ def test_check_whether_dbot_score_is_updated_for_every_instance_present_in_respo
 
 def test_url_is_malicious_and_domain_is_safe(mocker):
     """
+    Test case scenario where url is malicious and similar domain with different severity present in resposne.
+
     Given:
         - A domain dummy.com with minor severity present in response.
         - A domain abc.dummy.com with major severity present in response.
@@ -364,6 +383,8 @@ def test_url_is_malicious_and_domain_is_safe(mocker):
 
 def test_url_is_malicious_and_no_entry_in_domain(mocker):
     """
+    Test case scenario where url is malicious and not present in resposne.
+
     Given:
         - A url with dummy.com with major severity present in response.
         - A domain named dummy.com is not present in the response.
@@ -379,3 +400,83 @@ def test_url_is_malicious_and_no_entry_in_domain(mocker):
 
     assert response[0].indicator.domain == "dummy.com"
     assert response[0].indicator.dbot_score.score == 0
+
+
+@pytest.fixture()
+def mock_client():
+    """Create a mock client object to work with."""
+    from CofenseIntelligenceV2 import Client
+    client = Client(
+        base_url='https://www.threathq.com/',
+        verify=True,
+        headers=headers,
+        proxy=False,
+        score_mapping="None:0, Minor:1, Moderate:2, Major:3"
+    )
+
+    return client
+
+
+def test_threat_report_command_success(mock_client, requests_mock):
+    """
+    Test case scenario for successful execution of cofense-threat-report-get command.
+
+    Given:
+        - command arguments for threat_report_command
+    When:
+        - Calling `threat_report_command` function
+    Then:
+        - Returns a valid output.
+    """
+    from CofenseIntelligenceV2 import threat_report_command
+
+    mock_threat_report_endpoint = 'https://www.threathq.com/apiv1/t3/malware/111/html'
+    mock_response = "some data"
+    requests_mock.get(mock_threat_report_endpoint, text=mock_response, status_code=200)
+
+    actual = threat_report_command(mock_client, {"report_id": "111"})
+
+    assert actual["File"] == "111.html"
+
+
+@pytest.mark.parametrize("args, error_msg",
+                         [({"report_id": "111a"}, "Argument 'report_id' accepts only numeric literals."),
+                          ({"report_id": "111", "report_format": "dummy"},
+                           "Argument 'report_format' accepts only 'html' or 'pdf' as input.")])
+def test_threat_report_command_invalid_arg(args, error_msg, mock_client):
+    """
+    Test case scenario where invalid arguments are provided.
+
+    Given:
+        - command arguments for threat_report_command
+    When:
+        - Calling `threat_report_command` function
+    Then:
+        - Raises an error.
+    """
+    from CofenseIntelligenceV2 import threat_report_command
+    with pytest.raises(DemistoException) as e:
+        threat_report_command(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_threat_report_command_no_report_found_500(mock_client, requests_mock):
+    """
+    Test case scenario where no report exists for given report_id.
+
+    Given:
+        - command arguments for threat_report_command
+    When:
+        - Calling `threat_report_command` function
+    Then:
+        - Raises an error.
+    """
+    from CofenseIntelligenceV2 import threat_report_command
+
+    mock_threat_report_endpoint = 'https://www.threathq.com/apiv1/t3/malware/11111111111/html'
+    mock_response = ""
+    requests_mock.get(mock_threat_report_endpoint, text=mock_response, status_code=500)
+
+    with pytest.raises(DemistoException) as e:
+        threat_report_command(mock_client, {"report_id": "11111111111"})
+    assert str(e.value) == "No threat report found for given report_id."

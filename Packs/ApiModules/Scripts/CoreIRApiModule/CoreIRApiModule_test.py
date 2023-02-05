@@ -851,7 +851,7 @@ def test_endpoint_scan_abort_command_all_endpoints(requests_mock):
     assert scan_expected_tesult == res.outputs
 
 
-def test_get_update_args_unassgning_user():
+def test_get_update_args_unassgning_user(mocker):
     """
     Given:
         -  a dict indicating changed fields (delta) with assigned_user_mail set to "None"
@@ -862,8 +862,10 @@ def test_get_update_args_unassgning_user():
         - update_args have assigned_user_mail and assigned_user_pretty_name set to None and unassign_user set to 'true'
     """
     from CoreIRApiModule import get_update_args
-    delta = {'assigned_user_mail': 'None'}
-    update_args = get_update_args(delta, 1)
+    from CommonServerPython import UpdateRemoteSystemArgs
+    mocker.patch('CoreIRApiModule.handle_outgoing_issue_closure')
+    remote_args = UpdateRemoteSystemArgs({'delta': {'assigned_user_mail': 'None'}})
+    update_args = get_update_args(remote_args)
     assert update_args.get('assigned_user_mail') is None
     assert update_args.get('assigned_user_pretty_name') is None
     assert update_args.get('unassign_user') == 'true'
@@ -872,25 +874,9 @@ def test_get_update_args_unassgning_user():
 def test_get_update_args_close_incident():
     """
     Given:
-        -  a dict indicating changed fields (delta) with a change in owner
-        - the incident status - set to 1 == Active
-    When
-        - running get_update_args
-    Then
-        - update_args assigned_user_mail has the correct associated mail
-    """
-    from CoreIRApiModule import get_update_args
-    delta = {'closeReason': 'Other', "closeNotes": "Not Relevant", 'closingUserId': 'admin'}
-    update_args = get_update_args(delta, 2)
-    assert update_args.get('status') == 'resolved_other'
-    assert update_args.get('resolve_comment') == 'Not Relevant'
-
-
-def test_get_update_args_owner_sync(mocker):
-    """
-    Given:
         -  a dict indicating changed fields (delta) with closeReason set to Other and a closeNotes
         - the incident status - set to 2 == Closed
+        - the current status of the remote incident are 'new'
     When
         - running get_update_args
     Then
@@ -898,11 +884,37 @@ def test_get_update_args_owner_sync(mocker):
         - the resolve_comment is the same as the closeNotes
     """
     from CoreIRApiModule import get_update_args
+    from CommonServerPython import UpdateRemoteSystemArgs
+    remote_args = UpdateRemoteSystemArgs({
+        'delta': {'closeReason': 'Other', "closeNotes": "Not Relevant", 'closingUserId': 'admin'},
+        'data': {'status': 'new'},
+        'status': 2}
+    )
+    update_args = get_update_args(remote_args)
+    assert update_args.get('status') == 'resolved_other'
+    assert update_args.get('resolve_comment') == 'Not Relevant'
+
+
+def test_get_update_args_owner_sync(mocker):
+    """
+    Given:
+        -  a dict indicating changed fields (delta) with a change in owner
+        - the incident status - set to 2 == Close
+    When
+        - running get_update_args
+    Then
+        - update_args assigned_user_mail has the correct associated mail
+    """
+    from CoreIRApiModule import get_update_args
+    from CommonServerPython import UpdateRemoteSystemArgs
+    remote_args = UpdateRemoteSystemArgs({
+        'delta': {'owner': 'username'},
+        'data': {'status': 'new'}}
+    )
     mocker.patch.object(demisto, 'params', return_value={"sync_owners": True, "mirror_direction": "Incoming"})
     mocker.patch.object(demisto, 'findUser', return_value={"email": "moo@demisto.com", 'username': 'username'})
-    delta = {'owner': 'username'}
 
-    update_args = get_update_args(delta, 1)
+    update_args = get_update_args(remote_args)
 
     assert update_args.get('assigned_user_mail') == 'moo@demisto.com'
 
@@ -2284,24 +2296,37 @@ def test_get_update_args_when_getting_close_reason():
         - The status that the incident is getting to be mirrored out is "resolved_duplicate"
     """
     from CoreIRApiModule import get_update_args
-    update_args = get_update_args({'closeReason': 'Duplicate', 'closeNote': 'Closed as Duplicate.',
-                                   'closingUserId': 'Admin'}, 2)
+    from CommonServerPython import UpdateRemoteSystemArgs
+    remote_args = UpdateRemoteSystemArgs({
+        'delta': {
+            'closeReason': 'Duplicate', 'closeNote': 'Closed as Duplicate.',
+            'closingUserId': 'Admin'},
+        'data': {'status': 'new'},
+        'status': 2}
+    )
+    update_args = get_update_args(remote_args)
     assert update_args.get('status') == 'resolved_duplicate'
     assert update_args.get('closeNote') == 'Closed as Duplicate.'
 
 
-def test_get_update_args_when_not_getting_close_reason():
+def test_get_update_args_when_not_getting_closing_user_id():
     """
     Given:
         - delta from update_remote_system
     When
         - An incident in XSOAR was closed and update_remote_system has occurred.
     Then
-        - Because There is no change in the "closeReason" value, the status should not change.
+        - Because There is no change in the "closingUserId" value, the status should not change.
     """
     from CoreIRApiModule import get_update_args
-    update_args = get_update_args({'someChange': '1234'}, 2)
-    assert update_args.get('status') is None
+    from CommonServerPython import UpdateRemoteSystemArgs
+    remote_args = UpdateRemoteSystemArgs({
+        'delta': {'someChange': '1234'},
+        'data': {'status': 'new'},
+        'status': 2}
+    )
+    update_args = get_update_args(remote_args)
+    assert update_args.get('status') == 'resolved_other'
 
 
 def test_remove_blocklist_files_command(requests_mock):
@@ -2734,6 +2759,34 @@ class TestGetAlertByFilter:
         assert "{'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], 'paging': {'from': 0, " \
                "'to': 2}, 'filter': {'AND': [{'SEARCH_FIELD': 'source_insert_ts', 'SEARCH_TYPE': 'RANGE', " \
                "'SEARCH_VALUE': {'from': 1541494601000, 'to': 1541494601000}}]}}}" in request_data_log.call_args[0][0]
+
+    def test_get_alert_by_alert_action_status_filter(self, requests_mock, mocker):
+        """
+        Given:
+            - Core client
+            - Alert with action status of SCANNED
+        When
+            - Running get_alerts_by_filter command with alert_action_status="detected (scanned)"
+        Then
+            - Verify the alert in the output contains alert_action_status and alert_action_status_readable
+            - Ensure request filter contains the alert_action_status as SCANNED
+        """
+        from CoreIRApiModule import get_alerts_by_filter_command, CoreClient
+        api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
+        requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
+        request_data_log = mocker.patch.object(demisto, 'debug')
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+        args = {
+            'alert_action_status': 'detected (scanned)'
+        }
+        response = get_alerts_by_filter_command(client, args)
+        assert response.outputs[0].get('internal_id', {}) == 33333
+        assert response.outputs[0].get('alert_action_status', {}) == 'SCANNED'
+        assert response.outputs[0].get('alert_action_status_readable', {}) == 'detected (scanned)'
+        assert "{'SEARCH_FIELD': 'alert_action_status', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': " \
+               "'SCANNED'" in request_data_log.call_args[0][0]
 
     def test_get_alert_by_filter_command_multiple_values_in_same_arg(self, requests_mock, mocker):
         """

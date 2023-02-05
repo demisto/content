@@ -1,0 +1,6 @@
+8.8.8.8
+1.2.3.4
+google.com
+not_an_indicator
+www.google.com/path
+2001:db8:85a3:8d3:1319:8a2e:370:7348

@@ -1,4 +1,7 @@
 category: Case Management
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Trello
   version: -1
@@ -8,38 +11,45 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-- additionalinfo: ID of Trello board used both to fetch incidents and as the default
-    for all integration commands.
+  section: Connect
+  advanced: true
+- additionalinfo: ID of Trello board used both to fetch incidents and as the default for all integration commands.
   display: Default and Fetch Board ID
   hidden: false
   name: board_id
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: API Key
   hidden: false
   name: credentials
   required: true
   type: 9
-- additionalinfo: Optional - If specified, incidents will only be fetched when cards
-    are created in this specific list. Use trello-list-lists command to display IDs
-    of available lists in Board.
+  section: Connect
+- additionalinfo: Optional - If specified, incidents will only be fetched when cards are created in this specific list. Use trello-list-lists command to display IDs of available lists in Board.
   display: List to Fetch Incidents from
   hidden: false
   name: list_id
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 description: Interact with the Trello task manager
 display: Trello
 name: Trello
@@ -64,8 +74,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: 'Optional - the ID of  the board to query, if not provided will
-        use configured '
+      description: 'Optional - the ID of  the board to query, if not provided will use configured '
       isArray: false
       name: board_id
       required: false
@@ -107,8 +116,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: CSV list of Labels (by ID) to add to the card. Use trello-list-labels
-        command to display.
+      description: CSV list of Labels (by ID) to add to the card. Use trello-list-labels command to display.
       isArray: false
       name: idLabels
       required: false
@@ -183,8 +191,7 @@ script:
     name: trello-delete-card
   - arguments:
     - default: false
-      description: 'Optional - the ID of  the board to query, if not provided will
-        use configured '
+      description: 'Optional - the ID of  the board to query, if not provided will use configured '
       isArray: false
       name: board_id
       required: false
@@ -278,8 +285,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List all actions on a board, such as card updates, additions, and
-      deletes.
+    description: List all actions on a board, such as card updates, additions, and deletes.
     execution: false
     name: trello-list-actions
     outputs:
@@ -424,7 +430,7 @@ script:
     - contextPath: Trello.Cards.Labels.id
       description: Label ID
       type: Unknown
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.8.37233
   feed: false
   isfetch: true
   longRunning: false

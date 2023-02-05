@@ -14,9 +14,10 @@ import requests
 from datetime import timedelta
 from urllib.error import HTTPError
 from typing import Dict, Tuple
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
@@ -2307,8 +2308,9 @@ def add_remove_member_to_group(action_type):
 
     markdown_output = add_remove_api_response_to_markdown(api_response, action_type)
     entry_context = add_remove_api_response_to_context(api_response, action_type)
-
-    return markdown_output, entry_context, api_response
+    return CommandResults(readable_output=markdown_output,
+                          outputs=entry_context,
+                          raw_response=api_response)
 
 
 def create_add_remove_group_member_request(api_endpoint):
@@ -3040,9 +3042,9 @@ def main():
         elif demisto.command() == 'mimecast-get-group-members':
             get_group_members()
         elif demisto.command() == 'mimecast-add-group-member':
-            return_outputs(add_remove_member_to_group('add'))
+            return_results(add_remove_member_to_group('add'))
         elif demisto.command() == 'mimecast-remove-group-member':
-            return_outputs(add_remove_member_to_group('remove'))
+            return_results(add_remove_member_to_group('remove'))
         elif demisto.command() == 'mimecast-create-group':
             create_group()
         elif demisto.command() == 'mimecast-update-group':

@@ -1,4 +1,4 @@
-category: Email Gateway
+category: Network Security
 commonfields:
   id: CiscoEmailSecurity
   version: -1
@@ -25,8 +25,8 @@ configuration:
   name: timeout
   required: false
   type: 0
-description: Cisco Email Security is an email security gateway . It detects and blocks a wide variety of email-borne threats, such as malware, spam and phishing.
-display: CiscoEmailSecurity (Beta)
+description: Deprecated. Use Cisco Security Management Appliance instead.
+display: CiscoEmailSecurity (Beta) (Deprecated)
 name: CiscoEmailSecurity
 script:
   commands:
@@ -1205,7 +1205,7 @@ script:
     description: Deletes a list entry.
     execution: false
     name: cisco-email-security-list-entry-delete
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.8.37753
   feed: false
   isfetch: false
   longRunning: false
@@ -1218,3 +1218,4 @@ tests:
 - No tests
 fromversion: 5.0.0
 beta: true
+deprecated: true

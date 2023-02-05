@@ -15,6 +15,7 @@ Clarizen
 ExceedLMS
 Okta
 SecneurX
+VirusTotal
 
 [file:playbook-File_Enrichment_-_File_reputation.yml]
 ignore=BA101
@@ -96,3 +97,6 @@ ignore=PB121
 
 [file:pack_metadata.json]
 ignore=PA129
+
+[file:playbook-Block_Indicators_-_Generic_v2.yml]
+ignore=PB118

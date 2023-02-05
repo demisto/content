@@ -1,6 +1,8 @@
 Use the Microsoft Teams integration to send messages and notifications to your team members and create meetings.
 This integration was integrated and tested with version 1.0 of Microsoft Teams.
 
+**Note:** For use cases where it is only need to send messages to a specific channel, we recommend checking the [Microsoft Teams via Webhook Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams-via-webhook), which has a simpler setup.
+
 ## Integration Architecture
 Data is passed between Microsoft Teams and Cortex XSOAR through the bot that you will configure in Microsoft Teams. A webhook (that you will configure) receives the data from Teams and passes it to the messaging endpoint. The web server on which the integration runs in Cortex XSOAR listens to the messaging endpoint and processes the data from Teams. You can use an engine for communication between Teams and the Cortex XSOAR server. In order to mirror messages from Teams to Cortex XSOAR, the bot must be mentioned, using the @ symbol, in the message.
 - *Note* - In order to avoid mentioning the bot, if this was previously configured without adding the Bot ID, repeat the authentication flow and pay particular attention to the following steps:
@@ -16,10 +18,10 @@ The web server for the integration runs within a long-running Docker container. 
  	- the URL of the Cortex XSOAR server, including the configured port
  	- the Cortex XSOAR rerouting URL that you've defined for your Microsoft Teams instance (see the [Using Cortex XSOAR rerouting](#1-using-cortex-xsoar-rerouting) section for more details)
  	- or a proxy that redirects the messages received from Teams to the Cortex XSOAR server (see the [Using NGINX as reverse proxy](#2-using-nginx-as-reverse-proxy) section for more details)
- - Microsoft Teams will send events to the messaging endpoints via HTTPS request, which means the messaging endpoint must be accesible for Microsoft Teams to reach to it. As follows, the messaging endpoint can not contain private IP address or any DNS that will block the request from Microsoft Teams.
+ - Microsoft Teams will send events to the messaging endpoints via HTTPS request, which means the messaging endpoint must be accessible for Microsoft Teams to reach to it. As follows, the messaging endpoint can not contain private IP address or any DNS that will block the request from Microsoft Teams.
 In order to verify that the messaging endpoint is open as expected, you can surf to the messaging endpoint from a browser in an environment which is disconnected from the Cortex XSOAR environment.
  - It's important that the port is opened for outside communication and that the port is not being used, meaning that no service is listening on it. Therefore, the default port, 443, should not be used.
- - For additional security, we recommend placing the Teams integration webserver behind a reverse proxy (such as NGINX).
+ - For additional security, we recommend placing the Teams integration web server behind a reverse proxy (such as NGINX).
  - By default, the web server that the integration starts provides services in HTTP. For communication to be in HTTPS you need to provide a certificate and private key in the following format:
     ```
      -----BEGIN CERTIFICATE-----
@@ -74,17 +76,17 @@ On NGINX, configure the following:
 
 Follow [Configuring Upstream Servers NGINX guide](https://docs.nginx.com/nginx/admin-guide/security-controls/securing-http-traffic-upstream/#configuring-upstream-servers) for more details.
 
-The port (`7000` in this example), to which the reverse proxy should forward the traffic on HTTP, should be the same port you specify in the integration instance configuration, as the webserver the integration spins up, listens on that port.
+The port (`7000` in this example), to which the reverse proxy should forward the traffic on HTTP, should be the same port you specify in the integration instance configuration, as the web server the integration spins up, listens on that port.
 
 ![image](https://github.com/demisto/content/raw/fa322765a440f8376bbf7ac85f0400beb720f712/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/doc_files/RP-NGINX.png)
 
 ![image](https://github.com/demisto/content/raw/fa322765a440f8376bbf7ac85f0400beb720f712/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/doc_files/InstanceConfig7000.png)
 
 ### 3. Using Apache reverse proxy and Cortex XSOAR engine
-In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR, goes through a reverse proxy (e.g. [Apache](https://httpd.apache.org/docs/2.4/howto/reverse_proxy.html)) and possibly a load balancer, which relays the HTTPS requests posted from Microsoft Teams
+In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR, goes through a reverse proxy (e.g., [Apache](https://httpd.apache.org/docs/2.4/howto/reverse_proxy.html)) and possibly a load balancer, which relays the HTTPS requests posted from Microsoft Teams
 to a Cortex XSOAR engine, which can be put in a DMZ, on HTTP.
 
-The port (`7000` in this example), to which the reverse proxy should forward the traffic on HTTP, should be the same port you specify in the integration instance configuration, as the webserver the integration spins up, listens on that port.
+The port (`7000` in this example), to which the reverse proxy should forward the traffic on HTTP, should be the same port you specify in the integration instance configuration, as the web server the integration spins up, listens on that port.
 
 ![image](https://github.com/demisto/content/raw/fa322765a440f8376bbf7ac85f0400beb720f712/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/doc_files/RP-Engine.png)
 
@@ -98,13 +100,21 @@ The messaging endpoint should be the Cortex XSOAR URL, which need to be hosted o
 
 In the [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar) step, the following need to be configured:
  - The port selected above.
- - A certificate and key for configuring HTTPS webserver. This certificate can be self-signed.
+ - A certificate and key for configuring HTTPS web server. This certificate can be self-signed.
 
-The proxy intercepts HTTPS traffic, presents a public CA certificate, then proxies it to the webserver.
+The proxy intercepts HTTPS traffic, presents a public CA certificate, then proxies it to the web server.
 
-All HTTPS traffic that will hit the selected messaging endpoint will be directed to the HTTPS webserver the integration spins up, and will then be processed.
+All HTTPS traffic that will hit the selected messaging endpoint will be directed to the HTTPS web server the integration spins up, and will then be processed.
 
 ## Setup Video
+<video controls>
+    <source src="https://github.com/demisto/content-assets/blob/master/Assets/MicrosoftTeams/FullConfigVideo.mp4?raw=true"
+            type="video/mp4"/>
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/master/Assets/MicrosoftTeams/FullConfigVideo.mov?raw=true
+</video>
+
+
+## Old Setup Video (Use the above video)
 <video controls>
     <source src="https://github.com/demisto/content-assets/raw/845c0d790ceb4fbac08c5c7852b2a3bed0829778/Assets/MicrosoftTeams/config.mp4"
             type="video/mp4"/>
@@ -125,7 +135,25 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 ### Create the Demisto Bot in Microsoft Teams
 
 
-#### Using the Developer Portal
+#### Creating the Demisto Bot for Production environment using Microsoft Azure Portal (Recommended)
+1. Navigate to the [Create an Azure Bot page](https://portal.azure.com/#create/Microsoft.AzureBot).
+2. In the Bot Handle field, type **Demisto Bot**.
+3. Fill in the required Subscription and Resource Group, relevant links: [Subscription](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/create-subscription), [Resource Groups](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal).
+4. For Type of App, select **Multi Tenant**.
+5. For Creation type, select **Create new Microsoft App ID** for Creation Type if you don't already have an app registration, otherwise, select **Use existing app registration**, and fill in you App ID.
+6. Click **Review + Create**, and wait for the validation to pass.
+7. Click **create** if the validation has passed, and wait for the deployment to finish.
+8. Under Next Steps, click **Go to resource**.
+9. Navigate to **Configuration** on the left bar, and fill in the **Messaging Endpoint**.
+10. Store the **Microsoft App ID** value for the next steps, and navigate to **Manage** next to it.
+11. Click **New Client Secret**, fill in the **Description** and **Expires** fields as desired. Then click **Add**.
+12. Copy the client secret from the **value** field and store it for the next steps.
+13. Go back to the previous page, and navigate to **Channels** in the left bar.
+14. Click **Microsoft Teams** under **Available Channels**, click the checkbox, click **Agree**, then click **Apply**.
+
+Note: in step 5, if you choose **Use existing app registration**, make sure to delete the previous created bot with the same app id, remove it from the team it was added to as well.  
+
+#### Creating the Demisto Bot for development environment using the Developer Portal (Recommended to use `Azure portal` method mentioned above, this method will be removed soon)
 1. Navigate to the [Tools in the Microsoft Developer Portal](https://dev.teams.microsoft.com/tools).
 2. Navigate to **Bot management**.
 3. Click the **+New Bot** button.
@@ -138,7 +166,7 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 9. Store the generated secret securely for the next steps.
 
 
-#### Using the App Studio (Deprecated - Use `Developer Portal` instead.)
+#### Using the App Studio for development environment (Deprecated - Use `Developer Portal` instead.)
 1. Download the ZIP file located at the bottom of this article.
 2. In Microsoft Teams, access the Store.
 3. Search for and click **App Studio**.
@@ -243,6 +271,10 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 4. In the search box, type the name of the team to which to add the bot.
 5. Click **Set up** and configure the new app.
 
+
+## Known Limitations
+---
+In some cases, you might encounter a problem, where no communication is created between Teams and the messaging endpoint, when adding a bot to the team. You can workaround this problem by adding any member to the team the bot was added to. It's supposed to trigger a communication and solve the issue.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -377,7 +409,7 @@ No mirrored channels.
 
 ### Ring a user's Team account
 ***
-Rings a user's Teams account. Note: This is a ring only! no media will play in case the generated call is answered. To use this make sure your Bot has the following premissions - Calls.Initiate.All and Calls.InitiateGroupCall.All
+Rings a user's Teams account. Note: This is a ring only! no media will play in case the generated call is answered. To use this make sure your Bot has the following permissions - Calls.Initiate.All and Calls.InitiateGroupCall.All
 
 
 ##### Base Command
@@ -543,11 +575,11 @@ You can send the message `help` in order to see the supported commands:
 
 ## Troubleshooting
 
-1. The integration works by spinning up a webserver that listens to events and data posted to it from Microsoft Teams.
+1. The integration works by spinning up a web server that listens to events and data posted to it from Microsoft Teams.
 
-    If you see the error message `Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly.`, then it means that the tenant ID was never posted to the webserver, which should happen for the first time when the bot is added to the configured team.
+    If you see the error message `Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly.`, then it means that the tenant ID was never posted to the web server, which should happen for the first time when the bot is added to the configured team.
 
-    This probably means that there is a connection issue, and the webserver does not intercept the HTTPS queries from Microsoft Teams.
+    This probably means that there is a connection issue, and the web server does not intercept the HTTPS queries from Microsoft Teams.
 
     In order to troubleshoot, first verify the Docker container is up and running and publish the configured port to the outside world:
 
@@ -557,17 +589,18 @@ You can send the message `help` in order to see the supported commands:
 
     `988fdf341127        demisto/teams:1.0.0.6483      "python /tmp/pyrunne…"   6 seconds ago       Up 4 seconds        0.0.0.0:7000->7000/tcp   demistoserver_pyexecLongRunning-b60c04f9-754e-4b68-87ed-8f8113419fdb-demistoteams1.0.0.6483--26`
 
-    If the Docker container is up and running, try running cURL queries, to verify the webserver is up and running and listens on the configured URL:
+    If the Docker container is up and running, try running cURL queries, to verify the web server is up and running and listens on the configured URL:
 
      - To the messaging endpoint from a separate box.
      - From the Cortex XSOAR machine to localhost.
 
-       - Note: The webserver supports only POST method queries.
+       - Note: The web server supports only POST method queries.
 
     If the cURL queries were sent successfully, you should see in Cortex XSOAR logs the following line: `Finished processing Microsoft Teams activity successfully`.
 
-    if you're working with secured communication (HTTPS), make sure that you provided a valid certificate, run `openssl s_client -connect <domain.com>:443` command, verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
-
+    If you're working with secured communication (HTTPS), make sure that you provided a valid certificate, run `openssl s_client -connect <domain.com>:443` command, verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
+    
+    Try inserting your configured message endpoint in a browser tap, click `Enter`, if `Method Not Allowed` is returned, the endpoint is valid and ready to communicate, otherwise, it needs to be handled according to the returned error's message.
 
 2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, then it means the AAD application has insufficient permissions.
 

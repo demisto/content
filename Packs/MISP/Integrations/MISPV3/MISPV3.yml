@@ -1997,7 +1997,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Entry ID of the email.
+      description: Entry ID of the email (only supports .eml files).
       isArray: false
       name: entry_id
       required: true
@@ -3003,7 +3003,7 @@ script:
     - contextPath: MISP.Warninglist.Lists
       description: Name of warninglists where the value was found.
       type: string
-  dockerimage: demisto/pymisp2:1.0.0.35874
+  dockerimage: demisto/pymisp2:1.0.0.46386
   feed: false
   isfetch: false
   longRunning: false

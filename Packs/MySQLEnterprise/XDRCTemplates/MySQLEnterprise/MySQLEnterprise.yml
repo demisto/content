@@ -1,0 +1,12 @@
+filebeat.inputs:
+- type: filestream
+  enabled: true
+  json.keys_under_root: true
+  json.add_error_key: true
+  paths:
+    - /var/lib/mysql/audit.log
+  processors:
+    - add_fields:
+        fields:
+          vendor: mysql
+          product: enterprise

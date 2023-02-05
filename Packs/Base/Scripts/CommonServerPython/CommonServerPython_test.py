@@ -8,7 +8,9 @@ import sys
 import warnings
 
 import dateparser
+from freezegun import freeze_time
 import pytest
+import pytz
 import requests
 from pytest import raises, mark
 
@@ -18,8 +20,8 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, \
-    return_outputs, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, batch, FeedIndicatorType, \
+    return_outputs, is_filename_valid, \
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
@@ -1041,7 +1043,7 @@ def test_aws_table_to_markdown(header, raw_input, expected_output):
     assert aws_table_to_markdown(raw_input, header) == expected_output
 
 
-def test_argToList():
+def test_argToList(mocker):
     expected = ['a', 'b', 'c']
     test1 = ['a', 'b', 'c']
     test2 = 'a,b,c'
@@ -1051,17 +1053,19 @@ def test_argToList():
     test6 = '1'
     test7 = True
     test8 = [1, 2, 3]
+    test9 = "[test.com]"
 
     results = [argToList(test1), argToList(test2), argToList(test2, ','), argToList(test3), argToList(test4, ';')]
 
     for result in results:
         assert expected == result, 'argToList test failed, {} is not equal to {}'.format(str(result), str(expected))
-
+    mocker.patch.object(demisto, 'debug', return_value=None)
     assert argToList(test5) == [1]
     assert argToList(test5, transform=str) == ['1']
     assert argToList(test6) == ['1']
     assert argToList(test7) == [True]
     assert argToList(test8, transform=str) == ['1', '2', '3']
+    assert argToList(test9) == ["[test.com]"]
 
 
 @pytest.mark.parametrize('args, field, expected_output', [
@@ -1742,6 +1746,12 @@ class TestCommandResults:
         from CommonServerPython import CommandResults
         with pytest.raises(ValueError, match='outputs_prefix'):
             CommandResults(outputs=[])
+
+    def test_with_tags(self):
+        from CommonServerPython import CommandResults
+        command_results = CommandResults(tags=['tag1', 'tag2'])
+        assert command_results.tags == ['tag1', 'tag2']
+        assert command_results.to_context()['Tags'] == ['tag1', 'tag2']
 
     def test_dbot_score_is_in_to_context_ip(self):
         """
@@ -3063,6 +3073,7 @@ class TestParseDateRange:
         assert abs(utc_start_time - utc_end_time).days == 2
 
     @staticmethod
+    @freeze_time("2022-11-03 13:40:00 UTC")
     def test_case_insensitive():
         utc_now = datetime.utcnow()
         utc_start_time, utc_end_time = parse_date_range('2 Days', utc=True)
@@ -3268,6 +3279,7 @@ regexes_test = [
     (ipv4Regex, '192.168..1.1', False),
     (ipv4Regex, '192.256.1.1', False),
     (ipv4Regex, '192.256.1.1.1', False),
+    (ipv4Regex, '192.168.1.1/12', False),
     (ipv4cidrRegex, '192.168.1.1/32', True),
     (ipv4cidrRegex, '192.168.1.1.1/30', False),
     (ipv4cidrRegex, '192.168.1.b/30', False),
@@ -3439,6 +3451,15 @@ INDICATOR_VALUE_AND_TYPE = [
     ('castaneda-thornton.com', 'Domain'),
     ('192.0.0.1', 'IP'),
     ('test@gmail.com', 'Email'),
+    ('test@Demisto.com', 'Email'),
+    ('Test@demisto.com', 'Email'),
+    ('TEST@demisto.com', 'Email'),
+    ('TEST@Demisto.com', 'Email'),
+    ('TEST@DEMISTO.Com', 'Email'),
+    ('TesT@DEMISTO.Com', 'Email'),
+    ('TesT@DemisTO.Com', 'Email'),
+    ('TesT@DeMisTo.CoM', 'Email'),
+    ('TEST@DEMISTO.COM', 'Email'),
     ('e775eb1250137c0b83d4e7c4549c71d6f10cae4e708ebf0b5c4613cbd1e91087', 'File'),
     ('test@yahoo.com', 'Email'),
     ('http://test.com', 'URL'),
@@ -3511,6 +3532,51 @@ def test_auto_detect_indicator_type_tldextract(mocker):
         assert 'cache_file' in res[1].keys()
 
 
+VALID_DOMAIN_INDICATORS = ['www.static.attackiqtes.com',
+                           'test.com',
+                           'www.testö.com',
+                           'hxxps://path.test.com/check',
+                           'https%3A%2F%2Ftwitter.com%2FPhilipsBeLux&data=02|01||cb2462dc8640484baf7608d638d2a698|1a407a2d7675' \
+                           '4d178692b3ac285306e4|0|0|636758874714819880&sdata=dnJiphWFhnAKsk5Ps0bj0p%2FvXVo8TpidtGZcW6t8lDQ%3' \
+                           'D&reserved=0%3E%5bcid:image003.gif@01CF4D7F.1DF62650%5d%3C',
+                           'https://emea01.safelinks.protection.outlook.com/',
+                           'good.good']
+
+@pytest.mark.parametrize('indicator_value', VALID_DOMAIN_INDICATORS)
+def test_valid_domain_indicator_types(indicator_value):
+    """
+    Given
+    - Valid Domain indicators.
+    When
+    - Trying to match those indicators with the Domain regex.
+    Then
+    - The indicators are classified as Domain indicators.
+    """
+    assert re.match(domainRegex, indicator_value)
+
+
+INVALID_DOMAIN_INDICATORS = ['aaa.2234',
+                             '1.1.1.1',
+                             'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad',
+                             '1.1',
+                             '2001 : db8: 3333 : 4444 : 5555',
+                             'test..com',
+                             'test/com',
+                             '3.21.32.65/path']
+
+@pytest.mark.parametrize('indicator_value', INVALID_DOMAIN_INDICATORS)
+def test_invalid_domain_indicator_types(indicator_value):
+    """
+    Given
+    - invalid Domain indicators.
+    When
+    - Trying to match those indicators with the Domain regex.
+    Then
+    - The indicators are not classified as Domain indicators.
+    """
+    assert not re.match(domainRegex, indicator_value)
+
+
 VALID_URL_INDICATORS = [
     '3.21.32.65/path',
     '19.117.63.253:28/other/path',
@@ -3520,8 +3586,6 @@ VALID_URL_INDICATORS = [
     '2001:db8:85a3:8d3:1319:8a2e:370:7348/path/path',
     '2001:db8:85a3:8d3:1319:8a2e:370:7348/32/path/path',
     'https://google.com/sdlfdshfkle3247239elkxszmcdfdstgk4e5pt0/path/path/oatdsfk/sdfjjdf',
-    'www.123.43.6.89/path',
-    'https://15.12.76.123',
     'www.google.com/path',
     'wwW.GooGle.com/path',
     '2001:db8:85a3:8d3:1319:8a2e:370:7348/65/path/path',
@@ -3529,30 +3593,13 @@ VALID_URL_INDICATORS = [
     '2001:db8:85a3:8d3:1319:8a2e:370:7348/h'
     '1.1.1.1/7/server',
     "1.1.1.1/32/path",
-    'http://evil.tld/',
     'https://evil.tld/evil.html',
-    'ftp://foo.bar/',
     'www.evil.tld/evil.aspx',
-    'sftp://8.26.75.97:121',
     'sftp://69.254.57.79:5001/path',
     'sftp://75.26.0.1/path',
-    'https://www.evil.tld/',
     'www.evil.tld/resource',
-    'hxxps://google[.]com',
-    'hxxps://google[.]com:443',
-    'hxxps://google[.]com:443/path'
-    'www.1.2.3.4/?user=test%Email=demisto',
-    'www.1.2.3.4:8080/user=test%Email=demisto'
+    'hxxps://google[.]com:443/path',
     'http://xn--e1v2i3l4.tld/evilagain.aspx',
-    'https://www.xn--e1v2i3l4.tld',
-    'https://0330.0072.0307.0116',
-    'https://0563.2437.2623.2222',  # IP as octal number
-    'https://2467.1461.3567.1434:443',
-    'https://3571.3633.2222.3576:443/path',
-    'https://4573.2436.1254.7423:443/p',
-    'https://0563.2437.2623.2222:443/path/path',
-    'hxxps://www.xn--e1v2i3l4.tld',
-    'hxxp://www.xn--e1v2i3l4.tld',
     'www.evil.tld:443/path/to/resource.html',
     'WWW.evil.tld:443/path/to/resource.html',
     'wWw.Evil.tld:443/path/to/resource.html',
@@ -3561,45 +3608,29 @@ VALID_URL_INDICATORS = [
     'HTTPS://1.2.3.4/path/to/resource.html',
     '1.2.3.4/path',
     '1.2.3.4/path/to/resource.html',
-    'http://1.2.3.4:8080/',
     'http://1.2.3.4:8080/resource.html',
-    'HTTP://1.2.3.4',
     'HTTP://1.2.3.4:80/path',
     'ftp://foo.bar/resource',
     'FTP://foo.bar/resource',
-    'http://test.evil.tld/',
     'ftps://foo.bar/resource',
-    'ftps://foo.bar/Resource'
+    'ftps://foo.bar/Resource',
     '5.6.7.8/fdsfs',
     'https://serverName.com/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
     'http://serverName.org/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
     'https://1.1.1.1/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
     'https://google.com/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
     'www.google.com/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
-    'www.63.4.6.1/integrations/test-playbooks',
     'https://xsoar.pan.dev/docs/welcome',
     '5.6.7.8/user/',
     'http://www.example.com/and%26here.html',
-    'https://1234',  # IP as integer 1234 = '0.0.4.210'
-    'https://4657624',
-    'https://64123/path',
     'https://0.0.0.1/path',
-    'https://1',  # same as 0.0.0.1
-    'hXXps://isc.sans[.]edu/',
-    'hXXps://1.1.1.1[.]edu/',
     'hxxp://0[x]455e8c6f/0s19ef206s18s2f2s567s49a8s91f7s4s19fd61a',  # defanged hexa-decimal IP.
     'hxxp://0x325e5c7f/34823jdsasjfd/asdsafgf/324',  # hexa-decimal IP.
-    'hxxps://0xAA268BF1:8080/',
     'hxxps://0xAB268DC1:8080/path',
-    'hxxps://0xAB268DC1/',
     'hxxps://0xAB268DC1/p',
     'hxxps://0xAB268DC1/32',
-    'http://www.google.com:8080',
-    'http://www[.]google.com:8080',  # defanged Domain
     'http://www.google[.]com:8080/path',
     'http://www[.]google.com:8080/path',
-    'http://www.253.234.73.12:8080/secret.txt',
-    'https://www.10.15.53.95:8080',
     'www[.]google.com:8080/path',
     'www.google[.]com:8080/path',
     'google[.]com/path',
@@ -3608,6 +3639,7 @@ VALID_URL_INDICATORS = [
     '2001:db8:85a3:8d3:1319:8a2e:370:7348/80',
     '2001:0db8:0001:0000:0000:0ab9:C0A8:0102/resource.html',
     '2251:dbc:8fa3:8d3:1f19:8a2e:370:7348/80',
+    'https[:]//www.test.com/test',  # defanged colon sign
 ]
 
 
@@ -3625,26 +3657,21 @@ def test_valid_url_indicator_types(indicator_value):
 
 
 INVALID_URL_INDICATORS = [
+    'www.google.com',
+    'one.two.three.four.com',
+    'one.two.three.com',
     'test',
     'httn://bla.com/path',
     'google.com*',
     '1.1.1.1',
-    '1.1.1.1/',
-    '1.1.1.1/32',
-    '1.1.1.1/32/',
     'path/path',
     '1.1.1.1:8080',
-    '1.1.1.1:8080/',
     '1.1.1.1:111112243245/path',
     '3.4.6.92:8080:/test',
     '1.1.1.1:4lll/',
-    '2001:db8:85a3:8d3:1319:8a2e:370:7348/64/',
-    '2001:db8:85a3:8d3:1319:8a2e:370:7348/64',
-    '2001:db8:85a3:8d3:1319:8a2e:370:7348/32',
-    '2001:db8:3333:4444:5555:6666:7777:8888/',
     'flake8.pycqa.org',
     'google.com',
-    'HTTPS://dsdffd.c'  # not valid tld
+    'HTTPS://dsdffd.c',  # not valid tld
     'https://test',
     'ftp://test',
     'ftps:test',
@@ -3653,17 +3680,11 @@ INVALID_URL_INDICATORS = [
     'https:/1.1.1.1.1/path',
     'wwww.test',
     'help.test.com',
-    'help-test/com'
-    'wwww.path.com/path',
+    'help-test/com',
     'fnvfdsbf/path',
     '65.23.7.2',
     'k.f.a.f',
     'test/test/test/test',
-    'http://www.example.com/ %20here.html',
-    'http ://www.example.com/ %20here.html',
-    'http://www.example .com/%20here.html'
-    'http://wwww.example.com/%20here.html',
-    'FTP://Google.test:',
     '',
     'somestring',
     'dsjfshjdfgkjldsh32423123^^&*#@$#@$@!#4',
@@ -3675,30 +3696,24 @@ INVALID_URL_INDICATORS = [
     '2.2.2.2.2/3sad',
     'http://fdsfesd',
     'http://fdsfesd:8080',  # no tld
-    'FLAKE8.dds.asdfd/',
     'FTP://Google.',
     'https://www.',
-    '1.1.1.1/pa klj'
     '1.1.1.1.1/path',
     '2.2.2.2.2/3sad',
     'HTTPS://1.1.1.1..1.1.1.1/path',
-    'https://1.1.1.1.1.1.1.1.1.1.1/path'
+    'https://1.1.1.1.1.1.1.1.1.1.1/path',
     '1.1.1.1 .1/path',
-    '123.6.2.2/ path',
     '   test.com',
-    'test .com.domain'
+    'test .com.domain',
     'hxxps://0xAB26:8080/path',  # must be 8 hexa-decimal chars
     'hxxps://34543645356432234e:8080/path',  # too large integer IP
     'https://35.12.5677.143423:443',  # invalid IP address
     'https://4578.2436.1254.7423',  # invalid octal address (must be numbers between 0-7)
     'https://4578.2436.1254.7423:443/p',
-    'https://www.evil.tld/ https://4578.2436.1254.7423:443/p',
     'FTP://foo hXXps://1.1.1.1[.]edu/path',
     'https://216.58.199.78:12345fdsf',
     'https://www.216.58.199.78:sfsdg'
 ]
-
-
 @pytest.mark.parametrize('indicator_value', INVALID_URL_INDICATORS)
 def test_invalid_url_indicator_types(indicator_value):
     """
@@ -5195,7 +5210,7 @@ class TestCommonTypes:
             'IndicatorTimeline': [],
             'IgnoreAutoExtract': False,
             'Note': False,
-            'Relationships': []
+            'Relationships': [],
         }
 
     def test_create_domain(self):
@@ -5349,7 +5364,7 @@ class TestCommonTypes:
             'IndicatorTimeline': [],
             'IgnoreAutoExtract': False,
             'Note': False,
-            'Relationships': []
+            'Relationships': [],
         }
 
     def test_create_url(self):
@@ -7101,8 +7116,26 @@ class TestIsDemistoServerGE:
         assert is_demisto_version_ge('5.0.0')
         assert is_demisto_version_ge('4.5.0')
         assert not is_demisto_version_ge('5.5.0')
-        assert get_demisto_version_as_str() == '5.0.0-50000'
+        assert get_demisto_version_as_str() == '5.0.0-50000'        
 
+    def test_get_demisto_version_2(self, mocker):
+        mocker.patch.object(
+            demisto,
+            'demistoVersion',
+            return_value={
+                'version': '6.10.0',
+                'buildNumber': '50000'
+            }
+        )
+        assert get_demisto_version() == {
+            'version': '6.10.0',
+            'buildNumber': '50000'
+        }
+        assert is_demisto_version_ge('6.5.0')
+        assert is_demisto_version_ge('6.1.0')
+        assert is_demisto_version_ge('6.5')
+        assert not is_demisto_version_ge('7.0.0')
+        
     def test_is_demisto_version_ge_4_5(self, mocker):
         get_version_patch = mocker.patch('CommonServerPython.get_demisto_version')
         get_version_patch.side_effect = AttributeError('simulate missing demistoVersion')
@@ -7509,14 +7542,28 @@ class TestFetchWithLookBack:
         }
     ]
 
-    def example_fetch_incidents(self):
+    INCIDENTS_TIME_AWARE = [
+        {
+            'incident_id': incident.get('incident_id'),
+            'created': incident.get('created') + 'Z'
+        } for incident in INCIDENTS
+    ]
+
+    NEW_INCIDENTS_TIME_AWARE = [
+        {
+            'incident_id': incident.get('incident_id'),
+            'created': incident.get('created') + 'Z'
+        } for incident in NEW_INCIDENTS
+    ]
+
+    def example_fetch_incidents(self, time_aware=False):
         """
         An example fetch for testing
         """
 
         from CommonServerPython import get_fetch_run_time_range, filter_incidents_by_duplicates_and_limit, \
             update_last_run_object
-
+        date_format = '%Y-%m-%dT%H:%M:%S' + ('Z' if time_aware else '')
         incidents = []
 
         params = demisto.params()
@@ -7529,10 +7576,10 @@ class TestFetchWithLookBack:
         fetch_limit = last_run.get('limit') or fetch_limit_param
 
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch,
-                                                                    look_back=look_back, timezone=time_zone)
+                                                                    look_back=look_back, timezone=time_zone, date_format=date_format)
 
         query = self.build_query(start_fetch_time, end_fetch_time, fetch_limit)
-        incidents_res = self.get_incidents_request(query)
+        incidents_res = self.get_incidents_request(query, date_format)
 
         incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents_res, last_run=last_run,
                                                              fetch_limit=fetch_limit_param, id_field='incident_id')
@@ -7540,7 +7587,7 @@ class TestFetchWithLookBack:
         last_run = update_last_run_object(last_run=last_run, incidents=incidents, fetch_limit=fetch_limit_param,
                                           start_fetch_time=start_fetch_time,
                                           end_fetch_time=end_fetch_time, look_back=look_back,
-                                          created_time_field='created', id_field='incident_id')
+                                          created_time_field='created', id_field='incident_id', date_format=date_format)
 
         demisto.setLastRun(last_run)
         return incidents
@@ -7552,10 +7599,12 @@ class TestFetchWithLookBack:
             query['limit'] = limit
         return query
 
-    def get_incidents_request(self, query):
-        from_time = datetime.strptime(query['from'], '%Y-%m-%dT%H:%M:%S')
-        incidents = [inc for inc in self.INCIDENTS if
-                     datetime.strptime(inc['created'], '%Y-%m-%dT%H:%M:%S') > from_time]
+    def get_incidents_request(self, query, date_format):
+        time_aware = 'Z' in date_format
+        source_incidents = self.INCIDENTS_TIME_AWARE if time_aware else self.INCIDENTS
+        from_time = datetime.strptime(query['from'], date_format)
+        incidents = [inc for inc in source_incidents if
+                     datetime.strptime(inc['created'], date_format) > from_time]
         if query.get('limit') is not None:
             return incidents[:query['limit']]
         return incidents
@@ -7572,6 +7621,17 @@ class TestFetchWithLookBack:
          {'limit': 2, 'time': INCIDENTS[2]['created']}),
         ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
          {'limit': 3, 'time': INCIDENTS[3]['created']}),
+
+        ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]], [INCIDENTS_TIME_AWARE[4]],
+         {'limit': 2, 'time': INCIDENTS_TIME_AWARE[3]['created']}),
+        ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]], [],
+         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[4]['created']}),
+        ({'limit': 2, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[3],
+                                                                                                      INCIDENTS_TIME_AWARE[4]],
+         {'limit': 2, 'time': INCIDENTS_TIME_AWARE[2]['created']}),
+        ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
+         [INCIDENTS_TIME_AWARE[4]],
+         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[3]['created']}),
     ])
     def test_regular_fetch(self, mocker, params, result_phase1, result_phase2, expected_last_run):
         """
@@ -7588,6 +7648,7 @@ class TestFetchWithLookBack:
             # skip for python 2 - date
             assert True
             return
+        time_aware = 'Z' in expected_last_run['time']
 
         self.LAST_RUN = {}
 
@@ -7597,24 +7658,26 @@ class TestFetchWithLookBack:
         mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
 
         # Run first fetch
-        incidents_phase1 = self.example_fetch_incidents()
+        incidents_phase1 = self.example_fetch_incidents(time_aware)
 
         assert incidents_phase1 == result_phase1
         assert self.LAST_RUN == expected_last_run
 
         # Run second fetch
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
-        incidents_phase2 = self.example_fetch_incidents()
+        incidents_phase2 = self.example_fetch_incidents(time_aware)
 
         assert incidents_phase2 == result_phase2
 
     def mock_dateparser(self, date_string, settings):
+        time_aware = isinstance(date_string, str) and 'Z' in date_string
+        date_format = '%Y-%m-%dT%H:%M:%S' + ('Z' if time_aware else '')
         date_arr = date_string.split(' ')
         if len(date_arr) > 1 and date_arr[0].isdigit():
             return datetime(2022, 4, 1, 11, 0, 0) - timedelta(minutes=int(date_arr[0])) if date_arr[1] == 'minutes' \
                 else datetime(2022, 4, 1, 11, 0, 0) - timedelta(hours=int(date_arr[0]))
         return datetime(2022, 4, 1, 11, 0, 0) - (
-                    datetime(2022, 4, 1, 11, 0, 0) - datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S'))
+                    datetime(2022, 4, 1, 11, 0, 0) - datetime.strptime(date_string, date_format))
 
     @pytest.mark.parametrize(
         'params, result_phase1, result_phase2, result_phase3, expected_last_run_phase1, expected_last_run_phase2, new_incidents, index',
@@ -7647,6 +7710,38 @@ class TestFetchWithLookBack:
                     {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
                     [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
             ),
+
+            (
+                    {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
+                    [NEW_INCIDENTS_TIME_AWARE[0], INCIDENTS_TIME_AWARE[4]], [],
+                    {'found_incident_ids': {3: '', 4: ''}, 'limit': 4},
+                    {'found_incident_ids': {3: '', 4: '', 5: '', 6: ''}, 'limit': 6},
+                    [NEW_INCIDENTS_TIME_AWARE[0]], 2
+            ),
+            (
+                    {'limit': 2, 'first_fetch': '20 minutes', 'look_back': 30}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
+                    [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[4]],
+                    {'found_incident_ids': {3: '', 4: ''}, 'limit': 4},
+                    {'found_incident_ids': {3: '', 4: '', 7: '', 8: ''}, 'limit': 6},
+                    [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], 3
+            ),
+            (
+                    {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 15},
+                    [INCIDENTS_TIME_AWARE[0], INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [NEW_INCIDENTS_TIME_AWARE[0],
+                                                                                                  INCIDENTS_TIME_AWARE[3],
+                                                                                                  INCIDENTS_TIME_AWARE[4]], [],
+                    {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6},
+                    {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}, 'limit': 9},
+                    [NEW_INCIDENTS_TIME_AWARE[0]], 2
+            ),
+            (
+                    {'limit': 3, 'first_fetch': '20 minutes', 'look_back': 30},
+                    [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]],
+                    [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], [],
+                    {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6},
+                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
+                    [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], 3
+            ),
         ])
     def test_fetch_with_look_back(self, mocker, params, result_phase1, result_phase2, result_phase3,
                                   expected_last_run_phase1, expected_last_run_phase2, new_incidents, index):
@@ -7664,9 +7759,9 @@ class TestFetchWithLookBack:
             # skip for python 2 - date
             assert True
             return
-
+        time_aware = 'Z' in result_phase1[0]['created']
         self.LAST_RUN = {}
-        incidents = self.INCIDENTS[:]
+        incidents = self.INCIDENTS_TIME_AWARE[:] if time_aware else self.INCIDENTS[:] 
 
         mocker.patch.object(CommonServerPython, 'get_current_time', return_value=datetime(2022, 4, 1, 11, 0, 0))
         mocker.patch.object(dateparser, 'parse', side_effect=self.mock_dateparser)
@@ -7675,7 +7770,7 @@ class TestFetchWithLookBack:
         mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
 
         # Run first fetch
-        incidents_phase1 = self.example_fetch_incidents()
+        incidents_phase1 = self.example_fetch_incidents(time_aware)
 
         assert incidents_phase1 == result_phase1
         assert self.LAST_RUN['limit'] == expected_last_run_phase1['limit']
@@ -7684,11 +7779,14 @@ class TestFetchWithLookBack:
             assert inc['incident_id'] in self.LAST_RUN['found_incident_ids']
 
         next_run_phase1 = self.LAST_RUN['time']
-        self.INCIDENTS = incidents[:index] + new_incidents + incidents[index:]
-
+        source_incidents = incidents[:index] + new_incidents + incidents[index:]
+        if time_aware:
+            self.INCIDENTS_TIME_AWARE = source_incidents
+        else:
+            self.INCIDENTS = source_incidents
         # Run second fetch
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
-        incidents_phase2 = self.example_fetch_incidents()
+        incidents_phase2 = self.example_fetch_incidents(time_aware)
 
         assert incidents_phase2 == result_phase2
         assert self.LAST_RUN['limit'] == expected_last_run_phase2['limit']
@@ -7704,12 +7802,233 @@ class TestFetchWithLookBack:
 
         # Run third fetch
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
-        incidents_phase3 = self.example_fetch_incidents()
+        incidents_phase3 = self.example_fetch_incidents(time_aware)
 
         assert incidents_phase3 == result_phase3
 
         # Remove new incidents from self.INCIDENTS
-        self.INCIDENTS = incidents
+        if time_aware:
+            self.INCIDENTS_TIME_AWARE = incidents
+        else:
+            self.INCIDENTS = incidents
+
+    @pytest.mark.parametrize(
+        'args1, expected_results1, args2, expected_results2, args3, expected_results3',
+        [
+            (
+                {
+                    'incidents': [
+                        {'createAt': '2022-04-01T10:11:00', 'id': '1'},
+                        {'createAt': '2022-04-01T10:12:00', 'id': '2'},
+                        {'createAt': '2022-04-01T10:13:00', 'id': '3'}
+                    ],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-01T10:11:00',
+                    'end_fetch_time': '2022-04-05T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-01T10:11:00',
+                    'limit': 6,
+                    'found_incident_ids': {'1': '', '2': '', '3': ''}
+                },
+                {
+                    'incidents': [
+                        {'createAt': '2022-04-02T10:11:00', 'id': '4'},
+                        {'createAt': '2022-04-02T10:12:00', 'id': '5'},
+                        {'createAt': '2022-04-02T10:13:00', 'id': '6'}
+                    ],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-01T10:11:00',
+                    'end_fetch_time': '2022-04-06T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-01T10:11:00',
+                    'limit': 9,
+                    'found_incident_ids': {'1': '', '2': '', '3': '',
+                                           '4': '', '5': '', '6': ''}
+                },
+                {
+                    'incidents': [
+                        {'createAt': '2022-04-03T10:11:00', 'id': '7'},
+                        {'createAt': '2022-04-03T10:12:00', 'id': '8'},
+                        {'createAt': '2022-04-03T10:13:00', 'id': '9'}
+                    ],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-01T10:11:00',
+                    'end_fetch_time': '2022-04-07T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-01T10:11:00',
+                    'limit': 12,
+                    'found_incident_ids': {'1': '', '2': '', '3': '',
+                                           '4': '', '5': '', '6': '',
+                                           '7': '', '8': '', '9': ''}
+                }
+            ),
+            (
+                {
+                    'incidents': [
+                        {'createAt': '2022-04-01T10:11:00', 'id': '1'},
+                        {'createAt': '2022-04-01T10:12:00', 'id': '2'},
+                        {'createAt': '2022-04-01T10:13:00', 'id': '3'}
+                    ],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-01T10:11:00',
+                    'end_fetch_time': '2022-04-05T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-01T10:11:00',
+                    'limit': 6,
+                    'found_incident_ids': {'1': '', '2': '', '3': ''}
+                },
+                {
+                    'incidents': [
+                        {'createAt': '2022-04-02T10:11:00', 'id': '4'},
+                        {'createAt': '2022-04-02T10:12:00', 'id': '5'},
+                    ],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-01T10:11:00',
+                    'end_fetch_time': '2022-04-06T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-02T10:12:00',
+                    'limit': 3,
+                    'found_incident_ids': {'4': '', '5': ''}
+                },
+                {
+                    'incidents': [
+                        {'createAt': '2022-04-03T10:11:00', 'id': '7'},
+                        {'createAt': '2022-04-03T10:12:00', 'id': '8'},
+                        {'createAt': '2022-04-03T10:13:00', 'id': '9'}
+                    ],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-02T10:12:00',
+                    'end_fetch_time': '2022-04-07T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-02T10:12:00',
+                    'limit': 6,
+                    'found_incident_ids': {'4': '', '5': '',
+                                           '7': '', '8': '', '9': ''}
+                }
+            ),
+            (
+                {
+                    'incidents': [
+                        {'createAt': '2022-04-01T10:11:00', 'id': '1'},
+                        {'createAt': '2022-04-01T10:12:00', 'id': '2'},
+                        {'createAt': '2022-04-01T10:13:00', 'id': '3'}
+                    ],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-01T10:11:00',
+                    'end_fetch_time': '2022-04-05T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-01T10:11:00',
+                    'limit': 6,
+                    'found_incident_ids': {'1': '', '2': '', '3': ''}
+                },
+                {
+                    'incidents': [],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-01T10:11:00',
+                    'end_fetch_time': '2022-04-06T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-06T10:11:00',
+                    'limit': 3,
+                    'found_incident_ids': {'1': '', '2': '', '3': ''}
+                },
+                {
+                    'incidents': [],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-02T10:12:00',
+                    'end_fetch_time': '2022-04-07T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-07T10:11:00',
+                    'limit': 3,
+                    'found_incident_ids': {'1': '', '2': '', '3': ''}
+                }
+            )
+        ]
+    )
+    def test_update_last_run_object(self, args1, expected_results1, args2, expected_results2, args3, expected_results3):
+
+        from CommonServerPython import update_last_run_object
+
+        args1.update({'last_run': {}})
+        results = update_last_run_object(**args1)
+
+        assert results.get('time') == expected_results1.get('time')
+        assert results.get('limit') == expected_results1.get('limit')
+        for id_ in results.get('found_incident_ids').keys():
+            assert id_ in expected_results1.get('found_incident_ids')
+
+        for id_ in results.get('found_incident_ids'):
+            results['found_incident_ids'][id_] = results['found_incident_ids'][id_] - 200
+        args2.update({'last_run': results})
+        results = update_last_run_object(**args2)
+
+        assert results.get('time') == expected_results2.get('time')
+        assert results.get('limit') == expected_results2.get('limit')
+        for id_ in results.get('found_incident_ids').keys():
+            assert id_ in expected_results2.get('found_incident_ids')
+
+        for id_ in results.get('found_incident_ids'):
+            results['found_incident_ids'][id_] = results['found_incident_ids'][id_] - 200
+        args3.update({'last_run': results})
+        results = update_last_run_object(**args3)
+
+        assert results.get('time') == expected_results3.get('time')
+        assert results.get('limit') == expected_results3.get('limit')
+        for id_ in results.get('found_incident_ids').keys():
+            assert id_ in expected_results3.get('found_incident_ids')
 
 
 class TestTracebackLineNumberAdgustment:
@@ -8107,6 +8426,10 @@ class TestSendEventsToXSIAMTest:
         if not IS_PY3:
             return
 
+        mocker.patch.object(demisto, "params", return_value={"url": "www.test_url.com"})
+        mocker.patch.object(demisto, "callingContext", {"context": {"IntegrationInstance": "test_integration_instance",
+                                                                    "IntegrationBrand": "test_brand"}})
+
         if isinstance(error_msg, dict):
             status_code = 401
             requests_mock.post(
@@ -8294,3 +8617,76 @@ def test_append_metrics(mocker):
 
     results = CommonServerPython.append_metrics(metrics, results)
     assert len(results) == 1
+
+
+@pytest.mark.parametrize(
+    'filename',
+    ['/test', '\\test', ',test', ':test', 't/est.pdf', '../../test.xslx', '~test.png']
+)
+def test_is_valid_filename_faild(filename):
+    """
+    Given:
+        Filename.
+    When:
+        Checking if the filename is invalid
+    Then:
+        Test - Assert the function returns Exception
+    """
+    assert is_filename_valid(filename=filename) is False
+
+
+@pytest.mark.parametrize(
+    'filename',
+    ['test', 'test.txt', 'test.xslx', 'Test', 'טסט', 'test-test.pdf', 'test test.md']
+)
+def test_is_valid_filename(filename):
+    """
+    Given:
+        Filename.
+    When:
+        Checking if the filename is invalid
+    Then:
+        Test - Assert the function does not raise an Exception
+    """
+    assert is_filename_valid(filename)
+
+
+TEST_REPLACE_SPACES_IN_CREDENTIAL = [
+    (
+        'TEST test TEST', 'TEST test TEST'
+    ),
+    (
+        '-----BEGIN SSH CERTIFICATE----- MIIF7z gdwZcx IENpdH -----END SSH CERTIFICATE-----',
+        '-----BEGIN SSH CERTIFICATE-----\nMIIF7z\ngdwZcx\nIENpdH\n-----END SSH CERTIFICATE-----'
+    ),
+    (
+        '-----BEGIN RSA PRIVATE KEY----- MIIF7z gdwZcx IENpdH -----END RSA PRIVATE KEY-----',
+        '-----BEGIN RSA PRIVATE KEY-----\nMIIF7z\ngdwZcx\nIENpdH\n-----END RSA PRIVATE KEY-----'
+    ),
+    (
+        '-----BEGIN RSA PRIVATE KEY----- MIIF7z gdwZcx IENpdH',
+        '-----BEGIN RSA PRIVATE KEY----- MIIF7z gdwZcx IENpdH'
+    ),
+    (
+        None, None
+    ),
+    (
+        '', ''
+    )
+]
+
+
+@pytest.mark.parametrize('credential, expected', TEST_REPLACE_SPACES_IN_CREDENTIAL)
+def test_replace_spaces_in_credential(credential, expected):
+    """
+    Given:
+        Credential with spaces.
+    When:
+        Running replace_spaces_in_credential function.
+    Then:
+        Test - Assert the function not returning as expected.
+    """
+    from CommonServerPython import replace_spaces_in_credential
+
+    result = replace_spaces_in_credential(credential)
+    assert result == expected

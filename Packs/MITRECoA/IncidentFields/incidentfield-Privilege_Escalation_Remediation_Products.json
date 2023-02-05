@@ -1,0 +1,33 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "MITRE ATT\u0026CK CoA"
+    ],
+    "caseInsensitive": true,
+    "cliName": "privilegeescalationremediationproducts",
+    "closeForm": false,
+    "content": true,
+    "description": "The list of products used for remediation of techniques that belong to the Privilege Escalation MITRE ATT\u0026CK phase.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_privilegeescalationremediationproducts",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Privilege Escalation Remediation Products",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "markdown",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

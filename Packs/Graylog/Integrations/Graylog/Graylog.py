@@ -4,12 +4,11 @@ from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 
 from datetime import datetime
-
+import urllib3
 import dateparser
-import requests
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 def results_return(command, thingtoreturn):

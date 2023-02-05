@@ -13,12 +13,12 @@ import traceback
 from typing import Any, Dict, List
 
 import demistomock as demisto
-import requests
+import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 VERSION = "1.0.0"

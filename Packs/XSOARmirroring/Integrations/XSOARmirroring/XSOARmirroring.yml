@@ -21,8 +21,7 @@ configuration:
   name: apikey
   type: 4
   required: true
-  additionalinfo: The API key to access the server. The key must be provided by the
-    server to which you are connecting.
+  additionalinfo: The API key to access the server. The key must be provided by the server to which you are connecting.
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -36,8 +35,7 @@ configuration:
   name: query
   type: 0
   required: false
-  additionalinfo: Don't add created time to the query as this field will be addressed
-    in the "First fetch time".
+  additionalinfo: Don't add created time to the query as this field will be addressed in the "First fetch time".
 - display: First fetch time
   name: first_fetch
   defaultvalue: 3 days
@@ -53,8 +51,7 @@ configuration:
   name: tags
   type: 0
   required: false
-  additionalinfo: Only entries with these tags are retrieved from the XSOAR server.
-    If no tags are listed, no entries are retrieved.
+  additionalinfo: Only entries with these tags are retrieved from the XSOAR server. If no tags are listed, no entries are retrieved.
 - additionalinfo: Choose the tags to filter the enties you wish to send to the other XSOAR instance.
   defaultvalue: ""
   display: Outgoing Entry Tags
@@ -90,6 +87,14 @@ configuration:
   name: debug_mode
   type: 8
   required: false
+- display: Mirror Playbook ID
+  name: mirror_playbook_id
+  defaultvalue: "true"
+  type: 8
+  required: false
+  additionalinfo: 'A parameter integration that removes the playbookId field from incoming incidents.
+   Note: when set to true (default), the instance will attempt to run a playbook according to the incoming ID.
+    When set to false, the instance will run the default playbook for the incident type (if configured locally).'
 script:
   script: ''
   type: python
@@ -125,8 +130,7 @@ script:
       description: Retrieve only the entries from these categories.
       defaultValue: chats,notes
     - name: tags
-      description: Only entries with these tags are retrieved from the XSOAR server.
-        If no tags are listed, no entries are retrieved.
+      description: Only entries with these tags are retrieved from the XSOAR server. If no tags are listed, no entries are retrieved.
     - name: max_results
       description: Max number of entries to retrieve
       defaultValue: "10"
@@ -138,12 +142,11 @@ script:
       description: The remote incident id
     - name: lastUpdate
       description: Retrieve entries that were created after the last update.
-    description: Get remote data from a remote incident. Please note that this method
-      will not update the current incident, it's here for debugging purposes.
+    description: Get remote data from a remote incident. Please note that this method will not update the current incident, it's here for debugging purposes.
   - name: get-mapping-fields
     arguments: []
     description: Retrieves the mapping schema from a remote incident.
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.9.46032
   isfetch: true
   runonce: false
   subtype: python3

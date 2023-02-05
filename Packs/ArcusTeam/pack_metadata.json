@@ -2,7 +2,7 @@
     "name": "ArcusTeam",
     "description": "ArcusTeam's DeviceTotal Platform helps to identify and manage vulnerabilities found on IoT devices",
     "support": "partner",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "ArcusTeam",
     "url": "https://arcusteam.com/pa-partnership/",
     "email": "support@arcusteam.com",
@@ -10,19 +10,16 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Threat Intelligence",
-        "Security Analytics",
-        "Security",
-        "IoT"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [
         "cve",
         "score",
         "Attack Surface Management",
         "IOT",
-        "Network Devices"
+        "Network Devices",
+        "Threat Intelligence",
+        "Security Analytics"
     ],
     "githubUser": [],
     "marketplaces": [

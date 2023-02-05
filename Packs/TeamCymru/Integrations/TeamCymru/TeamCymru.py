@@ -3,13 +3,13 @@ from CommonServerUserPython import *
 
 '''IMPORTS'''
 
-import requests
+import urllib3
 from cymruwhois import Client  # Python interface to whois.cymru.com
 import csv
 from typing import Tuple
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 '''GLOBALS'''
 

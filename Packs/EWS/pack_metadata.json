@@ -2,13 +2,13 @@
     "name": "EWS",
     "description": "Exchange Web Services and Office 365 (mail)",
     "support": "xsoar",
-    "currentVersion": "1.14.1",
+    "currentVersion": "2.0.10",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-21T07:41:48Z",
     "categories": [
-        "Messaging"
+        "IT Services"
     ],
     "tags": [],
     "useCases": [],

@@ -1,0 +1,31 @@
+{
+    "id": "incident_threatvaultbypaloaltonetworksreleasenotes",
+    "version": -1,
+    "modified": "2022-12-12T12:12:59.622054472Z",
+    "name": "Threat Vault by Palo Alto Networks release notes",
+    "ownerOnly": false,
+    "cliName": "threatvaultbypaloaltonetworksreleasenotes",
+    "type": "html",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Threat Vault Release notes"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

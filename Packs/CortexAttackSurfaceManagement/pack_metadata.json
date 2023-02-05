@@ -2,23 +2,15 @@
     "name": "Cortex Attack Surface Management",
     "description": "Content for working with Attack Surface Management (ASM).",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.4.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Threat Intelligence",
-        "Network",
-        "Security"
-    ],
-    "useCases": [
-        "Asset Management",
-        "Threat Intelligence Management",
-        "Vulnerability Management"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "Attack Surface Management",
         "Cortex",
@@ -27,27 +19,44 @@
         "Palo Alto Networks"
     ],
     "dependencies": {
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
+        "ServiceNow": {
+            "mandatory": false,
+            "display_name": "ServiceNow"
         },
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
+        "Nmap": {
+            "mandatory": false,
+            "display_name": "Nmap"
         },
         "Tenable_io": {
             "mandatory": false,
             "display_name": "Tenable.io"
         },
-         "ServiceNow": {
+        "AWS-Enrichment-Remediation": {
             "mandatory": false,
-            "display_name": "ServiceNow"
+            "display_name": "AWS Enrichment and Remediation"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "GCP-Enrichment-Remediation": {
+            "mandatory": false,
+            "display_name": "GCP Enrichment and Remediation"
         }
     },
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "xpanse"
     ],
     "itemPrefix": [
         "ASM"
+    ],
+    "displayedImages": [
+        "ServiceNow",
+        "Nmap",
+        "Tenable_io",
+        "AWS-Enrichment-Remediation",
+        "GCP-Enrichment-Remediation",
+        "CommonScripts"
     ]
 }

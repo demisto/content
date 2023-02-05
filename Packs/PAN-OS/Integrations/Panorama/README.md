@@ -50,6 +50,40 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
    * [pan-os-get-logs](#pan-os-get-logs)
 * The target argument is supported only in operational type commands. Meaning, you cannot use it with commit, logs, or PCAP commands.
 
+## Fetch Incidents
+The Panorama integration now supports fetch incidents.
+The incidents are fetched according to a number of different optional log type queries. The log types are: **Traffic, Threat, URL, Data, Correlation, System, Wildfire, Decryption**.
+
+##### Max incidents per fetch
+The max incidents per fetch parameter specifies the maximum number of incidents to fetch **per** Log Type Query.
+
+##### Log Type
+The queries that will be included during the fetch are decided according to the "Log Type" parameter (Multiple select dropdown).
+- Selecting "All" will use all the log type queries in the fetch.
+- To choose a specific set of queries, select their log types from the dropdown (make sure "All" option is unselected).
+
+##### Log Type Query
+- Each log type has its own query field in the instance configuration.
+- Note that the default query values has some example text in it, make sure to enter a valid query.
+
+##### Log Type Query Examples
+
+| Log Type            | Query Example                                                                                                                                           |
+|---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Traffic             | (addr.src in {source}) and (addr.dst in {destination}) and (action eq {action})                                                                         |
+| Threat              | (severity geq high)                                                                                                                                     |
+| URL                 | ((action eq block-override) or (action eq block-url)) and (severity geq high)                                                                           |
+| Data                | ((action eq alert) or (action eq wildfire-upload-success) or (action eq forward)) and (severity geq high)                                               |
+| Correlation         | (hostid eq {host_id}) and (match_time in {last_x_time}) and (objectname eq {object_name}) and (severity geq '{severity}') and (src in {source_address}) |
+| System              | (subtype eq {sub_type}) and (severity geq {severity})                                                                                                   |
+| Wildfire Submission | ((action eq wildfire-upload-fail) or (action eq wildfire-upload-skip) or (action eq sinkhole))                                                          |
+| Decryption          | (app eq {application}) and (policy_name geq {policy_name}) and ((src in {source}) or (dst in {destination}))                                            |
+
+##### Classifiers and Mappers
+
+This integration supports a default Classifier (Panorama Classifier) and Mapper (Panorama Mapper) that handles incidents returned from the API.
+
+
 ## Configure Panorama on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -68,9 +102,20 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
 | additional_suspicious | URL Filtering Additional suspicious categories. CSV list of categories that will be considered suspicious. | False |
 | additional_malicious | URL Filtering Additional malicious categories. CSV list of categories that will be considered malicious. | False |
 | insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
+| First fetch timestamp  | First fetch time interval | False |
+| Max incidents per fetch | Max incidents per fetch for each selected Log Type Query | False |
+| Log Type | Log Types incidents to fetch | False |
+| Traffic Log Type Query | Traffic Query for fetch incidents | False |
+| Threat Log Type Query | Threat Query for fetch incidents | False |
+| URL Log Type Query | URL Query for fetch incidents | False |
+| Data Log Type Query | Data Query for fetch incidents | False |
+| Correlation Log Type Query | Correlation Query for fetch incidents | False |
+| System Log Type Query | System Query for fetch incidents | False |
+| Wildfire Submission Log Type Query | Wildfire Submission Query for fetch incidents | False |
+| Decryption Log Type Query | Decryption Query for fetch incidents | False |
+| Incidents Fetch Interval | Time interval between incident fetches | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+1. Click **Test** to validate the URLs, token, and connection.
 
 
 ## Debugging in Panorama
@@ -171,7 +216,7 @@ The equivalent `!pan-os` command is:
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-1. [Run any command supported in the Panorama API: panorama](#panorama)
+1. [Run any command supported in the Panorama API: pan-os](#pan-os)
 2. [Get pre-defined threats list from a Firewall or Panorama and stores as a JSON file in the context: panorama-get-predefined-threats-list](#pan-os-get-predefined-threats-list)
 3. [Commit a configuration: panorama-commit](#pan-os-commit)
 4. [Pushes rules from PAN-OS to the configured device group: panorama-push-to-device-group](#pan-os-push-to-device-group)
@@ -285,7 +330,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 
-### panorama
+### pan-os
 ***
 Run any command supported in the API.
 
@@ -314,7 +359,7 @@ Run any command supported in the API.
 | serialno | Specifies the device serial number. | Optional | 
 | reporttype | Chooses the report type, such as dynamic, predefined or custom. | Optional | 
 | reportname | Report name. | Optional | 
-| type | Request type (e.g. export, import, log, config). | Optional | 
+| type | Request type (e.g. export, import, log, config). Possible values are: keygen, config, commit, op, report, log, import, export, user-id, version. default is config. | Optional | 
 | search-time | The time that the PCAP was received on the firewall. Used for threat PCAPs. | Optional | 
 | target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 | job-id | Job ID. | Optional | 
@@ -3094,7 +3139,7 @@ Returns a list of predefined Security Rules.
 
 ### pan-os-query-logs
 ***
-Query logs in Panorama.
+The query logs in Panorama.
 
 
 #### Base Command
@@ -3104,45 +3149,151 @@ Query logs in Panorama.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| log-type | The log type. Can be "threat", "traffic", "wildfire", "url", or "data". | Required | 
+| log-type | The log type. Can be "threat", "traffic", "wildfire", "url", or "data". Possible values are: threat, traffic, wildfire, url, data. | Required | 
 | query | The query string by which to match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs. | Optional | 
-| time-generated | The time that the log was generated from the timestamp and prior to it.<br/>e.g "2019/08/11 01:10:44". | Optional | 
-| addr-src | Source address. | Optional | 
-| addr-dst | Destination address. | Optional | 
-| ip | Source or destination IP address. | Optional | 
-| zone-src | Source zone. | Optional | 
-| zone-dst | Destination Source. | Optional | 
-| action | Rule action. | Optional | 
-| port-dst | Destination port. | Optional | 
-| rule | Rule name, e.g "Allow all outbound". | Optional | 
-| url | URL, e.g "safebrowsing.googleapis.com". | Optional | 
-| filedigest | File hash (for WildFire logs only). | Optional | 
-| number_of_logs | Maximum number of logs to retrieve. If empty, the default is 100. The maximum is 5,000. | Optional | 
+| time-generated | The time the log was generated from the timestamp and prior to it.<br/>For example "2019/08/11 01:10:44". | Optional | 
+| addr-src | The source address. | Optional | 
+| addr-dst | The destination address. | Optional | 
+| ip | The source or destination IP address. | Optional | 
+| zone-src | The source zone. | Optional | 
+| zone-dst | The destination source. | Optional | 
+| action | The rule action. | Optional | 
+| port-dst | The destination port. | Optional | 
+| rule | The rule name, for example "Allow all outbound". | Optional | 
+| url | The URL, for example "safebrowsing.googleapis.com". | Optional | 
+| filedigest | The file hash (for WildFire logs only). | Optional | 
+| number_of_logs | The maximum number of logs to retrieve. If empty, the default is 100. The maximum is 5,000. Default is 100. | Optional | 
+| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional | 
+| timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Monitor.JobID | String | Job ID of the logs query. | 
-| Panorama.Monitor.Status | String | Status of the logs query. | 
-| Panorama.Monitor.Message | String | Message of the logs query. | 
+| Panorama.Monitor.JobID | String | The job ID of the logs query. | 
+| Panorama.Monitor.Status | String | The status of the logs query. | 
+| Panorama.Monitor.Message | String | The message of the logs query. | 
+| Panorama.Monitor.Logs.Action | String | The action taken for the session. Can be "alert", "allow", "deny", "drop", "drop-all-packets", "reset-client", "reset-server", "reset-both", or "block-url". | 
+| Panorama.Monitor.Logs.Application | String | The application associated with the session. | 
+| Panorama.Monitor.Logs.Category | String | The URL category of the URL subtype. For WildFire subtype, it is the verdict on the file, and can be either "malicious", "phishing", "grayware", or "benign". For other subtypes, the value is "any". | 
+| Panorama.Monitor.Logs.DeviceName | String | The hostname of the firewall on which the session was logged. | 
+| Panorama.Monitor.Logs.DestinationAddress | String | The original session destination IP address. | 
+| Panorama.Monitor.Logs.DestinationUser | String | The username of the user to which the session was destined. | 
+| Panorama.Monitor.Logs.DestinationCountry | String | The destination country or internal region for private addresses. Maximum length is 32 bytes. | 
+| Panorama.Monitor.Logs.DestinationPort | String | The destination port utilized by the session. | 
+| Panorama.Monitor.Logs.FileDigest | String | Only for the WildFire subtype, all other types do not use this field. The filedigest string shows the binary hash of the file sent to be analyzed by the WildFire service. | 
+| Panorama.Monitor.Logs.FileName | String | File name or file type when the subtype is file.
+File name when the subtype is virus.
+File name when the subtype is wildfire-virus.
+File name when the subtype is wildfire. | 
+| Panorama.Monitor.Logs.FileType | String | Only for the WildFire subtype, all other types do not use this field.
+Specifies the type of file that the firewall forwarded for WildFire analysis. | 
+| Panorama.Monitor.Logs.FromZone | String | The zone from which the session was sourced. | 
+| Panorama.Monitor.Logs.URLOrFilename | String | The actual URL when the subtype is url.
+The file name or file type when the subtype is file.
+The file name when the subtype is virus.
+The file name when the subtype is wildfire-virus.
+The file name when the subtype is wildfire.
+The URL or file name when the subtype is vulnerability \(if applicable\). | 
+| Panorama.Monitor.Logs.NATDestinationIP | String | The post-NAT destination IP address if destination NAT was performed. | 
+| Panorama.Monitor.Logs.NATDestinationPort | String | The post-NAT destination port. | 
+| Panorama.Monitor.Logs.NATSourceIP | String | The post-NAT source IP address if source NAT was performed. | 
+| Panorama.Monitor.Logs.NATSourcePort | String | The post-NAT source port. | 
+| Panorama.Monitor.Logs.PCAPid | String | The packet capture \(pcap\) ID is a 64 bit unsigned integral denoting
+an ID to correlate threat pcap files with extended pcaps taken as a part of
+that flow. All threat logs will contain either a pcap_id of 0 \(no associated
+pcap\), or an ID referencing the extended pcap file. | 
+| Panorama.Monitor.Logs.IPProtocol | String | The IP protocol associated with the session. | 
+| Panorama.Monitor.Logs.Recipient | String | Only for the WildFire subtype, all other types do not use this field.
+Specifies the name of the receiver of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall. | 
+| Panorama.Monitor.Logs.Rule | String | The name of the rule that the session matched. | 
+| Panorama.Monitor.Logs.RuleID | String | The ID of the rule that the session matched. | 
+| Panorama.Monitor.Logs.ReceiveTime | String | The time the log was received at the management plane. | 
+| Panorama.Monitor.Logs.Sender | String | Only for the WildFire subtype; all other types do not use this field.
+Specifies the name of the sender of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall. | 
+| Panorama.Monitor.Logs.SessionID | String | An internal numerical identifier applied to each session. | 
+| Panorama.Monitor.Logs.DeviceSN | String | The serial number of the firewall on which the session was logged. | 
+| Panorama.Monitor.Logs.Severity | String | The severity associated with the threat. Can be "informational", "low",
+"medium", "high", or "critical". | 
+| Panorama.Monitor.Logs.SourceAddress | String | The original session source IP address. | 
+| Panorama.Monitor.Logs.SourceCountry | String | The source country or internal region for private addresses. Maximum
+length is 32 bytes. | 
+| Panorama.Monitor.Logs.SourceUser | String | The username of the user who initiated the session. | 
+| Panorama.Monitor.Logs.SourcePort | String | The source port utilized by the session. | 
+| Panorama.Monitor.Logs.ThreatCategory | String | The threat categories used to classify different types of
+threat signatures. | 
+| Panorama.Monitor.Logs.Name | String | The Palo Alto Networks identifier for the threat. A description
+string followed by a 64-bit numerical identifier. | 
+| Panorama.Monitor.Logs.ID | String | The Palo Alto Networks ID for the threat. | 
+| Panorama.Monitor.Logs.ToZone | String | The zone to which the session was destined. | 
+| Panorama.Monitor.Logs.TimeGenerated | String | The time the log was generated on the data plane. | 
+| Panorama.Monitor.Logs.URLCategoryList | String | A list of the URL filtering categories the firewall used to
+enforce the policy. | 
+| Panorama.Monitor.Logs.Bytes | String | The total log bytes. | 
+| Panorama.Monitor.Logs.BytesReceived | String | The log bytes received. | 
+| Panorama.Monitor.Logs.BytesSent | String | The log bytes sent. | 
+| Panorama.Monitor.Logs.Vsys | String | The VSYS on the firewall that generated the log. | 
 
+#### Command example with polling
+```!pan-os-query-logs log-type=traffic number_of_logs=1 polling=true```
 
-#### Command Example
-```!pan-os-query-logs log-type=data query="( addr.src in 192.168.1.12 )" ```
+### Context example
+```json
+{
+    "Panorama": {
+        "Monitor": {
+            "JobID": "1291",
+            "LogType": "traffic",
+            "Logs": {
+              "TimeGenerated": "2019/07/24 08:50:24",
+              "SourceAddress": "1.1.1.1",
+              "DestinationAddress": "2.3.4.5",
+              "Application": "web-browsing",
+              "Action": "deny",
+              "Rule": "any - any accept"
+            },
+            "Status": "Completed"
+        }
+    }
+}
+```
 
 #### Human Readable Output
+>Fetching traffic logs for job ID 1291...
+> >### Query traffic Logs:
+>|TimeGenerated|SourceAddress|DestinationAddress|Application|Action|Rule|
+>|---|---|---|---|---|---|
+>| 2019/07/24 08:50:24 | 1.1.1.1 | 2.3.4.5 | web-browsing | deny | any - any accept |
 
+
+#### Command example without polling 
+```!pan-os-query-logs log-type=traffic number_of_logs=1```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Monitor": {
+            "JobID": "1283",
+            "LogType": "traffic",
+            "Message": "query job enqueued with jobid 1283",
+            "Status": "Pending"
+        }
+    }
+}
+```
+
+#### Human Readable Output
 >### Query Logs:
 >|JobID|Status|
 >|---|---|
->| 678 | Pending |
+>| 1283 | Pending |
+
 
 ### pan-os-check-logs-status
 ***
 Checks the status of a logs query.
-
 
 #### Base Command
 

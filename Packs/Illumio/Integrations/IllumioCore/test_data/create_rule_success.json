@@ -1,0 +1,47 @@
+{
+  "consumers": [
+    {
+      "label": {
+        "href": "/orgs/1/labels/3"
+      }
+    }
+  ],
+  "consuming_security_principals": [],
+  "created_at": "2022-09-07T08:10:46.253Z",
+  "created_by": {
+    "href": "/users/68"
+  },
+  "description": "",
+  "enabled": true,
+  "href": "/orgs/1/sec_policy/draft/rule_sets/2216/sec_rules/2231",
+  "ingress_services": [
+    {
+      "href": "/orgs/1/sec_policy/draft/services/1751"
+    }
+  ],
+  "machine_auth": false,
+  "network_type": "brn",
+  "providers": [
+    {
+      "label": {
+        "href": "/orgs/1/labels/3"
+      }
+    }
+  ],
+  "resolve_labels_as": {
+    "consumers": [
+      "workloads"
+    ],
+    "providers": [
+      "workloads"
+    ]
+  },
+  "sec_connect": false,
+  "stateless": false,
+  "unscoped_consumers": false,
+  "update_type": "create",
+  "updated_at": "2022-09-07T08:10:46.265Z",
+  "updated_by": {
+    "href": "/users/68"
+  }
+}

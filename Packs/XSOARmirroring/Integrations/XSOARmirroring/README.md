@@ -1,6 +1,8 @@
 Allows mirroring of XSOAR incidents between different Cortex XSOAR tenants.
 
 This integration was integrated and tested with version 6.0 of XSOAR
+Mirrored incidents include the playbook ID. The receiving side will attempt to run a playbook with a matching ID, if one exists locally.
+To have the machine run the default playbook for the mirrored incident, set the `Mirror Playbook ID` to `false`. Otherwise (default), the machine will attempt to run a playbook whose id matches the `playbookId` field in the mirrored incident.
 
 ## Configure XSOAR Mirroring on Cortex XSOAR
 
@@ -31,8 +33,9 @@ The mirroring instance in the first tenant contains a new incident type, called 
 4. Click **Test** to ensure that you can communicate with the Cortex XSOAR tenant.
 
 
-## Important note:
-In order to mirror custom fields, you need to create an incoming mapper for the integration and explicitly specify them in it.
+## Important notes:
+- In order to mirror custom fields, you need to create an incoming mapper for the integration and explicitly specify them in it.
+- In order to mirror custom fields in both directions, the custom fields in both XSOAR instances must have the same cli name.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

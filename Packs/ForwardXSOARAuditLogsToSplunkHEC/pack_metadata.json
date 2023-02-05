@@ -17,7 +17,9 @@
         }
     },
     "created": "2021-09-30T11:08:39Z",
-    "categories": [],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],

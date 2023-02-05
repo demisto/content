@@ -2,14 +2,13 @@ import json
 import io
 from datetime import datetime
 from XMCyberIntegration import (
-    get_version_command,
-    is_xm_version_supported_command,
-    enrich_from_ip,
-)
-from XMCyberIntegration import (
     enrich_from_entity_id,
     affected_entities_list_command,
     affected_critical_assets_list_command,
+    enrich_entity_from_fields,
+    get_version_command,
+    is_xm_version_supported_command,
+    enrich_from_ip,
 )
 from XMCyberIntegration import (
     Client,
@@ -171,7 +170,7 @@ def test_enrich_from_entity_id(requests_mock):
     """
 
     mock_url = (
-        f'{TEST_URL}{URLS.Entities}?filter={{"entityId":{{"$regex":"/3110337924893579985/i"}}}}'
+        f'{TEST_URL}{URLS.Entities}?filter={{"entityId": "3110337924893579985"}}'
         f"&pageSize={PAGE_SIZE}&page=1"
     )
     xm = mock_request_and_get_xm_mock(
@@ -206,6 +205,52 @@ def test_enrich_from_entity_id(requests_mock):
     )
 
 
+def test_enrich_from_fields(requests_mock):
+    """
+    Configures requests_mock instance to generate the appropriate search
+    API response. Checks the output of the command function with the expected output.
+    """
+
+    mock_url = (
+        f'{TEST_URL}{URLS.Entities}?search={{"$regex":"/CorporateDC/i"}}'
+        f'&filter={{"projectId": "focused-module-278310"}}&pageSize={PAGE_SIZE}&page=1'
+    )
+    xm = mock_request_and_get_xm_mock("test_data/entity_id.json", requests_mock, mock_url)
+
+    response = enrich_entity_from_fields(
+        xm,
+        {
+            "fields": ["name", "projectId"],
+            "values": ["CorporateDC", "focused-module-278310"],
+        },
+    )
+
+    assert_response(
+        response[0],
+        "XMCyber.Entity",
+        "id",
+        [
+            {
+                "id": "3110337924893579985",
+                "name": "CorporateDC",
+                "affectedEntities": 29,
+                "averageComplexity": 2,
+                "criticalAssetsAtRisk": 14,
+                "criticalAssetsAtRiskLevel": "medium",
+                "averageComplexityLevel": "medium",
+                "isAsset": True,
+                "compromisingTechniques": [
+                    {"count": 46, "name": "DNS Heap Overflow (CVE-2018-8626)"},
+                    {"count": 34, "name": "SIGRed (CVE-2020-1350)"},
+                ],
+                "type": "Sensor",
+                "report": "https://test.com/#/report/entity/3110337924893579985?timeId=timeAgo_days_7",
+                "OS": "Windows Server 2012 R2 (DC)",
+            }
+        ],
+    )
+
+
 def test_ip(requests_mock):
     """Tests ip command function.
 
@@ -213,7 +258,7 @@ def test_ip(requests_mock):
     API response. Checks the output of the command function with the expected output.
     """
 
-    mock_url = f'{TEST_URL}{URLS.Entities}?filter={{"ipv4Str":{{"$regex":"/172.0.0.1/i"}}}}&pageSize={PAGE_SIZE}&page=1'
+    mock_url = f'{TEST_URL}{URLS.Entities}?filter={{"ipv4Str": "172.0.0.1"}}&pageSize={PAGE_SIZE}&page=1'
     xm = mock_request_and_get_xm_mock(
         "test_data/entity_id.json", requests_mock, mock_url
     )
@@ -253,7 +298,7 @@ def test_get_version(requests_mock):
         "entityId",
         {
             "updater": "1.4.134.11846",
-            "system": "1.38.0.12821",
+            "system": "1.43.0.12821",
             "north": "1.0.3359+6496",
             "south": "2.1.966.348",
             "db": "4.2.3",
@@ -283,7 +328,7 @@ def _get_risk_score_incidents(create_time):
             "trend": 21,
             "current_grade": "F",
             "current_score": 41,
-            "name": "XM Security score - 41",
+            "name": "XM Cyber security score - 41",
             "create_time": create_time,
             "type": XM_CYBER_INCIDENT_TYPE_SCORE,
             "severity": SEVERITY.Low,
@@ -333,7 +378,7 @@ def _get_entities_incidents(create_time):
             "score": 0.53,
             "level": "low",
             "trend": None,
-            "name": "XM Asset at risk - Deployer",
+            "name": "XM Cyber critical asset at risk - Deployer",
             "severity": SEVERITY.Low,
             "create_time": create_time,
             "linkToReport": "https://test.com/#/report/entity/"
@@ -405,7 +450,7 @@ def _get_entities_incidents(create_time):
             "score": 1.55,
             "level": "low",
             "trend": None,
-            "name": "XM Asset at risk - testwinvm2",
+            "name": "XM Cyber critical asset at risk - testwinvm2",
             "severity": SEVERITY.Low,
             "create_time": create_time,
             "linkToReport": "https://test.com/#/report/entity/"
@@ -477,7 +522,7 @@ def _get_entities_incidents(create_time):
             "score": 1.91,
             "level": "low",
             "trend": None,
-            "name": "XM Asset at risk - testwinvm",
+            "name": "XM Cyber critical asset at risk - testwinvm",
             "severity": SEVERITY.Low,
             "create_time": create_time,
             "linkToReport": "https://test.com/#/report/entity/"
@@ -517,7 +562,7 @@ def _get_entities_incidents(create_time):
             "score": 0.05,
             "level": "low",
             "trend": 20,
-            "name": "XM Choke point - USERBB21",
+            "name": "XM Cyber choke point - USERBB21",
             "severity": SEVERITY.Low,
             "create_time": create_time,
             "linkToReport": "https://test.com/#/report/entity/15553084234424912589?timeId=timeAgo_days_7",
@@ -556,7 +601,7 @@ def _get_entities_incidents(create_time):
             "score": 0.05,
             "level": "low",
             "trend": 33,
-            "name": "XM Choke point - USERBB02",
+            "name": "XM Cyber choke point - USERBB02",
             "severity": SEVERITY.Low,
             "create_time": create_time,
             "linkToReport": "https://test.com/#/report/entity/872743867762485580?timeId=timeAgo_days_7",
@@ -596,7 +641,7 @@ def _get_entities_incidents(create_time):
             "score": 0.05,
             "level": "low",
             "trend": 33,
-            "name": "XM Choke point - script.bat",
+            "name": "XM Cyber choke point - script.bat",
             "severity": SEVERITY.Low,
             "create_time": create_time,
             "linkToReport": "https://test.com/#/report/entity/file-163b4ecf80b8429583007386c77cae39?timeId=timeAgo_days_7",
@@ -668,7 +713,7 @@ def _get_top_techniques_incidents(create_time):
             "complexity": {"level": "low", "value": 2},
             "chokePoints": 116,
             "ratio": 0.0007349167094395969,
-            "name": "XM Top technique - Domain Credentials",
+            "name": "XM Cyber technique impact - Domain Credentials",
             "severity": SEVERITY.Low,
             "create_time": create_time,
             "linkToReport": "https://test.com/#/report/technique/Exploit::DomainCredentials?timeId=timeAgo_days_7",
@@ -765,7 +810,7 @@ def _get_top_techniques_incidents(create_time):
             "complexity": {"level": "low", "value": 2},
             "chokePoints": 35,
             "ratio": 0.0017784651072878406,
-            "name": "XM Top technique - Taint Shared Content",
+            "name": "XM Cyber technique impact - Taint Shared Content",
             "severity": SEVERITY.Low,
             "create_time": create_time,
             "linkToReport": "https://test.com/#/report/technique/taintSharedContent?timeId=timeAgo_days_7",
@@ -842,7 +887,7 @@ def _get_top_techniques_incidents(create_time):
             "complexity": {"level": "low", "value": 2},
             "chokePoints": 74,
             "ratio": 0.0007863072815711517,
-            "name": "XM Top technique - EternalBlue (CVE-2017-0144)",
+            "name": "XM Cyber technique impact - EternalBlue (CVE-2017-0144)",
             "severity": SEVERITY.Low,
             "create_time": create_time,
             "linkToReport": "https://test.com/#/report/technique/Exploit::Ms17010?timeId=timeAgo_days_7",

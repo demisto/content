@@ -1,4 +1,4 @@
-XMCyber continuously finds attack vectors to critical assets. This integration fetches events (incidents) on changes in the overall risk score, risk to assets, or impacting attack techniques. Additionally incidents are enriched with incoming attack vectors to the incident's endpoints, and critical assets at risk form the incident.
+The XM Cyber integration creates unique incidents with valuable data collected daily, and enriches your existing incidents with attack simulation context. This enables you to prioritize your responses based on XM Cyber’s insights.
 This integration was integrated and tested with version 1.43.0.355 of XMCyber
 
 ## Configure XM Cyber on Cortex XSOAR
@@ -7,16 +7,19 @@ This integration was integrated and tested with version 1.43.0.355 of XMCyber
 2. Search for XM Cyber.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | API Key | True |
-    | URL | True |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Maximum number of incidents per fetch | False |
-    | First fetch | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | API Key |  | True |
+    | URL |  | True |
+    | Use system proxy settings |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Fetch incidents |  | False |
+    | Incident type |  | False |
+    | Maximum number of incidents per fetch |  | False |
+    | First fetch |  | False |
+    | Source Reliability | Reliability of the source providing the intelligence data. | False |
+    |  |  | False |
+    |  |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -43,7 +46,7 @@ List critical assets at risk from an entity and the complexity of the attack
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | XMCyber.Entity.id | String | XMCyber Entity ID | 
-| XMCyber.Entity.criticalAssetsAtRiskList.name | String | Compromising Technique Name | 
+| XMCyber.Entity.criticalAssetsAtRiskList.name | String | Compromising Technique name | 
 | XMCyber.Entity.criticalAssetsAtRiskList.average | Number | Average attack complexity | 
 | XMCyber.Entity.criticalAssetsAtRiskList.minimum | Number | Minimum attack complexity | 
 
@@ -128,7 +131,6 @@ List all entities at risk from an entity and the complexity of the attack
 | XMCyber.Entity.entitiesAtRiskList.name | String | Compromising Techinique Name | 
 | XMCyber.Entity.entitiesAtRiskList.technique | String | The attack technique which compromised the entity | 
 
-
 #### Command Example
 ```!xmcyber-affected-entities-list entityId=872743867762485580```
 
@@ -161,7 +163,6 @@ List all entities at risk from an entity and the complexity of the attack
 >| SQLSERVERB | Microsoft SQL Credentials Usage |
 >| share | Taint Shared Content |
 
-
 ### xmcyber-version-supported
 ***
 Check if current XM version supports Cortex Xsoar integration
@@ -179,7 +180,6 @@ There are no input arguments for this command.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | XMCyber.Version.valid | Boolean | Flag that indicates if the version is valid | 
-
 
 #### Command Example
 ```!xmcyber-version-supported```
@@ -201,7 +201,6 @@ There are no input arguments for this command.
 >|valid|
 >|---|
 >| true |
-
 
 ### xmcyber-version-get
 ***
@@ -246,7 +245,6 @@ There are no input arguments for this command.
 >|---|---|---|---|---|
 >| 4.2.3 | 1.0.3369+6514 | 2.1.967.352 | 1.38.0.12861 | 1.4.134.11886 |
 
-
 ### xmcyber-enrich-from-ip
 ***
 Return data on Entity by IP from XM Cyber
@@ -268,12 +266,12 @@ Return data on Entity by IP from XM Cyber
 | --- | --- | --- |
 | XMCyber.Entity.id | String | XMCyber Entity ID | 
 | XMCyber.Entity.name | String | Entity Name | 
-| XMCyber.Entity.isAsset | Boolean | Is Entity a Critical Asset | 
+| XMCyber.Entity.isAsset | Boolean | Entity is a critical asset | 
 | XMCyber.Entity.affectedEntities | Number | Number of unique entities at risk from this entity | 
 | XMCyber.Entity.averageComplexity | Number | Average complexity to compromise this entity | 
 | XMCyber.Entity.criticalAssetsAtRisk | Number | Number of unique critical assets at risk from this entity | 
 | XMCyber.Entity.averageComplexityLevel | String | Level of the average complexity to compromise this entity | 
-| XMCyber.Entity.compromisingTechniques.name | String | Technique compromising this entity | 
+| XMCyber.Entity.compromisingTechniques.technique | String | Technique compromising this entity | 
 | XMCyber.Entity.compromisingTechniques.count | Number | Number of vectors with this technique compromising this entity | 
 | XMCyber.Entity.type | String | Entity Type | 
 | XMCyber.Entity.report | String | Link to the Entity Report | 
@@ -281,7 +279,6 @@ Return data on Entity by IP from XM Cyber
 | Endpoint.Hostname | String | The hostname to matching the IP in XM Cyber | 
 | Endpoint.IP | String | IP address | 
 | Endpoint.OS | String | OS of the matched endpoint | 
-
 
 ### xmcyber-enrich-from-entityId
 ***
@@ -304,12 +301,12 @@ Return data on Entity by entityId from XM Cyber
 | --- | --- | --- |
 | XMCyber.Entity.id | String | XMCyber Entity ID | 
 | XMCyber.Entity.name | String | Entity Name | 
-| XMCyber.Entity.isAsset | Boolean | Is Entity a Critical Asset | 
+| XMCyber.Entity.isAsset | Boolean | Entity is a critical asset | 
 | XMCyber.Entity.affectedEntities | Number | Number of unique entities at risk from this entity | 
 | XMCyber.Entity.averageComplexity | Number | Average complexity to compromise this entity | 
 | XMCyber.Entity.criticalAssetsAtRisk | Number | Number of unique critical assets at risk from this entity | 
 | XMCyber.Entity.averageComplexityLevel | String | Level of the average complexity to compromise this entity | 
-| XMCyber.Entity.compromisingTechniques.name | String | Technique compromising this entity | 
+| XMCyber.Entity.compromisingTechniques.technique | String | Technique compromising this entity | 
 | XMCyber.Entity.compromisingTechniques.count | Number | Number of vectors with this technique compromising this entity | 
 | XMCyber.Entity.type | String | Entity Type | 
 | XMCyber.Entity.report | String | Link to the Entity Report | 
@@ -338,12 +335,47 @@ Return data on Entity by hostname from XM Cyber
 | --- | --- | --- |
 | XMCyber.Entity.id | String | XMCyber Entity ID | 
 | XMCyber.Entity.name | String | Entity Name | 
-| XMCyber.Entity.isAsset | Boolean | Is Entity a Critical Asset | 
+| XMCyber.Entity.isAsset | Boolean | Entity is a critical asset | 
 | XMCyber.Entity.affectedEntities | Number | Number of unique entities at risk from this entity | 
 | XMCyber.Entity.averageComplexity | Number | Average complexity to compromise this entity | 
 | XMCyber.Entity.criticalAssetsAtRisk | Number | Number of unique critical assets at risk from this entity | 
 | XMCyber.Entity.averageComplexityLevel | String | Level of the average complexity to compromise this entity | 
-| XMCyber.Entity.compromisingTechniques.name | String | Technique compromising this entity | 
+| XMCyber.Entity.compromisingTechniques.technique | String | Technique compromising this entity | 
+| XMCyber.Entity.compromisingTechniques.count | Number | Number of vectors with this technique compromising this entity | 
+| XMCyber.Entity.type | String | Entity Type | 
+| XMCyber.Entity.report | String | Link to the Entity Report | 
+| Host.Hostname | String | The name of the host. | 
+| Host.ID | String | The unique ID within the tool retrieving the host. | 
+| Host.IP | String | The IP address of the host. | 
+
+### xmcyber-enrich-from-fields
+***
+Return data on an XM entity
+
+
+#### Base Command
+
+`xmcyber-enrich-from-fields`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| fields | Comma-separated list of fields to search for the entity. | Required | 
+| values | Comma-separated list of values (in the same order than the fields list) used to search for the entity. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| XMCyber.Entity.id | String | XMCyber Entity ID | 
+| XMCyber.Entity.name | String | Entity Name | 
+| XMCyber.Entity.isAsset | Boolean | Entity is a critical asset | 
+| XMCyber.Entity.affectedEntities | Number | Number of unique entities at risk from this entity | 
+| XMCyber.Entity.averageComplexity | Number | Average complexity to compromise this entity | 
+| XMCyber.Entity.criticalAssetsAtRisk | Number | Number of unique critical assets at risk from this entity | 
+| XMCyber.Entity.averageComplexityLevel | String | Level of the average complexity to compromise this entity | 
+| XMCyber.Entity.compromisingTechniques.technique | String | Technique compromising this entity | 
 | XMCyber.Entity.compromisingTechniques.count | Number | Number of vectors with this technique compromising this entity | 
 | XMCyber.Entity.type | String | Entity Type | 
 | XMCyber.Entity.report | String | Link to the Entity Report | 

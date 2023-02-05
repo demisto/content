@@ -66,6 +66,11 @@ def quit_driver_and_reap_children(killMarkdownServer):
 
 def startServer():
     class fileHandler(http.server.BaseHTTPRequestHandler):
+        # See: https://docs.python.org/3/library/http.server.html#http.server.BaseHTTPRequestHandler.log_message
+        # Need to override otherwise messages are logged to stderr
+        def log_message(self, msg, *args):
+            demisto.debug("python http server log: " + (msg % args))
+
         def do_GET(self):
             demisto.debug(f'Handling MD Image request {self.path}')
             if TENANT_ACCOUNT_NAME:
@@ -89,23 +94,19 @@ def startServer():
                     return
                 name = res.get('name')
                 try:
-                    self.send_response(200)
-                    self.send_header("Content-type", "application/octet-stream")
-                    self.send_header("Content-Disposition", f'attachment; filename={name}')
-                    self.end_headers()
                     # Open the file
                     with open(f'{file_path}', 'rb') as file:
+                        self.send_response(200)
+                        self.send_header("Content-type", "application/octet-stream")
+                        self.send_header("Content-Disposition", f'attachment; filename={name}')
+                        self.end_headers()
                         self.wfile.write(file.read())  # Read the file and send the contents
-                    self.flush_headers()
                 except BrokenPipeError:  # ignore broken pipe as socket might have been closed
                     pass
             except Exception as ex:
-                demisto.debug(f'Failed to get markdown file {fileID}. Error: {ex}')
+                demisto.error(f'Failed to get markdown file: {fileID}, file path: {file_path}. Error: {ex}')
                 self.send_response(404)
                 self.flush_headers()
-
-    # Make sure the server is created at tmp dir
-    os.chdir(tempfile.gettempdir())
     # Create server object listening the port 10888
     global SERVER_OBJECT
     SERVER_OBJECT = HTTPServer(server_address=('', MD_HTTP_PORT), RequestHandlerClass=fileHandler)

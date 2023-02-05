@@ -20,7 +20,7 @@ def countUniqueLogs(table):
     for log in table:
         logArr.append("{} {}".format(log['panic'], log['value']))
     countValues = Counter(logArr)
-    common_values = countValues.most_common(3)
+    common_values = countValues.most_common(10)
 
     commonTable = []
     for log in common_values:
@@ -29,6 +29,16 @@ def countUniqueLogs(table):
         panic1['panicvalue'] = log[0]
         panic1['numberofoccurrences'] = str(log[1])
         commonTable.append(panic1)
+    return commonTable
+
+
+def findLatestTimestamp(table, commonTable):
+    for entry in commonTable:
+        for log in reversed(table):
+            if entry['panicvalue'] == f"{log['panic']} {log['value']}":
+                entry['latestpanictime'] = log['time']
+                break
+
     return commonTable
 
 
@@ -47,6 +57,7 @@ lines = re.findall(
 
 table = formatToTableStructure(lines)
 commonTable = countUniqueLogs(table)
+findLatestTimestamp(table, commonTable)
 demisto.executeCommand("setIncident", {"healthcheckpanics": commonTable})
 
 action_items = []
