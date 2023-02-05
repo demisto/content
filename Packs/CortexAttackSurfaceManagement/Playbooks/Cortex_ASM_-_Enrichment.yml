@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "11"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -48,9 +48,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "57"
+      - "68"
       "yes":
-      - "35"
+      - "3"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -67,8 +67,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 10
+          "x": 100,
+          "y": 1280
         }
       }
     note: false
@@ -99,7 +99,7 @@ tasks:
       {
         "position": {
           "x": 100,
-          "y": 1530
+          "y": 1520
         }
       }
     note: false
@@ -123,7 +123,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+      - "1"
       "yes":
       - "67"
     separatecontext: false
@@ -141,8 +141,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 715
+          "x": 460,
+          "y": 395
         }
       }
     note: false
@@ -154,10 +154,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: b6eb60f3-3908-4697-8340-3294d5219257
+    taskid: f17b8e2d-93df-45e2-81db-539ede5233ba
     type: condition
     task:
-      id: b6eb60f3-3908-4697-8340-3294d5219257
+      id: f17b8e2d-93df-45e2-81db-539ede5233ba
       version: -1
       name: What provider is this service?
       description: Determines which cloud provider the service is in order to direct to the correct enrichment.
@@ -166,7 +166,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+      - "1"
       AWS:
       - "64"
       GCP:
@@ -185,6 +185,12 @@ tasks:
           right:
             value:
               simple: Amazon Web Services
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RemoteIP
+            iscontext: true
     - label: GCP
       condition:
       - - operator: containsGeneral
@@ -197,12 +203,18 @@ tasks:
           right:
             value:
               simple: Google
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RemoteIP
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1075
+          "x": 460,
+          "y": 880
         }
       }
     note: false
@@ -226,7 +238,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+      - "1"
       "yes":
       - "66"
     separatecontext: false
@@ -263,7 +275,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 380
+          "y": 10
         }
       }
     note: false
@@ -287,14 +299,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "11"
+      - "7"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 460,
+          "y": 755
         }
       }
     note: false
@@ -321,39 +333,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -380,
-          "y": 2130
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "57":
-    id: "57"
-    taskid: 82f86815-d793-4bcb-855f-409433f54566
-    type: title
-    task:
-      id: 82f86815-d793-4bcb-855f-409433f54566
-      version: -1
-      name: continue
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "38"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -370,
-          "y": 230
+          "x": -200,
+          "y": 2260
         }
       }
     note: false
@@ -450,7 +431,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "38"
+      - "68"
     scriptarguments:
       IPAddress:
         complex:
@@ -499,8 +480,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1300
+          "x": 460,
+          "y": 1150
         }
       }
     note: false
@@ -549,8 +530,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 1300
+          "x": 880,
+          "y": 1150
         }
       }
     note: false
@@ -592,8 +573,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 560
+          "x": 460,
+          "y": 230
         }
       }
     note: false
@@ -618,7 +599,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "7"
+      - "35"
     scriptarguments:
       protocol:
         complex:
@@ -629,8 +610,49 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 900
+          "x": 460,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 66e582f6-c571-4cd0-85a6-12061a53cca4
+    type: regular
+    task:
+      id: 66e582f6-c571-4cd0-85a6-12061a53cca4
+      version: -1
+      name: Infer whether service is used for development (vs. production)
+      description: Identify whether the service is a "development" server. Development servers have no external users and run no production workflows. These servers might be named "dev", but they might also be named "qa", "pre-production", "user acceptance testing", or use other non-production terms. This automation uses both public data visible to anyone (`active_classifications` as derived by Xpanse ASM) as well as checking internal data for AI-learned indicators of development systems (`asm_tags` as derived from integrations with non-public systems).
+      scriptName: InferWhetherServiceIsDev
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      active_classifications:
+        complex:
+          root: ASM.ExternalService
+          accessor: active_classifications
+      asm_tags:
+        complex:
+          root: alert
+          accessor: asmtags
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 2100
         }
       }
     note: false
@@ -643,15 +665,15 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "11_3_#default#": 0.23,
-      "6_3_#default#": 0.28,
-      "7_3_#default#": 0.22
+      "11_1_#default#": 0.2,
+      "6_1_#default#": 0.25,
+      "7_1_#default#": 0.35
     },
     "paper": {
       "dimensions": {
-        "height": 2315,
-        "width": 1680,
-        "x": -380,
+        "height": 2445,
+        "width": 1460,
+        "x": -200,
         "y": -120
       }
     }
@@ -665,7 +687,14 @@ inputs:
   required: false
   description: IP address of service
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: ASM.ExternalService.externally_detected_providers
+  description: Providers of the external service.
+  type: unknown
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}
+marketplaces:
+  - marketplacev2
