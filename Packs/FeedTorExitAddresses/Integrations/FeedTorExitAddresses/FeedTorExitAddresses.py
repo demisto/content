@@ -4,9 +4,9 @@ from CommonServerUserPython import *
 
 import requests
 from typing import Dict, List, Optional
-
+import urllib3
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 SOURCE_NAME = "Tor Exit Addresses"
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -65,7 +65,10 @@ class Client(BaseClient):
                 indicator['lastseenbysource'] = self.datestring_to_server_format(date)
 
             elif line.startswith('ExitAddress'):
-                indicator['value'] = line.split()[1]
+                value = line.split()[1]
+                if FeedIndicatorType.ip_to_indicator_type(value) != FeedIndicatorType.IP:
+                    continue
+                indicator['value'] = value
                 raw_json = indicator.copy()
                 indicator['rawJSON'] = raw_json
                 indicator['fields'] = {
@@ -107,7 +110,7 @@ def module_test_command(client: Client, args: dict):
     return 'ok', {}, {}
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     feedTags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color')
