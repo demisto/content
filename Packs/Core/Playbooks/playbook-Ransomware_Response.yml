@@ -1,7 +1,39 @@
 id: Ransomware Response
 version: -1
 name: Ransomware Response
-description: "This playbook handles ransomware alerts based on the Cortex XDR Traps module signature 'Suspicious File Modification'\n\n**Attacker’s Goals:**\n\nAn attacker is attempting to encrypt the victim files for either extortion or destruction purposes.\n\n**Investigative Actions:**\n\nInvestigate the executed process image and verify if it is malicious using:\n\nXDR trusted signers\n\nVT trusted signers\n\nVT detection rate\n\nNSRL DB\n\n**Response Actions:**\n\nThe playbook’s first response action is a remediation plan which includes two sub-playbooks, **Containment Plan** and **Eradication Plan**, which is based on the initial data provided within the alert. In that phase, the playbooks will execute:\n\nAuto endpoint isolation\n\nAuto block indicators\n\nAuto file quarantine\n\nAuto user disable\n\nAuto process termination\n\nNext, the playbook executes an enrichment and response phase which includes two sub-playbooks, **Ransomware Enrich and Contain** & **Account Enrichment - Generic v2.1**.\nThe Ransomware Enrich and Contain playbook does the following:\n\n1.Checks if the initiator is a remote attacker and allows isolating the remote host, if possible. \n\n2.Retrieves the WildFire sandbox report and extracts the indicators within it. * The playbook tries to retrieve the report, but if there is no report available, the playbook tries to fetch the ransomware file for detonation. \n\n3.Hunts for the ransomware alert indicators from the alert table, searches for endpoints that have been seen with them, and allows containing the identified endpoints.\n\nNext, an advanced analysis playbook, which is currently done mostly manually, will be executed. This sub-playbook, **Ransomware Advanced Analysis** allows the analyst to upload the ransomware note and for the ransomware identification. Using the **ID-Ransomware** service, the analyst will be able to get the ransomware type and the decryptor if available.\n\nWhen the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes the Containment Plan sub-playbook, is executed.\n\n**This phase will execute the following containment actions:**\n\nManual block indicators\n\nManual file quarantine\n\nAuto endpoint isolation\n\nFinally, the recovery phase is executed. If the analysts decides to continue with the investigation rather than recover and close the alert, a manual task with **CISA** official ransomware investigation checklist is provided for further investigation.\n\n**External resources:**\n\n[MITRE Technique T1486](https://attack.mitre.org/techniques/T1486/)\n\n[CISA Ransomware Guide](https://www.cisa.gov/stopransomware/ransomware-guide)"
+description: "This playbook handles ransomware alerts based on the Cortex XDR Traps\
+  \ module signature 'Suspicious File Modification'\n\n**Attacker’s Goals:**\n\nAn\
+  \ attacker is attempting to encrypt the victim files for either extortion or destruction\
+  \ purposes.\n\n**Investigative Actions:**\n\nInvestigate the executed process image\
+  \ and verify if it is malicious using:\n\nXDR trusted signers\n\nVT trusted signers\n\
+  \nVT detection rate\n\nNSRL DB\n\n**Response Actions:**\n\nThe playbook’s first\
+  \ response action is a remediation plan which includes two sub-playbooks, **Containment\
+  \ Plan** and **Eradication Plan**, which is based on the initial data provided within\
+  \ the alert. In that phase, the playbooks will execute:\n\nAuto endpoint isolation\n\
+  \nAuto block indicators\n\nAuto file quarantine\n\nAuto user disable\n\nAuto process\
+  \ termination\n\nNext, the playbook executes an enrichment and response phase\
+  \ which includes two sub-playbooks, **Ransomware Enrich and Contain** & **Account\
+  \ Enrichment - Generic v2.1**.\nThe Ransomware Enrich and Contain playbook does\
+  \ the following:\n\n1.Checks if the initiator is a remote attacker and allows\
+  \ isolating the remote host, if possible. \n\n2.Retrieves the WildFire sandbox report\
+  \ and extracts the indicators within it. * The playbook tries to retrieve the report,\
+  \ but if there is no report available, the playbook tries to fetch the ransomware\
+  \ file for detonation. \n\n3.Hunts for the ransomware alert indicators from the alert\
+  \ table, searches for endpoints that have been seen with them, and allows containing\
+  \ the identified endpoints.\n\nNext, an advanced analysis playbook, which is currently\
+  \ done mostly manually, will be executed. This sub-playbook, **Ransomware Advanced\
+  \ Analysis** allows the analyst to upload the ransomware note and for the ransomware\
+  \ identification. Using the **ID-Ransomware** service, the analyst will be able\
+  \ to get the ransomware type and the decryptor if available.\n\nWhen the playbook\
+  \ executes, it checks for additional activity using the Endpoint Investigation Plan\
+  \ playbook, and another phase, which includes the Containment Plan sub-playbook,\
+  \ is executed.\n\n**This phase will execute the following containment actions:**\n\
+  \nManual block indicators\n\nManual file quarantine\n\nAuto endpoint isolation\n\
+  \nFinally, the recovery phase is executed. If the analysts decides to continue with\
+  \ the investigation rather than recover and close the alert, a manual task with\
+  \ **CISA** official ransomware investigation checklist is provided for further investigation.\n\
+  \n**External resources:**\n\n[MITRE Technique T1486](https://attack.mitre.org/techniques/T1486/)\n\
+  \n[CISA Ransomware Guide](https://www.cisa.gov/stopransomware/ransomware-guide)"
 starttaskid: "0"
 tasks:
   "0":
@@ -33,7 +65,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "3":
     id: "3"
     taskid: aab72395-ab25-404f-8ed3-0bb11e2f0f54
@@ -64,7 +95,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "5":
     id: "5"
     taskid: a370e139-e6b7-4ae8-869a-a17c21f0deb9
@@ -111,7 +141,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "14":
     id: "14"
     taskid: fcd06da8-42be-451f-8732-578fa30d464f
@@ -143,7 +172,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "36":
     id: "36"
     taskid: fe283460-c0d2-4830-8560-1b8dd76d2e06
@@ -174,7 +202,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "63":
     id: "63"
     taskid: fd0440b6-35fb-43d2-83fe-7f92f493282e
@@ -205,7 +232,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "81":
     id: "81"
     taskid: 449cb9c3-df2f-4302-88c0-038c41c0c705
@@ -236,7 +262,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "95":
     id: "95"
     taskid: 090eb73d-6b18-4d1f-8c19-f2da08a8ddf7
@@ -264,7 +289,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "103":
     id: "103"
     taskid: d399b4d5-b204-4739-897b-929ad87cc3bc
@@ -352,7 +376,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "106":
     id: "106"
     taskid: 8418ec9c-2074-4d98-8192-07db5af2ac8b
@@ -449,7 +472,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "120":
     id: "120"
     taskid: 4fff2e3f-c54e-4917-849b-b4e1caf8a688
@@ -506,7 +528,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "121":
     id: "121"
     taskid: 91d3b754-2bf2-470f-8b6e-f8868e846b10
@@ -552,7 +573,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "122":
     id: "122"
     taskid: 47278d70-0f8a-4ed3-83b1-de3f461f030f
@@ -610,7 +630,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "124":
     id: "124"
     taskid: 3e89a364-3a58-436e-83d7-01a23bae2a4f
@@ -645,7 +664,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "125":
     id: "125"
     taskid: 3f443fba-f5ef-4af5-81d4-938e01501ac5
@@ -678,7 +696,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "126":
     id: "126"
     taskid: ad58dec4-ad0e-4942-8aa5-37d5b8895d7c
@@ -724,7 +741,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "127":
     id: "127"
     taskid: 48d129cf-955d-49c1-8227-b754d5f8f2af
@@ -755,7 +771,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "128":
     id: "128"
     taskid: 7dda58d5-d915-4d0b-82db-edca50ea1890
@@ -807,7 +822,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "129":
     id: "129"
     taskid: 1b78ec0a-fb85-452c-82f1-7687ecc2cee2
@@ -838,7 +852,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "130":
     id: "130"
     taskid: a30248bf-e7f2-40b4-8e3b-05537a5b6af3
@@ -869,7 +882,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   '132':
     id: '132'
     taskid: 4dbf4631-7419-4a88-83c2-c9d2a0761149
@@ -910,20 +922,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "133":
     id: "133"
-    taskid: d7257ff3-fcc8-4128-8482-3a7e19bcf935
+    taskid: c4da120b-58c7-4521-8180-954cbb09f227
     type: playbook
     task:
-      id: d7257ff3-fcc8-4128-8482-3a7e19bcf935
+      id: c4da120b-58c7-4521-8180-954cbb09f227
       version: -1
       name: Enrichment for Verdict
       playbookName: Enrichment for Verdict
       type: playbook
       iscommand: false
       brand: ""
-      description: 'This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then  returns the information needed to establish the alert''s verdict.'
+      description: ''
     nexttasks:
       '#none#':
       - "134"
@@ -947,40 +958,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    scriptarguments:
-      CloseReason:
-        simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
-      Domain:
-        complex:
-          root: alert
-          accessor: domainname
-      FileSHA256:
-        complex:
-          root: alert
-          accessor: initiatorsha256
-      IP:
-        complex:
-          root: alert
-          accessor: hostip
-      URL:
-        complex:
-          root: alert
-          accessor: url
-      User:
-        complex:
-          root: alert
-          accessor: username
-      query:
-        simple: (initiatorsha256:${alert.initiatorsha256} or hostip:${alert.hostip}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
-      threshold:
-        simple: "2"
-    continueonerrortype: ""
   "134":
     id: "134"
-    taskid: 447d8826-9ad3-4882-831b-27f329ef7f6e
+    taskid: 4a1fda2c-53f2-4931-835f-693ca1e803dc
     type: condition
     task:
-      id: 447d8826-9ad3-4882-831b-27f329ef7f6e
+      id: 4a1fda2c-53f2-4931-835f-693ca1e803dc
       version: -1
       name: Got possible verdict?
       description: Checks the verdict received from the Enrichment for Verdict sub-playbook.
@@ -1032,16 +1015,6 @@ tasks:
           right:
             value:
               simple: unTrusted
-        - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: DBotScore
-                accessor: Score
-            iscontext: true
-          right:
-            value:
-              simple: "3"
     - label: False Positive
       condition:
       - - operator: isEqualString
@@ -1096,7 +1069,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "135":
     id: "135"
     taskid: b41f8a42-a2e9-49ec-80d0-f7efc093e38d
@@ -1177,7 +1149,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "136":
     id: "136"
     taskid: a4bb8e27-30f5-4ca1-8fd9-aca658aefad0
@@ -1239,7 +1210,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "137":
     id: "137"
     taskid: fac17c32-a38d-4dd7-8f4e-3b6e8337928c
@@ -1284,7 +1254,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "138":
     id: "138"
     taskid: 5b75d413-1efc-4a67-8d38-b54073d7d67e
@@ -1324,7 +1293,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {
@@ -1369,13 +1337,15 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Whether to isolate the remote endpoint if the attack has been triggered remotely.
+  description: Whether to isolate the remote endpoint if the attack has been triggered
+    remotely.
   playbookInputQuery:
 - key: isolateSimilarEndpoints
   value:
     simple: "True"
   required: false
-  description: Whether to isolate the endpoints identified with similar IoCs to the ransomware alert.
+  description: Whether to isolate the endpoints identified with similar IoCs to the
+    ransomware alert.
   playbookInputQuery:
 - key: RunAdvancedAnalysis
   value:
@@ -1395,5 +1365,3 @@ tests:
 marketplaces: ["marketplacev2"]
 fromversion: 6.6.0
 
-contentitemexportablefields:
-  contentitemfields: {}

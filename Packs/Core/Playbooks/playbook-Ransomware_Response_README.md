@@ -18,7 +18,7 @@ NSRL DB
 
 **Response Actions:**
 
-The playbook’s first response action is a remediation plan which includes two sub-playbooks, **Containment Plan** and **Eradication Plan**, which is based on the initial data provided within the alert. In that phase, the playbooks will execute:
+The playbook’s first response action is a remediation plan which includes two sub-playbooks, **Containment Plan** and **Eradication Plan**, and is based on the initial data provided within the alert. In that phase, the playbooks will execute:
 
 Auto endpoint isolation
 
@@ -30,8 +30,8 @@ Auto user disable
 
 Auto process termination
 
-Next, the playbook executes an enrichment and response phase which includes two sub-playbooks, **Ransomware Enrich and Contain** & **Account Enrichment - Generic v2.1**.
-The Ransomware Enrich and Contain playbook does the following:
+Next, the playbook will execute an enrichment and response phase which includes two sub-playbooks, **Ransomware Enrich and Contain** & **Account Enrichment - Generic v2.1**.
+The Ransomware Enrich and Contain playbook will do the following:
 
 1.Checks if the initiator is a remote attacker and allows isolating the remote host, if possible. 
 
@@ -39,7 +39,7 @@ The Ransomware Enrich and Contain playbook does the following:
 
 3.Hunts for the ransomware alert indicators from the alert table, searches for endpoints that have been seen with them, and allows containing the identified endpoints.
 
-Next, an advanced analysis playbook, which is currently done mostly manually, will be executed. This sub-playbook, **Ransomware Advanced Analysis** allows the analyst to upload the ransomware note and for the ransomware identification. Using the **ID-Ransomware** service, the analyst will be able to get the ransomware type and the decryptor if available.
+Next, an advanced analysis playbook, which is currently done mostly manually, will be executed. This sub-playbook, **Ransomware Advanced Analysis** allows the analyst to upload the ransomware note and for the ransomware identification. Using the **ID-Ransomware** service, the analyst will be able to get the ransomware type and the decryptor, if available.
 
 When the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes the Containment Plan sub-playbook, is executed.
 
@@ -63,15 +63,15 @@ Finally, the recovery phase is executed. If the analysts decides to continue wit
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Containment Plan
-* Recovery Plan
-* Account Enrichment - Generic v2.1
-* Ransomware Enrich and Contain
 * Handle False Positive Alerts
-* Endpoint Investigation Plan
-* Enrichment for Verdict
 * Eradication Plan
+* Recovery Plan
 * Ransomware Advanced Analysis
+* Endpoint Investigation Plan
+* Ransomware Enrich and Contain
+* Account Enrichment - Generic v2.1
+* Enrichment for Verdict
+* Containment Plan
 
 ### Integrations
 This playbook does not use any integrations.
@@ -92,7 +92,7 @@ This playbook does not use any scripts.
 | AutoEradication | Whether to execute the eradication actions automatically. | True | Optional |
 | isolateRemoteAttacker | Whether to isolate the remote endpoint if the attack has been triggered remotely. | True | Optional |
 | isolateSimilarEndpoints | Whether to isolate the endpoints identified with similar IoCs to the ransomware alert. | True | Optional |
-| RunAdvancedAnalysis | Whether to execute the Ransomware Advanced Analysis playbook.  Note that advanced analysis contains manual tasks which will stop the playbook's flow until the analysts's response. | True | Optional |
+| RunAdvancedAnalysis | Whether to execute the Ransomware Advanced Analysis playbook. Note that advanced analysis contains manual tasks which will stop the playbook's flow until the analysts's response. | True | Optional |
 | ShouldCloseAutomatically | Whether to close the alert automatically. | False | Optional |
 
 ## Playbook Outputs
