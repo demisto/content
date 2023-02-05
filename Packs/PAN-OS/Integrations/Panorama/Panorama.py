@@ -3705,11 +3705,13 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
     })
 
 
-def build_edit_audit_comment_policy_rules(name: str, audit_comment: str, pre_post: str) -> dict:
-    _xpath = f"{XPATH_RULEBASE}{pre_post}/security"
-    if name:
-        _xpath = f"{_xpath}/rules/entry[@name='{name}']"
-
+def build_audit_comment_params(
+    name: str, audit_comment: str, pre_post: str, policy_type='security'
+) -> dict:
+    """
+    Builds up the params needed to update the audit comment of a policy rule.
+    """
+    _xpath = f"{XPATH_RULEBASE}{pre_post}/{policy_type}/rules/entry[@name='{name}']"
     return {
         'type': 'op',
         'cmd': f"<set><audit-comment><xpath>{_xpath}</xpath><comment>{audit_comment}</comment></audit-comment></set>",
@@ -3741,7 +3743,7 @@ def panorama_edit_rule_command(args: dict):
 
         if args.get('element_to_change') == 'audit-comment':
             new_audit_comment = args.get('element_value') or ''
-            params = build_edit_audit_comment_policy_rules(
+            params = build_audit_comment_params(
                 rulename, new_audit_comment, pre_post='rulebase' if VSYS else pre_post
             )
         else:
