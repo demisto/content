@@ -10,15 +10,6 @@ jobs:
     if: github.repository == 'demisto/content'
     steps:
 
-      - name: Print runner script directory
-        run: find /home/runner/work/_temp/ | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
-
-      # TODO dev
-      - name: Print runner script contents
-        run: |
-          find /home/runner/work/_temp/ -type f -exec echo "====={}======" \; -exec file {} \; -exec cat {} \;
-
-
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -32,6 +23,14 @@ jobs:
           files: |
             Packs/**/ReleaseNotes/**
           since_last_remote_commit: false
+
+      - name: Print runner script directory
+        run: find /home/runner/work/_temp/ | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
+
+      # TODO dev
+      - name: Print runner script contents
+        run: |
+          find /home/runner/work/_temp/ -type f -exec echo "====={}======" \; -exec file {} \; -exec cat {} \;
 
       # # TODO dev
       # - name: Print runner script contents
