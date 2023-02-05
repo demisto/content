@@ -3511,6 +3511,9 @@ def panorama_list_rules_command(args: dict):
     rules = panorama_list_rules(xpath, name, filters, query)
     pretty_rules = prettify_rules(rules, target)
 
+    demisto.debug('This is the pretty rules')
+    demisto.debug(pretty_rules)
+
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -12515,7 +12518,8 @@ def parse_pan_os_list_pbf_rules(entries, show_uncommitted):
                 'EnforceSymmetricReturn': entry.get('enforce-symmetric-return'),
                 'Target': entry.get('target'),
                 'Application': extract_objects_info_by_key(entry, 'application'),
-                'Service': extract_objects_info_by_key(entry, 'service')
+                'Service': extract_objects_info_by_key(entry, 'service'),
+                'Disabled': disabled
             }
         )
 
@@ -12551,6 +12555,9 @@ def pan_os_list_pbf_rules_command(args):
         entries = list(filter(lambda x: x.get('action', {}).get(action), entries))
 
     table, pbf_rules = parse_pan_os_list_pbf_rules(entries, show_uncommitted=show_uncommitted)
+
+    demisto.debug('This is the table')
+    demisto.debug(table)
 
     return CommandResults(
         raw_response=raw_response,
