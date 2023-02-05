@@ -10885,7 +10885,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
             if err.res.status_code != 429 or retry_num == 3:
                 raise err
             else:
-                time.sleep(1)
+                time.sleep(1)  # pylint: disable=sleep-exists
 
     if res.get('error').lower() != 'false':
         raise DemistoException(header_msg + res.get('error'))
