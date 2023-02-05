@@ -1289,8 +1289,17 @@ def test_assigned_to_field_user_exists():
 CLOSING_RESPONSE = {'dbotIncidentClose': True, 'closeNotes': 'From ServiceNow: Test', 'closeReason': 'Resolved'}
 CLOSING_RESPONSE_CUSTOM = {'dbotIncidentClose': True, 'closeNotes': 'From ServiceNow: Test', 'closeReason': 'Test'}
 
+closed_ticket_state = (RESPONSE_CLOSING_TICKET_MIRROR_CLOSED, {
+                       'close_incident': 'closed'}, 'closed_at', CLOSING_RESPONSE)
+resolved_ticket_state = (RESPONSE_CLOSING_TICKET_MIRROR_RESOLVED, {
+                         'close_incident': 'resolved'}, 'resolved_at', CLOSING_RESPONSE)
+custom_ticket_state = (RESPONSE_CLOSING_TICKET_MIRROR_CUSTOM,
+                       {'close_incident': 'closed', 'server_close_custom_state': '9=Test'}, '', CLOSING_RESPONSE_CUSTOM)
 
-def test_get_remote_data_closing_incident_with_closed_state(mocker):
+
+@pytest.mark.parametrize('response_closing_ticket_mirror, parameters, time, closing_response',
+                         [closed_ticket_state, resolved_ticket_state, custom_ticket_state])
+def test_get_remote_data_closing_incident(mocker, response_closing_ticket_mirror, parameters, time, closing_response):
     """
     Given:
         -  ServiceNow client
@@ -1312,77 +1321,15 @@ def test_get_remote_data_closing_incident_with_closed_state(mocker):
                     ticket_type='sc_task', get_attachments=False, incident_name='description')
 
     args = {'id': 'sys_id', 'lastUpdate': 0}
-    params = {'close_incident': 'closed'}
-    mocker.patch.object(client, 'get', return_value=RESPONSE_CLOSING_TICKET_MIRROR_CLOSED)
+    params = parameters
+    mocker.patch.object(client, 'get', return_value=response_closing_ticket_mirror)
     mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
     mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
 
     res = get_remote_data_command(client, args, params)
-    assert 'closed_at' in res[0]
-    assert CLOSING_RESPONSE == res[2]['Contents']
-
-
-def test_get_remote_data_closing_incident_with_resolved_state(mocker):
-    """
-    Given:
-        -  ServiceNow client
-        -  arguments: id and LastUpdate(set to lower then the modification time).
-        -  ServiceNow ticket(in resolved state)
-        -  close_incident parameter is set to resolved
-    When
-        - running get_remote_data_command.
-    Then
-        - The resolved_at field exists in the ticket data.
-        - dbotIncidentClose exists.
-        - Closed notes exists.
-    """
-
-    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
-                    cr_server_url="cr_server_url", username='username',
-                    password='password', verify=False, fetch_time='fetch_time',
-                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
-                    ticket_type='sc_task', get_attachments=False, incident_name='description')
-
-    args = {'id': 'sys_id', 'lastUpdate': 0}
-    params = {'close_incident': 'resolved'}
-    mocker.patch.object(client, 'get', return_value=RESPONSE_CLOSING_TICKET_MIRROR_RESOLVED)
-    mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
-    mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
-
-    res = get_remote_data_command(client, args, params)
-    assert 'resolved_at' in res[0]
-    assert CLOSING_RESPONSE == res[2]['Contents']
-
-
-def test_get_remote_data_closing_incident_with_custom_state(mocker):
-    """
-    Given:
-        -  ServiceNow client
-        -  arguments: id and LastUpdate(set to lower then the modification time).
-        -  ServiceNow ticket in custom state
-        -  close_incident parameter is set to closed
-    When
-        - running get_remote_data_command.
-    Then
-        - The resolved_at field exists in the ticket data.
-        - dbotIncidentClose exists.
-        - Closed notes exists.
-    """
-
-    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
-                    cr_server_url="cr_server_url", username='username',
-                    password='password', verify=False, fetch_time='fetch_time',
-                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
-                    ticket_type='sc_task', get_attachments=False, incident_name='description')
-
-    args = {'id': 'sys_id', 'lastUpdate': 0}
-    params = {'close_incident': 'closed', 'server_close_custom_state': '9=Test'}
-    mocker.patch.object(client, 'get', return_value=RESPONSE_CLOSING_TICKET_MIRROR_CUSTOM)
-    mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
-    mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
-
-    res = get_remote_data_command(client, args, params)
-    assert CLOSING_RESPONSE_CUSTOM == res[2]['Contents']
+    if time:
+        assert time in res[0]
+    assert closing_response == res[2]['Contents']
 
 
 def test_get_remote_data_no_attachment(mocker):
