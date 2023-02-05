@@ -2171,6 +2171,6 @@ tests:
 - TestAzureSentinelPlaybookV2
 - No test - Manual test playbook-TestAzureSentinelPlaybook is available in NonCircleTests folder
 fromversion: 5.0.0
-defaultclassifier: Microsoft Sentinel - Classifier
+defaultIncidentType: Microsoft Sentinel Incident
 defaultmapperin: Microsoft Sentinel - Incoming Mapper
 defaultmapperout:
