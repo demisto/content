@@ -606,4 +606,4 @@ def test_number_of_file_types():
 
         - Removed type:    Decrease the number here.
     """
-    assert len(FileType) == 75
+    assert len(FileType) == 76
