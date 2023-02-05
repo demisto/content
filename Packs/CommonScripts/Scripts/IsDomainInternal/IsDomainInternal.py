@@ -36,7 +36,7 @@ if internal_domains:
     try:
         internal_domains = internal_domains.split("\n")
     except Exception as ex:
-        return_error("Could not parse the internal domains list. Please make sure that the list contains domain names, separated by new lines.")
+        return_error(f"Could not parse the internal domains list. Please make sure that the list contains domain names, separated by new lines.\nThe exact error is: {ex}")
 else:
     demisto.results("No internal domains were specified.")
     quit()
