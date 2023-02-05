@@ -785,7 +785,7 @@ def get_incident_extra_data_command(client, args):
                 "env12\\administrator"
             ],
             "wildfire_hits": 0,
-            "xdr_url": "https://analytics-content-test-tenant-1.xdr.us.paloaltonetworks.com/incident-view?caseId=413",
+            "xdr_url": "https://myxdrtenant.donotclick/incident-view?caseId=413",
             "aggregated_score": None
         }
 
@@ -1399,7 +1399,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
                         "env12\\administrator"
                     ],
                     "wildfire_hits": 0,
-                    "xdr_url": "https://analytics-content-test-tenant-1.xdr.us.paloaltonetworks.com/incident-view?caseId=413",
+                    "xdr_url": "https://myxdrtenant.donotclick/incident-view?caseId=413",
                     "aggregated_score": None
                 }
 
@@ -1648,7 +1648,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
                         "env12\\administrator"
                     ],
                     "wildfire_hits": 0,
-                    "xdr_url": "https://analytics-content-test-tenant-1.xdr.us.paloaltonetworks.com/incident-view?caseId=413",
+                    "xdr_url": "https://myxdrtenant.donotclick/incident-view?caseId=413",
                     "aggregated_score": None
                 }
 
