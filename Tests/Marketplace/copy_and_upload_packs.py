@@ -74,10 +74,15 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
         prod_index_json_blob = production_bucket.blob(prod_index_json_storage_path)
         prod_index_json_blob.cache_control = "no-cache,max-age=0"
 
+        logging.info(f'README DEBUG -- {build_index_blob.name=}  {build_index_blob.path=}')
+        logging.info(f'README DEBUG -- {production_bucket.name=} {production_bucket.path=}')
+        logging.info(f'README DEBUG -- {prod_index_storage_path}')
+        
         if build_current_index_generation == build_index_generation:
             copied_index = build_bucket.copy_blob(
                 blob=build_index_blob, destination_bucket=production_bucket, new_name=prod_index_storage_path
             )
+            logging.info(f'README DEBUG -- {copied_index.name=} {copied_index.path=}')
             if copied_index.exists():
                 logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
             else:
