@@ -3735,12 +3735,12 @@ def panorama_edit_rule_command(args: dict):
     if behaviour != 'replace':
         panorama_edit_rule_items(rulename, element_to_change, argToList(element_value), behaviour)
     else:
-        pre_post = args.get('pre_post')
+        pre_post = args.get('pre_post') or ''
         if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
             raise Exception('please provide the pre_post argument when editing a rule in Panorama instance.')
 
         if args.get('element_to_change') == 'audit-comment':
-            new_audit_comment = args.get('element_value')
+            new_audit_comment = args.get('element_value') or ''
             params = build_edit_audit_comment_policy_rules(
                 rulename, new_audit_comment, pre_post='rulebase' if VSYS else pre_post
             )
@@ -3766,7 +3766,7 @@ def panorama_edit_rule_command(args: dict):
                 params['element'] = add_argument_yes_no(element_value, element_to_change)
 
             if DEVICE_GROUP:
-                params['xpath'] = XPATH_SECURITY_RULES + pre_post + f'/security/rules/entry[@name=\'{rulename}\']'
+                params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + f'/security/rules/entry[@name=\'{rulename}\']'
             else:
                 params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
             params['xpath'] += '/' + element_to_change
