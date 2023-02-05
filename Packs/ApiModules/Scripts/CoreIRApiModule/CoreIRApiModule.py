@@ -1310,7 +1310,7 @@ def run_polling_command(client: CoreClient,
     """
     Arguments:
     args: args
-    cmd: the scheduled command's name(as appears in the yml file) to run in the following polling
+    cmd: the scheduled command's name (as appears in the yml file) to run in the following polling.
     command_function: the pythonic function that executes the command.
     command_decision_field: the field that being retrieved from the command_function's response that indicates the command_function status.
     results_function: the pythonic result function which we want to poll on.
