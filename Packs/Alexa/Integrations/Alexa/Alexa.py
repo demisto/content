@@ -35,7 +35,7 @@ def alexa_domain_command(domain, use_ssl, proxies, threshold, benign, reliabilit
         resp = requests.request('GET',
                                 'https://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain),
                                 verify=use_ssl, proxies=proxies)
-        root = defused_ET.fromstring(str(resp.content))
+        root = defused_ET.fromstring(resp.content)
         rank = root.find(".//POPULARITY").attrib['TEXT']  # type: ignore
     except:  # noqa
         rank = alexa_fallback_command(domain, use_ssl, proxies)
@@ -88,7 +88,7 @@ def test_module_command(use_ssl, proxies):
         resp = requests.request('GET',
                                 'https://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain),
                                 verify=use_ssl, proxies=proxies)
-        root = defused_ET.fromstring(str(resp.content))
+        root = defused_ET.fromstring(resp.content)
         rank = root.find(".//POPULARITY").attrib['TEXT']  # type: ignore
     except:  # noqa
         rank = alexa_fallback_command(domain, use_ssl, proxies)
