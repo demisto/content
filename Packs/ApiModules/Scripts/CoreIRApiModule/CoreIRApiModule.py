@@ -10,7 +10,7 @@ from typing import Tuple, Callable
 urllib3.disable_warnings()
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
-XSOAR_RESOLVED_STATUS = {
+XSOAR_RESOLVED_STATUS_TO_XDR = {
     'Other': 'resolved_other',
     'Duplicate': 'resolved_duplicate',
     'False Positive': 'resolved_false_positive',
@@ -2592,7 +2592,7 @@ def handle_outgoing_issue_closure(remote_args):
 
         if close_notes := update_args.get('closeNotes'):
             update_args['resolve_comment'] = close_notes
-        update_args['status'] = XSOAR_RESOLVED_STATUS.get(update_args.get('closeReason', 'Other'))
+        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason', 'Other'))
         demisto.debug(f"Closing Remote incident with status {update_args['status']}")
 
 
