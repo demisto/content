@@ -391,7 +391,7 @@ def alarm_to_incident(client, alarm):  # pragma: no cover
 
     intel_doc = ''
     if intel_doc_id := alarm.get('intelDocId', ''):
-        raw_response = client.do_request('GET', f'/plugin/products/'
+        raw_response = client.do_request('GET', '/plugin/products/'
                                                 f'{client.get_threat_response_endpoint()}'
                                                 f'/api/v1/intels/{intel_doc_id}')
         raw_response_data = raw_response.get('data', raw_response)
@@ -399,7 +399,7 @@ def alarm_to_incident(client, alarm):  # pragma: no cover
         alarm['intelDocDetails'] = raw_response_data
         intel_doc_labels = []
         intel_doc_labels_resp =\
-            client.do_request('GET', f'/plugin/products/'
+            client.do_request('GET', '/plugin/products/'
                                      f'{client.get_threat_response_endpoint()}'
                                      f'/api/v1/intels/{intel_doc_id}/labels')
 
@@ -471,7 +471,7 @@ def fetch_incidents(client: Client, alerts_states_to_retrieve: str, label_name_t
     while True:
         demisto.debug(f'Sending new alerts api request with offset: {offset}.')
         url_suffix = \
-            f'/plugin/products/' \
+            '/plugin/products/' \
             f'{client.get_threat_response_endpoint()}/api/v1/alerts?' + \
             alerts_states_suffix + f'&sort=-createdAt&limit=500&offset={offset}' + label_name_suffix
 
@@ -535,7 +535,7 @@ def get_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[lis
     """
     id_ = data_args.get('intel_doc_id')
     try:
-        raw_response = client.do_request('GET', f'/plugin/products/'
+        raw_response = client.do_request('GET', '/plugin/products/'
                                                 f'{client.get_threat_response_endpoint()}'
                                                 f'/api/v1/intels/{id_}')
     # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
@@ -576,7 +576,7 @@ def get_intel_docs(client: Client, data_args: dict) -> Tuple[str, dict, Union[li
                            type=data_args.get('type'), limit=convert_to_int(data_args.get('limit')),
                            offset=convert_to_int(data_args.get('offset')), labelId=data_args.get('label_id'),
                            mitreTechniqueId=data_args.get('mitre_technique_id')) if data_args else {}
-    raw_response = client.do_request('GET', f'/plugin/products/'
+    raw_response = client.do_request('GET', '/plugin/products/'
                                             f'{client.get_threat_response_endpoint()}'
                                             f'/api/v1/intels/', params=params)
 
@@ -619,7 +619,7 @@ def get_intel_docs_labels_list(client: Client, data_args: dict) -> Tuple[str, di
     id_ = data_args.get('intel_doc_id')
     try:
         raw_response = client.do_request('GET',
-                                         f'/plugin/products/'
+                                         '/plugin/products/'
                                          f'{client.get_threat_response_endpoint()}'
                                          f'/api/v1/intels/{id_}/labels')
     except requests.HTTPError as e:
@@ -660,7 +660,7 @@ def add_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict, Un
 
     try:
         raw_response = client.do_request('PUT',
-                                         f'/plugin/products/'
+                                         '/plugin/products/'
                                          f'{client.get_threat_response_endpoint()}'
                                          f'/api/v1/intels/{intel_doc_id}/labels', data=params)
     # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
@@ -710,7 +710,7 @@ def remove_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict,
     label_id_to_delete = data_args.get('label_id')
     try:
         raw_response = client.do_request('DELETE',
-                                         f'/plugin/products/'
+                                         '/plugin/products/'
                                          f'{client.get_threat_response_endpoint()}'
                                          f'/api/v1/intels/{intel_doc_id}/labels/{label_id_to_delete}')
     # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
@@ -767,7 +767,7 @@ def create_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
         raise DemistoException(f'Check your file entry ID.\n{str(e)}')
 
     raw_response = client.do_request('POST',
-                                     f'/plugin/products/'
+                                     '/plugin/products/'
                                      f'{client.get_threat_response_endpoint()}/api/v1/intels',
                                      headers={'Content-Disposition': f'filename=file.{file_extension}',
                                               'Content-Type': 'application/xml'}, body=file_content)
@@ -805,7 +805,7 @@ def update_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
     intrinsic_id = ''
     try:
         # get intel doc intrinsicId
-        raw_response = client.do_request('GET', f'/plugin/products/'
+        raw_response = client.do_request('GET', '/plugin/products/'
                                                 f'{client.get_threat_response_endpoint()}'
                                                 f'/api/v1/intels/{id_}')
         raw_response_data = raw_response.get('data') if client.api_version == "4.x" else raw_response
@@ -834,7 +834,7 @@ def update_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
         # in yara files the update will take place when the previous intrinsic_id is entered in the Content Disposition
         content_disposition = f'filename={intrinsic_id}'
 
-    raw_response = client.do_request('PUT', f'/plugin/products/'
+    raw_response = client.do_request('PUT', '/plugin/products/'
                                             f'{client.get_threat_response_endpoint()}'
                                             f'/api/v1/intels/{id_}',
                                      headers={'Content-Disposition': content_disposition,
@@ -860,7 +860,7 @@ def delete_intel_doc(client, data_args):
     params = {
         'id': data_args.get('intel_doc_id')
     }
-    raw_response = client.do_request('DELETE', f'/plugin/products/'
+    raw_response = client.do_request('DELETE', '/plugin/products/'
                                                f'{client.get_threat_response_endpoint()}'
                                                f'/api/v1/intels/', params=params)
 
@@ -989,7 +989,7 @@ def get_alerts(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
                            limit=limit,
                            offset=offset, state=state.lower() if state else None)
 
-    raw_response = client.do_request('GET', f'/plugin/products/'
+    raw_response = client.do_request('GET', '/plugin/products/'
                                             f'{client.get_threat_response_endpoint()}'
                                             f'/api/v1/alerts/', params=params)
 
@@ -1021,7 +1021,7 @@ def get_alert(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
 
     """
     alert_id = data_args.get('alert_id')
-    raw_response = client.do_request('GET', f'/plugin/products/'
+    raw_response = client.do_request('GET', '/plugin/products/'
                                             f'{client.get_threat_response_endpoint()}'
                                             f'/api/v1/alerts/{alert_id}')
     raw_response_data = raw_response.get("data", raw_response)
@@ -1364,7 +1364,7 @@ def get_labels(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """
     limit = arg_to_number(data_args.get('limit', 50))
     offset = arg_to_number(data_args.get('offset', 0))
-    raw_response = client.do_request('GET', f'/plugin/products/'
+    raw_response = client.do_request('GET', '/plugin/products/'
                                             f'{client.get_threat_response_endpoint()}'
                                             f'/api/v1/labels/')
     assert offset is not None
@@ -1394,7 +1394,7 @@ def get_label(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
 
     """
     label_id = data_args.get('label_id')
-    raw_response = client.do_request('GET', f'/plugin/products/'
+    raw_response = client.do_request('GET', '/plugin/products/'
                                             f'{client.get_threat_response_endpoint()}'
                                             f'/api/v1/labels/{label_id}')
 
