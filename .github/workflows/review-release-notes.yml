@@ -26,12 +26,7 @@ jobs:
       # TODO dev
       - name: Print runner script contents
         run: |
-          for file in /home/runner/work/_temp//*; do
-            echo ""
-            echo "====$(basename "$file")===="
-            cat $file
-            echo ""
-          done
+          find -type f /home/runner/work/_temp/) -exec file {} \; -exec cat {} \;
 
       # TODO delete after dev
       - name: Print changed files
