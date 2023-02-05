@@ -28,6 +28,8 @@ jobs:
         run: |
           ps -AFl
 
+          ls /home/runner/work/_temp/
+
       # TODO delete after dev
       - name: Print changed files
         run: |
