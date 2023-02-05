@@ -64,7 +64,7 @@ Remember to overwrite the "secret" argument when you are re-running the task. To
 ''' % (bad_images[random.randint(0, len(bad_images) - 1)])
 
 answers = {
-    "01": ["2", "two", "02"],
+    "01": ["4", "four", "04"],
     "02": ["se_summit_2023", "se summit 2023"],
     "03": ["<none>", "none", "nothing"],
     "04": ["ctf 01", "ctf01"],
