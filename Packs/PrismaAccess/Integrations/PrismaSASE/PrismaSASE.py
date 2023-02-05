@@ -2035,7 +2035,9 @@ def run_push_jobs_polling_command(client: Client, args: dict):
                                       readable_output=f'Something went wrong while trying to push sub process '
                                                       f'with id {job.get("id", "")}job id {job_id}. '
                                                       f'Result: {job_result}')
-    return CommandResults(readable_output=f'Finished pushing job {job_id}', outputs=outputs)
+    return CommandResults(readable_output=f'Finished pushing job {job_id}',
+                          outputs_prefix=f'{PA_OUTPUT_PREFIX}CandidateConfig',
+                          outputs=outputs)
 
 
 def main():  # pragma: no cover
