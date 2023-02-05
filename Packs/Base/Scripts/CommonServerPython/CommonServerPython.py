@@ -10864,13 +10864,29 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=8), status_code=res.status_code, error=error)
 
         demisto.error(header_msg + api_call_info)
-        raise DemistoException(header_msg + error, DemistoException)
+        raise DemistoException(header_msg + error, DemistoException, res)
 
-    zipped_data = gzip.compress(data.encode('utf-8'))   # type: ignore[AttributeError,attr-defined]
+    zipped_data = gzip.compress(data.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
     client = BaseClient(base_url=xsiam_url)
-    res = client._http_request(method='POST', full_url=urljoin(xsiam_url, '/logs/v1/xsiam'), data=zipped_data,
-                               headers=headers,
-                               error_handler=events_error_handler)
+
+    # retry mechanism in case there is a rate limit (429) from xsiam.
+    for retry_num in range(1, 4):
+        try:
+            demisto.debug('Sending events into xsiam: retry number {retry_num}'.format(retry_num=retry_num))
+            res = client._http_request(
+                method='POST',
+                full_url=urljoin(xsiam_url, '/logs/v1/xsiam'),
+                data=zipped_data,
+                headers=headers,
+                error_handler=events_error_handler
+            )
+            break
+        except DemistoException as err:
+            if err.res.status_code != 429 or retry_num == 3:
+                raise err
+            else:
+                time.sleep(1)
+
     if res.get('error').lower() != 'false':
         raise DemistoException(header_msg + res.get('error'))
 

@@ -8414,13 +8414,16 @@ class TestSendEventsToXSIAMTest:
         Then:
             case a:
                 - DemistoException is raised with the empty response message
-                - Error log is created with with the empty response message and status code of 403
+                - Error log is created with the empty response message and status code of 403
+                - Make sure only single api request was sent and that retry mechanism was not triggered
             case b:
                 - DemistoException is raised with the Unauthorized[401] message
-                - Error log is created with with Unauthorized[401] message and status code of 401
+                - Error log is created with Unauthorized[401] message and status code of 401
+                - Make sure only single api request was sent and that retry mechanism was not triggered
             case c:
                 - DemistoException is raised with the empty response message
-                - Error log is created with with the empty response message and status code of 403
+                - Error log is created with the empty response message and status code of 403
+                - Make sure only single api request was sent and that retry mechanism was not triggered
 
         """
         if not IS_PY3:
@@ -8432,13 +8435,13 @@ class TestSendEventsToXSIAMTest:
 
         if isinstance(error_msg, dict):
             status_code = 401
-            requests_mock.post(
+            request_mocker = requests_mock.post(
                 'https://api-url/logs/v1/xsiam', json=error_msg, status_code=status_code, reason='Unauthorized[401]'
             )
             expected_error_msg = 'Unauthorized[401]'
         else:
             status_code = 403
-            requests_mock.post('https://api-url/logs/v1/xsiam', text=None, status_code=status_code)
+            request_mocker = requests_mock.post('https://api-url/logs/v1/xsiam', text=None, status_code=status_code)
             expected_error_msg = 'Received empty response from the server'
 
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
@@ -8455,8 +8458,116 @@ class TestSendEventsToXSIAMTest:
         ):
             send_events_to_xsiam(events=events, vendor='some vendor', product='some product')
 
+        # make sure the request was sent only once and retry mechanism was not triggered
+        assert request_mocker.call_count == 1
+
         error_log_mocker.assert_called_with(
             expected_request_and_response_info.format(status_code=str(status_code), error_received=expected_error_msg))
+
+    @pytest.mark.parametrize(
+        'mocked_responses, expected_request_call_count, expected_error_log_count, should_succeed', [
+            (
+                [
+                    (429, None), (429, None), (429, None)
+                ],
+                3,
+                3,
+                False
+            ),
+            (
+                [
+                    (401, None), (401, None)
+                ],
+                1,
+                1,
+                False
+            ),
+            (
+                [
+                    (429, None), (429, None), (200, json.dumps({'error': 'false'}).encode('utf-8'))
+                ],
+                3,
+                2,
+                True
+            ),
+            (
+                [
+                    (429, None), (200, json.dumps({'error': 'false'}).encode('utf-8'))
+                ],
+                2,
+                1,
+                True
+            ),
+            (
+                [
+                    (200, json.dumps({'error': 'false'}).encode('utf-8'))
+                ],
+                1,
+                0,
+                True
+            )
+        ]
+    )
+    def test_retries_send_events_to_xsiam_rate_limit(
+        self, mocker, mocked_responses, expected_request_call_count, expected_error_log_count, should_succeed
+    ):
+        """
+        Given:
+            case a: 3 responses indicating about api limit from xsiam (429)
+            case b: 2 responses indicating about unauthorized access from xsiam
+            case c: 2 responses indicating about api limit from xsiam (429) and the third indicating about success
+            case d: 1 response indicating about api limit from xsiam (429) and the third indicating about success
+            case e: 1 response indicating about success from xsiam with no rate limit errors
+
+        When:
+            calling the send_events_to_xsiam function
+
+        Then:
+            case a:
+                - DemistoException is raised
+                - Error log is called 3 times
+                - Make sure 3 api requests were sent by the retry mechanism
+            case b:
+                - DemistoException is raised
+                - Error log is called 1 time
+                - Make sure only 1 api request was sent by the retry mechanism
+            case c:
+                - Error log is called 2 times
+                - Make sure only 3 api requests was sent by the retry mechanism
+            case d:
+                - Error log is called 1 time
+                - Make sure only 2 api requests was sent by the retry mechanism
+            case e:
+                - Error log is not called at all
+                - Make sure only 1 api request was sent by the retry mechanism
+
+        """
+        if not IS_PY3:
+            return
+
+        import requests
+        mocked_responses_side_effect = []
+        for status_code, text in mocked_responses:
+            api_response = requests.Response()
+            api_response.status_code = status_code
+            api_response._content = text
+            mocked_responses_side_effect.append(api_response)
+
+        request_mock = mocker.patch.object(requests.Session, 'request', side_effect=mocked_responses_side_effect)
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        error_mock = mocker.patch.object(demisto, 'error')
+
+        events = self.test_data['json_events']['events']
+        if should_succeed:
+            send_events_to_xsiam(events=events, vendor='some vendor', product='some product')
+        else:
+            with pytest.raises(DemistoException):
+                send_events_to_xsiam(events=events, vendor='some vendor', product='some product')
+
+        assert error_mock.call_count == expected_error_log_count
+        assert request_mock.call_count == expected_request_call_count
 
 
 class TestIsMetricsSupportedByServer:
