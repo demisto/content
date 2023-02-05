@@ -375,7 +375,7 @@ script:
       description: Configuration job ID.
       type: String
     - contextPath: PrismaSase.CandidateConfig.result
-      description: The configuration push result.
+      description: The configuration push result, e.g. OK, FAIL.
       type: String
     - contextPath: PrismaSase.CandidateConfig.details
       description: The configuration push details.
@@ -509,7 +509,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: This argument specifies rather to append or overwrite the....
+      description: Whether to overwrite the original rule values.
       isArray: false
       name: overwrite
       predefined:
@@ -1201,12 +1201,12 @@ script:
       - dynamic
       required: true
     - default: false
-      description: static addresses for the address group. If the type is static, value must be provided.
+      description: Static addresses for the address group. If the type is static, a value must be provided.
       isArray: false
       name: static_addresses
       required: false
     - default: false
-      description: dynamic filter for the address group. If the type is dynamic, value must be provided.
+      description: Dynamic filter for the address group. If the type is dynamic, a value must be provided.
       isArray: false
       name: dynamic_filter
       required: false
@@ -1268,11 +1268,11 @@ script:
     - default: false
       isArray: false
       name: static_addresses
-      description: static addresses for the address group. If the type is static, value must be provided.
+      description: Static addresses for the address group. If the type is static, a value must be provided.
     - default: false
       isArray: false
       name: dynamic_filter
-      description: dynamic filter for the address group. If the type is dynamic, value must be provided.
+      description: Dynamic filter for the address group. If the type is dynamic, a value must be provided.
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
@@ -1414,7 +1414,7 @@ script:
       - Category Match
       required: true
     - default: false
-      description: If the type is url list the value will be a comma separated array of url addresses. If the type is Category Match the value will be a comma separated array of categories name. The user can get the names by running prisma-sase-url-access-profile-list.
+      description: If the type is URL List, the value will be a comma-separated array of URL addresses. If the type is Category Match, the value will be a comma-separated array of category names. You can get the names by running the prisma-sase-url-access-profile-list command.
       isArray: true
       name: value
       required: true
@@ -1432,7 +1432,7 @@ script:
       name: tsg_id
     deprecated: false
     execution: false
-    description: Create a new url category.
+    description: Create a new URL category.
     name: prisma-sase-custom-url-category-create
     outputs:
     - contextPath: PrismaSase.CustomURLCategory.id
@@ -1486,7 +1486,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      description: This argument specifies rather to append or overwrite the....
+      description: Whether to overwrite the original custom URL category values.
     - default: false
       isArray: false
       name: description
@@ -1640,18 +1640,18 @@ script:
       - panw-bulletproof-ip-list
       - panw-highrisk-ip-list
       - panw-known-ip-list
-      description: The predefined IP list. If the type is predefined_ip, value must be provided.
+      description: The predefined IP list. If the type is predefined_ip, a value must be provided.
     - auto: PREDEFINED
       isArray: false
       name: predefined_url_list
       required: false
-      description: The predefined URL list. If the type is predefined_url, value must be provided.
+      description: The predefined URL list. If the type is predefined_url, a value must be provided.
       predefined:
       - panw–auth-portal-exclude-list
     - default: false
       isArray: false
       name: source_url
-      description: The source URL. If the type is IP, URL or Domain, value must be provided.
+      description: The source URL. If the type is ip, url or domain, a value must be provided.
     - auto: PREDEFINED
       isArray: false
       name: frequency
@@ -1744,7 +1744,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      description: This argument specifies rather to append or overwrite the....
+      description: Whether to overwrite the original external dynamic list values.
     - default: false
       isArray: false
       name: description
@@ -1769,23 +1769,23 @@ script:
       - panw-bulletproof-ip-list
       - panw-highrisk-ip-list
       - panw-known-ip-list
-      description: Dont know yet
+      description: The predefined ip list. If the type is predefined_ip, a value must be provided.
     - auto: PREDEFINED
       isArray: false
       name: predefined_url_list
       required: false
-      description: Dont know yet
+      description: The predefined URL list. If the type is predefined_url, a value must be provided.
       predefined:
       - panw–auth-portal-exclude-list
     - default: false
       isArray: false
       name: source_url
-      description: Dont know yet
+      description: The source URL. If the type is ip, url or domain, a value must be provided.
     - auto: PREDEFINED
       isArray: false
       name: frequency
       required: false
-      description: Dont know yet
+      description: Frequency to check for updates.
       predefined:
       - five_minute
       - hourly
@@ -1795,12 +1795,12 @@ script:
     - default: false
       isArray: false
       name: frequency_hour
-      description: The frequency hour.
+      description: The frequency hour. If the frequency argument is daily, weekly or monthly, value must be provided. Possible values are 00-23.
     - auto: PREDEFINED
       isArray: false
       name: day_of_week
       required: false
-      description: The day of the week.
+      description: The day of the week. If the frequency argument is weekly or monthly, value must be provided.
       predefined:
       - monday
       - tuesday
@@ -1812,7 +1812,7 @@ script:
     - default: false
       isArray: false
       name: day_of_month
-      description: The day of the month. Possible values are between 1 and 31.
+      description: The day of the month. If the frequency argument is monthly, value must be provided. Possible values are between 1 and 31.
     - default: false
       isArray: false
       name: exception_list

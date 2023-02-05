@@ -239,9 +239,7 @@ Push the candidate configuration.
 | --- | --- | --- |
 | folders | Comma-separated list of targets (Remote Networks, Mobile Users, Service Connections). | Required | 
 | description | Configuration push job description. | Optional | 
-| interval_in_seconds | interval for polling command. Default is 30. | Optional | 
-| job_id | For polling use. | Optional | 
-| parent_finished | For polling use. | Optional | 
+| interval_in_seconds | interval for polling command. Default is 30. | Optional |
 | tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 
 
@@ -250,7 +248,7 @@ Push the candidate configuration.
 | **Path** | **Type** | **Description** |
 | --- |----------| --- |
 | PrismaSase.CandidateConfig.job_id | String   | Configuration job ID. | 
-| PrismaSase.CandidateConfig.result | String   | The configuration push result. | 
+| PrismaSase.CandidateConfig.result | String   | The configuration push result, e.g. OK, FAIL. | 
 | PrismaSase.CandidateConfig.details | String   | The configuration push details. | 
 
 #### Command example
@@ -292,7 +290,7 @@ Update an existing security rule.
 | disabled | Whether the rule is disabled. | Optional | 
 | negate_source | Negate source. | Optional | 
 | negate_destination | Negate the destination. | Optional | 
-| overwrite | This argument specifies rather to append or overwrite the.... Possible values are: true, false. Default is false. | Optional | 
+| overwrite | Whether to overwrite the original rule values. Possible values are: true, false. Default is false. | Optional | 
 | tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 
 
@@ -702,11 +700,11 @@ Create a new tag.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaSase.Tag.id | String | The tag id. | 
+| PrismaSase.Tag.id | String | The tag ID. | 
 | PrismaSase.Tag.name | String | The tag name. | 
 | PrismaSase.Tag.folder | String | The tag folder. | 
 | PrismaSase.Tag.color | String | The tag color. | 
-| PrismaSase.Tag.comments | String | The tag momments. | 
+| PrismaSase.Tag.comments | String | The tag comments. | 
 
 #### Command example
 ```!prisma-sase-tag-create name="somename11" color="Azure Blue"```
@@ -755,7 +753,7 @@ Update an existing tag.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaSase.Tag.id | String | The tag id. | 
+| PrismaSase.Tag.id | String | The tag ID. | 
 | PrismaSase.Tag.name | String | The tag name. | 
 | PrismaSase.Tag.folder | String | The tag folder. | 
 | PrismaSase.Tag.color | String | The tag color. | 
@@ -834,7 +832,7 @@ Lists all address groups.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaSase.AddressGroup.id | String | The address group id. | 
+| PrismaSase.AddressGroup.id | String | The address group ID. | 
 | PrismaSase.AddressGroup.name | String | The address group name. | 
 | PrismaSase.AddressGroup.description | String | The address group description. | 
 | PrismaSase.AddressGroup.addresses | String | The address group addresses. | 
@@ -879,8 +877,8 @@ Create a new address group.
 | --- | --- | --- |
 | folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | type | The address group type. Possible values are: static, dynamic. | Required | 
-| static_addresses | static addresses for the address group. If the type is static, value must be provided. | Optional | 
-| dynamic_filter | dynamic filter for the address group. If the type is dynamic, value must be provided. | Optional | 
+| static_addresses | Static addresses for the address group. If the type is static, a value must be provided. | Optional | 
+| dynamic_filter | Dynamic filter for the address group. If the type is dynamic, a value must be provided. | Optional | 
 | description | The address group's description. | Optional | 
 | name | The name of the address group. | Required | 
 | tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
@@ -890,7 +888,7 @@ Create a new address group.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaSase.AddressGroup.id | String | The address group id. | 
+| PrismaSase.AddressGroup.id | String | The address group ID. | 
 | PrismaSase.AddressGroup.name | String | The address group name. | 
 | PrismaSase.AddressGroup.folder | String | The address group folder. | 
 | PrismaSase.AddressGroup.description | String | The address group description. | 
@@ -936,9 +934,9 @@ Update an existing address group.
 | --- | --- | --- |
 | group_id | The id of the address group. | Required | 
 | folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
-| static_addresses | static addresses for the address group. If the type is static, value must be provided. | Optional | 
-| dynamic_filter | dynamic filter for the address group. If the type is dynamic, value must be provided. | Optional | 
-| overwrite | Rather to overwrite existing data. Possible values are: true, false. Default is false. | Optional | 
+| static_addresses | Static addresses for the address group. If the type is static, a value must be provided. | Optional | 
+| dynamic_filter | Dynamic filter for the address group. If the type is dynamic, a value must be provided. | Optional | 
+| overwrite | Whether to overwrite the original address group values. Possible values are: true, false. Default is false. | Optional | 
 | description | The address group's description. | Optional | 
 | type | The address group type. Possible values are: dynamic, static. | Optional | 
 | tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
@@ -948,7 +946,7 @@ Update an existing address group.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaSase.AddressGroup.id | String | The address group id. | 
+| PrismaSase.AddressGroup.id | String | The address group ID. | 
 | PrismaSase.AddressGroup.name | String | The address group name. | 
 | PrismaSase.AddressGroup.folder | String | The address group folder. | 
 | PrismaSase.AddressGroup.description | String | The address group description. | 
@@ -1028,7 +1026,7 @@ Lists all custom URL categories.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaSase.CustomURLCategory.id | String | The URL category id. | 
+| PrismaSase.CustomURLCategory.id | String | The URL category ID. | 
 | PrismaSase.CustomURLCategory.name | String | The URL category name. | 
 | PrismaSase.CustomURLCategory.folder | String | The URL category folder. | 
 | PrismaSase.CustomURLCategory.type | String | The URL category type. | 
@@ -1065,7 +1063,7 @@ Lists all custom URL categories.
 
 ### prisma-sase-custom-url-category-create
 ***
-Create a new url category.
+Create a new URL category.
 
 
 #### Base Command
@@ -1077,7 +1075,7 @@ Create a new url category.
 | --- | --- | --- |
 | folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | type | The custom URL category's type. Possible values are: URL List, Category Match. | Required | 
-| value | If the type is url list the value will be a comma separated array of url addresses. If the type is Category Match the value will be a comma separated array of categories name. The user can get the names by running prisma-sase-url-access-profile-list. | Required | 
+| value | If the type is URL List, the value will be a comma-separated array of URL addresses. If the type is Category Match, the value will be a comma-separated array of category names. You can get the names by running the prisma-sase-url-access-profile-list command. | Required | 
 | description | The custom URL category's description. | Optional | 
 | name | The name of the custom URL category. | Required | 
 | tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
@@ -1087,7 +1085,7 @@ Create a new url category.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaSase.CustomURLCategory.id | String | The URL category id. | 
+| PrismaSase.CustomURLCategory.id | String | The URL category ID. | 
 | PrismaSase.CustomURLCategory.name | String | The URL category name. | 
 | PrismaSase.CustomURLCategory.folder | String | The URL category folder. | 
 | PrismaSase.CustomURLCategory.type | String | The URL category type. | 
@@ -1136,7 +1134,7 @@ Update an existing url category.
 | id | The custom URL category id. | Required | 
 | folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | value | . | Optional | 
-| overwrite | This argument specifies rather to append or overwrite the.... Possible values are: true, false. Default is false. | Optional | 
+| overwrite | Whether to overwrite the original custom URL category values. Possible values are: true, false. Default is false. | Optional | 
 | description | The custom URL category's description. | Optional | 
 | type | The custom URL category's type. Possible values are: URL List, Category Match. | Optional | 
 | tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
@@ -1146,7 +1144,7 @@ Update an existing url category.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaSase.CustomURLCategory.id | String | The URL category id. | 
+| PrismaSase.CustomURLCategory.id | String | The URL category ID. | 
 | PrismaSase.CustomURLCategory.name | String | The URL category name. | 
 | PrismaSase.CustomURLCategory.folder | String | The URL category folder. | 
 | PrismaSase.CustomURLCategory.type | String | The URL category type. | 
@@ -1230,7 +1228,7 @@ Lists all external dynamic lists.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaSase.ExternalDynamicList.id | String | The external dynamic list id. | 
+| PrismaSase.ExternalDynamicList.id | String | The external dynamic list ID. | 
 | PrismaSase.ExternalDynamicList.name | String | The external dynamic list name. | 
 | PrismaSase.ExternalDynamicList.folder | String | The external dynamic list folder. | 
 | PrismaSase.ExternalDynamicList.description | String | The external dynamic list description. | 
@@ -1280,9 +1278,9 @@ Create a new dynamic list.
 | folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
 | description | The dynamic list's description. | Optional | 
 | type | The dynamic list's type. Possible values are: predefined_ip, predefined_url, ip, domain, url. | Required | 
-| predefined_ip_list | The predefined IP list. If the type is predefined_ip, value must be provided. Possible values are: panw-torexit-ip-list, panw-bulletproof-ip-list, panw-highrisk-ip-list, panw-known-ip-list. | Optional | 
-| predefined_url_list | The predefined URL list. If the type is predefined_url, value must be provided. Possible values are: panw–auth-portal-exclude-list. | Optional | 
-| source_url | The source URL. If the type is IP, URL or Domain, value must be provided. | Optional | 
+| predefined_ip_list | The predefined IP list. If the type is predefined_ip, a value must be provided. Possible values are: panw-torexit-ip-list, panw-bulletproof-ip-list, panw-highrisk-ip-list, panw-known-ip-list. | Optional | 
+| predefined_url_list | The predefined URL list. If the type is predefined_url, a value must be provided. Possible values are: panw–auth-portal-exclude-list. | Optional | 
+| source_url | The source URL. If the type is ip, url or domain, a value must be provided. | Optional | 
 | frequency | Frequency to check for updates. Possible values are: five_minute, hourly, daily, weekly, monthly. | Optional | 
 | frequency_hour | The frequency hour. If the frequency argument is daily, weekly or monthly, value must be provided. Possible values are 00-23. | Optional | 
 | day_of_week | The day of the week. If the frequency argument is weekly or monthly, value must be provided. Possible values are: monday, tuesday, wednesday, thursday, friday, saturday, sunday. | Optional | 
@@ -1295,7 +1293,7 @@ Create a new dynamic list.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaSase.ExternalDynamicList.id | String | The external dynamic list id. | 
+| PrismaSase.ExternalDynamicList.id | String | The external dynamic list ID. | 
 | PrismaSase.ExternalDynamicList.name | String | The external dynamic list name. | 
 | PrismaSase.ExternalDynamicList.folder | String | The external dynamic list folder. | 
 | PrismaSase.ExternalDynamicList.description | String | The external dynamic list description. | 
@@ -1378,13 +1376,13 @@ Update an existing dynamic list.
 | --- | --- | --- |
 | id | The external dynamic list id. | Required | 
 | folder | Prisma sase folder location. Possible values are: Shared, Mobile Users, Remote Networks, Service Connections, Mobile Users Container, Mobile Users Explicit Proxy. Default is Shared. | Optional | 
-| overwrite | This argument specifies rather to append or overwrite the.... Possible values are: true, false. Default is false. | Optional | 
+| overwrite | Whether to overwrite the external dynamic list values. Possible values are: true, false. Default is false. | Optional | 
 | description | The dynamic list's description. | Optional | 
 | type | The dynamic list's type. Possible values are: predefined_ip, predefined_url, ip, domain, url. | Optional | 
-| predefined_ip_list | Dont know yet. Possible values are: panw-torexit-ip-list, panw-bulletproof-ip-list, panw-highrisk-ip-list, panw-known-ip-list. | Optional | 
-| predefined_url_list | Dont know yet. Possible values are: panw–auth-portal-exclude-list. | Optional | 
-| source_url | Dont know yet. | Optional | 
-| frequency | Dont know yet. Possible values are: five_minute, hourly, daily, weekly, monthly. | Optional | 
+| predefined_ip_list | The predefined ip list. If the type is predefined_ip, a value must be provided. Possible values are: panw-torexit-ip-list, panw-bulletproof-ip-list, panw-highrisk-ip-list, panw-known-ip-list. | Optional | 
+| predefined_url_list | The predefined URL list. If the type is predefined_url, a value must be provided. Possible values are: panw–auth-portal-exclude-list. | Optional | 
+| source_url | The source URL. If the type is ip, url or domain, a value must be provided. | Optional | 
+| frequency | Frequency to check for updates. Possible values are: five_minute, hourly, daily, weekly, monthly. | Optional | 
 | frequency_hour | The frequency hour. | Optional | 
 | day_of_week | The day of the week. Possible values are: monday, tuesday, wednesday, thursday, friday, saturday, sunday. | Optional | 
 | day_of_month | The day of the month. Possible values are between 1 and 31. | Optional | 
@@ -1396,7 +1394,7 @@ Update an existing dynamic list.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaSase.ExternalDynamicList.id | String | The external dynamic list id. | 
+| PrismaSase.ExternalDynamicList.id | String | The external dynamic list ID. | 
 | PrismaSase.ExternalDynamicList.name | String | The external dynamic list name. | 
 | PrismaSase.ExternalDynamicList.folder | String | The external dynamic list folder. | 
 | PrismaSase.ExternalDynamicList.description | String | The external dynamic list description. | 
