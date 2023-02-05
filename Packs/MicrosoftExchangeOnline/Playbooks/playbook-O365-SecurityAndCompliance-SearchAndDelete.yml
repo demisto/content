@@ -905,19 +905,6 @@ inputs:
     values are Hard and Soft or leave empty to select manually. (Hard = Unrecoverable,
     Soft=Recoverable)
   playbookInputQuery: null
-- key: search_polling_timeout
-  value:
-    simple: "45"
-  required: false
-  description: Amount of time to poll before declaring a timeout for the compliance
-    search and resuming the playbook (in minutes).
-  playbookInputQuery: null
-- key: search_polling_interval
-  value:
-    simple: "3"
-  required: false
-  description: The frequency that the polling command will run for compliance search.
-  playbookInputQuery: null
 - key: search_action_polling_timeout
   value:
     simple: "45"

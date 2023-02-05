@@ -208,14 +208,7 @@ view: |-
       }
     }
   }
-inputs:
-- key: EmailID
-  value:
-    complex:
-      root: incident
-      accessor: labels.Email/ID
-  required: false
-  description: The EWS Email ID
+inputs: []
 outputs:
 - contextPath: Email
   description: The email object
