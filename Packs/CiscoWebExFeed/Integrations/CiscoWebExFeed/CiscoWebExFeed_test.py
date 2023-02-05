@@ -158,6 +158,26 @@ def test_get_indicators_command__diffrent_indicator_type_and_limit_as_input(mock
     assert res.readable_output == expected
 
 
+def test_get_indicators_command__wrong_indicator_type(mocker):
+    """
+    Given:
+        - illegal indicator type
+    When:
+        - get_indicators_command is called
+    Then:
+        - the function should return the expectetd error message
+    """
+    from CiscoWebExFeed import get_indicators_command, Client
+    client = MockedClient(Client)
+    mocker.patch.object(Client, 'all_raw_data', return_value='gg')
+    mocker.patch.object(CiscoWebExFeed, 'check_indicator_type')
+    mocker.patch.object(CiscoWebExFeed, 'parse_indicators_from_response',
+                        return_value={'CIDR': ['ipmock1', 'ipmock2'], 'DOMAIN': ['domainmock1', 'domainmock2']})
+    with pytest.raises(DemistoException) as e:
+        get_indicators_command(client=client, indicator_type="mock_type")
+    assert e.value.message == 'The indicator_type argument must be one of the following: Both, CIDR, DOMAIN'
+
+
 @pytest.mark.parametrize('input, expected', [(FETCH_INDICATORS_INPUT_1, FETCH_INDICATORS_UOTPUT_1),
                                              (FETCH_INDICATORS_INPUT_2, FETCH_INDICATORS_UOTPUT_2)])
 def test_fetch_indicators_command__different_sizes_of_inputs(mocker, input, expected):
