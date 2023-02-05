@@ -1,6 +1,6 @@
 ## Authorization
 In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
-##### There are there ways to authenticate to the Microsoft Graph Services:
+##### There are three ways to authenticate to the Microsoft Graph Services:
 1. *Client Credentials Flow* (Recommended).
 2. *Device Code Flow*.
 3. *Azure Managed Identities*.

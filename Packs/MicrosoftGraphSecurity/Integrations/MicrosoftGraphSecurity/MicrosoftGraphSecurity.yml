@@ -80,7 +80,7 @@ configuration:
   required: false
   type: 8
   section: Connect
-- additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
   required: false
