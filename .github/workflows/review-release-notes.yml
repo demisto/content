@@ -28,23 +28,19 @@ jobs:
         run: |
           if [ -z "${{ steps.changed-files.outputs.all_changed_files }}" ]
           then
-                echo "steps.changed-files.outputs.all_changed_files is empty"
+                echo "all_changed_files is empty"
+                return
           else
-                echo "steps.changed-files.outputs.all_changed_files is NOT empty"
+                echo "all_changed_files is NOT empty"
                 echo "${{ steps.changed-files.outputs.all_changed_files }}"
           fi
 
       - name: Install SDK
-        if: |
-          steps.changed-files.outputs.all_changed_files == '' || 
-          steps.changed-files.outputs.all_changed_files == ' ' 
-          && return
         run: |
           
           python3 -m pip install demisto-sdk
 
       - name: Review Release Notes
-        # if: steps.changed-files.outputs.all_changed_files != '' && steps.changed-files.outputs.all_changed_files != ' '
         run: |
           release_notes="${{ steps.changed-files.outputs.all_changed_files }}"
           echo "Release notes found in PR: ${release_notes}. Starting docs review..."
