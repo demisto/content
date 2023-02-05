@@ -23,7 +23,10 @@ ignore=BA114
 ignore=BA114
 
 [file:playbook-Get_Mails_By_Folder_Paths.yml]
-ignore=BA114
+ignore=BA114,RM109,PB119
 
 [file:playbook-O365-SecurityAndCompliance-Test.yml]
 ignore=BA114
+
+[playbook-O365-SecurityAndCompliance-SearchAndDelete.yml]
+ignore=PB118
