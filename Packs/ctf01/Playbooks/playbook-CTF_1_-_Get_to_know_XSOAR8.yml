@@ -1,6 +1,5 @@
-id: 66ada574-4035-4847-8e35-0d389b590916
-version: 61
-vcShouldKeepItemLegacyProdMachine: false
+id: CTF 1 - Get to know XSOAR8
+version: -1
 name: CTF 1 - Get to know XSOAR8
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "21"
@@ -60,13 +60,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -90,23 +90,10 @@ tasks:
         tooltip: Try to generate the report to see it's content
         readonly: false
       title: Practicing with Reports
-      description: "Sometimes reports can be very useful. Reports can contain widgets
-        and customized data that can assist in demonstrating good teamwork in XSOAR
-        and how efficient it can be. \nTherefore, we have a hidden flag in one of
-        the reports - try to find it :sunglasses:"
+      description: "Sometimes reports can be very useful. Reports can contain widgets and customized data that can assist in demonstrating good teamwork in XSOAR and how efficient it can be. \nTherefore, we have a hidden flag in one of the reports - try to find it :sunglasses:"
       sender: Your SOC team
       expired: false
       totalanswers: 0
-    formDisplay:
-      headerbackgroundcolor: ""
-      headerfontcolor: ""
-      sender: ""
-      bodybackgroundcolor: ""
-      bodyfontcolor: ""
-      submitbuttonbackgroundcolor: ""
-      submitbuttonfontcolor: ""
-      submittext: ""
-      isexternalrtl: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -143,13 +130,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -175,8 +162,7 @@ tasks:
       - id: "1"
         label: ""
         labelarg:
-          simple: 'Advanced: In case this playbook runs, what will be the output of
-            the tasks?'
+          simple: 'Advanced: In case this playbook runs, what will be the output of the tasks?'
         required: false
         gridcolumns: []
         defaultrows: []
@@ -190,8 +176,7 @@ tasks:
         tooltip: Check the advanced settings of the playbook.
         readonly: false
       title: Check the Playbooks
-      description: Navigate to the newly downloaded playbook ("CTF-X") and check the
-        existing task
+      description: Navigate to the newly downloaded playbook ("CTF-X") and check the existing task
       sender: ""
       expired: false
       totalanswers: 0
@@ -226,13 +211,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -253,15 +238,10 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: Try to check the integration's python. Oh and remember that the answer
-          isn't always on the wall.
+        tooltip: Try to check the integration's python. Oh and remember that the answer isn't always on the wall.
         readonly: false
       title: Integration Settings
-      description: "As it used to be, the main method to ingest incidents into the
-        system remains the 'Integrations'  in each pack. Each integration can support
-        multiple instances and be configured \nTo get you familiar with the system,
-        we have hidden a flag inside one of the integrations (customized it and brought
-        it to our MP). "
+      description: "As it used to be, the main method to ingest incidents into the system remains the 'Integrations'  in each pack. Each integration can support multiple instances and be configured \nTo get you familiar with the system, we have hidden a flag inside one of the integrations (customized it and brought it to our MP). "
       sender: ""
       expired: false
       totalanswers: 0
@@ -296,14 +276,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
+      to:
       subject:
         simple: Incident fields
-      body: null
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -327,8 +307,7 @@ tasks:
         tooltip: 'hint: you probably can play with the filters'
         readonly: false
       title: Incident fields
-      description: Now navigate to the Incident's fields section (located in the Settings
-        tab). let's see if you are truly worthy ;)
+      description: Now navigate to the Incident's fields section (located in the Settings tab). let's see if you are truly worthy ;)
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -363,13 +342,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -414,6 +393,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -438,11 +418,7 @@ tasks:
       id: 001b4d4c-025c-4edf-8888-3e27c88642af
       version: -1
       name: Create a new incident using the CTF incident type
-      description: "Congrats! You finished with the first CTF! Well Done!!\n<Add gif
-        here>\n\nLet's continue with the next challenge :) \n\nIn order to proceed
-        to the following challenge, please create a new incident with the following
-        parameter:\n1. Incident name should be your\n`<name  / student_id> - CTF02
-        \ `\n2. incident type \"CTF_2\""
+      description: "Congrats! You finished with the first CTF! Well Done!!\n<Add gif here>\n\nLet's continue with the next challenge :) \n\nIn order to proceed to the following challenge, please create a new incident with the following parameter:\n1. Incident name should be your\n`<name  / student_id> - CTF02  `\n2. incident type \"CTF_2\""
       type: regular
       iscommand: false
       brand: ""
@@ -619,13 +595,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -637,8 +613,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: What is the key on your keyboard that opens the "Download support
-            logs" section?
+          simple: What is the key on your keyboard that opens the "Download support logs" section?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -649,8 +624,7 @@ tasks:
         - simple: Alt/Option
         fieldassociated: ""
         placeholder: ""
-        tooltip: 'If you saw Harry Potter - it''s like the secret chamber but quite
-          not... '
+        tooltip: 'If you saw Harry Potter - it''s like the secret chamber but quite not... '
         readonly: false
       - id: "1"
         label: ""
@@ -667,10 +641,7 @@ tasks:
         tooltip: In case you wonder - the password for the bundle is 'logsbundleprotect'
         readonly: false
       title: View and download logs
-      description: "It's pretty common to view logs and troubleshoot any strange issue
-        that the system produces, but in this version, the way of looking at the support
-        logs entirely changed... can you find a way to generate support logs :black_joker:?
-        \ \n\n"
+      description: "It's pretty common to view logs and troubleshoot any strange issue that the system produces, but in this version, the way of looking at the support logs entirely changed... can you find a way to generate support logs :black_joker:?  \n\n"
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -729,9 +700,7 @@ tasks:
       id: 0b7547d1-87de-4abc-8fe1-9d7f095fb547
       version: -1
       name: Welcome message
-      description: "Welcome to the SE_Sumit_2023!\nWe are happy to have you and start
-        the first challenge - CTF1!\nOnce you will proceed,  the SLA timer starts
-        to count down your work :) \n\n![myfile](https://github.com/demisto/content/raw/8b7d8c69aad403ae2158cf9798ce2661f5ed08ba/Packs/EscapeRoomTier1/images/incident_Snooping.gif)"
+      description: "Welcome to the SE_Sumit_2023!\nWe are happy to have you and start the first challenge - CTF1!\nOnce you will proceed,  the SLA timer starts to count down your work :) \n\n![myfile](https://github.com/demisto/content/raw/8b7d8c69aad403ae2158cf9798ce2661f5ed08ba/Packs/EscapeRoomTier1/images/incident_Snooping.gif)"
       type: regular
       iscommand: false
       brand: ""
@@ -765,6 +734,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -920,6 +890,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -996,3 +967,7 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+description: ''
