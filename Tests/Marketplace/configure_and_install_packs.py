@@ -8,7 +8,7 @@ from Tests.configure_and_test_integration_instances import MARKET_PLACE_CONFIGUR
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
-from Tests.Marketplace.marketplace_constants import GCPConfig, XSIAM_MP
+from Tests.Marketplace.marketplace_constants import GCPConfig, XSIAM_MP, XSOAR_MP
 
 
 def options_handler():
@@ -34,7 +34,7 @@ def options_handler():
     return options
 
 
-def install_packs_from_content_packs_to_install_path(servers, pack_ids, hostname=''):
+def install_packs_from_content_packs_to_install_path(servers, pack_ids, marketplace_tag_name, hostname=''):
     """
     Install pack_ids from "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and packs dependencies.
 
@@ -46,7 +46,7 @@ def install_packs_from_content_packs_to_install_path(servers, pack_ids, hostname
     install_packs_one_by_one = False
 
     for server in servers:
-        if server.marketplace_tag_name == XSIAM_MP:
+        if marketplace_tag_name == XSIAM_MP:
             install_packs_one_by_one = True
         logging.info(f'Starting to install all content packs in {hostname if hostname else server.internal_ip}')
         _, success = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname,
@@ -100,7 +100,9 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
     pack_ids_with_valid_min_server_version = packs_to_install - packs_with_higher_server_version
     logging.info(f'starting to install content packs {pack_ids_with_valid_min_server_version}')
 
-    install_packs_from_content_packs_to_install_path(servers, list(pack_ids_with_valid_min_server_version))
+    install_packs_from_content_packs_to_install_path(servers=servers,
+                                                     pack_ids=list(pack_ids_with_valid_min_server_version),
+                                                     marketplace_tag_name=XSOAR_MP)
     logging.success(
         f'Finished installing all content packs {pack_ids_with_valid_min_server_version} '
         f'in {[server.internal_ip for server in servers]}'
@@ -127,7 +129,8 @@ def xsiam_configure_and_install_flow(options, branch_name: str, build_number: st
     # extract pack_ids from the content_packs_to_install.txt
     pack_ids = Build.fetch_pack_ids_to_install(options.pack_ids_to_install)
     # Acquire the server's host and install new uploaded content packs
-    install_packs_from_content_packs_to_install_path([server], pack_ids, server.name)
+    install_packs_from_content_packs_to_install_path(servers=[server], pack_ids=pack_ids, hostname=server.name,
+                                                     marketplace_tag_name=XSIAM_MP)
     logging.success(f'Finished installing all content packs in {cloud_machine}')
 
 
