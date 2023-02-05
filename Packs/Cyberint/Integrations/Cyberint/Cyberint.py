@@ -1,7 +1,11 @@
 # pylint: disable=unsubscriptable-object
 import copy
 from CommonServerPython import *
+
 ''' IMPORTS '''
+
+import copy
+from CommonServerPython import *
 from requests import Response
 from contextlib import closing
 import json
