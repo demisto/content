@@ -68,6 +68,9 @@ def grab_CIDR_ips(data: list) -> List:
         return a list with only CIDR ip addresses
     """
     CIDR_ip_list: List = []
+    if not data[0]:
+        raise DemistoException('Did not find any IP indicators in the IP table')
+
     for line in data[0]:
         values = line.split(' (CIDR)')
         CIDR_ip_list.append(values[0])
