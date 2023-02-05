@@ -1002,3 +1002,46 @@ def test_special_chars_in_attachment_name(mocker):
     res = client._get_email_attachments('message_id')
 
     assert res[0].get('name') == attachment_file_name
+
+
+def test_generate_login_url(mocker):
+    """
+    Given:
+        - Self-deployed are true and auth code are the auth flow
+    When:
+        - Calling function msgraph-mail-generate-login-url
+        - Ensure the generated url are as expected.
+    """
+    # prepare
+    import demistomock as demisto
+    from MicrosoftGraphListener import main, Scopes
+    import MicrosoftGraphListener
+
+    redirect_uri = 'redirect_uri'
+    tenant_id = 'tenant_id'
+    client_id = 'client_id'
+    mocked_params = {
+        'redirect_uri': redirect_uri,
+        'auth_type': 'Authorization Code',
+        'self_deployed': 'True',
+        'creds_refresh_token': {'password': tenant_id},
+        'creds_auth_id': {
+            'password': client_id
+        },
+        'creds_enc_key': {
+            'password': 'client_secret'
+        }
+    }
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(demisto, 'command', return_value='msgraph-mail-generate-login-url')
+    mocker.patch.object(MicrosoftGraphListener, 'return_results')
+
+    # call
+    main()
+
+    # assert
+    expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
+                   f'response_type=code&scope=offline_access%20{Scopes.graph}' \
+                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
+    res = MicrosoftGraphListener.return_results.call_args[0][0].readable_output
+    assert expected_url in res
