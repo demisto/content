@@ -2453,7 +2453,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
 
         if server_close_custom_state or (ticket.get('closed_at') and close_incident == 'closed') \
                 or (ticket.get('resolved_at') and close_incident == 'resolved'):
-            demisto.debug(f'ticket is closed: {ticket}')
+            demisto.debug(f'SNOW ticket changed state- should be closed in XSOAR: {ticket}')
             entries.append({
                 'Type': EntryType.NOTE,
                 'Contents': {
@@ -2493,14 +2493,13 @@ def converts_state_close_reason(ticket_state: Optional[str], server_close_custom
                 custom_label = custom_state_label
 
     if custom_label:
-        demisto.debug(f'incident is closed using custom state. State Code: {ticket_state}, Label: {custom_label}')
+        demisto.debug(f'incident should be closed using custom state. State Code: {ticket_state}, Label: {custom_label}')
         return custom_label
     elif ticket_state in ['6', '7']:
-        demisto.debug(f'incident is closed using default state. State Code: {ticket_state}')
+        demisto.debug(f'incident should be closed using default state. State Code: {ticket_state}')
         return 'Resolved'
-    else:
-        demisto.debug(f'incident is closed using default close reason "Other". State Code: {ticket_state}')
-        return 'Other'
+    demisto.debug(f'incident is closed using default close reason "Other". State Code: {ticket_state}')
+    return 'Other'
 
 
 def update_remote_system_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> str:
