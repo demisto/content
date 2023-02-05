@@ -109,3 +109,44 @@ def test_get_rule(mocker):
     result = get_rule_command(client, 'groupName', 'wow')
     assert '### Rules wow' in result.readable_output
     assert result.outputs[0].get('name') == 'wow'
+
+
+def test_generate_login_url(mocker):
+    """
+    Given:
+        - Self-deployed are true and auth code are the auth flow
+    When:
+        - Calling function azure-nsg-generate-login-url
+    Then:
+        - Ensure the generated url are as expected.
+    """
+    # prepare
+    import demistomock as demisto
+    from AzureNetworkSecurityGroups import main
+    import AzureNetworkSecurityGroups
+
+    redirect_uri = 'redirect_uri'
+    tenant_id = 'tenant_id'
+    client_id = 'client_id'
+    mocked_params = {
+        'redirect_uri': redirect_uri,
+        'auth_type': 'Authorization Code',
+        'tenant_id': tenant_id,
+        'app_id': client_id,
+        'credentials': {
+            'password': 'client_secret'
+        }
+    }
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(demisto, 'command', return_value='azure-nsg-generate-login-url')
+    mocker.patch.object(AzureNetworkSecurityGroups, 'return_results')
+
+    # call
+    main()
+
+    # assert
+    expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
+                   'response_type=code&scope=offline_access%20https://management.azure.com/.default' \
+                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
+    res = AzureNetworkSecurityGroups.return_results.call_args[0][0].readable_output
+    assert expected_url in res
