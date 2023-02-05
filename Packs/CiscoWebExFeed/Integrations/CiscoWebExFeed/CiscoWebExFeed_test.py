@@ -161,7 +161,7 @@ def test_get_indicators_command__diffrent_indicator_type_and_limit_as_input(mock
 def test_get_indicators_command__wrong_indicator_type(mocker):
     """
     Given:
-        - illegal indicator type
+        - illegal indicator type as input
     When:
         - get_indicators_command is called
     Then:
