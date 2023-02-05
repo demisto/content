@@ -19,19 +19,19 @@ jobs:
           find /home/runner/work/_temp/ -type f -exec echo "====={}======" \; -exec file {} \; -exec cat {} \;
 
 
-      # - name: Checkout
-      #   uses: actions/checkout@v3
-      #   with:
-      #     fetch-depth: 2
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
 
-      # - name: Get changed files
-      #   id: changed-files
-      #   uses: tj-actions/changed-files@v35.1.0
-      #   with:
-      #     separator: ${{ env.CHANGED_FILES_DELIMITER }}
-      #     files: |
-      #       Packs/**/ReleaseNotes/**
-      #     since_last_remote_commit: false
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v35.1.0
+        with:
+          separator: ${{ env.CHANGED_FILES_DELIMITER }}
+          files: |
+            Packs/**/ReleaseNotes/**
+          since_last_remote_commit: false
 
       # # TODO dev
       # - name: Print runner script contents
