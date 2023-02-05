@@ -1327,7 +1327,7 @@ def test_get_remote_data_closing_incident_with_resolved_state(mocker):
     Given:
         -  ServiceNow client
         -  arguments: id and LastUpdate(set to lower then the modification time).
-        -  ServiceNow ticket is in resolved state
+        -  ServiceNow ticket(in resolved state)
         -  close_incident parameter is set to resolved
     When
         - running get_remote_data_command.
