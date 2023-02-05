@@ -206,7 +206,7 @@ def test_parse_indicators_from_response__fail_to_parse(mocker, requests_mock):
 def test_parse_indicators_from_response__ip_or_domain_indicators_are_None(mocker, requests_mock, CIDR_results, domain_results):
     """
     Given:
-        - a response from the website, (CIDR or domains) with the value None, 
+        - a response from the website, (CIDR or domains) with the value None
     When:
         - parse_indicators_from_response is called
     Then:
