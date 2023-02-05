@@ -2713,7 +2713,7 @@
             "playbookID": "Zoom_Test"
         },
         {
-            "integrations": "CiscoWebExFeed",
+            "integrations": "Cisco WebEx Feed",
             "playbookID": "Test_Cisco_WebEx_Feed",
             "fromversion": "6.0.0"
         },
