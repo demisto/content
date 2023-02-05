@@ -23,7 +23,7 @@ def util_load_json(path):
 
 
 client = Client(
-    base_url="http://<host:port>:port",
+    base_url="http://test.com",
     verify=False,
     proxy=False,
     client_id="test_123",
@@ -677,3 +677,26 @@ def test_check_valid_indicator_value_wrong_input(indicator_type, indicator_value
     with pytest.raises(ValueError) as e:
         check_valid_indicator_value(indicator_type, indicator_value)
     assert e.value.args[0] == expected_err_msg
+
+
+def test_get_access_token_or_login(requests_mock):
+    """
+        Tests the get_access_token_or_login function.
+
+            Given:
+                - requests_mock object.
+
+            When:
+                - Running the 'get_access_token_or_login function'.
+
+            Then:
+                -  Checks the output of the command function with the expected output.
+    """
+    post_req_url = client._base_url + '/atpapi/oauth2/tokens'
+    # before login, access_token is not present
+    requests_mock.post(post_req_url, json={'access_token': '12345'})
+    assert client.headers == {'Content-Type': 'application/json'}
+    client.get_access_token_or_login()
+    assert client.access_token == "12345"
+    # after login, access_token is present
+    assert client.headers == {'Authorization': f'Bearer {client.access_token}', 'Content-Type': 'application/json'}

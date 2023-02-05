@@ -3,9 +3,9 @@ Symantec Endpoint Detection and Response (EDR) On-Prem integration with Symantec
 """
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 import dateparser
-import requests
 import urllib3
 from typing import Callable
+from requests.exceptions import HTTPError
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -139,19 +139,20 @@ class Client(BaseClient):
     @property
     def headers(self):
         if self.access_token is None:  # for logging in, before self.access_token is set
-            raise DemistoException('Failed to get last saved access Token')
+            return {'Content-Type': 'application/json'}
+
         return {'Authorization': f'Bearer {self.access_token}', 'Content-Type': 'application/json'}
 
     def get_access_token_or_login(self) -> None:
         """
         Generate Access token
         Returns:
-            Returns Set access_token
+            self.access_token
         """
         global_context = demisto.getIntegrationContext()
         if last_access_token := get_access_token_from_context(global_context):
             self.access_token = last_access_token
-            demisto.debug(f"Last login access token still active. Return token {last_access_token}")
+            LOG("Access token still active. Using the same token")
         else:
             try:
                 response = self._http_request(
@@ -162,33 +163,25 @@ class Client(BaseClient):
                     resp_type='response'
                 )
                 response.raise_for_status()
+            except Exception as e:
+                LOG(e)
+                raise
 
-                new_access_token = response.json().get("access_token")
-                self.access_token = new_access_token
-                timestamp_string = int(time.time())
-                demisto.debug(f"login: success, saving access token {new_access_token}\n,"
-                              f"Created Timestamp : {timestamp_string}")
+            new_access_token = response.json().get("access_token")
+            self.access_token = new_access_token
+            timestamp_string = int(time.time())
+            LOG(f"Generated Access token. created timestamp : {timestamp_string}")
 
-                if global_integration_context := demisto.getIntegrationContext():
-                    global_integration_context['access_token'] = new_access_token
-                    global_integration_context['access_token_timestamp'] = timestamp_string
-                    demisto.setIntegrationContext(global_integration_context)
-                else:
-                    demisto.setIntegrationContext({
-                        'access_token': new_access_token,
-                        'access_token_timestamp': timestamp_string
-                    })
-
-            except requests.exceptions.HTTPError as err:
-                status = response.status_code
-                if status in HTTP_ERRORS:
-                    raise DemistoException(f'{HTTP_ERRORS[status]}, '
-                                           f'Error from API: {response.json().get("error")},'
-                                           f'{response.json().get("message")}',
-                                           res=response)
-                else:
-                    # if it is unknown error - get the message from the error itself
-                    raise DemistoException(f'Failed to execute. Error: {str(err)}', res=response)
+            if global_integration_context := demisto.getIntegrationContext():
+                global_integration_context['access_token'] = new_access_token
+                global_integration_context['access_token_timestamp'] = timestamp_string
+                demisto.setIntegrationContext(global_integration_context)
+            else:
+                demisto.setIntegrationContext({
+                    'access_token': new_access_token,
+                    'access_token_timestamp': timestamp_string
+                })
+        return
 
     def query_request_api(self, method: str, url_suffix: str, params: dict[str, Any] = None,
                           json_data: dict[str, Any] = None) -> Dict[str, Any]:
@@ -214,16 +207,9 @@ class Client(BaseClient):
                 allow_redirects=False
             )
             response.raise_for_status()
-        except requests.exceptions.HTTPError as err:
-            status = response.status_code
-            if status in HTTP_ERRORS:
-                raise DemistoException(f'{HTTP_ERRORS[status]}, '
-                                       f'Error from API: {response.json().get("error")},'
-                                       f'{response.json().get("message")}',
-                                       res=response)
-            else:
-                # if it is unknown error - get the message from the error itself
-                raise DemistoException(f'Failed to execute. Error: {str(err)}', res=response)
+        except Exception as e:
+            LOG(e)
+            raise
 
         return response.json()
 
@@ -246,16 +232,9 @@ class Client(BaseClient):
                 return_empty_response=True
             )
             response.raise_for_status()
-        except requests.exceptions.HTTPError as err:
-            status = response.status_code
-            if status in HTTP_ERRORS:
-                raise DemistoException(f'{HTTP_ERRORS[status]}, '
-                                       f'Error from API: {response.json().get("error")},'
-                                       f'{response.json().get("message")}',
-                                       res=response)
-            else:
-                # if it is unknown error - get the message from the error itself
-                raise DemistoException(f'Failed to execute. Error: {str(err)}', res=response)
+        except Exception as e:
+            LOG(e)
+            raise
 
         return response
 
@@ -1160,12 +1139,20 @@ def test_module(client: Client) -> str:
     Returns:
         Connection ok
     """
-    # get_incident_list_command(client, {'limit': 1})
-    client.query_request_api(method='POST',
-                             url_suffix='/atpapi/v2/incidents',
-                             params={},
-                             json_data={"verb": "query", 'limit': 1})
-    return 'ok'
+    message = ''
+    try:
+        response_json = client.query_request_api(
+            method='POST',
+            url_suffix='/atpapi/v2/incidents',
+            params={},
+            json_data={"verb": "query", 'limit': 1})
+        if response_json:
+            message = 'ok'
+
+    except Exception as e:
+        LOG(e)
+        raise
+    return message
 
 
 def get_domain_file_association_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2358,6 +2345,15 @@ def main() -> None:
             raise NotImplementedError(f"command {command} is not supported")
 
         return_results(command_output)
+
+    except HTTPError as exc:
+        status = exc.response.status_code
+        if HTTP_ERRORS.get(status) is not None:
+            raise DemistoException(f'{HTTP_ERRORS[status]}',
+                                   res=exc.response)
+        else:
+            # if it is unknown error - get the message from the error itself
+            raise DemistoException(f'Something went wrong with the http call. Error: {str(exc)}', res=exc.response)
 
 # Log exceptions and return errors
     except Exception as e:
