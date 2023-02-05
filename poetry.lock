@@ -565,7 +565,7 @@ paramiko = "^2.11.0"
 Pebble = ">=4.6.3,<6.0.0"
 pipenv = "^2022.3.28"
 prettytable = "^3.2.0"
-pydantic = "^1.9.2"
+pydantic = "^1.10"
 pykwalify = "^1.8.0"
 pylint = "2.12.2"
 PyPDF2 = "^1.28.6"
@@ -613,8 +613,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "0cc91515b14991172357719a3ff10e3ceb5d27e3"
-resolved_reference = "0cc91515b14991172357719a3ff10e3ceb5d27e3"
+reference = "1a6df79331d3f4124f227c8ac1888814452aab6a"
+resolved_reference = "1a6df79331d3f4124f227c8ac1888814452aab6a"
 
 [[package]]
 name = "deprecated"
@@ -3450,7 +3450,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "6a487d27054a22dc2ece30e70a7353b616c1148aeb8d9389525fe69f81f14331"
+content-hash = "189f34109ae1f50fa0d81445a5fca2c205f64de9e515bc92445d98097dede97e"
 
 [metadata.files]
 aiodns = [
