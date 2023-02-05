@@ -3475,8 +3475,8 @@ def panorama_list_rules(xpath: str, name: str = None, filters: dict = None, quer
 
     if query:
         params["xpath"] = f'{params["xpath"]}[{query}]'
-    else:
-        params["xpath"] = f'{params["xpath"]}[{build_xpath_filter(name, filters)}]'
+    elif xpath_filter := build_xpath_filter(name, filters):
+        params["xpath"] = f'{params["xpath"]}[{xpath_filter}]'
 
     result = http_request(
         URL,
@@ -11673,8 +11673,8 @@ def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] =
 
     if query:
         _xpath = f"{_xpath}/rules/entry[{query}]"
-    else:
-        _xpath = f"{_xpath}/rules/entry[{build_xpath_filter(name, filters)}]"
+    elif xpath_filter := build_xpath_filter(name, filters):
+        _xpath = f"{_xpath}/rules/entry[{xpath_filter}]"
 
     if element:
         _xpath = f"{_xpath}/{element}"
@@ -12443,8 +12443,8 @@ def build_pbf_xpath(name, pre_post, element_to_change=None, filters: dict = None
 
     if query:
         _xpath = f"{_xpath}/rules/entry[{query}]"
-    else:
-        _xpath = f"{_xpath}/rules/entry[{build_xpath_filter(name, filters)}]"
+    elif xpath_filter := build_xpath_filter(name, filters):
+        _xpath = f"{_xpath}/rules/entry[{xpath_filter}]"
 
     if element_to_change:
         _xpath = f'{_xpath}/{element_to_change}'
@@ -12534,9 +12534,6 @@ def pan_os_list_pbf_rules_command(args):
     raw_response = pan_os_list_pbf_rules(name=name, pre_post=pre_post, show_uncommitted=show_uncommitted, filters=filters, query=query)
     result = raw_response.get('response', {}).get('result', {})
 
-    if action := args.get('action'):  # Due to API limitations, we need to filter the action manually.
-        result = [rule for rule in result if rule.get('entry', {}).get('action', {}).get(action)]
-
     # the 'entry' key could be a single dict as well.
     entries = dict_safe_get(result, ['pbf', 'rules', 'entry'], default_return_value=result.get('entry'))
     if not isinstance(entries, list):  # when only one nat rule is returned it could be returned as a dict.
@@ -12548,6 +12545,9 @@ def pan_os_list_pbf_rules_command(args):
         page_size = arg_to_number(args.get('page_size')) or DEFAULT_LIMIT_PAGE_SIZE
         limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT_PAGE_SIZE
         entries = do_pagination(entries, page=page, page_size=page_size, limit=limit)
+
+    if action := args.get('action'):  # Due to API limitations, we need to filter the action manually.
+        entries = [entry for entry in entries if entry.get('action', {}).get(action)]
 
     table, pbf_rules = parse_pan_os_list_pbf_rules(entries, show_uncommitted=show_uncommitted)
 
