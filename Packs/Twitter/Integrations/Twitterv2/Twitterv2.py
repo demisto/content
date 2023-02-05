@@ -172,9 +172,9 @@ def create_context_data_get_user(response: dict, pinned_tweets: str) -> list[dic
                 tweet_id = tweet.get('id')
                 if pinned_tweet_id == tweet_id:
                     dict_to_append['pinned_Tweets'] = {'id': data_item.get('id', None),
-                                                       'text': data_item.get('id', None),
-                                                       'conversation_id': data_item.get('id', None),
-                                                       'edit_history_tweet_ids': data_item.get('id', None)}
+                                                       'text': data_item.get('text', None),
+                                                       'conversation_id': data_item.get('conversation_id', None),
+                                                       'edit_history_tweet_ids': data_item.get('edit_history_tweet_ids', None)}
         list_dict_response.append(remove_empty_elements(dict_to_append))
     return list_dict_response
 
