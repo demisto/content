@@ -286,7 +286,8 @@ def main() -> None:  # pragma: no cover
                     if i == 3:
                         demisto.setIntegrationContext({'events': events})
                         demisto.info(f'successfully added the following events into integration context: {events}')
-                    time.sleep(1)  # pylint: disable=sleep-exists
+                    else:
+                        time.sleep(1)  # pylint: disable=sleep-exists
 
         elif command == 'saas-security-get-events':
             return_results(get_events_command(client, args, max_fetch=max_fetch, max_iterations=max_iterations))
