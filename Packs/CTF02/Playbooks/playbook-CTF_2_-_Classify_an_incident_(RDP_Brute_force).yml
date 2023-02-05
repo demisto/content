@@ -1,0 +1,1123 @@
+id: 4e46e9da-78eb-4dad-8b20-daedaad59bc3
+version: 29
+vcShouldKeepItemLegacyProdMachine: false
+name: CTF 2 - Classify an incident (RDP Brute force)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2f955290-68e6-48ed-86d5-abeff525a176
+    type: start
+    task:
+      id: 2f955290-68e6-48ed-86d5-abeff525a176
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a3e7be3c-ca70-4e4d-8d75-531934d646b0
+    type: regular
+    task:
+      id: a3e7be3c-ca70-4e4d-8d75-531934d646b0
+      version: -1
+      name: Find the XDR RDP Brute Force incident
+      description: "Welcome to the second CTF challenge! \nIn this section, we are
+        going to overview the XDR RDP Brute Force incident from an analyst's perspective.\n\nTo
+        complete the challenge, please complete all the tasks in this playbook.\nIn
+        order to complete the tasks you will need to find the XDR RDP Brute Force
+        incident in your environment.\n*Note*: do not change anything in the incident
+        itself since multiple students are working on the same one. \n\nOnce you find
+        the relevant incident to work on -> complete this task and proceed to the
+        questions. \n\nAs it was mentioned before, SLA for the answers will start
+        once you mark this task as completed.\n\n"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 2d7340f6-01dd-4aab-8079-a13d26dbfbb7
+    type: regular
+    task:
+      id: 2d7340f6-01dd-4aab-8079-a13d26dbfbb7
+      version: -1
+      name: 'Check your answer #6'
+      description: This should provide answers to the CTF_2 ( RDP BruteForce)
+      scriptName: CTF_2_BF
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      question_ID:
+        simple: "06"
+      secret:
+        complex:
+          root: Classification.Answers
+          accessor: "0"
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e2413a7c-62cc-4892-8636-41f807fdf8df
+    type: collection
+    task:
+      id: e2413a7c-62cc-4892-8636-41f807fdf8df
+      version: -1
+      name: Using the Export Dynamic Lists function.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            Run the following command from your endpoint and enter the gained indicator from your CLI.
+
+            curl  -u admin:admin <your tenant URL>/xsoar/instance/execute/edl1\?q\=type:ip%20and%20verdict:malicious%20and%20tags:<Tag from the previous answer>
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg:
+        - simple: True Positive
+        - simple: False Positive
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'Once you have ran the command, the output should be displayed immediately
+          . Remember to overwrite all missing params <> '
+        readonly: false
+      title: Using EDLs to export indicators
+      description: "Once the incident has been classified, you might use the indicators
+        as you wish ( for blocking or approving them on your external systems).\nThe
+        Export Indicator Generic Service can be very useful to accomplish such a mission
+        but remember you have to configure that in advance. \n\nTo save you time we
+        have already configured that for you.\nCheck the command provided to you in
+        the questions themselves. Run it from your terminal on your machine (remember
+        that you will need \"Curl\" for running this command.\n"
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 54308de3-0643-4926-8430-8199ec1d3c40
+    type: regular
+    task:
+      id: 54308de3-0643-4926-8430-8199ec1d3c40
+      version: -1
+      name: 'Check your answer #8'
+      description: This should provide answers to the CTF_2 ( RDP BruteForce)
+      scriptName: CTF_2_BF
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      question_ID:
+        simple: "08"
+      secret:
+        complex:
+          root: Using EDLs to export indicators.Answers
+          accessor: "0"
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 8072155c-e7a5-44cb-89bc-9051f6109c62
+    type: title
+    task:
+      id: 8072155c-e7a5-44cb-89bc-9051f6109c62
+      version: -1
+      name: No More Questions
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2940
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: ctf02
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 6b22d8b1-b558-47ca-81c0-a14b763b3bc7
+    type: regular
+    task:
+      id: 6b22d8b1-b558-47ca-81c0-a14b763b3bc7
+      version: -1
+      name: Hope you have enjoyed
+      description: "Thank you for participating in our workshop for the XSOAR. Hope
+        that you have enjoyed the challenge and also gained some knowledge. \n\nTill
+        next time :) \n\n "
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 00d4877a-4193-4524-8618-1e658c48e6bd
+    type: collection
+    task:
+      id: 00d4877a-4193-4524-8618-1e658c48e6bd
+      version: -1
+      name: Are any errors in the playbook?
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Are there any playbook errors? '
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: You can check the Work Plan entries or the Incident overview section
+        readonly: false
+      title: Check if there are any errors in the playbook?
+      description: Sometimes playbooks are stopped due to an issue whether it's because
+        of the integration or missing information.  No matter what - the playbook
+        should always run without errors so all the reliable information will be populated
+        to the analyst properly.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: f6dbc1c4-d6f9-443e-8fb6-36e44ad32874
+    type: regular
+    task:
+      id: f6dbc1c4-d6f9-443e-8fb6-36e44ad32874
+      version: -1
+      name: 'Check your answer #1'
+      description: This should provide answers to the CTF_2 ( RDP BruteForce)
+      scriptName: CTF_2_BF
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      question_ID:
+        simple: "01"
+      secret:
+        complex:
+          root: Check if there are any errors in the playbook?.Answers
+          accessor: "0"
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: ba2aa016-ab34-4657-87ca-fd8fe4bd417b
+    type: collection
+    task:
+      id: ba2aa016-ab34-4657-87ca-fd8fe4bd417b
+      version: -1
+      name: Take a look at the indicators section
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What is the type of malicious indicator?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: You can check the Work Plan entries or the Incident overview section
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: How many relationships does the malicious indicator have within
+            existing indicators in your XSAOR?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: You can see the relationship numbers in the on the relevant indicator
+          . Remember that existing indicators are highlighted  with link.
+        readonly: false
+      title: Check the various indicators that are extracted from the incident
+      description: Indicators are our way to determine if the incident is malicious
+        or not even before we deep dive into the details. Indicator extraction can
+        be done in various ways.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: c02b4fcf-d51f-44c5-8188-bf6b376dcad0
+    type: regular
+    task:
+      id: c02b4fcf-d51f-44c5-8188-bf6b376dcad0
+      version: -1
+      name: 'Check your answer #2'
+      description: This should provide answers to the CTF_2 ( RDP BruteForce)
+      scriptName: CTF_2_BF
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      question_ID:
+        simple: "02"
+      secret:
+        complex:
+          root: Check the various indicators that are extracted from the incident.Answers
+          accessor: "0"
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: d99fdbf8-098e-473b-8338-0eb5bf7398e3
+    type: regular
+    task:
+      id: d99fdbf8-098e-473b-8338-0eb5bf7398e3
+      version: -1
+      name: 'Check your answer #3'
+      description: This should provide answers to the CTF_2 ( RDP BruteForce)
+      scriptName: CTF_2_BF
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      question_ID:
+        simple: "03"
+      secret:
+        complex:
+          root: Check the various indicators that are extracted from the incident.Answers
+          accessor: "1"
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: e4356ec8-0745-46f4-8050-24edb1ddc5c8
+    type: collection
+    task:
+      id: e4356ec8-0745-46f4-8050-24edb1ddc5c8
+      version: -1
+      name: Check if this incident is associated with a camping
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Based on the Campaign's Report, what was the year when this campaign
+            was first seen?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'Check the description of the campaign''s  report '
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: How many indicators are associated with the campaign?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: You can do that by searching the campaign name in the Threat Intel
+          Tab
+        readonly: false
+      title: Threat Camping
+      description: |-
+        Based on what we have found, this Malicious Indicator is also associated with a well-known campaign (based on a threat report we got from our amazing Unit42).
+        And now, let's dive into this finding.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 5175863c-db57-4dce-82ae-a687fd17798e
+    type: regular
+    task:
+      id: 5175863c-db57-4dce-82ae-a687fd17798e
+      version: -1
+      name: 'Check your answer #4'
+      description: This should provide answers to the CTF_2 ( RDP BruteForce)
+      scriptName: CTF_2_BF
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      question_ID:
+        simple: "04"
+      secret:
+        complex:
+          root: Threat Camping.Answers
+          accessor: "0"
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: b6f2cf69-6dee-4a49-8aea-5d27a9f4dd3d
+    type: title
+    task:
+      id: b6f2cf69-6dee-4a49-8aea-5d27a9f4dd3d
+      version: -1
+      name: Campaign and report
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 0f5ea5c5-ec0d-4ce1-8c06-7cff982041a7
+    type: title
+    task:
+      id: 0f5ea5c5-ec0d-4ce1-8c06-7cff982041a7
+      version: -1
+      name: TIM and Auto-extract
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 2aabcdfa-3b73-4652-83e5-fb92d0fb681c
+    type: title
+    task:
+      id: 2aabcdfa-3b73-4652-83e5-fb92d0fb681c
+      version: -1
+      name: Related Incidents
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 360a66dd-561b-4b0d-86fa-2133dac41bf2
+    type: collection
+    task:
+      id: 360a66dd-561b-4b0d-86fa-2133dac41bf2
+      version: -1
+      name: Classify this incident!
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Classify this Incident
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: True Positive
+        - simple: False Positive
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'Since you observed the Indicators, SandBox report and other related
+          incidents, you should have all the right information '
+        readonly: false
+      title: Classification
+      description: "Now, once you covered the incident's details and more - you can
+        classify the incident through this playbook! \nSo what's it going to be? True
+        Or False Positive? \n\nSince you observed the Indicators, SandBox report,
+        and other related incidents, you should have all the information to accomplish
+        this mission."
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 640970f4-9a54-4955-84a2-cf23a5e763cf
+    type: title
+    task:
+      id: 640970f4-9a54-4955-84a2-cf23a5e763cf
+      version: -1
+      name: Post classification actions
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 7b75b9e0-3a9d-45c9-8fc8-e017ad85d868
+    type: title
+    task:
+      id: 7b75b9e0-3a9d-45c9-8fc8-e017ad85d868
+      version: -1
+      name: Investigate the incident
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: ctf02
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: cc483645-e820-44c1-8c33-2dd9b454aae9
+    type: regular
+    task:
+      id: cc483645-e820-44c1-8c33-2dd9b454aae9
+      version: -1
+      name: 'Check your answer #5'
+      description: This should provide answers to the CTF_2 ( RDP BruteForce)
+      scriptName: CTF_2_BF
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      question_ID:
+        simple: "05"
+      secret:
+        complex:
+          root: Threat Camping.Answers
+          accessor: "1"
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 83fe109e-2903-4635-8bc7-3196ab919c08
+    type: title
+    task:
+      id: 83fe109e-2903-4635-8bc7-3196ab919c08
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: a4869d99-bc3d-45a0-8f13-ba0f05de9bc8
+    type: collection
+    task:
+      id: a4869d99-bc3d-45a0-8f13-ba0f05de9bc8
+      version: -1
+      name: Check the tag associated with the malicious indicator
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What is the malicious indicator's tag in our investigation?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: You can check indicators information from the incident's indicator
+          quick view or through the Threat Intel section.
+        readonly: false
+      title: Check the tag associated with the malicious indicator
+      description: Once we have classified the incident as true positive, we would
+        like to go and block all the relevant systems in our environment hence we
+        want to be able to identify those indicators that we want to block. Therefore,
+        we can tag our indicators with dedicated tags.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 8e7afe80-04d8-49c8-8c89-6ce58f7505ea
+    type: regular
+    task:
+      id: 8e7afe80-04d8-49c8-8c89-6ce58f7505ea
+      version: -1
+      name: 'Check your answer #7'
+      description: This should provide answers to the CTF_2 ( RDP BruteForce)
+      scriptName: CTF_2_BF
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      question_ID:
+        simple: "07"
+      secret:
+        complex:
+          root: Check the tag associated with the malicious indicator.Answers
+          accessor: "0"
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3455,
+        "width": 850,
+        "x": 210,
+        "y": -120
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: f55db132-511d-4136-8251-85ddeca01e53
