@@ -105,9 +105,8 @@ for ip in ip_list:
             indicator_exists = is_exist_res[0].get("Contents", {})[0].get("Exists")
             sleep(POLLING_TIME)
 
-    # If indicator exists, update it:
-    else:
-        demisto.executeCommand("setIndicator", args_set_existing_indicator)
+    # Once indicator exists, update it with internal property:
+    demisto.executeCommand("setIndicator", args_set_existing_indicator)
 
     # Finally - append new tag
     # The reason we don't add tags in the createNewIndicator or setIndicator funtions is because we don't want to override existing tags.
