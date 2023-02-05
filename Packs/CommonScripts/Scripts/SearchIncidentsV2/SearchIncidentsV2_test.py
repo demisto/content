@@ -2,9 +2,9 @@ from SearchIncidentsV2 import *
 import pytest
 
 data_test_check_if_found_incident = [
-    ([], 'failed to get incidents from demisto.\nGot: []'),
-    (None, 'failed to get incidents from demisto.\nGot: None'),
-    ('', 'failed to get incidents from demisto.\nGot: '),
+    ([], 'failed to get incidents from xsoar.\nGot: []'),
+    (None, 'failed to get incidents from xsoar.\nGot: None'),
+    ('', 'failed to get incidents from xsoar.\nGot: '),
     ([{'Contents': {'data': None}}], False),
     ([{'Contents': {'data': 'test'}}], True),
     ([{'Contents': {'test': 'test'}}], "{'test': 'test'}"),
@@ -103,15 +103,15 @@ FILTER_TO_MATCHED_INCIDENTS = [
     ({'type': ['Type-A', 'SomeType-A']}, ['2', '3']),
     ({'type': 'Another'}, []),
     ({'name': 'Phishing'}, ['1']),
-    ({'name': 'Phishing,Phishing Campaign'}, ['1', '2']),
+    ({'name': 'Phishing,Phishing Campaign'}, ['1', '2'])
 ]
 
 INCIDENT = [
     {'CustomFields':
-        {'hostname': 'host_name',
-         'initiatedby': 'initiated_by',
-         'targetprocessname': 'target_process_name',
-         'username': 'user_name'},
+         {'hostname': 'host_name',  # noqa
+          'initiatedby': 'initiated_by',
+          'targetprocessname': 'target_process_name',
+          'username': 'user_name'},
 
      'status': 0,
      'severity': 1,
@@ -174,3 +174,9 @@ def test_transform_to_alert_data():
     assert incident['hostname'] == 'host_name'
     assert incident['status'] == 'PENDING'
     assert incident['severity'] == 'LOW'
+
+
+def test_summarize_incidents():
+    assert summarize_incidents({'add_fields_to_summarize_context': 'test'}, [{'id': 'test', 'CustomFields': {}}]) == [
+        {'closed': 'n/a', 'created': 'n/a', 'id': 'test', 'incidentLink': 'n/a', 'name': 'n/a', 'owner': 'n/a',
+         'severity': 'n/a', 'status': 'n/a', 'test': 'n/a', 'type': 'n/a'}]

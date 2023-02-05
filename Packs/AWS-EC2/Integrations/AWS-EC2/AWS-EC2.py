@@ -1553,11 +1553,13 @@ def create_policy_kwargs_dict(args):
     policy_kwargs_keys = (('fromPort', 'FromPort'), ('toPort', 'ToPort'))
     policy_kwargs = {}
     for args_key, dict_key in policy_kwargs_keys:
-        if int(args.get(args_key)) is not None:
-            policy_kwargs.update({dict_key: int(args.get(args_key))})
+        if key := args.get(args_key):
+            policy_kwargs.update({dict_key: arg_to_number(key)})
     policy_kwargs_keys = (('cidrIp', 'CidrIp'), ('ipProtocol', 'IpProtocol'),
                           ('sourceSecurityGroupName', 'SourceSecurityGroupName'),
-                          ('SourceSecurityGroupOwnerId', 'SourceSecurityGroupOwnerId'))
+                          ('SourceSecurityGroupOwnerId', 'SourceSecurityGroupOwnerId'),
+                          ('cidrIpv6', 'CidrIpv6'),
+                          )
     for args_key, dict_key in policy_kwargs_keys:
         if args.get(args_key) is not None:
             policy_kwargs.update({dict_key: args.get(args_key)})
@@ -2929,8 +2931,8 @@ def main():
         aws_role_session_name = params.get('roleSessionName')
         aws_role_session_duration = params.get('sessionDuration')
         aws_role_policy = None
-        aws_access_key_id = params.get('access_key')
-        aws_secret_access_key = params.get('secret_key')
+        aws_access_key_id = params.get('credentials', {}).get('identifier') or params.get('access_key')
+        aws_secret_access_key = params.get('credentials', {}).get('password') or params.get('secret_key')
         verify_certificate = not params.get('insecure', True)
         timeout = params.get('timeout')
         retries = params.get('retries') or 5

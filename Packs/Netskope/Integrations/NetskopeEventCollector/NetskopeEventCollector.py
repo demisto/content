@@ -11,8 +11,9 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-EVENT_TYPES_V1 = ['application', 'audit', 'network']  # api version - v1
-EVENT_TYPES_V2 = ['alert', 'application', 'audit', 'network']  # api version v2
+ALL_SUPPORTED_EVENT_TYPES = ['alert', 'application', 'audit', 'network', 'page']
+EVENT_TYPES_V1 = ['application', 'audit', 'network', 'page']  # api version - v1
+EVENT_TYPES_V2 = ALL_SUPPORTED_EVENT_TYPES  # api version v2
 
 
 ''' CLIENT CLASS '''
@@ -32,7 +33,7 @@ class Client(BaseClient):
     def __init__(self, base_url: str, token: str, api_version: str, validate_certificate: bool, proxy: bool):
         super().__init__(base_url, verify=validate_certificate, proxy=proxy)
         if api_version == 'v1':
-            self._session.params['token'] = token
+            self._session.params['token'] = token  # type: ignore
         else:
             self.headers = {'Netskope-Api-Token': token}
 
@@ -68,7 +69,7 @@ class Client(BaseClient):
         if response.get('status') == 'success':
             results = response.get('data', [])
             for event in results:
-                event['event_type'] = 'alert'
+                populate_modeling_rule_fields(event, 'alert')
             return results
         return []
 
@@ -83,7 +84,7 @@ class Client(BaseClient):
 
 
 def get_sorted_events_by_type(events: list, event_type: str = '') -> list:
-    filtered_events = [event for event in events if event.get('event_type') == event_type]
+    filtered_events = [event for event in events if event.get('source_log_event') == event_type]
     filtered_events.sort(key=lambda k: k.get('timestamp'))
     return filtered_events
 
@@ -96,11 +97,20 @@ def create_last_run(events: list, last_run: dict) -> dict:  # type: ignore
     Returns:
     A dictionary with the times for the next run
     """
-    for event_type in ['alert', 'audit', 'application', 'network']:
+    for event_type in ALL_SUPPORTED_EVENT_TYPES:
         ordered_events_by_type = get_sorted_events_by_type(events, event_type)
         events_time = ordered_events_by_type[-1]['timestamp'] if ordered_events_by_type else last_run[event_type]
         last_run[event_type] = events_time
     return last_run
+
+
+def populate_modeling_rule_fields(event: dict, event_type: str):
+    event['source_log_event'] = event_type
+    try:
+        event['_time'] = timestamp_to_datestring(event['timestamp'] * 1000)
+    except TypeError:
+        # modeling rule will default on ingestion time if _time is missing
+        pass
 
 
 ''' COMMAND FUNCTIONS '''
@@ -128,7 +138,7 @@ def get_events_v1(client: Client, last_run: dict, limit: Optional[int] = None) -
         if response.get('status') == 'success':
             results = response.get('data', [])
             for event in results:
-                event['event_type'] = event_type
+                populate_modeling_rule_fields(event, event_type)
             events.extend(results)
 
     return events
@@ -174,7 +184,7 @@ def get_events_v2(client, last_run: dict, limit: Optional[int] = None) -> List[A
         if response.get('ok') == 1:
             results = response.get('result', [])
             for event in results:
-                event['event_type'] = event_type
+                populate_modeling_rule_fields(event, event_type)
             events.extend(results)
     return events
 
@@ -233,14 +243,8 @@ def main() -> None:  # pragma: no cover
         client = Client(base_url, token, api_version, verify_certificate, proxy)
 
         last_run = demisto.getLastRun()
-        if not last_run:
-            first_fetch = int(arg_to_datetime(first_fetch).timestamp())  # type: ignore[union-attr]
-            last_run = {
-                'alert': first_fetch,
-                'application': first_fetch,
-                'audit': first_fetch,
-                'network': first_fetch
-            }
+        first_fetch = int(arg_to_datetime(first_fetch).timestamp())  # type: ignore[union-attr]
+        last_run = {event_type: last_run.get(event_type, first_fetch) for event_type in ALL_SUPPORTED_EVENT_TYPES}
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.

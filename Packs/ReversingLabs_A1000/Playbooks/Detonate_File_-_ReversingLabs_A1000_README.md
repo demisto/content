@@ -45,4 +45,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Detonate File - ReversingLabs A1000](doc_imgs/Detonate_File_-_ReversingLabs_A1000_Thu_Jun_09_2022.png)
+![Detonate File - ReversingLabs A1000](../doc_files/Playbook_-_Detonate_File_-_ReversingLabs_A1000.png)

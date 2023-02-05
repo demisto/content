@@ -147,3 +147,24 @@ def test_launch_scan_command(mocker, requests_mock):
 
     assert 'The requested scan was launched successfully' in results['HumanReadable']
     assert entry_context['Id'] == '1'
+
+
+def test_get_asset_details_command(mocker, requests_mock):
+    from test_data.response_and_results import MOCK_RAW_ASSET_BY_IP
+    from test_data.response_and_results import MOCK_RAW_ASSET_ATTRIBUTES
+    from test_data.response_and_results import EXPECTED_ASSET_INFO_RESULTS
+
+    mock_demisto(mocker, {'ip': '1.3.2.1'})
+    requests_mock.get(MOCK_PARAMS['url'] + 'workbenches/assets', json={'assets': [{'id': 'fake_asset_id'}]})
+    requests_mock.get(MOCK_PARAMS['url'] + 'workbenches/assets/fake_asset_id/info',
+                      json=MOCK_RAW_ASSET_BY_IP)
+    requests_mock.get(MOCK_PARAMS['url'] + 'api/v3/assets/fake_asset_id/attributes',
+                      json=MOCK_RAW_ASSET_ATTRIBUTES)
+
+    from Tenable_io import get_asset_details_command
+
+    response = get_asset_details_command()
+
+    assert response.outputs == EXPECTED_ASSET_INFO_RESULTS
+    assert response.outputs_prefix == 'TenableIO.AssetDetails'
+    assert response.outputs_key_field == 'id'

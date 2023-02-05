@@ -1,8 +1,11 @@
 [file:MicrosoftGraphListener.yml]
-ignore=IN126,DS107,IN145
+ignore=IN126,DS107,IN124
 
 [file:classifier-mapper-incomming-MicrosoftGraphListener.json]
 ignore=BA101
 
 [file:classifier-MicrosoftGraphListener.json]
 ignore=BA101
+
+[known_words]
+msgraph

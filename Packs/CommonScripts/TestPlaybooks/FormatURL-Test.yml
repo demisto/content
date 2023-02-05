@@ -71,10 +71,10 @@ tasks:
     continueonerrortype: ""
   "2":
     id: "2"
-    taskid: 5523d22f-ff4c-48ac-8488-a54ce4f5d8b1
+    taskid: 3a237766-32bc-48b0-8d28-6ce5fb7769db
     type: condition
     task:
-      id: 5523d22f-ff4c-48ac-8488-a54ce4f5d8b1
+      id: 3a237766-32bc-48b0-8d28-6ce5fb7769db
       version: -1
       name: Assert Expected URL is Extracted
       description: This script checks that a context key exists (and contains data), and optionally checks the value of the context key for a match against an input value. If a regex is not supplied, the script checks that the key is not empty. This script can be used with the "GenericPolling" playbook to poll for field population or that a field contains a specific value. This scripts does not support a context key which holds a list of values.
@@ -109,7 +109,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: https://office.memoriesflower.com/permission/office.php
+              simple: https://office.memoriesflower.com/Permission/office.php
     continueonerrortype: ""
   "3":
     id: "3"
@@ -225,10 +225,10 @@ tasks:
     continueonerrortype: ""
   "6":
     id: "6"
-    taskid: 7db87ae8-2c54-41bf-8b7c-8a9d88c2c93f
+    taskid: 6e4c393b-b789-4646-8d38-6edf4922bfc6
     type: condition
     task:
-      id: 7db87ae8-2c54-41bf-8b7c-8a9d88c2c93f
+      id: 6e4c393b-b789-4646-8d38-6edf4922bfc6
       version: -1
       name: Assert Expected URL is Extracted
       description: Verify given entry contains a string
@@ -263,7 +263,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://links.mkt3337.com/ctt?kn=3&ms=mzq3otg3mdqs1&r=mzkxnzk3ndkwmda0s0&b=0&j=mtmwmja1odyznqs2&mt=1&rt=0
+              simple: http://links.mkt3337.com/ctt?kn=3&ms=MzQ3OTg3MDQS1&r=MzkxNzk3NDkwMDA0S0&b=0&j=MTMwMjA1ODYzNQS2&mt=1&rt=0
     continueonerrortype: ""
   "7":
     id: "7"
@@ -540,3 +540,6 @@ inputs: []
 outputs: []
 fromversion: 5.5.0
 description: Format URL test playbook
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

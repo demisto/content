@@ -1,0 +1,296 @@
+id: Cortex ASM - Remediation
+version: -1
+name: Cortex ASM - Remediation
+description: This playbook contains all the cloud provider sub playbooks for remediation
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bbd9a0ef-9f0c-4eb6-8be4-f2b1ae05bac6
+    type: start
+    task:
+      id: bbd9a0ef-9f0c-4eb6-8be4-f2b1ae05bac6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 6ae52c8e-9574-4dcd-8167-da8bc501096f
+    type: playbook
+    task:
+      id: 6ae52c8e-9574-4dcd-8167-da8bc501096f
+      version: -1
+      name: GCP - Firewall Remediation
+      description: Replace current firewall rules with limited access firewall rules.
+      playbookName: GCP - Firewall Remediation
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      GcpInstance:
+        complex:
+          root: alert.asmsystemids
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: alert.asmsystemids.Type
+                iscontext: true
+              right:
+                value:
+                  simple: GCP-VMNAME
+          accessor: ID
+      GcpNetwork:
+        complex:
+          root: alert.asmsystemids
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: alert.asmsystemids.Type
+                iscontext: true
+              right:
+                value:
+                  simple: GCP-VPC
+          accessor: ID
+      GcpZone:
+        complex:
+          root: alert.asmsystemids
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: alert.asmsystemids.Type
+                iscontext: true
+              right:
+                value:
+                  simple: GCP-ZONE
+          accessor: ID
+      RemotePort:
+        complex:
+          root: alert
+          accessor: remoteport
+      RemoteProtocol:
+        complex:
+          root: alert
+          accessor: protocol
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 4b3f41bd-ddc3-452e-8e2c-52c76325a037
+    type: condition
+    task:
+      id: 4b3f41bd-ddc3-452e-8e2c-52c76325a037
+      version: -1
+      name: What provider is this service?
+      description: Determines which cloud provider the service is in order to direct to the correct enrichment.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      AWS:
+      - "5"
+      GCP:
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: AWS
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: alert.asmcloud
+                accessor: Provider
+            iscontext: true
+          right:
+            value:
+              simple: AWS
+    - label: GCP
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: alert.asmcloud
+                accessor: Provider
+            iscontext: true
+          right:
+            value:
+              simple: GCP
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: af99df92-ef90-428d-81d3-4ff4e3bed216
+    type: title
+    task:
+      id: af99df92-ef90-428d-81d3-4ff4e3bed216
+      version: -1
+      name: Completed
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ff76e94c-74e4-42e8-89a8-1fd3774f00b1
+    type: playbook
+    task:
+      id: ff76e94c-74e4-42e8-89a8-1fd3774f00b1
+      version: -1
+      name: AWS - Security Group Remediation
+      description: Replace current security groups with limited access security groups.
+      playbookName: AWS - Security Group Remediation
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      NicID:
+        complex:
+          root: alert.asmsystemids
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: alert.asmsystemids.Type
+                iscontext: true
+              right:
+                value:
+                  simple: AWS-NIC
+          accessor: ID
+      RemediationRule:
+        complex:
+          root: inputs.RemediationRule
+      VpcID:
+        complex:
+          root: alert.asmsystemids
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: alert.asmsystemids.Type
+                iscontext: true
+              right:
+                value:
+                  simple: AWS-VPC
+          accessor: ID
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 825,
+        "width": 870,
+        "x": 440,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: RemediationRule
+  value:
+    simple: Remediation-Security-Group
+  required: true
+  description: 'The security group that will used for remediating internet exposures. '
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+marketplaces:
+  - marketplacev2

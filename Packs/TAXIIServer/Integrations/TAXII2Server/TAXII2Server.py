@@ -87,7 +87,18 @@ STIX2_TYPES_TO_XSOAR: dict[str, Union[str, tuple[str, ...]]] = {
     'url': FeedIndicatorType.URL,
     'file': FeedIndicatorType.File,
     'windows-registry-key': FeedIndicatorType.Registry,
+    'indicator': (FeedIndicatorType.IP, FeedIndicatorType.IPv6, FeedIndicatorType.DomainGlob,
+                  FeedIndicatorType.Domain, FeedIndicatorType.Account, FeedIndicatorType.Email,
+                  FeedIndicatorType.URL, FeedIndicatorType.File, FeedIndicatorType.Registry)
 }
+
+HASH_TYPE_TO_STIX_HASH_TYPE = {
+    'md5': 'MD5',
+    'sha1': 'SHA-1',
+    'sha256': 'SHA-256',
+    'sha512': 'SHA-512',
+}
+
 
 ''' TAXII2 Server '''
 
@@ -331,8 +342,8 @@ class TAXII2Server:
         objects = limited_iocs
 
         if SERVER.has_extension:
-            limited_extensions = extensions[offset:offset + limit]
-            objects = [val for pair in zip(limited_iocs, limited_extensions) for val in pair]
+            limited_extensions = get_limited_extensions(limited_iocs, extensions)
+            objects.extend(limited_extensions)
 
         if limited_iocs:
             first_added = limited_iocs[-1].get('created')
@@ -361,6 +372,24 @@ class TAXII2Server:
 SERVER: TAXII2Server = None  # type: ignore[assignment]
 
 ''' HELPER FUNCTIONS '''
+
+
+def get_limited_extensions(limited_iocs, extensions):
+    """
+    Args:
+        limited_iocs: List of the limited iocs.
+        extensions: List of all the generated extensions to limit.
+
+    Returns: List of the limited extensions related to the limited iocs.
+    """
+    limited_extensions = []
+    required_extensions_ids = []
+    for ioc in limited_iocs:
+        required_extensions_ids.extend(list(ioc.get('extensions', {}).keys()))
+    for extension in extensions:
+        if extension.get('id') in required_extensions_ids:
+            limited_extensions.append(extension)
+    return limited_extensions
 
 
 def taxii_validate_request_headers(f: Callable) -> Callable:
@@ -557,7 +586,7 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
     )
 
     total = 0
-
+    extensions_dict: dict = {}
     for ioc in indicator_searcher:
         found_indicators = ioc.get('iocs') or []
         total = ioc.get('total')
@@ -568,12 +597,13 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
                 if manifest_entry:
                     iocs.append(manifest_entry)
             else:
-                stix_ioc, extension_definition = create_stix_object(xsoar_indicator, xsoar_type)
+                stix_ioc, extension_definition, extensions_dict = create_stix_object(xsoar_indicator, xsoar_type, extensions_dict)
                 if XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) in SERVER.types_for_indicator_sdo:
                     stix_ioc = convert_sco_to_indicator_sdo(stix_ioc, xsoar_indicator)
                 if SERVER.has_extension and stix_ioc:
                     iocs.append(stix_ioc)
-                    extensions.append(extension_definition)
+                    if extension_definition:
+                        extensions.append(extension_definition)
                 elif stix_ioc:
                     iocs.append(stix_ioc)
 
@@ -683,28 +713,52 @@ def convert_sco_to_indicator_sdo(stix_object: dict, xsoar_indicator: dict) -> di
     object_type = stix_object['type']
     stix_type = 'indicator'
 
+    pattern = ''
+    if object_type == 'file':
+        hash_type = HASH_TYPE_TO_STIX_HASH_TYPE.get(get_hash_type(indicator_value), 'Unknown')
+        pattern = f"[file:hashes.'{hash_type}' = '{indicator_pattern_value}']"
+    else:
+        pattern = f"[{object_type}:value = '{indicator_pattern_value}']"
+
+    labels = get_labels_for_indicator(xsoar_indicator.get('score'))
+
     stix_domain_object: Dict[str, Any] = assign_params(
         type=stix_type,
         id=create_sdo_stix_uuid(xsoar_indicator, stix_type),
-        pattern=f"[{object_type}:value = '{indicator_pattern_value}']",
+        pattern=pattern,
         valid_from=stix_object['created'],
         valid_until=expiration_parsed,
-        description=xsoar_indicator.get('CustomFields', {}).get('description', '')
+        description=xsoar_indicator.get('CustomFields', {}).get('description', ''),
+        pattern_type='stix',
+        labels=labels
     )
     return dict({k: v for k, v in stix_object.items()
                  if k in ('spec_version', 'created', 'modified')}, **stix_domain_object)
 
 
-def create_stix_object(xsoar_indicator: dict, xsoar_type: str) -> tuple:
+def get_labels_for_indicator(score):
+    """Get indicator label based on the DBot score"""
+    if int(score) == 0:
+        return ['']
+    elif int(score) == 1:
+        return ['benign']
+    elif int(score) == 2:
+        return ['anomalous-activity']
+    elif int(score) == 3:
+        return ['malicious-activity']
+
+
+def create_stix_object(xsoar_indicator: dict, xsoar_type: str, extensions_dict: dict = {}) -> tuple:
     """
 
     Args:
         xsoar_indicator: to create stix object entry from
         xsoar_type: type of indicator in xsoar system
-
+        extensions_dict: dict contains all object types that already have their extension defined
     Returns:
         Stix object entry for given indicator, and extension. Format described here:
         (https://docs.google.com/document/d/1wE2JibMyPap9Lm5-ABjAZ02g098KIxlNQ7lMMFkQq44/edit#heading=h.naoy41lsrgt0)
+        extensions_dict: dict contains all object types that already have their extension defined
     """
     is_sdo = False
     if stix_type := XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type):
@@ -751,11 +805,42 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str) -> tuple:
         xsoar_indicator_to_return = xsoar_indicator
     extension_definition = {}
 
-    if SERVER.has_extension:
+    if SERVER.has_extension and object_type not in SERVER.types_for_indicator_sdo:
+        stix_object, extension_definition, extensions_dict = create_extension_definition(object_type, extensions_dict, xsoar_type,
+                                                                                         created_parsed, modified_parsed,
+                                                                                         stix_object, xsoar_indicator_to_return)
+
+    if is_sdo:
+        stix_object['description'] = xsoar_indicator.get('CustomFields', {}).get('description', "")
+    return stix_object, extension_definition, extensions_dict
+
+
+def create_extension_definition(object_type, extensions_dict, xsoar_type,
+                                created_parsed, modified_parsed, stix_object, xsoar_indicator_to_return):
+    """
+    Args:
+        object_type: the type of the stix_object.
+        xsoar_type: type of indicator in xsoar system.
+        extensions_dict: dict contains all object types that already have their extension defined.
+        created_parsed: the stix object creation time.
+        modified_parsed: the stix object last modified time.
+        stix_object: Stix object entry.
+        xsoar_indicator_to_return: the xsoar indicator to return.
+
+    Create an extension definition and update the stix object and extensions dict accordingly.
+
+    Returns:
+        the updated Stix object, its extension and updated extensions_dict.
+    """
+    extension_definition = {}
+    if object_type in extensions_dict:
+        extension_id = extensions_dict.get(object_type, {}).get('extension_id')
+        xsoar_indicator_to_return = extensions_dict.get(object_type, {}).get('xsoar_indicator_to_return')
+    else:
         xsoar_indicator_to_return['extension_type'] = 'property_extension'
-        extention_id = f'extension-definition--{uuid.uuid4()}'
+        extension_id = f'extension-definition--{uuid.uuid4()}'
         extension_definition = {
-            'id': extention_id,
+            'id': extension_id,
             'type': 'extension-definition',
             'spec_version': SERVER.version,
             'name': f'Cortex XSOAR TIM {xsoar_type}',
@@ -769,13 +854,11 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str) -> tuple:
             'version': '1.0',
             'extension_types': ['property-extension']
         }
-        stix_object['extensions'] = {
-            extention_id: xsoar_indicator_to_return,
-        }
-
-    if is_sdo:
-        stix_object['description'] = xsoar_indicator.get('CustomFields', {}).get('description', "")
-    return stix_object, extension_definition
+        extensions_dict[object_type] = {'extension_id': extension_id, 'xsoar_indicator_to_return': xsoar_indicator_to_return}
+    stix_object['extensions'] = {
+        extension_id: xsoar_indicator_to_return
+    }
+    return stix_object, extension_definition, extensions_dict
 
 
 def parse_content_range(content_range: str) -> tuple:

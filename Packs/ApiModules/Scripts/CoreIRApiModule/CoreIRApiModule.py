@@ -2040,7 +2040,7 @@ def blocklist_files_command(client, args):
                                         headers=['added_hashes'],
                                         headerTransform=pascalToSpace),
         outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                 f'blocklist.added_hashes.fileHash(val.fileHash == obj.fileHash)': hash_list},
+                 f'{args.get("prefix", "blocklist")}.added_hashes.fileHash(val.fileHash == obj.fileHash)': hash_list},
         raw_response=res
     )
 
@@ -2077,7 +2077,7 @@ def allowlist_files_command(client, args):
     if detailed_response:
         return CommandResults(
             readable_output=tableToMarkdown('Allowlist Files', res),
-            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.blocklist',
+            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.allowlist',
             outputs=res,
             raw_response=res
         )
@@ -2090,7 +2090,7 @@ def allowlist_files_command(client, args):
                                         headers=['added_hashes'],
                                         headerTransform=pascalToSpace),
         outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                 f'allowlist.added_hashes.fileHash(val.fileHash == obj.fileHash)': hash_list},
+                 f'{args.get("prefix", "allowlist")}.added_hashes.fileHash(val.fileHash == obj.fileHash)': hash_list},
         raw_response=res
     )
 
@@ -2586,13 +2586,12 @@ def handle_outgoing_issue_closure(remote_args):
     current_remote_status = remote_args.data.get('status') if remote_args.data else None
     # force closing remote incident only if:
     #   The XSOAR incident is closed
-    #   and the closingUserId was changed
     #   and the remote incident isn't already closed
     if remote_args.inc_status == 2 and \
-       update_args.get('closingUserId') and \
        current_remote_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
 
-        update_args['resolve_comment'] = update_args.get('closeNotes', '')
+        if close_notes := update_args.get('closeNotes'):
+            update_args['resolve_comment'] = close_notes
         update_args['status'] = XSOAR_RESOLVED_STATUS.get(update_args.get('closeReason', 'Other'))
         demisto.debug(f"Closing Remote incident with status {update_args['status']}")
 

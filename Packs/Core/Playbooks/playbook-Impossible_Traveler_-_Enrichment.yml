@@ -10,10 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: fc4d8da7-1269-45ad-8703-7516226dfcf9
+    taskid: 7ccb9fd5-4d10-49ab-89c8-a920b9547981
     type: start
     task:
-      id: fc4d8da7-1269-45ad-8703-7516226dfcf9
+      id: 7ccb9fd5-4d10-49ab-89c8-a920b9547981
       version: -1
       name: ""
       iscommand: false
@@ -37,14 +37,15 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
-    taskid: b4a79111-8e9a-4e92-8b75-9f5deef55af6
+    taskid: 26e7340f-7890-4435-8c78-04ad7fcbafca
     type: condition
     task:
-      id: b4a79111-8e9a-4e92-8b75-9f5deef55af6
+      id: 26e7340f-7890-4435-8c78-04ad7fcbafca
       version: -1
-      name: Can the account be enriched?
+      name: Is there account to be enriched?
       description: Checks whether there is a username for the offending user in context, and whether Active Directory v2 is enabled.
       type: condition
       iscommand: false
@@ -61,31 +62,10 @@ tasks:
       - - operator: isExists
           left:
             value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Active Directory Query v2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
               simple: incident.username
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -100,12 +80,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "9":
     id: "9"
-    taskid: b6abe120-6d1f-4eec-831e-28507e24a06a
+    taskid: f38df01f-6b55-466a-8bce-2e98b9b287d0
     type: title
     task:
-      id: b6abe120-6d1f-4eec-831e-28507e24a06a
+      id: f38df01f-6b55-466a-8bce-2e98b9b287d0
       version: -1
       name: Done
       type: title
@@ -127,12 +108,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "13":
     id: "13"
-    taskid: 648c7ef2-9607-4b0a-832e-cd336da1c563
+    taskid: 8f0bc025-3ee1-42b3-8f04-524a31b916df
     type: regular
     task:
-      id: 648c7ef2-9607-4b0a-832e-cd336da1c563
+      id: 8f0bc025-3ee1-42b3-8f04-524a31b916df
       version: -1
       name: Get coordinates for the IP Addresses
       description: Sends an HTTP request. Returns the response as Json.
@@ -163,12 +145,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "14":
     id: "14"
-    taskid: 58c7dc86-983c-4daa-8595-4292e03f7583
+    taskid: eb064458-d034-4248-89a9-3fac30ef7520
     type: regular
     task:
-      id: 58c7dc86-983c-4daa-8595-4292e03f7583
+      id: eb064458-d034-4248-89a9-3fac30ef7520
       version: -1
       name: Parse HTTP response JSON
       description: 'Parse a given JSON string "value" to a representative object. For example: ''{"a": "value"}'' => {"a": "value"}.'
@@ -209,12 +192,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "15":
     id: "15"
-    taskid: 64a4ddd2-e5bf-4586-84ec-1ebb57812236
+    taskid: f03e3aee-72d7-456e-8c29-48df8ffadc9b
     type: regular
     task:
-      id: 64a4ddd2-e5bf-4586-84ec-1ebb57812236
+      id: f03e3aee-72d7-456e-8c29-48df8ffadc9b
       version: -1
       name: Set Location
       description: Sets a value in context under the key you entered.
@@ -261,12 +245,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "16":
     id: "16"
-    taskid: 44f5608d-032c-47e2-82ec-6923fb39431c
+    taskid: 31b0887a-17b7-4446-8ae3-9286cb07a564
     type: regular
     task:
-      id: 44f5608d-032c-47e2-82ec-6923fb39431c
+      id: 31b0887a-17b7-4446-8ae3-9286cb07a564
       version: -1
       name: Set Event Time
       description: Sets a value in context under the key you entered.
@@ -301,12 +286,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "18":
     id: "18"
-    taskid: 9c8786c5-2bc1-485e-87d1-48d0a469e3f3
+    taskid: 8ae6b224-d274-49e6-8665-43b78bdd5b6d
     type: regular
     task:
-      id: 9c8786c5-2bc1-485e-87d1-48d0a469e3f3
+      id: 8ae6b224-d274-49e6-8665-43b78bdd5b6d
       version: -1
       name: Delete HTTP Response Context
       description: |-
@@ -342,12 +328,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "19":
     id: "19"
-    taskid: e24cc311-2f9f-4707-875f-851c2f5fc4c1
+    taskid: 817a6f83-aad4-46a2-8035-4e4778523de7
     type: regular
     task:
-      id: e24cc311-2f9f-4707-875f-851c2f5fc4c1
+      id: 817a6f83-aad4-46a2-8035-4e4778523de7
       version: -1
       name: Set IP Address
       description: Sets a value in context under the key you entered.
@@ -393,12 +380,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "21":
     id: "21"
-    taskid: ecf8a5b1-a14c-4f20-859b-c3ccc90bbfab
+    taskid: 1d06af95-318b-4397-8dbb-72b52f36f0a2
     type: regular
     task:
-      id: ecf8a5b1-a14c-4f20-859b-c3ccc90bbfab
+      id: 1d06af95-318b-4397-8dbb-72b52f36f0a2
       version: -1
       name: Delete Coordinates Context
       description: |-
@@ -434,12 +422,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "22":
     id: "22"
-    taskid: 551b7910-0643-4b54-8c4f-2c3aa08d6701
+    taskid: 4d690d07-5c35-42e4-8da1-3dfc737316f5
     type: regular
     task:
-      id: 551b7910-0643-4b54-8c4f-2c3aa08d6701
+      id: 4d690d07-5c35-42e4-8da1-3dfc737316f5
       version: -1
       name: Create Impossible Traveler Events
       description: Sets a value in context under the key you entered.
@@ -485,12 +474,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "23":
     id: "23"
-    taskid: 62195258-dc32-434d-8f8d-1d9d2f6f2fa9
+    taskid: 7157a915-00e4-419b-8d9e-1e3b46bc706a
     type: regular
     task:
-      id: 62195258-dc32-434d-8f8d-1d9d2f6f2fa9
+      id: 7157a915-00e4-419b-8d9e-1e3b46bc706a
       version: -1
       name: Delete Events Context
       description: |-
@@ -526,12 +516,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "24":
     id: "24"
-    taskid: 8b425d6e-2abc-474e-8400-1a4a24c1141c
+    taskid: 97760e8c-ee4d-4656-8d19-65928cb54fcd
     type: regular
     task:
-      id: 8b425d6e-2abc-474e-8400-1a4a24c1141c
+      id: 97760e8c-ee4d-4656-8d19-65928cb54fcd
       version: -1
       name: Set Country
       description: Sets a value in context under the key you entered.
@@ -577,12 +568,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "26":
     id: "26"
-    taskid: f49b343b-6623-4160-8285-339d2787c6bc
+    taskid: 0411b244-1c46-466e-87f7-3f5770571e2f
     type: regular
     task:
-      id: f49b343b-6623-4160-8285-339d2787c6bc
+      id: 0411b244-1c46-466e-87f7-3f5770571e2f
       version: -1
       name: Set event identity
       description: Sets a value in context under the key you entered.
@@ -619,12 +611,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "27":
     id: "27"
-    taskid: 91c3bcf8-543a-4495-8ee8-47af61b90e8f
+    taskid: ea2cf994-dcd6-4756-811f-6ac158487081
     type: title
     task:
-      id: 91c3bcf8-543a-4495-8ee8-47af61b90e8f
+      id: ea2cf994-dcd6-4756-811f-6ac158487081
       version: -1
       name: Clear Processed Context
       type: title
@@ -651,12 +644,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "28":
     id: "28"
-    taskid: 840ab143-98a6-4984-8459-8d36947800cd
+    taskid: ace7b867-75f1-48b0-8a9b-464fdb91d6d2
     type: regular
     task:
-      id: 840ab143-98a6-4984-8459-8d36947800cd
+      id: ace7b867-75f1-48b0-8a9b-464fdb91d6d2
       version: -1
       name: Get IP address verdict
       description: Checks the specified IP address against the AbuseIP database.
@@ -686,12 +680,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "29":
     id: "29"
-    taskid: 425c1314-3a85-4579-85a5-4300208761ab
+    taskid: 2eb086b8-6cf1-44f4-830f-a1ff14796a85
     type: playbook
     task:
-      id: 425c1314-3a85-4579-85a5-4300208761ab
+      id: 2eb086b8-6cf1-44f4-830f-a1ff14796a85
       version: -1
       name: Account Enrichment - Generic v2.1
       description: |-

@@ -1,87 +1,110 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import json
-from typing import Any, ItemsView
+from typing import Any, List, Dict
+from datetime import datetime
+import re
 
 """
-This script is used to simplify the process of creating a new Issue in Jira.
-You can add fields that you want in the Issue as script arguments and or in the
-code and have a newly created Issue easily.
+This script is used to simplify the process of creating a new Issue in Jira,
+including using custom fields.
 """
 
-"""
-createIssue default argument, we recommend not changing them.
-"""
-DEFAULT_ARGS = ['summary',
-                'projectKey',
-                'issueTypeName',
-                'issueTypeId',
-                'projectName',
-                'description',
-                'labels',
-                'priority',
-                'dueDate',
-                'assignee',
-                'reporter',
-                'parentIssueKey',
-                'parentIssueId'
-                ]
+INTEGRATION_COMMAND = "jira-create-issue"
+DATE_FORMAT = "%Y-%m-%d"
 
 
-def add_additional_args(known: Dict[str, Any], additional: Dict[str, Any]) -> Dict[str, Any]:
+def validate_date_field(date_str: str):
     """
-    Adds the extra arguments to the known arguments.
-    The extra arguments need to be serialized to a JSON string.
+    Private method to validate the date field is in expected format
+    YYYY-MM-DD.
 
     Args:
-        - `known` (`Dict[str, Any]`): A dict holding the known/expected arguments
-
-    Returns:
-        - `Dict[str, Any]` holding the full payload sent to the `jira-create-issue` script
+        - `date_str` (`str`): The date field to validate
     """
 
-    if additional:
-        known["issueJSON"] = json.dumps(additional)
-
-    return known
+    # This raises a ValueError when the parsing fails
+    datetime.strptime(date_str, DATE_FORMAT)
 
 
-def get_known_args_from_input(input: ItemsView) -> Dict[str, Any]:
+def parse_custom_fields(custom_fields: List[str]) -> Dict[str, Any]:
     """
-    Creates a dictionary of known arguments passed into script.
+    Parse the custom fields into a dictionary.
+    The custom fields arrive as comma-separated values:
+        `customfield_10101=foo,customfield_10102=bar`
+
+    And are returned as a dict:
+        `'customfield_10101': 'foo', 'customfield_10101': 'bar'`
+
     Args:
-        - `input` (`dict_items[Tuple[str, Any]]`): A view (dict_items) of the command arguments
+        - `custom_fields` (`List[str]`): List of custom fields.s
+
     Returns:
-        - `Dict[str, Any]` representing the script arguments
+        - `Dict[str, Any]` representing the custom fields.
     """
 
-    return {key: value for key, value in input if key in DEFAULT_ARGS}
+    result: Dict[str, Any] = {}
+    regex = r'(customfield_\d{5,})={1}(\w+)'
+
+    for custom_field in custom_fields:
+
+        field_regex_match = re.search(regex, custom_field)
+
+        if field_regex_match:
+            field_key, field_value = re.findall(regex, custom_field)[0]
+
+            if field_value.isnumeric() and not field_value.startswith("0"):
+                field_value = int(field_value)  # type: ignore
+
+            result[field_key] = field_value
+
+    return result
 
 
-def get_additional_args_from_input(input: ItemsView) -> Dict[str, Any]:
+def add_custom_fields(args: Dict[str, Any], custom_fields: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Creates a dictionary of unknown arguments passed into script.
+    Method to generate the payload representing the Jira issue custom fields and add it to the script arguments.
+
     Args:
-        - `input` (`dict_items[Tuple[str, Any]]`): A view (dict_items) of the command arguments
+        - `custom_fields` (`Dict[str, Any]`): A dicto of custom fields
     Returns:
-        - `Dict[str, Any]` representing the script arguments
+        - A `Dict[str, Any]` with the Jira issue payload
     """
 
-    return {key: value for key, value in input if key not in DEFAULT_ARGS}
+    args["issueJson"] = {}
+    args["issueJson"]["fields"] = custom_fields
+
+    return args
 
 
 def main():  # pragma: no cover
     try:
 
-        input = demisto.args().items()
+        args = demisto.args()
 
-        known_args = get_known_args_from_input(input)
-        additional_args = get_additional_args_from_input(input)
+        demisto.debug(f"Arguments provided: \n{args}")
 
-        # merge known and unknown into one
-        args = add_additional_args(known=known_args, additional=additional_args)
+        if "dueDate" in args:
+            validate_date_field(args.get("dueDate"))
 
-        create_issue_result = demisto.executeCommand("jira-create-issue", args)
+        if "customFields" in args:
+            demisto.debug("Found customFields arguments. Attempting to parse them...")
+            custom_fields = parse_custom_fields(argToList(args.get("customFields")))
+
+            # supplied custom fields might not parse correctly
+            if custom_fields:
+                demisto.debug(f"Custom fields parsed: {custom_fields}. Removing 'customFields' argument...")
+
+                # `jira-create-issue`` doesn't include `customFields` arg so we need to remove it and replace it with `issueJson`.
+                del args["customFields"]
+                demisto.debug("'customFields' removed. Adding custom field payload to the rest of the command arguments...")
+                args = add_custom_fields(args, custom_fields)
+                demisto.debug("Custom fields added to command arguments")
+
+        demisto.debug(f"Executing {INTEGRATION_COMMAND} with arguments: \n{args}")
+        create_issue_result = demisto.executeCommand(
+            INTEGRATION_COMMAND,
+            args
+        )
 
         return_results(create_issue_result)
     except Exception as e:

@@ -157,7 +157,8 @@ class Client(CrowdStrikeClient):
         timestamp = self.set_last_run()
 
         last_modified_time = demisto.getIntegrationContext().get('last_modified_time')
-        if fetch_command and response.get('resources', [])[-1].get('last_updated') == last_modified_time:
+        resources = response.get('resources', [])
+        if fetch_command and resources and resources[-1].get('last_updated') == last_modified_time:
             offset = demisto.getIntegrationContext().get('offset', 0) + limit
         else:
             offset = 0
@@ -310,7 +311,8 @@ def create_relationships(field: str, indicator: dict, resource: dict) -> list:
     """
     relationships = []
     for relation in resource[field]:
-        if field == 'relations' and relation.get('type', "") == "password":
+        if field == 'relations' and not CROWDSTRIKE_TO_XSOAR_TYPES.get(relation.get('type')):
+            demisto.debug(f"The related indicator type {relation.get('type')} is not supported in XSOAR.")
             continue
         related_indicator_type = CROWDSTRIKE_TO_XSOAR_TYPES[field] if field != 'relations' else \
             CROWDSTRIKE_TO_XSOAR_TYPES[relation['type']]
@@ -323,7 +325,7 @@ def create_relationships(field: str, indicator: dict, resource: dict) -> list:
             entity_a_type=indicator['type'],
             entity_b=relation['indicator'] if field == 'relations' else relation,
             entity_b_type=related_indicator_type,
-            reverse_name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES[relation_name]
+            reverse_name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES.get(relation_name, '')
         ).to_indicator()
 
         relationships.append(indicator_relation)

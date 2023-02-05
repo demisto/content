@@ -238,7 +238,7 @@ def test_module(client: Client, first_fetch_time: str) -> str:
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[str, int]],
                     first_fetch_time: Union[int, str], query: Optional[str], mirror_direction: str,
-                    mirror_tag: List[str]) -> Tuple[Dict[str, str], List[dict]]:
+                    mirror_tag: List[str], mirror_playbook_id: bool = False) -> Tuple[Dict[str, str], List[dict]]:
     """This function retrieves new incidents every interval (default is 1 minute).
 
     :type client: ``Client``
@@ -264,6 +264,11 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
     :type mirror_direction: ``str``
     :param mirror_direction:
         Mirror direction for the fetched incidents
+
+    :type mirror_playbook_id: `bool`
+    :param mirror_playbook_id:
+        When set to false, mirrored incidents will have a blank playbookId value,
+         causing the receiving machine to run the default playbook of the incident type.
 
     :type mirror_tag: ``List[str]``
     :param mirror_tag:
@@ -311,8 +316,14 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
         incident_result['dbotMirrorTags'] = mirror_tag if mirror_tag else None  # type: ignore
         incident_result['dbotMirrorId'] = incident['id']
 
+        if mirror_playbook_id:
+            fields = FIELDS_TO_COPY_FROM_REMOTE_INCIDENT
+        else:
+            fields = [field for field in FIELDS_TO_COPY_FROM_REMOTE_INCIDENT
+                      if field != 'playbookId']
+
         for key, value in incident.items():
-            if key in FIELDS_TO_COPY_FROM_REMOTE_INCIDENT:
+            if key in fields:
                 incident_result[key] = value
 
         incident_result['rawJSON'] = json.dumps(incident)
@@ -350,7 +361,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
             latest_created_time = incident_created_time
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_fetch': (latest_created_time + timedelta(microseconds=1))  # type: ignore[operator]
+    next_run = {'last_fetch': (latest_created_time + timedelta(milliseconds=1))  # type: ignore[operator]
                 .strftime(XSOAR_DATE_FORMAT)}  # type: ignore[union-attr,operator]
 
     return next_run, incidents_result
@@ -751,8 +762,8 @@ def main() -> None:
     verify_certificate = not demisto.params().get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
-    first_fetch_time = dateparser.parse(demisto.params().get('first_fetch', '3 days')) \
-        .strftime(XSOAR_DATE_FORMAT)  # type: ignore[union-attr]
+    first_fetch_time = arg_to_datetime(demisto.params().get('first_fetch', '3 days')).strftime(XSOAR_DATE_FORMAT)  # type: ignore
+
     proxy = demisto.params().get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     mirror_tags = set(demisto.params().get('mirror_tag', '').split(',')) \
@@ -790,7 +801,8 @@ def main() -> None:
                     first_fetch_time=first_fetch_time,
                     query=query,
                     mirror_direction=demisto.params().get('mirror_direction'),
-                    mirror_tag=list(mirror_tags)
+                    mirror_tag=list(mirror_tags),
+                    mirror_playbook_id=demisto.params().get('mirror_playbook_id', True),
                 )
 
             return_results(test_module(client, first_fetch_time))
@@ -803,7 +815,8 @@ def main() -> None:
                 first_fetch_time=first_fetch_time,
                 query=query,
                 mirror_direction=demisto.params().get('mirror_direction'),
-                mirror_tag=list(mirror_tags)
+                mirror_tag=list(mirror_tags),
+                mirror_playbook_id=demisto.params().get('mirror_playbook_id', True),
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)

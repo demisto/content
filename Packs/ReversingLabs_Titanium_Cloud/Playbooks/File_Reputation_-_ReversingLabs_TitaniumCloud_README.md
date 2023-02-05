@@ -41,4 +41,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![File Reputation - ReversingLabs TitaniumCloud](doc_imgs/File_Reputation_-_ReversingLabs_TitaniumCloud_Fri_Oct_08_2021.png)
+![File Reputation - ReversingLabs TitaniumCloud](../doc_files/Playbook_-_File_Reputation_-_ReversingLabs_TitaniumCloud.png)

@@ -443,7 +443,7 @@ def create_ip_command_results(activities: List[dict]):
             readable_output=human_readable,
             outputs_prefix='MicrosoftCloudAppSecurity.Activities',
             outputs_key_field='_id',
-            outputs=activities,
+            outputs=activity,
             indicator=indicator
         ))
     return command_results
@@ -908,7 +908,7 @@ def main():  # pragma: no cover
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
-    token = params.get('token')
+    token = params.get('creds_token', {}).get('password', '') or params.get('token', '')
     base_url = f'{params.get("url")}/api/v1'
     first_fetch = params.get('first_fetch')
     max_results = params.get('max_fetch')
