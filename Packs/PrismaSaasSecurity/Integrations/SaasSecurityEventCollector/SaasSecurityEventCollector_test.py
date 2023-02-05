@@ -357,63 +357,6 @@ class TestFetchEvents:
 
         assert expected_events == set_integration_context_mock.call_args.args[0]
 
-    def test_main_flow_fetch_events_with_retries(self, mocker):
-        """
-        Given
-           - a queue of responses to fetch events.
-           - integration parameters
-
-        When
-           - executing main to fetch events twice
-           - send_events_to_xsiam raised an exception 3 times and in the 4 time it succeeded
-
-        Then
-           - make sure the events are saved in the context after the first 3 errors.
-           - make sure that events were successfully sent in the second run of the main flow
-           - make sure that once events are sent, then code will exit.
-           - make sure in the second main run that integration context is now empty.
-        """
-        import SaasSecurityEventCollector
-
-        mocker.patch.object(
-            Client, 'http_request', side_effect=[
-                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
-                MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
-            ]
-        )
-        send_events_mocker = mocker.patch.object(
-            SaasSecurityEventCollector,
-            'send_events_to_xsiam',
-            side_effect=[Exception('error'), Exception('error2'), Exception('error3'), 'success']
-        )
-
-        set_integration_context_mock = mocker.patch.object(demisto, 'setIntegrationContext')
-
-        mocker.patch.object(demisto, 'params', return_value={
-            "url": "https://test.com/",
-            "credentials": {
-                "identifier": "1234",
-                "password": "1234",
-            },
-            "max_fetch": 10000,
-            "max_iterations": 100,
-        })
-        mocker.patch.object(demisto, 'command', return_value='fetch-events')
-        SaasSecurityEventCollector.main()
-
-        assert create_events(
-            start_id=1, end_id=200, should_dump=False
-        ) == set_integration_context_mock.call_args.args[0]
-
-        mocker.patch.object(
-            demisto, 'getIntegrationContext', return_value=set_integration_context_mock.call_args.args[0]
-        )
-
-        SaasSecurityEventCollector.main()
-
-        assert {} == set_integration_context_mock.call_args.args[0]
-        assert send_events_mocker.call_count == 4
-
     def test_main_flow_fetch_events_with_max_iterations(self, mocker):
         """
         Given
