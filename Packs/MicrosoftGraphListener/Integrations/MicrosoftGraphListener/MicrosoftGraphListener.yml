@@ -477,6 +477,9 @@ script:
   - description: Tests connectivity of the email.
     name: msgraph-mail-test
     arguments: []
+  - description: Run this command to rerun the authentication process.
+    name: msgraph-mail-auth-reset
+    arguments: []
   - name: msgraph-mail-list-emails
     arguments:
     - name: odata

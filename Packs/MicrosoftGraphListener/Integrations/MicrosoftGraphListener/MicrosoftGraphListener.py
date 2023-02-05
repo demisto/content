@@ -1496,6 +1496,11 @@ def update_email_status_command(client: MsGraphClient, args) -> CommandResults:
     )
 
 
+def reset_auth() -> str:
+    set_integration_context({})
+    return 'Authorization was reset successfully. Run **!msgraph-mail-test** to verify the authentication.'
+
+
 def build_folders_path(folder_string: str) -> Optional[str]:
     """
 
@@ -1673,6 +1678,8 @@ def main():
             raise Exception("Please use !msgraph-mail-test instead")
         if command == 'msgraph-mail-test':
             client.test_connection()
+        if command == 'msgraph-mail-auth-reset':
+            return_results(reset_auth())
         if command == 'fetch-incidents':
             next_run, incidents = client.fetch_incidents(demisto.getLastRun())
             demisto.setLastRun(next_run)
