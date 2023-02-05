@@ -12,6 +12,7 @@ from CommonServerPython import DemistoException, CommandResults
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 import dateparser
 import test_data.fetch_incidents_input as fetch_incidents_input
+import test_data.mock_rules as mock_rules
 from freezegun import freeze_time
 
 integration_firewall_params = {
@@ -3896,13 +3897,13 @@ class TestPanOSListNatRulesCommand:
                 'Name': 'test', 'Tags': 'test tag', 'SourceZone': '1.1.1.1', 'DestinationZone': '1.1.1.1',
                 'SourceAddress': 'any', 'DestinationAddress': 'any', 'DestinationInterface': None,
                 'Service': 'any', 'Description': None, 'SourceTranslation': None, 'DynamicDestinationTranslation': None,
-                'DestinationTranslation': None
+                'DestinationTranslation': None, 'Disabled': 'yes'
             },
             {
                 'Name': 'test-2', 'Tags': None, 'SourceZone': '2.2.2.2', 'DestinationZone': '2.2.2.2',
                 'SourceAddress': 'any', 'DestinationAddress': 'any', 'DestinationInterface': None,
                 'Service': 'any', 'Description': None, 'SourceTranslation': None, 'DynamicDestinationTranslation': None,
-                'DestinationTranslation': None
+                'DestinationTranslation': None, 'Disabled': 'no'
             }
         ]
 
@@ -6328,3 +6329,10 @@ class TestFetchIncidentsFlows:
         assert last_id_dict.get('X_log_type', '') == '000000002'
         assert last_fetch_dict.get('Y_log_type', '') == '2022-01-01 13:00:00'
         assert last_id_dict.get('Y_log_type', '') == '000000002'
+
+
+@pytest.mark.parametrize('name, filters, expected_result', mock_rules.get_mock_rules)
+def test_build_xpath_filter(name, filters, expected_result):
+    from Panorama import build_xpath_filter
+    mock_result = build_xpath_filter(name, filters)
+    assert mock_result == expected_result

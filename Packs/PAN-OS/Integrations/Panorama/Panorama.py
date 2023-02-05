@@ -694,7 +694,7 @@ def get_pan_os_major_version() -> int:
 def build_xpath_filter(rule_name: str = None, filters: dict = None) -> str:
     xpath_prefix = ''
     if rule_name:
-        xpath_prefix = f"@name = '{rule_name}'"
+        xpath_prefix = f"@name='{rule_name}'"
     if filters:
         for key, value in filters.items():
             if key in RULE_FILTERS:
@@ -11772,7 +11772,8 @@ def pan_os_list_nat_rules_command(args):
         disabled=args.get('disabled'),
         nat_type=args.get('nat_type')
     )
-    filters['nat-type'] = filters.pop('nat_type')  # Replace the key name.
+    if nat_type := filters.pop('nat_type', None):  # Replace the key name from 'nat_type' to 'nat-type'.
+        filters['nat-type'] = nat_type
     query = args.get('query')
 
     raw_response = get_pan_os_nat_rules(name=name, pre_post=pre_post, show_uncommited=show_uncommitted, filters=filters, query=query)
