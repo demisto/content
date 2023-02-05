@@ -5471,6 +5471,7 @@
         "playbook-AzureDevOps-Test": "No Working Instance",
         "test playbook - Google Cloud Functions": "No Working Instance",
         "playbook-GCP-IAM_Test": "No Working Instance",
+        "GoogleCalendar-Test": "No Working Instance",
         "AlexaV2 Test Playbook": "The service is deprecated on Dec 15, 2022",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
         "CortexXpanse_Test": "No instance - issue CRTX-65449",
