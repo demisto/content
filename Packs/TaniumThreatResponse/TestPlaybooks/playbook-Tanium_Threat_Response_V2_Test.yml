@@ -1,6 +1,6 @@
 id: Tanium Threat Response V2 Test
 version: -1
-name: Tanium Threat Response Test
+name: Tanium Threat Response V2 Test
 starttaskid: "0"
 tasks:
   "0":
