@@ -418,7 +418,7 @@ upload-packs-to-xpanse-marketplace:
     - section_start "Upload Packs To Marketplace Storage"
     - |
       if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$CI_COMMIT_BRANCH" == "xpanse-marketplace" ]] || [[ "$GCS_MARKET_XPANSE_BUCKET" != "$GCS_PRODUCTION_XPANSE_BUCKET" ]]; then
-        EXTRACT_FOLDER=$(mktemp -d)
+        EXTRACT_FOLDER=$ARTIFACTS_FOLDER/index_extracted_zip
         PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
         PACKS_DEPENDENCIES=$ARTIFACTS_FOLDER/packs_dependencies.json
         CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}

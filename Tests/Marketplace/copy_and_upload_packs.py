@@ -77,7 +77,6 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
         logging.info(f'README DEBUG -- {build_index_blob.name=}  {build_index_blob.path=}')
         logging.info(f'README DEBUG -- {production_bucket.name=} {production_bucket.path=}')
         logging.info(f'README DEBUG -- {prod_index_storage_path}')
-        
         if build_current_index_generation == build_index_generation:
             copied_index = build_bucket.copy_blob(
                 blob=build_index_blob, destination_bucket=production_bucket, new_name=prod_index_storage_path
@@ -107,8 +106,6 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
     except Exception as e:
         logging.exception(f"Failed copying {GCPConfig.INDEX_NAME}. Additional Info: {str(e)}")
         sys.exit(1)
-    finally:
-        shutil.rmtree(index_folder_path)
 
 
 def upload_core_packs_config(production_bucket: Bucket, build_number: str, extract_destination_path: str,
