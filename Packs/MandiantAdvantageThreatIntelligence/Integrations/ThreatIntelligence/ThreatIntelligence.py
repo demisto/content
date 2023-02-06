@@ -634,24 +634,6 @@ def create_actor_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
     }
     return indicator_obj
 
-
-def get_cvss_score(cve: dict) -> str:
-    """
-    Parse the CVSS Data and return the Base Score
-    Args:
-        cve: A raw CVE indicator dict
-    Returns:
-        str: The CVSS 'base score'
-    """
-    if "v3.1" in cve.get("common_vulnerability_scores", {}):
-        return cve["common_vulnerability_scores"]["v3.1"]["base_score"]
-    elif "v2.0" in cve.get("common_vulnerability_scores", {}):
-        return cve["common_vulnerability_scores"]["v2.0"]["base_score"]
-
-    demisto.debug("No matching CVE score found")
-    return ""
-
-
 def parse_cvss(cve: dict) -> dict:
     """
     Parse CVSS information into XSOAR format
@@ -1194,13 +1176,6 @@ def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
     for indicator in indicators:
         indicator["value"] = indicators_value_to_clickable([indicator["value"]])
 
-        dummy_indicator = [
-            {
-                "value": "$$DummyIndicator$$",
-                "relationships": indicator["relationships"],
-            }
-        ]
-        demisto.createIndicators(dummy_indicator)
 
     return CommandResults(
         content_format=formats["json"],
@@ -1221,14 +1196,6 @@ def fetch_threat_actor(client: MandiantClient, args: Dict = None):
 
     if client.enrichment:
         enrich_indicators(client, indicator, "Actors")
-
-        dummy_indicator = [
-            {
-                "value": "$$DummyIndicator$$",
-                "relationships": indicator[0]["relationships"],
-            }
-        ]
-        demisto.createIndicators(dummy_indicator)
 
     demisto.createIndicators(indicator)
 
@@ -1254,14 +1221,6 @@ def fetch_malware_family(client: MandiantClient, args: Dict = None):
     if client.enrichment:
         enrich_indicators(client, indicator_list, "Malware")
 
-        dummy_indicator = [
-            {
-                "value": "$$DummyIndicator$$",
-                "relationships": indicator_list[0]["relationships"],
-            }
-        ]
-        demisto.createIndicators(dummy_indicator)
-
     demisto.createIndicators(indicator_list)
 
     indicator_list[0]["fields"]["name"] = indicators_value_to_clickable(
@@ -1286,15 +1245,6 @@ def fetch_campaign(client: MandiantClient, args: Dict = None):
     )
 
     indicator_list = [create_campaign_indicator(client, indicator)]
-
-    if client.enrichment:
-        dummy_indicator = [
-            {
-                "value": "$$DummyIndicator$$",
-                "relationships": indicator_list[0]["relationships"],
-            }
-        ]
-        demisto.createIndicators(dummy_indicator)
 
     demisto.createIndicators(indicator_list)
 
@@ -1414,12 +1364,12 @@ def main() -> None:
             "cve": fetch_reputation,
         }
 
-        return_results(command_map[demisto.command()](client, args))
+        return_results(command_map[command](client, args))
 
     # Log exceptions and return errors
     except Exception as e:
         return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
+            f"Failed to execute {command} command.\nError:\n{str(e)}"
         )
 
 
