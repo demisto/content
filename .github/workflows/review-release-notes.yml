@@ -25,7 +25,9 @@ jobs:
           since_last_remote_commit: false
 
       - name: Print runner script directory
-        run: find /home/runner/work/_temp/ | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
+        run: |
+          apt-fast install tree
+          tree /home/runner/work/_temp/
 
       # TODO dev
       - name: Print runner script contents
