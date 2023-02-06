@@ -23,6 +23,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: ""
       brand: ""
       id: f0b75a56-9b8e-4ea4-850a-c194e46d18d3
       iscommand: false
@@ -381,6 +382,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ""
       id: b4cbe90d-11b5-4a19-87af-b4104075b1d3
       iscommand: false
       name: Playbook Finished
