@@ -4,7 +4,7 @@ import pytest
 
 ALERT_CONTEXT = {
     "severity": 1,
-    "ip": "34.238.196.163",
+    "ip": "1.1.1.1",
     "tag": [
         {"Key": "env", "Source": "AWS", "Value": "dev"},
         {"Key": "Name", "Source": "AWS", "Value": "rdp_server"},
@@ -45,14 +45,14 @@ def test_evaluate_criteria_severity():
 
 
 def test_evaluate_criteria_ip():
-    cond = {"field": "ip", "operator": "eq", "value": "34.238.196.163"}
+    cond = {"field": "ip", "operator": "eq", "value": "1.1.1.1"}
     assert evaluate_criteria(cond, ALERT_CONTEXT) is True
 
-    cond = {"field": "ip", "operator": "eq", "value": "1.1.1.1"}
+    cond = {"field": "ip", "operator": "eq", "value": "2.2.2.2"}
     assert evaluate_criteria(cond, ALERT_CONTEXT) is False
 
     alert_context = {"ip": None}
-    cond = {"field": "ip", "operator": "eq", "value": "34.238.196.163"}
+    cond = {"field": "ip", "operator": "eq", "value": "1.1.1.1"}
     assert evaluate_criteria(cond, alert_context) is False
 
 
@@ -131,11 +131,11 @@ def test_match_remediation_rule_basic():
             "attack_surface_rule_id": "RdpServer",
             "criteria": [
                 {"field": "development_environment", "value": "true", "operator": "eq"},
-                {"field": "ip", "value": "34.238.196.163", "operator": "eq"},
+                {"field": "ip", "value": "1.1.1.1", "operator": "eq"},
             ],
             "criteria_conjunction": "AND",
             "action": "email",
-            "created_by": "test@panw.com",
+            "created_by": "noc@acme.com",
             "created_by_pretty": "First Last",
             "created_at": 1674264241000,
         },
@@ -147,7 +147,7 @@ def test_match_remediation_rule_basic():
             "criteria": [{"field": "severity", "value": "low", "operator": "eq"}],
             "criteria_conjunction": "AND",
             "action": "servicenow",
-            "created_by": "test@panw.com",
+            "created_by": "noc@acme.com",
             "created_by_pretty": "First Last",
             "created_at": 1674540567000,
         },
@@ -165,11 +165,11 @@ def test_match_remediation_rule_basic():
             "attack_surface_rule_id": "RdpServer",
             "criteria": [
                 {"field": "development_environment", "value": "true", "operator": "eq"},
-                {"field": "ip", "value": "34.238.196.163", "operator": "eq"},
+                {"field": "ip", "value": "1.1.1.1", "operator": "eq"},
             ],
             "criteria_conjunction": "AND",
             "action": "email",
-            "created_by": "test@panw.com",
+            "created_by": "noc@acme.com",
             "created_by_pretty": "First Last",
             "created_at": 1674264241000,
         },
@@ -181,7 +181,7 @@ def test_match_remediation_rule_basic():
             "criteria": [{"field": "severity", "value": "high", "operator": "eq"}],
             "criteria_conjunction": "AND",
             "action": "servicenow",
-            "created_by": "test@panw.com",
+            "created_by": "noc@acme.com",
             "created_by_pretty": "First Last",
             "created_at": 1674540567000,
         },
@@ -198,11 +198,11 @@ def test_match_remediation_rule_basic():
         "attack_surface_rule_id": "RdpServer",
         "criteria": [
             {"field": "development_environment", "value": "true", "operator": "eq"},
-            {"field": "ip", "value": "34.238.196.163", "operator": "eq"},
+            {"field": "ip", "value": "1.1.1.1", "operator": "eq"},
         ],
         "criteria_conjunction": "AND",
         "action": "email",
-        "created_by": "test@panw.com",
+        "created_by": "noc@acme.com",
         "created_by_pretty": "First Last",
         "created_at": 1674264241000,
     }
@@ -219,11 +219,11 @@ def test_match_remediation_rule_basic():
             "attack_surface_rule_id": "RdpServer",
             "criteria": [
                 {"field": "development_environment", "value": "true", "operator": "eq"},
-                {"field": "ip", "value": "1.1.1.1", "operator": "eq"},
+                {"field": "ip", "value": "2.2.2.2", "operator": "eq"},
             ],
             "criteria_conjunction": "AND",
             "action": "email",
-            "created_by": "test@panw.com",
+            "created_by": "noc@acme.com",
             "created_by_pretty": "First Last",
             "created_at": 1674264241000,
         },
@@ -235,7 +235,7 @@ def test_match_remediation_rule_basic():
             "criteria": [{"field": "severity", "value": "high", "operator": "eq"}],
             "criteria_conjunction": "AND",
             "action": "servicenow",
-            "created_by": "test@panw.com",
+            "created_by": "noc@acme.com",
             "created_by_pretty": "First Last",
             "created_at": 1674540567000,
         },
