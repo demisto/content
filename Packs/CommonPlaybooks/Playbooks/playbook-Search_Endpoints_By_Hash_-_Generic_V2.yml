@@ -37,11 +37,10 @@ tasks:
     taskid: c185447e-549c-476e-8477-98c461dadd16
     type: playbook
     task:
-      id: c185447e-549c-476e-8477-98c461dadd16
+      id: 77111675-2526-411e-88fb-6f1ea92d57b8
       version: -1
-      name: Search Endpoints By Hash - CrowdStrike
-      description: Hunt for endpoint activity involving hash and domain IOCs, using Crowdstrike Falcon Host
-      playbookName: Search Endpoints By Hash - CrowdStrike
+      name: CrowdStrike Falcon - Search Endpoints By Hash
+      playbookName: CrowdStrike Falcon - Search Endpoints By Hash
       type: playbook
       iscommand: false
       brand: ""
@@ -49,18 +48,9 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      MD5Hash:
+      FileSha256:
         complex:
-          root: inputs
-          accessor: MD5Hash
-      SHA1Hash:
-        complex:
-          root: inputs
-          accessor: SHA1Hash
-      SHA256Hash:
-        complex:
-          root: inputs
-          accessor: SHA256Hash
+          root: inputs.SHA256Hash
     separatecontext: true
     loop:
       iscommand: false
