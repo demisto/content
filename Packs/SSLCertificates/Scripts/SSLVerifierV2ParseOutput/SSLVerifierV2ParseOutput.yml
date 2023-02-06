@@ -34,8 +34,6 @@ commonfields:
   version: -1
 dockerimage: demisto/python3:3.10.9.45313
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: SSLVerifierV2_ParseOutput
 outputs:
 - contextPath: SSLReport.Expiring
@@ -45,7 +43,6 @@ outputs:
   description: Certificates expiring in > 180 days
 - contextPath: SSLReport.Warning
   description: Certificates expiring in > 90 days and <= 180 days
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
