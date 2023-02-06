@@ -113,7 +113,7 @@ def test_convert_to_demisto_severity():
     severity_level = convert_to_demisto_severity("1.0")
     assert isinstance(severity_level, int)
     assert severity_level == 4
-
+    
     
 def test_main():
     from ZerohackXDR import main
