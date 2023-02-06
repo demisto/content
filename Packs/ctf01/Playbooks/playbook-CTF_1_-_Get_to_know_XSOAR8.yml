@@ -176,7 +176,7 @@ tasks:
         tooltip: Check the advanced settings of the playbook.
         readonly: false
       title: Check the Playbooks
-      description: "Navigate to the newly downloaded playbook (\"CTF-X\") and check the existing task \n\n![myfile](https://github.com/demisto/content/blob/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/look-nobodys-following-the-playbook-gerard-butler.gif)"
+      description: "Navigate to the newly downloaded playbook (\"CTF-X\") and check the existing task \n\n![myfile](https://raw.githubusercontent.com/demisto/content/d5fc1ffdf4d70621570e5a60fabea1047df4a3c0/Packs/ctf01/doc_files/look-nobodys-following-the-playbook-gerard-butler.gif)"
       sender: ""
       expired: false
       totalanswers: 0

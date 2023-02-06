@@ -1,19 +1,19 @@
 id: CTF 2 - Classify an incident - RDP Brute force
-version: -1
+version: 15
+vcShouldKeepItemLegacyProdMachine: false
 name: CTF 2 - Classify an incident - RDP Brute force
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2f955290-68e6-48ed-86d5-abeff525a176
+    taskid: 2bd4aecf-6329-4c67-86cd-58ca954c6e16
     type: start
     task:
-      id: 2f955290-68e6-48ed-86d5-abeff525a176
+      id: 2bd4aecf-6329-4c67-86cd-58ca954c6e16
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -35,13 +35,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: a3e7be3c-ca70-4e4d-8d75-531934d646b0
+    taskid: 906e556e-c6da-4f0c-8778-a845c37bea90
     type: regular
     task:
-      id: a3e7be3c-ca70-4e4d-8d75-531934d646b0
+      id: 906e556e-c6da-4f0c-8778-a845c37bea90
       version: -1
       name: Find the XDR RDP Brute Force incident
-      description: "Welcome to the second CTF challenge! \nIn this section, we are going to overview the XDR RDP Brute Force incident from an analyst's perspective.\n\nTo complete the challenge, please complete all the tasks in this playbook.\nIn order to complete the tasks you will need to find the XDR RDP Brute Force incident in your environment.\n*Note*: do not change anything in the incident itself since multiple students are working on the same one. \n\nOnce you find the relevant incident to work on -> complete this task and proceed to the questions. \n\nAs it was mentioned before, SLA for the answers will start once you mark this task as completed.\n\n \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/the-office-the.gif)"
+      description: "Welcome to the second CTF challenge! \nIn this section, we are
+        going to analyze the XDR RDP Brute Force incident from an analyst's perspective.\n\nTo
+        complete the challenge, please complete all the tasks in this playbook.\nIn
+        order to complete the tasks you will need to find the XDR RDP Brute Force
+        incident in your environment.\n*Note*: do not change anything in the incident
+        itself, since multiple students are working on the same one. \n\nOnce you
+        find the relevant incident, complete this task and proceed.\n\nAs it was mentioned
+        before, SLA for the answers will start once you mark this task as completed.\n\n
+        \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/the-office-the.gif)"
       type: regular
       iscommand: false
       brand: ""
@@ -66,10 +74,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 2d7340f6-01dd-4aab-8079-a13d26dbfbb7
+    taskid: c591b287-7bd4-4606-8b58-43ca0114d204
     type: regular
     task:
-      id: 2d7340f6-01dd-4aab-8079-a13d26dbfbb7
+      id: c591b287-7bd4-4606-8b58-43ca0114d204
       version: -1
       name: 'Check your answer #6'
       description: This should provide answers to the CTF_2 ( RDP BruteForce)
@@ -107,10 +115,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: e2413a7c-62cc-4892-8636-41f807fdf8df
+    taskid: 63db3a12-71dd-416f-8b61-f89b97f95ac4
     type: collection
     task:
-      id: e2413a7c-62cc-4892-8636-41f807fdf8df
+      id: 63db3a12-71dd-416f-8b61-f89b97f95ac4
       version: -1
       name: Using the Export Dynamic Lists function.
       type: collection
@@ -132,13 +140,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
-      body:
+      to: null
+      subject: null
+      body: null
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -151,7 +159,7 @@ tasks:
         label: ""
         labelarg:
           simple: |-
-            Run the following command from your endpoint and enter the gained indicator from your CLI.
+            Run the following command from your endpoint and enter the received indicator from your command.
 
             curl  -u admin:admin <your tenant URL>/xsoar/instance/execute/edl1\?q\=type:ip%20and%20verdict:malicious%20and%20tags:<Tag from the previous answer>
         required: false
@@ -164,11 +172,17 @@ tasks:
         - simple: False Positive
         fieldassociated: ""
         placeholder: ""
-        tooltip: 'Once you have ran the command, the output should be displayed immediately . Remember to overwrite all missing params <> '
+        tooltip: 'Once you have ran the command, the output should be displayed immediately
+          . Remember to overwrite all missing data (<your tenant URL> and the <Tag
+          from the previous answer> ) '
         readonly: false
       title: Using EDLs to export indicators
-      description: "Once the incident has been classified, you might use the indicators as you wish ( for blocking or approving them on your external systems).\nThe Export Indicator Generic Service can be very useful to accomplish such a mission but remember you have to configure that in advance. \n\nTo save you time we have already configured that for you.\nCheck the command provided to you in the questions themselves. Run it from your terminal on your machine (remember that you will need \"Curl\" for running this command.\n \n\n![myfile](https://github.com/demisto/content/blob/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/hacker-meme.gif)"
-      sender: ""
+      description: "The Export Indicator Generic Service can be very useful but remember
+        you have to configure that in advance (no worries - to save you some time,
+        we have already configured that for you.). \n\n\nCheck the command provided
+        to you in the question. \nRun it from your personal terminal on your machine.\n*Note*:
+        You will need \"Curl\" for running this command\n\n![myfile](https://github.com/demisto/content/blob/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/hacker-meme.gif)"
+      sender: Your SOC team
       expired: false
       totalanswers: 0
     skipunavailable: false
@@ -177,10 +191,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 54308de3-0643-4926-8430-8199ec1d3c40
+    taskid: 0fb92795-6748-410b-80bc-0a79a8791ced
     type: regular
     task:
-      id: 54308de3-0643-4926-8430-8199ec1d3c40
+      id: 0fb92795-6748-410b-80bc-0a79a8791ced
       version: -1
       name: 'Check your answer #8'
       description: This should provide answers to the CTF_2 ( RDP BruteForce)
@@ -218,16 +232,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 8072155c-e7a5-44cb-89bc-9051f6109c62
+    taskid: 0499f25a-c2d2-4e42-8fc3-2ab1114b3900
     type: title
     task:
-      id: 8072155c-e7a5-44cb-89bc-9051f6109c62
+      id: 0499f25a-c2d2-4e42-8fc3-2ab1114b3900
       version: -1
       name: No More Questions
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -251,13 +264,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 6b22d8b1-b558-47ca-81c0-a14b763b3bc7
+    taskid: b7f452b8-b4b1-4560-8224-c6f1a0ede173
     type: regular
     task:
-      id: 6b22d8b1-b558-47ca-81c0-a14b763b3bc7
+      id: b7f452b8-b4b1-4560-8224-c6f1a0ede173
       version: -1
       name: Hope you have enjoyed
-      description: "Thank you for participating in our workshop for the XSOAR. Hope that you have enjoyed the challenge and also gained some knowledge. \n\nTill next time :) \n\n \n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/until-next.gif)"
+      description: "Thank you for participating in our workshop for the XSOAR. Hope
+        that you have enjoyed the challenge and also gained some knowledge. \n\nTill
+        next time :) \n\n \n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/until-next.gif)"
       type: regular
       iscommand: false
       brand: ""
@@ -282,10 +297,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 00d4877a-4193-4524-8618-1e658c48e6bd
+    taskid: ca7f4d6c-a739-463e-8889-45b85676857c
     type: collection
     task:
-      id: 00d4877a-4193-4524-8618-1e658c48e6bd
+      id: ca7f4d6c-a739-463e-8889-45b85676857c
       version: -1
       name: Are any errors in the playbook?
       type: collection
@@ -307,13 +322,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
-      body:
+      to: null
+      subject: null
+      body: null
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -339,7 +354,10 @@ tasks:
         tooltip: You can check the Work Plan entries or the Incident overview section
         readonly: false
       title: Check if there are any errors in the playbook?
-      description: "Sometimes playbooks are stopped due to an issue whether it's because of the integration or missing information.  No matter what - the playbook should always run without errors so all the reliable information will be populated to the analyst properly. \n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/despicable-me-minion.gif)"
+      description: "Sometimes playbooks are stopped due to an issue whether it's because
+        of the integration or missing information.  No matter what - the playbook
+        should always run without errors so all the reliable information will be populated
+        to the analyst properly. \n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/despicable-me-minion.gif)"
       sender: ""
       expired: false
       totalanswers: 0
@@ -349,10 +367,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: f6dbc1c4-d6f9-443e-8fb6-36e44ad32874
+    taskid: e4fd6e15-1902-4610-8a56-d16ba0bb1fd5
     type: regular
     task:
-      id: f6dbc1c4-d6f9-443e-8fb6-36e44ad32874
+      id: e4fd6e15-1902-4610-8a56-d16ba0bb1fd5
       version: -1
       name: 'Check your answer #1'
       description: This should provide answers to the CTF_2 ( RDP BruteForce)
@@ -390,12 +408,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: ba2aa016-ab34-4657-87ca-fd8fe4bd417b
+    taskid: 73fe2a07-7b80-4aba-82a9-ec1044a52acb
     type: collection
     task:
-      id: ba2aa016-ab34-4657-87ca-fd8fe4bd417b
+      id: 73fe2a07-7b80-4aba-82a9-ec1044a52acb
       version: -1
-      name: Take a look at the indicators section
+      name: Analyze the Incident Indicators
       type: collection
       iscommand: false
       brand: ""
@@ -416,13 +434,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
-      body:
+      to: null
+      subject: null
+      body: null
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -434,7 +452,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: What is the type of malicious indicator?
+          simple: What is the type of the malicious indicator?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -445,12 +463,12 @@ tasks:
         - simple: "No"
         fieldassociated: ""
         placeholder: ""
-        tooltip: You can check the Work Plan entries or the Incident overview section
+        tooltip: Check out the "Investigation" tab and find the "Indicators" section
         readonly: false
       - id: "1"
         label: ""
         labelarg:
-          simple: How many relationships does the malicious indicator have within existing indicators in your XSAOR?
+          simple: 2. How many relationships does the malicious indicator have?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -459,10 +477,14 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: You can see the relationship numbers in the on the relevant indicator . Remember that existing indicators are highlighted  with link.
+        tooltip: You can see the relationships numbers in the on the relevant indicator
+          . Remember that existing indicators are highlighted  with link.
         readonly: false
       title: Check the various indicators that are extracted from the incident
-      description: "Indicators are our way to determine if the incident is malicious or not even before we deep dive into the details. Indicator extraction can be done in various ways. \n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/hmm-suspect.gif)"
+      description: "Indicators are our first way to determine if the incident is malicious
+        or not even before we deep dive into the details. \nWe need you to analyze
+        the indicators within the XDR RDP brute force incident and help us to make
+        the right call!\n\n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/hmm-suspect.gif)"
       sender: ""
       expired: false
       totalanswers: 0
@@ -472,10 +494,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: c02b4fcf-d51f-44c5-8188-bf6b376dcad0
+    taskid: da0e26b8-3acd-4ddd-8336-2fbb9339f26e
     type: regular
     task:
-      id: c02b4fcf-d51f-44c5-8188-bf6b376dcad0
+      id: da0e26b8-3acd-4ddd-8336-2fbb9339f26e
       version: -1
       name: 'Check your answer #2'
       description: This should provide answers to the CTF_2 ( RDP BruteForce)
@@ -513,10 +535,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: d99fdbf8-098e-473b-8338-0eb5bf7398e3
+    taskid: 818d59f0-29d3-4257-84bf-8ee191cf7425
     type: regular
     task:
-      id: d99fdbf8-098e-473b-8338-0eb5bf7398e3
+      id: 818d59f0-29d3-4257-84bf-8ee191cf7425
       version: -1
       name: 'Check your answer #3'
       description: This should provide answers to the CTF_2 ( RDP BruteForce)
@@ -554,12 +576,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: e4356ec8-0745-46f4-8050-24edb1ddc5c8
+    taskid: 30d26ae3-a2a2-4744-860b-8b797754b206
     type: collection
     task:
-      id: e4356ec8-0745-46f4-8050-24edb1ddc5c8
+      id: 30d26ae3-a2a2-4744-860b-8b797754b206
       version: -1
-      name: Check if this incident is associated with a camping
+      name: Check if the indicator is associated with a campaign
       type: collection
       iscommand: false
       brand: ""
@@ -580,13 +602,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
-      body:
+      to: null
+      subject: null
+      body: null
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -598,7 +620,8 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Based on the Campaign's Report, what was the year when this campaign was first seen?
+          simple: Based on the Campaign's Report, what was the year when this campaign
+            was first seen?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -623,11 +646,15 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: You can do that by searching the campaign name in the Threat Intel Tab
+        tooltip: You can do that by searching the campaign name in the Threat Intel
+          Tab and check how many relationships it has.
         readonly: false
-      title: Threat Camping
-      description: "
-        Based on what we have found, this Malicious Indicator is also associated with a well-known campaign (based on a threat report we got from our amazing Unit42).\nAnd now, let's dive into this finding.\n\n![myfile](https://raw.githubusercontent.com/demisto/content/e89a247573e2d3927223be2ab2dc143cc1a40469/Packs/ctf01/doc_files/spinning-vortex.gif)"
+      title: Threat Campaign
+      description: |-
+        Based on what we have found, this malicious indicator is also associated with a well-known campaign (based on a threat report we got from our amazing Unit42).
+        And now, let's dive into other indicators.
+
+        ![myfile](https://raw.githubusercontent.com/demisto/content/e89a247573e2d3927223be2ab2dc143cc1a40469/Packs/ctf01/doc_files/spinning-vortex.gif)
       sender: ""
       expired: false
       totalanswers: 0
@@ -637,10 +664,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 5175863c-db57-4dce-82ae-a687fd17798e
+    taskid: 1d0237e7-a9ad-4683-81d7-c5b8c23cc6c0
     type: regular
     task:
-      id: 5175863c-db57-4dce-82ae-a687fd17798e
+      id: 1d0237e7-a9ad-4683-81d7-c5b8c23cc6c0
       version: -1
       name: 'Check your answer #4'
       description: This should provide answers to the CTF_2 ( RDP BruteForce)
@@ -678,16 +705,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: b6f2cf69-6dee-4a49-8aea-5d27a9f4dd3d
+    taskid: 7e5d148a-3484-4309-8ea4-e46dc935f76b
     type: title
     task:
-      id: b6f2cf69-6dee-4a49-8aea-5d27a9f4dd3d
+      id: 7e5d148a-3484-4309-8ea4-e46dc935f76b
       version: -1
       name: Campaign and report
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -709,16 +735,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 0f5ea5c5-ec0d-4ce1-8c06-7cff982041a7
+    taskid: 44da2012-d4ff-4b1e-8f54-a21294e249ab
     type: title
     task:
-      id: 0f5ea5c5-ec0d-4ce1-8c06-7cff982041a7
+      id: 44da2012-d4ff-4b1e-8f54-a21294e249ab
       version: -1
       name: TIM and Auto-extract
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -740,16 +765,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 2aabcdfa-3b73-4652-83e5-fb92d0fb681c
+    taskid: 70d59eaf-9851-4372-885a-292e9ca7f430
     type: title
     task:
-      id: 2aabcdfa-3b73-4652-83e5-fb92d0fb681c
+      id: 70d59eaf-9851-4372-885a-292e9ca7f430
       version: -1
       name: Related Incidents
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -771,10 +795,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 360a66dd-561b-4b0d-86fa-2133dac41bf2
+    taskid: 987c3d31-0766-47a9-8b94-73ce90caffb7
     type: collection
     task:
-      id: 360a66dd-561b-4b0d-86fa-2133dac41bf2
+      id: 987c3d31-0766-47a9-8b94-73ce90caffb7
       version: -1
       name: Classify this incident!
       type: collection
@@ -796,13 +820,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
-      body:
+      to: null
+      subject: null
+      body: null
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -825,11 +849,15 @@ tasks:
         - simple: False Positive
         fieldassociated: ""
         placeholder: ""
-        tooltip: 'Since you observed the Indicators, SandBox report and other related incidents, you should have all the right information '
+        tooltip: Look at the RDP Brute Force Tab
         readonly: false
       title: Classification
-      description: "Now, once you covered the incident's details and more - you can classify the incident through this playbook! \nSo what's it going to be? True Or False Positive? \n\nSince you observed the Indicators, SandBox report, and other related incidents, you should have all the information to accomplish this mission. \n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/classified-topgun.gif)"
-      sender: ""
+      description: "Now, once you covered the incident's details and more - you can
+        classify the incident through this playbook! \nSo what's it going to be? True
+        Or False Positive? \n\nYou can go over the collected data from the playbook
+        and the information provided in the layout, you should have all the information
+        to accomplish this mission. \n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/classified-topgun.gif)"
+      sender: Your SOC team
       expired: false
       totalanswers: 0
     skipunavailable: false
@@ -838,16 +866,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 640970f4-9a54-4955-84a2-cf23a5e763cf
+    taskid: deb05f1a-58b2-48f3-827b-a6b0acc8ad9a
     type: title
     task:
-      id: 640970f4-9a54-4955-84a2-cf23a5e763cf
+      id: deb05f1a-58b2-48f3-827b-a6b0acc8ad9a
       version: -1
       name: Post classification actions
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "37"
@@ -869,16 +896,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 7b75b9e0-3a9d-45c9-8fc8-e017ad85d868
+    taskid: 9096ef81-9d7f-4e9e-862c-fa8ebcf60606
     type: title
     task:
-      id: 7b75b9e0-3a9d-45c9-8fc8-e017ad85d868
+      id: 9096ef81-9d7f-4e9e-862c-fa8ebcf60606
       version: -1
       name: Investigate the incident
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -902,10 +928,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: cc483645-e820-44c1-8c33-2dd9b454aae9
+    taskid: 1e9e6d56-7636-4df2-8e72-23d3bca7335a
     type: regular
     task:
-      id: cc483645-e820-44c1-8c33-2dd9b454aae9
+      id: 1e9e6d56-7636-4df2-8e72-23d3bca7335a
       version: -1
       name: 'Check your answer #5'
       description: This should provide answers to the CTF_2 ( RDP BruteForce)
@@ -943,16 +969,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 83fe109e-2903-4635-8bc7-3196ab919c08
+    taskid: 7c43443b-65f3-4d0d-881b-2a4737f85e8e
     type: title
     task:
-      id: 83fe109e-2903-4635-8bc7-3196ab919c08
+      id: 7c43443b-65f3-4d0d-881b-2a4737f85e8e
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -971,10 +996,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: a4869d99-bc3d-45a0-8f13-ba0f05de9bc8
+    taskid: c0affa00-9f25-47dc-8a6c-8bdd214b3f82
     type: collection
     task:
-      id: a4869d99-bc3d-45a0-8f13-ba0f05de9bc8
+      id: c0affa00-9f25-47dc-8a6c-8bdd214b3f82
       version: -1
       name: Check the tag associated with the malicious indicator
       type: collection
@@ -996,13 +1021,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
-      body:
+      to: null
+      subject: null
+      body: null
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1014,7 +1039,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: What is the malicious indicator's tag in our investigation?
+          simple: What is the malicious indicator tag in our investigation?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -1025,11 +1050,19 @@ tasks:
         - simple: "No"
         fieldassociated: ""
         placeholder: ""
-        tooltip: You can check indicators information from the incident's indicator quick view or through the Threat Intel section.
+        tooltip: You can check indicators information from the incident's indicator
+          quick view or through the Threat Intel section.
         readonly: false
       title: Check the tag associated with the malicious indicator
-      description: "Once we have classified the incident as true positive, we would like to go and block all the relevant systems in our environment hence we want to be able to identify those indicators that we want to block. Therefore, we can tag our indicators with dedicated tags. \n\n![myfile](https://github.com/demisto/content/blob/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/john-cena-tag-me-in.gif)"
-      sender: ""
+      description: |-
+        Great!
+
+        Now, we have classified the incident as true positive, we would like to verify that we blocked the malicious indicator, therefore, we will use our EDL (Export dynamic lists) integration.
+
+        The EDL integration utilizes the TIM query to populate indicators to an external dynamic list. For example, a TIM query can use a dedicated tag for blocking (such as "Bad" or "BlockMe").
+
+        ![myfile](https://github.com/demisto/content/blob/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/john-cena-tag-me-in.gif)
+      sender: Your SOC team
       expired: false
       totalanswers: 0
     skipunavailable: false
@@ -1038,10 +1071,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 8e7afe80-04d8-49c8-8c89-6ce58f7505ea
+    taskid: ad47b1e6-f810-4afa-8c14-6b1c71b2e5e5
     type: regular
     task:
-      id: 8e7afe80-04d8-49c8-8c89-6ce58f7505ea
+      id: ad47b1e6-f810-4afa-8c14-6b1c71b2e5e5
       version: -1
       name: 'Check your answer #7'
       description: This should provide answers to the CTF_2 ( RDP BruteForce)
@@ -1091,7 +1124,3 @@ view: |-
   }
 inputs: []
 outputs: []
-tests:
-- No tests (auto formatted)
-fromversion: 6.5.0
-description: ''
