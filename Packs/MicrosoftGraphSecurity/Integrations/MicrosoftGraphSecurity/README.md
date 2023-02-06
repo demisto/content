@@ -136,3 +136,65 @@ Update an editable alert property within any integrated solution to keep alert s
 | --- | --- | --- |
 | MsGraph.Alert.ID | string | Alert ID. | 
 | MsGraph.Alert.Status | string | Alert status. | 
+
+### msg-search-alerts-v2
+***
+List alerts (security issues) within a customer's tenant that Microsoft or partner security solutions have identified.
+
+
+#### Base Command
+
+`msg-search-alerts-v2`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| last_modified | When the alert was last modified in the following string format - YYYY-MM-DD. Possible values are: Last24Hours, Last48Hours, LastWeek. | Optional | 
+| severity | Alert severity - set by vendor/provider. Possible values are: unknown, informational, low, medium, high. | Optional | 
+| time_from | The start time (creation time of alert) for the search in the string format YYYY-MM-DD. | Optional | 
+| time_to | The end time (creation time of alert) for the search in the string format YYYY-MM-DD. | Optional | 
+| filter | Use this field to filter on any of the alert properties in the format "{property} eq '{property-value}'", for example "category eq 'ransomware'". | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.Alert.ID | string | Alert ID. | 
+| MsGraph.Alert.Title | string | Alert title. | 
+| MsGraph.Alert.Category | string | Alert category. | 
+| MsGraph.Alert.Severity | string | Alert severity. | 
+| MsGraph.Alert.CreatedDate | date | Alert creation date. | 
+| MsGraph.Alert.FirstActivityDateTime | date | Alert first activity time. | 
+| MsGraph.Alert.LastActivityDateTime | date | Alert last activity time. | 
+| MsGraph.Alert.Status | string | Alert status. | 
+| MsGraph.Alert.Provider | string | Alert provider. | 
+
+### msg-get-alert-details-v2
+***
+Get details for a specific alert.
+
+
+#### Base Command
+
+`msg-get-alert-details`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | The Alert ID. Provider-generated GUID/unique identifier. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.Alert.ID | string | Alert ID. | 
+| MsGraph.Alert.Title | string | Alert title. | 
+| MsGraph.Alert.Category | string | Alert category. | 
+| MsGraph.Alert.Severity | string | Alert severity. | 
+| MsGraph.Alert.CreatedDate | date | Alert creation date. | 
+| MsGraph.Alert.FirstActivityDateTime | date | Alert first activity time. | 
+| MsGraph.Alert.LastActivityDateTime | date | Alert last activity time. | 
+| MsGraph.Alert.Status | string | Alert status. | 
+| MsGraph.Alert.Provider | Unknown | Alert provider .| 
