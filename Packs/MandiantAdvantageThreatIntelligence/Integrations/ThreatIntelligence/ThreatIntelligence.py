@@ -1055,7 +1055,7 @@ def get_indicator_list(
     indicators_list = last_run_dict.get(f"{indicator_type}List", [])
 
     if len(indicators_list) < limit:
-        last_run = last_run_dict.get(indicator_type + "Last", first_fetch)
+        last_run = last_run_dict.get(indicator_type + "LastFetch", first_fetch)
         new_indicators_list = get_new_indicators(
             client, last_run, indicator_type, limit
         )
@@ -1295,7 +1295,14 @@ def test_module(client: MandiantClient, args: Dict) -> str:
 
     # Note: As part of client initialization, a token is retrieved, which requires successful authentication
     # Therefor, if a user has reached this point with a valid MandiantClient, everything is working
-    return "ok"
+
+    indicators = client.get_indicators(params={"limit": 1})
+
+    if indicators is not None:
+        return "ok"
+
+    else:
+        return "failed to retrieve indicator"
 
 
 """ MAIN FUNCTION """
