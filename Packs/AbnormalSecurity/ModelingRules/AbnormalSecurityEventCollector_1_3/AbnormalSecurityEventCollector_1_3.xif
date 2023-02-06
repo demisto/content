@@ -7,7 +7,7 @@ alter
     senderIpAddress = coalesce(arraycreate(senderIpAddress))
 | alter
     xdm.event.id = threatId,
-    xdm.event.outcome = remediationStatus,
+    xdm.event.outcome = if(remediationStatus = "Auto-Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "Post Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "No Action Done", XDM_CONST.OUTCOME_FAILED, remediationStatus = "Would Remediate", XDM_CONST.OUTCOME_PARTIAL, remediationStatus = "Remediation Attempted", XDM_CONST.OUTCOME_PARTIAL, remediationStatus = null, null, to_string(remediationStatus)),
     xdm.email.recipients = toAddresses,
     xdm.email.attachment.filename = attachmentNames,
     xdm.email.subject = subject,
