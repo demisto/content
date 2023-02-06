@@ -54,7 +54,14 @@ def side_effect_twitter_tweet_search(method, url_suffix, headers, params, ok_cod
                           test_data['search_tweets_human_readable'], test_data['search_tweets_response']),
                          (10, '2020-11-10T00:00:00Z', '2020-11-17T00:00:00Z',
                           test_data['expected_output_dates'],
-                          test_data['search_tweets_human_readable_dates'], test_data['search_tweets_response_dates'])])
+                          '### Tweets search results:'
+                          '\n|Tweet ID|Text|Created At|Author Name|Author Username|Likes Count|Attachments URL|\n|'
+                          '---|---|---|---|---|---|---|\n|'
+                          ' 2020202020202020202 | some_tweet_text_1 | 2020-11-10T00:00:00.000Z | name_1 | username_1 | 0 |  |\n|'
+                          ' 2929292929292929292 | some_tweet_text_2 | 2020-11-11T00:00:00.000Z | name_2 | username_2 | 0 |  |\n|'
+                          ' 2828282828282828282 | some_tweet_text_3 | 2020-11-12T00:00:00.000Z | name_3 | username_3 | 0 |'
+                          ' https://url.jpg,<br>https://url.jpg,<br>https://url.jpg,<br>https://url.jpg |\n',
+                          test_data['search_tweets_response_dates'])])
 def test_twitter_tweet_search_command(mocker, limit, start_time, end_time, expected_output,
                                       expected_human_readable, expected_raw):
     """
