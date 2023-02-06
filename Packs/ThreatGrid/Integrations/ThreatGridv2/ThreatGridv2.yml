@@ -1705,7 +1705,7 @@ script:
       description: The associated IP.
       type: String
   runonce: false
-  dockerimage: demisto/python3:3.10.9.46032
+  dockerimage: demisto/python3:3.10.9.46807
   feed: false
   isfetch: false
   longRunning: false
