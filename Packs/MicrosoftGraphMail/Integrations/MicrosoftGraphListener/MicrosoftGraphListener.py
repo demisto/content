@@ -1691,10 +1691,11 @@ def main():     # pragma: no cover
     refresh_token = get_integration_context().get('current_refresh_token') or refresh_token_param
 
     client = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
-                           ok_codes, refresh_token, refresh_token_param, mailbox_to_fetch, folder_to_fetch,
+                           ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch,
                            first_fetch_interval, emails_fetch_limit, auth_code=auth_code, private_key=private_key,
                            display_full_email_body=display_full_email_body, mark_fetched_read=mark_fetched_read,
-                           redirect_uri=params.get('redirect_uri', ''), certificate_thumbprint=certificate_thumbprint)
+                           redirect_uri=params.get('redirect_uri', ''), certificate_thumbprint=certificate_thumbprint,
+                           refresh_token_param=refresh_token_param)
     try:
         command = demisto.command()
         args = prepare_args(command, demisto.args())
