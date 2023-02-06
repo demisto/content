@@ -2,7 +2,7 @@ commonfields:
   id: Threat Grid
   version: -1
 name: Threat Grid
-display: Cisco Threat Grid (Deprecated)
+display: Cisco Threat Grid (deprecated)
 category: Forensics & Malware Analysis
 description: Deprecated. Use Cisco Threat Grid v2 instead.
 detaileddescription: |-
