@@ -21,7 +21,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: InsightVM is a Vulnerability Management Tool which Scan your Network, Eliminate Vulnerabilities, Track and Communicate progress.
+description: InsightVM is a vulnerability management tool that can scan your network, eliminate vulnerabilities, and track and communicate its progress.
 display: Rapid7 InsightVM Cloud
 name: Rapid7 InsightVM Cloud
 script:
