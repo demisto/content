@@ -10885,7 +10885,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
             )
             break
         except DemistoException as err:
-            if err.res.status_code != 429 or retry_num == 3:
+            if err.res.status_code != 429 or retry_num == retries - 1:
                 raise err
             else:
                 time.sleep(1)  # pylint: disable=sleep-exists
