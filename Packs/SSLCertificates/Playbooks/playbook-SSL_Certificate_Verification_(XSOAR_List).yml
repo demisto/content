@@ -2,36 +2,27 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: 'Demo playbook - takes list of addresses from an XSOAR list, process the status of each SSL certificate, and generate war room and email summary outputs.'
 id: 2e7b0abd-18cd-4244-8608-b9be1199a642
-inputs: []
 name: 2e7b0abd-18cd-4244-8608-b9be1199a642
-outputs: []
+description: 'Demo playbook - takes list of addresses from an XSOAR list, process the status of each SSL certificate, and generate war room and email summary outputs.'
 starttaskid: "0"
 tasks:
   "0":
-    continueonerrortype: ""
     id: "0"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: f0b75a56-9b8e-4ea4-850a-c194e46d18d3
+    type: start
+    task:
+      description: ""
+      id: f0b75a56-9b8e-4ea4-850a-c194e46d18d3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      description: ""
-      brand: ""
-      id: f0b75a56-9b8e-4ea4-850a-c194e46d18d3
-      iscommand: false
-      name: ""
-      version: -1
-    taskid: f0b75a56-9b8e-4ea4-850a-c194e46d18d3
-    timertriggers: []
-    type: start
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -39,46 +30,46 @@ tasks:
           "y": 50
         }
       }
-  "2":
-    continueonerror: true
-    continueonerrortype: ""
-    id: "2"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: e6993720-eb0a-47a9-88aa-fbae58abe029
+    type: regular
+    task:
+      id: e6993720-eb0a-47a9-88aa-fbae58abe029
+      version: -1
+      name: Check certificate status for each domain
+      description: Use this automation to check for validity of your SSL certificate
+        and get the time until expiration.
+      scriptName: SSLVerifierV2
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
-    note: false
-    quietmode: 0
     scriptarguments:
       URL:
         complex:
-          accessor: Domains_All
           root: lists
+          accessor: Domains_All
           transformers:
-          - args:
+          - operator: splitAndTrim
+            args:
               delimiter:
                 value:
                   simple: ','
-            operator: splitAndTrim
       ignore-outputs:
         simple: "false"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Use this automation to check for validity of your SSL certificate
-        and get the time until expiration.
-      id: e6993720-eb0a-47a9-88aa-fbae58abe029
-      iscommand: false
-      name: Check certificate status for each domain
-      script: 9cc2bd75-c959-4709-8c3b-d684ec2ee17d
-      type: regular
-      version: -1
-    taskid: e6993720-eb0a-47a9-88aa-fbae58abe029
-    timertriggers: []
-    type: regular
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -86,40 +77,40 @@ tasks:
           "y": 195
         }
       }
-  "4":
-    continueonerrortype: ""
-    id: "4"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 886eed48-8ee6-4c2d-8f6a-2433e1f6e0e1
+    type: regular
+    task:
+      id: 886eed48-8ee6-4c2d-8f6a-2433e1f6e0e1
+      version: -1
+      name: Parse SSLVerifierV2 Output
+      description: "Parses the output from the !SSLVerifier automation into a markdown
+        table and separate context key \n\n"
+      scriptName: SSLVerifierV2_ParseOutput
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "15"
       - "16"
       - "17"
       - "18"
-    note: false
-    quietmode: 1
     scriptarguments:
       OutputToWarRoom:
         simple: "False"
       StatusType:
         simple: all
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: "Parses the output from the !SSLVerifier automation into a markdown
-        table and separate context key \n\n"
-      id: 886eed48-8ee6-4c2d-8f6a-2433e1f6e0e1
-      iscommand: false
-      name: Parse SSLVerifierV2 Output
-      script: 352951c2-b0d4-41d3-8dce-4122883d3c02
-      type: regular
-      version: -1
-    taskid: 886eed48-8ee6-4c2d-8f6a-2433e1f6e0e1
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -127,31 +118,31 @@ tasks:
           "y": 370
         }
       }
-  "5":
-    continueonerrortype: ""
-    id: "5"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 1
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ee0cf87d-7eda-4b2e-8073-f2d98b8f15b6
+    type: regular
+    task:
+      id: ee0cf87d-7eda-4b2e-8073-f2d98b8f15b6
+      version: -1
+      name: Generate Report Email (HTML)
+      description: Generate the HTML-formatted report for delivery via email
+      scriptName: SSLVerifierV2_GenerateEmailBody
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Generate the HTML-formatted report for delivery via email
-      id: ee0cf87d-7eda-4b2e-8073-f2d98b8f15b6
-      iscommand: false
-      name: Generate Report Email (HTML)
-      script: d8a653a4-e451-4eae-81b0-5d544ce9ec46
-      type: regular
-      version: -1
-    taskid: ee0cf87d-7eda-4b2e-8073-f2d98b8f15b6
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -159,17 +150,29 @@ tasks:
           "y": 895
         }
       }
-  "6":
-    continueonerrortype: ""
-    id: "6"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e00afaca-34b2-47f1-87dd-4f15e61f9a3a
+    type: regular
+    task:
+      id: e00afaca-34b2-47f1-87dd-4f15e61f9a3a
+      version: -1
+      name: Send Report Email (HTML)
+      description: Sends mail using Gmail.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "19"
-    note: false
-    quietmode: 0
     scriptarguments:
       htmlBody:
         simple: ${SSLReport.HTML}
@@ -178,19 +181,7 @@ tasks:
       to:
         simple: josh0x90@gmail.com
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Sends mail using Gmail.
-      id: e00afaca-34b2-47f1-87dd-4f15e61f9a3a
-      iscommand: true
-      name: Send Report Email (HTML)
-      script: '|||send-mail'
-      type: regular
-      version: -1
-    taskid: e00afaca-34b2-47f1-87dd-4f15e61f9a3a
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -198,17 +189,29 @@ tasks:
           "y": 1070
         }
       }
-  "10":
-    continueonerrortype: ""
-    id: "10"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 2a695572-5883-4d50-8ea2-0b735ced3b41
+    type: regular
+    task:
+      id: 2a695572-5883-4d50-8ea2-0b735ced3b41
+      version: -1
+      name: Set Expired Certificates Grid
+      description: Creates a Grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
-    note: false
-    quietmode: 1
     scriptarguments:
       columns:
         simple: Domain, ExpirationDate, TimeToExpiration
@@ -221,19 +224,7 @@ tasks:
       sort_by:
         simple: timetoexpiration
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Creates a Grid table from items or key-value pairs.
-      id: 2a695572-5883-4d50-8ea2-0b735ced3b41
-      iscommand: false
-      name: Set Expired Certificates Grid
-      script: SetGridField
-      type: regular
-      version: -1
-    taskid: 2a695572-5883-4d50-8ea2-0b735ced3b41
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -241,17 +232,29 @@ tasks:
           "y": 720
         }
       }
-  "11":
-    continueonerrortype: ""
-    id: "11"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 1
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 6fac48fe-8413-4176-85b5-5237d8542ae9
+    type: regular
+    task:
+      id: 6fac48fe-8413-4176-85b5-5237d8542ae9
+      version: -1
+      name: Set Expiring Certificates Grid
+      description: Creates a Grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
-    note: false
-    quietmode: 1
     scriptarguments:
       columns:
         simple: Domain, ExpirationDate, TimeToExpiration
@@ -264,19 +267,7 @@ tasks:
       sort_by:
         simple: timetoexpiration
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Creates a Grid table from items or key-value pairs.
-      id: 6fac48fe-8413-4176-85b5-5237d8542ae9
-      iscommand: false
-      name: Set Expiring Certificates Grid
-      script: SetGridField
-      type: regular
-      version: -1
-    taskid: 6fac48fe-8413-4176-85b5-5237d8542ae9
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -284,17 +275,29 @@ tasks:
           "y": 720
         }
       }
-  "12":
-    continueonerrortype: ""
-    id: "12"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 1
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 20f51842-d663-49da-86cd-729637a1f7ac
+    type: regular
+    task:
+      id: 20f51842-d663-49da-86cd-729637a1f7ac
+      version: -1
+      name: Set Warning Certificates Grid
+      description: Creates a Grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
-    note: false
-    quietmode: 1
     scriptarguments:
       columns:
         simple: Domain, ExpirationDate, TimeToExpiration
@@ -307,19 +310,7 @@ tasks:
       sort_by:
         simple: timetoexpiration
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Creates a Grid table from items or key-value pairs.
-      id: 20f51842-d663-49da-86cd-729637a1f7ac
-      iscommand: false
-      name: Set Warning Certificates Grid
-      script: SetGridField
-      type: regular
-      version: -1
-    taskid: 20f51842-d663-49da-86cd-729637a1f7ac
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -327,17 +318,29 @@ tasks:
           "y": 720
         }
       }
-  "13":
-    continueonerrortype: ""
-    id: "13"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 1
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 8ac08fdf-83be-45cf-84b8-af7e6cd6c257
+    type: regular
+    task:
+      id: 8ac08fdf-83be-45cf-84b8-af7e6cd6c257
+      version: -1
+      name: Set Good Certificates Grid
+      description: Creates a Grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
-    note: false
-    quietmode: 1
     scriptarguments:
       columns:
         simple: Domain, ExpirationDate, TimeToExpiration
@@ -350,19 +353,7 @@ tasks:
       sort_by:
         simple: timetoexpiration
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Creates a Grid table from items or key-value pairs.
-      id: 8ac08fdf-83be-45cf-84b8-af7e6cd6c257
-      iscommand: false
-      name: Set Good Certificates Grid
-      script: SetGridField
-      type: regular
-      version: -1
-    taskid: 8ac08fdf-83be-45cf-84b8-af7e6cd6c257
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -370,27 +361,27 @@ tasks:
           "y": 720
         }
       }
-  "14":
-    continueonerrortype: ""
-    id: "14"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
-    quietmode: 0
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: b4cbe90d-11b5-4a19-87af-b4104075b1d3
+    type: title
     task:
-      brand: ""
       description: ""
       id: b4cbe90d-11b5-4a19-87af-b4104075b1d3
-      iscommand: false
+      version: -1
       name: Playbook Finished
       type: title
-      version: -1
-    taskid: b4cbe90d-11b5-4a19-87af-b4104075b1d3
-    timertriggers: []
-    type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -398,47 +389,47 @@ tasks:
           "y": 1420
         }
       }
-  "15":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: ${SSLReport.Expired}
-          operator: isExists
-          right:
-            value: {}
-      label: "yes"
-    continueonerrortype: ""
-    id: "15"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "10"
     note: false
-    quietmode: 1
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 3cff891b-3eeb-4822-8d3c-ff22abd027fb
+    type: condition
     task:
-      brand: ""
+      id: 3cff891b-3eeb-4822-8d3c-ff22abd027fb
+      version: -1
+      name: Were Expired Certificates Found?
       description: This script checks that a context key exists (and contains data),
         and optionally checks the value of the context key for a match against an
         input value. If a regex is not supplied, the script checks that the key is
         not empty. This script can be used with the "GenericPolling" playbook to poll
         for field population or that a field contains a specific value. This scripts
         does not support a context key which holds a list of values.
-      id: 3cff891b-3eeb-4822-8d3c-ff22abd027fb
-      iscommand: false
-      name: Were Expired Certificates Found?
       type: condition
-      version: -1
-    taskid: 3cff891b-3eeb-4822-8d3c-ff22abd027fb
-    timertriggers: []
-    type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${SSLReport.Expired}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -446,47 +437,47 @@ tasks:
           "y": 545
         }
       }
-  "16":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: ${SSLReport.Expiring}
-          operator: isExists
-          right:
-            value: {}
-      label: "yes"
-    continueonerrortype: ""
-    id: "16"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "11"
     note: false
-    quietmode: 1
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 224d869f-67db-468f-8b71-8f2193711dd4
+    type: condition
     task:
-      brand: ""
+      id: 224d869f-67db-468f-8b71-8f2193711dd4
+      version: -1
+      name: Were Expiring Certificates Found?
       description: This script checks that a context key exists (and contains data),
         and optionally checks the value of the context key for a match against an
         input value. If a regex is not supplied, the script checks that the key is
         not empty. This script can be used with the "GenericPolling" playbook to poll
         for field population or that a field contains a specific value. This scripts
         does not support a context key which holds a list of values.
-      id: 224d869f-67db-468f-8b71-8f2193711dd4
-      iscommand: false
-      name: Were Expiring Certificates Found?
       type: condition
-      version: -1
-    taskid: 224d869f-67db-468f-8b71-8f2193711dd4
-    timertriggers: []
-    type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${SSLReport.Expiring}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -494,47 +485,47 @@ tasks:
           "y": 545
         }
       }
-  "17":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: ${SSLReport.Warning}
-          operator: isExists
-          right:
-            value: {}
-      label: "yes"
-    continueonerrortype: ""
-    id: "17"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "12"
     note: false
-    quietmode: 1
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 4373cdbb-6054-406a-82e2-fc0fbadd8b7c
+    type: condition
     task:
-      brand: ""
+      id: 4373cdbb-6054-406a-82e2-fc0fbadd8b7c
+      version: -1
+      name: Were Warning Certificates Found?
       description: This script checks that a context key exists (and contains data),
         and optionally checks the value of the context key for a match against an
         input value. If a regex is not supplied, the script checks that the key is
         not empty. This script can be used with the "GenericPolling" playbook to poll
         for field population or that a field contains a specific value. This scripts
         does not support a context key which holds a list of values.
-      id: 4373cdbb-6054-406a-82e2-fc0fbadd8b7c
-      iscommand: false
-      name: Were Warning Certificates Found?
       type: condition
-      version: -1
-    taskid: 4373cdbb-6054-406a-82e2-fc0fbadd8b7c
-    timertriggers: []
-    type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${SSLReport.Warning}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -542,47 +533,47 @@ tasks:
           "y": 545
         }
       }
-  "18":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: ${SSLReport.Good}
-          operator: isExists
-          right:
-            value: {}
-      label: "yes"
-    continueonerrortype: ""
-    id: "18"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "13"
     note: false
-    quietmode: 1
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: f435796d-9278-44a9-88e0-fd21853b7ada
+    type: condition
     task:
-      brand: ""
+      id: f435796d-9278-44a9-88e0-fd21853b7ada
+      version: -1
+      name: Were Good Certificates Found?
       description: This script checks that a context key exists (and contains data),
         and optionally checks the value of the context key for a match against an
         input value. If a regex is not supplied, the script checks that the key is
         not empty. This script can be used with the "GenericPolling" playbook to poll
         for field population or that a field contains a specific value. This scripts
         does not support a context key which holds a list of values.
-      id: f435796d-9278-44a9-88e0-fd21853b7ada
-      iscommand: false
-      name: Were Good Certificates Found?
       type: condition
-      version: -1
-    taskid: f435796d-9278-44a9-88e0-fd21853b7ada
-    timertriggers: []
-    type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${SSLReport.Good}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -590,34 +581,34 @@ tasks:
           "y": 545
         }
       }
-  "19":
-    continueonerrortype: ""
-    id: "19"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 1
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 1a365373-a1f7-4a84-82c1-eeb45f26009d
+    type: regular
+    task:
+      id: 1a365373-a1f7-4a84-82c1-eeb45f26009d
+      version: -1
+      name: Print output to War Room
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "14"
-    note: false
-    quietmode: 0
     scriptarguments:
       value:
         simple: ${SSLReport.md}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Prints text to war room (Markdown supported)
-      id: 1a365373-a1f7-4a84-82c1-eeb45f26009d
-      iscommand: false
-      name: Print output to War Room
-      script: Print
-      type: regular
-      version: -1
-    taskid: 1a365373-a1f7-4a84-82c1-eeb45f26009d
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -625,7 +616,13 @@ tasks:
           "y": 1245
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
