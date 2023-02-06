@@ -4,7 +4,6 @@ import shutil
 from os.path import isfile
 
 import demistomock as demisto  # noqa: F401
-import pyminizip
 from CommonServerPython import *  # noqa: F401
 
 ESCAPE_CHARACTERS = r'[/\<>"|?*]'
