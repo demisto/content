@@ -228,8 +228,10 @@ def search_alerts_v2_command(client: MsGraphClient, args):
     ec = {
         'MsGraph.Alert(val.ID && val.ID === obj.ID)': outputs
     }
-    table_headers = ['ID', 'Provider', 'Title', 'Category', 'Severity', 'CreatedDate', 'FirstActivityDateTime', 
-    'LastActivityDateTime', 'Status']
+    table_headers = [
+        'ID', 'Provider', 'Title', 'Category', 'Severity', 'CreatedDate',
+        'FirstActivityDateTime', 'LastActivityDateTime', 'Status'
+    ]
     human_readable = tableToMarkdown('Microsoft Security Graph Alerts', outputs, table_headers, removeNull=True)
     return human_readable, ec, alerts
 
