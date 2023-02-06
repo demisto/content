@@ -160,20 +160,20 @@ script:
     name: nexpose-get-asset-tags
     outputs:
     - contextPath: Nexpose.Asset.type
-      description: All addresses discovered on the asset.
+      description: The type of tag discovered on the asset.
       type: string
     - contextPath: Nexpose.Asset.name
-      description: Id of the asset.
+      description: ID of the asset.
       type: string
     - contextPath: Nexpose.Asset.created_time
-      description: The primary Media Access Control (MAC) address of the asset. The format is six groups of two hexadecimal digits separated by colons.
+      description: The created time of the tag.
       type: string
     - contextPath: Nexpose.Asset.risk_modifier
-      description: The type of asset. Valid values are unknown, guest, hypervisor, physical, mobile
+      description: The risk modifier for a criticality typed tag.
       type: string
   - arguments:
     - default: false
-      description: 'Number of records to retrieve in each API call when pagination is used.'
+      description: Number of records to retrieve in each API call when pagination is used.
       isArray: false
       name: page_size
       required: false

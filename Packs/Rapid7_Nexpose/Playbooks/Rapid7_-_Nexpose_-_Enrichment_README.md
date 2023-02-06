@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Rapid7 Nexpose
+Rapid7 Nexpose
 
 ### Scripts
 This playbook does not use any scripts.
@@ -21,15 +21,15 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IP | IP used to search for asset information and tags | | Optional |
+| IP | IP used to search for asset information and tags. | | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Nexpose.Asset | List of asset\(s\) information from Nexpose search | unknown |
-| Nexpose.AssetTag | List of asset tags from Nexpose tag search | unknown |
+| Nexpose.Asset | List of asset\(s\) information from the Nexpose search. | unknown |
+| Nexpose.AssetTag | List of asset tags from the Nexpose tag search. | unknown |
 
 ## Playbook Image
 ---

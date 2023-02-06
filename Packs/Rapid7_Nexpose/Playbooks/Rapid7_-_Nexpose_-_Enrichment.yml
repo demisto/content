@@ -204,7 +204,7 @@ tasks:
       id: 7597e8b2-f4f2-493d-87cf-1dc207f6c799
       version: -1
       name: Was an asset found?
-      description: Check is asset was found from Rapid7
+      description: Check if an asset was found from Rapid7.
       type: condition
       iscommand: false
       brand: ""
@@ -261,14 +261,14 @@ inputs:
   value:
     simple:
   required: true
-  description: IP used to search for asset information and tags
+  description: IP used to search for asset information and tags.
   playbookInputQuery:
 outputs:
 - contextPath: Nexpose.Asset
-  description: List of asset(s) information from Nexpose search
+  description: List of asset(s) information from the Nexpose search.
   type: unknown
 - contextPath: Nexpose.AssetTag
-  description: List of asset tags from Nexpose tag search
+  description: List of asset tags from the Nexpose tag search.
   type: unknown
 tests:
 - No tests (auto formatted)

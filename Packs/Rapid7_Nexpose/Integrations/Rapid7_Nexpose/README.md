@@ -87,10 +87,10 @@ Returns the specified asset.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Nexpose.AssetTag.type | string | Type of asset tag |
-| Nexpose.AssetTag.created_time | string | Timestamp with the tag was created |
-| Nexpose.AssetTag.name | string | The value of the tag |
-| Nexpose.AssetTag.risk_modifier | string | The risk modifier value associated with criticality tag type |
+| Nexpose.AssetTag.type | string | Type of asset tag. |
+| Nexpose.AssetTag.created_time | string | Timestamp with the tag was create. |
+| Nexpose.AssetTag.name | string | The value of the tag. |
+| Nexpose.AssetTag.risk_modifier | string | The risk modifier value associated with criticality tag type. |
 
 #### Command example
 
