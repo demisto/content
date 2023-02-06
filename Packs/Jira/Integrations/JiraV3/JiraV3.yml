@@ -249,7 +249,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A CSV list of fields to return.
+      description: A CSV list of fields to return (Using the name of the fields).
       isArray: false
       name:  specific_fields
       required: false
@@ -355,7 +355,7 @@ script:
       description: The entry ID to upload.
       isArray: false
       name: entry_id
-      required: false
+      required: true
       secret: false
     - default: false
       description: The attachment name to be displayed in Jira (overrides the original
@@ -426,8 +426,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The issue object (in JSON format). For example {"fields":{"customfield_10037":
-        "field_value"}}.'
+      description: 'The issue object (in JSON format). Using this argument will override the other arguments.
+        For example {"fields":{"customfield_10037":"field_value"}}.'
       isArray: false
       name: issue_json
       required: false
@@ -531,7 +531,8 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: The issue object (in JSON format).
+      description: 'The issue object (in JSON format). Using this argument will override the other arguments.
+        For example {"fields":{"customfield_10037":"field_value"}}.'
       isArray: false
       name: issue_json
       required: false
@@ -817,6 +818,10 @@ script:
     description: Use this command to start the OAuth process.
     execution: false
     name: jira-oauth-start
+  - deprecated: false
+    description: Use this command to test the connectivity of the Jira instance.
+    execution: false
+    name: jira-oauth-test
   - arguments:
     - default: false
       description: The comment ID.
@@ -1099,7 +1104,7 @@ script:
       secret: false
       defaultValue: '50'
     deprecated: false
-    description: 
+    description: Get board data
     execution: false
     name: jira-board-list
     outputs:
@@ -1118,6 +1123,33 @@ script:
     - contextPath: Jira.Board.admins
       description: The type the board.
       type: object
+    - contextPath: Jira.Board.admins.users
+      description: The users who own the board.
+      type: object
+    - contextPath: Jira.Board.admins.users.self
+      description: The URL of the user.
+      type: string
+    - contextPath: Jira.Board.admins.users.displayName
+      description: The display name of the user. Depending on the user’s privacy setting, this may return an alternative value.
+      type: string
+    - contextPath: Jira.Board.admins.users.active
+      description: Whether the user is active.
+      type: string
+    - contextPath: Jira.Board.admins.users.accountId
+      description: The account ID of the user, which uniquely identifies the user across all Atlassian products.
+      type: string
+    - contextPath: Jira.Board.admins.users.avatarUrls
+      description: The avatars of the user.
+      type: object
+    - contextPath: Jira.Board.admins.groups
+      description: The groups who own the board.
+      type: object
+    - contextPath: Jira.Board.admins.groups.name
+      description: The name of the group.
+      type: string
+    - contextPath: Jira.Board.admins.groups.self
+      description: The url of the group.
+      type: string
     - contextPath: Jira.Board.location
       description: The container that the board is located in.
       type: object
