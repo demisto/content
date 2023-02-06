@@ -32,9 +32,9 @@ comment: "Parses the output from the !SSLVerifierV2 automation into a markdown t
 commonfields:
   id: 352951c2-b0d4-41d3-8dce-4122883d3c02
   version: -1
-dockerimage: demisto/python3:3.10.9.45313
+dockerimage: demisto/python3:3.10.9.46807
 enabled: true
-name: SSLVerifierV2_ParseOutput
+name: 352951c2-b0d4-41d3-8dce-4122883d3c02
 outputs:
 - contextPath: SSLReport.Expiring
   description: Certificates expiring in <= 90 days
