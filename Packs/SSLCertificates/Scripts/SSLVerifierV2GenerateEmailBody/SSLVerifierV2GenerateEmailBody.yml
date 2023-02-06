@@ -1,17 +1,18 @@
-comment: 'Generates the HTML needed for a formatted email to be sent using the outputs of !SSLVerifierV2, as part of the SSLVerifierV2 content pack. '
+comment: 'Generates the HTML needed for a formatted email to be sent using the outputs
+  of !SSLVerifierV2, as part of the SSLVerifierV2 content pack. '
 commonfields:
-  id: SSLVerifierV2_GenerateEmailBody
+  id: d8a653a4-e451-4eae-81b0-5d544ce9ec46
   version: -1
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-dockerimage: demisto/python3:3.10.9.46032
+dockerimage: demisto/python3:3.10.9.45313
 enabled: true
+engineinfo: {}
+mainengineinfo: {}
 name: SSLVerifierV2_GenerateEmailBody
 outputs:
 - contextPath: SSLReport.HTML
   description: Email body formatted in HTML
   type: string
+pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
