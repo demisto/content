@@ -11,15 +11,6 @@ from collections import Counter
 
 """ CONSTANTS """
 
-""" CLIENT CLASS """
-
-""" HELPER FUNCTIONS """
-
-""" COMMAND FUNCTIONS """
-
-""" MAIN FUNCTION """
-
-
 params = demisto.params()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 MIRROR_DIRECTION = {
@@ -38,11 +29,13 @@ status_msg_types = [
     "IncidentCommentAdded",
 ]
 
+""" CLIENT CLASS """
+
 
 class Client(BaseClient):
-    def __init__(self, server_url, verify, proxy, headers, auth):
+    def __init__(self, server_url, verify, proxy, headers):
         super().__init__(
-            base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth
+            base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=None
         )
         self.api_key = None
 
@@ -256,6 +249,9 @@ class Client(BaseClient):
         return response
 
 
+""" HELPER FUNCTIONS """
+
+
 def get_hmac_sha256(key: Optional[str], comment: str):
     if key is None:
         key = ''
@@ -281,9 +277,7 @@ def validate_hmac_sha256(key: str, comment_w_hmac: str, separator="hmacsha256:")
     if len(result) != 2:
         return False
     comment, hash_mac = result
-    # logger.debug(f'{validate_hmac_sha256.__qualname__} comment: {comment}, {hash_mac}')
     if get_hmac_sha256(key, comment) == hash_mac:
-        # logger.info(f'{validate_hmac_sha256.__qualname__} validating hmac is True: {comment}, {hash_mac}')
         return True
     return False
 
@@ -298,6 +292,9 @@ def add_prefix_to_comment(commnet: Optional[str]) -> str:
     return f"from XSOAR Cortex {datetime.today():%Y%m%d_%H%M%S} {commnet},"
 
 
+""" COMMAND FUNCTIONS """
+
+
 def retrieve_labels_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     page = args.get("page")
     items = args.get("items")
@@ -305,9 +302,10 @@ def retrieve_labels_command(client: Client, args: Dict[str, Any]) -> CommandResu
     response = client.retrieve_labels_request(page, items)
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveLabels",
-        outputs_key_field="",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
+        readable_output=tableToMarkdown('Incidents', response.get('labels', []), headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -322,9 +320,10 @@ def retrieve_a_specific_label_command(
 
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveASpecificLabel",
-        outputs_key_field="",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
+        readable_output=tableToMarkdown('Incidents', response, headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -336,13 +335,11 @@ def retrieve_incidents_command(client: Client, args: Dict[str, Any]) -> CommandR
     fromdate = args.get("fromdate")
     todate = args.get("todate")
     status = args.get("status")
-    adversary_types = args.get("adversary-types")
+    adversary_types = args.get("adversary_types")
     labels = args.get("labels")
 
-    if status and isinstance(status, str):
-        status = status.split(",")
-    if adversary_types and isinstance(adversary_types, str):
-        adversary_types = adversary_types.split(",")
+    status = argToList(status)
+    adversary_types = argToList(adversary_types)
     if labels and isinstance(labels, str):
         labels = [int(label) for label in labels.split(",")]
 
@@ -351,9 +348,10 @@ def retrieve_incidents_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveIncidents",
-        outputs_key_field="",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
+        readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -367,9 +365,10 @@ def retrieve_a_specific_incident_details_command(
     response = client.retrieve_a_specific_incident_details_request(lumu_incident_id)
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveASpecificIncidentDetails",
-        outputs_key_field="",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
+        readable_output=tableToMarkdown('Incidents', response, headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -386,9 +385,10 @@ def retrieve_a_specific_incident_context_command(
     )
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveASpecificIncidentContext",
-        outputs_key_field="",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
+        readable_output=tableToMarkdown('Incidents', response, headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -416,6 +416,7 @@ def comment_a_specific_incident_command(
         outputs_key_field="",
         outputs=response,
         raw_response=response,
+        readable_output='Comment added to the incident successfully.'
     )
 
     return command_results
@@ -426,11 +427,10 @@ def retrieve_open_incidents_command(
 ) -> CommandResults:
     page = args.get("page")
     items = args.get("items")
-    adversary_types = args.get("adversary-types")
+    adversary_types = args.get("adversary_types")
     labels = args.get("labels")
 
-    if adversary_types and isinstance(adversary_types, str):
-        adversary_types = adversary_types.split(",")
+    adversary_types = argToList(adversary_types)
     if labels and isinstance(labels, str):
         labels = [int(label) for label in labels.split(",")]
 
@@ -439,9 +439,10 @@ def retrieve_open_incidents_command(
     )
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveOpenIncidents",
-        outputs_key_field="",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
+        readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -452,11 +453,10 @@ def retrieve_muted_incidents_command(
 ) -> CommandResults:
     page = args.get("page")
     items = args.get("items")
-    adversary_types = args.get("adversary-types")
+    adversary_types = args.get("adversary_types")
     labels = args.get("labels")
 
-    if adversary_types and isinstance(adversary_types, str):
-        adversary_types = adversary_types.split(",")
+    adversary_types = argToList(adversary_types)
     if labels and isinstance(labels, str):
         labels = [int(label) for label in labels.split(",")]
 
@@ -465,9 +465,10 @@ def retrieve_muted_incidents_command(
     )
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveMutedIncidents",
-        outputs_key_field="",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
+        readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -478,11 +479,10 @@ def retrieve_closed_incidents_command(
 ) -> CommandResults:
     page = args.get("page")
     items = args.get("items")
-    adversary_types = args.get("adversary-types")
+    adversary_types = args.get("adversary_types")
     labels = args.get("labels")
 
-    if adversary_types and isinstance(adversary_types, str):
-        adversary_types = adversary_types.split(",")
+    adversary_types = argToList(adversary_types)
     if labels and isinstance(labels, str):
         labels = [int(label) for label in labels.split(",")]
 
@@ -491,9 +491,10 @@ def retrieve_closed_incidents_command(
     )
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveClosedIncidents",
-        outputs_key_field="",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
+        readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -511,9 +512,10 @@ def retrieve_endpoints_by_incident_command(
     )
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveEndpointsByIncident",
-        outputs_key_field="",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
+        readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -537,6 +539,7 @@ def mark_incident_as_read_command(
         outputs_key_field="",
         outputs=response,
         raw_response=response,
+        readable_output='Marked as read the incident successfully.'
     )
 
     return command_results
@@ -561,6 +564,7 @@ def mute_incident_command(client: Client, args: Dict[str, Any]) -> CommandResult
         outputs_key_field="",
         outputs=response,
         raw_response=response,
+        readable_output='Muted the incident successfully.'
     )
 
     return command_results
@@ -585,6 +589,7 @@ def unmute_incident_command(client: Client, args: Dict[str, Any]) -> CommandResu
         outputs_key_field="",
         outputs=response,
         raw_response=response,
+        readable_output='Unmute the incident successfully.'
     )
 
     return command_results
@@ -609,6 +614,7 @@ def close_incident_command(client: Client, args: Dict[str, Any]) -> CommandResul
         outputs_key_field="",
         outputs=response,
         raw_response=response,
+        readable_output='Closed the incident successfully.'
     )
 
     return command_results
@@ -626,7 +632,7 @@ def consult_incidents_updates_through_rest_command(
     )
     command_results = CommandResults(
         outputs_prefix="Lumu.ConsultIncidentsUpdatesThroughRest",
-        outputs_key_field="",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
     )
@@ -634,9 +640,9 @@ def consult_incidents_updates_through_rest_command(
     return command_results
 
 
-def fetch_incidents(client: Client, first_fetch_time, last_run):
-    items = 30
-    time = 4
+def fetch_incidents(client: Client, first_fetch_time, last_run, items, time):
+    # items = 30
+    # time = 4
 
     last_fetch = last_run.get("last_fetch", None)
     last_fetch = int(last_fetch or first_fetch_time)
@@ -764,7 +770,6 @@ def get_remote_data_command(client, args):
         parsed_entries = []
 
         new_incident_data["lumu_incidentId"] = new_incident_data["id"]
-        new_incident_data["severity"] = 1
 
         if lumu_actions := new_incident_data.get("actions"):
             new_incident_data[
@@ -959,20 +964,26 @@ def clear_cache_command():
     cache["cache"] = []
     cache["lumu_incidentsId"] = []
     set_integration_context(cache)
-    return f"cache cleared {get_integration_context()=}"
+    command_results = CommandResults(
+        outputs_prefix="Lumu.ClearCache",
+        outputs_key_field="",
+        outputs=f"cache cleared {get_integration_context()=}",
+        raw_response=f"cache cleared {get_integration_context()=}",
+        readable_output=f"cache cleared {get_integration_context()=}"
+    )
+
+    return command_results
 
 
 def get_cache_command():
 
     cache = get_integration_context()
-
-    # demisto.debug(f'{cache=}')
-
     command_results = CommandResults(
         outputs_prefix="Lumu.GetCache",
         outputs_key_field="cache",
         outputs=cache,
         raw_response=cache,
+        readable_output=tableToMarkdown('Incidents', cache, headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -990,6 +1001,9 @@ def test_module(client: Client, args: Dict[str, Any]) -> None:
         return_results(msg_err)
 
 
+""" MAIN FUNCTION """
+
+
 def main() -> None:
 
     params: Dict[str, Any] = demisto.params()
@@ -997,9 +1011,11 @@ def main() -> None:
     url = params.get("url")
     verify_certificate: bool = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    offset_set_off = params.get("fetch_offset")
+    offset_set_off = params.get("fetch_offset", "0")
+    items = int(params.get("total_items_per_lumu_fetch", 30))
+    time_last = int(params.get("max_time_fetching_lumu_incident", 4))
 
-    headers: Dict = {}
+    headers: Dict = {"Content-Type": "application/json"}
 
     command = demisto.command()
     demisto.debug(f"Command being called is {command.upper():*^40}")
@@ -1007,9 +1023,8 @@ def main() -> None:
     try:
         urllib3.disable_warnings()
         client: Client = Client(
-            urljoin(url, ""), verify_certificate, proxy, headers=headers, auth=None
-        )
-        client.api_key = params["api_key"]
+            urljoin(url, ""), verify_certificate, proxy, headers=headers)
+        client.api_key = params.get("api_key")
         commands = {
             "lumu-retrieve-labels": retrieve_labels_command,
             "lumu-retrieve-a-specific-label": retrieve_a_specific_label_command,
@@ -1026,6 +1041,9 @@ def main() -> None:
             "lumu-unmute-incident": unmute_incident_command,
             "lumu-consult-incidents-updates-through-rest": consult_incidents_updates_through_rest_command,
             "lumu-close-incident": close_incident_command,
+            "get-modified-remote-data": get_modified_remote_data_command,
+            "get-remote-data": get_remote_data_command,
+            "update-remote-system": update_remote_system_command,
         }
 
         if command == "test-module":
@@ -1033,11 +1051,10 @@ def main() -> None:
         elif (
             "fetch-incidents" in command
             or command == "fetch-incidents"
-            or command == "lumu-fetch-incidents"
         ):
 
             last_run = demisto.getLastRun()
-            next_run, incidents = fetch_incidents(client, offset_set_off, last_run)
+            next_run, incidents = fetch_incidents(client, offset_set_off, last_run, items, time_last)
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
@@ -1060,9 +1077,7 @@ def main() -> None:
             return_results(update_remote_system_command(client, args))
 
         elif command == "lumu-clear-cache":
-            cache_msg = clear_cache_command()
-            demisto.debug(cache_msg)
-            return_results(cache_msg)
+            return_results(clear_cache_command())
 
         elif command == "lumu-get-cache":
             return_results(get_cache_command())

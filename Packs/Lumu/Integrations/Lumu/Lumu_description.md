@@ -153,7 +153,7 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
         ![](../../doc_files/incidentUnmuteFromCortexToLumu.png)
         <br>
 
--  Mute an incident from Lumu Portal
+-  Unmute an incident from Lumu Portal
     > Note: Lumu Portal to the left screen and Cortex to the right screen.
 
     - click in **Take Actions** button, go to `Unmute`, fill in the text box field  and submit the form.

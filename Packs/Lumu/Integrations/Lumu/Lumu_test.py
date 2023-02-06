@@ -316,13 +316,13 @@ def test_add_prefix_to_comment(mock_date):
 
 @patch.object(Client, 'retrieve_labels_request', return_value=official_response_retrieve_labels_request)
 def test_retrieve_labels_command(mock_retrieve_labels_request):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {'page': 5,
             'items': 4}
     response = retrieve_labels_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveLabels'
-    assert response.outputs_key_field == ''
+    assert response.outputs_key_field == 'id'
     assert 'labels' in response.outputs
     assert 'paginationInfo' in response.outputs
     assert response.outputs == official_response_retrieve_labels_request
@@ -330,12 +330,12 @@ def test_retrieve_labels_command(mock_retrieve_labels_request):
 
 @patch.object(Client, 'retrieve_a_specific_label_request', return_value=official_response_retrieve_a_specific_label_request)
 def test_retrieve_a_specific_label_command(mock_retrieve_a_specific_label_request):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {'label_id': 51}
     response = retrieve_a_specific_label_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveASpecificLabel'
-    assert response.outputs_key_field == ''
+    assert response.outputs_key_field == 'id'
     assert 'id' in response.outputs
     assert 'name' in response.outputs
     assert response.outputs == official_response_retrieve_a_specific_label_request
@@ -343,7 +343,7 @@ def test_retrieve_a_specific_label_command(mock_retrieve_a_specific_label_reques
 
 @patch.object(Client, 'retrieve_incidents_request', return_value=official_response_retrieve_incidents_request)
 def test_retrieve_incidents_command(mock_retrieve_incidents_request):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {"fromDate": "2023-01-01T14:40:14.939Z",
             "toDate": "2023-01-15T14:40:14.939Z",
             "status": "open,muted,closed",
@@ -354,7 +354,7 @@ def test_retrieve_incidents_command(mock_retrieve_incidents_request):
     response = retrieve_incidents_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveIncidents'
-    assert response.outputs_key_field == ''
+    assert response.outputs_key_field == 'id'
     assert 'items' in response.outputs
     assert 'timestamp' in response.outputs
     assert 'paginationInfo' in response.outputs
@@ -363,13 +363,13 @@ def test_retrieve_incidents_command(mock_retrieve_incidents_request):
 
 @patch.object(Client, 'retrieve_a_specific_incident_details_request', return_value=dummy_response_retrieve_a_specific_incident_details_request)  # noqa: E501
 def test_retrieve_a_specific_incident_details_command(mock_retrieve_a_specific_incident_details_request):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343"}
 
     response = retrieve_a_specific_incident_details_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveASpecificIncidentDetails'
-    assert response.outputs_key_field == ''
+    assert response.outputs_key_field == 'id'
     assert 'id' in response.outputs
     assert 'timestamp' in response.outputs
     assert 'status' in response.outputs
@@ -383,7 +383,7 @@ def test_retrieve_a_specific_incident_details_command(mock_retrieve_a_specific_i
 def test_comment_a_specific_incident_command(mock_comment_a_specific_incident_request,
                                              mock_prefix,
                                              mock_hash_gen):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343",
             "comment": "comment"}
 
@@ -400,7 +400,7 @@ def test_comment_a_specific_incident_command(mock_comment_a_specific_incident_re
 def test_comment_a_specific_incident_command_known_error(mock_comment_a_specific_incident_request,
                                                          mock_prefix,
                                                          mock_hash_gen):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343",
             "comment": "comment"}
 
@@ -417,7 +417,7 @@ def test_comment_a_specific_incident_command_known_error(mock_comment_a_specific
 def test_comment_a_specific_incident_command_raise_error(mock_comment_a_specific_incident_request,
                                                          mock_prefix,
                                                          mock_hash_gen):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343",
             "comment": "comment"}
     with pytest.raises(DemistoException):
@@ -426,13 +426,13 @@ def test_comment_a_specific_incident_command_raise_error(mock_comment_a_specific
 
 @patch.object(Client, 'retrieve_open_incidents_request', return_value=official_response_retrieve_open_incidents_request)
 def test_retrieve_open_incidents_command(mock_retrieve_open_incidents_request):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {"adversary-types": "C2C,Malware,DGA,Mining,Spam,Phishing", "labels": ""}
 
     response = retrieve_open_incidents_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveOpenIncidents'
-    assert response.outputs_key_field == ''
+    assert response.outputs_key_field == 'id'
     assert 'items' in response.outputs
     assert 'timestamp' in response.outputs
     assert 'paginationInfo' in response.outputs
@@ -441,13 +441,13 @@ def test_retrieve_open_incidents_command(mock_retrieve_open_incidents_request):
 
 @patch.object(Client, 'retrieve_muted_incidents_request', return_value=official_response_retrieve_muted_incidents_request)
 def test_retrieve_muted_incidents_command(mock_retrieve_muted_incidents_request):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {"adversary-types": "C2C,Malware,DGA,Mining,Spam,Phishing", "labels": ""}
 
     response = retrieve_muted_incidents_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveMutedIncidents'
-    assert response.outputs_key_field == ''
+    assert response.outputs_key_field == 'id'
     assert 'items' in response.outputs
     assert 'timestamp' in response.outputs
     assert 'paginationInfo' in response.outputs
@@ -456,13 +456,13 @@ def test_retrieve_muted_incidents_command(mock_retrieve_muted_incidents_request)
 
 @patch.object(Client, 'retrieve_closed_incidents_request', return_value=official_response_retrieve_closed_incidents_request)
 def test_retrieve_closed_incidents_command(mock_retrieve_closed_incidents_request):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {"adversary-types": "C2C,Malware,DGA,Mining,Spam,Phishing", "labels": ""}
 
     response = retrieve_closed_incidents_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveClosedIncidents'
-    assert response.outputs_key_field == ''
+    assert response.outputs_key_field == 'id'
     assert 'items' in response.outputs
     assert 'timestamp' in response.outputs
     assert 'paginationInfo' in response.outputs
@@ -471,14 +471,14 @@ def test_retrieve_closed_incidents_command(mock_retrieve_closed_incidents_reques
 
 @patch.object(Client, 'retrieve_endpoints_by_incident_request', return_value=official_response_retrieve_endpoints_by_incident_request)  # noqa: E501
 def test_retrieve_endpoints_by_incident_command(mock_retrieve_endpoints_by_incident_request):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {'page': 5,
             'items': 4,
             'lumu_incident_id': 'abc'}
     response = retrieve_endpoints_by_incident_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveEndpointsByIncident'
-    assert response.outputs_key_field == ''
+    assert response.outputs_key_field == 'id'
     assert 'items' in response.outputs
     assert 'paginationInfo' in response.outputs
     assert response.outputs == official_response_retrieve_endpoints_by_incident_request
@@ -487,7 +487,7 @@ def test_retrieve_endpoints_by_incident_command(mock_retrieve_endpoints_by_incid
 
 @patch.object(Client, 'mark_incident_as_read_request', return_value={'statusCode': 200})
 def test_mark_incident_as_read_command(mock_mark_incident_as_read_request):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343"}
 
     response = mark_incident_as_read_command(client, args)
@@ -499,7 +499,7 @@ def test_mark_incident_as_read_command(mock_mark_incident_as_read_request):
 
 @patch.object(Client, 'mark_incident_as_read_request', side_effect=DemistoException("Failed to parse json object from response: b''"))  # noqa: E501
 def test_mark_incident_as_read_command_known_error(mock_mark_incident_as_read_request):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343"}
 
     response = mark_incident_as_read_command(client, args)
@@ -511,7 +511,7 @@ def test_mark_incident_as_read_command_known_error(mock_mark_incident_as_read_re
 
 @patch.object(Client, 'mark_incident_as_read_request', side_effect=DemistoException("unknown error"))
 def test_mark_incident_as_read_command_raise_error(mock_mark_incident_as_read_request):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343"}
     with pytest.raises(DemistoException):
         mark_incident_as_read_command(client, args)
@@ -521,7 +521,7 @@ def test_mark_incident_as_read_command_raise_error(mock_mark_incident_as_read_re
 @patch('Lumu.add_prefix_to_comment')
 @patch.object(Client, 'mute_incident_request', return_value={'statusCode': 200})
 def test_mute_incident_command(mock_mute_incident_request, mock_prefix, mock_hash_gen):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343",
             "comment": "comment"}
 
@@ -536,7 +536,7 @@ def test_mute_incident_command(mock_mute_incident_request, mock_prefix, mock_has
 @patch('Lumu.add_prefix_to_comment')
 @patch.object(Client, 'mute_incident_request', side_effect=DemistoException("Failed to parse json object from response: b''"))
 def test_mute_incident_command_known_error(mock_mute_incident_request, mock_prefix, mock_hash_gen):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343",
             "comment": "comment"}
 
@@ -551,7 +551,7 @@ def test_mute_incident_command_known_error(mock_mute_incident_request, mock_pref
 @patch('Lumu.add_prefix_to_comment')
 @patch.object(Client, 'mute_incident_request', side_effect=DemistoException("unknown error"))
 def test_mute_incident_command_raise_error(mock_mute_incident_request, mock_prefix, mock_hash_gen):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343",
             "comment": "comment"}
     with pytest.raises(DemistoException):
@@ -562,7 +562,7 @@ def test_mute_incident_command_raise_error(mock_mute_incident_request, mock_pref
 @patch('Lumu.add_prefix_to_comment')
 @patch.object(Client, 'unmute_incident_request', return_value={'statusCode': 200})
 def test_unmute_incident_command(mock_unmute_incident_request, mock_prefix, mock_hash_gen):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343",
             "comment": "comment"}
 
@@ -577,7 +577,7 @@ def test_unmute_incident_command(mock_unmute_incident_request, mock_prefix, mock
 @patch('Lumu.add_prefix_to_comment')
 @patch.object(Client, 'unmute_incident_request', side_effect=DemistoException("Failed to parse json object from response: b''"))
 def test_unmute_incident_command_known_error(mock_unmute_incident_request, mock_prefix, mock_hash_gen):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343",
             "comment": "comment"}
 
@@ -592,7 +592,7 @@ def test_unmute_incident_command_known_error(mock_unmute_incident_request, mock_
 @patch('Lumu.add_prefix_to_comment')
 @patch.object(Client, 'unmute_incident_request', side_effect=DemistoException("unknown error"))
 def test_unmute_incident_command_raise_error(mock_unmute_incident_request, mock_prefix, mock_hash_gen):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343",
             "comment": "comment"}
     with pytest.raises(DemistoException):
@@ -603,7 +603,7 @@ def test_unmute_incident_command_raise_error(mock_unmute_incident_request, mock_
 @patch('Lumu.add_prefix_to_comment')
 @patch.object(Client, 'close_incident_request', return_value={'statusCode': 200})
 def test_close_incident_command(mock_close_incident_request, mock_prefix, mock_hash_gen):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343",
             "comment": "comment"}
 
@@ -618,7 +618,7 @@ def test_close_incident_command(mock_close_incident_request, mock_prefix, mock_h
 @patch('Lumu.add_prefix_to_comment')
 @patch.object(Client, 'close_incident_request', side_effect=DemistoException("Failed to parse json object from response: b''"))
 def test_close_incident_command_known_error(mock_close_incident_request, mock_prefix, mock_hash_gen):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343",
             "comment": "comment"}
 
@@ -633,7 +633,7 @@ def test_close_incident_command_known_error(mock_close_incident_request, mock_pr
 @patch('Lumu.add_prefix_to_comment')
 @patch.object(Client, 'close_incident_request', side_effect=DemistoException("unknown error"))
 def test_close_incident_command_raise_error(mock_close_incident_request, mock_prefix, mock_hash_gen):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343",
             "comment": "comment"}
     with pytest.raises(DemistoException):
@@ -642,14 +642,14 @@ def test_close_incident_command_raise_error(mock_close_incident_request, mock_pr
 
 @patch.object(Client, 'consult_incidents_updates_through_rest_request', return_value=dummy_response_consult_incidents_updates_through_rest_request)  # noqa: E501
 def test_consult_incidents_updates_through_rest_command(mock_consult_incidents_updates_through_rest_request):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {'offset': 5,
             'items': 2,
             'time': 4}
     response = consult_incidents_updates_through_rest_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.ConsultIncidentsUpdatesThroughRest'
-    assert response.outputs_key_field == ''
+    assert response.outputs_key_field == 'id'
     assert 'updates' in response.outputs
     assert 'offset' in response.outputs
     assert len(response.outputs['updates']) == 2
@@ -668,10 +668,12 @@ def test_fetch_incidents(mock_consult_incidents_updates_through_rest_request,
     import datetime
     mocked_today = datetime.datetime(2023, 1, 25)
     mock_date.now.return_value = mocked_today
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     first_fetch_time = 5555
     last_run = {'last_fetch': '129999'}
-    next_run, response = fetch_incidents(client, first_fetch_time, last_run)
+    items = 30
+    time_last = 4
+    next_run, response = fetch_incidents(client, first_fetch_time, last_run, items, time_last)
 
     assert next_run == {'last_fetch': '1085364'}
     assert len(response) == 2
@@ -682,7 +684,7 @@ def test_fetch_incidents(mock_consult_incidents_updates_through_rest_request,
 @patch('Lumu.set_integration_context')
 @patch('Lumu.get_integration_context')
 def test_get_modified_remote_data_command(mock_integration_context, mock_set_integration_context, mock_debug):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {}
     mock_integration_context.return_value = {'cache': [], 'lumu_incidentsId': []}
     response = get_modified_remote_data_command(client, args)
@@ -698,7 +700,7 @@ def test_get_modified_remote_data_command(mock_integration_context, mock_set_int
 @patch('Lumu.GetRemoteDataArgs')
 @patch.object(Client, 'retrieve_a_specific_incident_details_request', return_value=dummy_response_retrieve_a_specific_incident_details_request)  # noqa: E501
 def test_get_remote_data_command(mock_retrieve_a_specific_incident_details_request, mock_args, mock_debug):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {}
     response = get_remote_data_command(client, args)
     entries = response.entries
@@ -707,7 +709,7 @@ def test_get_remote_data_command(mock_retrieve_a_specific_incident_details_reque
     assert len(entries) == 2
     assert entries == [{'Type': 1, 'Contents': 'mute - from XSOAR Cortex 20230124_120758 , hmacsha256:90369dbefcf13550a9451e52e3c750f6f28159e71b403aa6402cb544cc678748', 'ContentsFormat': 'markdown', 'Note': True}, {'Type': 1, 'Contents': 'Incident ID:  14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343 \nDate of first contact: N/A \nAdversary type: Spam \nDescription: Activity Test Query \nTotal contacts: 95 \nTotal Endpoints: 3 \nURL: https://portal.lumu.io/compromise/incidents/show/14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343/detections', 'ContentsFormat': 'markdown', 'Note': True}]  # noqa: E501
     assert incident['lumu_status'] == 'muted'
-    assert incident == {'timestamp': '2023-01-24T11:48:56.059Z', 'contacts': 95, 'adversaryId': 'activity.lumu.io', 'adversaries': ['activity.lumu.io'], 'adversaryTypes': ['Spam'], 'description': 'Activity Test Query - Incident ID:  14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343 \nDate of first contact: N/A \nAdversary type: Spam \nDescription: Activity Test Query \nTotal contacts: 95 \nTotal Endpoints: 3 \nURL: https://portal.lumu.io/compromise/incidents/show/14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343/detections', 'labelDistribution': {'0': 26, '989': 69}, 'totalEndpoints': 3, 'lastContact': '2023-01-24T21:17:50Z', 'actions': [{'datetime': '2023-01-24T12:08:01.619Z', 'userId': 0, 'action': 'mute', 'comment': 'from XSOAR Cortex 20230124_120758 , hmacsha256:90369dbefcf13550a9451e52e3c750f6f28159e71b403aa6402cb544cc678748'}], 'status': 'muted', 'statusTimestamp': '2023-01-24T12:08:01.619Z', 'firstContactDetails': {'isPlayback': False}, 'lastContactDetails': {'uuid': '8e679300-9c2c-11ed-befc-73e72362bba0', 'datetime': '2023-01-24T21:17:50Z', 'host': 'activity.lumu.io', 'path': '/', 'types': ['Spam'], 'details': ['Activity Test Query'], 'endpointIp': '172.16.1.10', 'endpointName': '172.16.1.10', 'label': 989, 'sourceType': 'virtual_appliance', 'sourceId': '267e0d13-3d39-4b17-aeb0-6550a5a4df66', 'sourceData': {}, 'isPlayback': False}, 'lumu_incidentId': '14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343', 'severity': 1, 'comment': 'mute - from XSOAR Cortex 20230124_120758 , hmacsha256:90369dbefcf13550a9451e52e3c750f6f28159e71b403aa6402cb544cc678748', 'incomming_mirror_error': '', 'name': 'lumu - Activity Test Query - 14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343', 'lumu_status': 'muted'}  # noqa: E501
+    assert incident == {'timestamp': '2023-01-24T11:48:56.059Z', 'contacts': 95, 'adversaryId': 'activity.lumu.io', 'adversaries': ['activity.lumu.io'], 'adversaryTypes': ['Spam'], 'description': 'Activity Test Query - Incident ID:  14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343 \nDate of first contact: N/A \nAdversary type: Spam \nDescription: Activity Test Query \nTotal contacts: 95 \nTotal Endpoints: 3 \nURL: https://portal.lumu.io/compromise/incidents/show/14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343/detections', 'labelDistribution': {'0': 26, '989': 69}, 'totalEndpoints': 3, 'lastContact': '2023-01-24T21:17:50Z', 'actions': [{'datetime': '2023-01-24T12:08:01.619Z', 'userId': 0, 'action': 'mute', 'comment': 'from XSOAR Cortex 20230124_120758 , hmacsha256:90369dbefcf13550a9451e52e3c750f6f28159e71b403aa6402cb544cc678748'}], 'status': 'muted', 'statusTimestamp': '2023-01-24T12:08:01.619Z', 'firstContactDetails': {'isPlayback': False}, 'lastContactDetails': {'uuid': '8e679300-9c2c-11ed-befc-73e72362bba0', 'datetime': '2023-01-24T21:17:50Z', 'host': 'activity.lumu.io', 'path': '/', 'types': ['Spam'], 'details': ['Activity Test Query'], 'endpointIp': '172.16.1.10', 'endpointName': '172.16.1.10', 'label': 989, 'sourceType': 'virtual_appliance', 'sourceId': '267e0d13-3d39-4b17-aeb0-6550a5a4df66', 'sourceData': {}, 'isPlayback': False}, 'lumu_incidentId': '14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343', 'comment': 'mute - from XSOAR Cortex 20230124_120758 , hmacsha256:90369dbefcf13550a9451e52e3c750f6f28159e71b403aa6402cb544cc678748', 'incomming_mirror_error': '', 'name': 'lumu - Activity Test Query - 14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343', 'lumu_status': 'muted'}  # noqa: E501
 
 
 def test_get_mapping_fields_command():
@@ -735,7 +737,7 @@ def test_update_remote_system_command(mock_args, mock_debug,
                                       mock_comment_a_specific_incident_request,
                                       mock_prefix,
                                       mock_hash_gen):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {'data': 'dummy', 'entries': [], 'incidentChanged': True, 'remoteId': 'dummy'}
     mock_args.return_value.remote_incident_id = 'abcdef'
     mock_args.return_value.entries = []
@@ -780,7 +782,7 @@ def test_update_remote_system_command_known_error(mock_args, mock_debug,
                                                   mock_comment_a_specific_incident_request,
                                                   mock_prefix,
                                                   mock_hash_gen):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {'data': 'dummy', 'entries': [], 'incidentChanged': True, 'remoteId': 'dummy'}
 
     mock_args.return_value.entries = []
@@ -805,7 +807,7 @@ def test_update_remote_system_command_unknown_error(mock_args, mock_debug,
                                                     mock_comment_a_specific_incident_request,
                                                     mock_prefix,
                                                     mock_hash_gen):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     args = {'data': 'dummy', 'entries': [], 'incidentChanged': True, 'remoteId': 'dummy'}
 
     with pytest.raises(DemistoException):
@@ -820,7 +822,7 @@ def test_update_remote_system_command_unknown_error(mock_args, mock_debug,
 @patch('Lumu.get_integration_context', return_value={'cache': [], 'lumu_incidentsId': []})
 def test_clear_cache_command(mock_integration_context, mock_set_integration_context):
     response = clear_cache_command()
-    assert response == "cache cleared get_integration_context()={'cache': [], 'lumu_incidentsId': []}"
+    assert response.outputs == "cache cleared get_integration_context()={'cache': [], 'lumu_incidentsId': []}"
 
 
 @patch('Lumu.get_integration_context', return_value={'cache': [], 'lumu_incidentsId': []})
@@ -834,7 +836,7 @@ def test_get_cache_command(mock_integration_context):
 @patch('Lumu.demisto.args')
 @patch.object(Client, 'retrieve_labels_request', return_value=official_response_retrieve_labels_request)
 def test_test_module(mock_retrieve_labels_request, mock_args):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     t_module(client, mock_args)
     assert True
 
@@ -842,14 +844,14 @@ def test_test_module(mock_retrieve_labels_request, mock_args):
 @patch('Lumu.demisto.args')
 @patch.object(Client, 'retrieve_labels_request', side_effect=Exception())
 def test_test_module_error(mock_retrieve_labels_request, mock_args):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     t_module(client, mock_args)
     assert True
 
 
 @patch.object(Client, '_http_request', return_value=official_response_retrieve_labels_request)
 def test_retrieve_labels_request(mock_http_request):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     response = client.retrieve_labels_request(None, None)
     assert len(response['labels']) == 4
     assert response['labels'][0] == {'id': 51, 'name': 'Mi Ofi', 'relevance': 1}
@@ -858,34 +860,34 @@ def test_retrieve_labels_request(mock_http_request):
 
 @patch.object(Client, '_http_request', return_value=official_response_retrieve_a_specific_label_request)
 def test_retrieve_a_specific_label_request(mock_http_request):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     response = client.retrieve_a_specific_label_request(51)
     assert response == {'id': 51, 'name': 'Mi Ofi', 'relevance': 1}
 
 
 @patch.object(Client, '_http_request', return_value='')
 def test_mark_incident_as_read_request(mock_http_request):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     response = client.mark_incident_as_read_request('abc')
     assert response == ''
 
 
 @patch.object(Client, '_http_request', side_effect=DemistoException("Failed to parse json object from response: b''"))
 def test_mark_incident_as_read_request_json_error(mock_http_request):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     with pytest.raises(DemistoException):
         client.mark_incident_as_read_request('abc')
 
 
 @patch.object(Client, '_http_request', return_value='')
 def test_comment_a_specific_incident_request(mock_http_request):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     response = client.comment_a_specific_incident_request('abc', 'comment')
     assert response == ''
 
 
 @patch.object(Client, '_http_request', side_effect=DemistoException("Failed to parse json object from response: b''"))
 def test_comment_a_specific_incident_request_json_error(mock_http_request):
-    client = Client('server_url', False, 'proxy', {}, {})
+    client = Client('server_url', False, 'proxy', {})
     with pytest.raises(DemistoException):
         client.comment_a_specific_incident_request('abc', 'comment')

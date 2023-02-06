@@ -52,8 +52,5 @@ ignore=IF113
 [file:incidentfield-Lumu-lumu_event_type.json]
 ignore=IF113
 
-[file:Lumu.yml]
-ignore=DO106
-
 [file:classifier-mapper-incoming-Lumu.json]
 ignore=MP106

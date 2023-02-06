@@ -1,5 +1,5 @@
 SecOps operations - Reflect and manage the Lumu Incidents either from XSOAR Cortex or viceversa using the mirroring integration flow, https://lumu.io/
-This integration was integrated and tested with version xx of Lumu
+This integration was integrated and tested with version 20230206 of Lumu
 
 ## Configure Lumu on Cortex XSOAR
 
