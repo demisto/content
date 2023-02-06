@@ -211,7 +211,7 @@ class MsGraphClient:
     MAX_ATTACHMENT_SIZE = 3145728  # 3mb = 3145728 bytes
 
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
-                 ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit,
+                 ok_codes, refresh_token, refresh_token_param, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit,
                  auth_code, redirect_uri,
                  certificate_thumbprint: Optional[str] = None,
                  private_key: Optional[str] = None,
@@ -221,6 +221,7 @@ class MsGraphClient:
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
                                          proxy=proxy, ok_codes=ok_codes, refresh_token=refresh_token,
+                                         refresh_token_param=refresh_token_param,
                                          auth_code=auth_code, redirect_uri=redirect_uri,
                                          grant_type=AUTHORIZATION_CODE, certificate_thumbprint=certificate_thumbprint,
                                          private_key=private_key, retry_on_rate_limit=True)
@@ -1661,11 +1662,15 @@ def main():
     # params related to oproxy
     # In case the script is running for the first time, refresh token is retrieved from integration parameters,
     # in other case it's retrieved from integration context.
-    refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
+    # The refresh token from the integration parameters is passed as well and it will be used if for some reason the
+    # authentication with the oproxy server has failed (if the auth with the oproxy server has failed we will perform a
+    # second try using the refresh_token_param).
+    refresh_token_param = refresh_token  # Refresh token from the integration parameters (i.e current instance config)
+    refresh_token = get_integration_context().get('current_refresh_token') or refresh_token_param
 
     client = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
-                           ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
-                           emails_fetch_limit, auth_code=auth_code, private_key=private_key,
+                           ok_codes, refresh_token, refresh_token_param, mailbox_to_fetch, folder_to_fetch,
+                           first_fetch_interval, emails_fetch_limit, auth_code=auth_code, private_key=private_key,
                            display_full_email_body=display_full_email_body, mark_fetched_read=mark_fetched_read,
                            redirect_uri=params.get('redirect_uri', ''), certificate_thumbprint=certificate_thumbprint)
     try:
