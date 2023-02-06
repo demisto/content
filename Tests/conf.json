@@ -2713,6 +2713,11 @@
             "playbookID": "Zoom_Test"
         },
         {
+            "integrations": "Cisco WebEx Feed",
+            "playbookID": "Test_Cisco_WebEx_Feed",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "IP Enrichment - Generic v2 - Test",
             "integrations": "Threat Crowd",
             "fromversion": "4.1.0"
@@ -3634,7 +3639,7 @@
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
             "fromversion": "6.0.0",
-            "timeout" : 600
+            "timeout": 600
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
