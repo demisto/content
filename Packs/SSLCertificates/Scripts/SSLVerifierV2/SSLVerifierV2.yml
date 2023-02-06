@@ -11,9 +11,9 @@ comment: Use this automation to check for validity of your SSL certificate and g
 commonfields:
   id: 9cc2bd75-c959-4709-8c3b-d684ec2ee17d
   version: -1
-dockerimage: demisto/ansible-runner:1.0.0.46481
+dockerimage: demisto/ansible-runner:1.0.0.47001
 enabled: true
-name: SSLVerifierV2
+name: 9cc2bd75-c959-4709-8c3b-d684ec2ee17d
 outputs:
 - contextPath: SSLVerifierV2.Certificate.ExpirationDate
   description: Date Certificate Expires
