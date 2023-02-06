@@ -5625,8 +5625,11 @@ script:
       - post-rulebase
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
-    - description: A comma-separated list of tags by which to filter the rules.
+    - description: The tag to filter the rules.
       name: tag
+      deprecated: true
+    - description: A comma-separated list of tags by which to filter the rules.
+      name: tags
       isArray: true
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
