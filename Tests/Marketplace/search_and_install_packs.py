@@ -373,7 +373,7 @@ def install_packs(client: demisto_client,
                 logging.debug(f'The error occurred during parsing the install error: {str(ex)}')
                 raise ex
     try:
-        logging.info(f'Installing packs on server {host}')
+        logging.info(f'Installing packs {", ".join([p.get("id") for p in packs_to_install])} on server {host}')
         try:
             call_install_packs_request(packs_to_install)
 
