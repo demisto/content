@@ -687,7 +687,7 @@ class MsGraphClient:
 
     @staticmethod
     # -*- coding: utf-8 -*-
-    def _is_english(s):
+    def _is_only_ascii(s):
         """
         Check whether the string can be encoded only with ASCII characters
         (which are Latin alphabet + some other characters).
@@ -728,7 +728,7 @@ class MsGraphClient:
             attachment_type = attachment.get('@odata.type', '')
             attachment_name = attachment.get('name', 'untitled_attachment')
 
-            if not self._is_english(attachment_name):
+            if not self._is_only_ascii(attachment_name):
                 try:
                     demisto.debug(f"Trying to decode the attachment file name: {attachment_name}")
                     attachment_name = base64.b64decode(attachment_name)
