@@ -27,10 +27,14 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+4. Click **Test** to validate the URLs, token, and connection. 
+    (The test does not ensure sufficient permissions for all integration commands.)
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+## Required permissions
+This integration enables executing commands with different permission levels. plese look at the commands description for more information on the required permission. 
 ### zendesk-user-list
 ***
 Gets the specified user's data. 
