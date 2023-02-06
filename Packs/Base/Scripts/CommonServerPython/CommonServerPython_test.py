@@ -8514,9 +8514,9 @@ class TestSendEventsToXSIAMTest:
         """
         Given:
             case a: 3 responses indicating about api limit from xsiam (429)
-            case b: 2 responses indicating about unauthorized access from xsiam
+            case b: 2 responses indicating about unauthorized access from xsiam (401)
             case c: 2 responses indicating about api limit from xsiam (429) and the third indicating about success
-            case d: 1 response indicating about api limit from xsiam (429) and the third indicating about success
+            case d: 1 response indicating about api limit from xsiam (429) and the second indicating about success
             case e: 1 response indicating about success from xsiam with no rate limit errors
 
         When:
@@ -8530,16 +8530,16 @@ class TestSendEventsToXSIAMTest:
             case b:
                 - DemistoException is raised
                 - Error log is called 1 time
-                - Make sure only 1 api request was sent by the retry mechanism
+                - Make sure only 1 api request were sent by the retry mechanism
             case c:
                 - Error log is called 2 times
-                - Make sure only 3 api requests was sent by the retry mechanism
+                - Make sure only 3 api requests were sent by the retry mechanism
             case d:
                 - Error log is called 1 time
-                - Make sure only 2 api requests was sent by the retry mechanism
+                - Make sure only 2 api requests were sent by the retry mechanism
             case e:
                 - Error log is not called at all
-                - Make sure only 1 api request was sent by the retry mechanism
+                - Make sure only 1 api request were sent by the retry mechanism
 
         """
         if not IS_PY3:
