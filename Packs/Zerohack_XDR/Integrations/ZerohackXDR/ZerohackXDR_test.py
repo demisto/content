@@ -23,14 +23,16 @@
 # requests-mock library uses a pytest specific mechanism to provide a
 # requests_mock instance to any function with an argument named requests_mock.
 
-# Note: The test module function has not been added to these set of tests as it is only used for checking if the 
-#       connection with Zerohack XDR is working correctly.
+# Note: The test module function has not been added to these set of tests as it is only used for checking if the
+# #       connection with Zerohack XDR is working correctly.
 import json
+
 
 def util_load_json(path):
     with open(path, "r") as file:
         text = file.read()
         return json.loads(text)
+
 
 def test_get_latest_incident(requests_mock):
     from ZerohackXDR import Client, get_latest_incident
@@ -49,6 +51,7 @@ def test_get_latest_incident(requests_mock):
     requests_mock.register_uri('GET', f'{ZEROHACK_XDR_API_BASE_URL}/xdr-api', json=mock_response)
     incident = get_latest_incident(client, severity_level=4)
     assert isinstance(incident, dict)
+
 
 def test_fetch_incidents(requests_mock):
     from ZerohackXDR import Client, fetch_incidents
@@ -77,15 +80,15 @@ def test_fetch_incidents(requests_mock):
 
     requests_mock.register_uri('GET', f'{ZEROHACK_XDR_API_BASE_URL}/xdr-api', responses_list)
 
-    next_run, incidents = fetch_incidents(
-        client = client, 
-        max_results = max_results_per_severity, 
-        min_severity = min_severity, 
-        last_run = last_run, 
+    next_run, incidents=fetch_incidents(
+        client=client,
+        max_results=max_results_per_severity,
+        min_severity=min_severity,
+        last_run=last_run,
         first_fetch = "1 day"
     )
     # Type checks.
     assert isinstance(next_run, dict)
     assert isinstance(incidents, list)
     # Bound checks.
-    assert len(incidents) <= max_results_per_severity*len(severity_levels)
+    assert len(incidents) <= max_results_per_severity * len(severity_levels)
