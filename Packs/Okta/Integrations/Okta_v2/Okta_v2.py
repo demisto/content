@@ -400,7 +400,6 @@ class Client(BaseClient):
                     'Status': user.get('status'),
                     'Manager': user.get('profile', {}).get('manager'),
                     'Manager Email': user.get('profile', {}).get('managerEmail')
-
                 }
                 users.append(user)
             return users
