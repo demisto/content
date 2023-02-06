@@ -12,10 +12,10 @@
       - .npm/
     policy: pull
 
-.filter-non-nightly-docker-updates-rule:
-  rules:
-    - if: '$CI_COMMIT_BRANCH =~ 3'
-      when: never
+#.filter-non-nightly-docker-updates-rule:
+#  rules:
+#    - if: '$CI_COMMIT_BRANCH =~ /^(demisto\/[^\/]+)(?!.*-nightly).*$/'
+#      when: never
 
 
 .setup-network-certs: &setup-network-certs
@@ -187,10 +187,13 @@
 
 .default-job-settings:
   interruptible: true
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^(demisto\/[^\/]+)(?!.*-nightly).*$/'
+      when: never
   extends:
     - .default-cache
     - .default-before-script
-    - .filter-non-nightly-docker-updates-rule
+#    - .filter-non-nightly-docker-updates-rule
 
 
 .trigger-slack-notification:
