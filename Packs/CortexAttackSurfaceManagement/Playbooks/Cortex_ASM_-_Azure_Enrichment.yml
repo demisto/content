@@ -1,7 +1,7 @@
 id: Cortex ASM - Azure Enrichment
 version: -1
 name: Cortex ASM - Azure Enrichment
-description: Given the IP address this playbook enriches Azure information relevant to ASM alerts.
+description: Given the IP address, this playbook enriches Azure information relevant to ASM alerts.
 starttaskid: "0"
 tasks:
   "0":
@@ -216,7 +216,7 @@ tasks:
       id: 81d10059-2900-4307-8b6c-3a65752e9cbe
       version: -1
       name: Set service owner grid field
-      description: Sets  the potential Azure service owner to grid field for ASM service owner object.
+      description: Sets the potential Azure service owner to the grid field for the ASM service owner object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -390,7 +390,7 @@ tasks:
       id: c801e484-f37c-45c2-823f-e874b71de29a
       version: -1
       name: Set system IDs grid field (NSG)
-      description: Sets Azure NSG information to grid field for ASM system IDs object.
+      description: Sets Azure NSG information to the grid field for the ASM system IDs object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -441,7 +441,7 @@ tasks:
       id: 52559531-089d-4112-8de8-f4ff2d874911
       version: -1
       name: Set system IDs grid field (Resource Group)
-      description: Sets Azure resource group information to grid field for ASM system IDs object.
+      description: Sets Azure resource group information to the grid field for the ASM system IDs object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -486,7 +486,7 @@ tasks:
       id: b42c20cb-0fb7-45e7-8186-69503c51a2a6
       version: -1
       name: Set system IDs grid field (NIC)
-      description: Sets Azure NIC information to grid field for ASM system IDs object.
+      description: Sets Azure NIC information to the grid field for the ASM system IDs object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -537,7 +537,7 @@ tasks:
       id: 1bc6606c-ad86-4d2d-80c8-c9405f7330ca
       version: -1
       name: Set system IDs grid field (ID)
-      description: Sets Azure Compute instance ID to grid field for ASM system IDs object.
+      description: Sets the Azure Compute instance ID to the grid field for the ASM system IDs object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -582,7 +582,7 @@ tasks:
       id: 1836855c-6a0b-4a39-8092-fb4b83d291cb
       version: -1
       name: Set private IP grid field
-      description: Sets private IP to grid field for ASM private IP object.
+      description: Sets the private IP to the grid field for the ASM private IP object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -687,7 +687,7 @@ tasks:
       id: 75b690cd-03c8-41a6-887e-cfe86fb0cd10
       version: -1
       name: Set cloud grid field
-      description: Sets Azure subscription, resource group, and location information to grid field for ASM cloud object.
+      description: Sets Azure subscription, resource group, and location information to the grid field for the ASM cloud object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -749,7 +749,7 @@ tasks:
       id: 1839aa7e-5f63-4b8c-86ae-92d2e617b964
       version: -1
       name: Set system IDs grid field (Compute Name)
-      description: Sets Azure Compute instance name to grid field for ASM system IDs object.
+      description: Sets the Azure Compute instance name to the grid field for the ASM system IDs object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -926,7 +926,7 @@ inputs:
       root: inputs
       accessor: remoteip
   required: false
-  description: IP address of service
+  description: IP address of the service.
   playbookInputQuery:
 outputs: []
 tests:

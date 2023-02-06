@@ -96,7 +96,7 @@ Playbook that is used as a container folder for all remediation of ASM alerts.
 
 #### Cortex ASM - Azure Enrichment
 
-Playbook that given the IP address enriches Azure information relevant to ASM alerts.	
+Given the IP address, this playbook enriches Azure information relevant to ASM alerts.
 ![Cortex ASM - Azure Enrichment](https://raw.githubusercontent.com/demisto/content/69b67c9a2330cbe9002d6d0ec8f32dbccb0c6877/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Azure_Enrichment.png)
 
 #### Cortex ASM - GCP Enrichment

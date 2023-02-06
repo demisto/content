@@ -690,7 +690,7 @@ tasks:
       id: 437703be-f9d0-42eb-864c-de6fd5f869e7
       version: -1
       name: Cortex ASM - Azure Enrichment
-      description: Given the IP address this playbook enriches Azure information relevant to ASM alerts.
+      description: Given the IP address, this playbook enriches Azure information relevant to ASM alerts.
       playbookName: Cortex ASM - Azure Enrichment
       type: playbook
       iscommand: false
