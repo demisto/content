@@ -514,7 +514,7 @@ class TestCollector(ABC):
             # we do want to install packs in this case (tests are not collected in this case anyway)
             logger.info(f'pack {pack_id} has support level {e.support_level} (not xsoar), '
                         f'collecting to make sure it is installed properly.')
-        except IncompatibleMarketplaceException as e:
+        except IncompatibleMarketplaceException:
             is_xsoar_and_xsiam_pack = MarketplaceVersions.XSOAR in (pack_metadata.marketplaces or ()) and \
                 MarketplaceVersions.MarketplaceV2 in (pack_metadata.marketplaces or ())
 
@@ -530,7 +530,7 @@ class TestCollector(ABC):
             # But still need to avoid collecting packs that belongs to one marketplace when collecting to the other marketplace.
             if (not allow_incompatible_marketplace or (allow_incompatible_marketplace and not is_xsoar_and_xsiam_pack)) \
                     and not collect_only_to_upload:
-                raise e
+                raise
 
         version_range = content_item_range \
             if pack_metadata.version_range.is_default \
