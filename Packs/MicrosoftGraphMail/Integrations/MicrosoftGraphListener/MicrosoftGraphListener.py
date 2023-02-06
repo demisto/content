@@ -197,6 +197,27 @@ def build_recipients_human_readable(message_content):
     return to_recipients, cc_recipients, bcc_recipients
 
 
+# -*- coding: utf-8 -*-
+def is_only_ascii(s: str) -> bool:
+    """
+    Check whether the string can be encoded only with ASCII characters
+    (which are Latin alphabet + some other characters).
+    If it can not be encoded, then it has the characters from some other alphabet.
+
+    Args:
+        s: str to check
+
+    Returns: True when s contains only Latin alphabet + some other characters, otherwise False.
+
+    """
+    try:
+        s.encode(encoding='utf-8').decode('ascii')
+        return True
+
+    except UnicodeDecodeError:
+        return False
+
+
 ''' MICROSOFT GRAPH MAIL CLIENT '''
 
 
@@ -685,27 +706,6 @@ class MsGraphClient:
 
         return mime_content
 
-    @staticmethod
-    # -*- coding: utf-8 -*-
-    def _is_only_ascii(s):
-        """
-        Check whether the string can be encoded only with ASCII characters
-        (which are Latin alphabet + some other characters).
-        If it can not be encoded, then it has the characters from some other alphabet.
-
-        Args:
-            s: str to check
-
-        Returns: True when s contains only Latin alphabet + some other characters, otherwise False.
-
-        """
-        try:
-            s.encode(encoding='utf-8').decode('ascii')
-            return True
-            
-        except UnicodeDecodeError:
-            return False
-
     def _get_email_attachments(self, message_id, user_id=None, overwrite_rate_limit_retry=False):
         """
         Get email attachments  and upload to War Room.
@@ -728,7 +728,7 @@ class MsGraphClient:
             attachment_type = attachment.get('@odata.type', '')
             attachment_name = attachment.get('name', 'untitled_attachment')
 
-            if not self._is_only_ascii(attachment_name):
+            if not is_only_ascii(attachment_name):
                 try:
                     demisto.debug(f"Trying to decode the attachment file name: {attachment_name}")
                     attachment_name = base64.b64decode(attachment_name)
