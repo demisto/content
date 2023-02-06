@@ -1103,7 +1103,9 @@ tasks:
       - "9"
     scriptarguments:
       id:
-        simple: ${Nexpose.Asset.id}
+        complex:
+          root: Nexpose.Asset
+          accessor: id
     separatecontext: false
     continueonerrortype: ""
     view: |-

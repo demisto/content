@@ -131,6 +131,17 @@ Returns the specified asset.
 }
 ```
 
+#### Human Readable Output
+
+> ### Nexpose Asset Tags for Asset 1
+>
+> |type|name|risk_modifier|created_time|
+> |---|---|---|---|
+> | criticality | Low | 0.75 | 2023-00-00T00:00:00.000Z |
+> | location | FAKELOCATION |  | 2023-00-00T00:00:00.000Z |
+> | owner | FAKEOWNER |  | 2023-00-00T00:00:00.000Z |
+> | custom | AWS |  | 2023-00-00T00:00:00.000Z |
+
 ### nexpose-get-assets
 ***
 Returns all assets for which you have access.
