@@ -335,9 +335,7 @@ This command will search for Tweets from the last 7 days and return all informat
                     "text": "some_text_twitter"
                 }
             ],
-        "TweetNextToken": {
-            "next_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-        }
+        "TweetNextToken": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     }
 }
 ```
