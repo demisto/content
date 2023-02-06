@@ -981,7 +981,7 @@ def test_search_intelligence_with_confidence(mocker):
             'confidence': 'lt 80'}
     client = mock_client()
     # run
-    result = search_intelligence(client, **args)
+    search_intelligence(client, **args)
     http_call_args = client.http_request.call_args.kwargs.get('params')
     assert 'confidence' not in http_call_args
     assert 'confidence__lt' in http_call_args
