@@ -1,6 +1,7 @@
 commonfields:
   id: Zendesk
   version: -1
+deprecated: true
 name: Zendesk
 display: Zendesk
 category: Case Management
