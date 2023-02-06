@@ -80,12 +80,12 @@ def test_fetch_incidents(requests_mock):
 
     requests_mock.register_uri('GET', f'{ZEROHACK_XDR_API_BASE_URL}/xdr-api', responses_list)
 
-    next_run, incidents=fetch_incidents(
+    next_run, incidents = fetch_incidents(
         client=client,
         max_results=max_results_per_severity,
         min_severity=min_severity,
         last_run=last_run,
-        first_fetch = "1 day"
+        first_fetch="1 day"
     )
     # Type checks.
     assert isinstance(next_run, dict)
