@@ -419,7 +419,7 @@ tasks:
       id: 001b4d4c-025c-4edf-8888-3e27c88642af
       version: -1
       name: Create a new incident using the CTF incident type
-      description: "Congrats! You finished with the first CTF! Well Done!!\n<Add gif here>\n\nLet's continue with the next challenge :) \n\nIn order to proceed to the following challenge, please create a new incident with the following parameter:\n1. Incident name should be your\n`<name  / student_id> - CTF02  `\n2. incident type \"CTF02\"  \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/the-office-the.gif)
+      description: "Congrats! You finished with the first CTF! Well Done!!\n<Add gif here>\n\nLet's continue with the next challenge :) \n\nIn order to proceed to the following challenge, please create a new incident with the following parameter:\n1. Incident name should be your\n`<name  / student_id> - CTF02  `\n2. incident type \"CTF02\"  \n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/where-is-my-ctf.gif)
 "
       type: regular
       iscommand: false
