@@ -28,19 +28,19 @@ Organization Management role group). The Role Management role allows users to vi
 
 2. From the side menu, click **Permissions**.
 
-   ![side-menu](https://github.com/demisto/content/blob/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-side-menu.png)
+   ![side-menu](https://github.com/demisto/content/raw/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-side-menu.png)
 
 3. Search for and select the **Data Investigator** role.
 
 4. Click **Edit role group**. 
 
-   ![roles-edit-1](https://github.com/demisto/content/blob/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-edit-1.png)
+   ![roles-edit-1](https://github.com/demisto/content/raw/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-edit-1.png)
 
 5. Click **Choose Members** and click **Edit**. Add the user you intend to be used in the integration:
 
-   ![roles-edit-2](https://github.com/demisto/content/blob/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-edit-2.png)
+   ![roles-edit-2](https://github.com/demisto/content/raw/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-edit-2.png)
 6. Click **Add**.
-   ![roles-edit-3](https://github.com/demisto/content/blob/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-edit-3.png)
+   ![roles-edit-3](https://github.com/demisto/content/raw/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-edit-3.png)
 7. Choose which members to add from the displayed list and click **Add**.
 8. Click **Done**.
 
