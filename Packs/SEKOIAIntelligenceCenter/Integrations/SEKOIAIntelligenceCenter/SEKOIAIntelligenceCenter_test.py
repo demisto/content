@@ -92,12 +92,23 @@ def test_test_module_ok(client, requests_mock):
     assert SEKOIAIntelligenceCenter.test_module(client) == "ok"
 
 
-def test_test_module_nok(client, requests_mock):
-    response = {"message": "The token is invalid", "code": "T300"}
+@pytest.mark.parametrize(
+    "api_response, expected",
+    [
+        ({"message": "The token is invalid", "code": "T300"}, "The token is invalid."),
+        (
+            {"message": "The token has expired", "code": "T301"},
+            "The token has expired.",
+        ),
+        ({"message": "Token revoked", "code": "T302"}, "The token has been revoked."),
+    ],
+)
+def test_test_module_nok(client, requests_mock, api_response, expected):
+    requests_mock.get(
+        MOCK_URL + "/v1/apiauth/auth/validate", json=api_response, status_code=401
+    )
 
-    requests_mock.get(MOCK_URL + "/v1/apiauth/auth/validate", json=response)
-
-    assert "Authorization Error" in SEKOIAIntelligenceCenter.test_module(client)
+    assert expected in SEKOIAIntelligenceCenter.test_module(client)
 
 
 # This test only runs if SEKOIA.IO API_KEY is provided
