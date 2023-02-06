@@ -1,15 +1,19 @@
+import urllib.parse
+from collections import defaultdict
+
+
 import demistomock as demisto
 from CommonServerPython import *
 
 ''' IMPORTS '''
-import requests
+import urllib3
 import ipaddress
 import dateparser
 import tempfile
 from typing import Tuple
-
+import urllib
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
@@ -275,18 +279,75 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/hosts", params=params)
 
-    def get_impacted_resources(self, cve: str) -> dict:
+    def get_impacted_resources(self, cve: str, resource_type: str) -> dict:
         """
         Get the impacted resources that are based on a specific CVE.
 
         Args:
             cve (str): The CVE from which impacted resources will be retrieved.
+            resource_type (str): ResourceType is the single resource type to return vulnerability data for.
 
         Returns:
             dict: the impacted resources from the CVE.
         """
+        params = {"cve": cve}
+        # When there is no specific resource then images and hosts will be returned if they exist
+        if resource_type:
+            params["resourceType"] = resource_type
         return self._http_request(
-            method="GET", url_suffix="/stats/vulnerabilities/impacted-resources", params={"cve": cve}
+            method="GET", url_suffix="/stats/vulnerabilities/impacted-resources",
+            params=params
+        )
+
+    def get_waas_policies(self) -> dict:
+        """
+        Get the current WAAS policy
+
+        Returns:
+            dict: the current policy.
+        """
+        return self._http_request(
+            method="GET", url_suffix="policies/firewall/app/container"
+        )
+
+    def update_waas_policies(self, policy: dict) -> dict:
+        """
+        Update the waas policy.
+
+        Args:
+            policy (dict): the previous waas policy.
+
+        Returns:
+            dict: the updated policy.
+        """
+        return self._http_request(
+            method="PUT", url_suffix="policies/firewall/app/container", json_data=policy, resp_type="response", ok_codes=(200),
+            error_handler=lambda res: f"Error: {res.status_code} - {res.text}"
+        )
+
+    def get_firewall_audit_container_alerts(self, image_name: str, from_time: str, to_time: str, limit: int, audit_type: str):
+        """
+        Get the container audit alerts for a specific image.
+
+        Args:
+            image_name (str): The container image name.
+            from_time (str): The start time of the query for alerts.
+            to_time (str): The end time to query alerts.
+            limit (num): the limit of alerts returned.
+            audit_type (str): the alert audit type.
+
+        Returns:
+            dict: the container alerts.
+        """
+        params = {
+            "type": audit_type,
+            "imageName": image_name,
+            "from": from_time,
+            "to": to_time,
+            "limit": limit
+        }
+        return self._http_request(
+            method="GET", url_suffix="audits/firewall/app/container", params=params
         )
 
 
@@ -377,6 +438,25 @@ def test_module(client):
     return 'ok'
 
 
+def is_command_is_fetch():
+    """
+    Rules wether the executed command is fetch_incidents or classifier
+    - If Last Run is set, then it's a fetch_incident command.
+    Otherwise, the results are dependent on the fetched_incidents_list section in integration context:
+    If it's empty, then it means that fetch_incidents already ran once and therefore it must be a classifier.
+
+    :return: True if this is a fetch_incidents command, otherwise return false.
+    :rtype: ``bool``
+    """
+    if demisto.getLastRun():
+        return True
+    else:
+        if demisto.getIntegrationContext().get('fetched_incidents_list', []):
+            return False
+        else:
+            return True
+
+
 def fetch_incidents(client):
     """
     Fetches new alerts from Prisma Cloud Compute and returns them as a list of Demisto incidents
@@ -389,60 +469,68 @@ def fetch_incidents(client):
         list of incidents
     """
     incidents = []
-    alerts = client.list_incidents()
+    if is_command_is_fetch():
+        alerts = client.list_incidents()
 
-    if alerts:
-        for a in alerts:
-            alert_type = a.get('kind')
-            name = ALERT_TITLE
-            severity = 0
+        if alerts:
+            for a in alerts:
+                alert_type = a.get('kind')
+                name = ALERT_TITLE
+                severity = 0
 
-            # fix the audit category from camel case to display properly
-            if alert_type == ALERT_TYPE_AUDIT:
-                a['category'] = camel_case_transformer(a.get('category'))
+                # fix the audit category from camel case to display properly
+                if alert_type == ALERT_TYPE_AUDIT:
+                    a['category'] = camel_case_transformer(a.get('category'))
 
-            # always save the raw JSON data under this argument (used in scripts)
-            a['rawJSONAlert'] = json.dumps(a)
+                # always save the raw JSON data under this argument (used in scripts)
+                a['rawJSONAlert'] = json.dumps(a)
 
-            # parse any list into a markdown table, since tableToMarkdown takes the headers from the first object in
-            # the list check headers manually since some entries might have omit empty fields
-            tables = {}
-            for key, value in a.items():
-                # check only if we got a non empty list of dict
-                if isinstance(value, list) and value and isinstance(value[0], dict):
-                    tables[key + 'MarkdownTable'] = tableToMarkdown(camel_case_transformer(key + ' table'),
-                                                                    value,
-                                                                    headers=get_headers(key, value),
-                                                                    headerTransform=camel_case_transformer,
-                                                                    removeNull=True)
+                # parse any list into a markdown table, since tableToMarkdown takes the headers from the first object in
+                # the list check headers manually since some entries might have omit empty fields
+                tables = {}
+                for key, value in a.items():
+                    # check only if we got a non empty list of dict
+                    if isinstance(value, list) and value and isinstance(value[0], dict):
+                        tables[key + 'MarkdownTable'] = tableToMarkdown(camel_case_transformer(key + ' table'),
+                                                                        value,
+                                                                        headers=get_headers(key, value),
+                                                                        headerTransform=camel_case_transformer,
+                                                                        removeNull=True)
 
-            a.update(tables)
+                a.update(tables)
 
-            if alert_type == ALERT_TYPE_VULNERABILITY:
-                # E.g. "Prisma Cloud Compute Alert - imageName Vulnerabilities"
-                name += a.get('imageName') + ' Vulnerabilities'
-                # Set the severity to the highest vulnerability, take the first from the list
-                severity = translate_severity(a.get('vulnerabilities')[0].get('severity'))
+                if alert_type == ALERT_TYPE_VULNERABILITY:
+                    # E.g. "Prisma Cloud Compute Alert - imageName Vulnerabilities"
+                    name += a.get('imageName') + ' Vulnerabilities'
+                    # Set the severity to the highest vulnerability, take the first from the list
+                    severity = translate_severity(a.get('vulnerabilities')[0].get('severity'))
 
-            elif alert_type == ALERT_TYPE_COMPLIANCE or alert_type == ALERT_TYPE_AUDIT:
-                # E.g. "Prisma Cloud Compute Alert - Incident"
-                name += camel_case_transformer(a.get('type'))
-                # E.g. "Prisma Cloud Compute Alert - Image Compliance" \ "Prisma Compute Alert - Host Runtime Audit"
-                if a.get('type') != "incident":
-                    name += ' ' + camel_case_transformer(alert_type)
+                elif alert_type == ALERT_TYPE_COMPLIANCE or alert_type == ALERT_TYPE_AUDIT:
+                    # E.g. "Prisma Cloud Compute Alert - Incident"
+                    name += camel_case_transformer(a.get('type'))
+                    # E.g. "Prisma Cloud Compute Alert - Image Compliance" \ "Prisma Compute Alert - Host Runtime Audit"
+                    if a.get('type') != "incident":
+                        name += ' ' + camel_case_transformer(alert_type)
 
-            else:
-                # E.g. "Prisma Cloud Compute Alert - Cloud Discovery"
-                name += camel_case_transformer(alert_type)
+                else:
+                    # E.g. "Prisma Cloud Compute Alert - Cloud Discovery"
+                    name += camel_case_transformer(alert_type)
 
-            incidents.append({
-                'name': name,
-                'occurred': a.get('time'),
-                'severity': severity,
-                'rawJSON': json.dumps(a)
-            })
+                incidents.append({
+                    'name': name,
+                    'occurred': a.get('time'),
+                    'severity': severity,
+                    'rawJSON': json.dumps(a)
+                })
+        demisto.setLastRun({"id": "a"})
+        ctx = demisto.getIntegrationContext()
+        incidents_to_update = incidents or ctx.get('fetched_incidents_list')
+        ctx.update({'fetched_incidents_list': incidents_to_update})
+        demisto.setIntegrationContext(ctx)
+        return incidents
 
-    return incidents
+    else:
+        return demisto.getIntegrationContext().get('fetched_incidents_list', [])
 
 
 def parse_limit_and_offset_values(limit: str, offset: str = "0") -> Tuple[int, int]:
@@ -949,7 +1037,7 @@ def add_custom_ip_feeds(client: PrismaCloudComputeClient, args: dict) -> Command
         CommandResults: command-results object.
     """
     # the api overrides the blacklisted IPs, therefore it is necessary to add those who exist to the 'PUT' request.
-    current_ip_feeds = client.get_custom_ip_feeds().get("feed", [])
+    current_ip_feeds = (client.get_custom_ip_feeds() or {}).get("feed") or []
     new_ip_feeds = argToList(arg=args.pop("ip"))
 
     # remove duplicates, the api doesn't give error on duplicate IPs
@@ -973,7 +1061,7 @@ def get_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> Co
         CommandResults: command-results object.
     """
     limit, _ = parse_limit_and_offset_values(limit=args.get("limit", "50"))
-    feeds_info = client.get_custom_md5_malware()
+    feeds_info = client.get_custom_md5_malware() or {}
 
     if "_id" in feeds_info:
         feeds_info.pop("_id")  # not needed, it will be removed from the api in the future.
@@ -1020,7 +1108,8 @@ def add_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> Co
         CommandResults: command-results object.
     """
     # the api overrides the md5 malware hashes, therefore it is necessary to add those who exist to the 'PUT' request.
-    feeds = client.get_custom_md5_malware().get("feed", [])
+    feeds = (client.get_custom_md5_malware() or {}).get('feed') or []
+
     name = args.get("name")
     md5s = argToList(arg=args.get("md5", []))
 
@@ -1500,58 +1589,57 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
     """
     limit, offset = parse_limit_and_offset_values(limit=args.pop("limit", "50"), offset=args.pop("offset", "0"))
     cves = argToList(arg=args.get("cve", []))
+    resource_type = args.get("resourceType", "")
 
-    impacted_images, impacted_hosts, context_output = [], [], []
+    context_output, raw_response = [], {}
+    final_impacted_resources: defaultdict[str, list] = defaultdict(list)
+    resources_list = ["images", "registryImages", "hosts", "functions", "codeRepos"]
     for cve in cves:
         # api does not support offset/limit
-        if cve_impacted_resources := client.get_impacted_resources(cve=cve):
-            if "riskTree" in cve_impacted_resources and cve_impacted_resources.get("riskTree") is not None:
-                cve_impacted_resources["riskTree"] = dict(
-                    filter_api_response(
-                        api_response=list(cve_impacted_resources.get("riskTree", {}).items()),  # type: ignore[arg-type]
+        if cve_impacted_resources := client.get_impacted_resources(cve=cve, resource_type=resource_type):
+            raw_response[cve] = cve_impacted_resources
+            for resources in resources_list:
+                if resources in cve_impacted_resources and cve_impacted_resources.get(resources) is not None:
+                    cve_impacted_resources[resources] = filter_api_response(
+                        api_response=cve_impacted_resources[resources],  # type: ignore[arg-type]
                         limit=limit,
                         offset=offset
                     )
-                )
 
-                for image_details in cve_impacted_resources.get("riskTree", {}).values():
-                    for image in image_details:
-                        image_table_details = {
-                            "Cve": cve,
-                            "Image": image.get("image"),
-                            "Container": image.get("container"),
-                            "Host": image.get("host"),
-                            "Namespace": image.get("namespace")
+                    for resource in (cve_impacted_resources.get(resources) or []):
+                        resource_id_table_details = {
+                            "resourceID": resource.get("resourceID"),
                         }
-                        if image_table_details not in impacted_images:
-                            impacted_images.append(image_table_details)
+                        if containers := (resource.get('containers') or []):
+                            for container in containers:
+                                resource_id_table_details['Cve'] = cve
+                                resource_id_table_details['Image'] = container.get('image')
+                                resource_id_table_details['Container'] = container.get('container')
+                                resource_id_table_details['Host'] = container.get("host")
+                                resource_id_table_details['Namespace'] = container.get("namespace")
 
-            if "hosts" in cve_impacted_resources:
-                cve_impacted_resources["hosts"] = filter_api_response(
-                    api_response=cve_impacted_resources.get("hosts"), limit=limit, offset=offset
-                )
-
-                for host in cve_impacted_resources.get("hosts", []):
-                    host_table_details = {"Cve": cve, "Hostname": host}
-                    if host_table_details not in impacted_hosts:
-                        impacted_hosts.append(host_table_details)
+                        if resource_id_table_details not in final_impacted_resources[resources]:
+                            final_impacted_resources[resources].append(resource_id_table_details)
 
             context_output.append(cve_impacted_resources)
 
     if context_output:
-        impacted_images_table = tableToMarkdown(
-            name="Impacted Images",
-            t=impacted_images,
-            headers=["Cve", "Image", "Container", "Host", "Namespace"],
-            removeNull=True
-        )
-        impacted_hosts_table = tableToMarkdown(
-            name="Impacted Hosts",
-            t=impacted_hosts,
-            headers=["Cve", "Hostname"],
-            removeNull=True
-        )
-        table = impacted_images_table + impacted_hosts_table
+        impacted_resources_tables = []
+        mapping_resources_to_names = {"images": "Impacted Images",
+                                      "registryImages": "Impacted Registry Images",
+                                      "hosts": "Impacted Hosts",
+                                      "functions": "Impacted Functions",
+                                      "codeRepos": "Impacted CodeRepos"
+                                      }
+        for resources in resources_list:
+            if final_impacted_resources.get(resources):
+                impacted_resources_tables.append(tableToMarkdown(
+                    name=mapping_resources_to_names.get(resources),
+                    t=final_impacted_resources.get(resources),
+                    headers=["resourceID", "Cve", "Image", "Container", "Host", "Namespace"],
+                    removeNull=True)
+                )
+        table = ''.join(impacted_resources_tables)
     else:
         context_output, table = [], "No results found."
 
@@ -1560,6 +1648,112 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
         outputs_key_field="_id",
         outputs=context_output if context_output else None,
         readable_output=table,
+        raw_response=raw_response
+    )
+
+
+def get_waas_policies(client: PrismaCloudComputeClient, args: dict) -> List[CommandResults]:
+    """
+    Get the WAAS policies.
+    Implement the command 'prisma-cloud-compute-get-waas-policies'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-waas-policies command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    policies = client.get_waas_policies()
+    entry = []
+    for rule in policies.get("rules") or {}:
+        for spec in rule.get("applicationsSpec") or {}:
+            formatted_waas_policy = {
+                "SQLInjection": spec.get("sqli").get("effect"),
+                "CrossSiteScriptingXSS": spec.get("xss").get("effect"),
+                "OSCommandInjetion": spec.get("cmdi").get("effect"),
+                "CodeInjection": spec.get("codeInjection").get("effect"),
+                "LocalFileInclusion": spec.get("lfi").get("effect"),
+                "AttackToolsAndVulnScanners": spec.get("attackTools").get("effect"),
+                "Shellshock": spec.get("shellshock").get("effect"),
+                "MalformedHTTPRequest": spec.get("malformedReq").get("effect"),
+                "ATP": spec.get("networkControls").get("advancedProtectionEffect"),
+                "DetectInformationLeakage": spec.get("intelGathering").get("infoLeakageEffect")
+            }
+            data = {
+                "Name": rule.get("name"),
+                "WaasPolicy": formatted_waas_policy
+            }
+
+            entry.append(CommandResults(
+                outputs_prefix="PrismaCloudCompute.Policies",
+                outputs_key_field="Name",
+                outputs=data,
+                readable_output=tableToMarkdown(data["Name"], data["WaasPolicy"]),
+                raw_response=policies
+            ))
+
+    return entry
+
+
+def update_waas_policies(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Update the WAAS policy.
+    Implement the command 'prisma-cloud-compute-update-waas-policies'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-update-waas-policies command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    # waas_settings = ["sqli", "xss", "attackTools", "shellshock", "malformedReq", "cmdi", "lfi", "codeInjection"]
+
+    policy = args.get("policy", {})
+
+    for index, rule in enumerate(policy.get("rules")):
+        if rule["name"] != args.get("rule_name"):
+            continue
+        for spec in policy.get("rules")[index].get("applicationsSpec"):
+            spec[args.get("attack_type")] = {"effect": args.get("action")}
+
+    client.update_waas_policies(policy)
+    txt = "Successfully updated the WaaS policy"
+
+    return CommandResults(
+        readable_output=txt
+    )
+
+
+def get_audit_firewall_container_alerts(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Get the firewall container alerts.
+    Implement the command 'prisma-cloud-compute-get-audit-firewall-container-alerts'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-audit-firewall-container-alerts command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    now = datetime.now()
+    from_day = arg_to_number(args.get("FromDays", 2))
+    from_time = now - timedelta(days=from_day)      # type: ignore
+    image_name = urllib.parse.quote(args.get("ImageName"), safe='')     # type: ignore
+    audit_type = args.get("audit_type")
+    limit = arg_to_number(args.get("limit", 25))
+    data = client.get_firewall_audit_container_alerts(
+        image_name=image_name, from_time=f"{from_time.isoformat()}Z", to_time=f"{now.isoformat()}Z",
+        limit=limit, audit_type=audit_type)  # type: ignore
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.Audits",
+        outputs_key_field="_id",
+        outputs=data,
+        readable_output=tableToMarkdown("Audits", data),
+        raw_response=data
     )
 
 
@@ -1660,6 +1854,12 @@ def main():
             return_results(results=get_hosts_scan_list(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-vulnerabilities-impacted-resources-list':
             return_results(results=get_impacted_resources(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-get-waas-policies':
+            return_results(results=get_waas_policies(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-update-waas-policies':
+            return_results(update_waas_policies(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-get-audit-firewall-container-alerts':
+            return_results(results=get_audit_firewall_container_alerts(client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')

@@ -2,8 +2,9 @@ from typing import Tuple
 
 from CommonServerPython import *
 
+import urllib3
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 INTEGRATION_NAME = 'FireEye Central Management'
@@ -458,7 +459,6 @@ def main() -> None:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     except Exception as err:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(str(err), err)
 
 

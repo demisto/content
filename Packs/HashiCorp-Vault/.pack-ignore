@@ -1,2 +1,6 @@
 [file:HashiCorpVault.yml]
-ignore=IN145
+ignore=IN145,CJ105
+
+[known_words]
+HashiCorp
+namespace

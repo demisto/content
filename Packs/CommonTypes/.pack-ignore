@@ -264,6 +264,15 @@ ignore=IF100
 [file:incidentfield-Alert_Action.json]
 ignore=IF100
 
+[file:incidentfield-Detection_End_Time.json]
+ignore=IF115
+
+[file:incidentfield-Detection_ID.json]
+ignore=IF115
+
+[file:incidentfield-Detection_Update_Time.json]
+ignore=IF115
+
 [file:incidentfield-Alert_Attack_Time.json]
 ignore=IF100
 
@@ -288,5 +297,41 @@ ignore=IF100
 [file:incidentfield-Use_Case_Description.json]
 ignore=IF100
 
+[file:incidentfield-Alert_Confidence.json]
+ignore=IF100
+
+[file:incidentfield-Number_of_Related_Incidents.json]
+ignore=IF100
+
+[file:incidentfield-Verdict.json]
+ignore=IF115
+
+[file:incidentfield-SSDeep.json]
+ignore=IF115
+
 [known_words]
 SysAid
+longText
+XSOAR
+mutex
+urlRep
+Vectra
+sAMAccountName
+Dst
+domainRepUnified
+hostRep
+ipRep
+unifiedFileRep
+registryKey
+emailRep
+accountRep
+cveRep
+VerifyCIDR
+Exabeam
+swid
+cpe
+TLDs
+mailto
+
+[file:classifier-Mail-listener.json]
+ignore=BA101

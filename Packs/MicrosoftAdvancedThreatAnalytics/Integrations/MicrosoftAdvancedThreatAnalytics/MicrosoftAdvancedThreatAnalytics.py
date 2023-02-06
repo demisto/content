@@ -1,4 +1,3 @@
-import traceback
 from typing import Any, Dict, List, Tuple, Union
 
 import urllib3
@@ -349,7 +348,6 @@ def main() -> None:
         elif demisto.command() == 'ms-ata-entity-get':
             return_results(get_entity(client, demisto.args()))
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

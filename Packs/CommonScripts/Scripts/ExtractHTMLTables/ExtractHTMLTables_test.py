@@ -33,3 +33,19 @@ def test_extract_html_table():
         """
     res = extract_html_table(html_table, [])
     assert "Found 1 tables in HTML." in res['Contents']
+
+
+def test_no_html_table():
+    """
+    Given:
+        An html text without a table.
+
+    When:
+        Execute command extract_html_table
+
+    Then:
+        Validate the right output returns.
+    """
+    html_table = """"""
+    res = extract_html_table(html_table, [])
+    assert "Did not find tables in HTML." in res

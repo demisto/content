@@ -1,4 +1,5 @@
 import pytest
+import json
 from collections import OrderedDict
 from PaloAltoNetworks_PrismaCloudCompute import (
     PrismaCloudComputeClient, camel_case_transformer, fetch_incidents, get_headers,
@@ -10,7 +11,6 @@ from PaloAltoNetworks_PrismaCloudCompute import (
 )
 
 from CommonServerPython import DemistoException
-
 
 BASE_URL = 'https://test.com'
 
@@ -1279,3 +1279,105 @@ def test_context_data_output_is_valid(requests_mock, args, func, url_suffix, jso
             assert result.outputs == expected_output
     else:
         assert command_results.outputs == expected_context_output
+
+
+def test_get_impacted_resources(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-vulnerabilities-impacted-resources-list' command
+    Then:
+        -  Ensure raw_response is a dictionary with the given cve as a key and the value is the mocked answer
+    """
+    from PaloAltoNetworks_PrismaCloudCompute import get_impacted_resources, PrismaCloudComputeClient
+    d = {'_id': 'string', 'codeRepos': [], 'codeReposCount': 0, 'functions': [], 'functionsCount': 0, 'hosts': [],
+                'hostsCount': 0, 'images': [], 'imagesCount': 0, 'registryImages': [], 'registryImagesCount': 0}
+    mocker.patch.object(PrismaCloudComputeClient, 'get_impacted_resources', return_value=d)
+
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    assert get_impacted_resources(client, {'resourceType': 'image', 'cve': 'CVE-2018-1270'}).raw_response == \
+        {'CVE-2018-1270': d}
+
+
+def test_get_waas_policies(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-get-waas-policies' command
+    Then:
+        -  Ensure the outputs containers policy for ATP which equals 'alert' specified in the mock data
+    """
+    from PaloAltoNetworks_PrismaCloudCompute import get_waas_policies, PrismaCloudComputeClient
+
+    with open("test_data/get_waas_policies.json", "r") as f:
+        d = json.load(f)
+
+    mocker.patch.object(PrismaCloudComputeClient, 'get_waas_policies', return_value=d)
+
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    outputs = get_waas_policies(client, {'limit': 1, 'ImageName': 'vulnerables/web-dvwa:latest', 'audit_type': 'lfi'})[0].outputs
+
+    assert outputs["WaasPolicy"]["ATP"] == "alert"
+    assert outputs["WaasPolicy"]["CodeInjection"] == "alert"
+    assert outputs["WaasPolicy"]["DetectInformationLeakage"] == "disable"
+    assert outputs["WaasPolicy"]["SQLInjection"] == "alert"
+
+
+def test_update_waas_policies(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-update-waas-policies' command
+    Then:
+        -  Validate the output for a successul policy update
+    """
+    from PaloAltoNetworks_PrismaCloudCompute import update_waas_policies, PrismaCloudComputeClient
+
+    mocker.patch.object(PrismaCloudComputeClient, 'update_waas_policies',
+                        return_value=type('Response', (object,), {"status_code": 200}))
+
+    with open("test_data/update_waas_policy.json", "r") as f:
+        policy = json.load(f)
+
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+
+    args = {
+        "policy": policy,
+        "action": "ban",
+        "attack_type": "lfi",
+        "rule_name": "WaaS rule for DVWA"
+    }
+
+    assert update_waas_policies(client, args).readable_output == "Successfully updated the WaaS policy"
+
+
+def test_get_audit_firewall_container_alerts(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-get-audit-firewall-container-alerts' command
+    Then:
+        -  Ensure the outputs of requesting the container alerts equals the raw_response object which is mocked
+    """
+    from PaloAltoNetworks_PrismaCloudCompute import get_audit_firewall_container_alerts, PrismaCloudComputeClient
+
+    with open("test_data/get_audit_firewall_container_alerts.json", "r") as f:
+        d = json.load(f)
+
+    mocker.patch.object(PrismaCloudComputeClient, 'get_firewall_audit_container_alerts', return_value=d)
+
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    args = {
+        "audit_type": "lfi",
+        "ImageName": "vulnerables/web-dvwa:latest"
+    }
+
+    assert get_audit_firewall_container_alerts(client, args).raw_response == d

@@ -1,0 +1,97 @@
+{
+	"id": "ACTI Intelligence Alert",
+	"version": -1,
+	"fromVersion": "6.0.0",
+	"modified": "2022-03-07T11:04:11.805017767Z",
+	"commitMessage": "",
+	"shouldCommit": false,
+	"regex": "https://intelgraph.idefense.com/#/node/intelligence_alert/view/\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}",
+	"details": "ACTI Intelligence Alert",
+	"prevDetails": "ACTI Intelligence Alert",
+	"legacyNames": null,
+	"reputationScriptName": "",
+	"reputationCommand": "acti-getThreatIntelReport",
+	"enhancementScriptNames": [],
+	"system": false,
+	"locked": false,
+	"disabled": false,
+	"file": false,
+	"updateAfter": 0,
+	"mergeContext": false,
+	"formatScript": "FormatACTIURL",
+	"contextPath": "IAIR(val.value \u0026\u0026 val.value === obj.value)",
+	"contextValue": "value",
+	"excludedBrands": [],
+	"defaultMapping": null,
+	"manualMapping": {
+		"abstract": {
+			"simple": "IAIR.abstract"
+		},
+		"actiabstract": {
+			"simple": "IAIR.abstract"
+		},
+		"actianalysis": {
+			"simple": "IAIR.analysis"
+		},
+		"actiattachmentlinks": {
+			"simple": "IAIR.attachment_links"
+		},
+		"actiindextimestamp": {
+			"simple": "IAIR.index_timestamp"
+		},
+		"actilastmodified": {
+			"simple": "IAIR.last_modified"
+		},
+		"actilastpublished": {
+			"simple": "IAIR.last_published"
+		},
+		"actimitigation": {
+			"simple": "IAIR.mitigation"
+		},
+		"actireporttitle": {
+			"simple": "## ${IAIR.display_text}"
+		},
+		"actiseverity": {
+			"simple": "IAIR.severity"
+		},
+		"actithreattypes": {
+			"simple": "IAIR.threat_types"
+		},
+		"actiuuid": {
+			"simple": "IAIR.uuid"
+		},
+		"analysis": {
+			"simple": "IAIR.analysis"
+		},
+		"attachmentlinks": {
+			"simple": "IAIR.attachment_links"
+		},
+		"creationdate": {
+			"simple": "IAIR.created_on"
+		},
+		"indextimestamp": {
+			"simple": "IAIR.index_timestamp"
+		},
+		"lastmodified": {
+			"simple": "IAIR.last_modified"
+		},
+		"lastpublished": {
+			"simple": "IAIR.last_published"
+		},
+		"mitigation": {
+			"simple": "IAIR.mitigation"
+		},
+		"reporttitle": {
+			"simple": "## ${IAIR.display_text}"
+		},
+		"severity": {
+			"simple": "IAIR.severity"
+		},
+		"uuid": {
+			"simple": "IAIR.uuid"
+		}
+	},
+	"fileHashesPriority": null,
+	"expiration": 0,
+	"layout": "ACTI Intelligence Alert"
+}

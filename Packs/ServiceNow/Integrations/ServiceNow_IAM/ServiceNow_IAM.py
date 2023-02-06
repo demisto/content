@@ -358,9 +358,9 @@ def main():
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command(client))
 
-    except Exception:
+    except Exception as e:
         # For any other integration command exception, return an error
-        return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
+        return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
 from IAMApiModule import *  # noqa E402
 

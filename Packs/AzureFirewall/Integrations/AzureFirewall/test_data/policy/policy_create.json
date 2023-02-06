@@ -1,0 +1,20 @@
+{
+  "properties": {
+    "sku": {
+      "tier": "Standard"
+    },
+    "threatIntelMode": "Off",
+    "dnsSettings": {
+      "servers": []
+    },
+    "childPolicies": [],
+    "ruleCollectionGroups": [],
+    "firewalls": [],
+    "provisioningState": "Succeeded"
+  },
+  "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy",
+  "name": "xsoar-policy",
+  "type": "Microsoft.Network/FirewallPolicies",
+  "etag": "8a2f8505-0a20-465c-a34b-ce6937a6f9a8",
+  "location": "eastus"
+}

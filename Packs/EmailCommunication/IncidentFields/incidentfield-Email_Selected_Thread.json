@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Email Communication"
+    ],
+    "caseInsensitive": true,
+    "cliName": "emailselectedthread",
+    "closeForm": false,
+    "content": true,
+    "description": "Select the email thread number to view or reply to.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_emailselectedthread",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Email Selected Thread",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "placeholder": "Please enter a thread number",
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

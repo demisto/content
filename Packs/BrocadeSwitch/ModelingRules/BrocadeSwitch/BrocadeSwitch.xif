@@ -1,0 +1,27 @@
+[MODEL: dataset=brocade_switch_raw , model=Network]
+// create timestamp part
+alter timestamp_extract =  arrayindex( regextract(_raw_log , "\<\d+\>\s*(\w+\s\d+\s\d+\:\d+\:\d+)\s" ) ,0)
+| alter timestamp_format = parse_timestamp("%b %d %H:%M:%S", timestamp_extract )
+// end timestamp part
+| alter observer_name = arrayindex( regextract(_raw_log , "\<\d+\>\w+\s\d+\s\d+\:\d+\:\d+\s([A-Za-z0-9-_]+)\s" ),0),
+    original_event_type = arrayindex( regextract(_raw_log , "\d{2}\:\d{2}\:\d{2}\s\S+\s(\w+)\:" ),0),
+    original_event_sub_type = arrayindex( regextract(_raw_log , "[A-Z]+[a-z]*\:\s(\S+\s\w+)" ),0),
+    Source_username = arrayindex( regextract(_raw_log , "by\s([a-zA-Z0-9-_\s]+)from" ),0),
+    Source_mac_addresses = arrayindex( regextract(_raw_log , "\sMAC\s(\S+)\s" ) ,0),
+    outcome = arrayindex( regextract(_raw_log , "\s(\w+)\,\s\d+\sattempt\(s\)" ),0),
+    command_line = arrayindex( regextract(_raw_log , "CLI\sCMD\:\s\"([^\"]+)\"" ),0)
+// create Source_ipv4 field
+| alter src_ip1 = arrayindex( regextract(_raw_log , "src\sIP\s(\d+\.\d+\.\d+\.\d+)\s" ),0)
+    ,src_ip2 = arrayindex( regextract(_raw_log , "intruder\sIP:\s+(\d+\.\d+\.\d+\.\d+)" ),0)
+    ,src_ip3 = arrayindex( regextract(_raw_log , "from\stelnet\sclient\s(\d+\.\d+\.\d+\.\d+)") ,0)
+| alter Source_ipv4 = coalesce(src_ip1, src_ip2, src_ip3)
+// end create Source_ipv4 field
+| alter XDM.Network.event_timestamp = timestamp_format ,
+    XDM.Network.Observer.name = observer_name,
+    XDM.Network.original_event_type = original_event_type,
+    XDM.Network.original_event_sub_type = original_event_sub_type,
+    XDM.Network.Source.user.username = Source_username,
+    XDM.Network.Source.ipv4 = Source_ipv4,
+    XDM.Network.Source.host.mac_addresses = arraycreate(coalesce(Source_mac_addresses,"")),
+    XDM.Network.outcome = outcome,
+    XDM.Network.Destination.process.command_line = command_line;

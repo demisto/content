@@ -854,7 +854,7 @@ tasks:
       version: -1
       name: Get PAN-OS Version
       description: Show firewall device software version.
-      script: '|||panorama-show-device-version'
+      script: '|||pan-os-show-device-version'
       type: regular
       iscommand: true
       brand: ""

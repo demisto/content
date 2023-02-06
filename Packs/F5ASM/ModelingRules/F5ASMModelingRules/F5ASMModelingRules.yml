@@ -1,0 +1,7 @@
+fromversion: 6.8.0
+id: F5_ASM
+name: F5 ASM
+rules: ''
+schema: ''
+tags: F5 ASM
+toversion: 6.9.9

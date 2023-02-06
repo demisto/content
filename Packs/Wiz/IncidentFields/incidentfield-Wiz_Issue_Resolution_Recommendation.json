@@ -1,0 +1,30 @@
+{
+    "id": "incident_wizissueresolutionrecommendation",
+    "version": -1,
+    "modified": "2022-08-24T14:22:56.074323111Z",
+    "name": "Wiz Issue Resolution Recommendation",
+    "ownerOnly": false,
+    "cliName": "wizissueresolutionrecommendation",
+    "type": "markdown",
+    "closeForm": true,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Wiz Issue"
+    ],
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

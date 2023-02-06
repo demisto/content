@@ -2,7 +2,7 @@ import json
 import logging
 import time
 
-import requests
+import urllib3
 
 import demistomock as demisto
 import resilient
@@ -12,7 +12,7 @@ from CommonServerPython import *
 logging.basicConfig()
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 try:
     # disable 'warning' logs from 'resilient.co3'
     logging.getLogger('resilient.co3').setLevel(logging.ERROR)
@@ -27,18 +27,19 @@ if not demisto.params()['proxy']:
     del os.environ['https_proxy']
 
 ''' GLOBAL VARS '''
-URL = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
+DEMISTO_PARAMS = demisto.params()
+URL = DEMISTO_PARAMS['server'][:-1] if DEMISTO_PARAMS['server'].endswith('/') else DEMISTO_PARAMS['server']
 # Remove the http/s from the url (It's added automatically later)
 URL = URL.replace('http://', '').replace('https://', '')
 # Split the URL into two parts hostname & port
-SERVER, PORT = URL.rsplit(":", 1)
-ORG_NAME = demisto.params()['org']
-USERNAME = demisto.params().get('credentials', {}).get('identifier')
-PASSWORD = demisto.params().get('credentials', {}).get('password')
-API_KEY_ID = demisto.params().get('api_key_id')
-API_KEY_SECRET = demisto.params().get('api_key_secret')
-USE_SSL = not demisto.params().get('insecure', False)
-FETCH_TIME = demisto.params().get('fetch_time', '')
+SERVER, PORT = URL.rsplit(":", 1) if ':' in URL else (URL, '443')
+ORG_NAME = DEMISTO_PARAMS['org']
+USERNAME = DEMISTO_PARAMS.get('credentials', {}).get('identifier')
+PASSWORD = DEMISTO_PARAMS.get('credentials', {}).get('password')
+API_KEY_ID = DEMISTO_PARAMS.get('api_key_id')
+API_KEY_SECRET = DEMISTO_PARAMS.get('api_key_secret')
+USE_SSL = not DEMISTO_PARAMS.get('insecure', False)
+FETCH_TIME = DEMISTO_PARAMS.get('fetch_time', '')
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 if FETCH_TIME:
     if FETCH_TIME[-1] != 'Z':
@@ -127,7 +128,7 @@ def prettify_incidents(client, incidents):
     phases = get_phases(client)['entities']
     for incident in incidents:
         incident['id'] = str(incident['id'])
-        if isinstance(incident['description'], unicode):
+        if isinstance(incident['description'], str):
             incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
         incident['discovered_date'] = normalize_timestamp(incident['discovered_date'])
         incident['created_date'] = normalize_timestamp(incident['create_date'])
@@ -145,7 +146,7 @@ def prettify_incidents(client, incidents):
                 incident.pop('phase_id', None)
                 break
         if incident['severity_code']:
-            incident['severity'] = SEVERITY_CODE_DICT[incident['severity_code']]
+            incident['severity'] = SEVERITY_CODE_DICT.get(incident['severity_code'], incident['severity_code'])
             incident.pop('severity_code', None)
         start_date = incident.get('start_date')
         if start_date:
@@ -160,7 +161,7 @@ def prettify_incidents(client, incidents):
             incident.pop('negative_pr_likely', None)
         exposure_type_id = incident.get('exposure_type_id')
         if exposure_type_id:
-            incident['exposure_type'] = EXP_TYPE_ID_DICT[exposure_type_id]
+            incident['exposure_type'] = EXP_TYPE_ID_DICT.get(exposure_type_id, exposure_type_id)
             incident.pop('exposure_type_id', None)
         nist_attack_vectors = incident.get('nist_attack_vectors')
         if nist_attack_vectors:
@@ -361,20 +362,24 @@ def extract_data_form_other_fields_argument(other_fields, incident, changes):
     except Exception as e:
         raise Exception('The other_fields argument is not a valid json. ' + str(e))
 
-    for field_name, field_value in other_fields_json.items():
+    for field_path, field_value in other_fields_json.items():
+        field_split = field_path.split(".")
+        old_value = dict_safe_get(dict_object=incident, keys=field_split, default_return_value="Not found")
+        if old_value == "Not found":
+            raise Exception('The other_fields argument is invalid. Check the name of the field whether it is the right path')
         changes.append(
             {
-                'field': {'name': field_name},
+                'field': {'name': field_split[-1]},
                 # The format should be {type: value}.
                 # Because the type is not returned from the API we take the type from the new value.
-                'old_value': {list(field_value.keys())[0]: incident[field_name]},
+                'old_value': {list(field_value.keys())[0]: old_value},
                 'new_value': field_value
             }
         )
 
 
 def update_incident_command(client, args):
-    if len(args.keys()) == 1:
+    if len(list(args.keys())) == 1:
         raise Exception('No fields to update were given')
     incident_id = args['incident-id']
     incident = get_incident(client, incident_id, True)
@@ -523,7 +528,7 @@ def get_incident_command(client, incident_id):
                    'nist_attack_vectors']
     pretty_incident = dict((k, incident[k]) for k in wanted_keys if k in incident)
     if incident['resolution_id']:
-        pretty_incident['resolution'] = RESOLUTION_DICT[incident['resolution_id']]
+        pretty_incident['resolution'] = RESOLUTION_DICT.get(incident['resolution_id'], incident['resolution_id'])
     if incident['resolution_summary']:
         pretty_incident['resolution_summary'] = incident['resolution_summary'].replace('<div>', '').replace('</div>',
                                                                                                             '')
@@ -1048,7 +1053,7 @@ def fetch_incidents(client):
                 attachments = incident_attachments(client, str(incident.get('id', '')))
                 if attachments:
                     incident['attachments'] = attachments
-                if isinstance(incident.get('description'), unicode):
+                if isinstance(incident.get('description'), str):
                     incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
 
                 incident['discovered_date'] = normalize_timestamp(incident.get('discovered_date'))
@@ -1159,7 +1164,7 @@ def main():
             demisto.results(add_artifact_command(client, args['incident-id'], args['artifact-type'],
                                                  args['artifact-value'], args.get('artifact-description')))
     except Exception as e:
-        LOG(e.message)
+        LOG(str(e))
         LOG.print_log()
         raise
 

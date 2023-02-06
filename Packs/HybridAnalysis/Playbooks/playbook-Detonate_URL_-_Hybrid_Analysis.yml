@@ -1,0 +1,406 @@
+id: Detonate URL - Hybrid Analysis
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Detonate URL - Hybrid Analysis
+description: Deprecated. Use cs-falcon-sandbox-submit-url with polling=true instead.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: ac486e14-1500-41db-8579-c2acb8b805ef
+    type: start
+    task:
+      id: ac486e14-1500-41db-8579-c2acb8b805ef
+      version: -1
+      name: ''
+      description: Starting test.
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 6fe76277-78da-4060-80e6-7510e4714e54
+    type: condition
+    task:
+      id: 6fe76277-78da-4060-80e6-7510e4714e54
+      version: -1
+      name: Is there any active Hybrid Analysis instance?
+      description: Check for an active instance.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '6'
+      yes:
+      - '2'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Hybrid Analysis
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 93a33cc8-1959-49e6-8bde-49bf5dd9b550
+    type: condition
+    task:
+      id: 93a33cc8-1959-49e6-8bde-49bf5dd9b550
+      version: -1
+      name: Is there a URL?
+      description: Check for a URL.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '6'
+      yes:
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 04496818-e6b3-439b-8696-00146090b583
+    type: regular
+    task:
+      id: 04496818-e6b3-439b-8696-00146090b583
+      version: -1
+      name: Send URL to Hybrid Analysis
+      description: Submits the URL of a website, or the URL that contains the file, for analysis.
+      script: Hybrid Analysis|||hybrid-analysis-quick-scan-url
+      type: regular
+      iscommand: true
+      brand: Hybrid Analysis
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      url:
+        simple: ${inputs.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 1b9c288a-2909-4e51-8054-37182e8ece41
+    type: playbook
+    task:
+      id: 1b9c288a-2909-4e51-8054-37182e8ece41
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      Ids:
+        simple: ${HybridAnalysis.URL.ScanID}
+      Interval:
+        simple: ${inputs.interval}
+      PollingCommandArgName:
+        simple: scanID
+      PollingCommandName:
+        simple: hybrid-analysis-quick-scan-url-results
+      Timeout:
+        simple: ${inputs.timeout}
+      dt:
+        simple: HybridAnalysis.URL(val.Finished == 'False').ScanID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: bee9857d-c4a9-4e9f-8939-822514c68078
+    type: title
+    task:
+      id: bee9857d-c4a9-4e9f-8939-822514c68078
+      version: -1
+      name: Done
+      description: '-'
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: ec3318b4-d6bc-45bc-8afa-e7eb698f138f
+    type: regular
+    task:
+      id: ec3318b4-d6bc-45bc-8afa-e7eb698f138f
+      version: -1
+      name: Get task report
+      description: Returns the scan results of the given URL ID.
+      script: Hybrid Analysis|||hybrid-analysis-quick-scan-url-results
+      type: regular
+      iscommand: true
+      brand: Hybrid Analysis
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      scanID:
+        simple: ${HybridAnalysis.URL.ScanID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: 26314852-2b16-4e29-84f7-47fa57ecfe90
+    type: regular
+    task:
+      id: 26314852-2b16-4e29-84f7-47fa57ecfe90
+      version: -1
+      name: Sleep (let the sandbox create the task)
+      description: sleep
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      seconds:
+        simple: '5'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: d96fed7f-62ba-43e3-8770-f49aa059e330
+    type: regular
+    task:
+      id: d96fed7f-62ba-43e3-8770-f49aa059e330
+      version: -1
+      name: View task
+      description: Returns the scan results of the given URL ID.
+      script: Hybrid Analysis|||hybrid-analysis-quick-scan-url-results
+      type: regular
+      iscommand: true
+      brand: Hybrid Analysis
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      scanID:
+        simple: ${HybridAnalysis.URL.ScanID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1290,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+  required: false
+  description: URL to detonate.
+  playbookInputQuery:
+- key: interval
+  value:
+    simple: '1'
+  required: false
+  description: How often to poll for results.
+  playbookInputQuery:
+- key: timeout
+  value:
+    simple: '10'
+  required: false
+  description: How long to wait before giving up waiting for results.
+  playbookInputQuery:
+outputs:
+- contextPath: HybridAnalysis.URL.Scanner.Name
+  description: The URL scanner name.
+- contextPath: HybridAnalysis.URL.Scanner.Positives
+  description: Number of positive scanners.
+- contextPath: HybridAnalysis.URL.Scanner.Status
+  description: Status of the scanning.
+- contextPath: HybridAnalysis.URL.Scanner
+  description: Placeholder for scanner data.
+  type: unknown
+tests:
+- No tests (deprecated)
+fromversion: 6.2.0
+deprecated: true

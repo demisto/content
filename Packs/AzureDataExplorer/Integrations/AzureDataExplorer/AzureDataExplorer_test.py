@@ -25,9 +25,9 @@ def load_mock_response(file_name: str) -> str:
         return mock_file.read()
 
 
-def mock_client():
+def mock_client(auth_type: str = 'Device Code'):
     from AzureDataExplorer import DataExplorerClient
-    return DataExplorerClient(CLUSTER_URL, APPLICATION_ID, CLIENT_ACTIVITY_PREFIX, False, False)
+    return DataExplorerClient(CLUSTER_URL, APPLICATION_ID, CLIENT_ACTIVITY_PREFIX, False, False, auth_type)
 
 
 def test_execute_search_query_command(requests_mock):
@@ -260,3 +260,25 @@ def test_validate_list_command_arguments():
         validate_list_command_arguments(1, 0, 1)
     except ValueError as v_error:
         assert str(v_error) == 'Page and limit arguments must be integers greater than 0.'
+
+
+@pytest.mark.parametrize('auth_type, expected_results', [
+    ('Device Code', "Please enable the integration and run `!azure-data-explorer-auth-start`"),
+    ('Authorization Code', "When using user auth flow configuration,")])
+def test_test_module_command(mocker, auth_type, expected_results):
+    """
+        Given:
+            - Case 1: Integration params with 'Device' as auth_type.
+            - Case 2: Integration params with 'User Auth' as auth_type.
+        When:
+            - Calling test-module command.
+        Then
+            - Assert the right exception was thrown.
+            - Case 1: Should throw an exception related to Device-code-flow config and return True.
+            - Case 2: Should throw an exception related to User-Auth-flow config and return True.
+    """
+    from AzureDataExplorer import test_module
+    client = mock_client(auth_type)
+    with pytest.raises(Exception) as e:
+        test_module(client)
+    assert expected_results in str(e.value)

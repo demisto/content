@@ -24,3 +24,4 @@
 !qradar-reset-last-run
 !qradar-ips-source-get filter=`source_ip="172.42.18.211"` range=0-2
 !qradar-ips-local-destination-get filter=`local_destination_ip="172.42.18.211"`
+!qradar-get-events-polling offense_id=194

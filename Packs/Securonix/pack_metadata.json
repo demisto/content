@@ -1,11 +1,11 @@
 {
     "name": "Securonix",
     "description": "Use the Securonix integration to manage incidents and watchlists.",
-    "support": "xsoar",
-    "currentVersion": "1.1.11",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "support": "partner",
+    "currentVersion": "1.2.0",
+    "author": "Securonix",
+    "url": "https:/www.securonix.com",
+    "email": "support@securonix.com",
     "created": "2020-03-10T08:37:18Z",
     "categories": [
         "Analytics & SIEM"

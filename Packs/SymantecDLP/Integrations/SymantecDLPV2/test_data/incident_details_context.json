@@ -1,26 +1,12 @@
 {
   "ID": 3620,
-  "creationDate": "2022-03-06T15:23:53.245",
-  "policyId": 2,
   "severity": "High",
-  "incidentStatusId": 1,
-  "detectionDate": "2022-03-06T15:23:39.197",
-  "senderIPAddress": "1.1.1.1",
-  "endpointMachineIpAddress": "1.1.1.1",
-  "policyName": "Network Test policy",
-  "policyVersion": 4,
-  "preventOrProtectStatusId": 0,
-  "messageSource": "NETWORK",
-  "messageType": "HTTP",
-  "detectionServerName": "Detection - Network monitor",
-  "policyGroupName": "policy_group.default.name",
-  "matchCount": 3,
   "customAttributeGroup": [
     {
       "name": "custom_attribute_group.default",
       "customAttribute": [
         {
-          "name": "Custom Attribue1",
+          "name": "Custom Attribute1",
           "index": 1
         },
         {
@@ -42,5 +28,53 @@
         }
       ]
     }
-  ]
+  ],
+  "policyVersion": 4,
+  "attachmentInfo": [
+    {
+      "componentType": 3,
+      "messageComponentName": "token",
+      "messageComponentId": 4623,
+      "wasCracked": false,
+      "documentFormat": "unknown",
+      "mimeType": "application/octet-stream",
+      "originalSize": 0
+    }
+  ],
+  "messageSubject": "HTTP incident",
+  "policyName": "Network Test policy",
+  "policyGroupName": "policy_group.default.name",
+  "policyGroupId": 1,
+  "messageSource": "NETWORK",
+  "messageId": 2104,
+  "messageOriginatorID": 828,
+  "matchCount": 3,
+  "creationDate": "2022-03-06T15:23:53.245",
+  "isBlockedStatusSuperseded": false,
+  "detectionServerName": "Detection - Network monitor",
+  "networkSenderPort": 59637,
+  "messageType": "HTTP",
+  "policyId": 2,
+  "detectionDate": "2022-03-06T15:23:39.197",
+  "messageTypeId": 3,
+  "detectionServerId": 1,
+  "messageDate": "2022-03-06T15:23:39.197",
+  "senderIPAddress": "1.1.1.1",
+  "endpointMachineIpAddress": "1.1.1.1",
+  "recipientInfo": [
+    {
+      "recipientType": 1,
+      "recipientPort": 80,
+      "recipientDomain": "2.2.2.254",
+      "recipientIdentifier": "http://2.2.2.254/latest/api/token",
+      "recipientIPAddress": "2.2.2.254",
+      "recipientUrl": "http://2.2.2.254/latest/api/token"
+    }
+  ],
+  "networkSenderIdentifier": "1.1.1.1",
+  "isHidingNotAllowed": false,
+  "incidentStatusName": "incident.status.New",
+  "incidentStatusId": 1,
+  "isHidden": false,
+  "preventOrProtectStatusId": 0
 }

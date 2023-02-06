@@ -60,7 +60,6 @@ def main():
         return_results(cmd_results)
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute MyToDoTasksWidget Script. Error: {str(e)}', e)
 
 

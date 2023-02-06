@@ -480,7 +480,8 @@ def file_reputation(client: Client, args: Dict) -> List[CommandResults]:
             indicator=app_hash,
             indicator_type=DBotScoreType.FILE,
             integration_name='Zimperium',
-            score=score
+            score=score,
+            reliability=demisto.params().get('integrationReliability')
         )
         hash_type = get_hash_type(app_hash)
         if hash_type == 'md5':

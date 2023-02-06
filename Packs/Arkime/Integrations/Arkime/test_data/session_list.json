@@ -1,0 +1,58 @@
+{
+    "data": [
+        {
+            "firstPacket": 1649921199252,
+            "rootId": "220414-Yg445Ur1tpRKTKBpr8lhv37w",
+            "totDataBytes": 0,
+            "ipProtocol": 6,
+            "node": "localhost",
+            "lastPacket": 1650190531644,
+            "source": {
+                "as": {},
+                "geo": {},
+                "packets": 4890,
+                "port": 22,
+                "ip": "192.168.1.130",
+                "bytes": 715384
+            },
+            "destination": {
+                "as": {},
+                "geo": {},
+                "port": 41096,
+                "ip": "192.168.1.88",
+                "packets": 5110,
+                "bytes": 985952
+            },
+            "client": {
+                "bytes": 0
+            },
+            "server": {
+                "bytes": 0
+            },
+            "network": {
+                "packets": 10000,
+                "bytes": 1701336
+            },
+            "id": "3@220417-Yg7OpiE4Pi1PFaRqu8lztuA6"
+        }
+    ],
+    "map": {},
+    "graph": {
+        "xmin": 1650190238000,
+        "xmax": 1650363038000,
+        "interval": 60,
+        "sessionsHisto": [],
+        "sessionsTotal": 0,
+        "source.packetsHisto": [],
+        "destination.packetsHisto": [],
+        "network.packetsTotal": 0,
+        "source.bytesHisto": [],
+        "destination.bytesHisto": [],
+        "network.bytesTotal": 0,
+        "client.bytesHisto": [],
+        "server.bytesHisto": [],
+        "totDataBytesTotal": 0
+    },
+    "recordsTotal": 6420810,
+    "recordsFiltered": 516305
+}

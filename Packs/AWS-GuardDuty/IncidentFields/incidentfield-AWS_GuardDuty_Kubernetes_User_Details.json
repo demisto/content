@@ -1,0 +1,32 @@
+{
+    "id": "incident_awsguarddutykubernetesuserdetails",
+    "version": -1,
+    "modified": "2022-11-10T10:24:01.656112Z",
+    "name": "AWS GuardDuty Kubernetes User Details",
+    "ownerOnly": false,
+    "description": "Details about the Kubernetes user involved in a Kubernetes finding.",
+    "cliName": "awsguarddutykubernetesuserdetails",
+    "type": "longText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "AWS Guard Duty Kubernetes Finding"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

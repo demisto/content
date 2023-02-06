@@ -4,13 +4,15 @@ from CommonServerPython import *
 import jwt
 import uuid
 import requests
+import urllib3
 import json
 import re
 import zipfile
-from StringIO import StringIO
+from io import BytesIO
 from datetime import datetime, timedelta
+
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # CONSTANTS
 TOKEN_TIMEOUT = 300  # 5 minutes
@@ -22,6 +24,7 @@ URI_ZONES = 'zones/v2'
 URI_THREATS = 'threats/v2'
 URI_LISTS = 'globallists/v2'
 URI_HOSTNAME = 'devices/v2/hostname'
+URI_OPTICS = 'instaqueries/v2'  # Optics InstaQuery API Endpoint
 
 SCOPE_DEVICE_LIST = 'device:list'
 SCOPE_DEVICE_READ = 'device:read'
@@ -40,14 +43,17 @@ SCOPE_GLOBAL_LIST = 'globallist:list'
 SCOPE_THREAT_LIST = 'threat:list'
 SCOPE_GLOBAL_LIST_CREATE = 'globallist:create'
 SCOPE_GLOBAL_LIST_DELETE = 'globallist:delete'
+SCOPE_OPTICS_LIST = 'opticssurvey:list'  # Get InstaQueries
+SCOPE_OPTICS_CREATE = 'opticssurvey:create'  # Create InstaQuery
+SCOPE_OPTICS_GET = 'opticssurvey:read'  # Read a InstaQuery
 
 
 # PREREQUISITES
 def load_server_url():   # pragma: no cover
     """ Cleans and loads the server url from the configuration """
     url = demisto.params()['server']
-    url = re.sub('/[\/]+$/', '', url)
-    url = re.sub('\/$', '', url)
+    url = re.sub(r'/[\/]+$/', '', url)
+    url = re.sub(r'\/$', '', url)
     return url
 
 
@@ -74,7 +80,6 @@ def generate_jwt_times():   # pragma: no cover
 
 
 def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=False, access_token=''):   # pragma: no cover
-
     """
     Makes an API call to the server URL with the supplied uri, method, headers, body and params
     """
@@ -84,14 +89,14 @@ def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=Fals
             'Authorization': 'Bearer ' + access_token
         }
 
-    url = '%s/%s' % (SERVER_URL, uri)
+    url = '{}/{}'.format(SERVER_URL, uri)
     res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=USE_SSL)
     if res.status_code < 200 or res.status_code >= 300:
         if res.status_code == 409 and str(res.content).find('already an entry for this threat') != -1:
             raise Warning(res.content)
         if not res.status_code == 404 and not accept_404:
             return_error(
-                'Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(
+                'Got status code ' + str(res.status_code) + ' with body ' + str(res.content) + ' with headers ' + str(
                     res.headers))
     return json.loads(res.text) if res.text else res.ok
 
@@ -308,7 +313,7 @@ def get_device():
 def get_device_request(device_id):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
 
-    uri = '%s/%s' % (URI_DEVICES, device_id)
+    uri = '{}/{}'.format(URI_DEVICES, device_id)
     res = api_call(uri=uri, method='get', access_token=access_token)
     return res
 
@@ -382,7 +387,7 @@ def get_hostname_request(hostname):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
 
-    uri = '%s/%s' % (URI_HOSTNAME, hostname)
+    uri = '{}/{}'.format(URI_HOSTNAME, hostname)
     res = api_call(uri=uri, method='get', access_token=access_token)
     if not res:
         return None
@@ -442,7 +447,7 @@ def update_device_request(device_id, name=None, policy_id=None, add_zones=None, 
     if not body:
         raise Exception('No changes detected')
 
-    uri = '%s/%s' % (URI_DEVICES, device_id)
+    uri = '{}/{}'.format(URI_DEVICES, device_id)
     res = api_call(uri=uri, method='put', access_token=access_token, body=body)
     return res
 
@@ -466,7 +471,7 @@ def get_device_threats():
     if device_threats:
         dbot_score_dict = {Common.DBotScore.get_context_path(): []}  # type: Dict[str, List[Dict[str, str]]]
         for dbot_score_entry in dbot_score_array:
-            for key, value in dbot_score_entry.items():
+            for key, value in list(dbot_score_entry.items()):
                 dbot_score_dict[Common.DBotScore.get_context_path()].append(value)
 
         threats_context = createContext(data=device_threats, keyTransform=underscoreToCamelCase)
@@ -495,7 +500,7 @@ def get_device_threats_request(device_id, page=None, page_size=None):  # pragma:
         params['page'] = page
     if page_size:
         params['page_size'] = page_size
-    uri = '%s/%s/threats' % (URI_DEVICES, device_id)
+    uri = '{}/{}/threats'.format(URI_DEVICES, device_id)
     res = api_call(uri=uri, method='get', access_token=access_token, params=params)
     return res
 
@@ -624,7 +629,7 @@ def get_zone():
 def get_zone_request(zone_id):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_ZONE_READ)
 
-    uri = '%s/%s' % (URI_ZONES, zone_id)
+    uri = '{}/{}'.format(URI_ZONES, zone_id)
     res = api_call(uri=uri, method='get', access_token=access_token)
     return res
 
@@ -673,7 +678,7 @@ def update_zone_request(zone_id, name, policy_id, criticality):  # pragma: no co
     if not body:
         raise Exception('No changes detected')
 
-    uri = '%s/%s' % (URI_ZONES, zone_id)
+    uri = '{}/{}'.format(URI_ZONES, zone_id)
     res = api_call(uri=uri, method='put', access_token=access_token, body=body)
     return res
 
@@ -710,7 +715,7 @@ def get_threat():
 def get_threat_request(sha256):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_READ)
 
-    uri = '%s/%s' % (URI_THREATS, sha256)
+    uri = '{}/{}'.format(URI_THREATS, sha256)
     res = api_call(uri=uri, method='get', access_token=access_token, body={}, params={}, accept_404=False)
     return res
 
@@ -741,7 +746,7 @@ def get_threats():
 
     dbot_score_dict = {Common.DBotScore.get_context_path(): []}  # type: Dict[str, List[Dict[str, str]]]
     for dbot_score_entry in dbot_score_array:
-        for key, value in dbot_score_entry.items():
+        for key, value in list(dbot_score_entry.items()):
             dbot_score_dict[Common.DBotScore.get_context_path()].append(value)
 
     context_threat = createContext(data=threats, keyTransform=underscoreToCamelCase, removeNull=True)
@@ -850,7 +855,7 @@ def get_threat_devices_request(threat_hash, page=None, page_size=None):  # pragm
     if page_size:
         params['page_size'] = page_size
 
-    uri = '%s/%s/devices' % (URI_THREATS, threat_hash)
+    uri = '{}/{}/devices'.format(URI_THREATS, threat_hash)
     res = api_call(uri=uri, method='get', access_token=access_token, params=params)
     return res
 
@@ -872,7 +877,7 @@ def get_list():
     if lst:
         dbot_score_dict = {Common.DBotScore.get_context_path(): []}  # type: Dict[str, List[Dict[str, str]]]
         for dbot_score_entry in dbot_score_array:
-            for key, value in dbot_score_entry.items():
+            for key, value in list(dbot_score_entry.items()):
                 dbot_score_dict[Common.DBotScore.get_context_path()].append(value)
 
         context_list = createContext(data=lst, keyTransform=underscoreToCamelCase, removeNull=True)
@@ -975,7 +980,7 @@ def update_device_threats_request(device_id, threat_id, event):  # pragma: no co
         'event': event
     }
 
-    uri = '%s/%s/threats' % (URI_DEVICES, device_id)
+    uri = '{}/{}/threats'.format(URI_DEVICES, device_id)
     res = api_call(uri=uri, method='post', access_token=access_token, body=body)
 
     return res
@@ -992,12 +997,12 @@ def download_threat():
     threat_file = requests.get(threat_url, allow_redirects=True, verify=USE_SSL)
     if threat_file.status_code == 200:
         if demisto.args()['unzip'] == "yes":
-            file_archive = StringIO(threat_file.content)
+            file_archive = BytesIO(threat_file.content)
             zip_file = zipfile.ZipFile(file_archive)
-            file_data = zip_file.read(sha256.upper(), pwd='infected')
+            file_data = zip_file.read(sha256.upper(), pwd=b'infected')
             demisto.results(fileResult(sha256, file_data))
         else:
-            demisto.results(fileResult(sha256, threat_file.content + '.zip'))
+            demisto.results(fileResult(sha256, threat_file.content + b'.zip'))
     else:
         return_error('Could not fetch the file')
 
@@ -1056,7 +1061,7 @@ def download_threat():
 def download_threat_request(hash):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_READ)
 
-    uri = '%s/%s/%s' % (URI_THREATS, "download", hash)
+    uri = '{}/{}/{}'.format(URI_THREATS, "download", hash)
     res = api_call(uri=uri, method='get', access_token=access_token)
     if not res['url']:
         return_error('No url was found')
@@ -1099,7 +1104,7 @@ def add_hash_to_list():
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(
-            'The requested threat has been successfully added to ' + list_type + ' hashlist.', contents),
+            f'The requested threat has been successfully added to {list_type} hashlist.', contents),
         'EntryContext': context
     })
 
@@ -1143,7 +1148,7 @@ def delete_hash_from_lists():
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(
-            'The requested threat has been successfully removed from ' + list_type + ' hashlist.', contents),
+            f'The requested threat has been successfully removed from {list_type} hashlist.', contents),
         'EntryContext': context
     })
 
@@ -1229,15 +1234,16 @@ def get_policy_details():
     title_filetype_actions_threat = 'Cylance Policy Details - FileType Actions Threat Files'
     title_filetype_actions_suspicious = 'Cylance Policy Details - FileType Actions Suspicious Files'
     title_safelist = 'Cylance Policy Details - File Exclusions - SafeList'
-    title_memory_exclusion = 'Cylance Policy Details - Memory Violation Actions \n' +\
-                             'This table provides detailed information about the memory violation settings. \n' +\
+    title_memory_exclusion = 'Cylance Policy Details - Memory Violation Actions \n' + \
+                             'This table provides detailed information about the memory violation settings. \n' + \
                              'Memory protections Exclusion List :'
     title_memory_violation = 'Memory Violation Settings: '
-    title_additional_settings = 'Cylance Policy Details - Policy Settings. \n' +\
+    title_additional_settings = 'Cylance Policy Details - Policy Settings. \n' + \
                                 'Various policy settings are contained within this section.'
 
     policy_details = get_policy_details_request(policy_id)
     memory_violations_content = []
+
     if policy_details:
         title = 'Cylance Policy Details for: ' + policy_id
         date_time = ''
@@ -1250,11 +1256,9 @@ def get_policy_details():
                 date_time = datetime.fromtimestamp(ts / 1000).strftime('%Y-%m-%dT%H:%M:%S.%f+00:00')
 
         context = {
-            'Cylance.Policy(val.ID && val.ID == obj.ID)': {
-                'ID': policy_details.get('policy_id'),
-                'Name': policy_details.get('policy_name'),
-                'Timestamp': date_time
-            }
+            'ID': policy_details.get('policy_id'),
+            'Name': policy_details.get('policy_name'),
+            'Timestamp': date_time
         }
 
         contents = {
@@ -1317,28 +1321,146 @@ def get_policy_details():
                 'Value': additional_setting.get('value')
             })
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': contents,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents)
+    context.update(policy_details)
+    results = CommandResults(
+        outputs=context,
+        outputs_prefix='Cylance.Policy',
+        outputs_key_field='policy_id',
+        readable_output=tableToMarkdown(title, contents)
         + tableToMarkdown(title_filetype_actions_suspicious, filetype_actions_suspicious_contents)
         + tableToMarkdown(title_filetype_actions_threat, filetype_actions_threat_contents)
         + tableToMarkdown(title_safelist, safelist_contents)
         + tableToMarkdown(title_memory_exclusion, policy_details.get('memory_exclusion_list'))
         + tableToMarkdown(title_memory_violation, memory_violations_content)
         + tableToMarkdown(title_additional_settings, memory_violations_content),
-        'EntryContext': context
-    })
+        raw_response=policy_details
+    )
+    return_results(results)
 
 
-def get_policy_details_request(policy_id):  # pragma: no cover
+def get_policy_details_request(policy_id):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_POLICY_READ)
 
-    uri = '%s/%s' % (URI_POLICIES, policy_id)
+    uri = '{}/{}'.format(URI_POLICIES, policy_id)
     res = api_call(uri=uri, method='get', access_token=access_token)
     return res
+
+
+def create_instaquery_request(name, description, artifact, value_type, match_values, match_type, zone_list):
+    # Create request
+    data = {
+        "name": name,
+        "description": description,
+        "artifact": artifact,
+        "match_value_type": value_type,
+        "match_values": match_values,
+        "case_sensitive": False,
+        "match_type": match_type,
+        "zones": zone_list
+    }
+
+    access_token = get_authentication_token([SCOPE_OPTICS_CREATE, SCOPE_OPTICS_GET])
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + access_token
+    }
+    uri = URI_OPTICS
+    res = api_call(uri=uri, method='post', body=data, headers=headers)
+    return res
+
+
+def create_instaquery():
+    query_args = demisto.args()
+    name = query_args.get('name')
+    description = query_args.get('description')
+    artifact = query_args.get('artifact')
+    match_value_type = query_args.get('match_value_type')
+    match_values = query_args.get('match_values').split(",")
+    match_type = query_args.get('match_type')
+    zones = "".join(query_args.get('zone').split("-")).upper()  # Remove '-' and upper case
+    zone_list = zones.split(",")
+
+    # Process the match value
+    if artifact in match_value_type:
+        value_type = re.findall(r'(?<=\.).*', match_value_type)[0]  # Remove the artifact prefix
+    else:
+        demisto.error('The value type is not suitable with the selected artifact')
+
+    # Create request
+    res = create_instaquery_request(name, description, artifact, value_type, match_values, match_type, zone_list)
+
+    if res:
+        # Return results to context and war room
+        results = CommandResults(
+            outputs=res,
+            outputs_prefix='InstaQuery.New',
+            outputs_key_field='id'
+        )
+        return_results(results)
+
+
+def get_instaquery_result_request(query_id):
+    # Create request
+    access_token = get_authentication_token([SCOPE_OPTICS_GET, SCOPE_OPTICS_CREATE])
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + access_token
+    }
+    # Endpoint format /instaqueries/v2/{queryID}/results
+    uri = URI_OPTICS + "/" + query_id + "/results"
+    res = api_call(uri=uri, method='get', headers=headers)
+    return res
+
+
+def get_instaquery_result():
+    query_id = demisto.args().get('query_id')
+    res = get_instaquery_result_request(query_id)
+
+    if res['result']:
+        results_count = len(res.get('result'))
+        result_title = str(results_count) + " results found, find more details in context. Here is the 1st result:" \
+            if results_count > 1 else "1 result found:"
+        readable_results = tableToMarkdown(
+            result_title,
+            json.loads(res['result'][0]['Result']).get('Properties')
+        )
+    else:
+        readable_results = "### No result found"
+
+    # Return results to context and war room
+    results = CommandResults(
+        outputs=res,
+        outputs_prefix='InstaQuery.Results',
+        outputs_key_field='id',
+        readable_output=readable_results
+    )
+    return_results(results)
+
+
+def list_instaquery_request(page, page_size):
+    # Create request
+    access_token = get_authentication_token([SCOPE_OPTICS_LIST, SCOPE_OPTICS_GET])
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + access_token
+    }
+    # Endpoint format /instaqueries/v2/{queryID}/results
+    uri = URI_OPTICS + "?page=" + page + "&page_size=" + page_size
+    res = api_call(uri=uri, method='get', headers=headers)
+    return res
+
+
+def list_instaquery():
+    page = demisto.args().get('page_number')
+    page_size = demisto.args().get('page_size')
+    res = list_instaquery_request(page, page_size)
+    if res:
+        # Return results to context and war room
+        results = CommandResults(
+            outputs=res,
+            outputs_prefix='InstaQuery.List',
+        )
+        return_results(results)
 
 
 def fetch_incidents():
@@ -1405,7 +1527,7 @@ def main():    # pragma: no cover
     USE_SSL = not demisto.params().get('unsecure', False)
     command = demisto.command()
 
-    LOG('Command being called is {command}'.format(command=command))
+    LOG(f'Command being called is {command}')
     try:
         handle_proxy()
         if demisto.command() == 'test-module':
@@ -1480,6 +1602,16 @@ def main():    # pragma: no cover
 
         elif demisto.command() == 'cylance-protect-get-policy-details':
             get_policy_details()
+
+        # Optics InstaQuery command
+        elif demisto.command() == 'cylance-optics-create-instaquery':
+            create_instaquery()
+
+        elif demisto.command() == 'cylance-optics-get-instaquery-result':
+            get_instaquery_result()
+
+        elif demisto.command() == 'cylance-optics-list-instaquery':
+            list_instaquery()
 
     except Warning as w:
         demisto.results({

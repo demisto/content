@@ -1,7 +1,12 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 import json
+
+
+class IncorrectUsageError(Exception):
+    pass
 
 
 class Client(BaseClient):
@@ -9,11 +14,24 @@ class Client(BaseClient):
         super().__init__(base_url, *args, **kwarg)
 
 
-def test_module(client: Client) -> str:
+def _get_behavioral_task_id(value):
+    if str(value).startswith("behavioral"):
+        return value
 
-    r = client._http_request(
-        "GET", "users", resp_type="response", ok_codes=(200, 401, 404)
+    raise IncorrectUsageError(
+        "Task ID must be 'behavioral' followed by a number. "
+        "E.G: 'behavioral1'"
     )
+
+
+def test_module(client: Client) -> str:
+    r = client._http_request(
+        "GET", "me", resp_type="response", ok_codes=(200, 401, 404)
+    )
+    if r.status_code == 404:
+        r = client._http_request(
+            "GET", "users", resp_type="response", ok_codes=(200, 401, 404)
+        )
 
     if r.status_code == 404:
         return "Page not found, possibly wrong base_url"
@@ -37,14 +55,28 @@ def query_samples(client, **args) -> CommandResults:
 
     r = client._http_request("GET", "samples", params=params)
 
-    results = CommandResults(
-        outputs_prefix="Triage.samples", outputs_key_field="id", outputs=r["data"]
+    return CommandResults(
+        outputs_prefix="Triage.samples", outputs_key_field="id",
+        outputs=r["data"]
     )
-    return results
 
 
 def submit_sample(client: Client, **args) -> CommandResults:
-    data = {"kind": args.get("kind"), "interactive": False}
+    data = {
+        "kind": args.get("kind"),
+        "interactive": argToBoolean(args.get("interactive", False))
+    }
+
+    if args.get("password"):
+        data["password"] = args["password"]
+
+    if args.get("timeout"):
+        data.setdefault("defaults", {})["timeout"] = arg_to_number(
+            args["timeout"]
+        )
+
+    if args.get("network"):
+        data.setdefault("defaults", {})["network"] = args["network"]
 
     if args.get("profiles", []):
         profiles_data = []
@@ -52,43 +84,57 @@ def submit_sample(client: Client, **args) -> CommandResults:
             profiles_data.append({"profile": i, "pick": "sample"})
         data["profiles"] = profiles_data
 
-    if data["kind"] == "url":
+    if data["kind"] in ("url", "fetch"):
         data.update({"url": args.get("data")})
         r = client._http_request("POST", "samples", json_data=data)
     elif data["kind"] == "file":
-        file_path = demisto.getFilePath(demisto.args().get("data")).get("path")
-        with open(file_path, "rb") as f:
-            files = {"file": f}
-            r = client._http_request("POST", "samples", json_data=data, files=files)
+        file_id = args.get("data")
+        demisto_file = demisto.getFilePath(file_id)
+        # Use original filename if available. File id is a fallback.
+        filename = demisto_file.get("name") or file_id
+        with open(demisto_file.get("path"), "rb") as f:
+            files = {"file": (filename, f)}
+            r = client._http_request(
+                "POST", "samples",
+                data={"_json": json.dumps(data)}, files=files
+            )
     else:
-        return_error(
-            f'Type of sample needs to be selected, either "file" or "url", the selected type was: {data["kind"]}'
+        raise IncorrectUsageError(
+            f'Type of submission needs to be selected, either "file", "url", '
+            f'or fetch. The selected type was: {data["kind"]}'
         )
 
-    results = CommandResults(
+    return CommandResults(
         outputs_prefix="Triage.submissions", outputs_key_field="id", outputs=r
     )
-    return results
 
 
 def get_sample(client: Client, **args) -> CommandResults:
     sample_id = args.get("sample_id")
     r = client._http_request("GET", f"samples/{sample_id}")
 
-    results = CommandResults(
+    return CommandResults(
         outputs_prefix="Triage.samples", outputs_key_field="id", outputs=r
     )
-    return results
 
 
 def get_sample_summary(client: Client, **args) -> CommandResults:
-    sample_id = args.get("sample_id")
-    r = client._http_request("GET", f"samples/{sample_id}/summary")
+    outputs = []
+    for sample_id in argToList(args.get("sample_id", "")):
+        try:
+            res = client._http_request(
+                "GET", f"samples/{sample_id}/summary", ok_codes=(200,)
+            )
+        except DemistoException as e:
+            e.message += f" - Sample ID: {sample_id}"
+            raise
 
-    results = CommandResults(
-        outputs_prefix="Triage.sample-summaries", outputs_key_field="sample", outputs=r
+        outputs.append(res)
+
+    return CommandResults(
+        outputs_prefix="Triage.sample-summaries", outputs_key_field="sample",
+        outputs=outputs
     )
-    return results
 
 
 def delete_sample(client: Client, **args) -> str:
@@ -110,16 +156,17 @@ def set_sample_profile(client: Client, **args) -> str:
     }
     if args.get("profiles"):
         data.update({"profiles": [{"profile": args.get("profiles", "")}]})
-    data = json.dumps(data)
 
-    client._http_request("POST", f"samples/{sample_id}/profile", data=data)
+    client._http_request(
+        "POST", f"samples/{sample_id}/profile", data=json.dumps(data)
+    )
 
     return f"Profile successfully set for sample {sample_id}"
 
 
 def get_static_report(client: Client, **args) -> CommandResults:
     """
-    Get's the static analysis report from a given sample
+    Gets the static analysis report for a given sample id
     """
     sample_id = args.get("sample_id")
 
@@ -182,10 +229,9 @@ def get_report_triage(client: Client, **args) -> CommandResults:
     Outputs a score, should map to a DBot score
     """
     sample_id = args.get("sample_id")
-    task_id = args.get("task_id")
+    task_id = _get_behavioral_task_id(args.get("task_id"))
 
     r = client._http_request("GET", f"samples/{sample_id}/{task_id}/report_triage.json")
-
     score = 0
     indicator: Any
     if 'sample' in r:
@@ -219,19 +265,17 @@ def get_report_triage(client: Client, **args) -> CommandResults:
             dbot_score=dbot_score
         )
 
-    results = CommandResults(
+    return CommandResults(
         outputs_prefix="Triage.sample.reports.triage",
         outputs_key_field="sample.id",
         outputs=r,
         indicator=indicator
     )
 
-    return results
-
 
 def get_kernel_monitor(client: Client, **args) -> dict:
     sample_id = args.get("sample_id")
-    task_id = args.get("task_id")
+    task_id = _get_behavioral_task_id(args.get("task_id"))
 
     r = client._http_request(
         "GET", f"samples/{sample_id}/{task_id}/logs/onemon.json", resp_type="text"
@@ -245,7 +289,7 @@ def get_kernel_monitor(client: Client, **args) -> dict:
 
 def get_pcap(client: Client, **args) -> dict:
     sample_id = args.get("sample_id")
-    task_id = args.get("task_id")
+    task_id = _get_behavioral_task_id(args.get("task_id"))
 
     r = client._http_request(
         "GET", f"samples/{sample_id}/{task_id}/dump.pcap", resp_type="response"
@@ -267,9 +311,7 @@ def get_dumped_files(client: Client, **args) -> dict:
         "GET", f"samples/{sample_id}/{task_id}/{file_name}", resp_type="content"
     )
 
-    results = fileResult(f"{file_name}", r)
-
-    return results
+    return fileResult(f"{file_name}", r)
 
 
 def get_users(client: Client, **args) -> CommandResults:
@@ -284,11 +326,9 @@ def get_users(client: Client, **args) -> CommandResults:
     if r.get("data"):
         r = r["data"]
 
-    results = CommandResults(
+    return CommandResults(
         outputs_prefix="Triage.users", outputs_key_field="id", outputs=r
     )
-
-    return results
 
 
 def create_user(client: Client, **args) -> CommandResults:
@@ -304,11 +344,9 @@ def create_user(client: Client, **args) -> CommandResults:
 
     r = client._http_request("POST", "users", data=data)
 
-    results = CommandResults(
+    return CommandResults(
         outputs_prefix="Triage.users", outputs_key_field="id", outputs=r
     )
-
-    return results
 
 
 def delete_user(client: Client, **args) -> str:
@@ -329,22 +367,18 @@ def create_apikey(client: Client, **args) -> CommandResults:
 
     r = client._http_request("POST", f"users/{userID}/apikeys", data=data)
 
-    results = CommandResults(
+    return CommandResults(
         outputs_prefix="Triage.apikey", outputs_key_field="key", outputs=r
     )
-
-    return results
 
 
 def get_apikey(client: Client, **args) -> CommandResults:
     userID = args.get("userID")
     r = client._http_request("GET", f"users/{userID}/apikeys")
 
-    results = CommandResults(
+    return CommandResults(
         outputs_prefix="Triage.apikey", outputs_key_field="key", outputs=r.get("data")
     )
-
-    return results
 
 
 def delete_apikey(client: Client, **args) -> str:
@@ -353,9 +387,7 @@ def delete_apikey(client: Client, **args) -> str:
 
     client._http_request("DELETE", f"users/{userID}/apikeys/{apiKeyName}")
 
-    results = f"API key {apiKeyName} was successfully deleted"
-
-    return results
+    return f"API key {apiKeyName} was successfully deleted"
 
 
 def get_profile(client: Client, **args) -> CommandResults:
@@ -371,11 +403,9 @@ def get_profile(client: Client, **args) -> CommandResults:
     if not profileID and r.get("data"):
         r = r["data"]
 
-    results = CommandResults(
+    return CommandResults(
         outputs_prefix="Triage.profiles", outputs_key_field="id", outputs=r
     )
-
-    return results
 
 
 def create_profile(client: Client, **args) -> CommandResults:
@@ -391,11 +421,9 @@ def create_profile(client: Client, **args) -> CommandResults:
 
     r = client._http_request("POST", "profiles", data=data)
 
-    results = CommandResults(
+    return CommandResults(
         outputs_prefix="Triage.profiles", outputs_key_field="id", outputs=r
     )
-
-    return results
 
 
 def update_profile(client: Client, **args) -> str:
@@ -413,9 +441,7 @@ def update_profile(client: Client, **args) -> str:
 
     client._http_request("PUT", f"profiles/{profileID}", data=json.dumps(data))
 
-    results = "Profile updated successfully"
-
-    return results
+    return "Profile updated successfully"
 
 
 def delete_profile(client: Client, **args) -> str:
@@ -423,9 +449,18 @@ def delete_profile(client: Client, **args) -> str:
 
     client._http_request("DELETE", f"profiles/{profileID}")
 
-    results = f"Profile {profileID} successfully deleted"
+    return f"Profile {profileID} successfully deleted"
 
-    return results
+
+def query_search(client, **args) -> CommandResults:
+    params = {"query": args.get("query")}
+
+    r = client._http_request("GET", "search", params=params)
+
+    return CommandResults(
+        outputs_prefix="Triage.samples", outputs_key_field="id",
+        outputs=r["data"]
+    )
 
 
 def main():
@@ -435,11 +470,13 @@ def main():
         params.get("base_url"),
         verify=params.get("Verify SSL"),
         headers={"Authorization": f'Bearer {params.get("API Key")}'},
+        proxy=params.get("proxy", False)
     )
 
     commands = {
         "test-module": test_module,
         "triage-query-samples": query_samples,
+        "triage-query-search": query_search,
         "triage-submit-sample": submit_sample,
         "triage-get-sample": get_sample,
         "triage-get-sample-summary": get_sample_summary,
@@ -463,10 +500,15 @@ def main():
     }
 
     command = demisto.command()
-    if command in commands:
+    try:
+        if command not in commands:
+            raise IncorrectUsageError(
+                f"Command '{command}' is not available in this integration"
+            )
+
         return_results(commands[command](client, **args))  # type: ignore
-    else:
-        return_error(f"Command {command} is not available in this integration")
+    except Exception as e:
+        return_error(str(e))
 
 
 if __name__ in ["__main__", "__builtin__", "builtins"]:

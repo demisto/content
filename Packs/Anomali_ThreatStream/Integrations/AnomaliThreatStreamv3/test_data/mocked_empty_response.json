@@ -1,0 +1,10 @@
+{
+    "meta": {
+        "limit": 20,
+        "next": null,
+        "offset": 0,
+        "previous": null,
+        "total_count": 0
+    },
+    "objects": []
+}

@@ -1,16 +1,39 @@
 import urllib3
+from base64 import urlsafe_b64encode
 
 from CommonServerPython import *
 
 
 class Client:
-    def __init__(self, server_url, verify, proxy, headers, client_cert, client_key):
+    def __init__(self, server_url, verify, proxy, headers, client_cert, client_key, ca_cert):
+        ca_cert_path = ''
+        if ca_cert:
+            ca_cert_path = 'ca.cert'
+            with open(ca_cert_path, 'wb') as file:
+                file.write(ca_cert.encode())
+            self._verify = ca_cert_path
+        else:
+            self._verify = verify
         self._base_url = server_url
-        self._verify = verify
         self._proxy = proxy
-        self._headers = headers
+        self._headers = headers if headers else dict()
         self._client_cert = client_cert
         self._client_key = client_key
+
+    def reg_auth(self, identitytoken, registry_username, registry_password, registry_serveraddress):
+        if identitytoken and any([registry_username, registry_password, registry_serveraddress]):
+            raise ValueError(
+                "Registry IdentityToken and Credential auth paramaters provided. \
+                    Can only use one authentication method not both.")
+        if identitytoken:
+            json_string = json.dumps({"identitytoken": identitytoken})
+            self._headers['X-Registry-Auth'] = urlsafe_b64encode(json_string.encode('utf-8'))
+        else:
+            if not all([registry_username, registry_password, registry_serveraddress]):
+                raise ValueError("Credential Auth method requires registry_username, registry_password, registry_serveraddress")
+            json_string = json.dumps({"username": registry_username, "password": registry_password,
+                                     "serveraddress": registry_serveraddress})
+            self._headers['X-Registry-Auth'] = urlsafe_b64encode(json_string.encode('utf-8'))
 
     def _http_request(self, method, url_suffix='', full_url=None, params=None, headers=None, data=None, json_data=None):
         address = full_url if full_url else urljoin(self._base_url, url_suffix)
@@ -25,6 +48,7 @@ class Client:
             client_key_path = 'client_key.key'
             with open(client_key_path, 'wb') as file:
                 file.write(self._client_key.encode())
+
         response = requests.session().request(
             method,
             address,
@@ -34,11 +58,16 @@ class Client:
             json=json_data,
             headers=headers,
             cert=(client_cert_path, client_key_path),
-            timeout=2,
-
+            timeout=None
         )
+
+        # Some docker commands return no data, just a status code.
+        # Better pass the status code on as the result, rather than nothing
+        if not response.content:
+            return {'Status Code': response.status_code}
+
         if response.headers.get('Content-Type') == 'application/json':
-            return json.loads(response.content)
+            return json.loads(response.content.splitlines()[-1])  # If content is jsonl, latest message is the most relevant
         else:
             return response.content
 
@@ -212,7 +241,7 @@ class Client:
         return response
 
     def container_list_request(self, list_all, limit, size, filters):
-        params = assign_params(list_all=list_all, limit=limit, size=size, filters=filters)
+        params = assign_params(all=list_all, limit=limit, size=size, filters=filters)
 
         headers = self._headers
 
@@ -457,15 +486,14 @@ class Client:
 
         return response
 
-    def image_create_request(self, from_image, from_src, repo, tag, message, input_image, platform):
-        params = assign_params(from_image=from_image, from_src=from_src, repo=repo, tag=tag, message=message,
+    def image_create_request(self, from_image, from_src, repo, tag, message, platform):
+        params = assign_params(fromImage=from_image, fromSrc=from_src, repo=repo, tag=tag, message=message,
                                platform=platform)
-        data = assign_params(input_image=input_image)
 
         headers = self._headers
         headers['Content-Type'] = 'text/plain'
 
-        response = self._http_request('post', 'images/create', params=params, json_data=data, headers=headers)
+        response = self._http_request('post', 'images/create', params=params, headers=headers)
 
         return response
 
@@ -1230,7 +1258,7 @@ def container_delete_command(client, args):
 
     response = client.container_delete_request(id_, v, force, link)
     command_results = CommandResults(
-        outputs_prefix='Docker',
+        outputs_prefix='Docker.ContainerDelete',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -1789,13 +1817,12 @@ def image_create_command(client, args):
     repo = str(args.get('repo', ''))
     tag = str(args.get('tag', ''))
     message = str(args.get('message', ''))
-    input_image = str(args.get('input_image', ''))
     platform = str(args.get('platform', ''))
 
-    response = client.image_create_request(from_image, from_src, repo, tag, message, input_image, platform)
+    response = client.image_create_request(from_image, from_src, repo, tag, message, platform)
     command_results = CommandResults(
-        outputs_prefix='Docker',
-        outputs_key_field='',
+        outputs_prefix='Docker.ImageCreate',
+        outputs_key_field='Status',
         outputs=response,
         raw_response=response
     )
@@ -1926,7 +1953,7 @@ def image_push_command(client, args):
 
     response = client.image_push_request(name, tag)
     command_results = CommandResults(
-        outputs_prefix='Docker',
+        outputs_prefix='Docker.ImagePush',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -1958,7 +1985,7 @@ def image_tag_command(client, args):
 
     response = client.image_tag_request(name, repo, tag)
     command_results = CommandResults(
-        outputs_prefix='Docker',
+        outputs_prefix='Docker.ImageTag',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -2866,9 +2893,14 @@ def main():
     args = demisto.args()
     url = params.get('url')
     client_cert = params.get('client_certificate')
-    client_key = params.get('client_key')
+    client_key = params.get('client_key', {}).get('credentials', {}).get('sshkey')
+    ca_cert = params.get('ca_certificate')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    identitytoken = params.get('identitytoken', False)
+    registry_username = params.get('Registry Username', {}).get('identifier', False)
+    registry_password = params.get('Registry Username', {}).get('password', False)
+    registry_serveraddress = params.get('registry_serveraddress', False)
 
     command = demisto.command()
     LOG(f'Command being called is {command}')
@@ -2876,7 +2908,12 @@ def main():
     try:
         urllib3.disable_warnings()
         client = Client(urljoin(url, "/v1.41"), verify_certificate, proxy, headers=None,
-                        client_cert=client_cert, client_key=client_key)
+                        client_cert=client_cert, client_key=client_key, ca_cert=ca_cert)
+
+        if any([identitytoken, registry_username, registry_password, registry_serveraddress]):
+            client.reg_auth(identitytoken=identitytoken, registry_username=registry_username,
+                            registry_password=registry_password, registry_serveraddress=registry_serveraddress)
+
         commands = {
             'docker-build-prune': build_prune_command,
             'docker-config-create': config_create_command,

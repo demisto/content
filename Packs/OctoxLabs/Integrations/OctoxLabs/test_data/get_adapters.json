@@ -1,0 +1,29 @@
+{
+	"count": 2,
+	"results": [
+		{
+			"id": 1,
+			"name": "Netskope",
+			"slug": "netskope",
+			"description": "Netskope Description",
+			"groups": [
+				"network_monitoring"
+			],
+			"beta": true,
+			"status": 1,
+			"hr_status": "Done"
+		},
+		{
+			"id": 2,
+			"name": "Active Directory",
+			"slug": "active-directory",
+			"description": "Active Directory Description",
+			"groups": [
+				"ad"
+			],
+			"beta": false,
+			"status": 3,
+			"hr_status": "Error"
+		}
+	]
+}

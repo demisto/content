@@ -25,3 +25,6 @@ ignore=BA101
 
 [file:Smokescreen_IllusionBLACK_image.png]
 ignore=IM111
+
+[file:classifier-Smokescreen_IllusionBLACK.json]
+ignore=BA101

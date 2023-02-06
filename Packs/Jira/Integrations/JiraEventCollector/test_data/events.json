@@ -1,0 +1,109 @@
+{
+    "offset": 0,
+    "limit": 1000,
+    "total": 3,
+    "records": [
+        {
+            "id": 3,
+            "summary": "User Changed",
+            "remoteAddress": "192.168.1.1",
+            "authorKey": "administrator",
+            "authorAccountId": "5ab8f18d741e9c2c7e9d4538",
+            "created": "2022-04-12T18:45:42.967+0000",
+            "category": "user management",
+            "eventSource": "Jira Connect Plugin",
+            "description": "Optional description",
+            "objectItem": {
+                "id": "user",
+                "name": "user",
+                "typeName": "USER",
+                "parentId": "1",
+                "parentName": "Jira Internal Directory"
+            },
+            "changedValues": [
+                {
+                    "fieldName": "email",
+                    "changedFrom": "user@atlassian.com",
+                    "changedTo": "newuser@atlassian.com"
+                }
+            ],
+            "associatedItems": [
+                {
+                    "id": "jira-software-users",
+                    "name": "jira-software-users",
+                    "typeName": "GROUP",
+                    "parentId": "1",
+                    "parentName": "Jira Internal Directory"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "summary": "User created",
+            "remoteAddress": "192.168.1.1",
+            "authorKey": "administrator",
+            "authorAccountId": "5ab8f18d741e9c2c7e9d4538",
+            "created": "2022-04-12T18:41:42.967+0000",
+            "category": "user management",
+            "eventSource": "Jira Connect Plugin",
+            "description": "Optional description",
+            "objectItem": {
+                "id": "user",
+                "name": "user",
+                "typeName": "USER",
+                "parentId": "1",
+                "parentName": "Jira Internal Directory"
+            },
+            "changedValues": [
+                {
+                    "fieldName": "email",
+                    "changedFrom": "user@atlassian.com",
+                    "changedTo": "newuser@atlassian.com"
+                }
+            ],
+            "associatedItems": [
+                {
+                    "id": "jira-software-users",
+                    "name": "jira-software-users",
+                    "typeName": "GROUP",
+                    "parentId": "1",
+                    "parentName": "Jira Internal Directory"
+                }
+            ]
+        },
+        {
+            "id": 1,
+            "summary": "User created",
+            "remoteAddress": "192.168.1.1",
+            "authorKey": "administrator",
+            "authorAccountId": "5ab8f18d741e9c2c7e9d4538",
+            "created": "2022-04-12T18:40:42.967+0000",
+            "category": "user management",
+            "eventSource": "Jira Connect Plugin",
+            "description": "Optional description",
+            "objectItem": {
+                "id": "user",
+                "name": "user",
+                "typeName": "USER",
+                "parentId": "1",
+                "parentName": "Jira Internal Directory"
+            },
+            "changedValues": [
+                {
+                    "fieldName": "email",
+                    "changedFrom": "user@atlassian.com",
+                    "changedTo": "newuser@atlassian.com"
+                }
+            ],
+            "associatedItems": [
+                {
+                    "id": "jira-software-users",
+                    "name": "jira-software-users",
+                    "typeName": "GROUP",
+                    "parentId": "1",
+                    "parentName": "Jira Internal Directory"
+                }
+            ]
+        }
+    ]
+}

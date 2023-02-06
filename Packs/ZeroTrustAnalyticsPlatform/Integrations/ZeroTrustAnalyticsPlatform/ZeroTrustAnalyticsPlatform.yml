@@ -60,15 +60,15 @@ configuration:
   name: input_tag
   type: 0
 - display: Fetch attachments for comments from ZTAP
-  defaultvalue: false
+  defaultvalue: 'false'
   name: get_attachments
   type: 8
 - display: Sync closing incidents with ZTAP
-  defaultvalue: false
+  defaultvalue: 'false'
   name: close_incident
   type: 8
 - display: Sync reopening incidents with ZTAP
-  defaultvalue: false
+  defaultvalue: 'false'
   name: reopen_incident
   type: 8
 - display: First fetch timestamp
@@ -124,7 +124,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.4.28442
+  dockerimage: demisto/python3:3.10.9.42476
 fromversion: 6.0.0
 defaultmapperin: ZeroTrustAnalyticsPlatform - Incoming Mapper
 defaultclassifier: ZeroTrustAnalyticsPlatform - Classifier

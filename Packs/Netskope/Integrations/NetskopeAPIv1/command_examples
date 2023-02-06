@@ -1,0 +1,10 @@
+!netskope-event-list event_type=application limit=1 start_time=2021-03-21T18:48:02.358736 end_time=2022-03-21T18:48:02.358736
+!netskope-alert-list limit=1 start_time=2021-03-21T18:48:02.358736 end_time=2022-03-21T18:48:02.358736
+!netskope-quarantined-file-list limit=1
+!netskope-quarantined-file-get file_id=1M_RR4jLPUwclKOhqZ7sPSqkMNS-S6Vyr quarantine_profile_id=1
+!netskope-quarantined-file-update file_id=1M_RR4jLPUwclKOhqZ7sPSqkMNS-S6Vyr quarantine_profile_id=1 action=block
+!netskope-url-list-update name="Allowed URLs" urls="allow.me,allow2.me"
+!netskope-file-hash-list-update name="Test SHA256" hash="00db7cf5cc13df9ae88615af999582608361c14fc915d1dd76fa619d1c341597"
+!netskope-client-list limit=1
+!netskope-host-associated-user-list hostname=TEST82A5 limit=1
+!netskope-user-associated-host-list username=test@goxsoar.com

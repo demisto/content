@@ -10,11 +10,10 @@ This playbook does not use any sub-playbooks.
 * Digital Shadows
 
 ### Scripts
+* Print
 * AddEvidence
 
 ### Commands
-* associateIndicatorsToIncident
-* createNewIndicator
 * ds-search
 
 ## Playbook Inputs
@@ -22,7 +21,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IoC_CVE | The ID of the CVE to assess and enrich | CVE.ID | Optional |
+| IoC_CVE | A Digital Shadows ShadowSearch query containing CVE IDs | CVE.ID | Optional |
 
 ## Playbook Outputs
 ---

@@ -1,0 +1,16 @@
+commonfields:
+  id: CoreIRApiModule
+  version: -1
+name: CoreIRApiModule
+script: ''
+type: python
+subtype: python3
+tags:
+- infra
+- server
+comment: Common Core IR Client, provides generic Infrastructure.
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/python3:3.10.1.27636
+fromversion: 5.0.0

@@ -1,0 +1,1 @@
+!aws-gd-get-events severity=Low should_push_events=false limit=1 collect_from="60 days ago"

@@ -38,22 +38,24 @@ It then continues with the following eradication actions:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* Recovery Plan
+* Eradication Plan
+* Handle False Positive Alerts
 * Containment Plan
 * Endpoint Investigation Plan
-* Eradication Plan
-* Recovery Plan
 * Command-Line Analysis
-* Handle False Positive Alerts
 
 ### Integrations
+* Cortex Core - IR
 * CortexCoreIR
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
-* core-get-dynamic-analysis
+* core-get-cmd-analytics-prevalence
 * closeInvestigation
+* core-get-dynamic-analysis
 
 ## Playbook Inputs
 ---
@@ -63,7 +65,6 @@ This playbook does not use any scripts.
 | ShouldCloseAutomatically | Whether to close the alert automatically or manually, after an analyst's review. | False | Optional |
 | AutoRestoreEndpoint | Whether to execute the Recovery playbook. | False | Optional |
 | AutoContainment | Whether to execute automatically or manually the containment plan tasks:<br/>\* Block indicators<br/>\* Quarantine file<br/>\* Disable user  |  | Optional |
-| PreHostContainment | Isolate the host after the Analysis phase \(command-line analysis\) | True | Optional |
 | FileRemediation | Can be 'Quarantine' or 'Delete'. |  | Optional |
 
 ## Playbook Outputs
@@ -72,4 +73,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![T1059 - Command and Scripting Interpreter](https://raw.githubusercontent.com/demisto/content/260a4d094a4db588e37a3763d511b5248cd7049b/Packs/Core/doc_files/T1059_-_Command_and_Scripting_Interpreter.png)
+![T1059 - Command and Scripting Interpreter](../doc_files/T1059_-_Command_and_Scripting_Interpreter.png)

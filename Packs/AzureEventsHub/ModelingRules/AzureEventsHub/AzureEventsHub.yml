@@ -1,0 +1,7 @@
+fromversion: 6.8.0
+id: azure_events_hub_modeling_rule
+name: Azure Events Hub Modeling Rule
+rules: ''
+schema: ''
+tags: Azure Events Hub
+toversion: 6.9.9

@@ -193,7 +193,6 @@ def main() -> None:  # pragma: no cover
         return_results(run_hey_test(**args))
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Error:\n{str(e)}')
 
 

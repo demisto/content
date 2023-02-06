@@ -1,4 +1,4 @@
-category: File Integrity Management
+category: Forensics & Malware Analysis
 commonfields:
   id: CimTrak
   version: -1
@@ -50,6 +50,7 @@ configuration:
   required: false
   type: 0
 - name: max_fetch
+  display: Maximum number of incidents to fetch every time
   required: false
   type: 0
   defaultvalue: '50'
@@ -2330,7 +2331,7 @@ script:
     - contextPath: CimTrak.Object.agentObjectId
       description: Agent Object Id
       type: number
-  dockerimage: demisto/python3:3.10.4.27798
+  dockerimage: demisto/python3:3.10.9.46807
   isfetch: true
   longRunning: true
   runonce: false

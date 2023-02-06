@@ -1,0 +1,23 @@
+commonfields:
+  id: IncapGetDomainApproverEmail
+  version: -1
+name: IncapGetDomainApproverEmail
+script: ''
+type: python
+subtype: python3
+tags:
+- Incapsula
+comment: Use this operation to get the list of email addresses that can be used when adding an SSL site
+system: true
+args:
+- name: domain
+  description: 'The domain name of the site. For example: www.example.com, hello.example.com, example.com'
+scripttarget: 0
+dependson:
+  must:
+  - incap-get-domain-approver-email
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.6.33415
+tests:
+- No tests (auto formatted)

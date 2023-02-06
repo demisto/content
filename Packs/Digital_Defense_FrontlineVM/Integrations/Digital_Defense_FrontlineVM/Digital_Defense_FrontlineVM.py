@@ -428,7 +428,7 @@ def get_host_id_from_ip_address(ip_address):
     if len(hosts_with_given_ip) < 1:
         msg = 'Host not found within Frontline.Cloud given host IP Address. Host will not be included in querying vulnerabilities'
         demisto.error('Frontline.Cloud get_host_id_from_ip_address -- ' + msg)  # print to demisto log in ERROR
-        demisto.log('Frontline.Cloud get_host_id_from_ip_address -- ' + msg)    # print to war room
+        demisto.debug('Frontline.Cloud get_host_id_from_ip_address -- ' + msg)
     first_relevant_host = hosts_with_given_ip[0]
     return first_relevant_host.get('id')
 

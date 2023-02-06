@@ -1,3 +1,5 @@
+# Deprecated - D2 agent is deprecated. No available replacement.
+
 Runs the Intezer Endpoint Analysis scanner.
 ## Script Data
 ---

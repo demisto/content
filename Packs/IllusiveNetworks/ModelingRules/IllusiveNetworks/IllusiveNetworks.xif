@@ -1,0 +1,42 @@
+[MODEL: model=Audit, dataset=illusive_illusive_raw]
+filter cefname = "Audit" or cefname = "Violation"
+| alter
+    XDM.Audit.event_timestamp = to_timestamp(to_integer(arrayindex(regextract(to_string(rt), "[0-9]{0,10}"), 0)), "SECONDS"),
+    XDM.Audit.original_event_type = cat,
+    XDM.Audit.TriggeredBy.ipv4 = dvc,
+    XDM.Audit.original_event_description = if(cefName = "Violation", cs2, cefName = "Audit", msg),
+    XDM.Audit.TriggeredBy.identity.name = duser,
+    XDM.Audit.outcome = outcome,
+    XDM.Audit.original_event_sub_type = cefName,
+    XDM.Audit.threat.severity = cefSeverity,
+    XDM.Audit.TriggeredBy.project = cefDeviceProduct,
+    XDM.Audit.TriggeredBy.agent.version = cefDeviceVersion,
+    XDM.Audit.identity.type = cefDeviceEventClassId,
+    XDM.Audit.identity.sub_type = cs1,
+    XDM.Audit.threat.description = if(cefName = "Violation", msg),
+    XDM.Audit.TriggeredBy.identity.type = if(cs1 = "USER_CREDENTIALS", cs3),
+    XDM.Audit.audited_resource.name = if(cs1 = "CROWN_JEWEL_CREDENTIALS", cs3),
+    XDM.Audit.audited_resource.type = cs4,
+    XDM.Audit.TriggeredBy.identity.sub_type = cs5;
+
+[MODEL: model=Endpoint, dataset=illusive_illusive_raw]
+filter cat = "illusive:alerts"
+| alter
+    XDM.Endpoint.event_timestamp = to_timestamp(to_integer(arrayindex(regextract(to_string(rt), "[0-9]{0,10}"), 0)), "SECONDS"),
+    XDM.Endpoint.original_event_type = cat,
+    XDM.Endpoint.Target.host.ipv4_addresses = arraycreate(dvc),
+    XDM.Endpoint.original_event_description = msg,
+    XDM.Endpoint.original_event_id = to_string(cn2),
+    XDM.Endpoint.Target.module.path = cs1,
+    XDM.Endpoint.threat.name = destinationServiceName,
+    XDM.Endpoint.Target.host.hostname = dhost,
+    XDM.Endpoint.Actor.user.username = duser,
+    XDM.Endpoint.Actor.host.hostname = shost,
+    XDM.Endpoint.Actor.process.name = sproc,
+    XDM.Endpoint.Actor.host.ipv4_addresses = arraycreate(src),
+    XDM.Endpoint.original_event_sub_type = cefName,
+    XDM.Endpoint.Observer.version = cefVersion,
+    XDM.Endpoint.threat.severity = cefSeverity,
+    XDM.Endpoint.Observer.vendor = cefDeviceVendor,
+    XDM.Endpoint.Observer.product = cefDeviceProduct,
+    XDM.Endpoint.Target.agent.version = cefDeviceVersion;

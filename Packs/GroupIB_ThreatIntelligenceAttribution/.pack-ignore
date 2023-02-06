@@ -12,3 +12,6 @@ ignore=IM111
 
 [file:GroupIB_TIA_Feed_image.png]
 ignore=IM111
+
+[file:classifier-Group-IB_Threat_Intelligence_&_Attribution_(classifier).json]
+ignore=BA101

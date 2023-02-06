@@ -1,0 +1,24 @@
+{
+  "gitlab_gitlab_raw": {
+    "id": {
+      "type": "string",
+      "is_array": false
+    },
+    "author_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "entity_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "entity_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "details": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

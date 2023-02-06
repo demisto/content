@@ -3,7 +3,6 @@ import gzip
 import hashlib
 import secrets
 import string
-import traceback
 from typing import Any, Dict, Tuple
 
 import requests
@@ -532,19 +531,6 @@ def get_nonce() -> str:
     return "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
 
 
-def add_context_to_integration_context(context: dict):
-    """
-    Add the given context to the integration context.
-
-    Args:
-        context (str): The context to add.
-    """
-    if context:
-        integration_context = get_integration_context()
-        integration_context.update(context)
-        set_integration_context(integration_context)
-
-
 def remove_query_id_from_integration_context(query_id: str):
     """
     Remove the given query_id from the integration context.
@@ -606,7 +592,7 @@ def start_xql_query_polling_command(client: Client, args: dict) -> Union[Command
     args['query_id'] = execution_id
     # the query data is being saved in the integration context for the next scheduled command command.
     try:
-        add_context_to_integration_context({
+        set_to_integration_context_with_retries({
             execution_id: {
                 'query': args.get('query'),
                 'time_frame': args.get('time_frame'),
@@ -633,8 +619,10 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     # get the query data either from the integration context (if its not the first run) or from the given args.
     query_id = args.get('query_id', '')
     parse_result_file_to_context = argToBoolean(args.get('parse_result_file_to_context', 'false'))
-    integration_context = get_integration_context()
-    command_data = integration_context.get(query_id, args)
+    integration_context, _ = get_integration_context_with_version()
+    command_data_raw = integration_context.get(query_id, args)
+    command_data = json.loads(command_data_raw) if isinstance(command_data_raw, str)\
+        else integration_context.get(query_id, args)
     command_name = command_data.get('command_name', demisto.command())
     interval_in_secs = int(args.get('interval_in_seconds', 10))
     max_fields = arg_to_number(args.get('max_fields', 20))
@@ -864,7 +852,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {command} command.\nError: {str(e)}')
 
 

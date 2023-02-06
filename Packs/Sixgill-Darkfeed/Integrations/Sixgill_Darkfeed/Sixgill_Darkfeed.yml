@@ -89,7 +89,7 @@ configuration:
   type: 8
   required: false
 - display: Incremental Feed
-  defaultvalue: true
+  defaultvalue: 'true'
   hidden: true
   name: feedIncremental
   required: false
@@ -123,7 +123,7 @@ script:
     description: Fetching Sixgill DarkFeed indicators
     execution: true
     name: sixgill-get-indicators
-  dockerimage: demisto/sixgill:1.0.0.23434
+  dockerimage: demisto/sixgill:1.0.0.44895
   feed: true
   isfetch: false
   longRunning: false

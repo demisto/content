@@ -6,8 +6,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-import requests
-import traceback
+import urllib3
 import base64
 from datetime import datetime, timedelta
 from ipaddress import IPv4Address, AddressValueError, summarize_address_range
@@ -17,7 +16,7 @@ from typing import (
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 """ CONSTANTS """
@@ -642,7 +641,7 @@ def main() -> None:
 
     params = demisto.params()
     command = demisto.command()
-    api_key = params.get("apikey")
+    api_key = params.get('credentials', {}).get('password', '') or params.get("apikey", '')
     base_url = urljoin(params["url"], "/api")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
@@ -687,7 +686,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(
             f"Failed to execute {command} command.\nError:\n{str(e)}"
         )

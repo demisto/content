@@ -429,7 +429,8 @@ tlds = {
     "aws": {
         "_group": "amazonregistry",
         "_type": "newgtld",
-        "adapter": "none"
+        "adapter": "none",
+        "host": "whois.nic.aws"
     },
     "ax": {
         "host": "whois.ax"
@@ -7127,7 +7128,7 @@ dble_ext = dble_ext_str.split(",")
 
 
 def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=False, with_server_list=False,
-                  server_list=None, is_refer_server=False):
+                  server_list=None, is_refer_server=False, is_recursive=True):
     previous = previous or []
     server_list = server_list or []
     # Sometimes IANA simply won't give us the right root WHOIS server
@@ -7143,14 +7144,14 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
 
     if rfc3490:
         if sys.version_info < (3, 0):
-            domain = encode(domain if type(domain) is unicode else decode(domain, "utf8"), "idna")
+            domain = encode(domain if type(domain) is str else decode(domain, "utf8"), "idna")
         else:
             domain = encode(domain, "idna").decode("ascii")
 
     if len(previous) == 0 and server == "":
         # Root query
         is_exception = False
-        for exception, exc_serv in exceptions.items():
+        for exception, exc_serv in list(exceptions.items()):
             if domain.endswith(exception):
                 is_exception = True
                 target_server = exc_serv
@@ -7202,18 +7203,19 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
     if never_cut == False:
         new_list = [response] + previous
     server_list.append(target_server)
-    for line in [x.strip() for x in response.splitlines()]:
-        match = re.match("(refer|whois server|referral url|registrar whois(?: server)?):\s*([^\s]+\.[^\s]+)", line,
-                         re.IGNORECASE)
-        if match is not None:
-            referral_server = match.group(2)
-            if referral_server != server and "://" not in referral_server:  # We want to ignore anything non-WHOIS (eg. HTTP) for now.
-                # Referral to another WHOIS server...
-                try:
-                    return get_whois_raw(domain, referral_server, new_list, server_list=server_list,
-                                         with_server_list=with_server_list, is_refer_server=True)
-                except Exception as msg:
-                    demisto.info("Failed for querying a referral server {} : {}".format(referral_server, msg))
+    if is_recursive:
+        for line in [x.strip() for x in response.splitlines()]:
+            match = re.match("(refer|whois server|referral url|registrar whois(?: server)?):\s*([^\s]+\.[^\s]+)", line,
+                             re.IGNORECASE)
+            if match is not None:
+                referral_server = match.group(2)
+                if referral_server != server and "://" not in referral_server: # We want to ignore anything non-WHOIS (eg. HTTP) for now.
+                    # Referral to another WHOIS server...
+                    try:
+                        return get_whois_raw(domain, referral_server, new_list, server_list=server_list,
+                                             with_server_list=with_server_list, is_refer_server=True)
+                    except Exception as msg:
+                        demisto.info("Failed for querying a referral server {} : {}".format(referral_server, msg))
 
     if with_server_list:
         return new_list, server_list
@@ -7227,7 +7229,7 @@ def get_root_server(domain):
         if domain.endswith(dble):
             ext = dble
 
-    if ext in tlds.keys():
+    if ext in list(tlds.keys()):
         entry = tlds[ext]
         try:
             host = entry["host"]
@@ -7245,8 +7247,8 @@ def get_root_server(domain):
                              outputs=context)
             else:
                 return_warning('The domain - {} - is not supported by the Whois service'.format(domain),
-                               exit=True, outputs=context)
-
+                               outputs=context)
+                raise WhoisWarnningException('The domain - {} - is not supported by the Whois service'.format(domain))
         return host
 
     else:
@@ -7303,8 +7305,6 @@ def whois_request_get_response(socket, domain):
     return d
 
 
-
-
 airports = {}  # type: dict
 countries = {}  # type: dict
 states_au = {}  # type: dict
@@ -7315,6 +7315,8 @@ states_ca = {}  # type: dict
 class WhoisException(Exception):
     pass
 
+class WhoisWarnningException(Exception):
+    pass
 
 def precompile_regexes(source, flags=0):
     return [re.compile(regex, flags) for regex in source]
@@ -7322,7 +7324,7 @@ def precompile_regexes(source, flags=0):
 
 def preprocess_regex(regex):
     # Fix for #2; prevents a ridiculous amount of varying size permutations.
-    regex = re.sub(r"\\s\*\(\?P<([^>]+)>\.\+\)", r"\s*(?P<\1>\S.*)", regex)
+    regex = re.sub(r"\\s\*\(\?P<([^>]+)>\.\+\)", r"\\s*(?P<\1>\\S.*)", regex)
     # Experimental fix for #18; removes unnecessary variable-size whitespace
     # matching, since we're stripping results anyway.
     regex = re.sub(r"\[ \]\*\(\?P<([^>]+)>\.\*\)", r"(?P<\1>.*)", regex)
@@ -7615,11 +7617,11 @@ nic_contact_regexes = [
     # nic.ir, individual  - this is a nasty one.
     "nic-hdl:\s+(?P<handle>.+)\norg:\s+(?P<organization>.+)\n(?:e-mail:\s+(?P<email>.+)\n)?(?:address:\s+(?P<street1>.+?)(?:,+ (?P<street2>.+?)(?:,+ (?P<street3>.+?)(?:,+ (?P<street4>.+?)(?:,+ (?P<street5>.+?)(?:,+ (?P<street6>.+?)(?:,+ (?P<street7>.+?))?)?)?)?)?)?, (?P<city>.+), (?P<state>.+), (?P<country>.+)\n)?(?:phone:\s+(?P<phone>.+)\n)?(?:fax-no:\s+(?P<fax>.+)\n)?",
     # nic.ir, organization
-    "nic-hdl:\s*(?P<handle>.+)\ntype:\s*(?P<type>.+)\ncontact:\s*(?P<name>.+)\n(?:.+\n)*?(?:address:\s*(?P<street1>.+)\naddress:\s*(?P<street2>.+)\naddress:\s*(?P<street3>.+)\naddress:\s*(?P<country>.+)\n)?(?:phone:\s*(?P<phone>.+)\n)?(?:fax-no:\s*(?P<fax>.+)\n)?(?:.+\n)*?(?:e-mail:\s*(?P<email>.+)\n)?(?:.+\n)*?changed:\s*(?P<changedate>[0-9]{2}\/[0-9]{2}\/[0-9]{4}).*\n",
+    "nic-hdl:\s*(?P<handle>.+)\ntype:\s*(?P<type>.+)\ncontact:\s*(?P<name>.+)\n(?:.+\n)*?(?:address:\s*(?P<street1>.+)\naddress:\s*(?P<street2>.+)\naddress:\s*(?P<street3>.+)\naddress:\s*(?P<country>.+)\n)?(?:phone:\s*(?P<phone>.+)\n)?(?:fax-no:\s*(?P<fax>.+)\n)?(?:.+\n)*?(?:e-mail:\s*(?P<email>.+)\n)?(?:.+\n)*?changed:\s*(?P<changedate>.*}).*\n",
     # AFNIC madness without country field
-    "nic-hdl:\s*(?P<handle>.+)\ntype:\s*(?P<type>.+)\ncontact:\s*(?P<name>.+)\n(?:.+\n)*?(?:address:\s*(?P<street1>.+)\n)?(?:address:\s*(?P<street2>.+)\n)?(?:address:\s*(?P<street3>.+)\n)?(?:phone:\s*(?P<phone>.+)\n)?(?:fax-no:\s*(?P<fax>.+)\n)?(?:.+\n)*?(?:e-mail:\s*(?P<email>.+)\n)?(?:.+\n)*?changed:\s*(?P<changedate>[0-9]{2}\/[0-9]{2}\/[0-9]{4}).*\n",
+    "nic-hdl:\s*(?P<handle>.+)\ntype:\s*(?P<type>.+)\ncontact:\s*(?P<name>.+)\n(?:.+\n)*?(?:address:\s*(?P<street1>.+)\n)?(?:address:\s*(?P<street2>.+)\n)?(?:address:\s*(?P<street3>.+)\n)?(?:phone:\s*(?P<phone>.+)\n)?(?:fax-no:\s*(?P<fax>.+)\n)?(?:.+\n)*?(?:e-mail:\s*(?P<email>.+)\n)?(?:.+\n)*?changed:\s*(?P<changedate>.*).*\n",
     # AFNIC madness any country -at all-
-    "nic-hdl:\s*(?P<handle>.+)\ntype:\s*(?P<type>.+)\ncontact:\s*(?P<name>.+)\n(?:.+\n)*?(?:address:\s*(?P<street1>.+)\n)?(?:address:\s*(?P<street2>.+)\n)?(?:address:\s*(?P<street3>.+)\n)?(?:address:\s*(?P<street4>.+)\n)?country:\s*(?P<country>.+)\n(?:phone:\s*(?P<phone>.+)\n)?(?:fax-no:\s*(?P<fax>.+)\n)?(?:.+\n)*?(?:e-mail:\s*(?P<email>.+)\n)?(?:.+\n)*?changed:\s*(?P<changedate>[0-9]{2}\/[0-9]{2}\/[0-9]{4}).*\n",
+    "nic-hdl:\s*(?P<handle>.+)\ntype:\s*(?P<type>.+)\ncontact:\s*(?P<name>.+)\n(?:.+\n)*?(?:address:\s*(?P<street1>.+)\n)?(?:address:\s*(?P<street2>.+)\n)?(?:address:\s*(?P<street3>.+)\n)?(?:address:\s*(?P<street4>.+)\n)?country:\s*(?P<country>.+)\n(?:phone:\s*(?P<phone>.+)\n)?(?:fax-no:\s*(?P<fax>.+)\n)?(?:.+\n)*?(?:e-mail:\s*(?P<email>.+)\n)?(?:.+\n)*?changed:\s*(?P<changedate>.+).*\n",
     # AFNIC madness with country field
 ]
 
@@ -7670,11 +7672,28 @@ nic_contact_references["billing"] = precompile_regexes(nic_contact_references["b
 if sys.version_info < (3, 0):
     def is_string(data):
         """Test for string with support for python 2."""
-        return isinstance(data, basestring)
+        return isinstance(data, str)
 else:
     def is_string(data):
         """Test for string with support for python 3."""
         return isinstance(data, str)
+
+
+class InvalidDateHandler:
+    """
+        A class to represent an anparseble date by the datetime module.
+        mainly for dates containing day, year, or month with an unvalid value of 0.
+        """
+
+    def __init__(self, year, month, day):
+        self.year = year
+        self.month = month 
+        self.day = day
+
+    def strftime(self, *args):
+        if self.year == 2000:
+            return f'{self.day}-{self.month}-{0}'
+        return f'{self.day}-{self.month}-{self.year}'
 
 
 def parse_raw_whois(raw_data, normalized=None, never_query_handles=True, handle_server=""):
@@ -7684,7 +7703,7 @@ def parse_raw_whois(raw_data, normalized=None, never_query_handles=True, handle_
     raw_data = [segment.replace("\r", "") for segment in raw_data]  # Carriage returns are the devil
 
     for segment in raw_data:
-        for rule_key, rule_regexes in grammar['_data'].items():  # type: ignore
+        for rule_key, rule_regexes in list(grammar['_data'].items()):  # type: ignore
             if (rule_key in data) == False:
                 for line in segment.splitlines():
                     for regex in rule_regexes:
@@ -7766,13 +7785,14 @@ def parse_raw_whois(raw_data, normalized=None, never_query_handles=True, handle_
         if match is not None:
             chunk = match.group(1)
             for match in re.findall("\s+?(.+)\n", chunk):
-                match = match.split()[0]  # type: ignore
-                # Prevent nameserver aliases from being picked up.
-                if not match.startswith("[") and not match.endswith("]"):  # type: ignore
-                    try:
-                        data["nameservers"].append(match.strip())  # type: ignore
-                    except KeyError as e:
-                        data["nameservers"] = [match.strip()]  # type: ignore
+                if match.strip():  # type: ignore
+                    match = match.split()[0]  # type: ignore
+                    # Prevent nameserver aliases from being picked up.
+                    if not match.startswith("[") and not match.endswith("]"):  # type: ignore
+                        try:
+                            data["nameservers"].append(match.strip())  # type: ignore
+                        except KeyError as e:
+                            data["nameservers"] = [match.strip()]  # type: ignore
         # The .ie WHOIS server puts ambiguous status information in an unhelpful order
         match = re.search('ren-status:\s*(.+)', segment)
         if match is not None:
@@ -7886,7 +7906,7 @@ def normalize_data(data, normalized):
                     normalize_name(item, abbreviation_threshold=threshold, length_threshold=1, ignore_nic=ignore_nic)
                     for item in data[key]]
 
-    for contact_type, contact in data['contacts'].items():
+    for contact_type, contact in list(data['contacts'].items()):
         if contact is not None:
             if 'country' in contact and contact['country'] in countries:
                 contact['country'] = countries[contact['country']]
@@ -7965,7 +7985,7 @@ def normalize_name(value, abbreviation_threshold=4, length_threshold=8, lowercas
                     if len(words[0]) >= abbreviation_threshold and "." not in words[0]:
                         normalized_words.append(words[0].capitalize())
                     elif lowercase_domains and "." in words[0] and not words[0].endswith(".") and not words[
-                        0].startswith("."):
+                            0].startswith("."):
                         normalized_words.append(words[0].lower())
                     else:
                         # Probably an abbreviation or domain, leave it alone
@@ -7985,7 +8005,7 @@ def normalize_name(value, abbreviation_threshold=4, length_threshold=8, lowercas
                     if len(words[-1]) >= abbreviation_threshold and "." not in words[-1]:
                         normalized_words.append(words[-1].capitalize())
                     elif lowercase_domains and "." in words[-1] and not words[-1].endswith(".") and not words[
-                        -1].startswith("."):
+                            -1].startswith("."):
                         normalized_words.append(words[-1].lower())
                     else:
                         # Probably an abbreviation or domain, leave it alone
@@ -7997,7 +8017,7 @@ def normalize_name(value, abbreviation_threshold=4, length_threshold=8, lowercas
 
 def parse_dates(dates):
     global grammar
-    parsed_dates = []
+    parsed_dates: List[datetime | InvalidDateHandler] = []
 
     for date in dates:
         for rule in grammar['_dateformats']:  # type: ignore
@@ -8056,15 +8076,16 @@ def parse_dates(dates):
                     hour = 0
                     minute = 0
                     second = 0
-                    demisto.debug(e.message)
+                    demisto.debug(e)
         try:
             if year > 0:
-                try:
+                if month > 12:
+                    # We might have gotten the day and month the wrong way around, let's try it the other way around.
+                    month, day = day, month
+                if 0 in [year, month, day]:
+                    parsed_dates.append(InvalidDateHandler(year=year, month=month, day=day))
+                else:
                     parsed_dates.append(datetime(year, month, day, hour, minute, second))
-                except ValueError as e:
-                    # We might have gotten the day and month the wrong way around, let's try it the other way around
-                    # If you're not using an ISO-standard date format, you're an evil registrar!
-                    parsed_dates.append(datetime(year, day, month, hour, minute, second))
         except UnboundLocalError as e:
             pass
 
@@ -8226,7 +8247,7 @@ def parse_registrants(data, never_query_handles=True, handle_server=""):
                     elements.append(obj["lastname"])
                 obj["name"] = " ".join(elements)
             if 'country' in obj and 'city' in obj and (re.match("^R\.?O\.?C\.?$", obj["country"], re.IGNORECASE) or obj[
-                "country"].lower() == "republic of china") and obj["city"].lower() == "taiwan":
+                    "country"].lower() == "republic of china") and obj["city"].lower() == "taiwan":
                 # There's an edge case where some registrants append ", Republic of China" after "Taiwan", and this is mis-parsed
                 # as Taiwan being the city. This is meant to correct that.
                 obj["country"] = "%s, %s" % (obj["city"], obj["country"])
@@ -8264,10 +8285,10 @@ def parse_nic_contact(data):
     return handle_contacts
 
 
-def get_whois(domain, normalized=None):
+def get_whois(domain, normalized=None, is_recursive=True):
     if normalized is None:
         normalized = []
-    raw_data, server_list = get_whois_raw(domain, with_server_list=True)
+    raw_data, server_list = get_whois_raw(domain, with_server_list=True, is_recursive=is_recursive)
     return parse_raw_whois(raw_data, normalized=normalized, never_query_handles=False,
                            handle_server=server_list[-1])
 
@@ -8347,7 +8368,7 @@ def create_outputs(whois_result, domain, reliability, query=None):
         if 'registrant' in contacts and contacts['registrant'] is not None:
             md['Registrant'] = contacts['registrant']
             standard_ec['Registrant'] = contacts['registrant'].copy()
-            for key, val in contacts['registrant'].items():
+            for key, val in list(contacts['registrant'].items()):
                 standard_ec['Registrant'][key.capitalize()] = val
             ec['Registrant'] = contacts['registrant']
             if 'organization' in contacts['registrant']:
@@ -8356,7 +8377,7 @@ def create_outputs(whois_result, domain, reliability, query=None):
             md['Administrator'] = contacts['admin']
             ec['Administrator'] = contacts['admin']
             standard_ec['Admin'] = contacts['admin'].copy()
-            for key, val in contacts['admin'].items():
+            for key, val in list(contacts['admin'].items()):
                 standard_ec['Admin'][key.capitalize()] = val
             standard_ec['WHOIS']['Admin'] = contacts['admin']
         if 'tech' in contacts and contacts['tech'] is not None:
@@ -8407,8 +8428,12 @@ def prepare_readable_ip_data(response):
 
 def domain_command(reliability):
     domains = demisto.args().get('domain', [])
+    is_recursive = argToBoolean(demisto.args().get('recursive'))
     for domain in argToList(domains):
-        whois_result = get_whois(domain)
+        try:
+            whois_result = get_whois(domain, is_recursive=is_recursive)
+        except WhoisWarnningException:
+            continue
         md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability)
         dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
         demisto.results({
@@ -8421,7 +8446,7 @@ def domain_command(reliability):
 
 
 def get_whois_ip(ip):
-    from urllib2 import build_opener, ProxyHandler
+    from urllib.request import build_opener, ProxyHandler
     from ipwhois import IPWhois
     proxy_opener = None
     if demisto.params().get('proxy'):
@@ -8475,18 +8500,32 @@ def ip_command(ips, reliability):
 
 
 def whois_command(reliability):
-    query = demisto.args().get('query')
-    domain = get_domain_from_query(query)
-    whois_result = get_whois(domain)
-    md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
-    dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': str(whois_result),
-        'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-        'EntryContext': dbot_score,
-    })
+    args = demisto.args()
+    query = args.get('query')
+    is_recursive = argToBoolean(args.get('recursive', 'false'))
+    verbose = argToBoolean(args.get('verbose', 'false'))
+    demisto.info(f'whois command is called with the query {query}')
+    for query in argToList(query):
+        domain = get_domain_from_query(query)
+        whois_result = get_whois(domain, is_recursive=is_recursive)
+        md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
+        context_res = {}
+        context_res.update(dbot_score)
+        context_res.update({Common.Domain.CONTEXT_PATH: standard_ec})
+
+        if verbose: 
+            demisto.info('Verbose response')
+            whois_result['query'] = query
+            json_res = json.dumps(whois_result, indent=4, sort_keys=True, default=str)
+            context_res.update({'Whois(val.query==obj.query)': json.loads(json_res)})
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': str(whois_result),
+            'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
+            'EntryContext': context_res,
+        })
 
 
 def test_command():
@@ -8539,6 +8578,7 @@ def main():
     reliability = demisto.params().get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.B
 
+    org_socket = None
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
@@ -8566,5 +8606,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()

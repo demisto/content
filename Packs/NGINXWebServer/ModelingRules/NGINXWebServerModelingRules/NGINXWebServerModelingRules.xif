@@ -1,0 +1,52 @@
+[MODEL: dataset="nginx_nginx_raw", model="Network"] 
+ filter _raw_log contains "GET" or _raw_log contains "HEAD" or _raw_log contains "POST" or _raw_log contains "DELETE" or _raw_log contains "CONNECT" or _raw_log contains "OPTIONS" or _raw_log contains "TRACE" or _raw_log contains "PATCH" 
+| alter Request_time = arrayindex(regextract(_raw_log , "\[(\d+\/\w+\/\d+\:\d+\:\d+\:\d+\s\S+)\]") , 0)
+| alter Source_Ip = arrayindex(regextract(_raw_log , "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s)") ,0)
+| alter  requested_line= arrayindex(regextract(_raw_log ,"\"(\w+\s[^\"]+)\"") ,0)
+| alter response_code = arrayindex(regextract(_raw_log,"\"\s(\d+)") ,0)
+| alter User_agent = arrayindex(regextract(_raw_log ,"\"\s\"([^\"]+)") ,0)
+| alter Referrer= arrayindex(regextract(_raw_log ,"(http[^\"]+)"),0)
+| alter bytes_size=arrayindex(regextract(_raw_log ,"\d\s(\d+)"),0)
+// extract source_ip
+| alter sourceipv4= arrayindex(regextract(_raw_log , "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s)") ,0)
+| alter sourceipv6 = arrayindex(regextract(_raw_log ,"(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)") ,0)
+| alter sourceip = coalesce(sourceipv4 ,sourceipv6)
+// end extract source_ip
+| alter Username = arrayindex(regextract(_raw_log,"(\S+)\s\[\d+\/") ,0)
+| alter XDM.Network.event_timestamp= parse_timestamp("%d/%b/%Y:%H:%M:%S %Ez", Request_time)
+| alter XDM.Network.http.url = requested_line
+| alter XDM.Network.http.response_code = response_code  
+//| alter XDM.Network.http.user_agent= User_agent
+| alter XDM.Network.http.referrer =Referrer
+| alter XDM.Network.Destination.bytes=to_number(bytes_size)
+| alter XDM.Network.Source.ipv4 =source_ip
+| alter XDM.Network.Source.user.username =Username;
+
+[MODEL: dataset="nginx_nginx_raw", model="Audit"] 
+alter timestamp = arrayindex(regextract(_raw_log , "(\d+\/\d+\/\d+\s\d+\:\d+\:\d+) ") , 0)
+| alter log_level= arrayindex(regextract(_raw_log ,"\[(\w+)\]") ,0)
+| alter Tid= arrayindex(regextract(_raw_log ,"\#(\d+)") ,0)     
+| alter cid = arrayindex(regextract(_raw_log ,"\*(\d+)") ,0)
+| alter uri=arrayindex(regextract(_raw_log ,"open\(\)\s\"?([^\s]+)"),0)
+| alter error_message =arrayindex(regextract(_raw_log ,"\*\d+\s([^\,]+)"),0) 
+// extract client
+| alter client_address_ipv4= arrayindex(regextract(_raw_log ,"client:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"), 0)
+| alter client_address_ipv6 = arrayindex(regextract(_raw_log ,"client\:\s(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)") ,0)
+| alter client_address  = coalesce(client_address_ipv4 , client_address_ipv6)
+// end extract client
+| alter Server =arrayindex(regextract(_raw_log ,"server\:([^\,]+)"),0)
+| alter Request =arrayindex(regextract(_raw_log ,"request\:([^\,]+)"),0)
+| alter Host =arrayindex(regextract(_raw_log ,"host\:\s\"?([^\"?\:]+)"),0)
+| alter Referrer =arrayindex(regextract(_raw_log ,"referrer\:\s([^\s]+) "),0)
+| alter destination_port =arrayindex(regextract(_raw_log ,"host\:\s\"?[^\"?\:]+\:(\d+)"),0)
+| alter XDM.Audit.event_timestamp = parse_timestamp("%Y/%m/%d %X", timestamp)
+| alter XDM.Audit.threat.severity = log_level
+| alter XDM.Audit.identity.uuid=tid
+| alter XDM.Audit.TriggeredBy.ipv4 =client_address       
+| alter XDM.Audit.threat.description = error_message
+| alter XDM.Audit.identity.name = server
+| alter XDM.Audit.threat.description =request 
+| alter XDM.Audit.identity.name  =host
+| alter XDM.Audit.original_event_description =referrer 
+| alter XDM.Audit.TriggeredBy.identity.uuid =  uri
+| alter XDM.Audit.audited_resource.value  = destination_port;

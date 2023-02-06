@@ -1,5 +1,5 @@
 
-## Unit 42
+## Unit 42 ATOMs Feed 
 In order to access the Unit 42 feed, you first must register for an account.
 
 1. Go to https://stix2.unit42.org/ to sign up.

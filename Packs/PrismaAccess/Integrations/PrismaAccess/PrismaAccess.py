@@ -49,6 +49,7 @@ def panos_connect(net_connect: Netmiko = None):
 
 
 def panos_ssh(cmd: str, net_connect: Netmiko = None):
+    result_cmd = str()
     if sshConfigured:
         """
         Run any command
@@ -58,11 +59,16 @@ def panos_ssh(cmd: str, net_connect: Netmiko = None):
         try:
             if not net_connect:
                 net_connect = Netmiko(**panos)
-            result_cmd = net_connect.send_command_timing(cmd)
+                # Sometimes returns "debug", and will not wait for results
+                result_cmd = net_connect.send_command_timing(cmd)
+
+                # This command ensures the first has finished
+                result_cmd += net_connect.send_command_timing("\n")
         finally:
             if net_connect:
                 net_connect.disconnect()
-        return result_cmd
+                # Remove newlines and carriage returns
+        return result_cmd.replace('\n', ' ').replace('\r', '')
     else:
         raise Exception('You must configure the SSH integration parameters to use this command.')
 
@@ -129,7 +135,7 @@ def prisma_access_active_users():
 
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]  # pylint: disable=no-member
 
 ''' GLOBALS '''
 apiConfigured = False
@@ -391,12 +397,19 @@ def prisma_access_logout_user(computer: str, domain: str, user: str) -> Dict[str
     if apiConfigured:
         xmlComputer = '<computer>%s</computer>' % b64encode(computer.encode('utf8')).decode('utf8') if computer else ''
         b64User = (b64encode(user.encode('utf8'))).decode('utf8')
+        cmd = ''
+        if domain:
+            cmd = '''<request><plugins><cloud_services><gpcs>
+                  <logout_mobile_user><gateway>%s<domain>%s</domain><user>%s</user></gateway></logout_mobile_user>
+                  </gpcs></cloud_services></plugins></request>''' % (xmlComputer, domain, b64User)
+        else:
+            cmd = '''<request><plugins><cloud_services><gpcs>
+                  <logout_mobile_user><gateway>%s<user>%s</user></gateway></logout_mobile_user>
+                  </gpcs></cloud_services></plugins></request>''' % (xmlComputer, b64User)
         params = {
             'type': 'op',
             'key': API_KEY,
-            'cmd': '''<request><plugins><cloud_services><gpcs>
-                    <logout_mobile_user><gateway>%s<domain>%s</domain><user>%s</user></gateway></logout_mobile_user>
-                    </gpcs></cloud_services></plugins></request>''' % (xmlComputer, domain, b64User)
+            'cmd': cmd
         }
         result = http_request(URL, 'GET', params=params)
         return result

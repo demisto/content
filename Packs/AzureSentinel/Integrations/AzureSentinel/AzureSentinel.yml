@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Azure Sentinel
   version: -1
@@ -9,45 +12,73 @@ configuration:
   name: server_url
   required: true
   type: 0
+- name: creds_tenant_id
+  required: false
+  type: 9
+  displaypassword: Tenant ID
+  hiddenusername: true
+  section: Connect
 - display: Tenant ID
   name: tenant_id
-  required: true
+  required: false
   type: 4
+  hidden: true
+  section: Connect
 - display: Client ID
   name: credentials
   required: false
   type: 9
+  section: Connect
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: creds_certificate
+  required: false
+  type: 9
+  displaypassword: Private Key
+  section: Connect
+  advanced: true
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
+  hidden: true
+  section: Connect
+  advanced: true
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
   required: false
   type: 14
+  hidden: true
+  section: Connect
+  advanced: true
 - display: Subscription ID
   name: subscriptionID
   required: true
   type: 0
+  section: Connect
 - display: Resource Group Name
   name: resourceGroupName
   required: true
   type: 0
+  section: Connect
 - display: Workspace Name
   name: workspaceName
   required: true
   type: 0
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   required: false
   type: 0
+  section: Collect
 - defaultvalue: Informational
   display: The minimum severity of incidents to fetch
   name: min_severity
@@ -58,20 +89,27 @@ configuration:
   - High
   required: false
   type: 15
+  section: Collect
+  advanced: true
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Use the Azure Sentinel integration to get and manage incidents and get related entity information for incidents.
-display: Azure Sentinel
+display: Microsoft Sentinel
 name: Azure Sentinel
 script:
   commands:
@@ -490,9 +528,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The email address of the incident assignee. Note that the updated API field is `owner.email`.
+      description: The email address of the incident assignee. It is recommended to update *user_principal_name* instead of this field. Note that the updated API field is `owner.email`.
       isArray: false
       name: assignee_email
+      required: false
+      secret: false
+    - default: false
+      description: The user principal name of the client. Note that the updated API field is `owner.userPrincipalName`.
+      isArray: false
+      name: user_principal_name
       required: false
       secret: false
     - default: false
@@ -1786,7 +1830,7 @@ script:
     - contextPath: AzureSentinel.ThreatIndicator.Types
       description: The threat types of the indicator.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.28507
+  dockerimage: demisto/crypto:1.0.0.45575
   feed: false
   isfetch: true
   longRunning: false

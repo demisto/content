@@ -1,25 +1,32 @@
-import demistomock as demisto
-from CommonServerPython import *
-
-''' IMPORTS '''
-import requests
-import time
 import json
 import random
+import time
+import urllib3
+
+import demistomock as demisto  # noqa: F401
+import requests
+from CommonServerPython import *  # noqa: F401
+
+''' IMPORTS '''
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 ADD = 'ADD_TO_LIST'
 REMOVE = 'REMOVE_FROM_LIST'
+INTEGRATION_NAME = 'Zscaler'
+SUSPICIOUS_CATEGORIES = ['SUSPICIOUS_DESTINATION', 'SPYWARE_OR_ADWARE']
 CLOUD_NAME = demisto.params()['cloud']
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
-API_KEY = str(demisto.params()['key'])
+API_KEY = str(demisto.params().get('creds_key', {}).get('password', '')) or str(demisto.params().get('key', ''))
+if not API_KEY:
+    raise Exception('API Key is missing. Please provide an API Key.')
 BASE_URL = CLOUD_NAME + '/api/v1'
 USE_SSL = not demisto.params().get('insecure', False)
 PROXY = demisto.params().get('proxy', True)
+REQUEST_TIMEOUT = int(demisto.params().get('requestTimeout', 15))
 DEFAULT_HEADERS = {
     'content-type': 'application/json'
 }
@@ -58,7 +65,7 @@ AUTO_ACTIVATE_CHANGES_COMMANDS = (
 )
 
 ''' HANDLE PROXY '''
-if not PROXY:
+if not PROXY:  # pragma: no cover
     del os.environ['HTTP_PROXY']
     del os.environ['HTTPS_PROXY']
     del os.environ['http_proxy']
@@ -85,7 +92,7 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
                                verify=USE_SSL,
                                data=data,
                                headers=headers,
-                               timeout=15
+                               timeout=REQUEST_TIMEOUT
                                )
         if res.status_code not in (200, 204):
             if res.status_code == EXCEEDED_RATE_LIMIT_STATUS_CODE and num_of_seconds_to_wait <= MAX_SECONDS_TO_WAIT:
@@ -100,9 +107,11 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
                                 ' For more info about your quota usage, run the command zscaler-url-quota.')
             else:
                 if res.status_code in ERROR_CODES_DICT:
-                    raise Exception('Your request failed with the following error: {}'.format(ERROR_CODES_DICT[res.status_code]))
+                    raise Exception('Your request failed with the following error: {}.\nMessage: {}'.format(
+                        ERROR_CODES_DICT[res.status_code], res.text))
                 else:
-                    raise Exception('Your request failed with the following error: {}'.format(res.status_code))
+                    raise Exception('Your request failed with the following error: {}.\nMessage: {}'.format(
+                        res.status_code, res.text))
     except Exception as e:
         LOG('Zscaler request failed with url={url}\tdata={data}'.format(url=url, data=data))
         LOG(e)
@@ -412,13 +421,11 @@ def url_lookup(args):
     multiple = args.get('multiple', 'true').lower() == 'true'
     response = lookup_request(url, multiple)
     raw_res = json.loads(response.content)
-    ec = dict()  # type: Dict[str, List]
-    ec[outputPaths['url']] = []
-    ec['DBotScore'] = []
-    pre_table_data = []
+
     urls_list = argToList(url)
+    results: List[CommandResults] = []
+
     for data in raw_res:
-        suspicious_categories = ['SUSPICIOUS_DESTINATION', 'SPYWARE_OR_ADWARE']
         res_url = data.get('url')
         for url in urls_list:
             # since zscaler expects to recieve a URL without the protocol, we omit it in `lookup_request`
@@ -426,109 +433,104 @@ def url_lookup(args):
             # the URL retruned with the one we got as an argument
             if 'http://' + res_url in url or 'https://' + res_url in url:
                 data['url'] = url
+
         ioc_context = {'Address': data['url'], 'Data': data['url']}
-        score = 1
+        score = Common.DBotScore.GOOD
+
         if len(data['urlClassifications']) == 0:
             data['urlClassifications'] = ''
         else:
             data['urlClassifications'] = ''.join(data['urlClassifications'])
             ioc_context['urlClassifications'] = data['urlClassifications']
             if data['urlClassifications'] == 'MISCELLANEOUS_OR_UNKNOWN':
-                score = 0
+                score = Common.DBotScore.NONE
+
         if len(data['urlClassificationsWithSecurityAlert']) == 0:
             data['urlClassificationsWithSecurityAlert'] = ''
         else:
             data['urlClassificationsWithSecurityAlert'] = ''.join(data['urlClassificationsWithSecurityAlert'])
             ioc_context['urlClassificationsWithSecurityAlert'] = data['urlClassificationsWithSecurityAlert']
-            if data['urlClassificationsWithSecurityAlert'] in suspicious_categories:
-                score = 2
+            if data['urlClassificationsWithSecurityAlert'] in SUSPICIOUS_CATEGORIES:
+                score = Common.DBotScore.SUSPICIOUS
             else:
-                score = 3
-            ioc_context['Malicious'] = {
-                'Vendor': 'Zscaler',
-                'Description': data['urlClassificationsWithSecurityAlert']
-            }
+                score = Common.DBotScore.BAD
+
             data['ip'] = data.pop('url')
-        ioc_context = createContext(data=ioc_context, removeNull=True)
-        ec[outputPaths['url']].append(ioc_context)
-        ec['DBotScore'].append(
-            {
-                "Indicator": data.get('url') or data.get('ip'),
-                "Score": score,
-                "Type": "url",
-                "Vendor": "Zscaler"
-            }
+
+        url_indicator = Common.URL(
+            url=ioc_context['Data'],
+            dbot_score=Common.DBotScore(
+                indicator=ioc_context['Data'],
+                indicator_type=DBotScoreType.URL,
+                integration_name=INTEGRATION_NAME,
+                malicious_description=data.get('urlClassificationsWithSecurityAlert', None),
+                score=score
+            )
         )
-        pre_table_data.append(data)
-    if ec[outputPaths['url']] or ec['DBotScore']:
-        title = 'Zscaler URL Lookup'
-        entry = {
-            'Type': entryTypes['note'],
-            'Contents': raw_res,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, pre_table_data, removeNull=True),
-            'EntryContext': ec
-        }
-    else:
-        entry = 'No results found.'  # type: ignore
-    return entry
+
+        results.append(CommandResults(
+            outputs_prefix=f'{INTEGRATION_NAME}.URL',
+            outputs_key_field='Data',
+            indicator=url_indicator,
+            readable_output=tableToMarkdown(f'Zscaler URL Lookup for {ioc_context["Data"]}', data, removeNull=True),
+            outputs=createContext(data=ioc_context, removeNull=True),
+            raw_response=data))
+
+    return results or 'No results found.'
 
 
 def ip_lookup(ip):
-    response = lookup_request(ip, multiple=True)
-    hr = json.loads(response.content)
-    if hr:
-        ioc_context = [None] * len(hr)  # type: List[Any]
-        suspicious_categories = ['SUSPICIOUS_DESTINATION', 'SPYWARE_OR_ADWARE']
-        dbot_score_array = [None] * len(hr)  # type: List[Any]
-        for i in range(len(hr)):
-            ioc_context[i] = {}
-            dbot_score_array[i] = {}
-            ioc_context[i]['Address'] = hr[i]['url']
-            dbot_score_array[i]['Indicator'] = hr[i]['url']
-            score = 1
-            if len(hr[i]['urlClassifications']) == 0:
-                hr[i]['iplClassifications'] = ''
-            else:
-                hr[i]['ipClassifications'] = ''.join(hr[i]['urlClassifications'])
-                ioc_context[i]['ipClassifications'] = hr[i]['ipClassifications']
-            del hr[i]['urlClassifications']
-            if len(hr[i]['urlClassificationsWithSecurityAlert']) == 0:
-                hr[i]['ipClassificationsWithSecurityAlert'] = ''
-            else:
-                hr[i]['ipClassificationsWithSecurityAlert'] = ''.join(hr[i]['urlClassificationsWithSecurityAlert'])
-                if hr[i]['urlClassificationsWithSecurityAlert'] in suspicious_categories:
-                    score = 2
-                else:
-                    score = 3
-                ioc_context[i]['Malicious'] = {
-                    'Vendor': 'Zscaler',
-                    'Description': hr[i]['ipClassificationsWithSecurityAlert']
-                }
-            del hr[i]['urlClassificationsWithSecurityAlert']
-            hr[i]['ip'] = hr[i].pop('url')
-            dbot_score_array[i]['Score'] = score
-            dbot_score_array[i]['Type'] = 'ip'
-            dbot_score_array[i]['Vendor'] = 'Zscaler'
+    results: List[CommandResults] = []
 
-        ioc_context = createContext(data=ioc_context, removeNull=True)
-        ec = {
-            outputPaths['ip']: ioc_context,
-            'DBotScore': dbot_score_array
-        }
-        title = 'Zscaler IP Lookup'
-        entry = {
-            'Type': entryTypes['note'],
-            'Contents': hr,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, hr, removeNull=True),
-            'EntryContext': ec
-        }
-    else:
-        entry = 'No results found.'  # type: ignore
-    return entry
+    response = lookup_request(ip, multiple=True)
+    raw_res = json.loads(response.content)
+
+    for data in raw_res:
+        ioc_context = {'Address': data['url']}
+        score = Common.DBotScore.GOOD
+
+        if len(data['urlClassifications']) == 0:
+            data['iplClassifications'] = ''
+        else:
+            data['ipClassifications'] = ''.join(data['urlClassifications'])
+            ioc_context['ipClassifications'] = data['ipClassifications']
+
+        del data['urlClassifications']
+
+        if len(data['urlClassificationsWithSecurityAlert']) == 0:
+            data['ipClassificationsWithSecurityAlert'] = ''
+        else:
+            data['ipClassificationsWithSecurityAlert'] = ''.join(data['urlClassificationsWithSecurityAlert'])
+            ioc_context['ipClassificationsWithSecurityAlert'] = data['ipClassificationsWithSecurityAlert']
+            if data['urlClassificationsWithSecurityAlert'] in SUSPICIOUS_CATEGORIES:
+                score = Common.DBotScore.SUSPICIOUS
+            else:
+                score = Common.DBotScore.BAD
+
+        del data['urlClassificationsWithSecurityAlert']
+
+        data['ip'] = data.pop('url')
+
+        ip_indicator = Common.IP(
+            ip=data['ip'],
+            dbot_score=Common.DBotScore(
+                indicator=data['ip'],
+                indicator_type=DBotScoreType.IP,
+                integration_name=INTEGRATION_NAME,
+                malicious_description=data.get('ipClassificationsWithSecurityAlert', None),
+                score=score
+            )
+        )
+        results.append(CommandResults(
+            outputs_prefix=f'{INTEGRATION_NAME}.IP',
+            indicator=ip_indicator,
+            outputs_key_field='Address',
+            readable_output=tableToMarkdown(f'Zscaler IP Lookup for {ioc_context["Address"]}', data, removeNull=True),
+            outputs=createContext(data=ioc_context, removeNull=True),
+            raw_response=data
+        ))
+
+    return results or 'No results found.'
 
 
 def lookup_request(ioc, multiple=True):
@@ -915,10 +917,109 @@ def get_category_by_id(category_id):
     return None
 
 
+def get_users_command(args):
+    name = args.get("name", None)
+    pageSize = args.get("pageSize")
+    pageNo = args.get("page", 1)
+    if name is not None:
+        cmd_url = '/users?page={}&pageSize={}&name={}'.format(pageNo, pageSize, name)
+    else:
+        cmd_url = '/users?page={}&pageSize={}'.format(pageNo, pageSize)
+    response = http_request('GET', cmd_url).json()
+
+    if(len(response) < 10):
+        human_readable = tableToMarkdown("Users ({})".format(len(response)), response)
+    else:
+        human_readable = "Retrieved {} users".format(len(response))
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {'Zscaler.Users': response},
+    }
+    return entry
+
+
+def get_departments_command(args):
+    name = args.get("name", None)
+    pageSize = args.get("pageSize")
+    pageNo = args.get("page", 1)
+    if name is not None:
+        cmd_url = '/departments?page={}&pageSize={}&search={}&limitSearch=true'.format(pageNo, pageSize, name)
+    else:
+        cmd_url = '/departments?page={}&pageSize={}'.format(pageNo, pageSize)
+    response = http_request('GET', cmd_url).json()
+
+    if len(response) < 10:
+        human_readable = tableToMarkdown("Departments ({})".format(len(response)), response)
+    else:
+        human_readable = "Retrieved {} departments".format(len(response))
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {'Zscaler.Departments': response},
+    }
+    return entry
+
+
+def get_usergroups_command(args):
+    name = args.get("name", None)
+    pageSize = args.get("pageSize")
+    pageNo = args.get("page", 1)
+    if name is not None:
+        cmd_url = '/groups?page={}&pageSize={}&search={}'.format(pageNo, pageSize, name)
+    else:
+        cmd_url = '/groups?page={}&pageSize={}'.format(pageNo, pageSize)
+    response = http_request('GET', cmd_url).json()
+
+    if len(response) < 10:
+        human_readable = tableToMarkdown("User groups ({})".format(len(response)), response)
+    else:
+        human_readable = "Retrieved {} user groups".format(len(response))
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {'Zscaler.UserGroups': response},
+    }
+    return entry
+
+
+def set_user_command(args):
+    userId = args.get("id")
+    params = json.loads(args.get("user"))
+    cmd_url = '/users/{}'.format(userId)
+
+    response = http_request('PUT', cmd_url, json.dumps(params), DEFAULT_HEADERS)
+    responseJson = response.json()
+    if response.status_code == 200:
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': responseJson,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': "Successfully updated the user (id: {} name: {})".format(responseJson["id"], responseJson["name"]),
+            'EntryContext': {'Zscaler.Users': responseJson},
+        }
+        return entry
+    else:
+        return responseJson
+
+
 ''' EXECUTION CODE '''
 
 
-def main():
+def main():  # pragma: no cover
     command = demisto.command()
 
     LOG('command is %s' % (command,))
@@ -972,6 +1073,14 @@ def main():
                 return_results(activate_command())
             elif command == 'zscaler-url-quota':
                 return_results(url_quota_command())
+            elif command == 'zscaler-get-users':
+                return_results(get_users_command(demisto.args()))
+            elif command == 'zscaler-update-user':
+                return_results(set_user_command(demisto.args()))
+            elif command == 'zscaler-get-departments':
+                return_results(get_departments_command(demisto.args()))
+            elif command == 'zscaler-get-usergroups':
+                return_results(get_usergroups_command(demisto.args()))
         except Exception as e:
             LOG(str(e))
             LOG.print_log()

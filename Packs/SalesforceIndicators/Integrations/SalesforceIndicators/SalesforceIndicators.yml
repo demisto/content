@@ -24,13 +24,12 @@ configuration:
   name: insecure
   required: false
   type: 8
-- defaultvalue: "false"
+- defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: None
   display: Indicator Reputation
   name: feedReputation
@@ -55,7 +54,7 @@ configuration:
   required: true
   type: 15
 - defaultvalue: never
-  display: ""
+  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -64,19 +63,17 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-- defaultvalue: "20160"
-  display: ""
+- defaultvalue: '20160'
+  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: "240"
+- defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -86,13 +83,21 @@ configuration:
   name: object
   required: true
   type: 0
-- additionalinfo: 'The name of the field to use as the value of the indicator (example:
-    Id)'
+- additionalinfo: Whether to use the LastModifiedDate or CreatedDate to find new or changed objects. If nothing is provided, the LastModifiedDate field will be used.
+  display: Date Field
+  name: date_field
+  required: false
+  type: 0
+  defaultvalue: LastModifiedDate
+  options:
+  - LastModifiedDate
+  - CreatedDate
+- additionalinfo: 'The name of the field to use as the value of the indicator (example: Id)'
   display: Value Field
   name: key_field
   required: true
   type: 0
-- additionalinfo: 'The SOQL filter to use (example: Id = ''123'' AND Name = ''Test'')'
+- additionalinfo: "The SOQL filter to use (example: Id = '123' AND Name = 'Test')"
   display: Filter
   name: filter
   required: false
@@ -102,25 +107,23 @@ configuration:
   name: fields
   required: false
   type: 12
-- additionalinfo: Specify how far to go back to find created objects, in days. This
-    will only be used if there is no Filter provided above.
-  defaultvalue: "365"
+- defaultvalue: '365'
   display: Indicator History (in days)
   name: indicator_history
-  required: false
   type: 0
-- defaultvalue: 'true'
-  display: Fetch indicators
-  name: feed
-  type: 8
   required: false
+  additionalinfo: Specify how far to go back to find created objects, in days. This will only be used if there is no Filter provided above.
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+  defaultvalue: 'true'
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   required: false
   type: 0
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -137,8 +140,8 @@ script:
   commands:
   - arguments: []
     name: salesforce-get-indicators
-    description: 'Executes the fetch-indicators command'
-  dockerimage: demisto/python3:3.10.4.27798
+    description: Executes the fetch-indicators command
+  dockerimage: demisto/python3:3.10.5.31797
   feed: true
   runonce: false
   script: ''

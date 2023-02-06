@@ -43,6 +43,18 @@ class Client(BaseClient):
         ).get('data')
         return r
 
+    def set_extra_params(self, args: Dict[str, Any]) -> None:
+        '''
+        Set any extra params (in the form of a dictionary) for this client
+        '''
+        self.extra_params = args
+
+    def get_extra_params(self) -> Dict[str, Any]:
+        '''
+        Set any extra params (in the form of a dictionary) for this client
+        '''
+        return self.extra_params
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -222,6 +234,15 @@ def test_module(client: Client) -> str:
     return message
 
 
+def craft_sumo_url(svc_url, resource_type, id):
+    if resource_type == "insight":
+        return f'{svc_url}/sec/insight/{id}'
+    elif resource_type == "signal":
+        return f'{svc_url}/sec/signal/{id}'
+    else:
+        return ""
+
+
 def insight_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     '''
     Get insight details
@@ -239,10 +260,12 @@ def insight_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     resp_json = client.req('GET', 'sec/v1/insights/{}'.format(insight_id), query)
     insight = insight_signal_to_readable(resp_json)
+    insight['SumoUrl'] = craft_sumo_url(client.get_extra_params()['instance_endpoint'], 'insight', insight_id)
+
     readable_output = tableToMarkdown(
         'Insight Details:', [insight],
         ['Id', 'ReadableId', 'Name', 'Action', 'Status', 'Assignee', 'Description', 'LastUpdated', 'LastUpdatedBy', 'Severity',
-         'Closed', 'ClosedBy', 'Timestamp', 'Entity', 'Resolution'], headerTransform=pascalToSpace)
+         'Closed', 'ClosedBy', 'Timestamp', 'Entity', 'Resolution', 'SumoUrl'], headerTransform=pascalToSpace)
 
     return CommandResults(
         readable_output=readable_output,
@@ -283,9 +306,10 @@ def signal_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     signal = client.req('GET', 'sec/v1/signals/{}'.format(signal_id))
     signal.pop('allRecords', None)  # don't need to display records from signal
     signal = insight_signal_to_readable(signal)
+    signal['SumoUrl'] = craft_sumo_url(client.get_extra_params()['instance_endpoint'], 'signal', signal_id)
     readable_output = tableToMarkdown(
-        'Signal Details:', [signal],
-        ['Id', 'Name', 'RuleId', 'Description', 'Severity', 'ContentType', 'Timestamp', 'Entity'], headerTransform=pascalToSpace)
+        'Signal Details:', [signal], ['Id', 'Name', 'RuleId', 'Description', 'Severity',
+                                      'ContentType', 'Timestamp', 'Entity', 'SumoUrl'], headerTransform=pascalToSpace)
 
     return CommandResults(
         readable_output=readable_output,
@@ -683,6 +707,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
         query['recordSummaryFields'] = record_summary_fields
     incidents = []
     hasNextPage = True
+    instance_endpoint = client.get_extra_params()['instance_endpoint']
     while hasNextPage:
 
         # only query parameter that changes loop to loop is the offset
@@ -694,6 +719,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
             # convert it from the API response
             insight_timestamp = a.get('created')
             insight_id = a.get('id')
+            insight_readableid = a.get('readableId')
+            # add sumoUrl to signal:
+            a['sumoUrl'] = craft_sumo_url(instance_endpoint, 'insight', insight_id)
+
             if insight_id and insight_timestamp and insight_id not in last_fetch_ids:
                 try:
                     incident_datetime = datetime.strptime(insight_timestamp, '%Y-%m-%dT%H:%M:%S.%f')
@@ -707,9 +736,15 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
                 if last_fetch:
                     if incident_created_time < last_fetch:
                         continue
+                # add sumoUrl to raw insight:
+
+                signals = a.get('signals')
+                for signal in signals:
+                    signal_id = signal['id']
+                    signal['sumoUrl'] = craft_sumo_url(instance_endpoint, 'signal', signal_id)
 
                 incidents.append({
-                    'name': a.get('name', 'No name') + ' - ' + insight_id,
+                    'name': a.get('name', 'No name') + ' - ' + insight_readableid,
                     'occurred': timestamp_to_datestring(incident_created_time_ms),
                     'details': a.get('description'),
                     'severity': translate_severity(a.get('severity')),
@@ -778,7 +813,7 @@ def main() -> None:
             proxy=proxy,
             auth=(access_id, access_key),
             ok_codes=[200])
-
+        client.set_extra_params({'instance_endpoint': demisto.getParam('instance_endpoint')})
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)

@@ -9,3 +9,6 @@ ignore=BA110
 
 [file:TrendMicro_image.png]
 ignore=IM111
+
+[known_words]
+TrendMicroDeepSecurity

@@ -261,11 +261,13 @@ def create_new_edl(request_args: RequestArguments) -> str:
         # we collect first all indicators because we ned all ips to collapse_ips
         new_iocs_file = create_text_out_format(new_iocs_file, request_args)
         new_iocs_file.seek(0)
+        iocs_set = set()
         for count, line in enumerate(new_iocs_file):
             # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
             if count + 1 > limit:
                 break
-            else:
+            elif line not in iocs_set:
+                iocs_set.add(line)
                 formatted_indicators += line
     else:
         new_iocs_file = get_indicators_to_format(indicator_searcher, request_args)

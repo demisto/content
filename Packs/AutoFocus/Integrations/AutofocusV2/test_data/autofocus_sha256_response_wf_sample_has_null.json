@@ -1,0 +1,23 @@
+{
+  "indicator": {
+    "indicatorValue": "6833e945695d2609de175c5f67693594748229962759f366b822be5fd568f292",
+    "indicatorType": "FILEHASH",
+    "summaryGenerationTs": 1663661978492,
+    "firstSeenTsGlobal": null,
+    "lastSeenTsGlobal": null,
+    "latestPanVerdicts": {
+      "WF_SAMPLE": null
+    },
+    "seenByDataSourceIds": ["WF_SAMPLE"]
+  },
+  "tags": [],
+  "bucketInfo": {
+    "minutePoints": 200,
+    "dailyPoints": 100000,
+    "minuteBucketStart": "2022-09-20 08:19:10",
+    "dailyBucketStart": "2022-09-19 19:29:35",
+    "minutePointsRemaining": 144,
+    "dailyPointsRemaining": 77314,
+    "waitInSeconds": 0
+  }
+}

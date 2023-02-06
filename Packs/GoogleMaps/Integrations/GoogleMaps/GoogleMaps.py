@@ -1,6 +1,8 @@
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
+import urllib3
+
 OUTPUTS_PREFIX = 'GoogleMaps'
 
 STATUS_OK = 'OK'
@@ -9,7 +11,7 @@ STATUS_ZERO_RESULTS = 'ZERO_RESULTS'
 MESSAGE_ZERO_RESULTS = 'No matching places were found.'
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 class Client(BaseClient):
@@ -120,7 +122,6 @@ def main():
             raise NotImplementedError(f"command '{command}' is not supported")
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # prints the traceback
 
         error_parts = [f'Failed to execute the {command} command.',
                        'Error:',

@@ -1,4 +1,5 @@
 Use IntSights to manage and mitigate threats.
+This integration was tested with Intsights API version 3.
 
 ## Configure IntSights on Cortex XSOAR
 
@@ -316,25 +317,24 @@ Searches for an exact IOC value.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IntSights.Iocs.ID | string | The ID of the IOC. | 
 | IntSights.Iocs.Value | string | The value of the IOC. | 
 | IntSights.Iocs.Type | string | The type of the IOC. | 
 | IntSights.Iocs.FirstSeen | date | The date the IOC was first seen. | 
 | IntSights.Iocs.LastSeen | date | The date the IOC was last seen. | 
-| IntSights.Iocs.SourceID | string | The ID source of the IOC. | 
+| IntSights.Iocs.LastUpdatedDate | date | The date the IOC was last updated. | 
+| IntSights.Iocs.SourceID | string | The source ID of the IOC. | 
 | IntSights.Iocs.SourceName | string | The source name of the IOC. | 
-| IntSights.Iocs.SourceConfidenceLevel | string | The source confidence level of the IOC. | 
+| IntSights.Iocs.SourceConfidenceLevel | string | The confidence level of the IOC source. | 
 | IntSights.Iocs.Severity | string | The severity of the IOC. | 
-| IntSights.Iocs.AccountID | string | The account ID of the IOC. | 
-| IntSights.Iocs.Domain | string | The domain of the IOC. | 
 | IntSights.Iocs.Status | string | The status of the IOC. | 
-| IntSights.Iocs.Flags.IsInAlexa | boolean | Whether or not the IOC is in Alexa. | 
-| IntSights.Iocs.Enrichment.Status | string | The enrichment status of the IOC. | 
-| IntSights.Iocs.Enrichment.Data | string | The enrichment data of the IOC. | 
+| IntSights.Iocs.Sources.name | string | The source name of the IOC. | 
+| IntSights.Iocs.Sources.confidenceLevel | string | The confidence level of the IOC source. | 
+| IntSights.Iocs.Sources.id | string | The source id of the IOC. | 
+| IntSights.Iocs.tags | Array | The tags of the IOC. |
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The type of the indicator. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | String | The actual score. | 
+| DBotScore.Score | Number | The actual score. | 
 | File.Name | String | The full file name \(including file extension\). | 
 | File.Malicious.Vendor | String | The vendor that reported the file as malicious. | 
 | File.Malicious.Description | String | A description explaining why the file was determined to be malicious. | 
@@ -346,7 +346,7 @@ Searches for an exact IOC value.
 | URL.Malicious.Description | String | A description of the malicious URL. | 
 | IP.Malicious.Vendor | String | The vendor reporting the IP address as malicious. | 
 | IP.Malicious.Description | String | A description explaining why the IP address was reported as malicious. | 
-| IP.Address | String | The IP address. | 
+| IP.Address | String | IP address. | 
 | Domain.Name | String | The domain name. For example, "google.com". | 
 | Domain.Malicious.Vendor | String | The vendor reporting the domain as malicious. | 
 | Domain.Malicious.Description | String | A description explaining why the domain was reported as malicious. | 
@@ -370,6 +370,7 @@ Returns count totals of the available IOCs.
 | first-seen-from | Beginning of the date range when the IOC was first seen (MM/DD/YYYY). Default is 0. | Optional | 
 | first-seen-to | End of the date range when the IOC was first seen (MM/DD/YYYY). Default is 0. | Optional | 
 | last-seen-from | Beginning of the date range when the IOC was last seen (MM/DD/YYYY). Default is 0. | Optional | 
+| last-updated-from | Beginning of the date range when the IOC was last updated (YYYY-MM-DD). | Optional | 
 | last-seen-to | End of the date range when the IOC was last seen (MM/DD/YYYY). Default is 0. | Optional | 
 
 
@@ -377,21 +378,20 @@ Returns count totals of the available IOCs.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IntSights.Iocs.ID | string | The ID of the IOC. | 
 | IntSights.Iocs.Value | string | The value of the IOC. | 
 | IntSights.Iocs.Type | string | The type of the IOC. | 
 | IntSights.Iocs.FirstSeen | date | The date the IOC was first seen. | 
 | IntSights.Iocs.LastSeen | date | The date the IOC was last seen. | 
+| IntSights.Iocs.LastUpdatedDate | date | The date the IOC was last updated. | 
 | IntSights.Iocs.SourceID | string | The source ID of the IOC. | 
 | IntSights.Iocs.SourceName | string | The source name of the IOC. | 
 | IntSights.Iocs.SourceConfidenceLevel | string | The confidence level of the IOC source. | 
 | IntSights.Iocs.Severity | string | The severity of the IOC. | 
-| IntSights.Iocs.AccountID | string | The account ID of the IOC. | 
-| IntSights.Iocs.Domain | string | The domain of the IOC. | 
 | IntSights.Iocs.Status | string | The status of the IOC. | 
-| IntSights.Iocs.Flags.IsInAlexa | boolean | Whether or not the IOC is in Alexa. | 
-| IntSights.Iocs.Enrichment.Status | string | The enrichment status of the IOC. | 
-| IntSights.Iocs.Enrichment.Data | string | The enrichment data of the IOC. | 
+| IntSights.Iocs.Sources.name | string | The source name of the IOC. | 
+| IntSights.Iocs.Sources.confidenceLevel | string | The confidence level of the IOC source. | 
+| IntSights.Iocs.Sources.id | string | The source id of the IOC. | 
+| IntSights.Iocs.tags | Array | The tags of the IOC. |
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The type of the indicator. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 

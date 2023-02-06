@@ -16,10 +16,13 @@ ANY.RUN is a cloud-based sanbox with interactive access.
     | --- | --- |
     | Server URL | True |
     | Username | True |
+    | Password | True |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+4. If using API Key authentication method, insert the text `_token` into the **Username** parameter and the API key you have into the **Password**.
+
+5. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

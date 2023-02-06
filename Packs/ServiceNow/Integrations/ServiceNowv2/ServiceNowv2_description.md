@@ -19,6 +19,7 @@ To use OAuth 2.0 authorization follow the next steps:
 **Notes:**
 1. When running the `!servicenow-oauth-login` command, a refresh token is generated and will be used to produce new access tokens after the current access token has expired.
 2. Every time the refresh token expires you will have to run the `servicenow-oauth-login` command again. Hence, we recommend to set the `Refresh Token Lifespan` field in the endpoint created in step 1 to a long period (can be set to several years). 
+3. The grant type used to get an access token is `Client credentials`. See the [Snow documentation](https://docs.servicenow.com/bundle/tokyo-platform-security/page/administer/security/concept/c_OAuthApplications.html) for more information.
 
 
 ### Using Multi Factor Authentication (MFA)
@@ -30,6 +31,10 @@ If MFA is enabled for your user, follow the next steps:
 **Notes:**
 1. When using basic authorization, you will have to update your password with the current OTP every time the current code expires (30 seconds), hence we recommend using OAuth 2.0 authorization.
 2. For using OAuth 2.0 see the above instructions. The OTP code should be appended to the password parameter in the `!servicenow-oauth-login` command.
+3. **look-back parameter note**:
+In case the **look-back** parameter is initialized with a certain value and during a time that incidents were fetched, if changing 
+the look back to a number that is greater than the previous value, then in the initial incident fetching there will be incidents duplications.
+If the integration was already set with look back > 0, and the look-back is not being increased at any point of time, then those incident duplications would not occur.
 
 ---
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/service-now-v2)

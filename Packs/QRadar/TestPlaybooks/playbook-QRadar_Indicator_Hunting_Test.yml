@@ -88,10 +88,6 @@ tasks:
         simple: 7D930D55986DF5C69CF1A9C2DE7E33B3,7D930D55986DF5C69CF1A9C2DE7E33B5
       QradarIPfield:
         simple: sourceip,destinationip
-      QradarMD5Field:
-        simple: file hash,MD5 Hash
-      QradarSHA1Field:
-        simple: SHA1 Hash
       QradarSHA256Field: {}
       QradarURLDomainField:
         simple: URL

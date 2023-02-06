@@ -1,0 +1,32 @@
+{
+    "id": "2ed7f9ee-3f6a-472a-95d7-f3ea0e72641a",
+    "name": "Sarkus",
+    "firstName": "Sarkus",
+    "lastName": "Delta",
+    "email": "sarkus@example.com",
+    "exchangeLogin": "exchangeLogin77",
+    "groups": {
+        "total": 2,
+        "itemsCount": 2,
+        "items": [
+            {
+                "id": "1cce37cb-99c0-4ab1-be75-60c4331ffb4c",
+                "name": "Update - 2",
+                "displayName": "Update - 2"
+            },
+            {
+                "id": "04824701-52cc-4c1b-b7e2-445fad9bdd42",
+                "name": "test name",
+                "displayName": "test name"
+            }
+        ]
+    },
+    "tenant": {
+        "id": "fb66cdd2-55ea-4927-ba59-529309e264f6"
+    },
+    "source": {
+        "type": "custom"
+    },
+    "createdAt": "2022-09-20T08:47:00.207Z",
+    "updatedAt": "2022-09-20T08:47:00.210Z"
+}

@@ -4,7 +4,6 @@ import demistomock as demisto
 import importlib
 import Elasticsearch_v2
 import pytest
-from dateutil.parser import parse
 import requests
 import unittest
 from unittest import mock
@@ -188,6 +187,7 @@ MOCK_ES7_INCIDENTS = str([
                    '"_source": {"Date": "2019-08-27T18:00:00Z"}'
                    '}',
         'occurred': '2019-08-27T18:00:00Z',
+        'dbotMirrorId': '123',
         'labels': [
             {
                 'type': 'Date',
@@ -204,6 +204,7 @@ MOCK_ES7_INCIDENTS = str([
                    '"_source": {"Date": "2019-08-27T18:01:25.343212Z"}'
                    '}',
         'occurred': '2019-08-27T18:01:25Z',
+        'dbotMirrorId': '456',
         'labels': [
             {
                 'type': 'Date',
@@ -223,7 +224,8 @@ MOCK_ES7_INCIDENTS_WITHOUT_LABELS = str([
                    '"_score": 0.6814878, '
                    '"_source": {"Date": "2019-08-27T18:00:00Z"}'
                    '}',
-        'occurred': '2019-08-27T18:00:00Z'
+        'occurred': '2019-08-27T18:00:00Z',
+        'dbotMirrorId': '123'
     }, {
         'name': 'Elasticsearch: Index: customer, ID: 456',
         'rawJSON': '{'
@@ -233,7 +235,8 @@ MOCK_ES7_INCIDENTS_WITHOUT_LABELS = str([
                    '"_score": 0.6814878, '
                    '"_source": {"Date": "2019-08-27T18:01:25.343212Z"}'
                    '}',
-        'occurred': '2019-08-27T18:01:25Z'
+        'occurred': '2019-08-27T18:01:25Z',
+        'dbotMirrorId': '456'
     }
 ])
 
@@ -248,6 +251,7 @@ MOCK_ES6_INCIDETNS = str([
                    '"_source": {"Date": "2019-08-29T14:45:00.123Z"}'
                    '}',
         'occurred': '2019-08-29T14:45:00Z',
+        'dbotMirrorId': '123',
         'labels':
             [
                 {
@@ -265,6 +269,7 @@ MOCK_ES6_INCIDETNS = str([
                    '"_source": {"Date": "2019-08-29T14:46:00.123456Z"}'
                    '}',
         'occurred': '2019-08-29T14:46:00Z',
+        'dbotMirrorId': '456',
         'labels':
             [
                 {
@@ -286,6 +291,7 @@ MOCK_ES6_INCIDETNS_WITHOUT_LABELS = str([
                    '"_source": {"Date": "2019-08-29T14:45:00.123Z"}'
                    '}',
         'occurred': '2019-08-29T14:45:00Z',
+        'dbotMirrorId': '123'
     }, {
         'name': 'Elasticsearch: Index: users, ID: 456',
         'rawJSON': '{'
@@ -296,6 +302,7 @@ MOCK_ES6_INCIDETNS_WITHOUT_LABELS = str([
                    '"_source": {"Date": "2019-08-29T14:46:00.123456Z"}'
                    '}',
         'occurred': '2019-08-29T14:46:00Z',
+        'dbotMirrorId': '456'
     }
 ])
 
@@ -347,6 +354,7 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP = str([
                    '"_source": {"Date": "1572502634"}'
                    '}',
         'occurred': '2019-10-31T06:17:14Z',
+        'dbotMirrorId': '123',
         'labels': [
             {
                 'type': 'Date',
@@ -363,6 +371,7 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP = str([
                    '"_source": {"Date": "1572502640"}'
                    '}',
         'occurred': '2019-10-31T06:17:20Z',
+        'dbotMirrorId': '456',
         'labels': [
             {
                 'type': 'Date',
@@ -383,6 +392,7 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP_WITHOUT_LABELS = str([
                    '"_source": {"Date": "1572502634"}'
                    '}',
         'occurred': '2019-10-31T06:17:14Z',
+        'dbotMirrorId': '123'
     }, {
         'name': 'Elasticsearch: Index: customer, ID: 456',
         'rawJSON': '{'
@@ -393,6 +403,7 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP_WITHOUT_LABELS = str([
                    '"_source": {"Date": "1572502640"}'
                    '}',
         'occurred': '2019-10-31T06:17:20Z',
+        'dbotMirrorId': '456'
     }
 ])
 
@@ -567,7 +578,6 @@ MOC_ES7_SERVER_RESPONSE = {
     }
 }
 
-
 MOCK_PARAMS = [
     {
         'client_type': 'Elasticsearch',
@@ -620,7 +630,8 @@ def test_context_creation_es7(params, mocker):
                                                                                size, total_dict, ES_V7_RESPONSE)
 
     assert str(search_context) == MOCK_ES7_SEARCH_CONTEXT
-    assert str(meta_headers) == "['Query', 'took', 'timed_out', 'total', 'max_score', 'Server', 'Page', 'Size']"
+    assert str(meta_headers) == "['Query', 'took', 'timed_out', 'total', 'max_score', " \
+                                "'Server', 'Page', 'Size', 'aggregations']"
     assert str(hit_tables) == MOCK_ES7_HIT_CONTEXT
     assert str(hit_headers) == "['_id', '_index', '_type', '_score', 'Date']"
 
@@ -640,7 +651,8 @@ def test_context_creation_es6(params, mocker):
                                                                                size, total_dict, ES_V6_RESPONSE)
 
     assert str(search_context) == MOCK_ES6_SEARCH_CONTEXT
-    assert str(meta_headers) == "['Query', 'took', 'timed_out', 'total', 'max_score', 'Server', 'Page', 'Size']"
+    assert str(meta_headers) == "['Query', 'took', 'timed_out', 'total', " \
+                                "'max_score', 'Server', 'Page', 'Size', 'aggregations']"
     assert str(hit_tables) == MOCK_ES6_HIT_CONTEXT
     assert str(hit_headers) == "['_id', '_index', '_type', '_score', 'Date']"
 
@@ -650,7 +662,7 @@ def test_incident_creation_e6(params, mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
     importlib.reload(Elasticsearch_v2)  # To reset the Elasticsearch client with the OpenSearch library
     from Elasticsearch_v2 import results_to_incidents_datetime
-    last_fetch = parse('2019-08-29T14:44:00Z')
+    last_fetch = '2019-08-29T14:44:00Z'
     incidents, last_fetch2 = results_to_incidents_datetime(ES_V6_RESPONSE, last_fetch)
 
     # last fetch should not truncate the milliseconds
@@ -666,7 +678,7 @@ def test_incident_creation_e7(params, mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
     importlib.reload(Elasticsearch_v2)  # To reset the Elasticsearch client with the OpenSearch library
     from Elasticsearch_v2 import results_to_incidents_datetime
-    last_fetch = parse('2019-08-27T17:59:00')
+    last_fetch = '2019-08-27T17:59:00'
     incidents, last_fetch2 = results_to_incidents_datetime(ES_V7_RESPONSE, last_fetch)
 
     # last fetch should not truncate the milliseconds
@@ -850,3 +862,106 @@ class TestIncidentLabelMaker(unittest.TestCase):
 
         labels = incident_label_maker(sources)
         self.assertEqual(labels, expected_labels)
+
+
+@pytest.mark.parametrize('last_fetch, time_range_start, time_range_end, result',
+                         [('', '1.1.2000 12:00:00Z', '2.1.2000 12:00:00Z',
+                           {'range': {'time_field': {'gt': 946728000000, 'lt': 949406400000}}}),
+                          (946728000000, '', '2.1.2000 12:00:00Z',
+                           {'range': {'time_field': {'gt': 946728000000, 'lt': 949406400000}}}),
+                          ('', '', '2.1.2000 12:00:00Z',
+                           {'range': {'time_field': {'lt': 949406400000}}}),
+                          ])
+def test_get_time_range(last_fetch, time_range_start, time_range_end, result):
+    from Elasticsearch_v2 import get_time_range
+    assert get_time_range(last_fetch, time_range_start, time_range_end, "time_field") == result
+
+
+def test_build_eql_body():
+    from Elasticsearch_v2 import build_eql_body
+    assert build_eql_body(None, None, None, None, None, None, None) == {}
+    assert build_eql_body("query", "fields", "size", "tiebreaker_field",
+                          "timestamp_field", "event_category_field", "filter") == {
+        "query": "query",
+        "fields": "fields",
+        "size": "size",
+        "tiebreaker_field": "tiebreaker_field",
+        "timestamp_field": "timestamp_field",
+        "event_category_field": "event_category_field",
+        "filter": "filter"
+    }
+
+
+first_case_all_with_empty_string = ('', {'a': {'mappings': {'properties': {'example': {}}}}},
+                                    {'a': {'_id': 'doc_id', '_index': 'a', '_source': {'example': 'type: '}}}
+                                    )
+second_case_with_prefix_and_wildcard = ('.internal.alerts-*',
+                                        {'.internal.alerts-security': {'mappings': {'properties': {'example': {}}}},
+                                         '.internal': {'mappings': {'properties': {'example': {}}}}},
+                                        {'.internal.alerts-security':
+                                            {'_id': 'doc_id', '_index': '.internal.alerts-security',
+                                                '_source': {'example': 'type: '}}}
+                                        )
+third_regular_case = ('a', {'a': {'mappings': {'properties': {'example': {}}}}},
+                      {'a': {'_id': 'doc_id', '_index': 'a', '_source': {'example': 'type: '}}})
+
+
+@pytest.mark.parametrize('indexes, response, expected_result',
+                         [first_case_all_with_empty_string, second_case_with_prefix_and_wildcard, third_regular_case])
+def test_get_mapping_fields_command(mocker, indexes, response, expected_result):
+    class ResponseMockObject:
+        def json(self):
+            return response
+
+    mocker.patch('Elasticsearch_v2.FETCH_INDEX', indexes)
+    mocker.patch('Elasticsearch_v2.requests.get', return_value=ResponseMockObject())
+    result = Elasticsearch_v2.get_mapping_fields_command()
+    assert result == expected_result
+
+
+def test_search_command_with_query_dsl(mocker):
+    """
+    Given
+      - index to the search command with query_dsl
+
+    When
+    - executing the search command
+
+    Then
+     - make sure that the index is being taken from the command arguments and not from integration parameters
+     - make sure that the size / page arguments are getting called when using query_dsl
+    """
+    import Elasticsearch_v2
+    Elasticsearch_v2.FETCH_INDEX = 'index from parameter'
+    index_from_arg = 'index from arg'
+    mocker.patch.object(
+        demisto, 'args', return_value={'index': index_from_arg, 'query_dsl': 'test', 'size': '5', 'page': '0'}
+    )
+    search_mock = mocker.patch.object(Elasticsearch_v2.Elasticsearch, 'search', return_value=ES_V7_RESPONSE)
+    mocker.patch.object(Elasticsearch_v2.Elasticsearch, '__init__', return_value=None)
+    Elasticsearch_v2.search_command({})
+    assert search_mock.call_args.kwargs['index'] == index_from_arg
+    assert search_mock.call_args.kwargs['size'] == 5
+    assert search_mock.call_args.kwargs['from_'] == 0
+
+
+def test_execute_raw_query(mocker):
+    """
+    Given
+      - index and elastic search objects
+
+    When
+    - executing execute_raw_query function with two response: first an exception and second a correct response.
+
+    Then
+     - make sure that no exception was raised from the function.
+     - make sure the response came back correctly.
+    """
+    import Elasticsearch_v2
+    Elasticsearch_v2.FETCH_INDEX = 'index from parameter'
+    mocker.patch.object(
+        Elasticsearch_v2.Elasticsearch, 'search', return_value=ES_V7_RESPONSE
+    )
+    mocker.patch.object(Elasticsearch_v2.Elasticsearch, '__init__', return_value=None)
+    es = Elasticsearch_v2.elasticsearch_builder({})
+    assert Elasticsearch_v2.execute_raw_query(es, 'dsadf') == ES_V7_RESPONSE

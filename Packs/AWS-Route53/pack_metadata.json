@@ -8,13 +8,14 @@
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "IT Services"
+        "Cloud Services"
     ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "xpanse"
     ]
 }

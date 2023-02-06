@@ -2,12 +2,11 @@ import json
 from datetime import datetime, timedelta
 from CommonServerPython import *
 
-import requests
-import traceback
+import urllib3
 from typing import Dict, Any
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR"
 
@@ -361,9 +360,10 @@ def get_active_sessions_list_command(client: Client, args: Dict[str, Any]) -> Co
     device_ip = args.get('device_ip')
     device_mac_address = args.get('device_mac_address')
     visitor_phone = args.get('visitor_phone')
+    limit = args.get('limit', 25)
 
     session_filter = sessions_filter_to_json_object(session_id, device_ip, device_mac_address, visitor_phone)
-    params = {"filter": session_filter}
+    params = {"filter": session_filter, "limit": limit}
 
     res = client.prepare_request(method='GET', params=params, url_suffix='session')
     readable_output, all_active_sessions_list = parse_items_response(res, parse_active_sessions_response)
@@ -465,7 +465,6 @@ def main() -> None:
             raise NotImplementedError(f'{demisto.command()} is not an existing HPE Aruba ClearPass command')
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

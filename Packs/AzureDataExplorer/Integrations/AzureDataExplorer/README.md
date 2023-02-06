@@ -14,6 +14,12 @@ This integration was integrated and tested with version V1 of AzureDataExplorer.
     | Client Activity Prefix | A customized prefix of the client activity identifier for the query execution. For example, for a prefix value of 'XSOAR-DataExplorer', the client activity ID will be in the format of:  'XSOAR-DataExplorer;&amp;lt;UUID&amp;gt;'. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
+    | Authentication Type | Type of authentication - could be Authorization Code Flow \(recommended\) or Device Code Flow | False |
+    | Tenant ID (for Authorization Code mode) |  | False |
+    | Client Secret (for Authorization Code mode) |  | False |
+    | Client Secret (for Authorization Code mode) |  | False |
+    | Application redirect URI (for Authorization Code mode) |  | False |
+    | Authorization code | for Authorization Code mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -434,3 +440,64 @@ Starts a best-effort attempt to cancel a specific running search query in the sp
 >|Client Request Id|Reason Phrase|Running Query Canceled|
 >|---|---|---|
 >| xxxx-xxxxx-xxxxx | None | false |
+
+### azure-data-explorer-auth-start
+***
+Run this command to start the authorization process and follow the instructions in the command results.
+
+
+#### Base Command
+
+`azure-data-explorer-auth-start`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+### azure-data-explorer-auth-complete
+***
+Run this command to complete the authorization process. This should be used after running the azure-data-explorer-auth-start command.
+
+
+#### Base Command
+
+`azure-data-explorer-auth-complete`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+### azure-data-explorer-auth-reset
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+
+#### Base Command
+
+`azure-data-explorer-auth-reset`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+### azure-data-explorer-auth-test
+***
+Run this command to test the connectivity to Azure Data Explorer.
+
+
+#### Base Command
+
+`azure-data-explorer-auth-test`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

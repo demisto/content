@@ -1,0 +1,126 @@
+{
+    "success": true,
+    "data": {
+        "page": {
+            "currentPage": 0,
+            "currentElements": 1,
+            "totalPages": 1,
+            "totalElements": 1
+        },
+        "threats": [
+            {
+                "id": 261737,
+                "relatedSearchTags": [],
+                "feeds": [
+                    {
+                        "id": 23,
+                        "permissions": {
+                            "OWNER": false,
+                            "WRITE": false,
+                            "READ": true
+                        },
+                        "displayName": "Cofense"
+                    }
+                ],
+                "blockSet": [
+                    {
+                        "malwareFamily": {
+                            "familyName": "FormBook",
+                            "description": "FormBook is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications."
+                        },
+                        "impact": "Major",
+                        "confidence": 100,
+                        "blockType": "URL",
+                        "role": "C2",
+                        "roleDescription": "Command and control location used by malware",
+                        "data": "https://abc.dummy.com/doc/dummy",
+                        "data_1": {
+                            "domain": "dummy.com",
+                            "host": "abc.dummy.com"
+                        }
+                    },
+                    {
+                        "malwareFamily": {
+                            "familyName": "FormBook",
+                            "description": "FormBook is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications."
+                        },
+                        "impact": "Major",
+                        "confidence": 100,
+                        "blockType": "URL",
+                        "role": "C2",
+                        "roleDescription": "Command and control location used by malware",
+                        "data": "http://www.dummy.com?q=dummy",
+                        "data_1": {
+                            "domain": "dummy.com",
+                            "query": "q=dummy"
+                        }
+                    }
+                ],
+                "lastPublished": 1657112815638,
+                "firstPublished": 1657112813922,
+                "label": "Finance - FormBook",
+                "executiveSummary": "Finance-themed campaign delivers FormBook.",
+                "hasReport": true,
+                "reportURL": "https://www.threathq.com/api/l/activethreatreport/261737/html",
+                "apiReportURL": "https://www.threathq.com/apiv1/t3/malware/261737/html",
+                "threatDetailURL": "https://www.threathq.com/p42/search/default?m=261737",
+                "threatType": "MALWARE",
+                "deliveryMechanisms": [],
+                "secureEmailGatewaySet": [],
+                "malwareFamilySet": [
+                    {
+                        "familyName": "FormBook",
+                        "description": "FormBook is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications."
+                    }
+                ]
+            },
+            {
+                "id": 261737,
+                "relatedSearchTags": [],
+                "feeds": [
+                    {
+                        "id": 23,
+                        "permissions": {
+                            "OWNER": false,
+                            "WRITE": false,
+                            "READ": true
+                        },
+                        "displayName": "Cofense"
+                    }
+                ],
+                "blockSet": [
+                    {
+                        "malwareFamily": {
+                            "familyName": "FormBook",
+                            "description": "FormBook is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications."
+                        },
+                        "impact": "Minor",
+                        "confidence": 100,
+                        "blockType": "Domain Name",
+                        "role": "C2",
+                        "roleDescription": "Command and control location used by malware",
+                        "data": "dummy.com",
+                        "data_1": "dummy.com"
+                    }
+                ],
+                "lastPublished": 1657112815638,
+                "firstPublished": 1657112813922,
+                "label": "Finance - FormBook",
+                "executiveSummary": "Finance-themed campaign delivers FormBook.",
+                "hasReport": true,
+                "reportURL": "https://www.threathq.com/api/l/activethreatreport/261737/html",
+                "apiReportURL": "https://www.threathq.com/apiv1/t3/malware/261737/html",
+                "threatDetailURL": "https://www.threathq.com/p42/search/default?m=261737",
+                "threatType": "MALWARE",
+                "deliveryMechanisms": [],
+                "secureEmailGatewaySet": [],
+                "malwareFamilySet": [
+                    {
+                        "familyName": "FormBook",
+                        "description": "FormBook is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications."
+                    }
+                ]
+            }
+        ]
+    }
+}

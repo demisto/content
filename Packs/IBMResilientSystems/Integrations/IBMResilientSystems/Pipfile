@@ -3,6 +3,14 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
+[packages]
+requests = "*"
+requests-mock = "*"
+requests-toolbelt = "*"
+resilient = "*"
+urllib3 = "*"
+virtualenv = "*"
+
 [dev-packages]
 pylint = "*"
 pytest = "*"
@@ -11,14 +19,5 @@ requests-mock = "*"
 pytest-xdist = "*"
 pytest-json = "*"
 flake8 = "*"
-
-[packages]
-requests = "==2.18.4"
-requests-mock = "==1.5.0"
-requests-toolbelt = "==0.8.0"
-resilient = "==30.0.86"
-urllib3 = "==1.22"
-virtualenv = "==15.1.0"
-
 [requires]
-python_version = "2.7"
+python_version = "3.10"

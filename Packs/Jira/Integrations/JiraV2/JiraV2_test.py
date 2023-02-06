@@ -2,6 +2,7 @@ from optparse import OptionParser
 from unittest.mock import Mock
 import demistomock as demisto
 import pytest
+from CommonServerPython import *
 
 integration_params = {
     "url": "https://localhost",
@@ -391,6 +392,7 @@ def test_update_remote_system_delta(mocker):
     Then:
         - The issue in Jira has the new summary.
     """
+    import JiraV2
     from JiraV2 import update_remote_system_command
 
     mocker.patch("JiraV2.edit_issue_command", return_value="")
@@ -400,10 +402,12 @@ def test_update_remote_system_delta(mocker):
         {
             "incidentChanged": "17757",
             "remoteId": "17757",
-            "delta": {"summary": "changes"},
+            "data": {"summary": "data", "not_changes_key": "not_changes_val"},
+            "delta": {"summary": "changes", "dbotMirrorDirection": "test"},
         }
     )
     assert res == "17757"
+    assert JiraV2.edit_issue_command.call_args[1]['summary'] == 'data'
 
 
 def test_get_mapping_fields(mocker):
@@ -908,7 +912,20 @@ def test_edit_issue_status(mocker):
     mocker.patch("JiraV2.get_issue", return_value=True)
     mocker.patch(
         "JiraV2.list_transitions_data_for_issue",
-        return_value={"transitions": [{"name": "To Do", "id": 1}]},
+        return_value={"transitions": [{"name": "To Do", "id": 1, "to": {
+            "self": "https: //demistodev.atlassian.net/rest/api/2/status/10000",
+            "description": "",
+            "iconUrl": "https://demistodev.atlassian.net/images/icons/status_generic.gif",
+            "name": "To Do",
+            "id": "10000",
+            "statusCategory": {
+                "self": "https://demistodev.atlassian.net/rest/api/2/statuscategory/2",
+                "id": 2,
+                "key": "new",
+                "colorName": "blue-gray",
+                "name": "To Do"
+            }
+        }}]},
     )
     mocked_return_error = mocker.patch("JiraV2.return_error", return_value=None)
     mocked_edit_transition = mocker.patch("JiraV2.edit_transition", return_value=None)
@@ -1219,6 +1236,46 @@ AUTH_CASES = [
 ]
 
 
+def test_get_project_id_old_version(requests_mock):
+    """
+    Given:
+        - Jira api version less than 9.0.0.
+    When
+        - Running the create issue command.
+    Then
+        - Ensure only the original api endpoint is being used.
+    """
+    from JiraV2 import get_project_id
+    first_case_mock = requests_mock.get('https://localhost/rest/api/latest/issue/createmeta', status_code=200,
+                                        json={"projects": [{"name": "Test_name", "key": "Test_key", "id": "Test_id"}]})
+    second_case_mock = requests_mock.get('https://localhost/rest/api/latest/project', status_code=200)
+    id = get_project_id(project_name='Test_name')
+    assert id == 'Test_id'
+    assert first_case_mock.called_once and not second_case_mock.called
+
+
+def test_get_project_id(mocker):
+    """
+    Given:
+        - Jira api version greater or equal to 9.0.0.
+    When
+        - Running the create issue command.
+    Then
+        - Ensure only the new api endpoint is being used.
+    """
+    from JiraV2 import get_project_id
+
+    def mock_res(method, endpoint, resp_type):
+        if endpoint == 'rest/api/latest/issue/createmeta':
+            raise DemistoException("Status code: 404\nMessage: Issue Does Not Exist")
+        elif endpoint == 'rest/api/latest/project':
+            return [{"name": "Test_name", "key": "Test_key", "id": "Test_id"}]
+
+    mocker.patch('JiraV2.jira_req', side_effect=mock_res)
+    id = get_project_id(project_name='Test_name')
+    assert id == 'Test_id'
+
+
 @pytest.mark.parametrize('params, custom_headers, expected_headers', AUTH_CASES)
 def test_jira_req(mocker, requests_mock, params, custom_headers, expected_headers):
     """
@@ -1237,14 +1294,12 @@ def test_jira_req(mocker, requests_mock, params, custom_headers, expected_header
            - Ensure the authentication headers are correct when using default headers
        """
     import JiraV2
-    import requests
 
     class ResponseDummy():
         def __init__(self):
             self.ok = 1
 
-    req_mock = mocker.patch.object(requests, 'request', return_value=ResponseDummy())
-    # requests_mock.register_uri(requests_mock.ANY, 'example.com', text='resp')
+    req_mock = mocker.patch.object(JiraV2.SESSION, 'request', return_value=ResponseDummy())
     JiraV2.USERNAME = params.get('username')
     JiraV2.HEADERS = {'Content-Type': 'application/json'}
     mocker.patch.object(demisto, "params", return_value=params)
@@ -1429,3 +1484,45 @@ def test_get_account_id_from_attribute_attribute_do_not_match(mocker):
     res = get_account_id_from_attribute(attribute='some_email@mail.com')
 
     assert res.outputs['AccountID'] == 'TEST-ID'
+
+
+def test_append_to_empty_field_command(mocker):
+    """
+    Given:
+        - The issue ID, a json of field and new values
+    When
+        - Running the append_to_field_command
+    Then
+        - Ensure appending is working as excpected
+    """
+    from test_data.raw_response import GET_ISSUE_RESPONSE
+    from JiraV2 import append_to_field_command
+
+    mocker.patch('JiraV2.jira_req', return_value=GET_ISSUE_RESPONSE)
+    mocker.patch('JiraV2.__get_field_type', return_value='string')
+    mock_update = mocker.patch('JiraV2._update_fields')
+
+    _, outputs, _ = append_to_field_command('id', field_json='{"labels":"New"}')
+
+    mock_update.assert_called_with('id', {'labels': 'New'})
+
+
+def test_append_to_existing_field_command(mocker):
+    """
+    Given:
+        - The issue ID, a json of field and new values
+    When
+        - Running the append_to_field_command
+    Then
+        - Ensure appending is working as excpected
+    """
+    from test_data.raw_response import GET_ISSUE_RESPONSE_WITH_LABELS
+    from JiraV2 import append_to_field_command
+
+    mocker.patch('JiraV2.jira_req', return_value=GET_ISSUE_RESPONSE_WITH_LABELS)
+    mocker.patch('JiraV2.__get_field_type', return_value='array')
+    mock_update = mocker.patch('JiraV2._update_fields')
+
+    _, outputs, _ = append_to_field_command('id', field_json='{"labels":"New"}')
+
+    mock_update.assert_called_with('id', {'labels': ['test', 'New']})

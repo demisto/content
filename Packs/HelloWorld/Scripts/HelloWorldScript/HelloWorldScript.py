@@ -24,20 +24,20 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 from typing import Dict, Any
-import traceback
 
 
 ''' STANDALONE FUNCTION '''
 
 
 def say_hello(name: str) -> str:
-    """Returns 'Hello {name}'
+    """
+    Returns 'Hello {name}'.
 
-    :type name: ``str``
-    :param name: name to append to the 'Hello' string
+    Args:
+        name (str): name to append to the 'Hello' string.
 
-    :return: string containing 'Hello {name}'
-    :rtype: ``str``
+    Returns:
+        dict: string containing 'Hello {name}'
     """
 
     return f'Hello {name}'
@@ -49,15 +49,12 @@ def say_hello(name: str) -> str:
 def say_hello_command(args: Dict[str, Any]) -> CommandResults:
     """helloworld-say-hello command: Returns Hello {somename}
 
-    :type args: ``str``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-        ``args['name']`` is used as input name
+    Args:
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['name']`` is used as input name
 
-    :return:
-        CommandResults with output context and human readable string.
-
-    :rtype: ``CommandResults``
+    Returns:
+        CommandResults: CommandResults with output context and human readable string.
     """
 
     # Check the HelloWorld comments from the HelloWorld Integration
@@ -88,7 +85,6 @@ def main():
     try:
         return_results(say_hello_command(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute HelloWorldScript. Error: {str(ex)}')
 
 

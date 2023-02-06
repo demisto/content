@@ -1,7 +1,5 @@
-Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
-Creating the Client ID and Client Secret
+Creating the Client ID and Client Secret in the SaaS Security UI:
 ---
-In the SaaS Security UI:
 1. Navigate to **Settings** > **External Service**.
 2. Click **Add API Client**.
 3. Specify a unique name for the API client.

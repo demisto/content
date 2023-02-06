@@ -42,3 +42,11 @@ ignore=IF100
 
 [file:pack_metadata.json]
 ignore=PA129
+
+[known_words]
+fromVersion
+SLAs
+Cheatsheet
+
+[file:1_4_2.md]
+ignore=RN113,RN114

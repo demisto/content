@@ -1,0 +1,233 @@
+{
+  "rawResponse": {
+    "id": 265,
+    "createdBy": "cds",
+    "createdDate": "2022-07-07T11:47:53.537965",
+    "modifiedBy": "cds",
+    "modifiedDate": "2022-07-25T11:17:47.118966",
+    "stopRequested": true,
+    "quarantineEmails": [
+      {
+        "id": 34,
+        "recipientAddress": "test@example.com",
+        "internetMessageId": "<testInternetMessageId1>",
+        "ewsMessageId": null,
+        "status": "UNKNOWN_MAILBOX",
+        "errorMessage": "No primary addresses were found for 34/xxxxx@example.com",
+        "createdDate": "2022-07-07T11:19:18.498196",
+        "quarantinedDate": null,
+        "originalFolderId": null
+      },
+      {
+        "id": 36,
+        "recipientAddress": "test2@example.com",
+        "internetMessageId": "<testInternetMessageId2>",
+        "ewsMessageId": null,
+        "status": "UNKNOWN_MAILBOX",
+        "errorMessage": "No primary addresses were found for 36/xxxxx@example.com",
+        "createdDate": "2022-07-07T11:47:47.829729",
+        "quarantinedDate": null,
+        "originalFolderId": null
+      }
+    ],
+    "quarantineJobRuns": [
+      {
+        "id": 108,
+        "jobRunType": "QUARANTINE",
+        "status": "COMPLETED",
+        "startedDate": "2022-07-07T11:48:24.286317",
+        "completedDate": "2022-07-07T11:48:24.841332",
+        "total": 2,
+        "error": 2
+      },
+      {
+        "id": 114,
+        "jobRunType": "QUARANTINE",
+        "status": "COMPLETED",
+        "startedDate": "2022-07-07T11:55:09.404561",
+        "completedDate": "2022-07-07T11:55:09.933878",
+        "total": 2,
+        "error": 2
+      },
+      {
+        "id": 137,
+        "jobRunType": "QUARANTINE",
+        "status": "COMPLETED",
+        "startedDate": "2022-07-07T12:10:09.776387",
+        "completedDate": "2022-07-07T12:10:10.564183",
+        "total": 2,
+        "error": 2
+      },
+      {
+        "id": 169,
+        "jobRunType": "QUARANTINE",
+        "status": "COMPLETED",
+        "startedDate": "2022-07-07T12:24:55.3698",
+        "completedDate": "2022-07-07T12:24:55.986113",
+        "total": 2,
+        "error": 2
+      },
+      {
+        "id": 175,
+        "jobRunType": "QUARANTINE",
+        "status": "COMPLETED",
+        "startedDate": "2022-07-07T12:39:41.164803",
+        "completedDate": "2022-07-07T12:39:41.511586",
+        "total": 2,
+        "error": 2
+      },
+      {
+        "id": 468,
+        "jobRunType": "EXPUNGE",
+        "status": "COMPLETED",
+        "startedDate": null,
+        "completedDate": "2022-07-22T11:50:46.966388",
+        "total": 2,
+        "error": 0
+      }
+    ],
+    "autoQuarantine": false,
+    "matchingIOCs": [
+      "test_ioc_id_1"
+    ],
+    "matchingSources": [],
+    "matchingIocInfo": [
+      {
+        "id": "test_ioc_id_1",
+        "type": "ioc",
+        "attributes": {
+          "threat_type": "SUBJECT",
+          "threat_value": "test_ioc"
+        },
+        "metadata": {
+          "source": null,
+          "quarantine": {
+            "source_names": [
+              "Vision-UI"
+            ],
+            "expires_at": "2022-08-05T18:29:59.999+00:00",
+            "created_at": "2022-07-22T08:34:32.288+00:00",
+            "first_quarantined_at": "2022-07-22T08:34:32.851+00:00",
+            "last_quarantined_at": "2022-07-22T08:34:32.851+00:00",
+            "match_count": 1,
+            "quarantine_count": 10,
+            "expired": false
+          }
+        }
+      }
+    ],
+    "searchId": null,
+    "emailCount": 2
+  },
+  "outputs": {
+    "id": 265,
+    "createdBy": "cds",
+    "createdDate": "2022-07-07T11:47:53.537965",
+    "modifiedBy": "cds",
+    "modifiedDate": "2022-07-25T11:17:47.118966",
+    "stopRequested": true,
+    "quarantineEmails": [
+      {
+        "id": 34,
+        "recipientAddress": "test@example.com",
+        "internetMessageId": "<testInternetMessageId1>",
+        "status": "UNKNOWN_MAILBOX",
+        "errorMessage": "No primary addresses were found for 34/xxxxx@example.com",
+        "createdDate": "2022-07-07T11:19:18.498196"
+      },
+      {
+        "id": 36,
+        "recipientAddress": "test2@example.com",
+        "internetMessageId": "<testInternetMessageId2>",
+        "status": "UNKNOWN_MAILBOX",
+        "errorMessage": "No primary addresses were found for 36/xxxxx@example.com",
+        "createdDate": "2022-07-07T11:47:47.829729"
+      }
+    ],
+    "quarantineJobRuns": [
+      {
+        "id": 108,
+        "jobRunType": "QUARANTINE",
+        "status": "COMPLETED",
+        "startedDate": "2022-07-07T11:48:24.286317",
+        "completedDate": "2022-07-07T11:48:24.841332",
+        "total": 2,
+        "error": 2
+      },
+      {
+        "id": 114,
+        "jobRunType": "QUARANTINE",
+        "status": "COMPLETED",
+        "startedDate": "2022-07-07T11:55:09.404561",
+        "completedDate": "2022-07-07T11:55:09.933878",
+        "total": 2,
+        "error": 2
+      },
+      {
+        "id": 137,
+        "jobRunType": "QUARANTINE",
+        "status": "COMPLETED",
+        "startedDate": "2022-07-07T12:10:09.776387",
+        "completedDate": "2022-07-07T12:10:10.564183",
+        "total": 2,
+        "error": 2
+      },
+      {
+        "id": 169,
+        "jobRunType": "QUARANTINE",
+        "status": "COMPLETED",
+        "startedDate": "2022-07-07T12:24:55.3698",
+        "completedDate": "2022-07-07T12:24:55.986113",
+        "total": 2,
+        "error": 2
+      },
+      {
+        "id": 175,
+        "jobRunType": "QUARANTINE",
+        "status": "COMPLETED",
+        "startedDate": "2022-07-07T12:39:41.164803",
+        "completedDate": "2022-07-07T12:39:41.511586",
+        "total": 2,
+        "error": 2
+      },
+      {
+        "id": 468,
+        "jobRunType": "EXPUNGE",
+        "status": "COMPLETED",
+        "completedDate": "2022-07-22T11:50:46.966388",
+        "total": 2,
+        "error": 0
+      }
+    ],
+    "autoQuarantine": false,
+    "matchingIOCs": [
+      "test_ioc_id_1"
+    ],
+    "matchingSources": [],
+    "matchingIocInfo": [
+      {
+        "id": "test_ioc_id_1",
+        "type": "ioc",
+        "attributes": {
+          "threat_type": "SUBJECT",
+          "threat_value": "test_ioc"
+        },
+        "metadata": {
+          "quarantine": {
+            "source_names": [
+              "Vision-UI"
+            ],
+            "expires_at": "2022-08-05T18:29:59.999+00:00",
+            "created_at": "2022-07-22T08:34:32.288+00:00",
+            "first_quarantined_at": "2022-07-22T08:34:32.851+00:00",
+            "last_quarantined_at": "2022-07-22T08:34:32.851+00:00",
+            "match_count": 1,
+            "quarantine_count": 10,
+            "expired": false
+          }
+        }
+      }
+    ],
+    "emailCount": 2
+  }
+}

@@ -1,0 +1,25 @@
+{
+    "meta": {},
+    "data": [
+        {
+            "requests": 21382,
+            "bandwidth": 1236895162,
+            "identity": {
+                "id": 589064228,
+                "type": {
+                    "id": 9,
+                    "type": "roaming",
+                    "label": "Roaming Computers"
+                },
+                "label": "DESKTOP-IIQVPJ7",
+                "deleted": false
+            },
+            "counts": {
+                "requests": 21382,
+                "allowedrequests": 21267,
+                "blockedrequests": 41
+            },
+            "rank": 1
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+commonfields:
+  id: PrintErrorEntry
+  version: -1
+name: PrintErrorEntry
+fromversion: 5.0.0
+script: ''
+type: python
+subtype: python3
+tags: []
+comment: Prints an error entry with a given message
+enabled: true
+args:
+- name: message
+  description: The error message to be printed.
+  default: true
+  required: true
+scripttarget: 0
+runonce: false
+dockerimage: demisto/python3:3.10.6.33415
+tests:
+- No tests (auto formatted)

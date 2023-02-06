@@ -1,9 +1,15 @@
 import re
 import mimetypes
+import sys
+
 import dateparser
 from CommonServerPython import *  # noqa: F401
+import urllib3
 
 import demistomock as demisto  # noqa: F401
+
+urllib3.disable_warnings()
+
 
 ''' GLOBAL VARS '''
 ALARM_HEADERS = ['alarmId', 'alarmStatus', 'associatedCases', 'alarmRuleName', 'dateInserted', 'dateUpdated',
@@ -1036,7 +1042,7 @@ class Client(BaseClient):
 
             response = self._http_request('GET', 'lr-alarm-api/alarms/', params=params)
             alarms = response.get('alarmsSearchDetails')
-
+            alarms = alarms if alarms else []
             if created_after:
                 filtered_alarms = []
                 created_after = dateparser.parse(created_after)
@@ -1318,6 +1324,7 @@ class Client(BaseClient):
         return response
 
     def list_details_and_items_get_request(self, list_id, max_items):
+        self._headers['maxItemsThreshold'] = str(sys.maxsize)
         raw_response = self._http_request('GET', f'lr-admin-api/lists/{list_id}')
         response = raw_response.copy()
         if max_items and response.get('items'):
@@ -2497,7 +2504,6 @@ def main() -> None:  # pragma: no cover
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
         client: Client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=None)
 
         commands = {

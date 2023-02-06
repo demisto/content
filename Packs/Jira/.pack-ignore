@@ -19,3 +19,8 @@ ignore=PB106
 [known_words]
 Atlassian
 Jira
+JiraEventCollector
+JiraCreateIssue
+JiraCreateIssueExample
+customFields
+SSL

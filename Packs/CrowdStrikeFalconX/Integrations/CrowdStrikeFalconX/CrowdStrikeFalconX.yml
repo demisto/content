@@ -1,4 +1,7 @@
 category: Forensics & Malware Analysis
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: CrowdStrike Falcon X
   version: -1
@@ -9,18 +12,24 @@ configuration:
   name: base_url
   required: false
   type: 0
+  section: Connect
 - display: Client ID
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -34,8 +43,9 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
-description: Use the CrowdStrike Falcon X integration to submit files, file hashes, URLs, and FTPs for sandbox analysis, and to retrieve reports.
-display: CrowdStrike Falcon X
+  section: Collect
+description: Use the CrowdStrike Falcon Intelligence Sandbox integration to submit files, file hashes, URLs, and FTPs for sandbox analysis, and to retrieve reports.
+display: CrowdStrike Falcon Intelligence Sandbox
 name: CrowdStrike Falcon X
 script:
   commands:
@@ -103,13 +113,84 @@ script:
       secret: false
     - auto: PREDEFINED
       default:
-      defaultValue: "no"
+      defaultValue: no
       description: Whether to submit the given file to the sandbox. Can be "yes" or "no". Default is "no".
       isArray: false
       name: submit_file
       predefined:
-      - 'no'
-      - 'yes'
+      - no
+      - yes
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: "160: Windows 10"
+      description: Sandbox environment used for analysis. Relevant if the submit_file parameter is set to true.
+      isArray: false
+      name: environment_id
+      predefined:
+      - '300: Linux Ubuntu 16.04'
+      - 64-bit
+      - '200: Android (static analysis)'
+      - '160: Windows 10'
+      - 64-bit
+      - '110: Windows 7'
+      - 64-bit
+      - '100: Windows 7'
+      - 32-bit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Runtime script for sandbox analysis. Relevant if the submit_file parameter is set to true.
+      isArray: false
+      name: action_script
+      predefined:
+      - default
+      - default_maxantievasion
+      - default_randomfiles
+      - default_randomtheme
+      - default_openie
+      required: false
+      secret: false
+    - default: false
+      description: 'Command line script passed to the submitted file at runtime. Max length: 2048 characters. Relevant if the submit_file parameter is set to true.'
+      isArray: false
+      name: command_line
+      required: false
+      secret: false
+    - default: false
+      description: 'Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters. Relevant if the submit_file parameter is set to true.'
+      isArray: false
+      name: document_password
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether the sandbox analysis routes network traffic via TOR. If true, sandbox analysis routes network traffic via TOR. Relevant if the submit_file parameter is set to true.
+      isArray: false
+      name: enable_tor
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Name of the malware sample that is used for file type detection and analysis. Relevant if the submit_file parameter is set to true.
+      isArray: false
+      name: submit_name
+      required: false
+      secret: false
+    - default: false
+      description: Set a custom date for the sandbox environment in the format yyyy-MM-dd. Relevant if the submit_file parameter is set to true.
+      isArray: false
+      name: system_date
+      required: false
+      secret: false
+    - default: false
+      description: Sets a custom time for the sandbox environment in the format HH:mm. Relevant if the submit_file parameter is set to true.
+      isArray: false
+      name: system_time
       required: false
       secret: false
     deprecated: false
@@ -266,49 +347,49 @@ script:
       description: The sandbox incidents.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.tactic
-      description: The sndbox MITRE tactic name.
+      description: The sandbox MITRE tactic name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.technique
-      description: The sndbox MITRE technique name.
+      description: The sandbox MITRE technique name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.attack_id
-      description: The sndbox MITRE technique ID.
+      description: The sandbox MITRE technique ID.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers
-      description: The sndbox MITRE malicious identifiers.
+      description: The sandbox MITRE malicious identifiers.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.technique
-      description: The sndbox MITRE parent technique name.
+      description: The sandbox MITRE parent technique name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id
-      description: The sndbox MITRE parent technique ID.
+      description: The sandbox MITRE parent technique ID.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki
-      description: The sndbox MITRE parent technique wiki URL link.
+      description: The sandbox MITRE parent technique wiki URL link.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.threat_level_human
-      description: The sndbox signatures threat level.
+      description: The sandbox signatures threat level.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.category
-      description: The sndbox signatures category.
+      description: The sandbox signatures category.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.identifier
-      description: The sndbox signatures identifier.
+      description: The sandbox signatures identifier.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.type
-      description: The sndbox signatures type.
+      description: The sandbox signatures type.
       type: Number
     - contextPath: csfalconx.resource.sandbox.signatures.relevance
-      description: The sndbox signatures relevance.
+      description: The sandbox signatures relevance.
       type: Number
     - contextPath: csfalconx.resource.sandbox.signatures.name
-      description: The sndbox signatures name.
+      description: The sandbox signatures name.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.description
-      description: The sndbox signatures description.
+      description: The sandbox signatures description.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.origin
-      description: The sndbox signatures origin.
+      description: The sandbox signatures origin.
       type: String
     - contextPath: csfalconx.resource.intel.malware_families
       description: The malware families of the resource.
@@ -435,7 +516,7 @@ script:
     execution: false
     name: cs-fx-submit-uploaded-file
     outputs:
-    - contextPath: 'csfalconx.resource.uploaded_id'
+    - contextPath: csfalconx.resource.uploaded_id
       description: Analysis ID received after uploading the file.
       type: String
     - contextPath: csfalconx.resource.file_name
@@ -589,49 +670,49 @@ script:
       description: The sandbox incidents.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.tactic
-      description: The sndbox MITRE tactic name.
+      description: The sandbox MITRE tactic name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.technique
-      description: The sndbox MITRE technique name.
+      description: The sandbox MITRE technique name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.attack_id
-      description: The sndbox MITRE technique ID.
+      description: The sandbox MITRE technique ID.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers
-      description: The sndbox MITRE malicious identifiers.
+      description: The sandbox MITRE malicious identifiers.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.technique
-      description: The sndbox MITRE parent technique name.
+      description: The sandbox MITRE parent technique name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id
-      description: The sndbox MITRE parent technique ID.
+      description: The sandbox MITRE parent technique ID.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki
-      description: The sndbox MITRE parent technique wiki URL link.
+      description: The sandbox MITRE parent technique wiki URL link.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.threat_level_human
-      description: The sndbox signatures threat level.
+      description: The sandbox signatures threat level.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.category
-      description: The sndbox signatures category.
+      description: The sandbox signatures category.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.identifier
-      description: The sndbox signatures identifier.
+      description: The sandbox signatures identifier.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.type
-      description: The sndbox signatures type.
+      description: The sandbox signatures type.
       type: Number
     - contextPath: csfalconx.resource.sandbox.signatures.relevance
-      description: The sndbox signatures relevance.
+      description: The sandbox signatures relevance.
       type: Number
     - contextPath: csfalconx.resource.sandbox.signatures.name
-      description: The sndbox signatures name.
+      description: The sandbox signatures name.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.description
-      description: The sndbox signatures description.
+      description: The sandbox signatures description.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.origin
-      description: The sndbox signatures origin.
+      description: The sandbox signatures origin.
       type: String
     - contextPath: csfalconx.resource.intel.malware_families
       description: The malware families of the resource.
@@ -857,49 +938,49 @@ script:
       description: The sandbox incidents.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.tactic
-      description: The sndbox MITRE tactic name.
+      description: The sandbox MITRE tactic name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.technique
-      description: The sndbox MITRE technique name.
+      description: The sandbox MITRE technique name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.attack_id
-      description: The sndbox MITRE technique ID.
+      description: The sandbox MITRE technique ID.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers
-      description: The sndbox MITRE malicious identifiers.
+      description: The sandbox MITRE malicious identifiers.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.technique
-      description: The sndbox MITRE parent technique name.
+      description: The sandbox MITRE parent technique name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id
-      description: The sndbox MITRE parent technique ID.
+      description: The sandbox MITRE parent technique ID.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki
-      description: The sndbox MITRE parent technique wiki URL link.
+      description: The sandbox MITRE parent technique wiki URL link.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.threat_level_human
-      description: The sndbox signatures threat level.
+      description: The sandbox signatures threat level.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.category
-      description: The sndbox signatures category.
+      description: The sandbox signatures category.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.identifier
-      description: The sndbox signatures identifier.
+      description: The sandbox signatures identifier.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.type
-      description: The sndbox signatures type.
+      description: The sandbox signatures type.
       type: Number
     - contextPath: csfalconx.resource.sandbox.signatures.relevance
-      description: The sndbox signatures relevance.
+      description: The sandbox signatures relevance.
       type: Number
     - contextPath: csfalconx.resource.sandbox.signatures.name
-      description: The sndbox signatures name.
+      description: The sandbox signatures name.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.description
-      description: The sndbox signatures description.
+      description: The sandbox signatures description.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.origin
-      description: The sndbox signatures origin.
+      description: The sandbox signatures origin.
       type: String
     - contextPath: csfalconx.resource.intel.malware_families
       description: The malware families of the resource.
@@ -1106,10 +1187,10 @@ script:
       description: Analysis ID.
       type: String
     - contextPath: csfalconx.resource.incidents.details
-      description: Indicent details.
+      description: Incident details.
       type: String
     - contextPath: csfalconx.resource.incidents.name
-      description: Indicent name.
+      description: Incident name.
       type: String
     - contextPath: csfalconx.resource.processes.command_line
       description: Process command line.
@@ -1388,7 +1469,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'SHA256 hashes to search for. Overridden by the *filter* argument (if provided)'
+      description: SHA256 hashes to search for. Overridden by the *filter* argument (if provided)
       isArray: true
       name: hashes
       required: false
@@ -1437,7 +1518,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Maximum number of report IDs to return. Maximum is 5000.'
+      description: Maximum number of report IDs to return. Maximum is 5000.
       isArray: false
       name: limit
       required: false
@@ -1583,7 +1664,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Default is false.'
+      description: Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Default is false.
       isArray: false
       name: enable_tor
       predefined:
@@ -1592,7 +1673,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Name of the malware sample that’s used for file type detection and analysis.
+      description: Name of the malware sample that is used for file type detection and analysis.
       isArray: false
       name: submit_name
       required: false
@@ -1802,49 +1883,49 @@ script:
       description: The sandbox incidents.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.tactic
-      description: The sndbox MITRE tactic name.
+      description: The sandbox MITRE tactic name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.technique
-      description: The sndbox MITRE technique name.
+      description: The sandbox MITRE technique name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.attack_id
-      description: The sndbox MITRE technique ID.
+      description: The sandbox MITRE technique ID.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers
-      description: The sndbox MITRE malicious identifiers.
+      description: The sandbox MITRE malicious identifiers.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.technique
-      description: The sndbox MITRE parent technique name.
+      description: The sandbox MITRE parent technique name.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id
-      description: The sndbox MITRE parent technique ID.
+      description: The sandbox MITRE parent technique ID.
       type: String
     - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki
-      description: The sndbox MITRE parent technique wiki URL link.
+      description: The sandbox MITRE parent technique wiki URL link.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.threat_level_human
-      description: The sndbox signatures threat level.
+      description: The sandbox signatures threat level.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.category
-      description: The sndbox signatures category.
+      description: The sandbox signatures category.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.identifier
-      description: The sndbox signatures identifier.
+      description: The sandbox signatures identifier.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.type
-      description: The sndbox signatures type.
+      description: The sandbox signatures type.
       type: Number
     - contextPath: csfalconx.resource.sandbox.signatures.relevance
-      description: The sndbox signatures relevance.
+      description: The sandbox signatures relevance.
       type: Number
     - contextPath: csfalconx.resource.sandbox.signatures.name
-      description: The sndbox signatures name.
+      description: The sandbox signatures name.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.description
-      description: The sndbox signatures description.
+      description: The sandbox signatures description.
       type: String
     - contextPath: csfalconx.resource.sandbox.signatures.origin
-      description: The sndbox signatures origin.
+      description: The sandbox signatures origin.
       type: String
     - contextPath: csfalconx.resource.intel.malware_families
       description: The malware families of the resource.
@@ -1885,7 +1966,7 @@ script:
     description: Downloads IOC packs, PCAP files, and other analysis artifacts.
     execution: false
     name: cs-fx-download-ioc
-  dockerimage: demisto/python3:3.10.4.28442
+  dockerimage: demisto/python3:3.10.9.45313
   feed: false
   isfetch: false
   longRunning: false
@@ -1896,4 +1977,6 @@ script:
   type: python
 fromversion: 5.0.0
 tests:
-- No tests - no instance
+- CrowdStrike_FalconX_Test
+- CrowdStrike_Falcon_X_-Test-Detonate_File
+- CrowdStrike_Falcon_X_-Test-Detonate_URL

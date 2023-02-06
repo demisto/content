@@ -1,0 +1,16 @@
+{
+  "msft_adfs_raw": {
+    "EVENT": {
+        "type": "string",
+        "is_array": false
+    },
+    "winlog": {
+        "type": "string",
+        "is_array": false
+    },
+    "MESSAGE": {
+        "type": "string",
+        "is_array": false
+    }
+  }
+}

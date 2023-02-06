@@ -28,9 +28,12 @@ This integration was integrated and tested with Silverfort version 2.12.
 
 4. Click **Test** to validate the URLs, token, and connection.
 - To generate an API token:
-    1. From the Silverfort Admin Console, navigate to __Settings__ > __Advanced__.
-    2. In the Authentication Tokens section, click __Generate Token__.
-    3. Copy the generated token and save it in a safe place.
+    1. On the Silverfort Admin Console, navigate to the **SETTINGS** page, and then select **Silverfort API**.
+    2. Next to the Application **User ID** field, click **Create App User**.
+    3. Copy the values of the **App User ID** and **App User Secret**.
+    4. Click Save all.
+    5. The API KEY is "**App USer ID**:**App USer Secret**". (note the ":" between User ID and Secret)
+    For more information, see the [Silverfort documentation](https://support.silverfort.com/hc/en-us/articles/360020891537-Silverfort-Risk-Engine-API-Reference).
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

@@ -13,7 +13,7 @@ For more information about JQL syntax, go to https://www.atlassian.com/software/
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for jira-v2.
-3. **Authentiction**: As of June 2019, basic authentication using passwords for Jira is no longer supported. Use an API token or OAuth 1.0 instead.
+3. **Authentiction**: As of June 2019, basic authentication using passwords for Jira Cloud is no longer supported. Use an API token or OAuth 1.0 instead. As of this writing, Jira Data Center (unlike Jira Cloud) still supports basic authentication.
 4. Click **Add instance** to create and configure a new integration instance.
     *  ______________ Basic Authentication ________________
     
@@ -95,6 +95,8 @@ Queries Jira issues.
 | Ticket.Summary | Unknown | The summary of the ticket. | 
 | Ticket.Status | Unknown | The status of the ticket. | 
 | Ticket.Priority | String | The priority of the ticket. | 
+| Ticket.Description | String | The description of the ticket. | 
+| Ticket.Labels | String | The labels of the ticket. | 
 | Ticket.ProjectName | String | The ticket project name. | 
 | Ticket.DueDate | Date | The due date. | 
 | Ticket.Created | Date | The time the ticket was created. | 
@@ -129,7 +131,7 @@ Queries Jira issues.
 ```
 
 #### Human Readable Output
-### jira-issue-query
+**jira-issue-query**
 |assignee|created|creator|description|duedate|id|issueType|key|labels|priority|project|reporter|status|summary|ticket_link|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | null(null) | 2019-05-04T02:45:09.909+0300 | {creator} | TypeofIssueIdList |  | 12658 | A task that needs to be done. | TES-25 |  | Medium | test1 | {creator} | Done | HelloBlocked11 | https://demistodev.atlassian.net/rest/api/latest/issue/12658 |
@@ -194,7 +196,7 @@ Fetches an issue from Jira.
 ```
 
 #### Human Readable Output
-### jira-get-issue
+**jira-get-issue**
 |assignee|attachment|created|creator|description|duedate|id|issueType|key|labels|priority|project|reporter|status|summary|ticket_link|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | null(null) |  | 2020-01-19T12:34:13.784+0200 | {creator} | lala |  | 15572 | Request for Action | DEM-5415 |  | Medium | demistodev | {assignee} | To Do | Test issue23 | https://demistodev.atlassian.net/rest/api/latest/issue/15572 |
@@ -257,7 +259,7 @@ Creates a new issue in Jira.
 ```
 
 #### Human Readable Output
-### jira-create-issue
+**jira-create-issue**
 |id|key|projectKey|self|
 |---|---|---|---|
 | 15576 | DEM-5419 | DEM | https://demistodev.atlassian.net/rest/api/latest/issue/15576 |
@@ -290,7 +292,7 @@ There is no context output for this command.
 
 
 ##### Human Readable Output
-### jira-issue-upload-file
+**jira-issue-upload-file**
 |attachment_link|attachment_name|id|issueId|
 |---|---|---|---|
 | https://demistodev.atlassian.net/rest/api/2/attachment/13456 | jira_v2_yml.yml | 13456 | 15572 |
@@ -321,7 +323,7 @@ There is no context output for this command.
 
 
 ##### Human Readable Output
-### jira-issue-add-comment
+**jira-issue-add-comment**
 |comment|id|key|ticket_link|
 |---|---|---|---|
 | test comment | 13779 | admin | https://demistodev.atlassian.net/rest/api/2/issue/15572/comment/13779 |
@@ -359,7 +361,7 @@ There is no context output for this command.
 
 
 ##### Human Readable Output
-### jira-issue-add-link
+**jira-issue-add-link**
 |id|ticket_link|
 |---|---|
 | 13722 | https://demistodev.atlassian.net/rest/api/latest/issue/DEM-5415/remotelink/13722 |
@@ -424,7 +426,7 @@ Modifies an issue in Jira.
 
 #### Human Readable Output
 
-### jira-edit-issue
+**jira-edit-issue**
 |assignee|attachment|created|creator|description|duedate|id|issueType|key|labels|priority|project|reporter|status|summary|ticket_link|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | {assignee} |  | 2021-06-02T10:45:15.838-0400 | {creator} | testing3 |  | 10044 | A small, distinct piece of work. | DEM-5415 |  | Medium | SomethingGreat | {reporter} | To Do | Phishing Incident Declared | https://somejira.atlassian.net/rest/api/latest/issue/10044 |
@@ -474,7 +476,7 @@ Returns the comments added to a ticket.
 }
 ```
 ##### Human Readable Output
-### Comments
+**Comments**
 |Comment|Created|User|
 |---|---|---|
 | test comment | 2020-01-19T12:35:49.194+0200 | admin |
@@ -585,6 +587,119 @@ Account ID for attribute: XSOAR User is: 5e4ds952052b790c97509a7c
 Lists all possible transitions for a given ticket.
 
 
+
+### jira-append-to-field
+***
+Modifies a specific field in an issue in Jira by appending to it instead of replacing its content. 
+Field must be either of type string (appending by using ',') or arrayd.
+
+
+#### Base Command
+
+`jira-append-to-field`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issueId | The ID of the issue to edit. | Required | 
+| fieldJson | The field object (in JSON format). For example {"customfield_10037": "New value"}. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Ticket.Id | Unknown | The ticket ID. | 
+| Ticket.Key | Unknown | The ticket key. | 
+| Ticket.Assignee | Unknown | The user assigned to the ticket. | 
+| Ticket.Creator | Unknown | The user who created the ticket. | 
+| Ticket.Summary | Unknown | The ticket summary. | 
+| Ticket.Status | Unknown | The ticket status. | 
+
+#### Command Example
+```!jira-append-to-field issueId=CIAC-3597 fieldJson={\"customfield_16492\":\"example\"} ```
+
+#### Context Example
+```json
+{
+  "Ticket": {
+    "Assignee": "User Name(user@example.com)",
+    "Created": "2022-07-21T10:52:22.043+0000",
+    "Creator": "User Name(user@example.com)",
+    "DueDate": null,
+    "Custom Field Display Name": "test,example",
+    "Id": "1179420",
+    "Key": "TEST-3597",
+    "Labels": [
+      "test",
+    ],
+    "LastSeen": null,
+    "LastUpdate": "2022-07-27T04:47:24.214+0000",
+    "Priority": "P5",
+    "ProjectName": "Project Name",
+    "Status": "Backlog",
+    "Summary": "example",
+    "attachment": ""
+  }
+}
+
+
+### jira-get-specific-field
+***
+Gets specific fields from a Jira issue and adds it to context dynamically.
+
+#### Base Command
+
+`jira-get-specific-field`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issueId | The ID of the issue to edit. | Required | 
+| components | The fields to retrieve from the issue. For example field="customfield_164,labels". | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Ticket.Id | Unknown | The ticket ID. | 
+| Ticket.Key | Unknown | The ticket key. | 
+| Ticket.Assignee | Unknown | The user assigned to the ticket. | 
+| Ticket.Creator | Unknown | The user who created the ticket. | 
+| Ticket.Summary | Unknown | The ticket summary. | 
+| Ticket.Status | Unknown | The ticket status. | 
+
+#### Command Example
+```!jira-get-specific-field issueId="TEST-3597" field="labels,customfield_16492" ```
+
+#### Context Example
+```json
+{
+  "Ticket": {
+    "Assignee": "User Name(user@example.com)",
+    "Created": "2022-07-21T10:52:22.043+0000",
+    "Creator": "User Name(user@example.com)",
+    "DueDate": null,
+    "Custom Field Display Name": "test",
+    "Id": "1179420",
+    "Key": "TEST-3597",
+    "Labels": [
+      "test"
+    ],
+    "LastSeen": null,
+    "LastUpdate": "2022-07-27T04:47:24.214+0000",
+    "Priority": "P5",
+    "ProjectName": "Project Name",
+    "Status": "Backlog",
+    "Summary": "example",
+    "attachment": ""
+  }
+}
+
+```
+
+
 #### Base Command
 
 `jira-list-transitions`
@@ -618,7 +733,7 @@ Lists all possible transitions for a given ticket.
 }
 ```
 #### Human Readable Output
-### List Transitions:
+**List Transitions:**
 |Transition Name|
 |---|
 | Backlog |
@@ -702,7 +817,7 @@ There is no context output for this command.
 **This feature is compliant with Cortex XSOAR version 6.0 and above.**
 This part walks you through setting up the Jira integration to mirror incidents from Jira in Cortex XSOAR. 
 The instructions below include steps for configuring the integration and the incoming and outgoing mappers. However, not every option available in the integration, nor all classification and mapping features are covered. 
-For information about **Classification and Mapping** visit: [Classification and Mapping](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/incidents/classification-and-mapping.html).
+For information about **Classification and Mapping** visit: [Classification and Mapping](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Classification-and-Mapping).
 
 When mirroring incidents, you can make changes in Jira, which will be reflected in Cortex XSOAR, or vice versa. 
 You can also attach files from either of the systems, which will then be available in the other system. 

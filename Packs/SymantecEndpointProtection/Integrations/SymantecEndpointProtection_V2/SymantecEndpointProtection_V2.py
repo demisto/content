@@ -3,7 +3,9 @@ from CommonServerPython import *
 import requests
 import json
 import re
-import urllib
+import urllib.request
+import urllib.parse
+import urllib.error
 
 requests.packages.urllib3.disable_warnings()
 
@@ -85,7 +87,7 @@ def endpoint_endpoint_extract(raw_json):
 
 
 def build_query_params(params):
-    list_params = map(lambda key: key + '=' + str(params[key]), params.keys())
+    list_params = list(map(lambda key: key + '=' + str(params[key]), params.keys()))
     query_params = '&'.join(list_params)
     return '?' + query_params if query_params else ''
 
@@ -94,7 +96,7 @@ def do_auth(server, crads, insecure, domain):
     url = fix_url(str(server)) + 'sepm/api/v1/identity/authenticate'
     body = {
         'username': crads.get('identifier') if crads.get('identifier') else '',
-        'password': urllib.quote(crads.get('password')) if crads.get('password') else '',
+        'password': urllib.parse.quote(crads.get('password')) if crads.get('password') else '',
         'domain': domain if domain else ''
     }
     res = requests.post(url, headers={"Content-Type": "application/json"}, data=json.dumps(body), verify=not insecure)
@@ -275,7 +277,8 @@ def update_content(token, computer_id):
         error_code = demisto.get(
             res_json, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorCode')
         error_message = demisto.get(
-            res_json, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage')
+            res_json,
+            'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage')
         if error_code or error_message:
             return_error('An error response has returned from server:'
                          ' {0} with code: {1}'.format(error_message, error_code))
@@ -354,25 +357,25 @@ def change_assigined(policy):
 
 
 def sanitize_policies_list_for_md(policies_list):
-    return map(change_assigined, policies_list)
+    return list(map(change_assigined, policies_list))
 
 
 def sanitize_policies_list(policies_list):
-    return map(lambda policy: {
+    return list(map(lambda policy: {
         'PolicyName': policy['name'],
         'Type': policy['policytype'],
         'ID': policy['id'],
         'Description': policy['desc'],
         'Enabled': policy['enabled'],
-        'AssignedLocations': map(lambda location: {
+        'AssignedLocations': list(map(lambda location: {
             'GroupID': location.get('groupId'),
             'Locations': location.get('locationIds')
-        }, policy.get('assignedtolocations') if policy.get('assignedtolocations') else []),
-        'AssignedCloudGroups': map(lambda location: {
+        }, policy.get('assignedtolocations') if policy.get('assignedtolocations') else [])),
+        'AssignedCloudGroups': list(map(lambda location: {
             'GroupID': location.get('groupId'),
             'Locations': location.get('locationIds')
-        }, policy.get('assignedtocloudgroups') if policy.get('assignedtocloudgroups') else []),
-    }, policies_list)
+        }, policy.get('assignedtocloudgroups') if policy.get('assignedtocloudgroups') else [])),
+    }, policies_list))
 
 
 def validate_ip(ip):
@@ -487,7 +490,7 @@ def endpoint_quarantine(token, endpoint, action):
 def get_location_list(token, group_id):
     url = 'sepm/api/v1/groups/{}/locations'.format(group_id)
     url_resp = do_get(token, False, url)
-    location_ids = map(lambda location_string: {'ID': location_string.split('/')[-1]}, url_resp)
+    location_ids = list(map(lambda location_string: {'ID': location_string.split('/')[-1]}, url_resp))
     return url_resp, location_ids
 
 
@@ -697,8 +700,8 @@ def list_locations_command(token):
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': url_resp,
-        'HumanReadable': tableToMarkdown('Locations', map(lambda location: {'Location ID': location.get('ID')},
-                                                          location_ids)),
+        'HumanReadable': tableToMarkdown('Locations', list(map(lambda location: {'Location ID': location.get('ID')},
+                                                               location_ids))),
         'IgnoreAutoExtract': True,
         'EntryContext': {
             'SEPM.Locations': location_ids
@@ -842,7 +845,7 @@ def main():
         if current_command == 'sep-identify-old-clients':
             old_clients_command(token)
     except Exception as ex:
-        return_error('Cannot perform the command: {}. Error: {}'.format(current_command, ex), ex)
+        return_error(f'Cannot perform the command: {current_command}. Error: {ex}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

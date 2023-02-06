@@ -3,13 +3,11 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 import dateparser
 
-import requests
-import traceback
 from typing import Dict, Any
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
-
+import urllib3
+urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
@@ -391,15 +389,12 @@ def get_all_group_custom_attributes(group: dict) -> dict:
     return custom_attributes_dict
 
 
-def get_common_incident_details(static_attributes: dict, editable_attributes: dict, args, incident_type=None,
-                                isfetch=False) -> dict:
+def get_common_incident_details(static_attributes: dict, editable_attributes: dict, args) -> dict:
     """
     Parses the needed incident details into context paths
     :param static_attributes: The static attributes of the incident
     :param editable_attributes: The editable attributes of the incident
     :param args: demisto.args
-    :param incident_type: The incident type.
-    :param isfetch: Check if this function was called by the fetch-incidents command.
     :return: the parsed dict
     """
     incident_info_map_editable = editable_attributes.get('infoMap', {})
@@ -407,28 +402,16 @@ def get_common_incident_details(static_attributes: dict, editable_attributes: di
     incident_custom_attribute_groups = editable_attributes.get('customAttributeGroups', [])
     incident_details: dict = assign_params(**{
         'ID': static_attributes.get('incidentId'),
-        'creationDate': incident_info_map_static.get('creationDate'),
-        'policyId': incident_info_map_static.get('policyId'),
         'severity': get_severity_name_by_id(arg_to_number(incident_info_map_editable.get('severityId'))),
-        'incidentStatusId': incident_info_map_editable.get('incidentStatusId'),
-        'detectionDate': incident_info_map_static.get('detectionDate'),
-        'senderIPAddress': incident_info_map_static.get('senderIPAddress'),
-        'endpointMachineIpAddress': incident_info_map_static.get('endpointMachineIpAddress'),
-        'policyName': incident_info_map_static.get('policyName'),
-        'dataOwnerEmail': incident_info_map_editable.get('dataOwnerEmail'),
-        'dataOwnerName': incident_info_map_editable.get('dataOwnerName'),
-        'policyVersion': incident_info_map_static.get('policyVersion'),
-        'messageSource': incident_info_map_static.get('messageSource'),
-        'messageType': incident_info_map_static.get('messageType'),
-        'detectionServerName': incident_info_map_static.get('detectionServerName'),
-        'policyGroupName': incident_info_map_static.get('policyGroupName'),
-        'matchCount': incident_info_map_static.get('matchCount'),
-        'preventOrProtectStatusId': incident_info_map_editable.get('preventOrProtectStatusId'),
         'customAttributeGroup': parse_custom_attribute(incident_custom_attribute_groups, args),
     })
-    if isfetch:
-        incident_additional_details = get_details_for_specific_type(incident_type, incident_info_map_static)
-        incident_details.update(incident_additional_details)
+    static_attributes.pop('incidentId')
+    editable_attributes.pop('incidentId')
+    incident_info_map_editable.pop('severityId')
+    editable_attributes.pop('customAttributeGroups', [])
+    incident_details.update(incident_info_map_static)
+    incident_details.update(incident_info_map_editable)
+
     return assign_params(**incident_details)
 
 
@@ -448,52 +431,6 @@ def get_details_unauthorized_incident(incident_data):
     })
 
     return {key: val for key, val in incident_details.items() if val}
-
-
-def get_details_for_specific_type(incident_type, incident_info_map_static):
-    if incident_type == 'NETWORK':
-        additional_info = assign_params(**{
-            'messageSubject': incident_info_map_static.get('messageSubject'),
-            'networkSenderPort': incident_info_map_static.get('networkSenderPort'),
-            'recipientInfo': {
-                'recipientDomain': incident_info_map_static.get('recipientInfo')[0].get('recipientDomain'),
-                'recipientPort': incident_info_map_static.get('recipientInfo')[0].get('recipientPort'),
-                'recipientUrl': incident_info_map_static.get('recipientInfo')[0].get('recipientUrl')},
-
-        })
-
-    elif incident_type == 'DISCOVER':
-        additional_info = assign_params(**{
-            'discoverName': incident_info_map_static.get('discoverName'),
-            'discoverRepositoryLocation': incident_info_map_static.get('discoverRepositoryLocation'),
-            'fileModifiedBy': incident_info_map_static.get('fileModifiedBy'),
-            'fileCreatedBy': incident_info_map_static.get('fileCreatedBy'),
-            'fileOwner': incident_info_map_static.get('fileOwner'),
-            'fileOwnerEmail': incident_info_map_static.get('fileOwnerEmail'),
-            'fileAccessDate': incident_info_map_static.get('fileAccessDate'),
-            'discoverServer': incident_info_map_static.get('discoverServer'),
-            'discoverTargetName': incident_info_map_static.get('discoverTargetName'),
-            'discoverScanStartDate': incident_info_map_static.get('discoverScanStartDate'),
-
-        })
-    elif incident_type == 'ENDPOINT':
-        additional_info = assign_params(**{
-            'domainUserName': incident_info_map_static.get('domainUserName'),
-            'endpointApplicationName': incident_info_map_static.get('endpointApplicationName'),
-            'endpointDeviceInstanceId': incident_info_map_static.get('endpointDeviceInstanceId'),
-            'endpointMachineName': incident_info_map_static.get('endpointMachineName'),
-            'endpointFileName': incident_info_map_static.get('endpointFileName'),
-            'endpointFilePath': incident_info_map_static.get('endpointFilePath'),
-            'fileCreatedBy': incident_info_map_static.get('fileCreatedBy'),
-            'fileModifiedBy': incident_info_map_static.get('fileModifiedBy'),
-            'endpointApplicationPath': incident_info_map_static.get('endpointApplicationPath'),
-            'endpointConnectionStatus': incident_info_map_static.get('endpointConnectionStatus'),
-            'fileAccessDate': incident_info_map_static.get('fileAccessDate'),
-
-        })
-    else:
-        return {}
-    return additional_info
 
 
 def get_hr_context_incidents_status(status_list: List[dict]):
@@ -577,12 +514,10 @@ def get_incident_details_fetch(client, incident):
     incident_details = {}
     try:
         incident_id = incident.get('incidentId')
-        incident_type = incident.get('messageSource', '')
         static_attributes = client.get_incident_static_attributes_request(incident_id)
         editable_attributes = client.get_incident_editable_attributes_request(incident_id)
         incident_details = get_common_incident_details(static_attributes, editable_attributes,
-                                                       args={"custom_attributes": "all"}, isfetch=True,
-                                                       incident_type=incident_type)
+                                                       args={"custom_attributes": "all"})
     # In case of getting 401 (Unauthorized incident) - will get missing data
     except DemistoException as e:
         if '401' in str(e):
@@ -913,7 +848,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

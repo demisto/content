@@ -4,10 +4,11 @@ API Documentation:
     https://developers.virustotal.com/v3.0/reference
 """
 from collections import defaultdict
-from typing import Callable
+from typing import Callable, cast
 
 from dateparser import parse
 
+import demistomock as demisto
 from CommonServerPython import *
 
 INTEGRATION_NAME = "VirusTotal"
@@ -99,7 +100,10 @@ class Client(BaseClient):
             'https://www.virustotal.com/api/v3/',
             verify=not argToBoolean(params.get('insecure')),
             proxy=argToBoolean(params.get('proxy')),
-            headers={'x-apikey': params['credentials']['password']}
+            headers={
+                'x-apikey': params['credentials']['password'],
+                'x-tool': 'CortexVirusTotalV3'
+            }
         )
 
     # region Reputation calls
@@ -111,7 +115,7 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'ip_addresses/{ip}?relationships={relationships}'
+            f'ip_addresses/{ip}?relationships={relationships}', ok_codes=(429, 200)
         )
 
     def file(self, file: str, relationships: str = '') -> dict:
@@ -121,7 +125,7 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'files/{file}?relationships={relationships}'
+            f'files/{file}?relationships={relationships}', ok_codes=(404, 429, 200)
         )
 
     def url(self, url: str, relationships: str = ''):
@@ -131,7 +135,7 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'urls/{encode_url_to_base64(url)}?relationships={relationships}'
+            f'urls/{encode_url_to_base64(url)}?relationships={relationships}', ok_codes=(429, 200)
         )
 
     def domain(self, domain: str, relationships: str = '') -> dict:
@@ -141,7 +145,7 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'domains/{domain}?relationships={relationships}'
+            f'domains/{domain}?relationships={relationships}', ok_codes=(429, 200)
         )
 
     # endregion
@@ -332,14 +336,14 @@ class Client(BaseClient):
             params={'limit': limit}
         )
 
-    def passive_dns_data(self, ip: str, limit: int) -> dict:
+    def passive_dns_data(self, id: dict, limit: int) -> dict:
         """
         See Also:
             https://developers.virustotal.com/v3.0/reference#ip-relationships
         """
         return self._http_request(
             'GET',
-            f'ip_addresses/{ip}/resolutions',
+            f'{"ip_addresses" if id["type"] == "ip" else "domains"}/{id["value"]}/resolutions',
             params={'limit': limit}
         )
 
@@ -362,6 +366,16 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             f'/analyses/{analysis_id}'
+        )
+
+    def get_file_sigma_analysis(self, file_hash: str) -> dict:
+        """
+        See Also:
+            https://developers.virustotal.com/reference/files#relationships
+        """
+        return self._http_request(
+            'GET',
+            f'files/{file_hash}/sigma_analysis',
         )
 
     # region Premium commands
@@ -799,10 +813,10 @@ class ScoreCalculator:
         """
         self.logs.append(f'Basic analyzing of "{indicator}"')
         data = raw_response.get('data', {})
-        attributes = data['attributes']
+        attributes = data.get('attributes', {})
         popularity_ranks = attributes.get('popularity_ranks')
-        last_analysis_results = attributes['last_analysis_results']
-        last_analysis_stats = attributes['last_analysis_stats']
+        last_analysis_results = attributes.get('last_analysis_results')
+        last_analysis_stats = attributes.get('last_analysis_stats')
         if self.is_good_by_popularity_ranks(popularity_ranks):
             return Common.DBotScore.GOOD
         if self.is_preferred_vendors_pass_malicious(last_analysis_results):
@@ -1019,8 +1033,8 @@ class ScoreCalculator:
             base_score,
             [
                 client.get_domain_communicating_files,
-                client.get_url_downloaded_files,
-                client.get_url_referrer_files
+                client.get_domain_downloaded_files,
+                client.get_domain_referrer_files
             ]
         )
 
@@ -1147,6 +1161,9 @@ def build_domain_output(
         extended_data: bool):
     data = raw_response.get('data', {})
     attributes = data.get('attributes', {})
+    last_analysis_stats = attributes.get('last_analysis_stats', {})
+    positive_engines = last_analysis_stats.get('malicious', 0)
+    detection_engines = sum(last_analysis_stats.values())
     relationships_response = data.get('relationships', {})
     whois: defaultdict = get_whois(attributes.get('whois', ''))
     score = score_calculator.domain_score(domain, raw_response)
@@ -1192,16 +1209,19 @@ def build_domain_output(
         readable_output=tableToMarkdown(
             f'Domain data of {domain}',
             {
-                'last_modified': epoch_to_timestamp(attributes.get('last_modification_date')),
                 **data,
+                **attributes,
                 **whois,
-                **attributes
+                'last_modified': epoch_to_timestamp(attributes.get('last_modification_date')),
+                'positives': f'{positive_engines}/{detection_engines}'
             },
             headers=[
                 'id',
                 'Registrant Country',
+                'Registrar',
                 'last_modified',
-                'last_analysis_stats'
+                'reputation',
+                'positives'
             ],
             removeNull=True,
             headerTransform=underscoreToCamelCase
@@ -1259,19 +1279,19 @@ def build_url_output(
             f'URL data of "{url}"',
             {
                 **data,
-                **data.get('attributes', {}),
+                **attributes,
                 'url': url,
+                'last_modified': epoch_to_timestamp(attributes.get('last_modification_date')),
                 'positives': f'{positive_detections}/{detection_engines}',
-                'last_modified': epoch_to_timestamp(attributes.get('last_modification_date'))
             },
             headers=[
                 'url',
                 'title',
-                'last_modified',
                 'has_content',
                 'last_http_response_content_sha256',
-                'positives',
-                'reputation'
+                'last_modified',
+                'reputation',
+                'positives'
             ],
             removeNull=True,
             headerTransform=underscoreToCamelCase
@@ -1304,6 +1324,7 @@ def build_ip_output(client: Client, score_calculator: ScoreCalculator, ip: str, 
         geo_country=attributes.get('country'),
         detection_engines=detection_engines,
         positive_engines=positive_engines,
+        as_owner=attributes.get('as_owner'),
         relationships=relationships_list,
         dbot_score=Common.DBotScore(
             ip,
@@ -1328,7 +1349,7 @@ def build_ip_output(client: Client, score_calculator: ScoreCalculator, ip: str, 
                 'last_modified': epoch_to_timestamp(attributes.get('last_modification_date')),
                 'positives': f'{positive_engines}/{detection_engines}'
             },
-            headers=['id', 'network', 'country', 'last_modified', 'reputation', 'positives'],
+            headers=['id', 'network', 'country', 'as_owner', 'last_modified', 'reputation', 'positives'],
             headerTransform=underscoreToCamelCase
         ),
         outputs=data,
@@ -1415,6 +1436,12 @@ def build_file_output(
         raw_response=raw_response,
         relationships=relationships_list
     )
+
+
+def build_unknown_file_output(client: Client, file_hash: str) -> CommandResults:
+    desc = f'File "{file_hash}" was not found in VirusTotal'
+    dbot = Common.DBotScore(file_hash, DBotScoreType.FILE, INTEGRATION_NAME, 0, desc, client.reliability)
+    return CommandResults(indicator=Common.File(dbot), readable_output=desc)
 
 
 def get_whois(whois_string: str) -> defaultdict:
@@ -1523,6 +1550,11 @@ def encode_url_to_base64(url: str) -> str:
     return base64.urlsafe_b64encode(url.encode()).decode().strip('=')
 
 
+def merge_two_dicts(dict_a, dict_b):
+    merged_dict = dict_a.copy()
+    merged_dict.update(dict_b)
+    return merged_dict
+
 # endregion
 
 # region Reputation commands
@@ -1535,17 +1567,31 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, re
     """
     ips = argToList(args['ip'])
     results: List[CommandResults] = list()
+    execution_metrics = ExecutionMetrics()
     for ip in ips:
         raise_if_ip_not_valid(ip)
         try:
             raw_response = client.ip(ip, relationships)
+            if raw_response.get('error', {}).get('code') == "QuotaExceededError":
+                execution_metrics.quota_error += 1
+                result = CommandResults(readable_output=f'Quota exceeded for IP: {ip}')
+                results.append(result)
+                continue
         except Exception as exception:
             # If anything happens, just keep going
             demisto.debug(f'Could not process IP: "{ip}"\n {str(exception)}')
+            execution_metrics.general_error += 1
             continue
+        execution_metrics.success += 1
         results.append(
-            build_ip_output(client, score_calculator, ip, raw_response, argToBoolean(args.get('extended_data')))
-        )
+            build_ip_output(client, score_calculator, ip, raw_response, argToBoolean(args.get('extended_data'))))
+    if len(results) == 0:
+        result = CommandResults(readable_output='No IPs were found.').to_context()
+        results.append(result)
+    if execution_metrics.is_supported():
+        _metric_results = execution_metrics.metrics
+        metric_results = cast(CommandResults, _metric_results)
+        results.append(metric_results)
     return results
 
 
@@ -1556,15 +1602,34 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
     files = argToList(args['file'])
     extended_data = argToBoolean(args.get('extended_data'))
     results: List[CommandResults] = list()
+    execution_metrics = ExecutionMetrics()
+
     for file in files:
         raise_if_hash_not_valid(file)
         try:
             raw_response = client.file(file, relationships)
+            if raw_response.get('error', {}).get('code') == "QuotaExceededError":
+                execution_metrics.quota_error += 1
+                result = CommandResults(readable_output=f'Quota exceeded for file: {file}')
+                results.append(result)
+                continue
+            if raw_response.get('error', {}).get('code') == 'NotFoundError':
+                results.append(build_unknown_file_output(client, file))
+                continue
             results.append(build_file_output(client, score_calculator, file, raw_response, extended_data))
+            execution_metrics.success += 1
         except Exception as exc:
             # If anything happens, just keep going
-            results.append(CommandResults(readable_output=f'Could not process file: "{file}"\n {str(exc)}'))
-
+            demisto.debug(f'Could not process file: "{file}"\n {str(exc)}')
+            execution_metrics.general_error += 1
+            continue
+    if len(results) == 0:
+        result = CommandResults(readable_output='No files were found.')
+        results.append(result)
+    if execution_metrics.is_supported():
+        _metric_results = execution_metrics.metrics
+        metric_results = cast(CommandResults, _metric_results)
+        results.append(metric_results)
     return results
 
 
@@ -1576,16 +1641,29 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
     urls = argToList(args['url'])
     extended_data = argToBoolean(args.get('extended_data'))
     results: List[CommandResults] = list()
+    execution_metrics = ExecutionMetrics()
     for url in urls:
         try:
-            raw_response = client.url(
-                url, relationships
-            )
+            raw_response = client.url(url, relationships)
+            if raw_response.get('error', {}).get('code') == "QuotaExceededError":
+                execution_metrics.quota_error += 1
+                result = CommandResults(readable_output=f'Quota exceeded for url: {url}')
+                results.append(result)
+                continue
         except Exception as exception:
             # If anything happens, just keep going
             demisto.debug(f'Could not process URL: "{url}".\n {str(exception)}')
+            execution_metrics.general_error += 1
             continue
+        execution_metrics.success += 1
         results.append(build_url_output(client, score_calculator, url, raw_response, extended_data))
+    if len(results) == 0:
+        result = CommandResults(readable_output='No urls were found.')
+        results.append(result)
+    if execution_metrics.is_supported():
+        _metric_results = execution_metrics.metrics
+        metric_results = cast(CommandResults, _metric_results)
+        results.append(metric_results)
     return results
 
 
@@ -1594,18 +1672,34 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
     1 API Call for regular
     1-4 API Calls for premium subscriptions
     """
+    execution_metrics = ExecutionMetrics()
     domains = argToList(args['domain'])
     results: List[CommandResults] = list()
     for domain in domains:
         try:
             raw_response = client.domain(domain, relationships)
+            if raw_response.get('error', {}).get('code') == "QuotaExceededError":
+                execution_metrics.quota_error += 1
+                result = CommandResults(readable_output=f'Quota exceeded for domain: {domain}')
+                results.append(result)
+                continue
         except Exception as exception:
             # If anything happens, just keep going
             demisto.debug(f'Could not process domain: "{domain}"\n {str(exception)}')
+            execution_metrics.general_error += 1
             continue
-        results.append(
-            build_domain_output(client, score_calculator, domain, raw_response, argToBoolean(args.get('extended_data')))
-        )
+        execution_metrics.success += 1
+        result = build_domain_output(client, score_calculator, domain, raw_response,
+                                     argToBoolean(args.get('extended_data')))
+        results.append(result)
+    if len(results) == 0:
+        result = CommandResults(readable_output='No domains were found.')
+        results.append(result)
+    if execution_metrics.is_supported():
+        _metric_results = execution_metrics.metrics
+        metric_results = cast(CommandResults, _metric_results)
+        results.append(metric_results)
+
     return results
 
 
@@ -1751,18 +1845,35 @@ def scan_url_command(client: Client, args: dict) -> CommandResults:
     1 API Call
     """
     url = args['url']
-    raw_response = client.url_scan(url)
-    data = raw_response['data']
-    data['url'] = url
-    context = {
-        f'{INTEGRATION_ENTRY_CONTEXT}.Submission(val.id && val.id === obj.id)': data,
-        'vtScanID': data.get('id')  # BC preservation
-    }
+    raw_response: Dict[str, Any] = {}
+    data: Dict[str, Any] = {}
+    context: Dict[str, Any] = {}
+    headers = ['id', 'url']
+
+    try:
+        raw_response = client.url_scan(url)
+        data = raw_response['data']
+
+        data['url'] = url
+        context = {
+            f'{INTEGRATION_ENTRY_CONTEXT}.Submission(val.id && val.id === obj.id)': data,
+            'vtScanID': data.get('id')  # BC preservation
+        }
+    except DemistoException as ex:
+        error = ex.res.json().get('error')
+
+        # Invalid url, probably due to an unknown TLD
+        if error['code'] == 'InvalidArgumentError':
+            data = {'url': url, 'id': '', 'error': error['message']}
+            headers.append('error')
+        else:
+            raise
+
     return CommandResults(
         readable_output=tableToMarkdown(
             'New url submission:',
             data,
-            headers=['id', 'url']
+            headers=headers
         ),
         outputs=context,
         raw_response=raw_response
@@ -1804,7 +1915,7 @@ def get_comments_command(client: Client, args: dict) -> CommandResults:
         raw_response = client.get_ip_comments(resource, limit)
     elif resource_type == 'url':
         raw_response = client.get_url_comments(resource, limit)
-    elif resource_type == 'hash':
+    elif resource_type in ('hash', 'file'):
         raise_if_hash_not_valid(resource)
         raw_response = client.get_hash_comments(resource, limit)
     elif resource_type == 'domain':
@@ -1965,19 +2076,41 @@ def passive_dns_data(client: Client, args: dict) -> CommandResults:
     """
     1 API Call
     """
-    ip = args['ip']
+
+    id = {}
+    if 'ip' in args:
+        id['value'] = args['ip']
+        id['type'] = 'ip'
+        raise_if_ip_not_valid(id['value'])
+    elif 'domain' in args:
+        id['value'] = args['domain']
+        id['type'] = 'domain'
+    elif 'id' in args:
+        id['value'] = args['id']
+        if is_ip_valid(id['value']):
+            id['type'] = 'ip'
+        else:
+            id['type'] = 'domain'
+    else:
+        return CommandResults(readable_output='No IP address or domain was given.')
+
     limit = arg_to_number_must_int(
         args['limit'],
         arg_name='limit',
         required=True
     )
-    raw_response = client.passive_dns_data(ip, limit)
+
+    try:
+        raw_response = client.passive_dns_data(id, limit)
+    except Exception:
+        return CommandResults(readable_output=f'{"IP" if id["type"] == "ip" else "Domain"} {id["value"]} was not found.')
+
     data = raw_response['data']
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.PassiveDNS',
         'id',
         readable_output=tableToMarkdown(
-            f'Passive DNS data for IP {ip}',
+            f'Passive DNS data for {"IP" if id["type"] == "ip" else "domain"} {id["value"]}',
             [
                 {
                     'id': item['id'],
@@ -2034,7 +2167,6 @@ def get_analysis_command(client: Client, args: dict) -> CommandResults:
             {
                 **data.get('attributes', {}),
                 'id': analysis_id
-
             },
             headers=['id', 'stats', 'status'],
             headerTransform=underscoreToCamelCase
@@ -2060,6 +2192,52 @@ def delete_comment(client: Client, args: dict) -> CommandResults:
     id_ = args['id']
     client.delete_comment(id_)
     return CommandResults(readable_output=f'Comment {id_} has been deleted!')
+
+
+def file_sigma_analysis_command(client: Client, args: dict) -> CommandResults:
+    """Get last sigma analysis for a given file"""
+    file_hash = args['file']
+    only_stats = argToBoolean(args['only_stats'])
+    raw_response = client.file(file_hash)
+    data = raw_response['data']
+
+    if 'sigma_analysis_stats' not in data['attributes'] or 'sigma_analysis_results' not in data['attributes']:
+        return CommandResults(readable_output=f'No Sigma analyses for file {file_hash} were found.')
+
+    if only_stats:
+        return CommandResults(
+            f'{INTEGRATION_ENTRY_CONTEXT}.SigmaAnalysis',
+            'id',
+            readable_output=tableToMarkdown(
+                f'Summary of the last Sigma analysis for file {file_hash}:',
+                {
+                    **data['attributes']['sigma_analysis_stats'],
+                    '**TOTAL**': sum(data['attributes']['sigma_analysis_stats'].values())
+                },
+                headers=['critical', 'high', 'medium', 'low', '**TOTAL**'],
+                removeNull=True,
+                headerTransform=underscoreToCamelCase
+            ),
+            outputs=data,
+            raw_response=data['attributes']['sigma_analysis_stats'],
+        )
+    else:
+        return CommandResults(
+            f'{INTEGRATION_ENTRY_CONTEXT}.SigmaAnalysis',
+            'id',
+            readable_output=tableToMarkdown(
+                f'Matched rules for file {file_hash} in the last Sigma analysis:',
+                data['attributes']['sigma_analysis_results'],
+                headers=[
+                    'rule_level', 'rule_description', 'rule_source',
+                    'rule_title', 'rule_id', 'rule_author', 'match_context'
+                ],
+                removeNull=True,
+                headerTransform=underscoreToCamelCase
+            ),
+            outputs=data,
+            raw_response=data['attributes']['sigma_analysis_results'],
+        )
 
 
 def main(params: dict, args: dict, command: str):
@@ -2108,6 +2286,8 @@ def main(params: dict, args: dict, command: str):
         results = search_command(client, args)
     elif command == f'{COMMAND_PREFIX}-analysis-get':
         results = get_analysis_command(client, args)
+    elif command == f'{COMMAND_PREFIX}-file-sigma-analysis':
+        results = file_sigma_analysis_command(client, args)
     else:
         raise NotImplementedError(f'Command {command} not implemented')
     return_results(results)

@@ -1,10 +1,10 @@
 import ast
-import json
 import argparse
 import os
 import sys
 
 import demisto_client
+from Tests.configure_and_test_integration_instances import CloudBuild
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.search_and_install_packs import install_packs
@@ -77,7 +77,7 @@ def uninstall_all_packs(client: demisto_client, hostname):
     """ Lists all installed packs and uninstalling them.
     Args:
         client (demisto_client): The client to connect to.
-        hostname (str): xsiam hostname
+        hostname (str): cloud hostname
 
     Returns (list, bool):
         A flag that indicates if the operation succeeded or not.
@@ -100,7 +100,7 @@ def reset_base_pack_version(client: demisto_client):
 
 
     """
-    host = client.api_client.configuration.host
+    host = client.api_client.configuration.host.replace('https://api-', 'https://')  # disable-secrets-detection
     try:
         # make the search request
         response_data, status_code, _ = demisto_client.generic_request_func(client,
@@ -154,7 +154,7 @@ def wait_for_uninstallation_to_complete(client: demisto_client, retries: int = 3
                                 'packs. Aborting.')
             logging.info(f'The process of uninstalling all packs is not over! There are still {len(installed_packs)} '
                          f'packs installed. Sleeping for 10 seconds.')
-            sleep(10)
+            sleep(60)
             installed_packs = get_all_installed_packs(client)
             retry = retry + 1
 
@@ -171,46 +171,28 @@ def options_handler():
 
     """
     parser = argparse.ArgumentParser(description='Utility for instantiating and testing integration instances')
-    parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
-    parser.add_argument('--xsiam_servers_path', help='Path to secret xsiam server metadata file.')
+    parser.add_argument('--cloud_machine', help='cloud machine to use, if it is cloud build.')
+    parser.add_argument('--cloud_servers_path', help='Path to secret cloud server metadata file.')
+    parser.add_argument('--cloud_servers_api_keys', help='Path to the file with cloud Servers api keys.')
 
     options = parser.parse_args()
 
     return options
 
 
-def get_json_file(path):
-    """
-
-    Args:
-        path: path to retrieve file from.
-
-    Returns: json object loaded from the path.
-
-    """
-    with open(path, 'r') as json_file:
-        return json.loads(json_file.read())
-
-
-def get_xsiam_configuration(xsiam_machine, xsiam_servers):
-    """
-        Parses conf params from servers list.
-    """
-    conf = xsiam_servers.get(xsiam_machine)
-    return conf.get('api_key'), conf.get('base_url'), conf.get('x-xdr-auth-id')
-
-
 def main():
-    install_logging('cleanup_xsiam_instance.log', logger=logging)
+    install_logging('cleanup_cloud_instance.log', logger=logging)
 
-    # in xsiam we dont use demisto username
+    # in cloud we dont use demisto username
     os.environ.pop('DEMISTO_USERNAME', None)
 
     options = options_handler()
-    host = options.xsiam_machine
-    xsiam_servers = get_json_file(options.xsiam_servers_path)
-    api_key, base_url, xdr_auth_id = get_xsiam_configuration(options.xsiam_machine, xsiam_servers)
-    logging.info(f'Starting cleanup for XSIAM server {host}')
+    host = options.cloud_machine
+    logging.info(f'Starting cleanup for CLOUD server {host}')
+
+    api_key, _, base_url, xdr_auth_id = CloudBuild.get_cloud_configuration(options.cloud_machine,
+                                                                           options.cloud_servers_path,
+                                                                           options.cloud_servers_api_keys)
 
     client = demisto_client.configure(base_url=base_url,
                                       verify_ssl=False,

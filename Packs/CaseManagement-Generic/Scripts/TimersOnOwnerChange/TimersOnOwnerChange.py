@@ -1,4 +1,6 @@
-import demistomock as demisto
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 
 # This script stops the Time to Assignment timer when an Owner is assigned to an Incident, and starts the Remediation
 # SLA Timer.

@@ -632,8 +632,13 @@ tasks:
         simple: QRadar.StartTime
       value:
         complex:
-          root: QRadar.Events.[0]
+          root: QRadar.Events
           accessor: Starttime
+          transformers:
+          - operator: sort
+            args:
+              descending: {}
+          - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {

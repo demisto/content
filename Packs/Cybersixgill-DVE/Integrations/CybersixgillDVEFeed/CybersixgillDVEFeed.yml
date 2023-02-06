@@ -90,7 +90,7 @@ configuration:
   type: 8
   required: false
 - display: Incremental Feed
-  defaultvalue: true
+  defaultvalue: 'true'
   hidden: true
   name: feedIncremental
   required: false

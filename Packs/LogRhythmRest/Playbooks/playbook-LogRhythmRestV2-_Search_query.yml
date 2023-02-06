@@ -1,24 +1,23 @@
 id: LogRhythmRestV2 - Search query
 version: -1
 name: LogRhythmRestV2 - Search query
-description: 'This playbook used generic polling to get query results using the command:
-  lr-execute-search-query.'
-starttaskid: "0"
+description: 'This playbook used generic polling to get query results using the command: lr-execute-search-query.'
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 3526d18a-1838-430e-8c3e-176384cfc476
     type: start
     task:
       id: 3526d18a-1838-430e-8c3e-176384cfc476
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     separatecontext: false
     view: |-
       {
@@ -34,8 +33,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 69b4bbd3-aef3-4374-8307-b16fb29724bb
     type: regular
     task:
@@ -46,10 +45,10 @@ tasks:
       script: '|||lr-execute-search-query'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       entity_id:
         complex:
@@ -135,8 +134,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: bbb6ddc2-ed6d-43cd-8f39-89bf5c3fdf57
     type: playbook
     task:
@@ -154,29 +153,29 @@ tasks:
       playbookName: GenericPolling
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       Ids:
         complex:
           root: LogRhythm.Search
           accessor: TaskId
       Interval:
-        simple: "1"
+        simple: '1'
       PollingCommandArgName:
         simple: task_id
       PollingCommandName:
         simple: lr-get-query-result
       Timeout:
-        simple: "60"
+        simple: '60'
       dt:
-        simple: LogRhythm.Search(val.TaskStatus == 'Searching').TaskId
+        simple: LogRhythm.Search(val.TaskStatus == 'Searching' || val.TaskStatus == 'First Results' || val.TaskStatus == 'Queued' || val.TaskStatus == 'Paused').TaskId
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
     view: |-
@@ -193,20 +192,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: 71283421-3034-44cf-8d26-74fcfcdb280a
     type: regular
     task:
       id: 71283421-3034-44cf-8d26-74fcfcdb280a
       version: -1
       name: Get results
-      description: Get search query results with task ID output from the lr-execute-search-query
-        command.
+      description: Get search query results with task ID output from the lr-execute-search-query command.
       script: '|||lr-get-query-result'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     scriptarguments:
       task_id:
         complex:
@@ -242,7 +240,7 @@ view: |-
 inputs:
 - key: number_of_days
   value:
-    simple: "7"
+    simple: '7'
   required: true
   description: Number of days to search.
   playbookInputQuery:
@@ -308,13 +306,13 @@ inputs:
   playbookInputQuery:
 - key: max_massage
   value:
-    simple: "10"
+    simple: '10'
   required: false
   description: Maximum number of log messages to query.
   playbookInputQuery:
 - key: query_timeout
   value:
-    simple: "60"
+    simple: '60'
   required: false
   description: The query timeout in seconds.
   playbookInputQuery:

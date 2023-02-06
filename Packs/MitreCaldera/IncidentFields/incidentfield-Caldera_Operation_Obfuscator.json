@@ -1,0 +1,38 @@
+{
+    "id": "incident_calderaoperationobfuscator",
+    "version": -1,
+    "name": "MITRE Caldera Operation Obfuscator",
+    "ownerOnly": false,
+    "cliName": "calderaoperationobfuscator",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "script": "CalderaReadOnlyFields",
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "plain-text",
+        "base64",
+        "base64jumble",
+        "base64noPadding",
+        "caesar cipher",
+        "steganography"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Caldera Operation"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

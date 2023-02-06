@@ -1,7 +1,7 @@
 {
   "raw_response_list": {
     "data": {
-      "policyObjConnection": {
+      "policyObjs": {
         "edges": [
           {
             "node": {

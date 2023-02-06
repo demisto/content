@@ -18,10 +18,15 @@
     "group": 2,
     "hidden": false,
     "openEnded": false,
+    "description": "Analysis of the incident.",
     "associatedToAll": false,
     "associatedTypes": [
         "ACTI Intelligence Alert",
-        "ACTI Intelligence Report"
+        "ACTI Intelligence Report",
+        "ACTI Threat Group",
+        "ACTI Threat Campaign",
+        "ACTI Threat Actor",
+        "ACTI Malware Family"
     ],
     "unmapped": false,
     "unsearchable": true,

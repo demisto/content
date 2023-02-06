@@ -274,11 +274,11 @@ def GetIncidentsByOrg(queryId):
         mlist = p.findall(content)
         if mlist and mlist[0] != '':
             mm = mlist[0].replace('"', '')
-            m = mm.split("=")[-1]
+            m = int(mm.split("=")[-1])
             num = 0
-            if int(m) > 1000:
-                num = int(m) / 1000
-                if int(m) % 1000 > 0:
+            if m > 1000:
+                num = int(m / 1000)
+                if m % 1000 > 0:
                     num += 1
             if num > 0:
                 for i in range(num):

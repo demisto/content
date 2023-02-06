@@ -1,4 +1,7 @@
 category: Network Security
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: RedLock
   version: -1
@@ -8,48 +11,64 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Customer name
   name: customer
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - display: Fetch only incidents matching this rule name
   name: ruleName
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: Fetch only incidents matching this policy name
   name: policyName
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: Fetch only incidents with this severity
   name: policySeverity
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - defaultvalue: 7 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
-    months, 1 year)
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
   required: false
   type: 0
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Cloud threat defense
 display: Prisma Cloud (RedLock)
 name: RedLock
@@ -57,19 +76,13 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The maximum number of records to return. '; limit search records
-        to {}' is appended to every query where {} is the maximum number of records
-        to return. If no value is provided, only 1 record is returned.
+      description: The maximum number of records to return. '; limit search records to {}' is appended to every query where {} is the maximum number of records to return. If no value is provided, only 1 record is returned.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: 'The RQL config query to run. Examples of RQL config queries can
-        be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/config-query/config-query-examples.html.
-        Note that ` limit search records to 1` is automatically appended to each query
-        and a `;` may need to be added to the end of the rql input to make the entire
-        query valid.  The limit parameter adjusts this to be a value other than 1.'
+      description: 'The RQL config query to run. Examples of RQL config queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/config-query/config-query-examples.html. Note that ` limit search records to 1` is automatically appended to each query and a `;` may need to be added to the end of the rql input to make the entire query valid.  The limit parameter adjusts this to be a value other than 1.'
       isArray: false
       name: rql
       required: true
@@ -163,8 +176,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The search unit. login and epoch are only available if timeRangeValue
-        is not provided.
+      description: The search unit. login and epoch are only available if timeRangeValue is not provided.
       isArray: false
       name: time-range-unit
       predefined:
@@ -222,25 +234,37 @@ script:
       required: false
       secret: false
     - default: false
+      description: The number of alerts to return
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
       description: The policy compliance standard
       isArray: false
       name: policy-compliance-standard
       required: false
       secret: false
     - default: false
-      description: The cloud account
+      description: The cloud account ID.
+      isArray: false
+      name: cloud-account-id
+      required: false
+      secret: false
+    - default: false
+      description: The cloud account name.
       isArray: false
       name: cloud-account
       required: false
       secret: false
     - default: false
-      description: The cloud region
+      description: The cloud region name.
       isArray: false
       name: cloud-region
       required: false
       secret: false
     - default: false
-      description: The alert rule name
+      description: The alert rule name.
       isArray: false
       name: alert-rule-name
       required: false
@@ -328,7 +352,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Search alerts on the Prisma Cloud (RedLock) platform
+    description: Search alerts on the Prisma Cloud (RedLock) platform. If no time-range arguments are given, the search will filter only alerts from the last 7 days.
     execution: false
     name: redlock-search-alerts
     outputs:
@@ -372,6 +396,18 @@ script:
       name: alert-id
       required: true
       secret: false
+    - default: false
+      description: Start time for search in the following string format -  MM/DD/YYYY, Should be provided along with time-range-date-to. If not both are provided, the time range will be set to the last 7 days and this argument will be ignored.
+      isArray: false
+      name: time-range-date-from
+      required: false
+      secret: false
+    - default: false
+      description: End time for search in the following format -  MM/DD/YYYY, Should be provided along with time-range-date-from. If not both are provided, the time range will be set to the last 7 days and this argument will be ignored.
+      isArray: false
+      name: time-range-date-to
+      required: false
+      secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
@@ -383,6 +419,9 @@ script:
       - 'false'
       required: false
       secret: false
+    - description: List of additional keys to return from the resource JSON, specified as a comma separated list (e.g. "key1,key2,key3").  To preview all available resource JSON data, run redlock-get-alert-details with the "raw-response=true" option.
+      name: resource_keys
+      required: false
     deprecated: false
     description: Gets the details of an alert based on alert ID
     execution: false
@@ -421,6 +460,21 @@ script:
     - contextPath: Redlock.Alert.RiskDetail.Score
       description: The risk score
       type: string
+    - contextPath: Redlock.Alert.Resource.AccountID
+      description: The cloud account ID where the resource resides
+      type: string
+    - contextPath: Redlock.Alert.Resource.ID
+      description: The Resource ID of the cloud resource
+      type: string
+    - contextPath: Redlock.Alert.Resource.Name
+      description: The Resource Name of the cloud resource
+      type: string
+    - contextPath: Redlock.Alert.Resource.Data
+      description: Additional keys from Resource.Data. Only appears when resource_keys argument is specified.
+      type: json
+    - contextPath: Redlock.Alert.Resource.Account
+      description: The cloud account name where the resource resides
+      type: string
   - arguments:
     - default: false
       description: Comma-separated list of string IDs to be dismissed.
@@ -429,16 +483,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: The amount of time to snooze. Both snooze value and unit must be
-        specified.
+      description: The amount of time to snooze. Both snooze value and unit must be specified.
       isArray: false
       name: snooze-value
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The time unit for if snoozing alert.  Both snooze value and unit
-        must be specified if snoozing.
+      description: The time unit for if snoozing alert.  Both snooze value and unit must be specified if snoozing.
       isArray: false
       name: snooze-unit
       predefined:
@@ -639,8 +691,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Dismiss the alerts matching the given filter. Must provide either
-      policy IDs or alert IDs.
+    description: Dismiss the alerts matching the given filter. Must provide either policy IDs or alert IDs.
     execution: true
     name: redlock-dismiss-alerts
     outputs:
@@ -831,8 +882,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Re-open the alerts matching the given filter.  Must provide either
-      policy IDs or alert IDs.
+    description: Re-open the alerts matching the given filter.  Must provide either policy IDs or alert IDs.
     execution: true
     name: redlock-reopen-alerts
     outputs:
@@ -878,8 +928,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of time range value units for the search. For example,
-        3 days, 5 weeks, etc.
+      description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
       isArray: false
       name: time-range-value
       required: false
@@ -915,8 +964,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Search configuration inventory on the Prisma Cloud (RedLock) platform
-      using RQL language.
+    description: Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL language.
     execution: false
     name: redlock-search-config
     outputs:
@@ -994,8 +1042,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of time range value units for the search. For example,
-        3 days, 5 weeks, etc.
+      description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
       isArray: false
       name: time-range-value
       required: false
@@ -1052,8 +1099,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of time range value units for the search. For example,
-        3 days, 5 weeks, etc.
+      description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
       isArray: false
       name: time-range-value
       required: false
@@ -1095,8 +1141,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Search networks on the Prisma Cloud (RedLock) platform using RQL
-      language.
+    description: Search networks on the Prisma Cloud (RedLock) platform using RQL language.
     execution: false
     name: redlock-search-network
     outputs:
@@ -1135,8 +1180,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Sorting parameters. The sort order is ascending unless the field
-        is prefixed with minus (-), in which case it is descending.
+      description: Sorting parameters. The sort order is ascending unless the field is prefixed with minus (-), in which case it is descending.
       isArray: false
       name: sort
       required: false
@@ -1179,8 +1223,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: End time in Unix time (the number of seconds that have elapsed
-        since the Unix epoch) for the absolute time type.
+      description: End time in Unix time (the number of seconds that have elapsed since the Unix epoch) for the absolute time type.
       isArray: false
       name: filter_end_time
       required: false
@@ -1319,15 +1362,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The scan ID. The scan ID can be retrieved by the redlock-list-scans
-        command.
+      description: The scan ID. The scan ID can be retrieved by the redlock-list-scans command.
       isArray: false
       name: scan_id
       required: true
       secret: false
     deprecated: false
-    description: Returns the status of the asynchronous IaC scan job that has the
-      specified scan ID.
+    description: Returns the status of the asynchronous IaC scan job that has the specified scan ID.
     execution: false
     name: redlock-get-scan-status
     outputs:
@@ -1339,15 +1380,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans
-        command.
+      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans command.
       isArray: false
       name: scan_id
       required: true
       secret: false
     deprecated: false
-    description: Returns scan result details for the completed scan that has the specified
-      scan ID
+    description: Returns scan result details for the completed scan that has the specified scan ID
     execution: false
     name: redlock-get-scan-results
     outputs:
@@ -1390,7 +1429,7 @@ script:
     - contextPath: Redlock.Scans.results.id
       description: Scan results ID
       type: String
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.9.42476
   feed: false
   isfetch: true
   longRunning: false

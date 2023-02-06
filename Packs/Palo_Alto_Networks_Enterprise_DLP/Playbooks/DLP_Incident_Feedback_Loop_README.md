@@ -1,4 +1,4 @@
-This playbook collects feedback from the user about blocked files.
+Collects feedback from user about blocked files.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,22 +7,23 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* SlackV3
+* Microsoft Teams
 * Palo_Alto_Networks_Enterprise_DLP
 * Mail Sender (New)
+* SlackV3
 
 ### Scripts
-* DlpAskFeedback
 * isError
 * Set
+* DlpAskFeedback
 
 ### Commands
+* send-mail
+* send-notification
+* pan-dlp-update-incident
 * setIncident
 * pan-dlp-exemption-eligible
-* send-mail
 * slack-get-user-details
-* pan-dlp-update-incident
-* send-notification
 
 ## Playbook Inputs
 ---

@@ -14,41 +14,6 @@ commands:
           command: |
             echo 'export INSTANCE_ROLE="<< parameters.instance_role >>"' >> $BASH_ENV
             echo 'export INSTANCE_WAS_CREATED="<< parameters.instance_created >>"' >> $BASH_ENV
-  start-tunnel:
-    description: "Opens an ssh tunnel to the demisto servers and wait until the tunnels are established"
-    parameters:
-      timeout:
-        type: integer
-        default: 10
-    steps:
-      - run:
-          name: add ssh configurations
-          shell: /bin/bash
-          command: |
-            if [ -z $INSTANCE_WAS_CREATED ];
-              then
-                echo "Skipping - instance was not created"
-                exit 0
-            fi
-            # Modifying ssh config file
-            echo "Host 10.0.*
-              StrictHostKeyChecking no
-              LogLevel ERROR
-              ProxyJump content-build@content-build-lb.demisto.works  # disable-secrets-detection
-             Host content-build-lb.demisto.works
-              Port 43567
-              UserKnownHostsFile /dev/null
-              StrictHostKeyChecking no
-              LogLevel ERROR" >> ~/.ssh/config
-      - run:
-          name: Open SSH Tunnel
-          command: |
-            if [ -z $INSTANCE_WAS_CREATED ];
-              then
-                echo "Skipping - instance was not created"
-                exit 0
-            fi
-            ./Tests/scripts/open_ssh_tunnel.sh
 
 parameters:
   artifact_build_num:
@@ -94,7 +59,7 @@ references:
 
   container_config: &container_config
     docker:
-      - image: devdemisto/content-build:3.0.0.27109  # disable-secrets-detection
+      - image: devdemisto/content-build:3.0.0.33772  # disable-secrets-detection
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -112,17 +77,18 @@ references:
     attach_workspace:
       at: *workspace_root
 
-  add_ssh_keys: &add_ssh_keys
-    add_ssh_keys:
-      fingerprints:
-        - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
-        - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
-
   prepare_environment: &prepare_environment
     run:
       name: Prepare Environment
       when: always
       command: |
+        poetry --version
+        # Check if CircleCI's config file and poetry files files are up to date
+        # if poetry isn't up-to-date, checkout from origin/master.
+        ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml $CIRCLE_BRANCH
+        ./Tests/scripts/is_file_up_to_date.sh poetry.lock $CIRCLE_BRANCH true
+        ./Tests/scripts/is_file_up_to_date.sh pyproject.toml $CIRCLE_BRANCH true
+
         echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
         echo 'export PATH="/home/circleci/.local/bin:${PWD}/node_modules/.bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
         echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
@@ -147,30 +113,30 @@ references:
 
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/Marketplace/*
-        if [ ! -e "venv" ]; then
-          echo "installing venv"
-          NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
-          source ./venv/bin/activate
-          pip3 install -r .circleci/build-requirements.txt
-        else
-          echo "venv exists (from cache). activating"
-          source ./venv/bin/activate
-        fi
+
+        echo "Checking if pyproject.toml is consistent with poetry.lock"
+        poetry lock --check
+
+        # we still need to install even if cached. if cached, `poetry` will handle it
+        echo "installing venv"
+        NO_HOOKS=1 .hooks/bootstrap
+        source ./.venv/bin/activate
+
         # store in bash env so we load our venv in each step
-        echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
+        echo 'source /home/circleci/project/.venv/bin/activate' >> $BASH_ENV
         git config diff.renameLimit 6000
 
         echo "========== Build Parameters =========="
         set | grep -E "^NIGHTLY=|^CONTRIB_BRANCH=|^SDK_REF"
-        python --version
-        python3 --version
+        python3 --version | tee -a $CIRCLE_ARTIFACTS/installed_python_libraries.txt
+        python3 -m pip list | tee -a $CIRCLE_ARTIFACTS/installed_python_libraries.txt
         node --version
         npm --version
         demisto-sdk --version
 
   restore_cache: &restore_cache
     restore_cache:
-      key: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+      key: virtualenv-venv-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}-{{ checksum "package-lock.json" }}
 
   remote_docker: &remote_docker
     setup_remote_docker:
@@ -207,7 +173,10 @@ references:
 
   run_unit_testing_and_lint: &run_unit_testing_and_lint
     run:
-      name: Run Unit Testing and Lint
+      parameters:
+        dockerimageflag:
+          type: string
+      name: Run Unit Testing And Lint - Docker Image:<< parameters.dockerimageflag >>
       when: always
       no_output_timeout: 5h
       command: |
@@ -225,7 +194,7 @@ references:
         echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
         echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
         mkdir ./unit-tests
-        demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
+        demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --docker-image << parameters.dockerimageflag >>
 
   generate_coverage_reports: &generate_coverage_reports
     run:
@@ -233,8 +202,15 @@ references:
       when: always
       no_output_timeout: 1h
       command: |
+        EXIT_CODE=0
         if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
-          demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all --previous-coverage-report-url https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json
+          demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all --previous-coverage-report-url https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json || EXIT_CODE=1
+          # Checks if the $XSOAR_BOT_TEST_CONTENT exist. for security reasons only non forked pr's have access to it.
+          if [[ -n $XSOAR_BOT_TEST_CONTENT && -e $ARTIFACTS_FOLDER/coverage_report/html/index.html ]]; then
+            echo "Adding unit tests coverage comment to the pr"
+            python3 ./Tests/scripts/add_pr_comment.py
+          fi
+          exit $EXIT_CODE
         fi
 
   infrastructure_testing: &infrastructure_testing
@@ -244,7 +220,6 @@ references:
       command: |
         python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
         python3 -m pytest ./Tests/Marketplace/Tests/ -v
-        python3 -m pytest ./Tests/scripts/utils/tests -v
         python3 -m pytest ./Tests/tests -v
         python3 -m pytest ./Tests/private_build/tests -v
         python3 -m pytest Utils -v
@@ -309,6 +284,10 @@ references:
         context: nightly_env
         requires:
           - Setup Environment
+        matrix:
+          parameters:
+            dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "from-yml" ]
+        name: Run Unit Testing And Lint - Docker Image:<< matrix.dockerimageflag >>
     - Run Validations:
         requires:
           - Setup Environment
@@ -325,22 +304,23 @@ jobs:
       - *prepare_environment
       - save_cache:
           paths:
-            - venv
+            - .venv
             - node_modules
-          key: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+          key: virtualenv-venv-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}-{{ checksum "package-lock.json" }}
       - *get_contribution_pack
-      - *add_ssh_keys
       - *persist_to_workspace
 
   Run Unit Testing And Lint:
     <<: *container_config
     resource_class: medium
     <<: *environment
+    parameters:
+      dockerimageflag:
+        type: string
     steps:
       - *attach_workspace
       - *remote_docker
       - *restore_cache
-      - *add_ssh_keys
       - *prepare_environment
       - *infrastructure_testing
       - *run_unit_testing_and_lint
@@ -356,7 +336,6 @@ jobs:
     steps:
       - *attach_workspace
       - *restore_cache
-      - *add_ssh_keys
       - *prepare_environment
       - *secrets
       - *create_id_set
@@ -366,13 +345,6 @@ jobs:
           name: Spell Checks
           command: |
             python3 ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
-      - run:
-          name: Check if CircleCI's config file and requirements.txt files are up to date
-          when: always
-          command: |
-            ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml $CIRCLE_BRANCH
-            ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py2.txt $CIRCLE_BRANCH
-            ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py3.txt $CIRCLE_BRANCH
       - run:
           name: Verify Base Branch for Contribution
           when: always
@@ -410,6 +382,10 @@ workflows:
       - Run Unit Testing And Lint:
           requires:
             - Setup Environment
+          matrix:
+            parameters:
+              dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "from-yml" ]
+          name: Run Unit Testing And Lint - Docker Image:<< matrix.dockerimageflag >>
       - Run Validations:
           requires:
             - Setup Environment

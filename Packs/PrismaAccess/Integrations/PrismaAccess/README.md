@@ -106,7 +106,7 @@ Run a query via the Prisma Access CLI
 ```!prisma-access-query query="querystring limit=2 action getGPaaSActiveUsers"```
 
 
-### prisma-access-cli-command
+### prisma-access-cli-command (deprecated)
 ***
 Run a custom CLI command on Prisma Access
 
@@ -129,7 +129,7 @@ There is no context output for this command.
 ```!prisma-access-cli-command cmd="show system info | match hostname"```
 
 
-### prisma-access-active-users
+### prisma-access-active-users (deprecated)
 ***
 Query currently active users.
 

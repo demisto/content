@@ -35,7 +35,7 @@ configuration:
 script:
   script: '-'
   type: python
-  subtype: python2
+  subtype: python3
   commands:
   - name: fortisiem-get-events-by-incident
     arguments:
@@ -373,7 +373,7 @@ script:
     description: Lists all elements in a resource list.
   isfetch: true
   runonce: false
-  dockerimage: demisto/python:2.7.18.27799
+  dockerimage: demisto/python3:3.10.6.33415
 tests:
 - No Test
 fromversion: 5.0.0

@@ -609,4 +609,5 @@ view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n
 inputs: []
 outputs: []
 fromversion: 5.5.0
-description: Test playbook for iDefense_v2
+deprecated: true
+description: Deprecated. No available replacement.

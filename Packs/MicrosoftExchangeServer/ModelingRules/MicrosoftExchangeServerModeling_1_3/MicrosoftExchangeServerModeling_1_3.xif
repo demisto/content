@@ -1,0 +1,17 @@
+[MODEL: dataset="msft_exchange_raw"]
+//alter _time = date_time
+alter  xdm.source.host.ipv4_addresses = arraycreate(coalesce(client_ip, "")),
+	xdm.source.host.hostname = client_hostname,
+	xdm.target.host.ipv4_addresses = arraycreate(coalesce(server_ip, "")),
+	xdm.target.host.hostname = server_hostname,
+	xdm.event.type = event_id,
+	xdm.event.id = internal_message_id,
+	xdm.email.message_id = message_id,
+	xdm.session_context_id = network_message_id,
+	xdm.email.recipients = arraycreate(coalesce(recipient_address, "")),
+	xdm.email.subject = message_subject,
+	xdm.email.sender = sender_address,
+	xdm.email.return_path = if(return_path = "<>",null,return_path),
+	xdm.event.description = message_info,
+	xdm.observer.unique_identifier = tenant_id,
+	xdm.observer.content_version = schema_version;

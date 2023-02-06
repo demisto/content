@@ -1021,6 +1021,24 @@ inputs:
   description: The desired incident type for the created incident when the device
     control violations were found.
   playbookInputQuery:
+- key: EndpointID
+  value: {}
+  required: false
+  description: |-
+    The Endpoint ID to search for device control violations.
+  playbookInputQuery:
+- key: Hostname
+  value: {}
+  required: false
+  description: |-
+    The hostname of the endpoint to query for device control violations.
+  playbookInputQuery:
+- key: IPAddress
+  value: {}
+  required: false
+  description: |-
+    The IP address of the endpoint to query for device control violations.
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)

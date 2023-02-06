@@ -2,20 +2,18 @@
     "name": "Shift Management",
     "description": "This pack's purpose is to provide a single interface for all those essential elements of Shift management and handover in one place.",
     "support": "xsoar",
-    "currentVersion": "1.3.4",
+    "currentVersion": "1.3.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-01T08:30:00Z",
     "categories": [
-        "Case Management"
+        "Utilities"
     ],
     "tags": [
-        "Incident Handling"
+        "Core"
     ],
-    "useCases": [
-        "Case Management"
-    ],
+    "useCases": [],
     "keywords": [
         "Shift management",
         "Handover",

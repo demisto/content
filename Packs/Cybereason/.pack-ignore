@@ -6,3 +6,14 @@ ignore=RM104
 
 [file:Cybereason_image.png]
 ignore=IM111
+
+[known_words]
+Cybereason
+unarchive
+fetchfile
+unquarantine
+unsuspend
+Malop
+unisolates
+Preprocessing
+malops

@@ -1,0 +1,1139 @@
+id: Cortex ASM - GCP Enrichment
+version: -1
+name: Cortex ASM - GCP Enrichment
+description: Given the IP address this playbook enriches GCP information relevant to ASM alerts.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c6245be9-c179-4ae5-8349-e6f38b3c9204
+    type: start
+    task:
+      id: c6245be9-c179-4ae5-8349-e6f38b3c9204
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 7e88d6a9-2f2a-407c-8f34-736fa7f41b7e
+    type: playbook
+    task:
+      id: 7e88d6a9-2f2a-407c-8f34-736fa7f41b7e
+      version: -1
+      name: GCP - Enrichment
+      description: Given the IP address this playbook enriches GCP and Firewall information.
+      playbookName: GCP - Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: ee4812d0-34d9-41e9-8ddc-58390e5371eb
+    type: title
+    task:
+      id: ee4812d0-34d9-41e9-8ddc-58390e5371eb
+      version: -1
+      name: Set Field
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 88926de3-c3aa-4c0d-85d7-33bbc47513c2
+    type: condition
+    task:
+      id: 88926de3-c3aa-4c0d-85d7-33bbc47513c2
+      version: -1
+      name: Is there VM and IAM information?
+      description: Determines if there is EC2 information to set the private IP, cloud, and tags fields.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "15"
+      - "14"
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: GoogleCloudCompute
+                accessor: Instances
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 0d552da2-08ef-41c5-88d8-8a46a1e96d02
+    type: condition
+    task:
+      id: 0d552da2-08ef-41c5-88d8-8a46a1e96d02
+      version: -1
+      name: Is there IAM information?
+      description: Determines if there is IAM information to set in the service owner field.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: GCPIAM.Policy.bindings
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCPIAM.Policy.bindings.role
+                      iscontext: true
+                    right:
+                      value:
+                        simple: roles/owner
+                accessor: members
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 52473054-d75a-4982-8ee7-2ce9f2bcca8d
+    type: condition
+    task:
+      id: 52473054-d75a-4982-8ee7-2ce9f2bcca8d
+      version: -1
+      name: Is there VM and firewall information?
+      description: Determines if there is EC2 and security group information to set in the system IDs field.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: GoogleCloudCompute
+                accessor: Instances
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: GoogleCloudCompute
+                accessor: Firewalls
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 94c8bed8-1a07-4c51-83c0-56090e12ae5d
+    type: title
+    task:
+      id: 94c8bed8-1a07-4c51-83c0-56090e12ae5d
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: e983f046-9a33-4354-8e57-2088b0eaafcc
+    type: regular
+    task:
+      id: e983f046-9a33-4354-8e57-2088b0eaafcc
+      version: -1
+      name: Set service owner grid field
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      gridfield:
+        simple: asmserviceowner
+      keys:
+        simple: Name,Email,Source,Timestamp
+      val1:
+        simple: n/a
+      val2:
+        complex:
+          root: GCPIAM.Policy.bindings
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: GCPIAM.Policy.bindings.role
+                iscontext: true
+              right:
+                value:
+                  simple: roles/owner
+          accessor: members
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: 'user:'
+      val3:
+        simple: GCP
+      val4:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: TimeStampToDate
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 1fc0f8de-68ac-49eb-8d8a-921918de4134
+    type: title
+    task:
+      id: 1fc0f8de-68ac-49eb-8d8a-921918de4134
+      version: -1
+      name: Service Owner
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 2883c07f-4e15-4c82-8d36-041e0b5fba8e
+    type: regular
+    task:
+      id: 2883c07f-4e15-4c82-8d36-041e0b5fba8e
+      version: -1
+      name: Get current time
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 347f1271-f64c-439d-8eb9-67e5a95b0d37
+    type: regular
+    task:
+      id: 347f1271-f64c-439d-8eb9-67e5a95b0d37
+      version: -1
+      name: Set private IP grid field
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      gridfield:
+        simple: asmprivateip
+      keys:
+        simple: IP,Source
+      val1:
+        complex:
+          root: GoogleCloudCompute.Instances.networkInterfaces
+          accessor: networkIP
+          transformers:
+          - operator: uniq
+      val2:
+        simple: GCP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 2829b3eb-1003-41ce-82b2-ab5e69b1a7fa
+    type: title
+    task:
+      id: 2829b3eb-1003-41ce-82b2-ab5e69b1a7fa
+      version: -1
+      name: Private IP
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: fc1927bb-a661-4ced-8f9d-05eeb7bef60e
+    type: title
+    task:
+      id: fc1927bb-a661-4ced-8f9d-05eeb7bef60e
+      version: -1
+      name: Cloud
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: f7ee4b2f-ac30-4ba1-8255-6f24b48fa7f0
+    type: regular
+    task:
+      id: f7ee4b2f-ac30-4ba1-8255-6f24b48fa7f0
+      version: -1
+      name: Set cloud grid field
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      gridfield:
+        simple: asmcloud
+      keys:
+        simple: Provider,Organization,Project,Region,Other
+      val1:
+        simple: GCP
+      val2:
+        simple: n/a
+      val3:
+        complex:
+          root: GoogleCloudCompute.Instances.networkInterfaces
+          accessor: network
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?<=projects/)[^/]+(?=/global)
+              unpack_matches: {}
+          - operator: uniq
+      val4:
+        complex:
+          root: GoogleCloudCompute.Instances
+          accessor: zone
+          transformers:
+          - operator: uniq
+      val5:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 08910aa4-9f09-4fc6-834a-329ecb76b6e9
+    type: title
+    task:
+      id: 08910aa4-9f09-4fc6-834a-329ecb76b6e9
+      version: -1
+      name: Tags
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1810,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: aa652e68-37bd-46d9-890e-b068ac3021a2
+    type: regular
+    task:
+      id: aa652e68-37bd-46d9-890e-b068ac3021a2
+      version: -1
+      name: Set tags grid field
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      gridfield:
+        simple: asmtags
+      keys:
+        simple: Key,Value,Source
+      val1:
+        complex:
+          root: GoogleCloudCompute.Instances
+          accessor: labels
+          transformers:
+          - operator: jmespath
+            args:
+              expression:
+                value:
+                  simple: keys(@)
+      val2:
+        complex:
+          root: GoogleCloudCompute.Instances
+          accessor: labels
+          transformers:
+          - operator: jmespath
+            args:
+              expression:
+                value:
+                  simple: values(@)
+      val3:
+        simple: GCP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1810,
+          "y": 1265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 2ef6effe-0d79-414a-802e-6d8063a54ec0
+    type: title
+    task:
+      id: 2ef6effe-0d79-414a-802e-6d8063a54ec0
+      version: -1
+      name: System IDs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 4c5da6f0-bddb-4add-8825-05dab108e917
+    type: regular
+    task:
+      id: 4c5da6f0-bddb-4add-8825-05dab108e917
+      version: -1
+      name: Set system IDs grid field (VPC)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: Type,ID,Link
+      val1:
+        simple: GCP-VPC
+      val2:
+        complex:
+          root: GoogleCloudCompute.Instances.networkInterfaces
+          accessor: network
+          transformers:
+          - operator: uniq
+      val3:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: fa10f9e8-d55c-48b9-8262-ec2828d18cbc
+    type: regular
+    task:
+      id: fa10f9e8-d55c-48b9-8262-ec2828d18cbc
+      version: -1
+      name: Set system IDs grid field (FW)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: Type,ID,Link
+      val1:
+        simple: GCP-FW
+      val2:
+        complex:
+          root: GoogleCloudCompute.Firewalls
+          accessor: id
+          transformers:
+          - operator: uniq
+      val3:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: e54a35cb-f1a2-425c-87fc-c338801f02af
+    type: regular
+    task:
+      id: e54a35cb-f1a2-425c-87fc-c338801f02af
+      version: -1
+      name: Set system IDs grid field (NET)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: Type,ID,Link
+      val1:
+        simple: GCP-NET
+      val2:
+        complex:
+          root: GoogleCloudCompute.Instances.networkInterfaces
+          accessor: subnetwork
+          transformers:
+          - operator: uniq
+      val3:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: b415384b-b74b-445b-8dbf-6880e04b2e40
+    type: regular
+    task:
+      id: b415384b-b74b-445b-8dbf-6880e04b2e40
+      version: -1
+      name: Set system IDs grid field (NIC)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: Type,ID,Link
+      val1:
+        simple: GCP-NIC
+      val2:
+        complex:
+          root: GoogleCloudCompute.Instances.networkInterfaces
+          accessor: name
+          transformers:
+          - operator: uniq
+      val3:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 2db9ad64-599f-45d3-8d59-44283d3e8851
+    type: regular
+    task:
+      id: 2db9ad64-599f-45d3-8d59-44283d3e8851
+      version: -1
+      name: Set system IDs grid field (VM)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: Type,ID,Link
+      val1:
+        simple: GCP-VM
+      val2:
+        complex:
+          root: GoogleCloudCompute.Instances
+          accessor: id
+          transformers:
+          - operator: uniq
+      val3:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 97bc1ae8-d977-4740-845c-a8c604abbca8
+    type: regular
+    task:
+      id: 97bc1ae8-d977-4740-845c-a8c604abbca8
+      version: -1
+      name: Set system IDs grid field (ZONE)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: Type,ID,Link
+      val1:
+        simple: GCP-ZONE
+      val2:
+        complex:
+          root: GoogleCloudCompute.Instances
+          accessor: zone
+          transformers:
+          - operator: uniq
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?<=zones\/)[^$]+
+              unpack_matches: {}
+      val3:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: e985a34e-00d0-4cc2-869f-acceb58716ce
+    type: regular
+    task:
+      id: e985a34e-00d0-4cc2-869f-acceb58716ce
+      version: -1
+      name: Set system IDs grid field (VM NAME)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: Type,ID,Link
+      val1:
+        simple: GCP-VMNAME
+      val2:
+        complex:
+          root: GoogleCloudCompute.Instances
+          accessor: name
+          transformers:
+          - operator: uniq
+      val3:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: bbb34ae1-c8fb-4877-8217-23df14b96c4a
+    type: condition
+    task:
+      id: bbb34ae1-c8fb-4877-8217-23df14b96c4a
+      version: -1
+      name: Are there any tags?
+      description: |+
+        Check whether there are any tags associated to instances.
+
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: GoogleCloudCompute.Instances
+                accessor: labels
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1810,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2205,
+        "width": 2350,
+        "x": -160,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: RemoteIP
+  value:
+    complex:
+      root: alert
+      accessor: remoteip
+  required: false
+  description: IP address of service
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+marketplaces:
+  - marketplacev2

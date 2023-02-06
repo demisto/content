@@ -1,0 +1,10 @@
+{
+  "ip_command_response": {"asn": "15169", "ip": "8.8.8.8", "prefix": "8.8.8.0/24", "cc": "US", "owner": "GOOGLE, US", "key": "8.8.8.8"},
+  "mock_output": {"ASN": "15169",
+                  "ASOwner": "GOOGLE, US",
+                  "Address": "8.8.8.8",
+                  "Geo": {"Country": "US"},
+                  "Registrar": {"Abuse": {"Network": "8.8.8.0/24"}}},
+  "mock_readable": "### Team Cymru results for 8.8.8.8\n|IP|ASN|Organization|Country|Range|\n|---|---|---|---|---|\n| 8.8.8.8 | 15169 | GOOGLE, US | US | 8.8.8.0/24 |\n"
+}
+

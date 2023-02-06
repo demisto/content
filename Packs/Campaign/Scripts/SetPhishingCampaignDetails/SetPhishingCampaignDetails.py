@@ -1,5 +1,3 @@
-import traceback
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import dateparser
@@ -125,7 +123,6 @@ def main():
         CommandResults(readable_output='Added incident successfully to Campaign.')
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to set campaign details.\nError:\n{str(e)}')
 
 

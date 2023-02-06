@@ -7,6 +7,7 @@ microsoft-atp-run-antivirus-scan machine_id=f70f9fe6b29cd9511652434919c6530618f0
 microsoft-atp-list-alerts severity=Low
 microsoft-atp-update-alert alert_id=da637200417169017725_183736971 status=InProgress
 microsoft-atp-advanced-hunting query="LogonEvents | take 1 | project MachineId, ReportId, tostring(EventTime)"
+microsoft-atp-advanced-hunting query_batch=`{"queries": [{"query": "DeviceInfo | where OnboardingStatus == 'Onboarded' | limit 10 | distinct DeviceName", "name": "name1", "timeout": "20"}]}`
 microsoft-atp-create-alert category=Backdoor description="test" report_id=20279 event_time=2020-02-23T07:22:07.1532018Z
 machine_id=4899036531e374137f63289c3267bad772c13fef recommended_action="runAntiVirusScan" severity=Low title="testing alert"
 microsoft-atp-get-alert-related-user id=da637175364995825348_1865170845
@@ -68,3 +69,5 @@ microsoft-atp-advanced-hunting-cover-up query_purpose=compromised_information us
 microsoft-atp-advanced-hunting-cover-up query_purpose=connected_devices username=demisto
 microsoft-atp-advanced-hunting-cover-up query_purpose=action_types username=demisto
 microsoft-atp-advanced-hunting-cover-up query_purpose=common_files  username=demisto
+microsoft-atp-get-machine-users machine_id=0a3250e0693a109f1affc9217be9459028aa8424
+microsoft-atp-get-machine-alerts machine_id=0a3250e0693a109f1affc9217be9459028aa8424

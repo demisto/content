@@ -1,0 +1,417 @@
+id: Hurukai - Hunt IOCs
+version: -1
+name: Hurukai - Hunt IOCs
+description: This playbook allows is triggered by the Hurukai - Process Indicators - Manual Review playbook. It allows to search for IOC sightings in the HarfangLab EDR and tag sighted IOCs accordingly for manual review. All IOCs are tagged in order to be further inserted into a HarfangLab EDR IOC source.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 7546765c-30d6-4dc5-8b25-5b9bd8240451
+    type: start
+    task:
+      id: 7546765c-30d6-4dc5-8b25-5b9bd8240451
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 60d4fc38-239d-4f32-8050-c9201a65cf40
+    type: regular
+    task:
+      id: 60d4fc38-239d-4f32-8050-c9201a65cf40
+      version: -1
+      name: harfanglab-hunt-search-hash
+      description: Command used to search a hash IOC in database
+      script: Hurukai|||harfanglab-hunt-search-hash
+      type: regular
+      iscommand: true
+      brand: Hurukai
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      hash:
+        simple: ${playbookQuery.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 5a197971-6b89-4036-8e2e-ae531450e943
+    type: title
+    task:
+      id: 5a197971-6b89-4036-8e2e-ae531450e943
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 1f129094-948d-4e8c-85bc-118c16df24c0
+    type: condition
+    task:
+      id: 1f129094-948d-4e8c-85bc-118c16df24c0
+      version: -1
+      name: Which IOC type ?
+      description: "Check whether we get IOCs we can search"
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '7'
+      hash:
+      - '2'
+    separatecontext: false
+    conditions:
+    - label: hash
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: File
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: 2b77b6d6-5808-4c80-8dd1-baf6a30cbaa4
+    type: regular
+    task:
+      id: 2b77b6d6-5808-4c80-8dd1-baf6a30cbaa4
+      version: -1
+      name: Set existing EDR sightings tag
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: existing_edr_sightings
+      indicatorsValues:
+        complex:
+          root: Harfanglab.Hash
+          filters:
+          - - operator: isNotEqualNumber
+              left:
+                value:
+                  simple: Harfanglab.Hash.curr_running
+                iscontext: true
+              right:
+                value:
+                  simple: '0'
+            - operator: isNotEqualNumber
+              left:
+                value:
+                  simple: Harfanglab.Hash.prev_runned
+                iscontext: true
+              right:
+                value:
+                  simple: '0'
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: hash
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: 254a08ce-1638-4ec3-88ed-0618efbc6805
+    type: regular
+    task:
+      id: 254a08ce-1638-4ec3-88ed-0618efbc6805
+      version: -1
+      name: Processed indicators
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: ProcessedIndicators
+      value:
+        complex:
+          root: Harfanglab.Hash
+          filters:
+          - - operator: isNotEqualNumber
+              left:
+                value:
+                  simple: Harfanglab.Hash.curr_running
+                iscontext: true
+              right:
+                value:
+                  simple: '0'
+            - operator: isNotEqualNumber
+              left:
+                value:
+                  simple: Harfanglab.Hash.prev_runned
+                iscontext: true
+              right:
+                value:
+                  simple: '0'
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: hash
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '14':
+    id: '14'
+    taskid: 8b951ea2-d7f5-4881-8e19-c67d45f13631
+    type: regular
+    task:
+      id: 8b951ea2-d7f5-4881-8e19-c67d45f13631
+      version: -1
+      name: Set pending review tag
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: pending_review
+      indicatorsValues:
+        complex:
+          root: Harfanglab.Hash
+          filters:
+          - - operator: isNotEqualNumber
+              left:
+                value:
+                  simple: Harfanglab.Hash.curr_running
+                iscontext: true
+              right:
+                value:
+                  simple: '0'
+            - operator: isNotEqualNumber
+              left:
+                value:
+                  simple: Harfanglab.Hash.prev_runned
+                iscontext: true
+              right:
+                value:
+                  simple: '0'
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: hash
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '15':
+    id: '15'
+    taskid: ed369baf-94d3-442c-8430-2feac895c63c
+    type: regular
+    task:
+      id: ed369baf-94d3-442c-8430-2feac895c63c
+      version: -1
+      name: Set to_edr_blocklist tag
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: to_edr_blocklist
+      indicatorsValues:
+        complex:
+          root: Harfanglab
+          accessor: Hash
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: hash
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1285,
+        "width": 640,
+        "x": 150,
+        "y": -280
+      }
+    }
+  }
+inputs:
+- key: ''
+  value: {}
+  required: false
+  description: ''
+  playbookInputQuery:
+    query: ''
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ''
+        byto: ''
+        byfrom: ''
+        tovalue:
+        fromvalue:
+        field: ''
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+outputs:
+- contextPath: ProcessedIndicators
+  description: Indicators that are associated to EDR sightings and need reviewing.
+  type: unknown
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

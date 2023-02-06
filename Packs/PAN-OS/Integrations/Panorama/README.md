@@ -48,6 +48,41 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
    * [pan-os-query-logs](#pan-os-query-logs)
    * [pan-os-check-logs-status](#pan-os-check-logs-status)
    * [pan-os-get-logs](#pan-os-get-logs)
+* The target argument is supported only in operational type commands. Meaning, you cannot use it with commit, logs, or PCAP commands.
+
+## Fetch Incidents
+The Panorama integration now supports fetch incidents.
+The incidents are fetched according to a number of different optional log type queries. The log types are: **Traffic, Threat, URL, Data, Correlation, System, Wildfire, Decryption**.
+
+##### Max incidents per fetch
+The max incidents per fetch parameter specifies the maximum number of incidents to fetch **per** Log Type Query.
+
+##### Log Type
+The queries that will be included during the fetch are decided according to the "Log Type" parameter (Multiple select dropdown).
+- Selecting "All" will use all the log type queries in the fetch.
+- To choose a specific set of queries, select their log types from the dropdown (make sure "All" option is unselected).
+
+##### Log Type Query
+- Each log type has its own query field in the instance configuration.
+- Note that the default query values has some example text in it, make sure to enter a valid query.
+
+##### Log Type Query Examples
+
+| Log Type            | Query Example                                                                                                                                           |
+|---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Traffic             | (addr.src in {source}) and (addr.dst in {destination}) and (action eq {action})                                                                         |
+| Threat              | (severity geq high)                                                                                                                                     |
+| URL                 | ((action eq block-override) or (action eq block-url)) and (severity geq high)                                                                           |
+| Data                | ((action eq alert) or (action eq wildfire-upload-success) or (action eq forward)) and (severity geq high)                                               |
+| Correlation         | (hostid eq {host_id}) and (match_time in {last_x_time}) and (objectname eq {object_name}) and (severity geq '{severity}') and (src in {source_address}) |
+| System              | (subtype eq {sub_type}) and (severity geq {severity})                                                                                                   |
+| Wildfire Submission | ((action eq wildfire-upload-fail) or (action eq wildfire-upload-skip) or (action eq sinkhole))                                                          |
+| Decryption          | (app eq {application}) and (policy_name geq {policy_name}) and ((src in {source}) or (dst in {destination}))                                            |
+
+##### Classifiers and Mappers
+
+This integration supports a default Classifier (Panorama Classifier) and Mapper (Panorama Mapper) that handles incidents returned from the API.
+
 
 ## Configure Panorama on Cortex XSOAR
 
@@ -67,16 +102,121 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
 | additional_suspicious | URL Filtering Additional suspicious categories. CSV list of categories that will be considered suspicious. | False |
 | additional_malicious | URL Filtering Additional malicious categories. CSV list of categories that will be considered malicious. | False |
 | insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
+| First fetch timestamp  | First fetch time interval | False |
+| Max incidents per fetch | Max incidents per fetch for each selected Log Type Query | False |
+| Log Type | Log Types incidents to fetch | False |
+| Traffic Log Type Query | Traffic Query for fetch incidents | False |
+| Threat Log Type Query | Threat Query for fetch incidents | False |
+| URL Log Type Query | URL Query for fetch incidents | False |
+| Data Log Type Query | Data Query for fetch incidents | False |
+| Correlation Log Type Query | Correlation Query for fetch incidents | False |
+| System Log Type Query | System Query for fetch incidents | False |
+| Wildfire Submission Log Type Query | Wildfire Submission Query for fetch incidents | False |
+| Decryption Log Type Query | Decryption Query for fetch incidents | False |
+| Incidents Fetch Interval | Time interval between incident fetches | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
-   
+1. Click **Test** to validate the URLs, token, and connection.
+
+
+## Debugging in Panorama
+In order to ease the process of understanding what parameters are required to be used in the `!pan-os` command, it is highly recommended to use the debugging mode in Panorama to get the correct structure of a request.
+
+Debugging Methods:
+* [How to run a PAN-OS Web UI Debug](https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000CmA9CAK)
+* [Configuration (API)](https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/pan-os-xml-api-request-types/configuration-api)
+* [Use the API browser](https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/get-started-with-the-pan-os-xml-api/explore-the-api/use-the-api-browser#id676e85fa-1823-466a-9e31-269dc6eb433a)
+
+Several Examples of `!pan-os` for a configuration type commands:
+
+1) Create a new address object named test123 for the test device-group.
+
+Given the following debug-log from PAN-OS Web UI Debug after creating an address through the Panorama UI:
+
+`
+<request cmd="set" obj="/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='test']/address/entry[@name='test123']" cookie="12345" newonly="yes">
+  <ip-netmask>1.1.1.1</ip-netmask>
+</request>
+`
+
+   The equivalent `!pan-os` command is:
+
+`
+!pan-os action=set xpath=/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='test']/address/entry[@name='test123'] type=config element=<ip-netmask>1.1.1.1</ip-netmask>
+`
+| Argument | Description |
+| --- | --- |
+| action | Create/add an object. In this case we want to create a new address object, so we will use set - the Panorama debug log shows us its a 'set' action. |
+| xpath | /config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='test']/address/entry[@name='test123'] - simply the location of the new object. |
+| type | This is a configuration type command, therefore use config. |
+| element | The object properties (similar to an API body request). |
+
+2) Modify an existing address group object named test12345 under the test device group to use a different address object.
+
+Given the following debug-log from PAN-OS Web UI Debug after editing an address group through the Panorama UI to use a different address object:
+
+`
+<request cmd="edit" obj="/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='test']/address-group/entry[@name='test12345']" cookie="1234">
+  <entry name="test12345">
+    <static>
+      <member>test123</member>
+    </static>
+  </entry>
+</request>
+`
+
+The equivalent `!pan-os` command is:
+
+`
+!pan-os action=edit xpath=/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='test']/address-group/entry[@name='test12345'] type=config element=<static><member>test123</member></static>
+`
+| Argument | Description |
+| --- | --- |
+| action | Edit an object, in this case we want to edit an entry in an existing address group object, so we will use edit - the panorama debug log shows us its an 'edit' action. |
+| xpath | /config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='test']/address-group/entry[@name='test12345' - simply the location of the object. |
+| type | This is a configuration type command, therefore use config.
+| element | The object properties (similar to an API body request).
+
+3) Get a specific security pre-rule called test1.
+
+Using the API browser, we can easily find the xpath for the security pre-rule object, therefore the pan-os command will be:
+
+`
+!pan-os xpath=/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='test']/pre-rulebase/security/rules/entry[@name='test1'], action=get type=config
+`
+
+| Argument | Description |
+| --- | --- |
+| action | Get an object, in this case we want to get an object, so we will use 'get' as an action. |
+| xpath | By using the API browser, we can find every object's xpath easily.
+| type | This is a configuration type command, therefore use config.
+
+Several examples of `!pan-os` for an operational type command:
+
+1) Show system information  - Can be viewed by using the API browser to get the structure of the request.
+
+![Show System Info Operational command](../../doc_files/show-system-info-api-example.png)
+
+The equivalent `!pan-os` command is:
+
+`
+!pan-os type=op cmd=<show><system><info></info></system></show>
+`
+
+2) Show information about all the jobs - Can be viewed by using the API browser to get the structure of the request.
+
+![Show all jobs information](../../doc_files/get-all-jobs-api-example.png)
+
+The equivalent `!pan-os` command is:
+
+`
+!pan-os type=op cmd=<show><jobs><all></all></jobs></show>
+`
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-1. [Run any command supported in the Panorama API: panorama](#pan-os)
+1. [Run any command supported in the Panorama API: pan-os](#pan-os)
 2. [Get pre-defined threats list from a Firewall or Panorama and stores as a JSON file in the context: panorama-get-predefined-threats-list](#pan-os-get-predefined-threats-list)
 3. [Commit a configuration: panorama-commit](#pan-os-commit)
 4. [Pushes rules from PAN-OS to the configured device group: panorama-push-to-device-group](#pan-os-push-to-device-group)
@@ -183,10 +323,14 @@ After you successfully execute a command, a DBot message appears in the War Room
 105. [Get the HA state and associated details from the given device and any other details.](#pan-os-platform-get-ha-state)
 106. [Get all the jobs from the devices in the environment, or a single job when ID is specified.](#pan-os-platform-get-jobs)
 107. [Download The provided software version onto the device.](#pan-os-platform-download-software)
+108. [Download the running configuration](#pan-os-get-running-config)
+109. [Download the merged configuration](#pan-os-get-merged-config)
+110. [Create Nat-rule](#pan-os-create-nat-rule)
+111. [Create PBF-rule](#pan-os-create-pbf-rule)
 
 
 
-### panorama
+### pan-os
 ***
 Run any command supported in the API.
 
@@ -198,26 +342,26 @@ Run any command supported in the API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Action to be taken, such as show, get, set, edit, delete, rename, clone, move, override, multi-move, multi-clone, or complete. | Optional | 
+| action | Action to be taken, such as show, get, set, edit, delete, rename, clone, move, override, multi-move, multi-clone, or complete. Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/pan-os-xml-api-request-types/configuration-api | Optional | 
 | category | Category parameter. For example, when exporting a configuration file, use "category=configuration". | Optional | 
-| cmd | Specifies the xml structure that defines the command. Used for operation commands. | Optional | 
+| cmd | Specifies the XML structure that defines the command. Used for operation commands (op type command). Can be retrieved from the PAN-OS web UI debugger or enabling debugging via the CLI using `debug cli on`. | Optional | 
 | command | Run a command. For example, command =&lt;show&gt;&lt;arp&gt;&lt;entry name='all'/&gt;&lt;/arp&gt;&lt;/show&gt; | Optional | 
 | dst | Specifies a destination. | Optional | 
-| element | Used to define a new value for an object. | Optional | 
-| to | End time (used when cloning an object). | Optional | 
-| from | Start time (used when cloning an object). | Optional | 
+| element | Used to define a new value for an object. Should be an XML object, for example, <static><member>test</member></static>. | Optional | 
+| to | End time (used only when cloning an object). | Optional | 
+| from | Start time (used only when cloning an object). | Optional | 
 | key | Sets a key value. | Optional | 
 | log-type | Retrieves log types. For example, log-type=threat for threat logs. | Optional | 
 | where | Specifies the type of a move operation (for example, where=after, where=before, where=top, where=bottom). | Optional | 
 | period | Time period. For example, period=last-24-hrs | Optional | 
-| xpath | xpath location. For example, xpath=/config/predefined/application/entry[@name='hotmail'] | Optional | 
+| xpath | xpath location. xpath defines the location of the object. For example, xpath=/config/predefined/application/entry[@name='hotmail']. Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/about-the-pan-os-xml-api/structure-of-a-pan-os-xml-api-request/xml-and-xpath. | Optional | 
 | pcap-id | PCAP ID included in the threat log. | Optional | 
 | serialno | Specifies the device serial number. | Optional | 
 | reporttype | Chooses the report type, such as dynamic, predefined or custom. | Optional | 
 | reportname | Report name. | Optional | 
-| type | Request type (e.g. export, import, log, config). | Optional | 
+| type | Request type (e.g. export, import, log, config). Possible values are: keygen, config, commit, op, report, log, import, export, user-id, version. default is config. | Optional | 
 | search-time | The time that the PCAP was received on the firewall. Used for threat PCAPs. | Optional | 
-| target | Target number of the firewall. Use only on a Panorama instance. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 | job-id | Job ID. | Optional | 
 | query | Query string. | Optional | 
 | vsys | The name of the virtual system to be configured. If no vsys is mentioned, this command will not use the vsys parameter. | Optional | 
@@ -226,6 +370,13 @@ Run any command supported in the API.
 #### Context Output
 
 There is no context output for this command.
+
+
+#### Command Example
+```!pan-os xpath=“/config/devices/entry[@name=‘localhost.localdomain’]/template/entry[@name=‘test’]/config/devices/entry[@name=‘localhost.localdomain’]/network/profiles/zone-protection-profile/entry[@name=‘test’]/scan-white-list/entry[@name=‘test’]/ipv4" type=config action=edit element=“<ipv4>1.1.1.1</ipv4>” ```
+
+#### Human Readable Output
+>Command was executed successfully.
 
 
 ### pan-os-get-predefined-threats-list
@@ -266,7 +417,7 @@ Gets the pre-defined threats list from a Firewall or Panorama and stores as a JS
 
 ### pan-os-commit
 ***
-Commits a configuration to Palo Alto Firewall or Panorama, but does not validate if the commit was successful. Committing to Panorama does not push the configuration to the Firewalls. To push the configuration, run the panorama-push-to-device-group command.
+Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true", otherwise does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
 
 
 #### Base Command
@@ -276,46 +427,75 @@ Commits a configuration to Palo Alto Firewall or Panorama, but does not validate
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| description | Commit description. | Optional |
-| admin_name | To commit admin-level changes on a firewall, include the administrator name in the request. | Optional |
-| force_commit | Force Commit. | Optional |
-| exclude_device_network_configuration | Partial commit while excluding device and network configuration. | Optional | 
-| exclude_shared_objects | Partial commit while excluding shared objects.| Optional |
+| description | The commit description. | Optional | 
+| admin_name | The administrator name. To commit admin-level changes on a firewall, include the administrator name in the request. | Optional | 
+| force_commit | Forces a commit. Possible values are: true, false. | Optional | 
+| exclude_device_network_configuration | Performs a partial commit while excluding device and network configuration. Possible values are: true, false. | Optional | 
+| exclude_shared_objects | Performs a partial commit while excluding shared objects. Possible values are: true, false. | Optional | 
+| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional |
+| timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
+
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Commit.JobID | number | Job ID to commit. | 
-| Panorama.Commit.Status | string | Commit status | 
+| Panorama.Commit.JobID | Number | The job ID to commit. | 
+| Panorama.Commit.Status | String | The commit status. | 
+| Panorama.Commit.Description | String | The commit description from the the command input. | 
 
+#### Command example with polling
+```!pan-os-commit description=test polling=true interval_in_seconds=5 timeout=60```
+#### Human Readable Output
 
-#### Command Example
-```!pan-os-commit```
+>Waiting for commit "test" with job ID 12345 to finish...
+>### Commit Status:
+>|JobID|Status| Description
+>|---|---|---|
+>| 12345 | Success | test
 
 #### Context Example
 ```json
 {
     "Panorama": {
         "Commit": {
-            "JobID": "113198",
-            "Status": "Pending"
+            "JobID": "12345",
+            "Status": "Success",
+            "Description": "test"
         }
     }
 }
 ```
 
+#### Command example without polling
+```!pan-os-commit description=test```
+
 #### Human Readable Output
 
->### Commit:
->|JobID|Status|
->|---|---|
->| 113198 | Pending |
+>### Commit Status:
+>|JobID|Status| Description
+>|---|---|---|
+>| 12345 | Pending | test
+
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Commit": {
+            "JobID": "12345",
+            "Status": "Pending",
+            "Description": "test"
+        }
+    }
+}
+```
 
 
 ### pan-os-push-to-device-group
 ***
-Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID.  
+Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID. Validates if a push has been successful if polling="true".
 
 
 #### Base Command
@@ -325,31 +505,92 @@ Pushes rules from PAN-OS to the configured device group. In order to push the co
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device-group | The device group for which to return addresses (Panorama instances). | Optional |
-| validate-only | Pre policy validation. | Optional. |
-| include-template | Whether to include template changes. | Optional. |
-| description | Push description. | Optional |
-| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional |
+| device-group | The device group to which to push (Panorama instances). | Optional | 
+| validate-only | Pre policy validation. Possible values are: true, false. Default is false. | Optional | 
+| include-template | Whether to include template changes. Possible values are: true, false. Default is true. | Optional | 
+| description | The push description. | Optional | 
+| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional | 
+| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional | 
+| timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Push.DeviceGroup | String | Device group in which the policies were pushed. | 
-| Panorama.Push.JobID | Number | Job ID of the polices that were pushed. | 
-| Panorama.Push.Status | String | Push status. | 
+| Panorama.Push.DeviceGroup | String | The device group in which the policies were pushed. | 
+| Panorama.Push.JobID | Number | The job ID of the policies that were pushed. | 
+| Panorama.Push.Status | String | The push status. | 
+| Panorama.Push.Warnings | String | The push warnings. | 
+| Panorama.Push.Errors | String | The push errors. | 
+| Panorama.Push.Details | String | The job ID details. | 
 
+#### Command example with polling=true
+```!pan-os-push-to-device-group description=test polling=true interval_in_seconds=5 timeout=60```
 
-#### Command Example
-```!pan-os-push-to-device-group ```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+            "Details": [
+                "commit succeeded with warnings",
+                "commit succeeded with warnings"
+            ],
+            "Errors": ,
+            "JobID": "31377",
+            "Status": "Completed",
+            "Warnings": [
+                "Interface loopback.645 has no zone configuration.",
+                "External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "Warning: No valid Antivirus content package exists",
+                "(Module: device)"
+            ]
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
->### Push to Device Group Status:
->|JobID|Status|
->|---|---|
->| 113198 | Pending |
+>Waiting for Job-ID 31374 to finish push changes to device-group Lab-Devices..
+>### Push to Device Group status:
+>|JobID|Status|Details|Errors|Warnings|
+>|---|---|---|---|---|
+>| 31377 | Completed | commit succeeded with warnings,<br/>commit succeeded with warnings | | Interface loopback.645 has no zone configuration.,<br/>External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>Warning: No valid Antivirus content package exists,<br/>(Module: device) |
+
+#### Command example with polling=false
+```!pan-os-push-to-device-group description=test polling=false```
+
+#### Human Readable Output
+
+>### Push to Device Group status:
+>|JobID|Status|Description|
+>|---|---|---|
+>| 113198 | Pending | test |
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+          "JobID": "113198",
+          "Status": "Pending",
+          "Description": "test",
+          "DeviceGroup": "device group name"
+        }
+    }
+}
+```
 
 ### pan-os-list-addresses
 ***
@@ -474,14 +715,15 @@ Creates an address object.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | New address name. | Required | 
-| description | New address description. | Optional | 
-| fqdn | FQDN of the new address. | Optional | 
-| ip_netmask | IP Netmask of the new address. For example, 10.10.10.10/24 | Optional | 
-| ip_range | IP range of the new address IP. For example, 10.10.10.0-10.10.10.255 | Optional | 
-| device-group | The device group for which to return addresses (Panorama instances). | Optional | 
-| tag | The tag for the new address. | Optional | 
+|-------------------| --- | --- |
+| name              | New address name. | Required | 
+| description       | New address description. | Optional | 
+| fqdn              | FQDN of the new address. | Optional | 
+| ip_netmask        | IP Netmask of the new address. For example, 10.10.10.10/24 | Optional | 
+| ip_range          | IP range of the new address IP. For example, 10.10.10.0-10.10.10.255 | Optional | 
+| ip_wildcard       | The IP wildcard of the new address. For example, 10.20.1.0/0.0.248.255 | Optional | 
+| device-group      | The device group for which to return addresses (Panorama instances). | Optional | 
+| tag               | The tag for the new address. | Optional | 
 
 
 #### Context Output
@@ -809,15 +1051,15 @@ Edits a static or dynamic address group.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Name of the address group to edit. | Required | 
-| type | Address group type. | Required | 
-| match | Address group new match. For example, '1.1.1.1 and 2.2.2.2'. | Optional | 
-| element_to_add | Element to add to the list of the static address group. Only existing Address objects can be added. | Optional | 
+|-------------------| --- | --- |
+| name              | Name of the address group to edit. | Required | 
+| type              | Address group type. | Required | 
+| match             | Address group new match. For example, '1.1.1.1 and 2.2.2.2'. | Optional | 
+| element_to_add    | Element to add to the list of the static address group. Only existing Address objects can be added. | Optional | 
 | element_to_remove | Element to remove from the list of the static address group. Only existing Address objects can be removed. | Optional | 
-| description | Address group new description. | Optional | 
-| tags | The tag of the Address group to edit. | Optional | 
-
+| description       | Address group new description. | Optional | 
+| tags              | The tag of the Address group to edit. | Optional | 
+| device-group      | The device group in which the address group belongs to. | Optional |
 
 #### Context Output
 
@@ -1215,13 +1457,13 @@ Edit a service group.
 `pan-os-edit-service-group`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Name of the service group to edit. | Required | 
-| services_to_add | Services to add to the service group. Only existing Services objects can be added. | Optional | 
+| **Argument Name**  | **Description** | **Required** |
+|--------------------| --- | --- |
+| name               | Name of the service group to edit. | Required | 
+| services_to_add    | Services to add to the service group. Only existing Services objects can be added. | Optional | 
 | services_to_remove | Services to remove from the service group. Only existing Services objects can be removed. | Optional | 
-| tags | Tag of the Service group to edit. | Optional | 
-
+| tags               | Tag of the Service group to edit. | Optional | 
+| device-group       | The device group in which the service group belongs to. | Optional |
 
 #### Context Output
 
@@ -1390,13 +1632,13 @@ Adds or removes sites to and from a custom URL category.
 `pan-os-edit-custom-url-category`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Name of the custom URL category to add or remove sites. | Required | 
-| sites | A comma separated list of sites to add to the custom URL category. | Optional | 
-| action | Adds or removes sites or categories. Can be "add",or "remove". | Required | 
-| categories | A comma separated list of categories to add to the custom URL category. | Optional | 
-
+| **Argument Name** | **Description**                                                         | **Required** |
+|-------------------|-------------------------------------------------------------------------| --- |
+| name              | Name of the custom URL category to add or remove sites.                 | Required | 
+| sites             | A comma separated list of sites to add to the custom URL category.      | Optional | 
+| action            | Adds or removes sites or categories. Possible values are: add, remove   | Required | 
+| categories        | A comma separated list of categories to add to the custom URL category. | Optional | 
+| device-group      | The device group in which the URL category belongs to.                  | Optional |
 
 #### Context Output
 
@@ -1421,6 +1663,7 @@ Gets a URL category from URL Filtering. This command is only available on Firewa
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | url | URL to check. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance | Optional |
 
 
 #### Context Output
@@ -1676,12 +1919,13 @@ Edit a URL filtering rule.
 `pan-os-edit-url-filter`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Name of the URL filter to edit. | Required | 
-| element_to_change | Element to change. | Required | 
-| element_value | Element value. Limited to one value. | Required | 
+| **Argument Name**  | **Description** | **Required** |
+|--------------------| --- | --- |
+| name               | Name of the URL filter to edit. | Required | 
+| element_to_change  | Element to change. | Required | 
+| element_value      | Element value. Limited to one value. | Required | 
 | add_remove_element | Add or remove an element from the Allow List or Block List fields. Default is to 'add' the element_value to the list. | Optional | 
+| device-group       | The device group in which the URL-filter belongs to. | Optional |
 
 
 #### Context Output
@@ -1933,10 +2177,11 @@ Modifies an element of an external dynamic list.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Name of the external dynamic list to edit. | Required | 
+|-------------------| --- | --- |
+| name              | Name of the external dynamic list to edit. | Required | 
 | element_to_change | The element to change (“url”, “recurring”, “certificate_profile”, “description”). | Required | 
-| element_value | The element value. | Required | 
+| element_value     | The element value. | Required | 
+| device-group      | The device group in which the EDL belongs to. | Optional |
 
 
 #### Context Output
@@ -2074,8 +2319,8 @@ Creates a policy rule.
 | tags | Rule tags to create. | Optional | 
 | category | A comma-separated list of URL categories. | Optional |
 | profile_setting | A profile setting group. | Optional | 
-| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument. | Optional | 
-| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument. | Optional |
+| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument. | Optional | 
+| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument. | Optional |
 
 #### Context Output
 
@@ -2142,8 +2387,8 @@ Creates a custom block policy rule.
 | log_forwarding | Log forwarding profile. | Optional | 
 | device-group | The device group for which to return addresses for the rule (Panorama instances). | Optional | 
 | tags | Tags for which to use for the custom block policy rule. | Optional | 
-| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument. | Optional | 
-| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument. | Optional |
+| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument. | Optional | 
+| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument. | Optional |
 
 #### Context Output
 
@@ -2194,8 +2439,8 @@ Changes the location of a policy rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rulename | Name of the rule to move. | Required | 
-| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument. | Required | 
-| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument. | Optional | 
+| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument. | Required | 
+| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument. | Optional | 
 | pre_post | Rule location. Mandatory for Panorama instances. | Optional | 
 | device-group | The device group for which to return addresses for the rule (Panorama instances). | Optional | 
 
@@ -2226,13 +2471,13 @@ Edits a policy rule.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| rulename | Name of the rule to edit. | Required | 
+|-------------------| --- | --- |
+| rulename          | Name of the rule to edit. | Required | 
 | element_to_change | Parameter in the security rule to change. Can be 'source', 'destination', 'application', 'action', 'category', 'description', 'disabled', 'target', 'log-forwarding', 'tag', 'source-user', 'service' or 'profile-setting'. | Required | 
-| element_value | The new value for the parameter. | Required | 
-| pre_post | Pre-rule or post-rule (Panorama instances). | Optional | 
-| behaviour | Whether to replace, add, or remove the element_value from the current rule object value. | Optional | 
-
+| element_value     | The new value for the parameter. | Required | 
+| pre_post          | Pre-rule or post-rule (Panorama instances). | Optional | 
+| behaviour         | Whether to replace, add, or remove the element_value from the current rule object value. | Optional | 
+| device-group      | The device group in which the rule belongs to. | Optional |
 
 #### Context Output
 
@@ -2316,9 +2561,9 @@ Returns a list of applications.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| predefined | Whether to list predefined applications or not. | Optional | 
-
+|-------------------| --- | --- |
+| predefined        | Whether to list predefined applications or not. | Optional | 
+| device-group      | The device group for which to return applications. | Optional |
 
 #### Context Output
 
@@ -2360,40 +2605,42 @@ Returns a list of applications.
 >|  | demisto_fw_app3 | 1 |  | ip-protocol | peer-to-peer | lala |
 
 
-### pan-os-commit-status
+### pan-os-commit
 ***
-Returns commit status for a configuration.
+Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true" otherwiese does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
 
 
 #### Base Command
 
-`pan-os-commit-status`
+`pan-os-commit`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| job_id | Job ID to check. | Required | 
+| description | The commit description. | Optional | 
+| admin_name | The administrator name. To commit admin-level changes on a firewall, include the administrator name in the request. | Optional | 
+| force_commit | Forces a commit. Possible values are: true, false. | Optional | 
+| exclude_device_network_configuration | Performs a partial commit while excluding device and network configuration. Possible values are: true, false. | Optional | 
+| exclude_shared_objects | Performs a partial commit while excluding shared objects. Possible values are: true, false. | Optional | 
+| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional | 
+| commit_job_id | commit job ID to use in polling commands. (automatically filled by polling). | Optional | 
+| timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Commit.JobID | number | Job ID of the configuration to be committed. | 
-| Panorama.Commit.Status | string | Commit status. | 
-| Panorama.Commit.Details | string | Job ID details. | 
-| Panorama.Commit.Warnings | String | Job ID warnings | 
+| Panorama.Commit.JobID | Number | The job ID to commit. | 
+| Panorama.Commit.Status | String | The commit status. | 
+| Panorama.Commit.Description | String | The commit description from the the command input. | 
 
-
-#### Command Example
-```!pan-os-commit-status job_id=948 ```
-
+#### Command example
+```!pan-os-commit description=test polling=true interval_in_seconds=5 timeout=60```
 #### Human Readable Output
 
->### Commit Status:
->|JobID|Status|
->|---|---|
->| 948 | Pending |
+>Waiting for commit "test" with job ID 7304 to finish...
 
 ### pan-os-push-status
 ***
@@ -2407,29 +2654,59 @@ Returns the push status for a configuration.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| job_id | Job ID to check. | Required | 
+| job_id | The job ID to check. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Push.DeviceGroup | string | Device group to which the policies were pushed. | 
-| Panorama.Push.JobID | number | Job ID of the configuration to be pushed. | 
-| Panorama.Push.Status | string | Push status. | 
-| Panorama.Push.Details | string | Job ID details. | 
-| Panorama.Push.Warnings | String | Job ID warnings | 
+| Panorama.Push.DeviceGroup | string | The device group to which the policies were pushed. | 
+| Panorama.Push.JobID | number | The job ID of the configuration to be pushed. | 
+| Panorama.Push.Status | string | The push status. | 
+| Panorama.Push.Details | string | The job ID details. | 
+| Panorama.Push.Warnings | String | The job ID warnings | 
 
-
-#### Command Example
-```!pan-os-push-status job_id=951 ```
+#### Command example
+```!pan-os-push-status job_id=31377```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+            "Details": [
+                "commit succeeded with warnings",
+                "commit succeeded with warnings"
+            ],
+            "Errors": [],
+            "JobID": "31377",
+            "Status": "Completed",
+            "Warnings": [
+                "Interface loopback.645 has no zone configuration.",
+                "External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "Warning: No valid Antivirus content package exists",
+                "(Module: device)"
+            ]
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
->### Push to Device Group Status:
->|JobID|Status|Details|
->|---|---|---|
->| 951 | Completed | commit succeeded with warnings |
+>### Push to Device Group status:
+>|JobID|Status|Details|Errors|Warnings|
+>|---|---|---|---|---|
+>| 31377 | Completed | commit succeeded with warnings,<br/>commit succeeded with warnings | | Interface loopback.645 has no zone configuration.,<br/>External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>Warning: No valid Antivirus content package exists,<br/>(Module: device) |
+
 
 ### pan-os-get-pcap
 ***
@@ -2751,6 +3028,7 @@ Returns a list of predefined Security Rules.
 | pre_post | Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances. | Optional | 
 | device-group | The device group for which to return addresses (Panorama instances). | Optional | 
 | tag | Tag for which to filter the rules. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance | Optional |
 
 
 #### Context Output
@@ -2861,7 +3139,7 @@ Returns a list of predefined Security Rules.
 
 ### pan-os-query-logs
 ***
-Query logs in Panorama.
+The query logs in Panorama.
 
 
 #### Base Command
@@ -2871,45 +3149,151 @@ Query logs in Panorama.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| log-type | The log type. Can be "threat", "traffic", "wildfire", "url", or "data". | Required | 
+| log-type | The log type. Can be "threat", "traffic", "wildfire", "url", or "data". Possible values are: threat, traffic, wildfire, url, data. | Required | 
 | query | The query string by which to match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs. | Optional | 
-| time-generated | The time that the log was generated from the timestamp and prior to it.<br/>e.g "2019/08/11 01:10:44". | Optional | 
-| addr-src | Source address. | Optional | 
-| addr-dst | Destination address. | Optional | 
-| ip | Source or destination IP address. | Optional | 
-| zone-src | Source zone. | Optional | 
-| zone-dst | Destination Source. | Optional | 
-| action | Rule action. | Optional | 
-| port-dst | Destination port. | Optional | 
-| rule | Rule name, e.g "Allow all outbound". | Optional | 
-| url | URL, e.g "safebrowsing.googleapis.com". | Optional | 
-| filedigest | File hash (for WildFire logs only). | Optional | 
-| number_of_logs | Maximum number of logs to retrieve. If empty, the default is 100. The maximum is 5,000. | Optional | 
+| time-generated | The time the log was generated from the timestamp and prior to it.<br/>For example "2019/08/11 01:10:44". | Optional | 
+| addr-src | The source address. | Optional | 
+| addr-dst | The destination address. | Optional | 
+| ip | The source or destination IP address. | Optional | 
+| zone-src | The source zone. | Optional | 
+| zone-dst | The destination source. | Optional | 
+| action | The rule action. | Optional | 
+| port-dst | The destination port. | Optional | 
+| rule | The rule name, for example "Allow all outbound". | Optional | 
+| url | The URL, for example "safebrowsing.googleapis.com". | Optional | 
+| filedigest | The file hash (for WildFire logs only). | Optional | 
+| number_of_logs | The maximum number of logs to retrieve. If empty, the default is 100. The maximum is 5,000. Default is 100. | Optional | 
+| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional | 
+| timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Monitor.JobID | String | Job ID of the logs query. | 
-| Panorama.Monitor.Status | String | Status of the logs query. | 
-| Panorama.Monitor.Message | String | Message of the logs query. | 
+| Panorama.Monitor.JobID | String | The job ID of the logs query. | 
+| Panorama.Monitor.Status | String | The status of the logs query. | 
+| Panorama.Monitor.Message | String | The message of the logs query. | 
+| Panorama.Monitor.Logs.Action | String | The action taken for the session. Can be "alert", "allow", "deny", "drop", "drop-all-packets", "reset-client", "reset-server", "reset-both", or "block-url". | 
+| Panorama.Monitor.Logs.Application | String | The application associated with the session. | 
+| Panorama.Monitor.Logs.Category | String | The URL category of the URL subtype. For WildFire subtype, it is the verdict on the file, and can be either "malicious", "phishing", "grayware", or "benign". For other subtypes, the value is "any". | 
+| Panorama.Monitor.Logs.DeviceName | String | The hostname of the firewall on which the session was logged. | 
+| Panorama.Monitor.Logs.DestinationAddress | String | The original session destination IP address. | 
+| Panorama.Monitor.Logs.DestinationUser | String | The username of the user to which the session was destined. | 
+| Panorama.Monitor.Logs.DestinationCountry | String | The destination country or internal region for private addresses. Maximum length is 32 bytes. | 
+| Panorama.Monitor.Logs.DestinationPort | String | The destination port utilized by the session. | 
+| Panorama.Monitor.Logs.FileDigest | String | Only for the WildFire subtype, all other types do not use this field. The filedigest string shows the binary hash of the file sent to be analyzed by the WildFire service. | 
+| Panorama.Monitor.Logs.FileName | String | File name or file type when the subtype is file.
+File name when the subtype is virus.
+File name when the subtype is wildfire-virus.
+File name when the subtype is wildfire. | 
+| Panorama.Monitor.Logs.FileType | String | Only for the WildFire subtype, all other types do not use this field.
+Specifies the type of file that the firewall forwarded for WildFire analysis. | 
+| Panorama.Monitor.Logs.FromZone | String | The zone from which the session was sourced. | 
+| Panorama.Monitor.Logs.URLOrFilename | String | The actual URL when the subtype is url.
+The file name or file type when the subtype is file.
+The file name when the subtype is virus.
+The file name when the subtype is wildfire-virus.
+The file name when the subtype is wildfire.
+The URL or file name when the subtype is vulnerability \(if applicable\). | 
+| Panorama.Monitor.Logs.NATDestinationIP | String | The post-NAT destination IP address if destination NAT was performed. | 
+| Panorama.Monitor.Logs.NATDestinationPort | String | The post-NAT destination port. | 
+| Panorama.Monitor.Logs.NATSourceIP | String | The post-NAT source IP address if source NAT was performed. | 
+| Panorama.Monitor.Logs.NATSourcePort | String | The post-NAT source port. | 
+| Panorama.Monitor.Logs.PCAPid | String | The packet capture \(pcap\) ID is a 64 bit unsigned integral denoting
+an ID to correlate threat pcap files with extended pcaps taken as a part of
+that flow. All threat logs will contain either a pcap_id of 0 \(no associated
+pcap\), or an ID referencing the extended pcap file. | 
+| Panorama.Monitor.Logs.IPProtocol | String | The IP protocol associated with the session. | 
+| Panorama.Monitor.Logs.Recipient | String | Only for the WildFire subtype, all other types do not use this field.
+Specifies the name of the receiver of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall. | 
+| Panorama.Monitor.Logs.Rule | String | The name of the rule that the session matched. | 
+| Panorama.Monitor.Logs.RuleID | String | The ID of the rule that the session matched. | 
+| Panorama.Monitor.Logs.ReceiveTime | String | The time the log was received at the management plane. | 
+| Panorama.Monitor.Logs.Sender | String | Only for the WildFire subtype; all other types do not use this field.
+Specifies the name of the sender of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall. | 
+| Panorama.Monitor.Logs.SessionID | String | An internal numerical identifier applied to each session. | 
+| Panorama.Monitor.Logs.DeviceSN | String | The serial number of the firewall on which the session was logged. | 
+| Panorama.Monitor.Logs.Severity | String | The severity associated with the threat. Can be "informational", "low",
+"medium", "high", or "critical". | 
+| Panorama.Monitor.Logs.SourceAddress | String | The original session source IP address. | 
+| Panorama.Monitor.Logs.SourceCountry | String | The source country or internal region for private addresses. Maximum
+length is 32 bytes. | 
+| Panorama.Monitor.Logs.SourceUser | String | The username of the user who initiated the session. | 
+| Panorama.Monitor.Logs.SourcePort | String | The source port utilized by the session. | 
+| Panorama.Monitor.Logs.ThreatCategory | String | The threat categories used to classify different types of
+threat signatures. | 
+| Panorama.Monitor.Logs.Name | String | The Palo Alto Networks identifier for the threat. A description
+string followed by a 64-bit numerical identifier. | 
+| Panorama.Monitor.Logs.ID | String | The Palo Alto Networks ID for the threat. | 
+| Panorama.Monitor.Logs.ToZone | String | The zone to which the session was destined. | 
+| Panorama.Monitor.Logs.TimeGenerated | String | The time the log was generated on the data plane. | 
+| Panorama.Monitor.Logs.URLCategoryList | String | A list of the URL filtering categories the firewall used to
+enforce the policy. | 
+| Panorama.Monitor.Logs.Bytes | String | The total log bytes. | 
+| Panorama.Monitor.Logs.BytesReceived | String | The log bytes received. | 
+| Panorama.Monitor.Logs.BytesSent | String | The log bytes sent. | 
+| Panorama.Monitor.Logs.Vsys | String | The VSYS on the firewall that generated the log. | 
 
+#### Command example with polling
+```!pan-os-query-logs log-type=traffic number_of_logs=1 polling=true```
 
-#### Command Example
-```!pan-os-query-logs log-type=data query="( addr.src in 192.168.1.12 )" ```
+### Context example
+```json
+{
+    "Panorama": {
+        "Monitor": {
+            "JobID": "1291",
+            "LogType": "traffic",
+            "Logs": {
+              "TimeGenerated": "2019/07/24 08:50:24",
+              "SourceAddress": "1.1.1.1",
+              "DestinationAddress": "2.3.4.5",
+              "Application": "web-browsing",
+              "Action": "deny",
+              "Rule": "any - any accept"
+            },
+            "Status": "Completed"
+        }
+    }
+}
+```
 
 #### Human Readable Output
+>Fetching traffic logs for job ID 1291...
+> >### Query traffic Logs:
+>|TimeGenerated|SourceAddress|DestinationAddress|Application|Action|Rule|
+>|---|---|---|---|---|---|
+>| 2019/07/24 08:50:24 | 1.1.1.1 | 2.3.4.5 | web-browsing | deny | any - any accept |
 
+
+#### Command example without polling 
+```!pan-os-query-logs log-type=traffic number_of_logs=1```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Monitor": {
+            "JobID": "1283",
+            "LogType": "traffic",
+            "Message": "query job enqueued with jobid 1283",
+            "Status": "Pending"
+        }
+    }
+}
+```
+
+#### Human Readable Output
 >### Query Logs:
 >|JobID|Status|
 >|---|---|
->| 678 | Pending |
+>| 1283 | Pending |
+
 
 ### pan-os-check-logs-status
 ***
 Checks the status of a logs query.
-
 
 #### Base Command
 
@@ -3343,7 +3727,7 @@ Show firewall device software version.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | Serial number of the target device. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 
 
 #### Context Output
@@ -3395,7 +3779,7 @@ Downloads the latest content update.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The device to which to download the content update. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance | Optional | 
 
 
 #### Context Output
@@ -3428,8 +3812,8 @@ Checks the download status of a content update.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The device to which the content update is downloading. | Optional | 
-| job_id | Job ID to check. | Required | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+| job_id | Job ID to check.                                                                             | Required | 
 
 
 #### Context Output
@@ -3464,7 +3848,7 @@ Installs the latest content update.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The device on which to install the content update. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance | Optional | 
 
 
 #### Context Output
@@ -3498,7 +3882,7 @@ Gets the installation status of the content update.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The device on which to check the installation status of the content update. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 | job_id | Job ID of the content installation. | Required | 
 
 
@@ -3534,7 +3918,7 @@ Checks the PAN-OS software version from the repository.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The target device from which to get the PAN-OS software version. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 
 
 #### Context Output
@@ -3557,7 +3941,7 @@ Downloads the target PAN-OS software version to install on the target device.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The target device from which to download the PAN-OS software version. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 | target_version | The target version number to install. | Required | 
 
 
@@ -3591,7 +3975,7 @@ Gets the download status of the target PAN-OS software.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The target device from which to get the download status. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 | job_id | Job ID to check. | Required | 
 
 
@@ -3624,9 +4008,9 @@ Installs the target PAN-OS version on the specified target device.
 `pan-os-install-panos-version`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| target | The target device on which to install the target PAN-OS software version. | Optional | 
+| **Argument Name** | **Description**  | **Required** |
+| --- |---| --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 | target_version | Target PAN-OS version to install. | Required | 
 
 
@@ -3660,7 +4044,7 @@ Gets the installation status of the PAN-OS software.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The target device from which to get the installation status. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 | job_id | Job ID to check. | Required | 
 
 
@@ -3695,7 +4079,7 @@ Reboots the Firewall device.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The target device for which to reboot the firewall. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 
 
 #### Context Output
@@ -3804,9 +4188,9 @@ Gets information for the specified security profile.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| security_profile | The security profile for which to get information. Can be "data-filtering", "file-blocking", "spyware", "url-filtering", "virus", "vulnerability", or "wildfire-analysis". | Optional | 
-
+|-------------------| --- | --- |
+| security_profile  | The security profile for which to get information. Can be "data-filtering", "file-blocking", "spyware", "url-filtering", "virus", "vulnerability", or "wildfire-analysis". | Optional | 
+| device-group      | The device group for which to return security profiles. | Optional |
 
 #### Context Output
 
@@ -3877,12 +4261,12 @@ Apply a security profile to specific rules or rules with a specific tag.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| profile_type | Security profile type. Can be 'data-filtering', 'file-blocking', 'spyware', 'url-filtering', 'virus, 'vulnerability', or wildfire-analysis.' | Required | 
-| rule_name | The rule name to apply. | Required | 
-| profile_name | The profile name to apply to the rule. | Required | 
-| pre_post | The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances. | Optional | 
-
+|-------------------| --- | --- |
+| profile_type      | Security profile type. Can be 'data-filtering', 'file-blocking', 'spyware', 'url-filtering', 'virus, 'vulnerability', or wildfire-analysis.' | Required | 
+| rule_name         | The rule name to apply. | Required | 
+| profile_name      | The profile name to apply to the rule. | Required | 
+| pre_post          | The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances. | Optional | 
+| device-group      | The device group for which to apply security profiles. | Optional |
 
 #### Context Output
 
@@ -4699,7 +5083,9 @@ Gets all ARP tables from all firewalls in the topology.
 #### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
 #### Context Output
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -4838,7 +5224,9 @@ Pulls all route summary information from the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
 
 
 #### Context Output
@@ -4889,7 +5277,9 @@ Pulls all route information from the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
 
 
 #### Context Output
@@ -5016,7 +5406,9 @@ Gets information from all PAN-OS systems in the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
 
 
 #### Context Output
@@ -5181,7 +5573,8 @@ Gets the operational information of the template stacks in the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+
 
 
 #### Context Output
@@ -5244,7 +5637,9 @@ Gets global counter information from all the PAN-OS firewalls in the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
 
 
 #### Context Output
@@ -5416,7 +5811,9 @@ Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
 
 
 #### Context Output
@@ -5498,7 +5895,9 @@ Check the devices for software that is available to be installed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
 
 
 #### Context Output
@@ -5563,7 +5962,9 @@ Get the HA state and associated details from the given device and any other deta
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
 
 
 #### Context Output
@@ -5620,7 +6021,8 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional |
 | status | Filter to return jobs by status. | Optional | 
 | job_type | Filter to return jobs by type. | Optional | 
 | id | Filter by ID. | Optional | 
@@ -5732,6 +6134,7 @@ Download the provided software version onto the device.
 | --- | --- | --- |
 | version | The software version to upgrade to, for example, 9.1.2. | Required | 
 | device_filter_string | String by which to filter the results to only install to sepecific devices or serial numbers. | Optional | 
+| target | Single serial number to target with this command | Optional | 
 | sync | If provided, runs the download synchronously. Make sure 'execution-timeout' is increased. | Optional | 
 
 
@@ -5797,3 +6200,2442 @@ There is no context output for this command.
 #### Human Readable Output
 
 **success**
+### pan-os-platform-reboot
+***
+Reboot the given device by hostid. Warning: This command has no confirmation and the device
+will immediately reboot.
+
+
+#### Base Command
+
+`pan-os-platform-reboot`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | ID of host (serial or hostname) to reboot. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.RestartStatus.Summary.hostid | String | Host ID. | 
+| PANOS.RestartStatus.Summary.started | String | Whether the system reboot has started. | 
+
+#### Command example
+```!pan-os-platform-reboot target=11111111111111```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "RestartStatus": {
+            "Summary": [
+                {
+                    "hostid": "11111111111111",
+                    "started": true
+                }
+            ]
+        }
+    }
+}
+```
+
+### pan-os-platform-get-system-status
+***
+Checks the status of the given device, checking whether it's up or down and if the operational mode is normal.
+
+
+#### Base Command
+
+`pan-os-platform-get-system-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | ID of host (serial or hostname) to check. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.SystemStatus.hostid | String | Host ID. | 
+| PANOS.SystemStatus.up | String | Whether the host device is up or still unavailable. | 
+
+#### Command example
+```!pan-os-platform-get-system-status target=11111111111111```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "SystemStatus": {
+          "hostid": "11111111111111",
+          "up": true
+        }
+    }
+}
+```
+
+### pan-os-platform-update-ha-state
+***
+Checks the status of the given device, checking whether it's up or down and the operational mode normal.
+
+
+#### Base Command
+
+`pan-os-platform-update-ha-state`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostid | ID of host (serial or hostname) to update the state. | Required | 
+| state | New state. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.HAStateUpdate.hostid | String | Host ID. | 
+| PANOS.HAStateUpdate.state | String | New HA state. | 
+
+#### Command example
+```!pan-os-platform-update-ha-state hostid=11111111111111 state=functional```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "HAStateUpdate": {
+          "hostid": "11111111111111",
+          "state": "functional"
+        }
+    }
+}
+```
+
+### pan-os-hygiene-check-log-forwarding
+***
+Checks that at least one log forwarding profile is configured according to best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-log-forwarding`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String by which to filter so that only the given device is checked. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed. | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | String | Total number of matching issues. | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | The parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue. | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of the issue. | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name. | 
+
+#### Command example
+```!pan-os-hygiene-check-log-forwarding```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Result": [
+                {
+                    "container_name": "LAB",
+                    "description": "Log forwarding profile missing log type 'threat'.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-2",
+                    "name": "test_fwd_profile-1"
+                },
+                {
+                    "container_name": "LAB",
+                    "description": "Log forwarding profile missing log type 'threat'.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-2",
+                    "name": "test_fwd_profile-1-1"
+                },
+                {
+                    "container_name": "shared",
+                    "description": "Log forwarding profile missing log type 'threat'.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-2",
+                    "name": "test_fwd_profile"
+                }
+            ],
+            "Summary": [
+                {
+                    "description": "Fails if there are no valid log forwarding profiles configured.",
+                    "issue_code": "BP-V-1",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                },
+                {
+                    "description": "Fails if the configured log forwarding profile has no match list.",
+                    "issue_code": "BP-V-2",
+                    "issue_count": 3,
+                    "result": "\u274c"
+                },
+                {
+                    "description": "Fails if enhanced application logging is not configured.",
+                    "issue_code": "BP-V-3",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails if there are no valid log forwarding profiles configured. | BP-V-1 | 0 | ✔️ |
+>| Fails if the configured log forwarding profile has no match list. | BP-V-2 | 3 | ❌ |
+>| Fails if enhanced application logging is not configured. | BP-V-3 | 0 | ✔️ |
+
+
+### pan-os-hygiene-check-vulnerability-profiles
+***
+Checks the configured vulnerability profiles to ensure at least one meets best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-vulnerability-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String by which to filter so that only the given device is checked. | Optional | 
+| minimum_block_severities | Comma-separated list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional | 
+| minimum_alert_severities | Comma-separated list of severities that must be in alert/default or higher mode. Default is medium,low. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed. | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | Nunber | Total number of matching issues. | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | The parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue. | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of the issue. | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-check-vulnerability-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Summary": [
+                {
+                    "description": "Fails if no vulnerability profile is configured for visibility.",
+                    "issue_code": "BP-V-4",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails if no vulnerability profile is configured for visibility. | BP-V-4 | 0 | ✔️ |
+
+
+### pan-os-platform-install-software
+***
+Install the given software version onto the device. Download the software first with panorama-download-panos-version.
+
+
+#### Base Command
+
+`pan-os-platform-install-software`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| version | Software version to upgrade to, for example: 9.1.2. | Required | 
+| device_filter_string | SString by which to filter to only install to specific devices or  serial numbers. | Optional | 
+| sync | If provided, runs the download synchronously. Make sure 'execution-timeout' is increased. | Optional | 
+| target | Single serial number to target with this command | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.InstallStatus.Summary.hostid | String | Host ID, | 
+| PANOS.InstallStatus.Summary.started | String | Whether the download process has started. | 
+
+#### Command example
+```!pan-os-platform-install-software version=9.1.0```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "InstallStatus": {
+            "Summary": [
+                {
+                    "hostid": "1111111111111",
+                    "started": true
+                },
+                {
+                    "hostid": "192.168.1.145",
+                    "started": true
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Software Install request Status
+>|hostid|started|
+>|---|---|
+>| 1111111111111 | true |
+>| 192.168.1.145 | true |
+
+### pan-os-hygiene-check-log-forwarding
+***
+Checks that at least one log forwarding profile is configured according to best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-log-forwarding`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String by which to filter so that only the given device is checked. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed. | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | Number | Total number of matching issues. | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | The parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue. | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of the issue. | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name. | 
+
+#### Command example
+```!pan-os-hygiene-check-log-forwarding```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Result": [
+                {
+                    "container_name": "LAB",
+                    "description": "Log forwarding profile missing log type 'threat'.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-2",
+                    "name": "test_fwd_profile-1"
+                },
+                {
+                    "container_name": "LAB",
+                    "description": "Log forwarding profile missing log type 'threat'.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-2",
+                    "name": "test_fwd_profile-1-1"
+                },
+                {
+                    "container_name": "shared",
+                    "description": "Log forwarding profile missing log type 'threat'.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-2",
+                    "name": "test_fwd_profile"
+                }
+            ],
+            "Summary": [
+                {
+                    "description": "Fails if there are no valid log forwarding profiles configured.",
+                    "issue_code": "BP-V-1",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                },
+                {
+                    "description": "Fails if the configured log forwarding profile has no match list.",
+                    "issue_code": "BP-V-2",
+                    "issue_count": 3,
+                    "result": "\u274c"
+                },
+                {
+                    "description": "Fails if enhanced application logging is not configured.",
+                    "issue_code": "BP-V-3",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails if there are no valid log forwarding profiles configured. | BP-V-1 | 0 | ✔️ |
+>| Fails if the configured log forwarding profile has no match list. | BP-V-2 | 3 | ❌ |
+>| Fails if enhanced application logging is not configured. | BP-V-3 | 0 | ✔️ |
+
+
+### pan-os-hygiene-check-vulnerability-profiles
+***
+Checks the configured vulnerability profiles to ensure at least one meets best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-vulnerability-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String by which to filter so that only the given device is checked. | Optional | 
+| minimum_block_severities | Comma-separated list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional | 
+| minimum_alert_severities | Comma-separated list of severities that must be in alert/default or higher mode. Default is medium,low. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed. | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | Number | Total number of matching issues. | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | The parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue. | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of the issue. | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name. | 
+
+#### Command example
+```!pan-os-hygiene-check-vulnerability-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Summary": [
+                {
+                    "description": "Fails if no vulnerability profile is configured for visibility.",
+                    "issue_code": "BP-V-4",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails if no vulnerability profile is configured for visibility. | BP-V-4 | 0 | ✔️ |
+
+
+### pan-os-hygiene-check-spyware-profiles
+***
+Checks the configured Anti-spyware profiles to ensure at least one meets best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-spyware-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given devices. | Optional | 
+| minimum_block_severities | csv list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional | 
+| minimum_alert_severities | csv list of severities that must be in alert/default or higher mode. Default is medium,low. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the check | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | String | Total number of matching issues | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-check-spyware-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Summary": [
+                {
+                    "description": "Fails if no spyware profile is configured for visibility.",
+                    "issue_code": "BP-V-5",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails if no spyware profile is configured for visibility. | BP-V-5 | 0 | ✔️ |
+
+
+### pan-os-hygiene-check-url-filtering-profiles
+***
+Checks the configured URL Filtering profiles to ensure at least one meets best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-url-filtering-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given device. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the check | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | String | Total number of matching issues | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-check-url-filtering-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Summary": [
+                {
+                    "description": "Fails if no spyware profile is configured for url-filtering",
+                    "issue_code": "BP-V-6",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails if no spyware profile is configured for url-filtering | BP-V-6 | 0 | ✔️ |
+
+
+### pan-os-hygiene-conforming-url-filtering-profiles
+***
+Returns a list of existing PANOS URL filtering objects that conform to best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-conforming-url-filtering-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given device. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.PanosObject.hostid | String | Host ID. | 
+| PANOS.PanosObject.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.PanosObject.name | String | The PAN-OS object name | 
+| PANOS.PanosObject.object_type | String | The PAN-OS-Python object type | 
+
+#### Command example
+```!pan-os-hygiene-conforming-url-filtering-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "PanosObject": [
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Outbound-URL",
+                "object_type": "URLFilteringProfile"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Exception-URL",
+                "object_type": "URLFilteringProfile"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Objects
+>|container_name|hostid|name|object_type|
+>|---|---|---|---|
+>| shared | 192.168.1.145 | Outbound-URL | URLFilteringProfile |
+>| shared | 192.168.1.145 | Exception-URL | URLFilteringProfile |
+
+
+### pan-os-hygiene-conforming-spyware-profiles
+***
+Returns all Anti-spyware profiles that conform to best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-conforming-spyware-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given device. | Optional | 
+| minimum_block_severities | csv list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional | 
+| minimum_alert_severities | csv list of severities that must be in alert/default or higher mode. Default is medium,low. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.PanosObject.hostid | String | Host ID. | 
+| PANOS.PanosObject.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.PanosObject.name | String | The PAN-OS object name | 
+| PANOS.PanosObject.object_type | String | The PAN-OS-Python object type | 
+
+#### Command example
+```!pan-os-hygiene-conforming-spyware-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "PanosObject": [
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Outbound-AS",
+                "object_type": "AntiSpywareProfile"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Inbound-AS",
+                "object_type": "AntiSpywareProfile"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Internal-AS",
+                "object_type": "AntiSpywareProfile"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Objects
+>|container_name|hostid|name|object_type|
+>|---|---|---|---|
+>| shared | 192.168.1.145 | Outbound-AS | AntiSpywareProfile |
+>| shared | 192.168.1.145 | Inbound-AS | AntiSpywareProfile |
+>| shared | 192.168.1.145 | Internal-AS | AntiSpywareProfile |
+
+
+### pan-os-hygiene-conforming-vulnerability-profiles
+***
+Returns all Vulnerability profiles that conform to best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-conforming-vulnerability-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given device. | Optional | 
+| minimum_block_severities | csv list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional | 
+| minimum_alert_severities | csv list of severities that must be in alert/default or higher mode. Default is medium,low. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.PanosObject.hostid | String | Host ID. | 
+| PANOS.PanosObject.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.PanosObject.name | String | The PAN-OS object name | 
+| PANOS.PanosObject.object_type | String | The PAN-OS-Python object type | 
+
+#### Command example
+```!pan-os-hygiene-conforming-vulnerability-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "PanosObject": [
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Outbound-VP",
+                "object_type": "VulnerabilityProfile"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Inbound-VP",
+                "object_type": "VulnerabilityProfile"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Internal-VP",
+                "object_type": "VulnerabilityProfile"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Objects
+>|container_name|hostid|name|object_type|
+>|---|---|---|---|
+>| shared | 192.168.1.145 | Outbound-VP | VulnerabilityProfile |
+>| shared | 192.168.1.145 | Inbound-VP | VulnerabilityProfile |
+>| shared | 192.168.1.145 | Internal-VP | VulnerabilityProfile |
+
+
+### pan-os-hygiene-check-security-zones
+***
+Check configured security zones have correct settings.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-security-zones`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given device. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the check | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | String | Total number of matching issues | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-check-security-zones```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Result": [
+                {
+                    "container_name": "LAB",
+                    "description": "Security zone has no log forwarding setting.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-7",
+                    "name": "TEST_ZONE"
+                }
+            ],
+            "Summary": [
+                {
+                    "description": "Fails when a security zone has no log forwarding setting.",
+                    "issue_code": "BP-V-7",
+                    "issue_count": 1,
+                    "result": "\u274c"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails when a security zone has no log forwarding setting. | BP-V-7 | 1 | ❌ |
+
+
+### pan-os-hygiene-check-security-rules
+***
+Check security rules are configured correctly.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-security-rules`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given device. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the check | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | String | Total number of matching issues | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-check-security-rules```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Result": [
+                {
+                    "container_name": "shared",
+                    "description": "Security rule is not configured to log at session end.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-8",
+                    "name": "Test-webapp-rule"
+                },
+                {
+                    "container_name": "shared",
+                    "description": "Security rule has no log forwarding profile.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-9",
+                    "name": "Test-webapp-rule"
+                },
+                {
+                    "container_name": "shared",
+                    "description": "Security rule has no profile group or configured threat profiles.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-10",
+                    "name": "Test-webapp-rule"
+                }
+            ],
+            "Summary": [
+                {
+                    "description": "Fails when a security rule is not configured to log at session end.",
+                    "issue_code": "BP-V-8",
+                    "issue_count": 1,
+                    "result": "\u274c"
+                },
+                {
+                    "description": "Fails when a security rule has no log forwarding profile configured.",
+                    "issue_code": "BP-V-9",
+                    "issue_count": 1,
+                    "result": "\u274c"
+                },
+                {
+                    "description": "Fails when a security rule has no configured profiles or profile groups.",
+                    "issue_code": "BP-V-10",
+                    "issue_count": 1,
+                    "result": "\u274c"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails when a security rule is not configured to log at session end. | BP-V-8 | 1 | ❌ |
+>| Fails when a security rule has no log forwarding profile configured. | BP-V-9 | 1 | ❌ |
+>| Fails when a security rule has no configured profiles or profile groups. | BP-V-10 | 1 | ❌ |
+
+
+### pan-os-hygiene-fix-log-forwarding
+***
+Fix log forwarding issues identified by pan-os-hygiene-check-log-forwarding.
+
+
+#### Base Command
+
+`pan-os-hygiene-fix-log-forwarding`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue | Dictionary of Hygiene issue, from a hygiene check command. Can be a list. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygieneFix.hostid | String | Host ID | 
+| PANOS.ConfigurationHygieneFix.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygieneFix.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygieneFix.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-fix-log-forwarding issue=${PANOS.ConfigurationHygiene.Result}```
+#### Context Example
+```json
+{
+  "PANOS": {
+    "ConfigurationHygieneFix": [
+      {
+        "container_name": "LAB",
+        "description": "Enabled Enhanced Application Logging.",
+        "hostid": "192.168.1.145",
+        "issue_code": "BP-V-2",
+        "name": "test_fwd_profile-1"
+      }
+    ]
+  }
+}
+```
+
+### pan-os-hygiene-fix-security-zone-log-settings
+***
+Fixes security zones that are configured without a valid log forwarding profile.
+
+
+#### Base Command
+
+`pan-os-hygiene-fix-security-zone-log-settings`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue | Dictionary of Hygiene issue, from a hygiene check command. Can be a list. | Required | 
+| log_forwarding_profile_name | Name of log forwarding profile to set. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygieneFix.hostid | String | Host ID | 
+| PANOS.ConfigurationHygieneFix.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygieneFix.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygieneFix.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-fix-security-zone-log-settings issue=${PANOS.ConfigurationHygiene.Result} log_forwarding_profile_name="test-fwd-profile"```
+#### Context Example
+```json
+{
+  "PANOS": {
+    "ConfigurationHygieneFix": [
+      {
+        "container_name": "LAB",
+        "description": "Set log forwarding profile test-fwd-profile",
+        "hostid": "192.168.1.145",
+        "issue_code": "BP-V-7",
+        "name": "TEST_ZONE"
+      }
+    ]
+  }
+}
+```
+
+### pan-os-hygiene-fix-security-rule-log-settings
+***
+Fixed security rules that have incorrect log settings by adding a log forwarding profile and setting
+
+
+#### Base Command
+
+`pan-os-hygiene-fix-security-rule-log-settings`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue | Dictionary of Hygiene issue, from a hygiene check command. Can be list. | Required | 
+| log_forwarding_profile_name | Name of log forwarding profile to use as log setting. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygieneFix.hostid | String | Host ID | 
+| PANOS.ConfigurationHygieneFix.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygieneFix.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygieneFix.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-fix-security-rule-log-settings issue=${PANOS.ConfigurationHygiene.Result.[0]} log_forwarding_profile_name="test-fwd-profile""```
+#### Context Example
+```json
+{
+  "PANOS": {
+    "ConfigurationHygieneFix": [
+      {
+        "container_name": "shared",
+        "description": "Set log forwarding profile to test-fwd-profile-3 andenabled log at session end.",
+        "hostid": "192.168.1.145",
+        "issue_code": "BP-V-8",
+        "name": "Test-webapp-rule"
+      }
+    ]
+  }
+}
+```
+
+### pan-os-hygiene-fix-security-rule-profile-settings
+***
+Fixed security rules that have incorrect log settings by adding a log forwarding profile and setting
+
+
+#### Base Command
+
+`pan-os-hygiene-fix-security-rule-profile-settings`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue | Dictionary of Hygiene issue, from a hygiene check command. | Required | 
+| security_profile_group_name | Name of Security profile group to use as log setting. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygieneFix.hostid | String | Host ID | 
+| PANOS.ConfigurationHygieneFix.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygieneFix.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygieneFix.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-fix-security-rule-log-settings issue=${PANOS.ConfigurationHygiene.Result.[0]} log_forwarding_profile_name="test-fwd-profile""```
+#### Context Example
+```json
+{
+  "PANOS": {
+    "ConfigurationHygieneFix": [
+      {
+        "container_name": "shared",
+        "description": "Set security profile group Alert-Only",
+        "hostid": "192.168.1.145",
+        "issue_code": "BP-V-10",
+        "name": "Test-webapp-rule"
+      }
+    ]
+  }    
+}
+```
+
+### pan-os-config-get-object
+***
+Searches and returns a reference for the given object type and name. If no name is provided, all objects of the given type will be returned.
+
+
+#### Base Command
+
+`pan-os-config-get-object`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_type | The type of object to search; see https://pandevice.readthedocs.io/en/latest/module-objects.html. Possible values are: AddressObject, AddressGroup, ServiceGroup, ServiceObject, ApplicationObject, ApplicationGroup, LogForwardingProfile, SecurityProfileGroup. | Required | 
+| device_filter_string | If provided, only objects from the given device are returned. | Optional | 
+| object_name | The name of the object reference to return if looking for a specific object. Supports regex if "use_regex" is set. | Optional | 
+| parent | The parent vsys or device group to search. If not provided, all will be returned. | Optional | 
+| use_regex | Enables regex matching on object name. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.PanosObject.hostid | String | Host ID. | 
+| PANOS.PanosObject.container_name | String | The parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.PanosObject.name | String | The PAN-OS object name. | 
+| PANOS.PanosObject.object_type | String | The PAN-OS python object type. | 
+
+#### Command example
+```!pan-os-config-get-object object_type="AddressObject"```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "PanosObject": [
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Sinkhole-IPv4",
+                "object_type": "AddressObject"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Sinkhole-IPv6",
+                "object_type": "AddressObject"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "test-shared",
+                "object_type": "AddressObject"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Objects
+>|container_name|hostid|name|object_type|
+>|---|---|---|---|
+>| shared | 192.168.1.145 | Sinkhole-IPv4 | AddressObject |
+>| shared | 192.168.1.145 | Sinkhole-IPv6 | AddressObject |
+>| shared | 192.168.1.145 | test-shared | AddressObject |
+
+
+### pan-os-platform-get-device-state
+***
+Get the device state from the provided device. Note: This will attempt to connect directly to the provided target to get the device state. If the IP address as reported in 'show system info' is unreachable, this command will fail.
+
+
+#### Base Command
+
+`pan-os-platform-get-device-state`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | String by which to filter to only show specific hostnames or serial numbers. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | String | Filename | 
+| InfoFile.EntryID | String | Entry ID | 
+| InfoFile.Size | String | Size of file | 
+| InfoFile.Type | String | Type of file | 
+| InfoFile.Info | String | Basic information of file | 
+### pan-os-push-to-template
+***
+Pushes the given PAN-OS template to the given devices or all devices that belong to the template.
+
+
+#### Base Command
+
+`pan-os-push-to-template`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template | The template to push. | Optional | 
+| validate-only | Whether to validate the policy. Possible values are: true, false. Default is false. | Optional | 
+| description | The push description. | Optional | 
+| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Push.Template | String | The device group in which the policies were pushed. | 
+| Panorama.Push.JobID | Number | The job ID of the policies that were pushed. | 
+| Panorama.Push.Status | String | The push status. | 
+| Panorama.Push.Warnings | String | The push warnings. | 
+| Panorama.Push.Errors | String | The push errors. | 
+
+#### Command example
+```!pan-os-push-to-template template=LAB```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+            "JobID": "564",
+            "Status": "Pending",
+            "Template": "LAB"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Push to Template:
+>|JobID|Status|
+>|---|---|
+>| 564 | Pending |
+
+
+### pan-os-push-to-template-stack
+***
+Pushes the given PAN-OS template-stack to the given devices or all devices that belong to the template stack.
+
+
+#### Base Command
+
+`pan-os-push-to-template-stack`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template-stack | The template-stack to push. | Required | 
+| validate-only | Whether to validate the policy. Possible values are: true, false. Default is false. | Optional | 
+| description | The push description. | Optional | 
+| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Push.TemplateStack | String | The device group in which the policies were pushed. | 
+| Panorama.Push.JobID | Number | The job ID of the policies that were pushed. | 
+| Panorama.Push.Status | String | The push status. | 
+| Panorama.Push.Warnings | String | The push warnings. | 
+| Panorama.Push.Errors | String | The push errors. | 
+
+#### Command example
+```!pan-os-push-to-template-stack template-stack=LAB-STACK```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+            "JobID": "565",
+            "Status": "Pending",
+            "TemplateStack": "LAB-STACK"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Push to Template:
+>|JobID|Status|
+>|---|---|
+>| 565 | Pending |
+
+
+### pan-os-get-running-config
+***
+Pull the running config file
+
+
+#### Base Command
+
+`pan-os-get-running-config`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | The target device. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-get-running-config target=00000000000```
+#### Context Example
+```json
+{
+    "File": {
+        "EntryID": "3678@268ee30b-69fa-4496-8ab8-51cdeb19c452",
+        "Info": "text/plain",
+        "MD5": "da7faf4c6440d87a3e50ef93536ed81a",
+        "Name": "running_config",
+        "SHA1": "7910271adc8b3e9de28b804442a11a5160d4adda",
+        "SHA256": "a4da4cbee7f3e411fbf76f2595d7dfcffce85bd6b3c000dac7a17e58747d1a2b",
+        "SHA512": "e90d995061b5771f068c07e727ece3b57eeabdac424dabe8f420848e482e2ad18411c030bd4b455f589d8cdae9a1dae942bfef1ebd038104dd975e168cfb7d19",
+        "SSDeep": "3072:KGH5vDQ4MEa4fM0EYRCmgQKQZyVlxgW0ITUj4MO2jCKH2:ZLMGyQKQZaw2",
+        "Size": 1284823,
+        "Type": "ASCII text, with very long lines"
+    }    
+}
+```
+
+
+### pan-os-get-merged-config
+***
+Pull the merged config file
+
+
+#### Base Command
+
+`pan-os-get-merged-config`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | The serial number of the device. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-get-merged-config target=0000000000```
+#### Context Example
+```json
+{
+    "File": {
+        "EntryID": "3682@268ee30b-69fa-4496-8ab8-51cdeb19c452",
+        "Info": "text/plain",
+        "MD5": "3204cc188e4b4a6616b449441d4d1ad4",
+        "Name": "merged_config",
+        "SHA1": "0b058a2ae4b595f80599ef0aeffda640ff386e95",
+        "SHA256": "7178b16cb30880c93345ff80810af4e1428573a28d1ee354d5c79b03372cc027",
+        "SHA512": "edf5b851eab40588e4e338071de3c18cc8d198d811ea0759670c0aa4c8028fa3b7870b9554c4b7d85f8429641d7cd6f6217a6b37500e24ad9c60b6cf39b39f3b",
+        "SSDeep": "3072:OGH5vDQ4MEa4fM0EYRCmgQKQZyVlxDW0ITUj4MO2jCKH2:tLMGyQKQZtw2",
+        "Size": 1322335,
+        "Type": "ASCII text, with very long lines"
+    }
+}
+```
+
+### pan-os-list-templates
+***
+Returns a list of available templates. (Used only in Panorama instances).
+
+
+#### Base Command
+
+`pan-os-list-templates`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template_name | The name of the template to retrieve. If not provided then all available templates will be brought. | Optional | 
+| limit | The maximum number of templates to retrieve. This value will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The page size of the templates to return. Default is 50. | Optional | 
+| page | The page at which to start listing templates. This must be a positive number. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Template.Name | String | The name of the template. | 
+| Panorama.Template.Description | String | The description of the template. | 
+| Panorama.Template.Variable.Name | String | The variable name of the template. | 
+| Panorama.Template.Variable.Type | String | The type of the template. | 
+| Panorama.Template.Variable.Value | String | The value of the variable of the template. | 
+| Panorama.Template.Variable.Description | String | The description of the variable of the template. | 
+
+#### Command example
+```!pan-os-list-templates limit=20```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Template": [
+            {
+                "Description": null,
+                "Name": "test-1",
+                "Variable": []
+            },
+            {
+                "Description": "test description",
+                "Name": "test-2",
+                "Variable": [
+                    {
+                        "Description": "variable-1-test",
+                        "Name": "$variable-1",
+                        "Type": "ip-netmask",
+                        "Value": "1.1.1.1"
+                    },
+                    {
+                        "Description": null,
+                        "Name": "$variable-2",
+                        "Type": "fqdn",
+                        "Value": "google.com"
+                    }
+                ]
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Templates:
+>|Description|Name|Variable|
+>|---|---|---|
+>|  | test-1 |  |
+>| test description | test-2 | $variable-1,<br/>$variable-2 |
+
+### pan-os-list-nat-rules
+***
+Returns a list of NAT rules of either a Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-list-nat-rules`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the NAT rule to retrieve. If not mentioned, will bring all the NAT rules. | Optional | 
+| device-group | The device group in which the NAT rules are part of. | Optional | 
+| pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| show_uncommitted | Whether to show the un-committed rules or not. can be true or false. Default is false. | Optional | 
+| limit | The maximum number of rules to retrieve, Will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The page at which to start listing NAT rules. Must be a positive number. Default is 50. | Optional | 
+| page | The page at which to start listing nat-rules, must be a positive number. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Nat.Name | String | The name of the rule. | 
+| Panorama.Nat.Location | String | The device group that the rule is part of. | 
+| Panorama.Nat.Tags | String | The tags in which the rule is part of. | 
+| Panorama.Nat.SourceZone | String | The source zone of the rule. | 
+| Panorama.Nat.DestinationZone | String | The destination zone of the rule. | 
+| Panorama.Nat.SourceAddress | String | The source address of the rule. | 
+| Panorama.Nat.DestinationAddress | String | The destination address of the rule. | 
+| Panorama.Nat.DestinationInterface | String | The destination interface of the rule. | 
+| Panorama.Nat.Service | String | The service in which the rule has. | 
+| Panorama.Nat.Description | String | The description of the rule. | 
+| Panorama.Nat.SourceTranslation | Unknown | The source translation of the rule. | 
+| Panorama.Nat.DestinationTranslation | Unknown | The destination translation of the rule. | 
+| Panorama.Nat.DynamicDestinationTranslation | Unknown | The dynamic destination translation of the rule. | 
+
+#### Command example
+```!pan-os-list-nat-rules pre_post=pre-rulebase show_uncommitted=true```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Nat": [
+            {
+                "Description": "a test rule",
+                "DestinationAddress": "test123",
+                "DestinationInterface": "any",
+                "DestinationTranslation": {
+                    "TranslatedAddress": "1.1.1.1"
+                },
+                "DestinationZone": "2.2.2.2",
+                "DynamicDestinationTranslation": null,
+                "Name": "test-2",
+                "Service": "any",
+                "SourceAddress": "5.5.5.5",
+                "SourceTranslation": {
+                    "DynamicIpAndPort": {
+                        "InterfaceAddress": "a2"
+                    }
+                },
+                "SourceZone": [
+                    "2.2.2.2",
+                    "3.3.3.3"
+                ],
+                "Tags": "test tag"
+            },
+            {
+                "Description": "blabla",
+                "DestinationAddress": "1.1.1.1",
+                "DestinationInterface": "a2",
+                "DestinationTranslation": null,
+                "DestinationZone": "2.2.2.2",
+                "DynamicDestinationTranslation": {
+                    "TranslatedAddress": "1.1.1.1"
+                },
+                "Name": "test-1",
+                "Service": "any",
+                "SourceAddress": "3.3.3.3",
+                "SourceTranslation": {
+                    "StaticIP": {
+                        "TranslatedAddress": "3.3.3.3"
+                    }
+                },
+                "SourceZone": "3.3.3.3",
+                "Tags": null
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Nat Policy Rules:
+>| Name   |Tags|Source Zone|Destination Zone|Source Address|Destination Address|Destination Interface|Service|Description|
+--------|---|---|---|---|---|---|---|---|---|
+>| test-2 | test tag | 2.2.2.2,<br/>3.3.3.3 | 2.2.2.2 | 5.5.5.5 | test123 | any | any | a test rule |
+>| test-1 |  | 3.3.3.3 | 2.2.2.2 | 3.3.3.3 | 1.1.1.1 | a2 | any | blabla |
+
+
+### pan-os-create-nat-rule
+***
+Creates a new NAT rule in a Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-create-nat-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the NAT rule to create. | Required | 
+| description | The description that the new NAT rule should have. | Optional | 
+| device-group | The device-group in which the new rule should be created (Panorama instances only). | Optional | 
+| pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| nat_type | The NAT type in which the rule will be created. Possible values are: ipv4, nat64, nptv6. Default is ipv4. | Optional | 
+| source_zone | A comma-separated list of source zones. Default is any. | Optional | 
+| destination_zone | A comma-separated list of destination zones. | Optional | 
+| destination_interface | The page at which to start listing nat-rules, must be a positive number. Default is any. | Optional | 
+| service | The service in which the rule will be created with. Default is any. | Optional | 
+| source_address | A comma-separated list of address object names, address group object names, or EDL object names. Default is any. | Optional | 
+| destination_address | A comma-separated list of address object names, address group object names, or EDL object names. Default is any. | Optional | 
+| source_translation_type | The source translation type in which the rule will be created. Possible values are: static-ip, dynamic-ip, dynamic-ip-and-port, none. Default is none. | Optional | 
+| source_translated_address_type | The source translation address type in which the rule will be created. Possible values are: translated-address, interface-address. Default is translated-address. | Optional | 
+| source_translated_address | A comma-separated list of source translation addresses. If source_translation_type == static_ip, must be a single value. | Optional | 
+| source_translated_interface | The source translation interface. | Optional | 
+| destination_translation_type | The destination translation type. Possible values are: static_ip, dynamic_ip, none. Default is none. | Optional | 
+| destination_translated_address | A comma-separated list of destination translated addresses. | Optional | 
+| destination_translated_port | The destination translated port. | Optional | 
+| destination_translation_distribution_method | The destination translation distribution method. Possible values are: round-robin, source-ip-hash, ip-modulo, ip-hash, least-sessions. | Optional | 
+| negate_destination | Whether to use negate destination. Possible values are: yes, no. | Optional | 
+| destination_dns_rewrite_direction | The DNS rewrite direction. Possible values are: forward, reverse. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-create-nat-rule rulename=test pre_post="pre-rulebase" source_translated_address_type="interface-address" source_translated_interface=a2 source_translation_type="dynamic-ip-and-port" destination_translation_type=dynamic_ip destination_translated_address=1.1.1.1```
+#### Human Readable Output
+
+>Nat rule test was created successfully.
+### pan-os-delete-nat-rule
+***
+Deletes a NAT rule.
+
+#### Base Command
+
+`pan-os-delete-nat-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the NAT rule to delete. Can be retrieved from the pan-os-list-nat-rules command. | Optional | 
+| device-group | The device-group from which the NAT rule should be deleted. Only for a Panorama instance. | Optional | 
+| pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-delete-nat-rule rulename=test pre_post="pre-rulebase"```
+#### Human Readable Output
+
+>Nat rule test was deleted successfully.
+### pan-os-edit-nat-rule
+***
+Edits a NAT rule.
+
+#### Base Command
+
+`pan-os-edit-nat-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- |--------------|
+| rulename | The name of the NAT rule to edit. Can be retrieved from the pan-os-list-nat-rules command. | Required     | 
+| device-group | The device-group that the NAT rule is part of. (Panorama instances only). | Optional     | 
+| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional     | 
+| behavior | The operation to perform on the rule. Possible values are: replace, add, remove. Default is replace. | Optional     | 
+| element_to_change | The element to change. Possible values are: tags, service, nat_type, description, source_zone, destination_zone, source_address, destination_address, destination_interface, negate_destination, source_translation_dynamic_ip_and_port, source_translation_interface, source_translation_dynamic_ip, source_translation_static_ip, destination_translation_port, destination_translation_ip, destination_translation_dynamic_port, destination_translation_dynamic_ip, destination_translation_dynamic_distribution_method, disabled. | Required     | 
+| element_value | The value of the element to change. Can be a list for certain elements. | Required     | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-edit-nat-rule rulename=test element_to_change=source_translation_static_ip behavior=replace pre_post="pre-rulebase" element_value=3.3.3.3```
+#### Human Readable Output
+
+>Nat rule test was edited successfully.
+### pan-os-list-virtual-routers
+***
+Returns a list of virtual routers of either Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-list-virtual-routers`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| virtual_router | The name of the virtual router to retrieve. If not mentioned, will bring all the virtual routers. | Optional | 
+| template | The template that the virtual router is part of. Use only for Panorama instances. | Optional | 
+| show_uncommitted | Whether to show the un-committed virtual routers or not. can be true or false. Default is false. | Optional | 
+| limit | The maximum number of virtual routers to retrieve. Will be used by default if the page argument was not provided. Default is 50. | Optional | 
+| page_size | The size of nat-rules to return. Default is 50. | Optional | 
+| page | The page at which to start listing virtual-routers. Must be a positive number. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.VirtualRouter.Name | String | The name of the virtual router. | 
+| Panorama.VirtualRouter.Interface | Unknown | The interface\(s\) that the virtual router uses. | 
+| Panorama.VirtualRouter.RIP | Unknown | Information about the RIP of the virtual router. | 
+| Panorama.VirtualRouter.OSPF | Unknown | Information about the OSPF of the virtual router. | 
+| Panorama.VirtualRouter.OSPFv3 | Unknown | Information about the OSPFv3 of the virtual router. | 
+| Panorama.VirtualRouter.BGP | Unknown | Information about the BGP of the virtual router. | 
+| Panorama.VirtualRouter.RedistributionProfile | Unknown | The redistribution profile\(s\) that the virtual router uses. | 
+| Panorama.VirtualRouter.Multicast | Unknown | Information about the multicast of the virtual router. | 
+| Panorama.VirtualRouter.StaticRoute | Unknown | The static routes\(s\) that the virtual router uses. | 
+
+#### Command example
+```!pan-os-list-virtual-routers show_uncommitted=true```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "VirtualRouter": [
+            {
+                "BGP": {
+                    "enable": "no",
+                    "routing-options": {
+                        "graceful-restart": {
+                            "enable": "yes"
+                        }
+                    }
+                },
+                "Interface": null,
+                "Multicast": {},
+                "Name": "virtual-router-1",
+                "OSPF": {
+                    "enable": "no"
+                },
+                "OSPFv3": {
+                    "enable": "no"
+                },
+                "RIP": {
+                    "enable": "no"
+                },
+                "RedistributionProfile": {},
+                "StaticRoute": {
+                    "ip": {
+                        "static-route": {
+                            "entry": [
+                                {
+                                    "@name": "static_route_ip",
+                                    "bfd": {
+                                        "profile": "None"
+                                    },
+                                    "destination": "1.1.1.1",
+                                    "metric": "14",
+                                    "nexthop": {
+                                        "ip-address": "1.1.1.1"
+                                    },
+                                    "path-monitor": {
+                                        "enable": "no",
+                                        "failure-condition": "any",
+                                        "hold-time": "2"
+                                    },
+                                    "route-table": {
+                                        "unicast": null
+                                    }
+                                },
+                                {
+                                    "@name": "static_route_ip2",
+                                    "bfd": {
+                                        "profile": "None"
+                                    },
+                                    "destination": "1.1.1.1",
+                                    "metric": "188",
+                                    "nexthop": {
+                                        "ip-address": "1.1.1.1"
+                                    },
+                                    "path-monitor": {
+                                        "enable": "no",
+                                        "failure-condition": "any",
+                                        "hold-time": "2"
+                                    },
+                                    "route-table": {
+                                        "unicast": null
+                                    }
+                                },
+                                {
+                                    "@name": "static_route_ip3",
+                                    "destination": "1.1.1.1/32",
+                                    "nexthop": {
+                                        "ip-address": "1.1.1.1"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "BGP": {
+                    "enable": "no",
+                    "routing-options": {
+                        "graceful-restart": {
+                            "enable": "yes"
+                        }
+                    }
+                },
+                "Interface": "loopback",
+                "Multicast": {
+                    "enable": "no",
+                    "rp": {
+                        "local-rp": {
+                            "candidate-rp": {
+                                "interface": "loopback"
+                            }
+                        }
+                    }
+                },
+                "Name": "virtual-router-2",
+                "OSPF": {
+                    "enable": "no"
+                },
+                "OSPFv3": {
+                    "enable": "no"
+                },
+                "RIP": {
+                    "auth-profile": {
+                        "entry": {
+                            "@name": "213"
+                        }
+                    },
+                    "enable": "no",
+                    "export-rules": {
+                        "entry": {
+                            "@name": "test1"
+                        }
+                    },
+                    "interface": {
+                        "entry": {
+                            "@name": "loopback",
+                            "bfd": {
+                                "profile": "Inherit-vr-global-setting"
+                            },
+                            "default-route": {
+                                "disable": {}
+                            },
+                            "enable": "yes",
+                            "mode": "normal"
+                        }
+                    }
+                },
+                "RedistributionProfile": {
+                    "entry": [
+                        {
+                            "@name": "test1",
+                            "action": {
+                                "no-redist": {}
+                            },
+                            "priority": "1"
+                        },
+                        {
+                            "@name": "test-2",
+                            "action": {
+                                "no-redist": {}
+                            },
+                            "priority": "123"
+                        }
+                    ]
+                },
+                "StaticRoute": {
+                    "ip": {
+                        "static-route": {
+                            "entry": {
+                                "@name": "test",
+                                "bfd": {
+                                    "profile": "None"
+                                },
+                                "destination": "1.1.1.1",
+                                "metric": "10",
+                                "nexthop": {
+                                    "ip-address": "2.2.2.2"
+                                },
+                                "path-monitor": {
+                                    "enable": "no",
+                                    "failure-condition": "any",
+                                    "hold-time": "2"
+                                },
+                                "route-table": {
+                                    "unicast": {}
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Virtual Routers:
+>|BGP|Interface|Multicast| Name             |OSPF|OSPFv3|RIP|RedistributionProfile|StaticRoute|
+>|---|---|------------------|---|---|---|---|---|---|
+>| no |  |  | virtual-router-1 | no | no | no |  | static_route_ip,<br/>static_route_ip2,<br/>static_route_ip3 |
+>| no | loopback | no | virtual-router-2 | no | no | no | test1,<br/>test-2 | test |
+
+### pan-os-list-redistribution-profiles
+***
+Returns a list of redistribution-profiles of a specific virtual-router of either a Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-list-redistribution-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Redistribution profile name. | Optional | 
+| virtual_router | The name of the virtual router that has the redistribution profiles retrieve. Can be retrieved from pan-os-list-virtual-routers. | Required | 
+| template | The template that the redistribution profiles and virtual-router are part of. Use only for Panorama instances. | Optional | 
+| limit | The maximum number of redistribution-profiles to retrieve. Default is 50. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-list-redistribution-profiles virtual_router=test```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "RedistributionProfile": [
+            {
+                "Action": "redist",
+                "BGP": {
+                    "Community": [
+                        "local-as",
+                        "no-export"
+                    ],
+                    "ExtendedCommunity": "0x4164ACFCE33404EA"
+                },
+                "FilterDestination": "1.1.1.1",
+                "FilterInterface": "loopback",
+                "FilterNextHop": "2.2.2.2",
+                "FilterType": [
+                    "bgp",
+                    "connect",
+                    "ospf",
+                    "rip",
+                    "static"
+                ],
+                "Name": "test1",
+                "OSPF": {
+                    "Area": [
+                        "1.1.1.1",
+                        "2.2.2.2"
+                    ],
+                    "PathType": [
+                        "ext-1",
+                        "ext-2",
+                        "inter-area",
+                        "intra-area"
+                    ],
+                    "Tag": "1"
+                },
+                "Priority": "1"
+            },
+            {
+                "Action": "no-redist",
+                "BGP": null,
+                "FilterDestination": null,
+                "FilterInterface": null,
+                "FilterNextHop": null,
+                "FilterType": null,
+                "Name": "test-2",
+                "OSPF": null,
+                "Priority": "123"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Redistribution profiles for virtual router test-guy
+>|Name|Priority|Action|Filter Type|Filter Destination|Filter Next Hop|BGP|OSPF|
+>|---|---|---|---|---|---|---|---|
+>| test1 | 1 | redist | bgp,<br/>connect,<br/>ospf,<br/>rip,<br/>static | 1.1.1.1 | 2.2.2.2 | Community: local-as,<br/>no-export<br/>ExtendedCommunity: 0x4164ACFCE33404EA | PathType: ext-1,<br/>ext-2,<br/>inter-area,<br/>intra-area<br/>Area: 1.1.1.1,<br/>2.2.2.2<br/>Tag: 1 |
+>| test-2 | 123 | no-redist |  |  |  |  |  |
+
+### pan-os-create-redistribution-profile
+***
+Creates a new redistribution-profile under a virtual-router for a Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-create-redistribution-profile`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the of the redistribution profile to create. | Required | 
+| virtual_router | The virtual router that the redistribution profile will be created on. | Required | 
+| template | The template that the virtual-router is in. Use only for Panorama instances. | Optional | 
+| filter_source_type | Comma-separated list of the filter source types. Possible values are: bgp, ospf, rip, static. | Optional | 
+| destination | A comma-separated list of destination to filter by. | Optional | 
+| nexthop | A comma-separated list of next-hops to filter by. | Optional | 
+| interface | A comma-separated list of interfaces to filter by. | Optional | 
+| priority | The priority of the profile. (1-255). | Required | 
+| action | The action of the profile. Possible values are: redist, no-redist. | Optional | 
+| filter_ospf_area | A comma-separated list of areas for the OSPF. | Optional | 
+| filter_ospf_tag | A comma-separated list of tags for the OSPF. | Optional | 
+| filter_ospf_path_type | A comma-separated list of path types for the OSPF. Possible values are: ext-1, ext-2, inter-area, intra-area. | Optional | 
+| filter_bgp_community | A comma-separated list of community filters for the BGP. 32-bit value in decimal or hex or in AS:VAL format where AS and VAL are each in 0 - 65535 range. (Max 10 values). | Optional | 
+| filter_bgp_extended_community | A comma-separated list of community filters for the BGP. 64-bit value in hex, or in TYPE:AS:VAL, TYPE:IP:VAL format. TYPE is 16-bit, the other two are 16-bit and 32-bit each. (Max 5 values). | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-create-redistribution-profile name=test virtual_router=virtual-router-1 priority=12 action=redist filter_bgp_extended_community=0x4164ACFCE33404EA filter_source_type=bgp,ospf filter_bgp_community=13,89 filter_ospf_path_type="ext-1" interface=loopback filter_ospf_tag=1.1.1.1,2.2.2.2 filter_ospf_area=1.1.1.1,2.2.2.2 nexthop=1.1.1.1```
+#### Human Readable Output
+
+>Redistribution profile test was created successfully.
+### pan-os-edit-redistribution-profile
+***
+Edits a redistribution-profile in a virtual-router.
+
+
+#### Base Command
+
+`pan-os-edit-redistribution-profile`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the redistribution-profile to edit. | Required | 
+| virtual_router | The name of the virtual-router that the redistribution-profile is part of. | Required | 
+| template |  The template that the virtual-router is in. Only for Panorama instances. | Optional | 
+| element_to_change | The element to change. Possible values are: filter_type, filter_destination, filter_nexthop, filter_interface, priority, action, filter_ospf_area, filter_ospf_tag, filter_ospf_path_type, filter_bgp_community, filter_bgp_extended_community. | Required | 
+| element_value | The value of the element to change. Can be a list for all the elements except priority and action. | Required | 
+| behavior | The operation to perform on the profile. Possible values are: replace, add, remove. Default is replace. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-edit-redistribution-profile virtual_router=virtual-router-name name=test element_to_change=filter_type element_value=bgp,ospf```
+#### Human Readable Output
+
+>Redistribution profile test was edited successfully.
+
+### pan-os-delete-redistribution-profile
+***
+Deletes a redistribution-profile from a virtual-router.
+
+
+#### Base Command
+
+`pan-os-delete-redistribution-profile`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the redistribution-profile to delete. | Required | 
+| virtual_router | The name of the virtual-router that the redistribution-profile is part of. | Required | 
+| template | The template that the virtual-router is in. Only for panorama instances. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-delete-redistribution-profile virtual_router=test1 name=test```
+#### Human Readable Output
+
+>Redistribution profile test was deleted successfully.
+### pan-os-list-pbf-rules
+***
+Returns a list of pbf-rules of either a Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-list-pbf-rules`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the pbf-rule to retrieve. If not mentioned, will bring all the pbf rules. | Optional | 
+| device-group | The device-group that the pbf-rules are part of. | Optional | 
+| pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| show_uncommitted | Whether to show the un-committed rules or not. can be true or false. Default is false. | Optional | 
+| limit | The maximum number of rules to retrieve. Will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The size of pbf-rules to return. Default is 50. | Optional | 
+| page | The page at which to start listing pbf-rules. Must be a positive number. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.PBF.Name | String | The name of the PBF rule. | 
+| Panorama.PBF.Description | String | The description of the PBF rule. | 
+| Panorama.PBF.Tags | Unknown | The tags of the PBF rule. | 
+| Panorama.PBF.SourceZone | Unknown | The source-zones of the PBF rule. | 
+| Panorama.PBF.SourceInterface | Unknown | The source-interfaces of the PBF rule. | 
+| Panorama.PBF.SourceAddress | Unknown | The source-addresses of the PBF rule. | 
+| Panorama.PBF.SourceUser | Unknown | The source-users of the PBF rule. | 
+| Panorama.PBF.DestinationAddress | Unknown | The destination-addresses of the PBF rule. | 
+| Panorama.PBF.EnforceSymmetricReturn | Unknown | The enforce-symmetric-return of the PBF rule. | 
+| Panorama.PBF.Target | Unknown | The target of the PBF rule. | 
+| Panorama.PBF.Application | Unknown | The applications of the PBF rule. | 
+| Panorama.PBF.Service | Unknown | The services of the PBF rule. | 
+
+#### Command example
+```!pan-os-list-pbf-rules pre_post="pre-rulebase" show_uncommitted=true rulename=test```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "PBF": {
+            "Action": {
+                "forward": {
+                    "egress-interface": "a2",
+                    "monitor": {
+                        "disable-if-unreachable": "no",
+                        "ip-address": "1.1.1.1",
+                        "profile": "profile"
+                    },
+                    "nexthop": {
+                        "ip-address": "2.2.2.2"
+                    }
+                }
+            },
+            "Application": "3pc",
+            "Description": "this is a test description",
+            "DestinationAddress": "1.1.1.1",
+            "EnforeSymmetricReturn": {
+                "enabled": "yes",
+                "nexthop-address-list": {
+                    "entry": {
+                        "@name": "1.1.1.1"
+                    }
+                }
+            },
+            "Name": "test",
+            "Service": "application-default",
+            "SourceAddress": "1.1.1.1",
+            "SourceInterface": null,
+            "SourceUser": "pre-logon",
+            "SourceZone": "1.1.1.1",
+            "Tags": [
+                "test tag",
+                "dag_test_tag"
+            ],
+            "Target": {
+                "negate": "no"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Policy Based Forwarding Rules:
+>|Action|Description|Destination Address|Name|Source Address|Source User|Source Zone|Tags|
+>|---|---|---|---|---|---|---|---|
+>| forward | this is a test description | 1.1.1.1 | test | 1.1.1.1 | pre-logon | 1.1.1.1 | test tag,<br/>dag_test_tag |
+
+### pan-os-create-pbf-rule
+***
+Creates a new policy-based-forwarding (PBF) rule in a Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-create-pbf-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the PBF-rule to create. | Required | 
+| description | The description that the new PBF-rule should have. | Optional | 
+| device-group | The device-group in which the new rule should be created. Only for Panorama instance. | Optional | 
+| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| tags | The tags that the rule will be created with. | Optional | 
+| source_zone | A comma-separated list of source zones. Default is any. | Optional | 
+| source_address | A comma-separated list of source addresses. Default is any. | Optional | 
+| source_user | A comma-separated list of source users. Default is any. | Optional | 
+| service | The service in which the rule will be created with. Default is any. | Optional | 
+| destination_address | A comma-separated list of destination addresses. Default is any. | Optional | 
+| application | A comma-separated list of applications. Default is any. | Optional | 
+| action | The action that the rule will be created with. Possible values are: forward, discard, no-pbf. | Required | 
+| egress_interface | The egress interface the rule will be created with. Must be provided if action == forward. | Optional | 
+| nexthop | The next-hop. Relevant only when action = forward. Possible values are: ip-address, fqdn, none. Default is none. | Optional | 
+| nexthop_value | The next-hop value when action = forward. Could be an IP address or FQDN. Required when nexthop is not none. | Optional | 
+| enforce_symmetric_return | Whether to enforce symmetric return. Possible values are: yes, no. Default is no. | Optional | 
+| negate_source | Whether to negate the source. Possible values are: yes, no. Default is no. | Optional | 
+| negate_destination | Whether to negate the destination. Possible values are: yes, no. Default is no. | Optional | 
+| nexthop_address_list | The nexthop addresses list for the symmetric return. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-create-pbf-rule rulename=test4 pre_post="pre-rulebase" enforce_symmetric_return=yes nexthop_address_list=1.1.1.1,2.2.2.2 action=forward description="this is just a description" egress_interface=a2 nexthop="ip-address" nexthop_value=1.1.1.1 negate_source=yes source_zone=1.1.1.1,2.2.2.2 destination_address=1.1.1.1,2.2.2.2 service=dns,service-https```
+#### Human Readable Output
+
+>PBF rule test4 was created successfully.
+### pan-os-edit-pbf-rule
+***
+Edits a redistribution-profile in a virtual-router.
+
+
+#### Base Command
+
+`pan-os-edit-pbf-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the PBF rule to edit. Can be retrieved from the pan-os-list-pbf-rules command. | Required | 
+| device-group | The device-group that the PBF rule is in. | Optional | 
+| pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| element_to_change | The element to change. Possible values are: source_zone, source_address, source_user, service, destination_address, application, negate_source, negate_destination, nexthop_address_list, enforce_symmetric_return, action_forward_egress_interface, action_forward_nexthop_ip, action_forward_nexthop_fqdn, action_forward_discard, action_forward_no_pbf. | Required | 
+| element_value | The value of the element to change. Can be a list for some of the elements. When element_to_change == 'action_forward_egress_interface', the action of the rule will be changed to 'forward' automatically. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-edit-pbf-rule rulename=test4 element_to_change=nexthop_address_list element_value="1.1.1.1,2.2.2.2" pre_post="pre-rulebase"```
+#### Human Readable Output
+
+>PBF test4 was edited successfully.
+### pan-os-delete-pbf-rule
+***
+Deletes a PBF rule.
+
+
+#### Base Command
+
+`pan-os-delete-pbf-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the pbf-rule to delete. Can be retrieved from the pan-os-list-pbf-rules command. | Required | 
+| device-group | The device-group from which the pbf-rule should be deleted. Only for a Panorama instance. | Optional | 
+| pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-delete-pbf-rule rulename=test4 pre_post="pre-rulebase"```
+#### Human Readable Output
+
+>PBF rule test4 was deleted successfully.
+### pan-os-list-application-groups
+***
+Returns a list of application-groups of either a Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-list-application-groups`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the application-group to retrieve. If not mentioned, will bring all the application-groups. | Optional | 
+| device-group | The device-group that the nat-rules are part of. | Optional | 
+| show_uncommitted | Whether to show the un-committed application-groups or not. Possible values are: true, false. Default is false. | Optional | 
+| limit | The maximum number of application-groups to retrieve. Will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The page size of the application-groups to return. Default is 50. | Optional | 
+| page | The page at which to start listing application-groups. Must be a positive number. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.ApplicationGroup.Name | String | The name of the application-group object. | 
+| Panorama.ApplicationGroup.Applications | Unknown | The list of the applications that the application-group has. | 
+| Panorama.ApplicationGroup.Members | Number | The number of the application that are part of the application-group | 
+
+#### Command example
+```!pan-os-list-application-groups show_uncommitted=true```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "ApplicationGroup": [
+            {
+                "Applications": [
+                    "1c-enterprise"
+                ],
+                "Members": 1,
+                "Name": "test"
+            },
+            {
+                "Applications": [
+                    "2ch-base",
+                    "4shared"
+                ],
+                "Members": 2,
+                "Name": "test-2"
+            },
+            {
+                "Applications": [
+                    "1c-enterprise",
+                    "4shared"
+                ],
+                "Members": 2,
+                "Name": "test-3"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Application groups:
+>|Applications|Members|Name|
+>|---|---|---|
+>| 1c-enterprise | 1 | test |
+>| 2ch-base,<br/>4shared | 2 | test-2 |
+>| 1c-enterprise,<br/>4shared | 2 | test-3 |
+
+
+### pan-os-create-application-group
+***
+Creates a new application group rule in a Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-create-application-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name for the application-group to be created with. | Required | 
+| applications | Comma-separated list of applications. Can be retrieved using the command pan-os-list-applications. | Required | 
+| device-group | The device-group in which the application-group should be created. Only for Panorama instance. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.ApplicationGroup.Name | String | The name of the application-group object. | 
+| Panorama.ApplicationGroup.Applications | Unknown | The list of the applications that the application-group has. | 
+| Panorama.ApplicationGroup.Members | Number | The number of the applications that are part of the application-group. | 
+
+#### Command example
+```!pan-os-create-application-group name=test-3 applications=1c-enterprise,4shared```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "ApplicationGroup": {
+            "Applications": [
+                "1c-enterprise",
+                "4shared"
+            ],
+            "Members": 2,
+            "Name": "test-3"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>application-group test-3 was created successfully.
+### pan-os-edit-application-group
+***
+Edits an application-group.
+
+
+#### Base Command
+
+`pan-os-edit-application-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name for the application-group to be edit. Can be retrieved from the pan-os-list-application-groups command. | Required | 
+| applications | Comma-separated list of applications. Can be retrieved using the command pan-os-list-applications. | Required | 
+| device-group | The device-group in which the application-group should be created. Only for a Panorama instance. | Optional | 
+| action | The action to perform on the application-group. Possible values are: add, remove. Default is add. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.ApplicationGroup.Name | String | The name of the application-group object. | 
+| Panorama.ApplicationGroup.Applications | Unknown | The list of the applications that the application-group has. | 
+| Panorama.ApplicationGroup.Members | Number | The number of the applications that are part of the application-group | 
+
+#### Command example
+```!pan-os-edit-application-group name=test-3 action=remove applications=4shared```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "ApplicationGroup": {
+            "Applications": [
+                "1c-enterprise"
+            ],
+            "Members": 1,
+            "Name": "test-3"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>application-group test-3 was edited successfully.
+### pan-os-delete-application-group
+***
+Deletes an application-group
+
+
+#### Base Command
+
+`pan-os-delete-application-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the application-group to delete. Can be retrieved from the pan-os-list-application-groups command. | Required | 
+| device-group | The device-group in which the application-group is part of. Only for a Panorama instance. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-delete-application-group name=test-3```
+#### Human Readable Output
+
+>application-group test-3 was deleted successfully.

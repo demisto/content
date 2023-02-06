@@ -1,0 +1,28 @@
+{
+    "name": "CVE-2022-30190 - MSDT RCE",
+    "description": "This pack handles MSDT RCE CVE-2022-30190, aka Follina vulnerability, a 0-day exploit in Microsoft MSDT protocol handler",
+    "support": "xsoar",
+    "currentVersion": "1.0.5",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "0-day",
+        "zero day",
+        "MSDT",
+        "Follina",
+        "CVE",
+        "CVE-2022-30190",
+        "30190",
+        "RCE"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

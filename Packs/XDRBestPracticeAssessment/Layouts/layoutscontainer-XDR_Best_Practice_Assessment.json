@@ -1,0 +1,746 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "BPA and Recommendations",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 5,
+                        "hideName": false,
+                        "i": "caseinfoid-c5f916a0-c64d-11ec-8c01-d98d2301ec92",
+                        "items": [
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpageneralsettings",
+                                "height": 106,
+                                "id": "4c677f50-c64f-11ec-8c01-d98d2301ec92",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpabrokervm",
+                                "height": 106,
+                                "id": "95af4350-c64f-11ec-8c01-d98d2301ec92",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpaintegrations",
+                                "height": 106,
+                                "id": "a1fd4990-c64f-11ec-8c01-d98d2301ec92",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpaaccessmanagement",
+                                "height": 106,
+                                "id": "ee880390-c64f-11ec-8c01-d98d2301ec92",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "xdrbpageneralsettingsrecommendation",
+                                "height": 106,
+                                "id": "77968b70-200a-11ed-91c3-692c3c3f563f",
+                                "index": 0,
+                                "listId": "caseinfoid-c5f916a0-c64d-11ec-8c01-d98d2301ec92",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "xdrbpabrokervmrecommendation",
+                                "height": 106,
+                                "id": "877e0c20-200a-11ed-91c3-692c3c3f563f",
+                                "index": 1,
+                                "listId": "caseinfoid-c5f916a0-c64d-11ec-8c01-d98d2301ec92",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "xdrbpaintegrationsrecommendation",
+                                "height": 106,
+                                "id": "80e87340-200b-11ed-91c3-692c3c3f563f",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "xdrbpaaccessmanagementrecommendation",
+                                "height": 106,
+                                "id": "87060080-200b-11ed-91c3-692c3c3f563f",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Configurations",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 6,
+                        "hideName": false,
+                        "i": "caseinfoid-15dab150-d6f8-11ec-abcd-1d05d3b2cc92",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 3,
+                                "fieldId": "xdrbpadeploymentstrategy",
+                                "height": 106,
+                                "id": "409c6eb0-d6f8-11ec-abcd-1d05d3b2cc92",
+                                "index": 0,
+                                "listId": "caseinfoid-15dab150-d6f8-11ec-abcd-1d05d3b2cc92",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpaagentinstallpackages",
+                                "height": 106,
+                                "id": "4d83cec0-d6f8-11ec-abcd-1d05d3b2cc92",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpaagentvdiflag",
+                                "height": 106,
+                                "id": "54bf4f20-d6f8-11ec-abcd-1d05d3b2cc92",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpaagentgroups",
+                                "height": 106,
+                                "id": "268c4350-d6f9-11ec-abcd-1d05d3b2cc92",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpaagentversions",
+                                "height": 106,
+                                "id": "e8762ae0-01ff-11ed-b566-3fd443c3e15c",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpacontentversions",
+                                "height": 106,
+                                "id": "2d1f5670-e5e6-11ec-bf4a-0b11099e03d5",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "xdrbpadeploymentstrategyrecommendation",
+                                "height": 106,
+                                "id": "95a12b10-200b-11ed-91c3-692c3c3f563f",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "xdrbpaagentinstallrecommendation",
+                                "height": 106,
+                                "id": "d32108c0-200b-11ed-91c3-692c3c3f563f",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "xdrbpaagentvdiflagrecommendation",
+                                "height": 106,
+                                "id": "d9cca530-200b-11ed-91c3-692c3c3f563f",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "xdrbpaagentgroupsrecommendation",
+                                "height": 106,
+                                "id": "1768e480-200c-11ed-91c3-692c3c3f563f",
+                                "index": 3,
+                                "listId": "caseinfoid-15dab150-d6f8-11ec-abcd-1d05d3b2cc92",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "xdrbpaagentversionsrecommendation",
+                                "height": 106,
+                                "id": "1dbaa120-200c-11ed-91c3-692c3c3f563f",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "xdrbpacontentversionsrecommendation",
+                                "height": 106,
+                                "id": "2448a370-200c-11ed-91c3-692c3c3f563f",
+                                "index": 5,
+                                "listId": "caseinfoid-15dab150-d6f8-11ec-abcd-1d05d3b2cc92",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Agent Management",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 6,
+                        "hideName": false,
+                        "i": "caseinfoid-bdb2d510-d6f8-11ec-abcd-1d05d3b2cc92",
+                        "items": [
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpapolicystrategy",
+                                "height": 106,
+                                "id": "4854f1d0-d6f9-11ec-abcd-1d05d3b2cc92",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpaagentprofile",
+                                "height": 106,
+                                "id": "519cee90-d6fa-11ec-abcd-1d05d3b2cc92",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 3,
+                                "fieldId": "xdrbpamalwareprofile",
+                                "height": 106,
+                                "id": "5846b640-d6fa-11ec-abcd-1d05d3b2cc92",
+                                "index": 2,
+                                "listId": "caseinfoid-bdb2d510-d6f8-11ec-abcd-1d05d3b2cc92",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpaexploitprofile",
+                                "height": 106,
+                                "id": "71151d60-d6fa-11ec-abcd-1d05d3b2cc92",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbparestrictionprofile",
+                                "height": 106,
+                                "id": "02f0beb0-d6fb-11ec-abcd-1d05d3b2cc92",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpaexceptionprofile",
+                                "height": 106,
+                                "id": "0971efc0-d6fb-11ec-abcd-1d05d3b2cc92",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "xdrbpapolicystrategyrecommendation",
+                                "height": 106,
+                                "id": "6c797930-200c-11ed-91c3-692c3c3f563f",
+                                "index": 0,
+                                "listId": "caseinfoid-bdb2d510-d6f8-11ec-abcd-1d05d3b2cc92",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "xdrbpaagentprofilerecommendation",
+                                "height": 106,
+                                "id": "73641a70-200c-11ed-91c3-692c3c3f563f",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "xdrbpamalwareprofilerecommendation",
+                                "height": 106,
+                                "id": "73c69050-200d-11ed-91c3-692c3c3f563f",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "xdrbpaexploitprofilerecommendation",
+                                "height": 106,
+                                "id": "7a820b40-200d-11ed-91c3-692c3c3f563f",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "xdrbparestrictionprofilerecommendation",
+                                "height": 106,
+                                "id": "7f5c4310-200d-11ed-91c3-692c3c3f563f",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "xdrbpaexceptionprofilerecommendation",
+                                "height": 106,
+                                "id": "85221360-200d-11ed-91c3-692c3c3f563f",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Policy and Profiles",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 11
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 5,
+                        "hideName": false,
+                        "i": "caseinfoid-c17cfc70-d6f8-11ec-abcd-1d05d3b2cc92",
+                        "items": [
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbparesponseoverview",
+                                "height": 106,
+                                "id": "2603f920-d6fc-11ec-abcd-1d05d3b2cc92",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpahostisolation",
+                                "height": 106,
+                                "id": "2b19b350-d6fc-11ec-abcd-1d05d3b2cc92",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 3,
+                                "fieldId": "xdrbpaliveterminal",
+                                "height": 106,
+                                "id": "30dc9d70-d6fc-11ec-abcd-1d05d3b2cc92",
+                                "index": 2,
+                                "listId": "caseinfoid-c17cfc70-d6f8-11ec-abcd-1d05d3b2cc92",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpaotheractions",
+                                "height": 106,
+                                "id": "426990c0-d6fc-11ec-abcd-1d05d3b2cc92",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "xdrbparesponseoverviewrecommendation",
+                                "height": 106,
+                                "id": "3cdfb9d0-2270-11ed-974a-bb824c3c8c8e",
+                                "index": 0,
+                                "listId": "caseinfoid-c17cfc70-d6f8-11ec-abcd-1d05d3b2cc92",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "xdrbpahostisolationrecommendation",
+                                "height": 106,
+                                "id": "454c1910-2270-11ed-974a-bb824c3c8c8e",
+                                "index": 1,
+                                "listId": "caseinfoid-c17cfc70-d6f8-11ec-abcd-1d05d3b2cc92",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "xdrbpaliveterminalrecommendation",
+                                "height": 106,
+                                "id": "4f2d8c20-2270-11ed-974a-bb824c3c8c8e",
+                                "index": 2,
+                                "listId": "caseinfoid-c17cfc70-d6f8-11ec-abcd-1d05d3b2cc92",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "xdrbpaotheractionsrecommendation",
+                                "height": 106,
+                                "id": "57844080-2270-11ed-974a-bb824c3c8c8e",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Incident Response",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 26
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "caseinfoid-c5c75050-d6f8-11ec-abcd-1d05d3b2cc92",
+                        "items": [
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpamanagementoverview",
+                                "height": 106,
+                                "id": "db4bdc40-d6fb-11ec-abcd-1d05d3b2cc92",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpaalerting",
+                                "height": 106,
+                                "id": "ffac73b0-d6fb-11ec-abcd-1d05d3b2cc92",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpaalertexclusions",
+                                "height": 106,
+                                "id": "05927630-d6fc-11ec-abcd-1d05d3b2cc92",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpaprocessexceptions",
+                                "height": 106,
+                                "id": "0e176680-d6fc-11ec-abcd-1d05d3b2cc92",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "xdrbpamanagementoverviewrecommendation",
+                                "height": 106,
+                                "id": "135df680-2270-11ed-974a-bb824c3c8c8e",
+                                "index": 0,
+                                "listId": "caseinfoid-c5c75050-d6f8-11ec-abcd-1d05d3b2cc92",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "xdrbpaalertingrecommendation",
+                                "height": 106,
+                                "id": "1a79b9e0-2270-11ed-974a-bb824c3c8c8e",
+                                "index": 1,
+                                "listId": "caseinfoid-c5c75050-d6f8-11ec-abcd-1d05d3b2cc92",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "xdrbpaalertexclusionsrecommendation",
+                                "height": 106,
+                                "id": "2242ad30-2270-11ed-974a-bb824c3c8c8e",
+                                "index": 2,
+                                "listId": "caseinfoid-c5c75050-d6f8-11ec-abcd-1d05d3b2cc92",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "xdrbpaprocessexceptionsrecommendation",
+                                "height": 106,
+                                "id": "2a4415a0-2270-11ed-974a-bb824c3c8c8e",
+                                "index": 4,
+                                "listId": "caseinfoid-c5c75050-d6f8-11ec-abcd-1d05d3b2cc92",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Incident Management",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 22
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 5,
+                        "hideName": false,
+                        "i": "caseinfoid-caf0b990-d6f8-11ec-abcd-1d05d3b2cc92",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 3,
+                                "fieldId": "xdrbpadevicecontrolprofile",
+                                "height": 106,
+                                "id": "abc93b70-d6fb-11ec-abcd-1d05d3b2cc92",
+                                "index": 0,
+                                "listId": "caseinfoid-caf0b990-d6f8-11ec-abcd-1d05d3b2cc92",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpadeviceexceptions",
+                                "height": 106,
+                                "id": "b6abf1e0-d6fb-11ec-abcd-1d05d3b2cc92",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpahostfirewall",
+                                "height": 106,
+                                "id": "bd6c4ed0-d6fb-11ec-abcd-1d05d3b2cc92",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 3,
+                                "fieldId": "xdrbpadiskencryption",
+                                "height": 106,
+                                "id": "c78a2ea0-d6fb-11ec-abcd-1d05d3b2cc92",
+                                "index": 3,
+                                "listId": "caseinfoid-caf0b990-d6f8-11ec-abcd-1d05d3b2cc92",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "xdrbpadevicecontrolrecommendation",
+                                "height": 106,
+                                "id": "c793a650-226f-11ed-974a-bb824c3c8c8e",
+                                "index": 0,
+                                "listId": "caseinfoid-caf0b990-d6f8-11ec-abcd-1d05d3b2cc92",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "xdrbpadeviceexceptionsrecommendation",
+                                "height": 106,
+                                "id": "f621adf0-226f-11ed-974a-bb824c3c8c8e",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "xdrbpahostfirewallrecommendation",
+                                "height": 106,
+                                "id": "fa72b890-226f-11ed-974a-bb824c3c8c8e",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "xdrbpadiskencryptionrecommendation",
+                                "height": 106,
+                                "id": "ff6c8650-226f-11ed-974a-bb824c3c8c8e",
+                                "index": 4,
+                                "listId": "caseinfoid-caf0b990-d6f8-11ec-abcd-1d05d3b2cc92",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Profile Extensions",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 17
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 5,
+                        "hideName": false,
+                        "i": "caseinfoid-14295b00-d6fc-11ec-abcd-1d05d3b2cc92",
+                        "items": [
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpadashboards",
+                                "height": 106,
+                                "id": "52581650-d6fc-11ec-abcd-1d05d3b2cc92",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrbpareports",
+                                "height": 106,
+                                "id": "58643e70-d6fc-11ec-abcd-1d05d3b2cc92",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "xdrbpadashboardsrecommendations",
+                                "height": 106,
+                                "id": "aed9bc20-2270-11ed-974a-bb824c3c8c8e",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "xdrbpareportsrecommendation",
+                                "height": 106,
+                                "id": "b34cf4c0-2270-11ed-974a-bb824c3c8c8e",
+                                "index": 2,
+                                "listId": "caseinfoid-14295b00-d6fc-11ec-abcd-1d05d3b2cc92",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Reporting",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 31
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "hidden": true,
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "hidden": true,
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "hidden": true,
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "XDR Best Practice Assessment",
+    "name": "XDR Best Practice Assessment",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.2.0",
+    "description": "",
+    "marketplaces": ["xsoar"]
+}

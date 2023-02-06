@@ -1,0 +1,26 @@
+commonfields:
+  id: GrrSetHunts
+  version: -1
+name: GrrSetHunts
+script: ''
+type: python
+subtype: python2
+deprecated: true
+tags:
+- GRR
+comment: Deprecated. Use grr_set_hunts instead.
+system: true
+args:
+- name: hunt_runner_args
+  description: Hunt runner arguments
+- name: hunt_args
+  description: Hunt arguments
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - grr_set_hunts
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.27799
+tests:
+- No tests (auto formatted)

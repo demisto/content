@@ -279,6 +279,11 @@
 <td style="width: 446px;">The submission visibility. If specified, overrides the 'public' parameter</td>
 <td style="width: 97px;">Optional</td>
 </tr>
+<tr>
+<td style="width: 165px;">use_url_as_name</td>
+<td style="width: 446px;">Whether to use the URL as the screenshot name. Default is false which sets screenshot name to screenshot.png</td>
+<td style="width: 97px;">Optional</td>
+</tr>
 </tbody>
 </table>
 <h5> </h5>

@@ -10,10 +10,10 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
-    "useCases": [
-        "Access"
+    "tags": [
+        "Use Case"
     ],
+    "useCases": [],
     "keywords": [],
     "dependencies": {
         "Active_Directory_Query": {

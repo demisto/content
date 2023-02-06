@@ -7,6 +7,7 @@ description: |-
    - AWS Default Security Group Does Not Restrict All Traffic
    - AWS Security Groups Allow Internet Traffic
    - AWS Security Groups With Inbound Rule Overly Permissive To All Traffic
+   - AWS Security Group allows all traffic on SSH port (22)
 starttaskid: "0"
 tasks:
   "0":
@@ -17,9 +18,9 @@ tasks:
       id: 92a448cc-b058-4323-8821-bd598d893d29
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "28"
@@ -27,13 +28,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1440,
-          "y": -280
+          "x": 710,
+          "y": -270
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: d0b6286b-9877-4b2b-84c7-90c6e2a0c1e8
@@ -51,7 +56,6 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      filters: {}
       groupIds:
         complex:
           root: incident
@@ -68,7 +72,6 @@ tasks:
               field:
                 value:
                   simple: groupId
-      groupNames: {}
       region:
         complex:
           root: incident
@@ -80,9 +83,6 @@ tasks:
               field:
                 value:
                   simple: regionId
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
     view: |-
       {
@@ -94,6 +94,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 5a0fe336-4d38-4c7d-8250-b7165f183d8e
@@ -102,9 +106,9 @@ tasks:
       id: 5a0fe336-4d38-4c7d-8250-b7165f183d8e
       version: -1
       name: Revoke all security group ingress rules
-      description: "Removes ingress rules from a security group. To remove a rule, the
-        values that you specify (for example, ports) must match the existing rules'
-        values exactly."
+      description: Removes ingress rules from a security group. To remove a rule,
+        the values that you specify (for example, ports) must match the existing rules'
+        values exactly.
       script: '|||aws-ec2-revoke-security-group-ingress-rule'
       type: regular
       iscommand: true
@@ -140,9 +144,6 @@ tasks:
               field:
                 value:
                   simple: regionId
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
       sourceSecurityGroupName:
         complex:
           root: AWS
@@ -156,13 +157,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1140,
-          "y": 710
+          "x": 950,
+          "y": 805
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: 1cf94ac2-9dfe-48c6-8fef-8deabb65238a
@@ -171,21 +176,25 @@ tasks:
       id: 1cf94ac2-9dfe-48c6-8fef-8deabb65238a
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ""
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1450,
-          "y": 1490
+          "x": 710,
+          "y": 1610
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: bb7658d0-6f23-46c1-8b3d-ad0cbbee43ef
@@ -195,7 +204,8 @@ tasks:
       version: -1
       name: Did we encounter an error?
       description: Checks whether given entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If an array is provided, a value of yes indicates that one of the entries returned an error.
+        to check the previous task entries. If an array is provided, a value of yes
+        indicates that one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -212,13 +222,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1140,
-          "y": 910
+          "x": 950,
+          "y": 975
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 8576666e-db4d-465f-825e-4b105d48068d
@@ -227,7 +241,8 @@ tasks:
       id: 8576666e-db4d-465f-825e-4b105d48068d
       version: -1
       name: Is there a default security group?
-      description: Check whether the VPC security group is the default.  If not, manually define a default security group.
+      description: Check whether the VPC security group is the default.  If not, manually
+        define a default security group.
       type: condition
       iscommand: false
       brand: ""
@@ -254,18 +269,22 @@ tasks:
       {
         "position": {
           "x": 950,
-          "y": 540
+          "y": 635
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 0fc57cf4-69bc-480c-8282-4d8b570717a1
+    taskid: e8679729-db1b-4544-8ca5-5bc68ffee4c6
     type: condition
     task:
-      id: 0fc57cf4-69bc-480c-8282-4d8b570717a1
+      id: e8679729-db1b-4544-8ca5-5bc68ffee4c6
       version: -1
       name: Execute remediation
       description: Remediate the appropriate Prisma Cloud policy based on the policy
@@ -274,6 +293,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      alltraffic-port22:
+      - "29"
       defaultSG:
       - "27"
       permissive:
@@ -315,6 +336,17 @@ tasks:
           right:
             value:
               simple: 566686e8-0581-4df5-ae22-5a901ed37b58
+    - label: alltraffic-port22
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 617b9138-584b-4e8e-ad15-7fbabafbed1a
     view: |-
       {
         "position": {
@@ -325,6 +357,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: 2cd3d451-40c9-4633-87f2-b4e28aef4600
@@ -333,8 +369,8 @@ tasks:
       id: 2cd3d451-40c9-4633-87f2-b4e28aef4600
       version: -1
       name: Revoke a public security group ingress rule
-      description: Removes an ingress rule from a security group. To remove a rule, the
-        values that you specify (for example, ports) must match the existing rule's
+      description: Removes an ingress rule from a security group. To remove a rule,
+        the values that you specify (for example, ports) must match the existing rule's
         values exactly.
       script: '|||aws-ec2-revoke-security-group-ingress-rule'
       type: regular
@@ -369,10 +405,6 @@ tasks:
               field:
                 value:
                   simple: regionId
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      sourceSecurityGroupName: {}
       toPort:
         complex:
           root: AWS
@@ -389,6 +421,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
     taskid: afabcf10-69da-4cb9-8e1c-973c24359d73
@@ -406,7 +442,6 @@ tasks:
       '#none#':
       - "23"
     scriptarguments:
-      filters: {}
       groupIds:
         complex:
           root: incident
@@ -423,7 +458,6 @@ tasks:
               field:
                 value:
                   simple: groupId
-      groupNames: {}
       region:
         complex:
           root: incident
@@ -435,9 +469,6 @@ tasks:
               field:
                 value:
                   simple: regionId
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
     view: |-
       {
@@ -449,6 +480,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
     taskid: 3681e8ec-3ee0-4a3d-8258-4c221cea314a
@@ -475,13 +510,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 540,
-          "y": 1320
+          "x": 710,
+          "y": 1330
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
     taskid: b12b6a9d-088a-4dcb-81a2-69f299f063a4
@@ -490,8 +529,8 @@ tasks:
       id: b12b6a9d-088a-4dcb-81a2-69f299f063a4
       version: -1
       name: Revoke a security group ingress rule permitting all traffic
-      description: Removes an egress rule from a security group. To remove a rule, the
-        values that you specify (for example, ports) must match the existing rule's
+      description: Removes an egress rule from a security group. To remove a rule,
+        the values that you specify (for example, ports) must match the existing rule's
         values exactly.
       script: '|||aws-ec2-revoke-security-group-ingress-rule'
       type: regular
@@ -524,10 +563,6 @@ tasks:
               field:
                 value:
                   simple: regionId
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      sourceSecurityGroupName: {}
       toPort:
         complex:
           root: AWS
@@ -538,12 +573,16 @@ tasks:
       {
         "position": {
           "x": -90,
-          "y": 540
+          "y": 635
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
     taskid: af4dfaed-daff-4ba5-8596-9cf065c06494
@@ -596,6 +635,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: c7f75cf1-ccc9-4097-8a86-53ae3b735b7b
@@ -626,6 +669,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
     taskid: c2c2f153-2285-4101-869c-9547c5cc9e67
@@ -634,10 +681,10 @@ tasks:
       id: c2c2f153-2285-4101-869c-9547c5cc9e67
       version: -1
       name: SG Overly Permissive To All Traffic
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "21"
@@ -646,12 +693,16 @@ tasks:
       {
         "position": {
           "x": -90,
-          "y": 390
+          "y": 455
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
     taskid: 2b391825-99a6-41ed-8264-edd946845cc3
@@ -660,10 +711,10 @@ tasks:
       id: 2b391825-99a6-41ed-8264-edd946845cc3
       version: -1
       name: SG Allows Internet Traffic
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "16"
@@ -678,6 +729,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
     taskid: 20a0adc7-86c1-42c0-839a-3148bbafca74
@@ -686,10 +741,10 @@ tasks:
       id: 20a0adc7-86c1-42c0-839a-3148bbafca74
       version: -1
       name: Default SG Does Not Restrict All Traffic
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "14"
@@ -698,7 +753,7 @@ tasks:
       {
         "position": {
           "x": 950,
-          "y": 390
+          "y": 455
         }
       }
     note: false
@@ -706,6 +761,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "28":
     id: "28"
     taskid: bf81822b-44d6-4a0d-8798-1308b75a90be
@@ -713,8 +770,9 @@ tasks:
     task:
       id: bf81822b-44d6-4a0d-8798-1308b75a90be
       version: -1
-      name: Is AWS - EC2 integration enabled?
-      description: Is AWS - EC2 integration enabled?
+      name: Is AWS - EC2 integration available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
@@ -723,38 +781,16 @@ tasks:
       - "9"
       "yes":
       - "2"
+    scriptarguments:
+      brandname:
+        simple: AWS - EC2
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: AWS - EC2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
     view: |-
       {
         "position": {
-          "x": 1440,
+          "x": 710,
           "y": -120
         }
       }
@@ -763,6 +799,124 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 41280bdc-7d46-431f-80bc-9b5e0efa82b1
+    type: title
+    task:
+      id: 41280bdc-7d46-431f-80bc-9b5e0efa82b1
+      version: -1
+      name: All Traffic Allowed on SSH Port
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 749cbfcb-24a1-4f9e-84dd-30577d851ff0
+    type: regular
+    task:
+      id: 749cbfcb-24a1-4f9e-84dd-30577d851ff0
+      version: -1
+      name: Revoke the 22 ingress rule
+      description: Removes egress rule from a security group. To remove a rule, the
+        values that you specify (for example, ports) must match the existing rule's
+        values exactly.
+      script: '|||aws-ec2-revoke-security-group-ingress-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      cidrIp:
+        simple: 0.0.0.0/0
+      fromPort:
+        simple: "22"
+      groupId:
+        complex:
+          root: AWS.EC2.SecurityGroups
+          accessor: GroupId
+      ipProtocol:
+        simple: tcp
+      toPort:
+        simple: "22"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 020c1d19-094f-4a3c-8206-7d6573e48f51
+    type: condition
+    task:
+      id: 020c1d19-094f-4a3c-8206-7d6573e48f51
+      version: -1
+      name: Did we encounter an error?
+      description: Checks whether given entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, a value of yes
+        indicates that one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "9"
+      "yes":
+      - "20"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -778,10 +932,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1835,
-        "width": 1920,
+        "height": 1945,
+        "width": 2000,
         "x": -90,
-        "y": -280
+        "y": -270
       }
     }
   }
@@ -790,6 +944,7 @@ inputs:
   value: {}
   required: true
   description: Provides the Prisma Cloud policy Id.
+  playbookInputQuery: null
 outputs: []
 tests:
 - No Test

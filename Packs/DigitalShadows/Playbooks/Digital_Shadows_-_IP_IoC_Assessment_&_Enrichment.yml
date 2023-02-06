@@ -2,26 +2,22 @@ id: Digital Shadows - IP_IoC Assessment & Enrichment
 version: -1
 name: Digital Shadows - IP_IoC Assessment & Enrichment
 description: Enrichment of IP IOC types - sub-playbook for IOC Assessment & Enrichment playbook
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: c20c79e4-3ae5-456e-825d-ad4d86ef59ed
+  '0':
+    id: '0'
+    taskid: e6b786dd-ea95-4297-8fe3-1f812d7f17d4
     type: start
     task:
-      id: c20c79e4-3ae5-456e-825d-ad4d86ef59ed
+      id: e6b786dd-ea95-4297-8fe3-1f812d7f17d4
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "7"
-      - "1"
-      - "2"
-      - "4"
-      - "3"
+      - '4'
     separatecontext: false
     view: |-
       {
@@ -37,12 +33,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: 7ff82f89-ccce-448a-845f-f0f75c83af91
+  '1':
+    id: '1'
+    taskid: ee9ec975-4d9a-4c4d-8b21-76c1c518bb4c
     type: regular
     task:
-      id: 7ff82f89-ccce-448a-845f-f0f75c83af91
+      id: ee9ec975-4d9a-4c4d-8b21-76c1c518bb4c
       version: -1
       name: ds-search - PROFILE INTELLIGENCE
       description: Perform a textual search against the available record types
@@ -52,7 +48,8 @@ tasks:
       brand: Digital Shadows
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
+      - '7'
     scriptarguments:
       extend-context:
         simple: IP Profile Name=content.entity.primaryTag.name
@@ -66,8 +63,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 195
+          "x": 695,
+          "y": 545
         }
       }
     note: false
@@ -77,12 +74,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 55e87b13-b2c7-492b-83eb-3d03dc376b76
+  '2':
+    id: '2'
+    taskid: 0b694f85-90c4-499c-8abe-bfdc78c9e423
     type: regular
     task:
-      id: 55e87b13-b2c7-492b-83eb-3d03dc376b76
+      id: 0b694f85-90c4-499c-8abe-bfdc78c9e423
       version: -1
       name: ds-search - MITRE TECHNIQUES
       description: Perform a textual search against the available record types
@@ -92,7 +89,8 @@ tasks:
       brand: Digital Shadows
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
+      - '1'
     scriptarguments:
       extend-context:
         simple: IP TTP Profiles=content.entity.primaryTag.name
@@ -106,8 +104,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
-          "y": 195
+          "x": 910,
+          "y": 370
         }
       }
     note: false
@@ -117,12 +115,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: 2f71dce9-ac8a-4935-8bf8-bf547cd99963
+  '3':
+    id: '3'
+    taskid: 1bb0e60a-3ce9-4e1b-8c28-7e859c0831a7
     type: regular
     task:
-      id: 2f71dce9-ac8a-4935-8bf8-bf547cd99963
+      id: 1bb0e60a-3ce9-4e1b-8c28-7e859c0831a7
       version: -1
       name: ds-search - THREAT FEEDS
       description: Perform a textual search against the available record types
@@ -132,7 +130,7 @@ tasks:
       brand: Digital Shadows
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       extend-context:
         simple: IP Associated Indicators=content.entity.indicators.title
@@ -147,7 +145,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 195
+          "y": 895
         }
       }
     note: false
@@ -157,12 +155,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: 337e56a0-18c6-41b9-8bc2-48314db44683
+  '4':
+    id: '4'
+    taskid: c4c40dd0-af6e-4cee-8b0d-bf077a2ff286
     type: regular
     task:
-      id: 337e56a0-18c6-41b9-8bc2-48314db44683
+      id: c4c40dd0-af6e-4cee-8b0d-bf077a2ff286
       version: -1
       name: ds-search - CONFIRMED ACTIVITY
       description: Perform a textual search against the available record types
@@ -172,7 +170,8 @@ tasks:
       brand: Digital Shadows
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
+      - '2'
     scriptarguments:
       extend-context:
         simple: IP Confirmed Activity=total
@@ -186,7 +185,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1985,
+          "x": 1125,
           "y": 195
         }
       }
@@ -197,12 +196,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: 59d71279-8847-43d4-8cf7-3ee0f6099e7e
+  '7':
+    id: '7'
+    taskid: 99c30d0e-c19e-45d0-856f-e63dedc6f16a
     type: regular
     task:
-      id: 59d71279-8847-43d4-8cf7-3ee0f6099e7e
+      id: 99c30d0e-c19e-45d0-856f-e63dedc6f16a
       version: -1
       name: ds-search - INTEL UPDATES
       description: Perform a textual search against the available record types
@@ -212,7 +211,8 @@ tasks:
       brand: Digital Shadows
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
+      - '3'
     scriptarguments:
       extend-context:
         simple: IP Intel Summary=content.entity.summary
@@ -222,291 +222,6 @@ tasks:
         simple: ${inputs.IoC_IP}
       sort_property:
         simple: sortDate
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: 9dd0dcd1-5925-4144-8edc-74154548667e
-    type: condition
-    task:
-      id: 9dd0dcd1-5925-4144-8edc-74154548667e
-      version: -1
-      name: is Associated Indicators blank?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      "no":
-      - "14"
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEmpty
-          left:
-            value:
-              simple: ${IP Associated Indicators}
-            iscontext: true
-    - label: "no"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ${IP Associated Indicators}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: beb62022-45e5-4e23-88ed-d63bd2ff76af
-    type: regular
-    task:
-      id: beb62022-45e5-4e23-88ed-d63bd2ff76af
-      version: -1
-      name: AddEvidence - INTEL UPDATES
-      description: |
-        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
-      scriptName: AddEvidence
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      desc:
-        simple: Summary
-      description:
-        simple: ${IP Intel Summary}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: 4e5b67df-f124-45b4-8e44-ba9f68714962
-    type: regular
-    task:
-      id: 4e5b67df-f124-45b4-8e44-ba9f68714962
-      version: -1
-      name: AddEvidence - INTEL PROFILES
-      description: |
-        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
-      scriptName: AddEvidence
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      desc:
-        simple: Profiles
-      description:
-        simple: ${IP Profile Name}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1125,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: 94a73d70-c2b9-404a-8471-8d6ff067625f
-    type: regular
-    task:
-      id: 94a73d70-c2b9-404a-8471-8d6ff067625f
-      version: -1
-      name: AddEvidence - MITRE TECHNIQUES
-      description: |
-        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
-      scriptName: AddEvidence
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      desc:
-        simple: Associated TTPs
-      description:
-        simple: ${IP TTP Profiles}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1555,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: fd8ef599-bd8b-4e46-87ff-a4fa5fdf6577
-    type: regular
-    task:
-      id: fd8ef599-bd8b-4e46-87ff-a4fa5fdf6577
-      version: -1
-      name: AddEvidence - CONFIRMED ACTIVITY
-      description: |
-        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
-      scriptName: AddEvidence
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      desc:
-        simple: Confirmed Malicious Activity Count
-      description:
-        simple: ${IP Confirmed Activity}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1985,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: 0448548c-3b09-42b5-8936-5efc2ad17649
-    type: title
-    task:
-      id: 0448548c-3b09-42b5-8936-5efc2ad17649
-      version: -1
-      name: End
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 560
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: e18cc002-50ee-4e21-81cf-b2e11d0b1def
-    type: regular
-    task:
-      id: e18cc002-50ee-4e21-81cf-b2e11d0b1def
-      version: -1
-      name: createNewIndicator
-      description: Change the properties of an indicator
-      script: Builtin|||createNewIndicator
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      value:
-        simple: ${IP Associated Indicators}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: e26b2c39-bd55-4dbe-8445-a9f313025908
-    type: regular
-    task:
-      id: e26b2c39-bd55-4dbe-8445-a9f313025908
-      version: -1
-      name: associateIndicatorsToIncident
-      description: Associate one or more indicators to incident. You can specify the indicators by either indicator ID or the value of the indicator
-      script: Builtin|||associateIndicatorsToIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    scriptarguments:
-      incidentId:
-        simple: ${incident.id}
-      indicatorsValues:
-        complex:
-          root: CreatedIndicator
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: Value
-          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -522,13 +237,254 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: fef4b210-0b39-4d2c-8f8c-ad99f6eccff3
+    type: condition
+    task:
+      id: fef4b210-0b39-4d2c-8f8c-ad99f6eccff3
+      version: -1
+      name: is Associated Indicators blank?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      no:
+      - '16'
+      yes:
+      - '13'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: ${IP Associated Indicators}
+            iscontext: true
+    - label: no
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${IP Associated Indicators}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 211651a2-36a9-4ee2-8f16-c681b63e5ae8
+    type: regular
+    task:
+      id: 211651a2-36a9-4ee2-8f16-c681b63e5ae8
+      version: -1
+      name: AddEvidence - INTEL UPDATES
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      desc:
+        simple: Summary
+      description:
+        simple: ${IP Intel Summary}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: 8abd417f-3a2e-4dd9-8544-38063e65dffe
+    type: regular
+    task:
+      id: 8abd417f-3a2e-4dd9-8544-38063e65dffe
+      version: -1
+      name: AddEvidence - INTEL PROFILES
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      desc:
+        simple: Profiles
+      description:
+        simple: ${IP Profile Name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: 06a27aa3-bfaa-4801-8e5e-5aa7b6a0f4ba
+    type: regular
+    task:
+      id: 06a27aa3-bfaa-4801-8e5e-5aa7b6a0f4ba
+      version: -1
+      name: AddEvidence - MITRE TECHNIQUES
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      desc:
+        simple: Associated TTPs
+      description:
+        simple: ${IP TTP Profiles}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: 9e3d3f19-c5f5-414c-8314-1cfc1b624fd2
+    type: regular
+    task:
+      id: 9e3d3f19-c5f5-414c-8314-1cfc1b624fd2
+      version: -1
+      name: AddEvidence - CONFIRMED ACTIVITY
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      desc:
+        simple: Confirmed Malicious Activity Count
+      description:
+        simple: ${IP Confirmed Activity}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: 244d7e17-80cb-4466-89ed-fb71a6cca9ef
+    type: title
+    task:
+      id: 244d7e17-80cb-4466-89ed-fb71a6cca9ef
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '16':
+    id: '16'
+    taskid: 97e25be5-a4a1-4ac2-8536-7fcc674190a4
+    type: regular
+    task:
+      id: 97e25be5-a4a1-4ac2-8536-7fcc674190a4
+      version: -1
+      name: Print Associated Indicators
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      value:
+        simple: ${IP Associated Indicators}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 765,
-        "width": 2315,
+        "height": 1290,
+        "width": 1670,
         "x": 50,
         "y": 50
       }
@@ -552,7 +508,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: An IP address to assess and enrich
+  description: A Digital Shadows ShadowSearch query containing IP addresses
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator

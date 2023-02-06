@@ -1,24 +1,32 @@
 name: GoogleDrive
 category: IT Services
 display: Google Drive
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - name: user_service_account_json
   display: User's Service Account JSON
   required: true
   defaultvalue:
   type: 4
+  section: Connect
   additionalinfo:
 - name: user_id
   display: User ID
   required: false
   defaultvalue:
   type: 0
+  section: Connect
+  advanced: true
   additionalinfo: The primary email address of the user to fetch the incident(s).
 - name: action_detail_case_include
   display: Action Detail Case Include
   required: false
   defaultvalue:
   type: 16
+  section: Collect
+  advanced: true
   additionalinfo: Action types to include for fetching the incident.
   options:
   - CREATE
@@ -34,6 +42,8 @@ configuration:
   required: false
   defaultvalue:
   type: 15
+  section: Collect
+  advanced: true
   additionalinfo: itemName - Fetch activities for this drive item. The
     format is "items/ITEM_ID". folderName - Fetch activities for this drive folder
     and all children and descendants. The format is "items/ITEM_ID".
@@ -45,11 +55,14 @@ configuration:
   required: false
   defaultvalue:
   type: 0
+  section: Collect
+  advanced: true
   additionalinfo: itemName or folderName for fetching the incident.
 - name: isFetch
   display: Fetch incidents
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
@@ -59,23 +72,30 @@ configuration:
   required: false
   defaultvalue: 50
   type: 0
+  section: Collect
   additionalinfo: The maximum number of incidents to fetch each time.
 - name: first_fetch
   display: First Fetch Time Interval
   required: false
   defaultvalue: 10 minutes
   type: 0
+  section: Collect
+  advanced: true
   additionalinfo: The time range to consider for the initial data fetch in the format
     <number> <unit> e.g., 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours.
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
   type: 8
+  section: Connect
+  advanced: true
   additionalinfo:
 - name: proxy
   display: Use system proxy settings
   required: false
   type: 8
+  section: Connect
+  advanced: true
   additionalinfo:
 description: Google Drive allows users to store files on their servers, synchronize
   files across devices, and share files. This integration helps you to create a new
@@ -3188,7 +3208,19 @@ script:
         command.
       required: false
       isArray: false
-  dockerimage: demisto/googleapi-python3:1.0.0.28211
+    - auto: PREDEFINED
+      default: false
+      defaultValue: "false"
+      description: 'Whether the requesting application supports both My Drives and
+        shared drives. Possible values: "true" and "false".'
+      isArray: false
+      name: supports_all_drives
+      predefined:
+        - "true"
+        - "false"
+      required: false
+      secret: false
+  dockerimage: demisto/googleapi-python3:1.0.0.41311
   feed: false
   isfetch: true
   longRunning: false

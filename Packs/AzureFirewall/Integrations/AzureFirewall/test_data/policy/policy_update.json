@@ -1,0 +1,39 @@
+{
+  "properties": {
+    "sku": {
+      "tier": "Standard"
+    },
+    "threatIntelMode": "Alert",
+    "threatIntelWhitelist": {
+      "fqdns": [
+        "microsoft.com"
+      ],
+      "ipAddresses": [
+        "189.160.40.11"
+      ]
+    },
+    "dnsSettings": {
+      "servers": [],
+      "enableProxy": true
+    },
+    "childPolicies": [],
+    "ruleCollectionGroups": [],
+    "firewalls": [
+      {
+        "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/xsoar-firewall-integration"
+      },
+      {
+        "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test22"
+      }
+    ],
+    "basePolicy": {
+      "id": "/subscriptions/xsoar-subscription/resourcegroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/my-second-policy"
+    },
+    "provisioningState": "Succeeded"
+  },
+  "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy",
+  "name": "xsoar-policy",
+  "type": "Microsoft.Network/FirewallPolicies",
+  "etag": "a47a9892-1914-4196-bb8d-c77e8143bcc3",
+  "location": "eastus"
+}

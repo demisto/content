@@ -74,23 +74,6 @@ class TestHttpRequest:
 
 
 class TestGetRequestsKwargs:
-
-    def test_with_file(self, mocker):
-        """
-            Given:
-                - file to upload
-            Then:
-                - Verify output format.
-        """
-        def override_open(open_path, *_other):
-            return open_path
-
-        mocker.patch('builtins.open', side_effect=override_open)
-        path = '/Users/some_user/some_dir/some_file.file'
-        output = get_requests_kwargs(file_path=path)
-        expected_output = {'files': [('file', ('iocs.json', path, 'application/json'))]}
-        assert output == expected_output, f'get_requests_kwargs(file_path={path})\n\treturns: {output}\n\t instead: {expected_output}'  # noqa: E501
-
     def test_with_json(self):
         """
             Given:
@@ -591,8 +574,9 @@ class TestCommands:
         iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'txt')
         mocker.patch.object(demisto, 'searchIndicators', returnvalue=iocs)
         mocker.patch('CoreIOCs.return_outputs')
+        mocker.patch('CoreIOCs.upload_file_to_bucket')
         sync(client)
-        assert http_request.call_args.args[0] == 'sync_tim_iocs', 'sync command url changed'
+        assert http_request.call_args.kwargs['url_suffix'] == 'sync_tim_iocs', 'sync command url changed'
 
     def test_get_sync_file(self, mocker):
         iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'txt')
@@ -620,9 +604,9 @@ class TestCommands:
         http_request = mocker.patch.object(Client, 'http_request')
         iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_iocs_to_keep, 'txt')
         mocker.patch.object(demisto, 'searchIndicators', returnvalue=iocs)
-        mocker.patch('CoreIOCs.return_outputs')
+        mocker.patch('CoreIOCs.upload_file_to_bucket')
         iocs_to_keep(client)
-        assert http_request.call_args.args[0] == 'iocs_to_keep', 'iocs_to_keep command url changed'
+        assert http_request.call_args.kwargs['url_suffix'] == 'iocs_to_keep', 'iocs_to_keep command url changed'
 
     def test_tim_insert_jsons(self, mocker):
         http_request = mocker.patch.object(Client, 'http_request')

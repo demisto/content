@@ -1,4 +1,4 @@
-[file:README.md]
+[file:Packs/GoogleCloudCompute/README.md]
 ignore=RM104
 
 [file:playbook-IP_Whitelist_-_GCP_Firewall.yml]
@@ -9,3 +9,6 @@ ignore=IN145
 
 [file:GoogleCloudCompute_image.png]
 ignore=IM111
+
+[file:Packs/GoogleCloudCompute/Integrations/GoogleCloudCompute/README.md]
+ignore=RM112

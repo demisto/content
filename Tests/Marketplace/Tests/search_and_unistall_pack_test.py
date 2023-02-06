@@ -107,6 +107,7 @@ def test_reset_base_pack_version(mocker):
    - Ensure the pack version gets reset.
    """
     client = MockClient()
+    client.api_client.configuration.host = 'https://api-someurl.com/'  # disable-secrets-detection
     mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
     mocker.patch('Tests.Marketplace.search_and_uninstall_pack.install_packs', return_value=True)
     success = script.reset_base_pack_version(client)
@@ -129,6 +130,7 @@ def test_exception_reset_base_pack(def_call, return_val, mocker):
    - Ensure error is raised.
    """
     client = MockClient()
+    client.api_client.configuration.host = 'https://api-someurl.com/'  # disable-secrets-detection
     ret_val_from_call = def_call(client)
     mocker.patch.object(demisto_client, 'generic_request_func', return_value=('', 500, None))
 

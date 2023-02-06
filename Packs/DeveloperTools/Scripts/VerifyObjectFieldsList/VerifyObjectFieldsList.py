@@ -2,7 +2,6 @@
 import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from typing import Dict, Any, Tuple
-import traceback
 
 
 def check_components(components: list, context: Any):
@@ -70,7 +69,6 @@ def main():
     try:
         return_results(check_fields_command(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute VerifyObjectFieldsList. Error: {str(ex)}')
 
 

@@ -195,7 +195,7 @@ def run_private_test_scenario(tests_settings: SettingsTester, t: dict, default_t
         playbook_skipped_integration.update(test_skipped_integration)
 
     # Skip tests that are missing from filtered list
-    if filtered_tests and playbook_id not in filtered_tests:
+    if playbook_id not in filtered_tests:
         return
 
     # Skip bad test
@@ -266,6 +266,9 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
     secret_params = secret_conf['integrations'] if secret_conf else []
 
     filtered_tests = extract_filtered_tests()
+    if not filtered_tests:
+        logging.info('no tests were collected to execute.')
+        return
 
     if not tests or len(tests) == 0:
         logging.info('no integrations are configured for test')

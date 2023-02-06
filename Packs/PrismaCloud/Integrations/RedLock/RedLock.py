@@ -1,7 +1,10 @@
+import urllib3
+
 from CommonServerPython import *
+import demistomock as demisto
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 URL = ''
 VERIFY = False
@@ -36,7 +39,7 @@ def get_token():
                     {", ".join(available_customer_names)})
             raise Exception(message)
     except ValueError as exception:
-        demisto.log(exception)
+        demisto.debug(exception)
         raise Exception('Could not parse API response.')
     HEADERS['x-redlock-auth'] = TOKEN
 
@@ -164,6 +167,7 @@ def handle_filters(payload):
         'policy-label': 'policy.label',
         'policy-compliance-standard': 'policy.complianceStandard',
         'cloud-account': 'cloud.account',
+        'cloud-account-id': 'cloud.accountId',
         'cloud-region': 'cloud.region',
         'alert-rule-name': 'alertRule.name',
         'resource-id': 'resource.id',
@@ -173,13 +177,11 @@ def handle_filters(payload):
         'cloud-type': 'cloud.type',
         'risk-grade': 'risk.grade',
         'policy-type': 'policy.type',
-        'policy-severity': 'policy.severity'
+        'policy-severity': 'policy.severity',
     }
     payload['filters'] = []
     for filter_ in demisto.args():
-        if filter_ in ('policy-name', 'policy-label', 'policy-compliance-standard', 'cloud-account', 'cloud-region',
-                       'alert-rule-name', 'resource-id', 'resource-name', 'resource-type', 'alert-status', 'alert-id',
-                       'cloud-type', 'risk-grade', 'policy-type', 'policy-severity') and demisto.getArg(filter_):
+        if filter_ in args_conversion and demisto.getArg(filter_):
             payload['filters'].append(
                 {'name': args_conversion[filter_], 'operator': '=', 'value': demisto.getArg(filter_)})
 
@@ -213,6 +215,7 @@ def alert_to_context(alert):
     """
     Transform a single alert to context struct
     """
+    args = demisto.args()
     ec = {
         'ID': alert.get('id'),
         'Status': alert.get('status'),
@@ -235,6 +238,16 @@ def alert_to_context(alert):
             'AccountID': demisto.get(alert, 'resource.accountId')
         }
     }
+    if 'resource_keys' in args:
+        # if resource_keys argument was given, include those items from resource.data
+        extra_keys = demisto.getArg('resource_keys')
+        resource_data = {}
+        keys = extra_keys.split(',')
+        for key in keys:
+            resource_data[key] = demisto.get(alert, f'resource.data.{key}')
+
+        ec['Resource']['Data'] = resource_data
+
     if alert.get('alertRules'):
         ec['AlertRules'] = [alert_rule.get('name') for alert_rule in alert.get('alertRules')]
 
@@ -245,16 +258,23 @@ def search_alerts():
     """
     Retrieves alerts by filter
     """
+    args = demisto.args()
     payload = {}  # type: dict
+
     handle_time_filter(payload, {'type': 'relative', 'value': {'amount': 7, 'unit': 'day'}})
     handle_filters(payload)
+    if 'limit' in args:
+        payload['limit'] = arg_to_number(args.get('limit'))
+
     response = req('POST', 'alert', payload, {'detailed': 'true'})
+
     alerts = []
     context_path = 'Redlock.Alert(val.ID === obj.ID)'
     context = {context_path: []}  # type: dict
     for alert in response:
         alerts.append(alert_to_readable(alert))
         context[context_path].append(alert_to_context(alert))
+
     context['Redlock.Metadata.CountOfAlerts'] = len(response)
     demisto.results({
         'Type': entryTypes['note'],
@@ -793,22 +813,62 @@ def redlock_get_scan_results():
         })
 
 
+def expire_stored_ids(fetched_ids):
+    """
+    Expires stored ids after 2 hours.
+
+    Args:
+        fetched_ids: list of fetched ids.
+
+    Returns:
+        The list of fetched ids.
+
+    """
+    if len(fetched_ids) == 0:
+        return []
+    cleaned_cache = []
+
+    two_hours = timedelta(hours=2).total_seconds() * 1000
+    now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
+
+    for i in range(len(fetched_ids)):
+        fetch_time = list(fetched_ids[i].values())[0]
+        timediff = now - fetch_time
+        if timediff < two_hours:
+            cleaned_cache.append(fetched_ids[i])
+    return cleaned_cache
+
+
 def fetch_incidents():
     """
     Retrieve new incidents periodically based on pre-defined instance parameters
     """
+    last_run = demisto.getLastRun()
+    last_run_time = last_run.get('time')  # This is purely to establish if a first fetch has occurred
+    fetched_ids = last_run.get('fetched_ids', [])
     now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
-    last_run = demisto.getLastRun().get('time')
-    if not last_run:  # first time fetch
-        last_run = parse_date_range(demisto.params().get('fetch_time', '3 days').strip(), to_timestamp=True)[0]
-
-    payload = {'timeRange': {
-        'type': 'absolute',
-        'value': {
-            'startTime': last_run,
-            'endTime': now
+    if not last_run_time:
+        first_time_fetch = demisto.params().get('fetch_time', '3 days').strip().split(' ')
+        first_fetch_amount = int(first_time_fetch[0])
+        first_fetch_unit = first_time_fetch[1]
+        time_range = {
+            'type': 'relative',
+            'value': {
+                "amount": first_fetch_amount,
+                "unit": first_fetch_unit.replace("s", "")  # This is make the unit singular
+            }
         }
-    }, 'filters': [{'name': 'alert.status', 'operator': '=', 'value': 'open'}]}
+        last_run_time = now
+    else:
+        time_range = {
+            'type': 'relative',
+            'value': {
+                "amount": 1,
+                "unit": "hour"
+            }
+        }
+
+    payload = {"timeRange": time_range, 'filters': [{'name': 'alert.status', 'operator': '=', 'value': 'open'}]}
     if demisto.getParam('ruleName'):
         payload['filters'].append({'name': 'alertRule.name', 'operator': '=',  # type: ignore
                                    'value': demisto.getParam('ruleName')})
@@ -822,14 +882,19 @@ def fetch_incidents():
     response = req('POST', 'alert', payload, {'detailed': 'true'})
     incidents = []
     for alert in response:
+        if any(alert.get('id') in x for x in fetched_ids):
+            demisto.debug(f"Fetched {alert.get('id')} already. Skipping")
+            continue
+        demisto.debug(f"{alert.get('id')} has not been fetched. Processing.")
         incidents.append({
             'name': alert.get('policy.name', 'No policy') + ' - ' + alert.get('id'),
             'occurred': convert_unix_to_demisto(alert.get('alertTime')),
             'severity': translate_severity(alert),
             'rawJSON': json.dumps(alert)
         })
+        fetched_ids.append({alert.get('id'): now})
 
-    return incidents, now
+    return incidents, fetched_ids, last_run_time
 
 
 def main():
@@ -872,13 +937,16 @@ def main():
         elif command == 'redlock-get-scan-results':
             redlock_get_scan_results()
         elif command == 'fetch-incidents':
-            incidents, new_run = fetch_incidents()
+            incidents, fetched_ids, last_run_time = fetch_incidents()
             demisto.incidents(incidents)
-            demisto.setLastRun({'time': new_run})
+            ids_to_insert = expire_stored_ids(fetched_ids)
+            demisto.setLastRun({
+                'fetched_ids': ids_to_insert,
+                'time': last_run_time
+            })
         else:
             raise Exception('Unrecognized command: ' + command)
     except Exception as err:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(str(err))
 
 

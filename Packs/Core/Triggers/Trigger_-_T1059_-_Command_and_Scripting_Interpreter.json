@@ -1,0 +1,64 @@
+{
+  "trigger_id": "546b06f5f92ffe83caf0e884a36df98d",
+  "playbook_id": "T1059 - Command and Scripting Interpreter",
+  "suggestion_reason": "Recommended for Alerts with evidence of MITRE technique “Command and Scripting Interpreter”",
+  "description": "This trigger is responsible for handling T1059 - Command and Scripting Interpreter alerts",
+  "trigger_name": "T1059 - Command and Scripting Interpreter",
+  "alerts_filter": {
+    "filter": {
+      "OR": [
+        {
+            "SEARCH_FIELD": "mitre_technique_id_and_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "T1059 - Command and Scripting Interpreter"
+        },
+        {
+            "SEARCH_FIELD": "mitre_technique_id_and_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "T1059 - Command-Line Interface"
+        },
+        {
+            "SEARCH_FIELD": "mitre_technique_id_and_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "T1059.001 - Command and Scripting Interpreter: PowerShell"
+        },
+        {
+            "SEARCH_FIELD": "mitre_technique_id_and_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "T1059.002 - Command and Scripting Interpreter: AppleScript"
+        },
+        {
+            "SEARCH_FIELD": "mitre_technique_id_and_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "T1059.003 - Command and Scripting Interpreter: Windows Command Shell"
+        },
+        {
+            "SEARCH_FIELD": "mitre_technique_id_and_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "T1059.004 - Command and Scripting Interpreter: Unix Shell"
+        },
+        {
+            "SEARCH_FIELD": "mitre_technique_id_and_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "T1059.005 - Command and Scripting Interpreter: Visual Basic"
+        },
+        {
+            "SEARCH_FIELD": "mitre_technique_id_and_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "T1059.006 - Command and Scripting Interpreter: Python"
+        },
+        {
+            "SEARCH_FIELD": "mitre_technique_id_and_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "T1059.007 - Command and Scripting Interpreter: JavaScript"
+        },
+        {
+            "SEARCH_FIELD": "mitre_technique_id_and_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "T1059.008 - Command and Scripting Interpreter: Network Device CLI"
+        }
+      ]
+    }
+  }
+}
+

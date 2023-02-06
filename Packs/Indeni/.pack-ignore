@@ -10,3 +10,6 @@ ignore=BA101
 
 [file:Indeni_image.png]
 ignore=IM111
+
+[file:classifier-indeni.json]
+ignore=BA101

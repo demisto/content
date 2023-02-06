@@ -1,14 +1,10 @@
+import urllib3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-# noqa: F401
-# noqa: F401
-# noqa: F401
-# noqa: F401
-
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 '''CONSTANTS'''
 
@@ -918,7 +914,11 @@ def main():
     user_profile = None
     params = demisto.params()
     base_url = urljoin(params['url'].strip('/'), '/api/v1/')
-    token = params.get('apitoken')
+    token = params.get('credentials', {}).get('password', '') or params.get('apitoken', '')
+
+    if not token:
+        raise ValueError('Missing API token.')
+
     mapper_in = params.get('mapper-in')
     mapper_out = params.get('mapper-out')
     verify_certificate = not params.get('insecure', False)
@@ -1009,9 +1009,9 @@ def main():
             demisto.incidents(incidents)
             demisto.setLastRun(next_run)
 
-    except Exception:
+    except Exception as e:
         # For any other integration command exception, return an error
-        return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
+        return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
 
 from IAMApiModule import *  # noqa: E402

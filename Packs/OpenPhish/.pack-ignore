@@ -3,3 +3,6 @@ ignore=BA108,BA109
 
 [file:OpenPhish_image.png]
 ignore=IM111
+
+[file:README.md]
+ignore=RM113

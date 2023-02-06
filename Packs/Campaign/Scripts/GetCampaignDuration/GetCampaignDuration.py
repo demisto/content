@@ -51,7 +51,6 @@ def get_duration_html():
     except FieldNotFound:
         return '<div style="text-align: center;">Duration is not available.</div>'
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f"Error calculating duration\n{str(e)}")
 
 

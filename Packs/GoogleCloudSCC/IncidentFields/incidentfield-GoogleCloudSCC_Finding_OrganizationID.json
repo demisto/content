@@ -1,0 +1,32 @@
+{
+    "id": "incident_googlecloudsccorganizationid",
+    "version": -1,
+    "modified": "2022-09-05T22:12:05.085133813+05:30",
+    "name": "Google Cloud SCC Organization ID",
+    "ownerOnly": false,
+    "description": "Unique Id of the organization",
+    "cliName": "googlecloudsccorganizationid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Google Cloud SCC Finding"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

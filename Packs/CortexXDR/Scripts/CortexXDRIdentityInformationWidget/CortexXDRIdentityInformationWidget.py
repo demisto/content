@@ -1,7 +1,5 @@
 from CommonServerPython import *
 
-import traceback
-
 ''' COMMAND FUNCTION '''
 
 
@@ -44,7 +42,6 @@ def main():
                                             headers=list(results[0].keys()) if results else None))
         return_results(command_results)
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute IdentityInformationWidget. Error: {str(ex)}')
 
 

@@ -1,0 +1,26 @@
+{
+  "total": 7,
+  "events": [
+  ],
+  "limit": 2,
+  "aggregations": {
+    "GROUP BY sensor_id": {
+      "columns": [
+        {
+          "field": "sensor_id",
+          "type": "STRING"
+        },
+        {
+          "field": "count",
+          "type": "INTEGER"
+        }
+      ],
+      "data": [
+        [
+          "test",
+          7
+        ]
+      ]
+    }
+  }
+}

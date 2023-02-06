@@ -23,6 +23,7 @@ tasks:
       '#none#':
       - "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -50,6 +51,7 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -88,11 +90,12 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -20,
-          "y": 340
+          "y": 310
         }
       }
     note: false
@@ -104,14 +107,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: bac1f73e-786c-4ec4-8334-748fab110af7
+    taskid: 8e468b02-e02c-4aeb-804c-0b73dfa0b1c8
     type: regular
     task:
-      id: bac1f73e-786c-4ec4-8334-748fab110af7
+      id: 8e468b02-e02c-4aeb-804c-0b73dfa0b1c8
       version: -1
-      name: Search for messages by MessageID
-      description: Gets the properties of returned emails. Typically shows partial
-        results. Use the "page_size" and "pages_to_pull" arguments to get all results.
+      name: Search for messages by encoded MessageID
+      description: Gets the properties of returned emails. Typically shows partial results. Use the "page_size" and "pages_to_pull" arguments to get all results.
       script: MicrosoftGraphMail|||msgraph-mail-list-emails
       type: regular
       iscommand: true
@@ -120,21 +122,22 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
+      odata:
+        simple: $filter=internetMessageId eq '${EncodedMessageID}'
       pages_to_pull:
         complex:
           root: inputs.PagesToPull
-      search:
-        simple: subject:${inputs.ThreadTopic}
       user_id:
         complex:
           root: inputs.UserID
     reputationcalc: 2
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -20,
-          "y": 805
+          "y": 905
         }
       }
     note: false
@@ -146,14 +149,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: b22d3fc0-5801-4c61-8b57-87dfc491682e
+    taskid: 2775b599-4846-4049-8c4e-1e2e660f27c5
     type: condition
     task:
-      id: b22d3fc0-5801-4c61-8b57-87dfc491682e
+      id: 2775b599-4846-4049-8c4e-1e2e660f27c5
       version: -1
       name: Was a matching email found?
-      description: Verifies that an email object with a message ID that matches the
-        InReplyTo ID of the forwarded email was found.
+      description: Verifies that an email object with a message ID that matches the InReplyTo ID of the forwarded email was found.
       type: condition
       iscommand: false
       brand: ""
@@ -170,7 +172,7 @@ tasks:
           left:
             value:
               complex:
-                root: MSGraphMail.InternetMessageID
+                root: MSGraphMail
                 filters:
                 - - operator: isEqualString
                     left:
@@ -181,12 +183,25 @@ tasks:
                       value:
                         simple: inputs.MessageID
                       iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: MSGraphMail.UserID
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.UserID
+                      iscontext: true
+                accessor: InternetMessageID
             iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -20,
-          "y": 1010
+          "y": 1090
         }
       }
     note: false
@@ -198,14 +213,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: ca359a26-a418-44a6-86f9-4b9cee53dfaa
+    taskid: e2653b70-6db7-4385-8281-0c31a7b5c91c
     type: regular
     task:
-      id: ca359a26-a418-44a6-86f9-4b9cee53dfaa
+      id: e2653b70-6db7-4385-8281-0c31a7b5c91c
       version: -1
       name: Get original email
-      description: Retrieves an email message by message ID and uploads the content
-        as an EML file.
+      description: Retrieves an email message by message ID and uploads the content as an EML file.
       script: MicrosoftGraphMail|||msgraph-mail-get-email-as-eml
       type: regular
       iscommand: true
@@ -227,6 +241,15 @@ tasks:
                 value:
                   simple: inputs.MessageID
                 iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: MSGraphMail.UserID
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.UserID
+                iscontext: true
           accessor: ID
           transformers:
           - operator: StripChars
@@ -240,11 +263,12 @@ tasks:
           root: inputs.UserID
     reputationcalc: 2
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -20,
-          "y": 1280
+          "y": 1310
         }
       }
     note: false
@@ -256,14 +280,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 015f4932-563b-458f-8009-e7daafc60547
+    taskid: 43134294-3804-4b55-8591-9845b146370f
     type: condition
     task:
-      id: 015f4932-563b-458f-8009-e7daafc60547
+      id: 43134294-3804-4b55-8591-9845b146370f
       version: -1
       name: Verify required inputs
-      description: Verifies that the required input values exist for retrieving the
-        original email.
+      description: Verifies that the required input values exist for retrieving the original email.
       type: condition
       iscommand: false
       brand: ""
@@ -271,7 +294,7 @@ tasks:
       '#default#':
       - "2"
       "yes":
-      - "11"
+      - "15"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -282,23 +305,60 @@ tasks:
               complex:
                 root: inputs.UserID
             iscontext: true
+          right:
+            value: {}
       - - operator: isExists
           left:
             value:
               complex:
                 root: inputs.MessageID
             iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.ThreadTopic
-            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -20,
-          "y": 570
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 062e413e-5f77-48bf-8f26-fffdaf91b333
+    type: regular
+    task:
+      id: 062e413e-5f77-48bf-8f26-fffdaf91b333
+      version: -1
+      name: Set EncodedMessageID
+      description: Since the MessageID may contain special characters, it should be URL encoded in order to use it in the next task.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      key:
+        simple: EncodedMessageID
+      value:
+        complex:
+          root: inputs.MessageID
+          transformers:
+          - operator: URLEncode
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 720
         }
       }
     note: false
@@ -316,7 +376,6 @@ view: |-
       "10_2_#default#": 0.31,
       "12_13_Yes": 0.58,
       "12_2_#default#": 0.78,
-      "14_11_yes": 0.59,
       "14_2_#default#": 0.37
     },
     "paper": {
@@ -338,11 +397,6 @@ inputs:
   value: {}
   required: false
   description: The InReplyTo header in the forwarded email.
-  playbookInputQuery:
-- key: ThreadTopic
-  value: {}
-  required: false
-  description: The ThreadTopic header in the forwarded email.
   playbookInputQuery:
 - key: PagesToPull
   value:

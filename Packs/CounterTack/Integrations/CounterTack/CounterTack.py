@@ -1428,5 +1428,5 @@ try:
     elif command == 'countertack-kill-process':
         kill_process()
 except Exception as e:
-    return_error(e.message)
+    return_error(e)
     LOG(e)

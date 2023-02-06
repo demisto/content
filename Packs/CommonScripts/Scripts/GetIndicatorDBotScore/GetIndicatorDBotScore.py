@@ -13,7 +13,10 @@ INDICATOR_TYPES = {
     'File SHA-256': DBotScoreType.FILE,
     'Email': DBotScoreType.EMAIL,
     'URL': DBotScoreType.URL,
-    'IPv6': DBotScoreType.IP
+    'IPv6': DBotScoreType.IP,
+    'Account': DBotScoreType.ACCOUNT,
+    'CIDR': DBotScoreType.CIDR,
+    'DomainGlob': DBotScoreType.DOMAINGLOB,
 }
 
 
@@ -26,7 +29,7 @@ def get_dbot_score_data(indicator, indicator_type, source, score):
 
 def iterate_indicator_entry(indicator, entry):
     indicator_type = entry["indicator_type"]
-    indicator_type = INDICATOR_TYPES.get(indicator_type, indicator_type).lower()
+    indicator_type = INDICATOR_TYPES.get(indicator_type, DBotScoreType.CUSTOM)
     sources = entry.get('moduleToFeedMap', {})
     if entry.get('manualScore'):
         sources[entry.get('setBy')] = {}

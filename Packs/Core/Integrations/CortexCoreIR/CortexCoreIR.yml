@@ -296,6 +296,9 @@ script:
       - uninstalled
       required: false
       secret: false
+    - name: username
+      description: The usernames to query for, accepts a single user, or comma-separated list of usernames.
+      isArray: true
     deprecated: false
     description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
     execution: false
@@ -3088,6 +3091,440 @@ script:
     - contextPath: Core.DynamicAnalysis.osSpawnerSigner
       description: ''
       type: String
+  - arguments:
+    - default: false
+      description: The sha256 of a file.
+      isArray: true
+      name: sha256
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the prevalence of a file, identified by sha256.
+    execution: false
+    hidden: false
+    name: core-get-hash-analytics-prevalence
+    outputs:
+    - contextPath: Core.AnalyticsPrevalence.Hash.value
+      description: Whether the hash is prevalent or not.
+      type: Boolean
+    - contextPath: Core.AnalyticsPrevalence.Hash.data.global_prevalence.value
+      description: The global prevalence of the hash.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Hash.data.local_prevalence.value
+      description: The local prevalence of the hash.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Hash.data.prevalence.value
+      description: The prevalence of the hash.
+      type: Number
+  - arguments:
+    - default: false
+      description: The IP address.
+      isArray: true
+      name: ip_address
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the prevalence of an ip, identified by ip_address.
+    execution: false
+    hidden: false
+    name: core-get-IP-analytics-prevalence
+    outputs:
+    - contextPath: Core.AnalyticsPrevalence.Ip.value
+      description: Whether the IP address is prevalent or not.
+      type: Boolean
+    - contextPath: Core.AnalyticsPrevalence.Ip.data.global_prevalence.value
+      description: The global prevalence of the IP.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Ip.data.local_prevalence.value
+      description: The local prevalence of the IP.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Ip.data.prevalence.value
+      description: The prevalence of the IP.
+      type: Number
+  - arguments:
+    - default: false
+      description: The domain name.
+      isArray: true
+      name: domain_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the prevalence of a domain, identified by domain_name.
+    execution: false
+    hidden: false
+    name: core-get-domain-analytics-prevalence
+    outputs:
+    - contextPath: Core.AnalyticsPrevalence.Domain.value
+      description: Whether the domain is prevalent or not.
+      type: Boolean
+    - contextPath: Core.AnalyticsPrevalence.Domain.data.global_prevalence.value
+      description: The global prevalence of the domain.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Domain.data.local_prevalence.value
+      description: The local prevalence of the domain.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Domain.data.prevalence.value
+      description: The prevalence of the domain.
+      type: Number
+  - arguments:
+    - default: false
+      description: The process name.
+      isArray: true
+      name: process_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the prevalence of a process, identified by process_name.
+    execution: false
+    hidden: false
+    name: core-get-process-analytics-prevalence
+    outputs:
+    - contextPath: Core.AnalyticsPrevalence.Process.value
+      description: Whether the process is prevalent or not.
+      type: Boolean
+    - contextPath: Core.AnalyticsPrevalence.Process.data.global_prevalence.value
+      description: The global prevalence of the process.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Process.data.local_prevalence.value
+      description: The local prevalence of the process.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Process.data.prevalence.value
+      description: The prevalence of the process.
+      type: Number
+  - arguments:
+    - default: false
+      description: The key name of a registry path.
+      isArray: true
+      name: key_name
+      required: true
+      secret: false
+    - default: false
+      description: The value name of a registry path.
+      isArray: true
+      name: value_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the prevalence of a registry_path, identified by key_name, value_name.
+    execution: false
+    hidden: false
+    name: core-get-registry-analytics-prevalence
+    outputs:
+    - contextPath: Core.AnalyticsPrevalence.Registry.value
+      description: Whether the registry is prevalent or not.
+      type: Boolean
+    - contextPath: Core.AnalyticsPrevalence.Registry.data.global_prevalence.value
+      description: The global prevalence of the registry.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Registry.data.local_prevalence.value
+      description: The local prevalence of the registry.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Registry.data.prevalence.value
+      description: The prevalence of the registry.
+      type: Number
+  - arguments:
+    - default: false
+      description: The process command line.
+      isArray: true
+      name: process_command_line
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the prevalence of a process_command_line, identified by process_command_line.
+    execution: false
+    hidden: false
+    name: core-get-cmd-analytics-prevalence
+    outputs:
+    - contextPath: Core.AnalyticsPrevalence.Cmd.value
+      description: Whether the CMD is prevalent or not.
+      type: Boolean
+    - contextPath: Core.AnalyticsPrevalence.Cmd.data.global_prevalence.value
+      description: The global prevalence of the CMD.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Cmd.data.local_prevalence.value
+      description: The local prevalence of the CDM.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Cmd.data.prevalence.value
+      description: The prevalence of the Cmd.
+      type: Number
+  - arguments:
+    - default: false
+      description: A comma-separated list of tenant IDs of the endpoint(s) for which you want to assign the tag.
+      isArray: true
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: The tag name to assign to the endpoint(s).
+      isArray: false
+      name: tag
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of endpoint IDs by which to filter the results.
+      isArray: true
+      name: endpoint_id_list
+      required: false
+      secret: false
+    - default: false
+      description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2"
+      isArray: true
+      name: dist_name
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma-separated list of IP addresses.
+        Example: 8.8.8.8,1.1.1.1
+      isArray: true
+      name: ip_list
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma-separated list of group name to which the agent belongs.
+        Example: group_name1,group_name2
+      isArray: true
+      name: group_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The endpoint platform.
+      isArray: true
+      name: platform
+      predefined:
+      - windows
+      - linux
+      - macos
+      - android
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma-separated list of alias names.
+        Examples: alias_name1,alias_name2
+      isArray: true
+      name: alias_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specifies whether the endpoint was isolated or unisolated.
+      isArray: false
+      name: isolate
+      predefined:
+      - isolated
+      - unisolated
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma-separated list of hostnames.
+        Example: hostname1,hostname2
+      isArray: true
+      name: hostname
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were first seen after {first_seen_gte}.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: first_seen_gte
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were first seen before {first_seen_lte}.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: first_seen_lte
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were last seen before {last_seen_gte}.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: last_seen_gte
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were last seen before {last_seen_lte}.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: last_seen_lte
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The status of the endpoint to filter.
+      isArray: false
+      name: status
+      predefined:
+      - connected
+      - disconnected
+      - lost
+      - uninstalled
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a tag to one or more endpoints.
+    execution: false
+    name: core-add-endpoint-tag
+  - arguments:
+    - default: false
+      description: A comma-separated list of tenant IDs of the endpoint(s) for which you want to remove the tag.
+      isArray: true
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: The tag name to remove from the endpoint(s).
+      isArray: false
+      name: tag
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of endpoint IDs to filter by them.
+      isArray: true
+      name: endpoint_id_list
+      required: false
+      secret: false
+    - default: false
+      description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2"
+      isArray: true
+      name: dist_name
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma-separated list of IP addresses.
+        Example: 8.8.8.8,1.1.1.1
+      isArray: true
+      name: ip_list
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma-separated list of group names to which the agent belongs.
+        Example: group_name1,group_name2
+      isArray: true
+      name: group_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The endpoint platform.       
+      isArray: true
+      name: platform
+      predefined:
+      - windows
+      - linux
+      - macos
+      - android
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma-separated list of alias names.
+        Examples: alias_name1,alias_name2
+      isArray: true
+      name: alias_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specifies whether the endpoint was isolated or unisolated.
+      isArray: false
+      name: isolate
+      predefined:
+      - isolated
+      - unisolated
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma-separated list of hostnames.
+        Example: hostname1,hostname2
+      isArray: true
+      name: hostname
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were first seen after {first_seen_gte}.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: first_seen_gte
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were first seen before {first_seen_lte}.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: first_seen_lte
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were last seen before {last_seen_gte}.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: last_seen_gte
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were last seen before {last_seen_lte}.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: last_seen_lte
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The status of the endpoint to filter.
+      isArray: false
+      name: status
+      predefined:
+      - connected
+      - disconnected
+      - lost
+      - uninstalled
+      required: false
+      secret: false
+    deprecated: false
+    description: Remove a tag from one or more endpoints.
+    execution: false
+    name: core-remove-endpoint-tag
   feed: false
   isfetch: false
   longRunning: false
@@ -3096,7 +3533,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.4.28442
+  dockerimage: demisto/python3:3.10.9.46807
 tests:
 - No tests
 fromversion: 6.2.0

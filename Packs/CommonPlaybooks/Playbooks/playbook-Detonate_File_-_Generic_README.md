@@ -17,6 +17,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Detonate File - Cuckoo
 * Detonate File - Lastline v2
 * Detonate File - VMRay
+* Detonate File - SecneurX Analysis
 
 ### Integrations
 This playbook does not use any integrations.
@@ -33,7 +34,7 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | EntryID | Entry ID of file to be detonated | File.EntryID | Optional |
-| File | File object of file to be detonated | File.None | Optional |
+| File | File object of file to be detonated | File | Optional |
 
 ## Playbook Outputs
 ---
@@ -244,3 +245,8 @@ This playbook does not use any commands.
 | VMRay.ThreatIndicator.Classification | The classifications of threat indicators. | string |
 | VMRay.ThreatIndicator.ID | The ID of the threat indicator. | number |
 | VMRay.ThreatIndicator.Operation | The operation that caused the indicators. | string |
+| SecneurXAnalysis.Report.SHA256 | SHA256 value of the analyzed sample | string |
+| SecneurXAnalysis.Report.Verdict | Summary result of the analyzed sample | string |
+| SecneurXAnalysis.Report.Tags | More details of the analyzed sample | string |
+| SecneurXAnalysis.Report.IOC | List of IOC's observed in the analyzed sample | string |
+| SecneurXAnalysis.Report.Status | Analysis queued sample state | string |

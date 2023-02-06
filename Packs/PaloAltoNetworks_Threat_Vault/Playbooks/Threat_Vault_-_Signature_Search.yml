@@ -2,7 +2,9 @@ id: PANW Threat Vault - Signature Search
 version: -1
 name: PANW Threat Vault - Signature Search
 fromversion: 5.0.0
-description: Initiates a Signature Search in Palo Alto Networks threat Vault.
+deprecated: true
+hidden: true
+description: Deprecated. No available replacement.
 starttaskid: "0"
 tasks:
   "0":

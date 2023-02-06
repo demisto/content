@@ -1,5 +1,7 @@
 import pytest
 
+from CommonServerPython import *
+
 from CrowdStrikeFalconX import Client, \
     send_uploaded_file_to_sandbox_analysis_command, send_url_to_sandbox_analysis_command, \
     get_full_report_command, get_report_summary_command, get_analysis_status_command, \
@@ -9,12 +11,12 @@ from CrowdStrikeFalconX import Client, \
 from TestsInput.context import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT, SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT, \
     GET_FULL_REPORT_CONTEXT, GET_REPORT_SUMMARY_CONTEXT, GET_ANALYSIS_STATUS_CONTEXT, CHECK_QUOTA_STATUS_CONTEXT, \
     FIND_SANDBOX_REPORTS_CONTEXT, FIND_SUBMISSION_ID_CONTEXT, MULTIPLE_ERRORS_RESULT, GET_FULL_REPORT_CONTEXT_EXTENDED, \
-    FIND_SANDBOX_REPORTS_HASH_CONTEXT
+    FIND_SANDBOX_REPORTS_HASH_CONTEXT, FIND_SANDBOX_REPORTS_NOT_FOUND_HASH_CONTEXT
 from TestsInput.http_responses import SEND_UPLOADED_FILE_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE, \
     SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE, GET_FULL_REPORT_HTTP_RESPONSE, GET_REPORT_SUMMARY_HTTP_RESPONSE, \
     CHECK_QUOTA_STATUS_HTTP_RESPONSE, FIND_SANDBOX_REPORTS_HTTP_RESPONSE, FIND_SUBMISSION_ID_HTTP_RESPONSE, \
     GET_ANALYSIS_STATUS_HTTP_RESPONSE, MULTI_ERRORS_HTTP_RESPONSE, NO_ERRORS_HTTP_RESPONSE, \
-    GET_FULL_REPORT_HTTP_RESPONSE_EMPTY
+    GET_FULL_REPORT_HTTP_RESPONSE_EMPTY, FIND_SANDBOX_REPORTS_NOT_FOUND_HTTP_RESPONSE
 
 
 class ResMocker:
@@ -128,6 +130,8 @@ FIND_SUBMISSION_ID_ARGS = {
      FIND_SANDBOX_REPORTS_CONTEXT),
     (find_sandbox_reports_command, FIND_SANDBOX_REPORTS_HASHES_ARGS, FIND_SANDBOX_REPORTS_HTTP_RESPONSE,
      FIND_SANDBOX_REPORTS_HASH_CONTEXT),
+    (find_sandbox_reports_command, FIND_SANDBOX_REPORTS_HASHES_ARGS, FIND_SANDBOX_REPORTS_NOT_FOUND_HTTP_RESPONSE,
+     FIND_SANDBOX_REPORTS_NOT_FOUND_HASH_CONTEXT),
     (find_submission_id_command, FIND_SUBMISSION_ID_ARGS, FIND_SUBMISSION_ID_HTTP_RESPONSE, FIND_SUBMISSION_ID_CONTEXT),
 ])
 def test_cs_falconx_commands(command, args, http_response, context, mocker):
@@ -142,7 +146,7 @@ def test_cs_falconx_commands(command, args, http_response, context, mocker):
     - create the context
     - validate the expected_result and the created context
     """
-    mocker.patch.object(Client, '_generate_token')
+    mocker.patch.object(Client, '_get_access_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
                     proxy=False, reliability=DBotScoreReliability.B)
 
@@ -180,7 +184,7 @@ def test_cs_falcon_x_polling_related_commands(command, args, http_response, cont
     - create the context
     - validate the expected_result and the created context
     """
-    mocker.patch.object(Client, '_generate_token')
+    mocker.patch.object(Client, '_get_access_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
                     proxy=False, reliability=DBotScoreReliability.B)
 
@@ -211,7 +215,7 @@ def test_handle_errors(http_response, output, mocker):
     Then
     - show the exception content
     """
-    mocker.patch.object(Client, '_generate_token')
+    mocker.patch.object(Client, '_get_access_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
                     proxy=False, reliability=DBotScoreReliability.B)
     try:
@@ -234,7 +238,7 @@ def test_running_polling_command_success_for_url(mocker):
     """
     args = {'ids': "1234", "extended_data": "true"}
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
-    mocker.patch.object(Client, '_generate_token')
+    mocker.patch.object(Client, '_get_access_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
                     proxy=False, reliability=DBotScoreReliability.B)
 
@@ -263,7 +267,7 @@ def test_running_polling_command_success_for_file(mocker):
     """
     args = {'ids': "1234", "extended_data": "true"}
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
-    mocker.patch.object(Client, '_generate_token')
+    mocker.patch.object(Client, '_get_access_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
                     proxy=False, reliability=DBotScoreReliability.B)
 
@@ -292,7 +296,7 @@ def test_running_polling_command_pending_for_url(mocker):
     """
     args = {'ids': "1234", "extended_data": "true"}
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
-    mocker.patch.object(Client, '_generate_token')
+    mocker.patch.object(Client, '_get_access_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
                     proxy=False, reliability=DBotScoreReliability.B)
 
@@ -317,7 +321,7 @@ def test_running_polling_command_pending_for_file(mocker):
     """
     args = {'ids': "1234", "extended_data": "true"}
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
-    mocker.patch.object(Client, '_generate_token')
+    mocker.patch.object(Client, '_get_access_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
                     proxy=False, reliability=DBotScoreReliability.B)
 
@@ -343,7 +347,7 @@ def test_running_polling_command_new_search_for_url(mocker):
     """
     args = SEND_URL_TO_SANDBOX_ANALYSIS_ARGS_POLLING
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
-    mocker.patch.object(Client, '_generate_token')
+    mocker.patch.object(Client, '_get_access_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
                     proxy=False, reliability=DBotScoreReliability.B)
 
@@ -372,7 +376,7 @@ def test_running_polling_command_new_search_for_file(mocker):
     """
     args = SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS_POLLING
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
-    mocker.patch.object(Client, '_generate_token')
+    mocker.patch.object(Client, '_get_access_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
                     proxy=False, reliability=DBotScoreReliability.B)
 
@@ -462,6 +466,7 @@ def test_parse_indicator():
         'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || '
         'val.SSDeep && val.SSDeep == obj.SSDeep)': {
             'Name': 'submit_name', 'Size': 123, 'SHA256': 'sha256', 'Type': 'foo type', 'Company': 'CompanyName',
+            'Hashes': [{'type': 'SHA256', 'value': 'sha256'}],
             'ProductName': 'ProductName',
             'Signature': {'Authentihash': '', 'Copyright': 'LegalCopyright', 'Description': 'FileDescription',
                           'FileVersion': 'FileVersion', 'InternalName': 'InternalName',
@@ -505,7 +510,7 @@ def test_file_command(requests_mock, mocker, file: str, mocked_address: str, moc
             Make sure the api calls are made correctly.
             Parsing is not tested as it's equivalent in other commands.
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(Client, '_get_access_token', return_value='token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
                     proxy=False, reliability=DBotScoreReliability.B)
     file_ids = mocked_response['resources']
@@ -521,3 +526,93 @@ def test_file_command(requests_mock, mocker, file: str, mocked_address: str, moc
     assert id_query_mock.call_count == 1
     assert all(mocked_search.call_count == 1 for mocked_search in search_query_mocks)
     assert isinstance(command_results, list) and len(command_results) == len(file_ids)
+
+
+@pytest.mark.parametrize('mocked_address,ioc_id,mocked_response,command_results_output',
+                         (('https://api.crowdstrike.com/falconx/entities/artifacts/v1',
+                           '123',
+                           {'headers': {'Content-Type': 'image/png',
+                                        'Content-Disposition': 'attachment; filename=screen_0.png'}},
+                           'screen_0.png'),
+                          ('https://api.crowdstrike.com/falconx/entities/artifacts/v1',
+                           '123',
+                           {'headers': {'Content-Type': 'application/json'}},
+                           None),
+                          ))
+def test_download_ioc_command(requests_mock, mocker, mocked_address, ioc_id, mocked_response, command_results_output):
+    """
+    Given
+            IOCs to download
+    When
+            Calling the cs-fx-download-ioc command
+    Then
+            - Verify that when the response includes an image a file is returned
+            - Verify that when the response includes a json the output is a table
+    """
+    mocker.patch.object(Client, '_get_access_token', return_value='token')
+    client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False, reliability=DBotScoreReliability.B)
+    from CrowdStrikeFalconX import download_ioc_command
+    requests_mock.get(mocked_address, headers=mocked_response.get('headers'), json={})
+    command_results = download_ioc_command(client, ioc_id)
+    if isinstance(command_results, dict):
+        assert command_results.get('File') == command_results_output
+    else:
+        assert command_results.outputs.get('File') == command_results_output
+
+
+def test_get_new_access_token(mocker):
+    """
+    Given
+     - no access token in the integration context at all
+
+    When
+     - trying to get the access token
+
+    Then
+     - make sure the integration creates a new access token
+    """
+    mocker.patch.object(Client, '_get_token_request', return_value=('123', '100'))
+    client = Client(
+        server_url="https://api.crowdstrike.com/",
+        username="user1",
+        password="12345",
+        use_ssl=False,
+        proxy=False,
+        reliability=DBotScoreReliability.B
+    )
+    access_token = client._get_access_token()
+    assert access_token == '123'
+
+
+def test_get_existing_access_token(mocker):
+    """
+    Given
+     - existing access token saved in integration context that its time is not expired yet
+
+    When
+     - trying to get the access token
+
+    Then
+     - make sure the integration gets the token from context.
+    """
+    mocker.patch.object(
+        demisto,
+        'getIntegrationContextVersioned',
+        return_value={
+            'context': {
+                'access_token': '123', 'token_initiate_time': '10000.941587', 'token_expiration_seconds': '7200'
+            }
+        }
+    )
+    mocker.patch.object(time, 'time', return_value=16999.941587)
+    client = Client(
+        server_url="https://api.crowdstrike.com/",
+        username="user1",
+        password="12345",
+        use_ssl=False,
+        proxy=False,
+        reliability=DBotScoreReliability.B
+    )
+    access_token = client._get_access_token()
+    assert access_token == '123'

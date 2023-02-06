@@ -1,5 +1,4 @@
 from CommonServerPython import *
-import traceback
 
 # Feel free to change it hard-coded
 IOC_SOURCE = 'Cortex XSOAR'
@@ -47,7 +46,7 @@ def convert_unique_fields(ioc: dict, action: str, host_groups: list, platforms: 
                 ioc['type'] = 'ipv4'
             elif ip_type == 'IPv6':
                 ioc['type'] = 'ipv6'
-        elif indicator_type == 'DOMAIN':
+        elif indicator_type == 'Domain':
             ioc['type'] = 'domain'
         else:
             raise DemistoException(f'The indicator type: {indicator_type} does not exist in CS Falcon')
@@ -109,7 +108,6 @@ def main():
         })
 
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute TransformIndicatorToCSFalconIOC. Error: {str(ex)}')
 
 

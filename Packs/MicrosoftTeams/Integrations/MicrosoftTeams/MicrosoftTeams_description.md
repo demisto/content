@@ -7,4 +7,6 @@ To create an instance of the Microsoft Teams integration in Cortex XSOAR, comple
 3. Configure Microsoft Teams on Demisto
 4. Add the Demisto Bot to a Team
  
+Important note: resetting the integration cache removes all data about teams, channels, members saved in the integration context. Performing this step requires removing the bot from all teams it was added to.
+
 For more information about registering a calling bot see the [Microsoft Teams Documentation](https://docs.microsoft.com/en-us/microsoftteams/platform/bots/calls-and-meetings/registering-calling-bot#add-microsoft-graph-permissions).

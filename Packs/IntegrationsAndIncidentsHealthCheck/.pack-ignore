@@ -96,3 +96,6 @@ ignore=RM106
 ignore=E9003
 [file:pack_metadata.json]
 ignore=PA129
+
+[known_words]
+similarIncident

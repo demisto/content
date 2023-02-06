@@ -1,0 +1,14 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self"
+        }
+    },
+    "data": {
+        "available": "data_available",
+        "status": "data_status",
+        "unlock_code": "data_unlock_code",
+        "comment": "data_comment"
+    }
+}

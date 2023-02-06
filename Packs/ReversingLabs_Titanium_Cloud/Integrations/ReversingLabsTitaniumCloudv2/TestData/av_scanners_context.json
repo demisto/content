@@ -458,7 +458,21 @@
             {
                 "MD5": "3133c2231fcee5d6b0b4c988a5201da1",
                 "SHA1": "21841b32c6165b27dddbd4d6eb3a672defe54271",
-                "SHA256": "2f6edf41016e97c58f9de01aa4cc66c9c7fe7dae23fe72e50a69cbd221f55346"
+                "SHA256": "2f6edf41016e97c58f9de01aa4cc66c9c7fe7dae23fe72e50a69cbd221f55346",
+                "Hashes": [
+                    {
+                        "type": "MD5",
+                        "value": "3133c2231fcee5d6b0b4c988a5201da1"
+                    },
+                    {
+                        "type": "SHA1",
+                        "value": "21841b32c6165b27dddbd4d6eb3a672defe54271"
+                    },
+                    {
+                        "type": "SHA256",
+                        "value": "2f6edf41016e97c58f9de01aa4cc66c9c7fe7dae23fe72e50a69cbd221f55346"
+                    }
+                ]
             }
         ],
         "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [

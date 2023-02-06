@@ -1,6 +1,6 @@
-This API enables you to use the Google Admin API. In order to enable the API, you will need to create an account service private key JSON file and copy its content as the value for the **Password** parameter field.
+This API enables you to use the Google Admin API. In order to enable the API, you need to create an account service private key JSON file and copy its content as the value for the **Password** parameter field.
 
-Follow these steps to [create a private key and authorize the API](https://developers.google.com/admin-sdk/directory/v1/guides/delegation).
+Follow these steps to [create a Service Account file with a Private Key and authorize the API](https://developers.google.com/admin-sdk/directory/v1/guides/delegation).
 
 | Function | API to Authorize |
 | -------- | ---------------- |
@@ -21,6 +21,14 @@ Follow these steps to [create a private key and authorize the API](https://devel
 | Add the forwarding address for the user | [https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing) |
 
 For the email user parameter, select a user with admin permissions and make sure that you follow the steps to perform Google Apps Domain-Wide Delegation of Authority.
+The required admin permissions are only used for user actions (i.e., creating users, getting user informations, deleting users):
+    - Organizational Units > Read
+    - Users
+    - Security > User Security Management
+    - Security > Security Settings
+Mailbox actions do not require admin previleges.
+If a non-admin user is the user for the integration's parameter, the test button will fail on a 403 error.
+This may also cause the ***gmail-search-all-mailboxes*** command to fail.
 
 ## Revoke/Fetch User Roles
 In order to revoke/fetch user role, you will need the Immutable Google Apps ID param.
@@ -31,4 +39,4 @@ To get an Immutable Google Apps ID (or customerId):
 There you will see URLs in the format:
 [https://accounts.google.com/o/saml2/idp?idpid=Cxxxxxxxx](https://accounts.google.com/o/saml2/idp?idpid=Cxxxxxxxx)
 Cxxxxxxxx is your Immutable Google Apps ID (customerId).
- 
+

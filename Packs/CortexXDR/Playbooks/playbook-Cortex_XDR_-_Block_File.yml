@@ -42,7 +42,7 @@ tasks:
       name: Cortex XDR add a file SHA256 to block list
       description: Adds requested files to block list if they are not already on block list
         or allow list.
-      script: '|||xdr-blacklist-files'
+      script: '|||xdr-blocklist-files'
       type: regular
       iscommand: true
       brand: ""

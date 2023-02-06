@@ -2,10 +2,11 @@ commonfields:
   id: SentinelOne
   version: -1
 name: SentinelOne
-display: SentinelOne
+display: SentinelOne (Deprecated)
+deprecated: true
 fromversion: 5.0.0
 category: Endpoint
-description: End point protection
+description: Deprecated. Use the SentinelOne v2 integration instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: url

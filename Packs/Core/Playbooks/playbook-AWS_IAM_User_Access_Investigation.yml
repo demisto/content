@@ -3,16 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: AWS IAM User Access Investigation
-description: "Investigate and respond to Cortex XSIAM alerts where an AWS IAM\
-  \ user`s access key is used suspiciously to access the cloud environment. \nThe\
-  \ following alerts are supported for AWS environments.\n- Penetration testing tool\
-  \ attempt\n- Penetration testing tool activity\n- Suspicious API call from a Tor\
-  \ exit node\n This is a beta playbook, which lets you implement and test pre-release\
-  \ software. Although AWS is supported, we are working towards multi-cloud support.\
-  \ As the playbook is beta, it might contain bugs. Updates to the playbook during\
-  \ the beta phase might include non-backward compatible features. We encourage\
-  \ feedback on the quality and usability of the content to help us identify and fix issues,\
-  \ so we can continually improve the content.\n"
+description: "Investigate and respond to Cortex XSIAM alerts where an AWS IAM user`s access key is used suspiciously to access the cloud environment. \nThe following alerts are supported for AWS environments.\n- Penetration testing tool attempt\n- Penetration testing tool activity\n- Suspicious API call from a Tor exit node\n This is a beta playbook, which lets you implement and test pre-release software. Although AWS is supported, we are working towards multi-cloud support. As the playbook is beta, it might contain bugs. Updates to the playbook during the beta phase might include non-backward compatible features. We encourage feedback on the quality and usability of the content to help us identify and fix issues, so we can continually improve the content.\n"
 starttaskid: "0"
 tasks:
   "0":
@@ -109,8 +100,7 @@ tasks:
       id: f452a1bf-3fc3-40db-8d4a-1666372f6a82
       version: -1
       name: Manual decision making - true/false-positive alert
-      description: Based on the collected data investigation and the verdict established
-        by the "Enrichment for Verdict" playbook, is this a true positive event?
+      description: Based on the collected data investigation and the verdict established by the "Enrichment for Verdict" playbook, is this a true positive event?
       type: condition
       iscommand: false
       brand: ""
@@ -232,17 +222,7 @@ tasks:
       id: 65900bdd-a39d-4848-8edc-4a3026a5360c
       version: -1
       name: AWS IAM User Access Investigation - Remediation
-      description: "Investigate and respond to Cortex XSIAM alerts where an AWS\
-        \ IAM user`s access key is used suspiciously to access the cloud environment.\
-        \ \nThe following alerts are supported for AWS environments.\n- Penetration\
-        \ testing tool attempt\n- Penetration testing tool activity\n- Suspicious\
-        \ API call from a Tor exit node\n This is a beta playbook, which lets you\
-        \ implement and test pre-release software. Although AWS is supported, we\
-        \ are working towards multi-cloud support. As the playbook is beta, it\
-        \ might contain bugs. Updates to the playbook during the beta phase might\
-        \ include non-backward compatible features. We encourage feedback on\
-        \ the quality and usability of the content to help us identify and fix issues,\
-        \ sp we can continually improve content.\n"
+      description: "Investigate and respond to Cortex XSIAM alerts where an AWS IAM user`s access key is used suspiciously to access the cloud environment. \nThe following alerts are supported for AWS environments.\n- Penetration testing tool attempt\n- Penetration testing tool activity\n- Suspicious API call from a Tor exit node\n This is a beta playbook, which lets you implement and test pre-release software. Although AWS is supported, we are working towards multi-cloud support. As the playbook is beta, it might contain bugs. Updates to the playbook during the beta phase might include non-backward compatible features. We encourage feedback on the quality and usability of the content to help us identify and fix issues, sp we can continually improve content.\n"
       playbookName: AWS IAM User Access Investigation - Remediation
       type: playbook
       iscommand: false
@@ -360,24 +340,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: c3ea602e-9306-4e1c-8934-38df053af2f0
+    taskid: fe3f84ca-6874-4450-85d7-4de28a71fd11
     type: playbook
     task:
-      id: c3ea602e-9306-4e1c-8934-38df053af2f0
+      id: fe3f84ca-6874-4450-85d7-4de28a71fd11
       version: -1
       name: Enrichment for Verdict
       playbookName: Enrichment for Verdict
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: 'This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then returns the information needed to establish the alert''s verdict.'
     nexttasks:
       '#none#':
       - "50"
     scriptarguments:
       CloseReason:
-        simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved -
-          Known Issue
+        simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
       Domain:
         complex:
           root: alert
@@ -403,8 +382,7 @@ tasks:
           root: alert
           accessor: username
       query:
-        simple: (username:${inputs.awsUser} or hostip:${inputs.IP}) and alertsource:${alert.sourceBrand}
-          and alertname:${alert.name}
+        simple: (hostip:${alert.hostip}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
       threshold:
         simple: "5"
     separatecontext: true
@@ -453,7 +431,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 230
+          "y": 220
         }
       }
     note: false
@@ -524,7 +502,7 @@ tasks:
       id: 62cfaa81-81fb-4166-8f73-e3e903c5e3c5
       version: -1
       name: Continue the investigation
-      description: "Continue the investigation."
+      description: Continue the investigation.
       type: regular
       iscommand: false
       brand: ""
@@ -554,7 +532,7 @@ tasks:
       id: ac7a9b9c-0d3c-494a-8def-9884ca58aadf
       version: -1
       name: Is it a suspicious or Tor IP?
-      description: "Is it a suspicious or Tor IP?"
+      description: Is it a suspicious or Tor IP?
       type: condition
       iscommand: false
       brand: ""

@@ -1,0 +1,5 @@
+{"next": "collection/?page=2&page_size=1", "previous": null, "page_size": 1,
+	"total": 7, "results": [{"id": "83b5fd74-8ca0-4f28-a173-1d6863b2acb4",
+	"name": "collection", "description": "with description", "is_active": true,
+	"type": "DATA_FEED", "is_editable": true, "polling": false, "inbox": true, 
+	"created": 1652080268, "has_subscribed": null}], "subscriber_name": ""}

@@ -1,0 +1,29 @@
+[
+    {
+        "accountId": "accountId",
+        "cloudAccountId": "cloudAccountId",
+        "externalId": "i-externalId",
+        "image": "ami-image",
+        "instanceType": "instanceType",
+        "isBillable": true,
+        "isRunning": true,
+        "kernelId": null,
+        "launchTime": "launchTime",
+        "name": "name",
+        "nics": [
+            {
+                "name": "eth0"
+            }
+        ],
+        "platform": "platform",
+        "profileArn": "profileArn",
+        "publicDnsName": "publicDnsName",
+        "region": "region",
+        "roleArns": [],
+        "ssmAgentInstanceInformation": null,
+        "tags": {
+            "Name": "Name"
+        },
+        "vpc": "vpc"
+    }
+]

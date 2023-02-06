@@ -1,0 +1,32 @@
+{
+    "id": "incident_awsguarddutycontainerdetails",
+    "version": -1,
+    "modified": "2022-11-10T10:26:55.833382Z",
+    "name": "AWS GuardDuty Container Details",
+    "ownerOnly": false,
+    "description": "Details of a container.",
+    "cliName": "awsguarddutycontainerdetails",
+    "type": "longText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "AWS Guard Duty Malware Protection Finding"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

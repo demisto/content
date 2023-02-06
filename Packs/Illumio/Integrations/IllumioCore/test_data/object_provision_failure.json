@@ -1,0 +1,6 @@
+[
+    {
+        "token": "not_acceptable_error",
+        "message": "Not Acceptable. One or more specified objects either don't exist, or do not have a draft version."
+    }
+]

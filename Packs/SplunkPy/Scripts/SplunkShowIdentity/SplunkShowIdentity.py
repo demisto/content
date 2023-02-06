@@ -1,33 +1,28 @@
-import json
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+import json
+
 
 def main():
+    identity_results = []
     incident = demisto.incident()
     if not incident:
         raise ValueError("Error - demisto.incident() expected to return current incident "
                          "from context but returned None")
-    custom_fields = incident.get('CustomFields', {})
-    identity_results_str = custom_fields.get('identitytable', {})
-    is_successful = custom_fields.get('successfulidentityenrichment', '')
-    if is_successful == 'false':
-        return CommandResults(readable_output='Identity enrichment failed.')
+    labels = incident.get('labels', [])
 
-    identity_results = json.loads(identity_results_str)
+    for label in labels:
+        if label.get('type') == 'successful_identity_enrichment':
+            is_successful = label.get('value')
+            if is_successful == 'false':
+                return CommandResults(readable_output='Identity enrichment failed.')
+        if label.get('type') == 'Identity':
+            identity_results = json.loads(label.get('value', []))
 
     if not identity_results:
-        return CommandResults(readable_output='No users were found in the notable.')
-
-    if isinstance(identity_results, list):
-        events_arr = []
-        for event in identity_results:
-            events_arr.append(event)
-        markdown = tableToMarkdown("", events_arr, headers=events_arr[0].keys())
-
-    else:
-        markdown = tableToMarkdown("", identity_results)
+        return CommandResults(readable_output='No identities were found in the notable')
+    markdown = tableToMarkdown("", identity_results, headers=identity_results[0].keys())
 
     return {'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdown}
 

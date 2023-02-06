@@ -50,7 +50,7 @@ tasks:
         file path are necessary in order to run the command. After running this command,
         you can use the xdr-action-status-get command with returned action_id, to
         check the action status.
-      script: '|||xdr-retrieve-files'
+      script: '|||xdr-file-retrieve'
       type: regular
       iscommand: true
       brand: ""

@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Email Communication"
+    ],
+    "caseInsensitive": true,
+    "cliName": "emailnewbody",
+    "closeForm": false,
+    "content": true,
+    "description": "Use this field to create email body text for use in 'Email Threads' layout",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_emailnewbody",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Email New Body",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "markdown",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

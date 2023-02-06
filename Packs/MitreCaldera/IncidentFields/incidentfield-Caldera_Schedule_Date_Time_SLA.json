@@ -1,0 +1,30 @@
+{
+    "id": "incident_calderascheduledatetimesla",
+    "version": -1,
+    "name": "MITRE Caldera Schedule Date Time SLA",
+    "ownerOnly": false,
+    "cliName": "calderascheduledatetimesla",
+    "type": "timer",
+    "closeForm": false,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Caldera Operation"
+    ],
+    "associatedToAll": false,
+    "breachScript": "CalderaStartOperation",
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 0,
+    "fromVersion": "6.2.0"
+}

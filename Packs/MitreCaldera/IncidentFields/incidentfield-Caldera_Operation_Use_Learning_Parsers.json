@@ -1,0 +1,35 @@
+{
+    "id": "incident_calderaoperationuselearningparsers",
+    "version": -1,
+    "name": "MITRE Caldera Operation Use Learning Parsers",
+    "ownerOnly": false,
+    "description": "Whether learning parsers are used.",
+    "cliName": "calderaoperationuselearningparsers",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "script": "CalderaReadOnlyFields",
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "true",
+        "false"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Caldera Operation"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

@@ -37,7 +37,7 @@ def test_module(requests_mock):
 
 def test_module_failure(mocker, requests_mock):
     """
-    Test the basic test-module command in case of a failure
+    Test the basic test-module command in case of a failure.
     """
     from CybleEvents import Client, get_test_response
 
@@ -57,7 +57,7 @@ def test_module_failure(mocker, requests_mock):
 
 def test_get_event_types(requests_mock):
     """
-    Test the module get_event_types.
+    Test the module get_event_types
     :param requests_mock:
     :return:
     """
@@ -307,7 +307,7 @@ def test_cyble_vision_fetch_detail(requests_mock, eID, eType):
 
 @pytest.mark.parametrize(
     "offset,limit", [
-        ('0', '-2'), ('0', '89')
+        ('0', '-2'), ('0', '1289')
     ]
 )
 def test_limit_cyble_vision_fetch_detail(requests_mock, capfd, offset, limit):
@@ -342,7 +342,7 @@ def test_limit_cyble_vision_fetch_detail(requests_mock, capfd, offset, limit):
 
     with capfd.disabled():
         with pytest.raises(ValueError,
-                           match=f"Limit should a positive number upto 50, limit: {limit}"):
+                           match=f"Limit should a positive number up to 1000, limit: {limit}"):
             fetch_alert_details(client=client, args=args)
 
 

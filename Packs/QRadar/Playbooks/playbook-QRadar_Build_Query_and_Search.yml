@@ -1,0 +1,476 @@
+id: QRadar Build Query and Search
+version: -1
+name: QRadar Build Query and Search
+description: |-
+  The QRadar Build Query and Search playbook creates an AQL query for the QRadar SIEM using the QRadarCreateAQLQuery automation queries. Complex queries take into consideration several inputs and allow including or excluding each of the values as well as performing a full or partial search. Each of the values can be searched across several fields.
+
+  The playbook supports 3 separate conditions to be evaluated.
+  For example, in the first condition, inputs will evaluate several user names that may or may not exist in several fields. The second input, can for example, evaluate for IP addresses in several fields that may or may not exist in several fields, and a third value can search for an event ID that may or may not exist in several fields. The results of all of the inputs will create an AQL query that covers all of the inputs combining all of the different conditions.
+
+  Each of the inputs is validated so in case the inputs are not set correctly, the user can review and run them again.
+  Also, populated inputs will be combined, meaning by populating the first and second values the resulting AQL query will be a combination of all of the values and not 3 separate searches. In addition, make sure to populate the inputs in order according to the indexed fields in QRadar (indexed fields should be provided before non indexed ones).
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 882c13a2-1780-4100-8c2b-59b6c1895d54
+    type: start
+    task:
+      id: 882c13a2-1780-4100-8c2b-59b6c1895d54
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 7196833d-8b25-46d8-89a4-fd337b275f01
+    type: playbook
+    task:
+      id: 7196833d-8b25-46d8-89a4-fd337b275f01
+      version: -1
+      name: QRadarFullSearch
+      description: This playbook runs a QRadar query and return its results to the context.
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      interval:
+        simple: '1'
+      query_expression:
+        simple: ${QRadarQuery}
+      timeout:
+        simple: '600'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 78da1d78-a6bc-4d0f-8f72-15d89f3d89a5
+    type: regular
+    task:
+      id: 78da1d78-a6bc-4d0f-8f72-15d89f3d89a5
+      version: -1
+      name: Build AQL query
+      description: Builds a QRadar AQL Query.
+      scriptName: QRadarCreateAQLQuery
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      base_field_match:
+        simple: ${inputs.BaseFieldMatch}
+      base_field_state:
+        simple: ${inputs.BaseFieldState}
+      base_fields_to_search:
+        simple: ${inputs.BaseFieldsToSearch}
+      base_values_to_search:
+        simple: ${inputs.BaseValuesToSearch}
+      first_additional_field_match:
+        simple: ${inputs.FirstAdditionalFieldMatch}
+      first_additional_field_state:
+        simple: ${inputs.FirstAdditionalFieldState}
+      first_additional_fields:
+        simple: ${inputs.FirstAdditionalFields}
+      first_additional_values:
+        simple: ${inputs.FirstAdditionalValues}
+      second_additional_field_match:
+        simple: ${inputs.SecondAdditionalFieldMatch}
+      second_additional_field_state:
+        simple: ${inputs.SecondAdditionalFieldState}
+      second_additional_fields:
+        simple: ${inputs.SecondAdditionalFields}
+      second_additional_values:
+        simple: ${inputs.SecondAdditionalValues}
+      select_fields:
+        simple: ${inputs.SelectFields}
+      time_frame:
+        simple: ${inputs.TimeFrame}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 111c651c-5335-40d6-8222-c9466407b062
+    type: playbook
+    task:
+      id: 111c651c-5335-40d6-8222-c9466407b062
+      version: -1
+      name: QRadar Get Hunting Results
+      playbookName: QRadar Get Hunting Results
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      SearchResults:
+        simple: ${QRadar.Search.Result}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 359cdad3-32d5-4567-8f22-031b29b653d7
+    type: condition
+    task:
+      id: 359cdad3-32d5-4567-8f22-031b29b653d7
+      version: -1
+      name: Use hunting results?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '6'
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.UseHuntingResults
+            iscontext: true
+          right:
+            value:
+              simple: 'True'
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 5821881c-e6bf-434e-8083-dff50e033291
+    type: title
+    task:
+      id: 5821881c-e6bf-434e-8083-dff50e033291
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 6495339d-e834-4a62-85a3-f1ea7ce69570
+    type: condition
+    task:
+      id: 6495339d-e834-4a62-85a3-f1ea7ce69570
+      version: -1
+      name: Are there search results?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '6'
+      yes:
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: QRadar.Search.Result
+            iscontext: true
+          right:
+            value:
+              simple: 'true'
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: 0087cb56-87db-48de-88db-818d93628828
+    type: condition
+    task:
+      id: 0087cb56-87db-48de-88db-818d93628828
+      version: -1
+      name: Are there values to search?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '6'
+      yes:
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.BaseValuesToSearch
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.FirstAdditionalValues
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SecondAdditionalValues
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1315,
+        "width": 950,
+        "x": 90,
+        "y": -60
+      }
+    }
+  }
+inputs:
+- key: BaseValuesToSearch
+  value: {}
+  required: false
+  description: The values of the first field to search. This can be a single value or a comma-separated list of values. For example, admin1,admin2
+  playbookInputQuery:
+- key: BaseFieldsToSearch
+  value: {}
+  required: false
+  description: The field names of the first field to search. This can be a single value or a comma-separated list of values. For example, username,user
+  playbookInputQuery:
+- key: BaseFieldState
+  value:
+    simple: include
+  required: false
+  description: The state of the first field to search, meaning whether the values in the field be included or excluded. Valid options are include or exclude.
+  playbookInputQuery:
+- key: BaseFieldMatch
+  value:
+    simple: exact
+  required: false
+  description: Whether the values of the first field should be an exact match or a partial match. Valid options are exact or partial. When choosing exact, the AQL query will use the = operator. When choosing partial, the AQL query will ILIKE and add '%%' to the values. Notice that if you choose exact you will have to specify the BaseFieldsToSearch as well.
+  playbookInputQuery:
+- key: FirstAdditionalValues
+  value: {}
+  required: false
+  description: The values of the second field to search. This can be a single value or a comma-separated list of values. For example admin1,admin2
+  playbookInputQuery:
+- key: FirstAdditionalFields
+  value: {}
+  required: false
+  description: The field names of the second field to search. This can be a single value or a comma-separated list of values. For example admin1,admin2
+  playbookInputQuery:
+- key: FirstAdditionalFieldState
+  value:
+    simple: include
+  required: false
+  description: The state of the second field to search, meaning whether the values in the field should be included or excluded. Valid options are include or exclude. Notice that if you choose exact you will have to specify the FirstAdditionalFields as well.
+  playbookInputQuery:
+- key: FirstAdditionalFieldMatch
+  value:
+    simple: exact
+  required: false
+  description: Whether the values of the second field should be an exact match or a partial match. Valid options are exact or partial.
+  playbookInputQuery:
+- key: SecondAdditionalValues
+  value: {}
+  required: false
+  description: The values of the third field to search. This can be a single value or a comma-separated list of values. For example admin1,admin2
+  playbookInputQuery:
+- key: SecondAdditionalFields
+  value: {}
+  required: false
+  description: The field names of the third field to search. This can be a single value or a comma-separated list of values. For example username,user
+  playbookInputQuery:
+- key: SecondAdditionalFieldState
+  value:
+    simple: include
+  required: false
+  description: The state of the third field to search, meaning should the values in the field be included or excluded. Valid options are include or exclude.
+  playbookInputQuery:
+- key: SecondAdditionalFieldMatch
+  value:
+    simple: exact
+  required: false
+  description: Should the values of the third field be an exact match or a partial match. Valid options are exact or partial. When choosing exact, the AQL query will use the = operator. When choosing partial, the AQL query will ILIKE and add '%%' to the values. Notice that if you choose exact you will have to specify the SecondAdditionalFields as well.
+  playbookInputQuery:
+- key: SelectFields
+  value:
+    simple: DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username
+  required: false
+  description: |-
+    The list of fields to select within the AQL query.
+    The default fields are
+    DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username
+  playbookInputQuery:
+- key: TimeFrame
+  value:
+    simple: LAST 1 HOURS
+  required: false
+  description: |-
+    Time frame as used in AQL.
+    For example:
+    LAST 7 DAYS
+    START '2019-09-25 15:51' STOP '2019-09-25 17:51'
+    For more examples, see IBM's AQL documentation.
+  playbookInputQuery:
+- key: UseHuntingResults
+  value:
+    simple: 'false'
+  required: false
+  description: The QRadar Get Hunting Results playbook outputs the detected hosts, users, and IP addresses detected in the QRadar search results.
+  playbookInputQuery:
+outputs:
+- contextPath: QRadar.Search.Result
+  description: The result of the search.
+  type: string
+- contextPath: QRadar.DetectedUsers
+  description: Users detected based on the username field in your search.
+  type: string
+- contextPath: QRadar.DetectedInternalIPs
+  description: Internal IP addresses detected based on fields and inputs in your search.
+  type: string
+- contextPath: QRadar.DetectedExternalIPs
+  description: External IP addresses detected based on fields and inputs in your search.
+  type: string
+- contextPath: QRadar.DetectedInternalHosts
+  description: Internal host names detected based on hosts in your assets table. Note that the data accuracy depends on how the asset mapping is configured in QRadar.
+  type: string
+- contextPath: QRadar.DetectedExternalHosts
+  description: External host names detected based on hosts in your assets table. Note that the data accuracy depends on how the asset mapping is configured in QRadar.
+  type: string
+tests:
+- no test
+fromversion: 6.2.0

@@ -69,6 +69,8 @@ def http_request(method, url_suffix, params_dict, headers):
 
     url = SERVER_URL + url_suffix
 
+    headers['x-tool'] = 'CortexVirusTotalPrivateAPIv2'
+
     LOG('running %s request with url=%s\theaders=%s\nparams=%s' % (method, url, headers, json.dumps(req_params)))
 
     try:

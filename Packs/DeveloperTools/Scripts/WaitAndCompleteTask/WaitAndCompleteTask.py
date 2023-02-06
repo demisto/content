@@ -4,7 +4,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 from typing import Dict, Any
-import traceback
 
 POSSIBLE_STATES = ['New', 'InProgress', 'Completed', 'Waiting', 'Error', 'Skipped', 'Blocked']
 
@@ -176,7 +175,6 @@ def main():  # pragma: no cover
     try:
         return_results(wait_and_complete_task_command(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute WaitAndCompleteTask. Error: {str(ex)}')
 
 

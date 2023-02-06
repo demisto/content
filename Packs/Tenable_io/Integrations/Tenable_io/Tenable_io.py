@@ -1,16 +1,18 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import os
 import sys
 import time
 import traceback
 from datetime import datetime
+import urllib3
 
-import demistomock as demisto  # noqa: F401
 import requests
-from CommonServerPython import *  # noqa: F401
+
 from requests.exceptions import HTTPError
 
-requests.packages.urllib3.disable_warnings()
-
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 FIELD_NAMES_MAP = {
     'ScanType': 'Type',
@@ -155,7 +157,7 @@ if not demisto.params()['proxy']:
 
 def flatten(d):
     r = {}  # type: ignore
-    for k, v in d.iteritems():
+    for k, v in d.items():
         if isinstance(v, dict):
             r.update(flatten(v))
     d.update(r)
@@ -164,23 +166,23 @@ def flatten(d):
 
 def filter_dict_null(d):
     if isinstance(d, dict):
-        return dict((k, v) for k, v in d.items() if v is not None)
+        return {k: v for k, v in d.items() if v is not None}
     return d
 
 
 def filter_dict_keys(d, keys):
     if isinstance(d, list):
-        return map(lambda x: filter_dict_keys(x, keys), d)
+        return [filter_dict_keys(x, keys) for x in d]
     if isinstance(d, dict):
-        return {k: v for k, v in d.iteritems() if k in keys}
+        return {k: v for k, v in d.items() if k in keys}
     return d
 
 
 def convert_severity_values(d):
     if isinstance(d, list):
-        return map(convert_severity_values, d)
+        return list(map(convert_severity_values, d))
     if isinstance(d, dict):
-        return {k: (severity_to_text[v] if k == 'Severity' else v) for k, v in d.iteritems()}
+        return {k: (severity_to_text[v] if k == 'Severity' else v) for k, v in d.items()}
     return d
 
 
@@ -194,9 +196,9 @@ def convert_dict_context_dates(d):
         return v
 
     if isinstance(d, list):
-        return map(convert_dict_context_dates, d)
+        return list(map(convert_dict_context_dates, d))
     if isinstance(d, dict):
-        return {k: convert_dict_context_dates(convert_epoch_to_date(k, v)) for k, v in d.iteritems()}
+        return {k: convert_dict_context_dates(convert_epoch_to_date(k, v)) for k, v in d.items()}
     return d
 
 
@@ -205,9 +207,9 @@ def convert_dict_readable_dates(d):
         return formatEpochDate(v) if isinstance(v, int) and any(s in k.lower() for s in ('date', 'time')) else v
 
     if isinstance(d, list):
-        return map(convert_dict_readable_dates, d)
+        return list(map(convert_dict_readable_dates, d))
     if isinstance(d, dict):
-        return {k: convert_dict_readable_dates(convert_epoch_to_date(k, v)) for k, v in d.iteritems()}
+        return {k: convert_dict_readable_dates(convert_epoch_to_date(k, v)) for k, v in d.items()}
     return d
 
 
@@ -219,9 +221,9 @@ def get_entry_for_object(title, context_key, obj, headers=None, remove_null=Fals
         return "There is no output result"
     filtered_obj = filter_dict_null(obj)
     if isinstance(filtered_obj, list):
-        filtered_obj = map(filter_dict_null, filtered_obj)
+        filtered_obj = list(map(filter_dict_null, filtered_obj))
     if headers and isinstance(filtered_obj, dict):
-        headers = intersection(headers, filtered_obj.keys())
+        headers = intersection(headers, list(filtered_obj.keys()))
 
     hr_obj = convert_dict_readable_dates(filtered_obj)
     context_obj = convert_dict_context_dates(filter_dict_keys(filtered_obj, headers) if headers else filtered_obj)
@@ -239,10 +241,9 @@ def get_entry_for_object(title, context_key, obj, headers=None, remove_null=Fals
 
 
 def replace_keys(src, trans_map=FIELD_NAMES_MAP, camelize=True):
-
     def snake_to_camel(snake_str):
         components = snake_str.split('_')
-        return ''.join(map(lambda x: x.decode('utf-8').title(), components))
+        return ''.join([x.title() for x in components])
 
     def replace(key, trans_map):
         if key in trans_map:
@@ -250,11 +251,11 @@ def replace_keys(src, trans_map=FIELD_NAMES_MAP, camelize=True):
         return key
 
     if isinstance(src, list):
-        return map(lambda x: replace_keys(x, trans_map, camelize), src)
+        return [replace_keys(x, trans_map, camelize) for x in src]
     if camelize:
-        src = {snake_to_camel(k): v for k, v in src.iteritems()}
+        src = {snake_to_camel(k): v for k, v in src.items()}
     if trans_map:
-        src = {replace(k, trans_map): v for k, v in src.iteritems()}
+        src = {replace(k, trans_map): v for k, v in src.items()}
     return src
 
 
@@ -327,9 +328,9 @@ def get_vuln_info(vulns):
     vulns_info = {v['plugin_id']: v for v in vulns}
     infos = []
     errors = []
-    for pid, info in vulns_info.iteritems():
+    for pid, info in vulns_info.items():
         vuln_details = send_vuln_details_request(pid)
-        if u'error' in vuln_details:
+        if 'error' in vuln_details:
             errors.append(info)
         else:
             info.update(flatten(vuln_details['info']))
@@ -359,6 +360,44 @@ def send_asset_vuln_request(asset_id, date_range):
     return res.json()
 
 
+def send_asset_details_request(asset_id: str) -> Dict[str, Any]:
+    """Gets asset details using the '{BASE_URL}workbenches/assets/{asset_id}/info' endpoint.
+
+    Args:
+        asset_id (string): id of the asset.
+
+    Returns:
+        dict: dict containing information on an asset.
+    """
+    full_url = "{}workbenches/assets/{}/info".format(BASE_URL, asset_id)
+    try:
+        res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL)
+        res.raise_for_status()
+    except HTTPError as exc:
+        return_error(f'Error calling for url {full_url}: error message {exc}')
+
+    return res.json()
+
+
+def send_asset_attributes_request(asset_id: str) -> Dict[str, Any]:
+    """Gets asset attributes using the '{BASE_URL}api/v3/assets/{asset_id}/attributes' endpoint.
+
+    Args:
+        asset_id (string): id of the asset.
+
+    Returns:
+        dict: dict containing information on an asset.
+    """
+    full_url = "{}api/v3/assets/{}/attributes".format(BASE_URL, asset_id)
+    try:
+        res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL)
+        res.raise_for_status()
+    except HTTPError as exc:
+        return_error(f'Error calling for url {full_url}: error message {exc}')
+
+    return res.json()
+
+
 def test_module():
     send_scan_request()
     return 'ok'
@@ -370,8 +409,8 @@ def get_scans_command():
         last_modification_date = int(time.mktime(datetime.strptime(last_modification_date[0:len('YYYY-MM-DD')],
                                                                    "%Y-%m-%d").timetuple()))
     response = send_scan_request(folder_id=folder_id, last_modification_date=last_modification_date)
-    scan_entries = map(get_scan_info, response['scans'])
-    valid_scans = filter(lambda x: x is not None, scan_entries)
+    scan_entries = list(map(get_scan_info, response['scans']))
+    valid_scans = [x for x in scan_entries if x is not None]
     invalid_scans = [k for k, v in zip(response['scans'], scan_entries) if v is None]
     res = [get_entry_for_object('Tenable.io - List of Scans', 'TenableIO.Scan(val.Id && val.Id === obj.Id)',
                                 replace_keys(valid_scans), GET_SCANS_HEADERS)]
@@ -464,6 +503,55 @@ def args_to_request_params(hostname, ip, date_range):
     return params, indicator
 
 
+def get_asset_details_command() -> CommandResults:
+    """
+    tenable-io-get-asset-details: Retrieves details for the specified asset to include custom attributes.
+
+    Args:
+        None
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains asset
+        details.
+    """
+    ip = demisto.getArg('ip')
+
+    if not ip:
+        return_error("Please provide an IP address")
+
+    params = {
+        "filter.0.filter": "host.target",
+        "filter.0.quality": "eq",
+        "filter.0.value": ip
+    }
+
+    asset_id = get_asset_id(params)
+    if not asset_id:
+        return CommandResults(readable_output=f'Asset not found: {ip}')
+
+    try:
+        info = send_asset_details_request(asset_id)
+        attrs = send_asset_attributes_request(asset_id)
+        if attrs:
+            attributes = []
+            for attr in attrs.get("attributes", []):
+                attributes.append({attr.get('name', ''): attr.get('value', '')})
+            info["info"]["attributes"] = attributes
+
+    except DemistoException as e:
+        return_error(f'Failed to include custom attributes. {e}')
+
+    readable_output = tableToMarkdown(
+        f'Asset Info for {ip}', info["info"], headers=["attributes", "fqdn", "interfaces", "ipv4", "id", "last_seen"])
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=info["info"],
+        outputs_prefix='TenableIO.AssetDetails',
+        outputs_key_field='id',
+        outputs=info["info"]
+    )
+
+
 def get_vulnerabilities_by_asset_command():
     hostname, ip, date_range = demisto.getArg('hostname'), demisto.getArg('ip'), demisto.getArg('dateRange')
     params, indicator = args_to_request_params(hostname, ip, date_range)
@@ -481,7 +569,7 @@ def get_vulnerabilities_by_asset_command():
         entry = get_entry_for_object('Vulnerabilities for asset {}'.format(indicator), 'TenableIO.Vulnerabilities',
                                      vulns, ASSET_VULNS_HEADERS)
         entry['EntryContext']['TenableIO.Assets(val.Hostname === obj.Hostname)'] = {
-            'Vulnerabilities': map(lambda x: x['plugin_id'], info['vulnerabilities']),
+            'Vulnerabilities': [x['plugin_id'] for x in info['vulnerabilities']],
             'Hostname': indicator
         }
         return entry
@@ -494,7 +582,8 @@ def get_scan_status_command():
         'Id': scan_id,
         'Status': scan_details['info']['status']
     }
-    return get_entry_for_object('Scan status for {}'.format(scan_id), 'TenableIO.Scan(val.Id && val.Id === obj.Id)', scan_status)
+    return get_entry_for_object('Scan status for {}'.format(scan_id), 'TenableIO.Scan(val.Id && val.Id === obj.Id)',
+                                scan_status)
 
 
 def pause_scan_command():
@@ -560,21 +649,28 @@ def resume_scan_command():
     return results
 
 
-if demisto.command() == 'test-module':
-    demisto.results(test_module())
-elif demisto.command() == 'tenable-io-list-scans':
-    demisto.results(get_scans_command())
-elif demisto.command() == 'tenable-io-launch-scan':
-    demisto.results(launch_scan_command())
-elif demisto.command() == 'tenable-io-get-scan-report':
-    demisto.results(get_report_command())
-elif demisto.command() == 'tenable-io-get-vulnerability-details':
-    demisto.results(get_vulnerability_details_command())
-elif demisto.command() == 'tenable-io-get-vulnerabilities-by-asset':
-    demisto.results(get_vulnerabilities_by_asset_command())
-elif demisto.command() == 'tenable-io-get-scan-status':
-    demisto.results(get_scan_status_command())
-elif demisto.command() == 'tenable-io-pause-scan':
-    demisto.results(pause_scan_command())
-elif demisto.command() == 'tenable-io-resume-scan':
-    demisto.results(resume_scan_command())
+def main():  # pragma: no cover
+    if demisto.command() == 'test-module':
+        demisto.results(test_module())
+    elif demisto.command() == 'tenable-io-list-scans':
+        demisto.results(get_scans_command())
+    elif demisto.command() == 'tenable-io-launch-scan':
+        demisto.results(launch_scan_command())
+    elif demisto.command() == 'tenable-io-get-scan-report':
+        demisto.results(get_report_command())
+    elif demisto.command() == 'tenable-io-get-vulnerability-details':
+        demisto.results(get_vulnerability_details_command())
+    elif demisto.command() == 'tenable-io-get-vulnerabilities-by-asset':
+        demisto.results(get_vulnerabilities_by_asset_command())
+    elif demisto.command() == 'tenable-io-get-scan-status':
+        demisto.results(get_scan_status_command())
+    elif demisto.command() == 'tenable-io-pause-scan':
+        demisto.results(pause_scan_command())
+    elif demisto.command() == 'tenable-io-resume-scan':
+        demisto.results(resume_scan_command())
+    elif demisto.command() == 'tenable-io-get-asset-details':
+        return_results(get_asset_details_command())
+
+
+if __name__ in ['__main__', 'builtin', 'builtins']:
+    main()

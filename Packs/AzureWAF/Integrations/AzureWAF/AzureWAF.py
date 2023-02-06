@@ -27,9 +27,21 @@ POLICY_PATH = 'providers/Microsoft.Network/ApplicationGatewayWebApplicationFirew
 
 class AzureWAFClient:
     @logger
-    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy,
+    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy, auth_type, tenant_id=None,
+                 enc_key=None, auth_code=None, redirect_uri=None,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com'):
-
+        AUTH_TYPES_DICT: dict = {
+            'Authorization Code': {
+                'grant_type': AUTHORIZATION_CODE,
+                'resource': None,
+                'scope': 'https://management.azure.com/.default'
+            },
+            'Device Code': {
+                'grant_type': DEVICE_CODE,
+                'resource': 'https://management.core.windows.net',
+                'scope': 'https://management.azure.com/user_impersonation offline_access user.read'
+            }
+        }
         # for dev environment use:
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
@@ -39,21 +51,25 @@ class AzureWAFClient:
         base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
-        client_args = {
-            'self_deployed': True,  # We always set the self_deployed key as True because when not using a self
+        client_args = assign_params(
+            self_deployed=True,  # We always set the self_deployed key as True because when not using a self
             # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
             # flow and most of the same arguments should be set, as we're !not! using OProxy.
-            'auth_id': app_id,
-            'token_retrieval_url': 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            'grant_type': DEVICE_CODE,
-            'base_url': base_url,
-            'verify': verify,
-            'proxy': proxy,
-            'resource': 'https://management.core.windows.net',  # disable-secrets-detection
-            'scope': 'https://management.azure.com/user_impersonation offline_access user.read',
-            'ok_codes': (200, 201, 202, 204),
-            'azure_ad_endpoint': azure_ad_endpoint
-        }
+            auth_id=app_id,
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            grant_type=AUTH_TYPES_DICT.get(auth_type, {}).get('grant_type'),  # disable-secrets-detection
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            resource=AUTH_TYPES_DICT.get(auth_type, {}).get('resource'),  # disable-secrets-detection
+            scope=AUTH_TYPES_DICT.get(auth_type, {}).get('scope'),
+            ok_codes=(200, 201, 202, 204),
+            redirect_uri=redirect_uri,
+            auth_code=auth_code,
+            azure_ad_endpoint=azure_ad_endpoint,
+            tenant_id=tenant_id,
+            enc_key=enc_key
+        )
 
         self.ms_client = MicrosoftClient(**client_args)
 
@@ -112,12 +128,8 @@ class AzureWAFClient:
 
 
 def test_connection(client: AzureWAFClient, params: Dict):
-    if params.get('self_deployed', False) and not params.get('auth_code'):
-        return_error('You must enter an authorization code in a self-deployed configuration.')
     client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
-    # should return error if user does not have permissions for the service.
-    client.get_policy_list_by_resource_group_name(client.resource_group_name)
-    return '✅ Great Success!'
+    return CommandResults(readable_output='✅ Success!')
 
 
 @logger
@@ -332,6 +344,23 @@ def reset_auth(client: AzureWAFClient):
                                           '**!azure-waf-auth-start** and **!azure-waf-auth-complete**.')
 
 
+@logger
+def test_module(client, params):
+    """
+    Performs basic GET request to check if the API is reachable and authentication is successful.
+    Returns ok if successful.
+    """
+    if demisto.params().get('auth_type') == 'Device Code':
+        raise Exception("When using device code flow configuration, "
+                        "Please enable the integration and run `!azure-waf-auth-start` and `!azure-waf-auth-complete` to "
+                        "log in. You can validate the connection by running `!azure-waf-auth-test`\n"
+                        "For more details press the (?) button.")
+
+    elif demisto.params().get('auth_type') == 'Authorization Code':
+        raise Exception("When using user auth flow configuration, "
+                        "Please enable the integration and run the !azure-waf-auth-test command in order to test it")
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -352,6 +381,11 @@ def main() -> None:
     args = demisto.args()
 
     client = AzureWAFClient(
+        tenant_id=params.get('tenant_id', ''),
+        auth_type=params.get('auth_type', 'Device Code'),
+        auth_code=params.get('auth_code', {}).get('password', ''),
+        redirect_uri=params.get('redirect_uri', ''),
+        enc_key=params.get('credentials', {}).get('password', ''),
         app_id=params.get('app_id', ''),
         subscription_id=params.get('subscription_id', ''),
         resource_group_name=params.get('resource_group_name', ''),
@@ -365,8 +399,7 @@ def main() -> None:
     try:
 
         if command == 'test-module':
-            raise ValueError("Please run `!azure-waf-auth-start` and `!azure-waf-auth-complete` to log in."
-                             " For more details press the (?) button.")
+            return_results(test_module(client, params))
         if command == 'azure-waf-auth-test':
             return_results(test_connection(client, params))
         else:

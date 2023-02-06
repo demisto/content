@@ -7,7 +7,7 @@ This integration was integrated and tested with Exchange Online PowerShell V2 mo
 ___
 * In the Azure Application, give the following application permission:
     * Office 365 Exchange Online -> Exchange.ManageAsApp - Application
-* To create, modify, and delete Safe Links policies, you need to be a member of the `Organization Management` or `Security Administrator` role groups.
+* To create, modify, and delete Safe Links policies, or use any of the report commands (detailed or aggregate report), you need to be a member of the `Organization Management` or `Security Administrator` role groups.
 * To manage permissions in the Microsoft 365 Defender portal, go to `Permissions & roles` or https://security.microsoft.com/securitypermissions. You need to be a global administrator or a member of the Organization Management role group in the Microsoft 365 Defender portal. Specifically, the Role Management role allows users to view, create, and modify role groups in the Microsoft 365 Defender portal, and by default, that role is assigned only to the Organization Management role group. See [Permissions in the Microsoft 365 Defender portal](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/permissions-microsoft-365-security-center?view=o365-worldwide)
 
 
@@ -254,7 +254,7 @@ Create a new Safe Links policy.
 | do_not_allow_click_through | Whether to allow users to click through to the original URL on warning pages. Default is false. Possible values are: true, false. | Optional | 
 | do_not_rewrite_urls | Comma-separated list of URLs that are not rewritten by Safe Links scanning. | Optional | 
 | do_not_track_user_clicks | Whether to track user clicks related to Safe Links protection of links in email messages. Default is false. Possible values are: true, false. | Optional | 
-| enable_for_internal_senders | Whether the Safe Links policy is applied to messages sent between internal senders and internal recipients within the same Exchange Online organization. Default is false. Possible values are: true, false. | Optional | 
+| enable_for_internal_senders | Whether the Safe Links policy is applied to messages sent between internal senders and internal recipients within the same Exchange Online organization.Default is false. Possible values are: true, false. | Optional | 
 | enable_organization_branding | Whether to display the organization's logo on Safe Links warning and notification pages. Default is false. Possible values are: true, false. | Optional | 
 | enable_safe_links_for_teams | Whether to enable Safe Links for Microsoft Teams. Default is false. Possible values are: true, false. | Optional | 
 | is_enabled | Whether to enable Safe Links protection for email messages. Default is false. Possible values are: true, false. | Optional | 
@@ -382,7 +382,7 @@ Update a Safe Links policy.
 | name | A unique name for the Safe Links policy. | Required | 
 | admin_display_name | The description for the policy. | Optional | 
 | custom_notification_text | The custom notification text to show to users. | Optional | 
-| deliver_message_after_scan | Whether to deliver email messages only after Safe Links scanning is complete. When true, messages that contain malicious links are not delivered. Default is false. Possible values are: true, false. | Optional | 
+| deliver_message_after_scan | Whether to deliver email messages only after Safe Links scanning was completed. When true, messages that contain malicious links are not delivered. Default is false. Possible values are: true, false. | Optional | 
 | do_not_allow_click_through | Whether to allow users to click through to the original URL on warning pages. Default is false. Possible values are: true, false. | Optional | 
 | do_not_rewrite_urls | Comma-separated list of URLs that are not rewritten by Safe Links scanning. | Optional | 
 | do_not_track_user_clicks | Whether to track user clicks related to Safe Links protection of links in email messages. Default is false. Possible values are: true, false. | Optional | 
@@ -847,6 +847,234 @@ Update a given Safe Links rule.
 >| Comments | Conditions | Description | DistinguishedName | ExceptIfRecipientDomainIs | ExceptIfSentTo | ExceptIfSentToMemberOf | Exceptions | ExchangeVersion | Guid | Identity | ImmutableId | IsValid | Name | ObjectState | OrganizationId | Priority | PSComputerName | PSShowComputerName | RecipientDomainIs | RuleVersion | RunspaceId | SafeLinksPolicy | SentTo | SentToMemberOf | State | WhenChanged
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| Changed recipients | "Microsoft.Exchange.MessagingPolicies.Rules.Tasks.SentToPredicate" | If the message: Is sent to 'xsoartest@xsoar.onmicrosoft.com'\ Take the following actions: Apply safe links policy "XSOAR Policy".\  | CN=XSOAR Policy,CN=SafeLinksVersioned,CN=Rules,CN=Transport Settings,CN=Configuration,CN=xsoartest.onmicrosoft.com,CN=ConfigurationUnits,DC=EURPR07A123,DC=PROD,DC=OUTLOOK,DC=COM |  |  |  |  | 0.1 (8.0.535.0) | {"value":"e5764de3-5495-4512-93f5-fe96d579fbd9","Guid":"e5764de3-5495-4512-93f5-fe96d579fbd9"} | XSOAR Policy | {"value":"e5764de3-5495-4512-93f5-fe96d579fbd9","Guid":"e5764de3-5495-4512-93f5-fe96d579fbd9"} | true | XSOAR Policy | Unchanged | EURPR07A123.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/xsoartest.onmicrosoft.com - EURPR07A123.PROD.OUTLOOK.COM/ConfigurationUnits/xsoartest.onmicrosoft.com/Configuration | 2 | outlook.office365.com | false |  | {"Major":14,"Minor":0,"Build":0,"Revision":0,"MajorRevision":0,"MinorRevision":0} | {"value":"72b57693-0ddb-45b0-a44f-4d722a352635","Guid":"72b57693-0ddb-45b0-a44f-4d722a352635"} | XSOAR Policy | "xsoartest@xsoar.onmicrosoft.com" |  | Enabled | {"value":"2021-10-21T12:49:40+00:00","DateTime":"Thursday, October 21, 2021 12:49:40 PM"}
+
+### o365-defender-safelinks-detailed-report-get
+***
+Get detailed information about Safe Links results for the last 7 days. Yesterday is the most recent date that you can specify.
+
+
+#### Base Command
+
+`o365-defender-safelinks-detailed-report-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| start_date | Start date of the date range in MM-DD-YYYY format.Yesterday is the most recent date that you can specify. You can't specify a date that's older than 7 days. Possible values are: . | Required | 
+| end_date | End date of the date range in MM-DD-YYYY format.Yesterday is the most recent date that you can specify. You can't specify a date that's older than 7 days. Possible values are: . | Required | 
+| domain |  filters the results by the domain in the URL. Possible values are: . | Optional | 
+| app_names |  filters the results by the app where the link was found. You can enter multiple values separated by commas e.g "Value1,Value2,...ValueN". Possible values are: Email Client, OfficeDocs, Teams. | Optional | 
+| action | filters the results by action. You can enter multiple values separated by commas e.g Value1,Value2,...ValueN. Possible values are: Allowed, Blocked, ClickedDuringScan, ClickedEvenBlocked, Scanning, TenantAllowed, TenantBlocked, TenantBlockedAndClickedThrough. | Optional | 
+| recipient_address |  filters the results by the recipient's email address. Possible values are: . | Optional | 
+| page | Page number of the results you want to view. Valid input for this parameter is an integer between 1 and 1000. The default value is 1. Possible values are: . | Optional | 
+| page_size | Specifies the maximum number of entries per page. Valid input for this parameter is an integer between 1 and 5000. The default value is 1000. Possible values are: . | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| O365Defender.SafeLinks.DetailedReport.Data.ClickTime | Date | Time the url was clicked. | 
+| O365Defender.SafeLinks.DetailedReport.Data.InternalMessageId | String | Internal message id. | 
+| O365Defender.SafeLinks.DetailedReport.Data.ClientMessageId | String | Client message id. | 
+| O365Defender.SafeLinks.DetailedReport.Data.SenderAddress | String | Sender of the email with the clicked URL. | 
+| O365Defender.SafeLinks.DetailedReport.Data.RecipientAddress | String | Receiver of the email with the clicked URL. | 
+| O365Defender.SafeLinks.DetailedReport.Data.Url | String | Clicked URL. | 
+| O365Defender.SafeLinks.DetailedReport.Data.UrlDomain | String | Domain of th clicked URL. | 
+| O365Defender.SafeLinks.DetailedReport.Data.Action | String | Action type. | 
+| O365Defender.SafeLinks.DetailedReport.Data.AppName | String | App where the link was found. | 
+| O365Defender.SafeLinks.DetailedReport.Data.SourceId | Unknown | Source id. | 
+| O365Defender.SafeLinks.DetailedReport.Data.Organization | String | Organization. | 
+| O365Defender.SafeLinks.DetailedReport.Data.DetectedBy | Unknown |  | 
+| O365Defender.SafeLinks.DetailedReport.Data.UrlType | Unknown |  | 
+| O365Defender.SafeLinks.DetailedReport.Data.Flags | Number | 0: Allowed 1: Blocked 2: ClickedEvenBlocked 3: ClickedDuringScan | 
+| O365Defender.SafeLinks.DetailedReport.ReportId | Number | The report id, unique for every run | 
+
+#### Command example
+```!o365-defender-safelinks-detailed-report-get end_date=08-01-2022 start_date=07-31-2022```
+#### Context Example
+```json
+{
+    "O365Defender": {
+        "SafeLinks": {
+            "DetailedReport": {
+                "Data": [
+                    {
+                        "Action": "Allowed",
+                        "AppName": "Email Client",
+                        "ClickTime": "2022-08-01T10:12:49",
+                        "ClientMessageId": null,
+                        "DetectedBy": "ATP safe links",
+                        "EndDate": "0001-01-01T00:00:00",
+                        "Flags": 0,
+                        "InternalMessageId": "dc6ebe31-e968-4cf8-a4b4-08da73a65b1c",
+                        "Organization": "test.onmicrosoft.com",
+                        "PSComputerName": "outlook.office365.com",
+                        "PSShowComputerName": false,
+                        "RecipientAddress": "test@test.onmicrosoft.com",
+                        "RunspaceId": "93d2c78c-db42-41a0-b67c-5f72881b7338",
+                        "SenderAddress": null,
+                        "SourceId": null,
+                        "StartDate": "0001-01-01T00:00:00",
+                        "Url": "http://go.microsoft.com/",
+                        "UrlDomain": "go.microsoft.com",
+                        "UrlType": ""
+                    }
+                ],
+                "ReportId": "93d2c78c-db42-41a0-b67c-5f72881b7338"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+### Results of o365-defender-safelinks-detailed-report-get
+| Action | AppName | ClickTime | ClientMessageId | DetectedBy | EndDate | Flags | InternalMessageId | Organization | PSComputerName | PSShowComputerName | RecipientAddress | RunspaceId | SenderAddress | SourceId | StartDate | Url | UrlDomain | UrlType
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+| Allowed | Email Client | \{"value":"2022\-08\-01T10:12:49","DateTime":"Monday, August 1, 2022 10:12:49 AM"\} |  | ATP safe links | \{"value":"0001\-01\-01T00:00:00","DateTime":"Monday, January 1, 0001 12:00:00 AM"\} | 0 | \{"value":"dc6ebe31\-e968\-4cf8\-a4b4\-08da73a65b1c","Guid":"dc6ebe31\-e968\-4cf8\-a4b4\-08da73a65b1c"\} | test.onmicrosoft.com | outlook.office365.com | false | test@test.onmicrosoft.com | \{"value":"39cbdab4\-5b97\-4f20\-bb17\-b0d1848183a6","Guid":"39cbdab4\-5b97\-4f20\-bb17\-b0d1848183a6"\} |  |  | \{"value":"0001\-01\-01T00:00:00","DateTime":"Monday, January 1, 0001 12:00:00 AM"\} | http://go.microsoft.com/ | go.microsoft.com | 
+
+
+
+### o365-defender-safelinks-aggregate-report-get
+***
+general information about Safe Links results for the last 90 days. Yesterday is the most recent date that you can specify.
+
+
+#### Base Command
+
+`o365-defender-safelinks-aggregate-report-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| start_date | Start date of the date range in MM-DD-YYYY format.Yesterday is the most recent date that you can specify. You can't specify a date that's older than 90 days. Possible values are: . | Required | 
+| end_date | End date of the date range in MM-DD-YYYY format.YYesterday is the most recent date that you can specify. You can't specify a date that's older than 90 days. Possible values are: . | Required | 
+| app_names |  filters the results by the app where the link was found. You can enter multiple values separated by commas e.g "Value1,Value2,...ValueN". Possible values are: Email Client, OfficeDocs, Teams. | Optional | 
+| action | filters the results by action. You can enter multiple values separated by commas e.g Value1,Value2,...ValueN. Possible values are: Allowed, Blocked, ClickedDuringScan, ClickedEvenBlocked, Scanning, TenantAllowed, TenantBlocked, TenantBlockedAndClickedThrough. | Optional | 
+| summerize_by | Returns totals based on the values you specify. Summarizing reduces the amount of data that's retrieved for the report, and delivers the report faster. By default the summrize is by Action. Possible values are: Action, App. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| O365Defender.SafeLinks.AggregateReport.Data.App | String | App where the link was found. | 
+| O365Defender.SafeLinks.AggregateReport.Data.Action | String | Action type. | 
+| O365Defender.SafeLinks.AggregateReport.Data.MessageCount | Number | Number of messages with a link. | 
+| O365Defender.SafeLinks.AggregateReport.Data.RecipientCount | Number | Number of recipients of the link. | 
+| O365Defender.SafeLinks.AggregateReport.ReportId | Number | The report id, unique for every run | 
+
+#### Command example
+```!o365-defender-safelinks-aggregate-report-get end_date=08-01-2022 start_date=07-31-2022```
+#### Context Example
+```json
+{
+    "O365Defender": {
+        "SafeLinks": {
+            "AggregateReport": {
+                "Data": [
+                    {
+                        "Action": "Allowed",
+                        "App": "",
+                        "EndDate": "0001-01-01T00:00:00",
+                        "MessageCount": 0,
+                        "PSComputerName": "outlook.office365.com",
+                        "PSShowComputerName": false,
+                        "RecipientCount": 0,
+                        "RunspaceId": "e3633f6c-e9b5-4c9d-9acc-8f669b28a974",
+                        "StartDate": "0001-01-01T00:00:00"
+                    },
+                    {
+                        "Action": "TenantAllowed",
+                        "App": "",
+                        "EndDate": "0001-01-01T00:00:00",
+                        "MessageCount": 0,
+                        "PSComputerName": "outlook.office365.com",
+                        "PSShowComputerName": false,
+                        "RecipientCount": 0,
+                        "RunspaceId": "e3633f6c-e9b5-4c9d-9acc-8f669b28a974",
+                        "StartDate": "0001-01-01T00:00:00"
+                    },
+                    {
+                        "Action": "Blocked",
+                        "App": "",
+                        "EndDate": "0001-01-01T00:00:00",
+                        "MessageCount": 0,
+                        "PSComputerName": "outlook.office365.com",
+                        "PSShowComputerName": false,
+                        "RecipientCount": 0,
+                        "RunspaceId": "e3633f6c-e9b5-4c9d-9acc-8f669b28a974",
+                        "StartDate": "0001-01-01T00:00:00"
+                    },
+                    {
+                        "Action": "TenantBlocked",
+                        "App": "",
+                        "EndDate": "0001-01-01T00:00:00",
+                        "MessageCount": 0,
+                        "PSComputerName": "outlook.office365.com",
+                        "PSShowComputerName": false,
+                        "RecipientCount": 0,
+                        "RunspaceId": "e3633f6c-e9b5-4c9d-9acc-8f669b28a974",
+                        "StartDate": "0001-01-01T00:00:00"
+                    },
+                    {
+                        "Action": "ClickedEvenBlocked",
+                        "App": "",
+                        "EndDate": "0001-01-01T00:00:00",
+                        "MessageCount": 0,
+                        "PSComputerName": "outlook.office365.com",
+                        "PSShowComputerName": false,
+                        "RecipientCount": 0,
+                        "RunspaceId": "e3633f6c-e9b5-4c9d-9acc-8f669b28a974",
+                        "StartDate": "0001-01-01T00:00:00"
+                    },
+                    {
+                        "Action": "TenantBlockedAndClickedThrough",
+                        "App": "",
+                        "EndDate": "0001-01-01T00:00:00",
+                        "MessageCount": 0,
+                        "PSComputerName": "outlook.office365.com",
+                        "PSShowComputerName": false,
+                        "RecipientCount": 0,
+                        "RunspaceId": "e3633f6c-e9b5-4c9d-9acc-8f669b28a974",
+                        "StartDate": "0001-01-01T00:00:00"
+                    },
+                    {
+                        "Action": "Scanning",
+                        "App": "",
+                        "EndDate": "0001-01-01T00:00:00",
+                        "MessageCount": 0,
+                        "PSComputerName": "outlook.office365.com",
+                        "PSShowComputerName": false,
+                        "RecipientCount": 0,
+                        "RunspaceId": "e3633f6c-e9b5-4c9d-9acc-8f669b28a974",
+                        "StartDate": "0001-01-01T00:00:00"
+                    },
+                    {
+                        "Action": "ClickedDuringScan",
+                        "App": "",
+                        "EndDate": "0001-01-01T00:00:00",
+                        "MessageCount": 0,
+                        "PSComputerName": "outlook.office365.com",
+                        "PSShowComputerName": false,
+                        "RecipientCount": 0,
+                        "RunspaceId": "e3633f6c-e9b5-4c9d-9acc-8f669b28a974",
+                        "StartDate": "0001-01-01T00:00:00"
+                    }
+                ],
+                "ReportId": "e3633f6c-e9b5-4c9d-9acc-8f669b28a974"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+### Results of o365-defender-safelinks-aggregate-report-get
+| Action | App | EndDate | MessageCount | PSComputerName | PSShowComputerName | RecipientCount | RunspaceId | StartDate
+| --- | --- | --- | --- | --- | --- | --- | --- | ---
+| Allowed |  | \{"value":"0001\-01\-01T00:00:00","DateTime":"Monday, January 1, 0001 12:00:00 AM"\} | 0 | outlook.office365.com | false | 0 | \{"value":"0063bc64\-9230\-43a9\-91b3\-10829ec2801f","Guid":"0063bc64\-9230\-43a9\-91b3\-10829ec2801f"\} | \{"value":"0001\-01\-01T00:00:00","DateTime":"Monday, January 1, 0001 12:00:00 AM"\}
 
 Known Limitations
 ----

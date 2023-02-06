@@ -1,0 +1,1 @@
+!microsoft-365-defender-get-events limit=1 first_fetch='3 days'

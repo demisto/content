@@ -1,0 +1,22 @@
+{
+    "name": "MarkdownToHTML (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Winultimatum",
+    "url": "",
+    "email": "",
+    "created": "2022-05-18T12:45:15Z",
+    "categories": ["Utilities"],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "Winultimatum"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "hidden": true
+}
