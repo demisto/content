@@ -272,7 +272,7 @@ def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> List[C
         readable_output_next_token = tableToMarkdown("Tweet Next Token:", {'next_token': next_token},
                                                      headers=['next_token'], removeNull=False)
         command_results.append(CommandResults(
-            outputs={'Twitter.TweetNextToken(val.next_token)': {"next_token": next_token}},
+            outputs={'Twitter(true)': {'TweetNextToken': next_token}},
             readable_output=readable_output_next_token,
         ))
 

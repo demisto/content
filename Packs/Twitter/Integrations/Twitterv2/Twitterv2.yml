@@ -124,7 +124,7 @@ script:
     - contextPath: Twitter.Tweet.media.alt_text
       description: A description of an image to enable and support accessibility. Can be up to 1000 characters long.
       type: String
-    - contextPath: Twitter.TweetNextToken.next_token
+    - contextPath: Twitter.TweetNextToken
       description: A value that encodes the next 'page' of results that can be requested, via the next_token request parameter.
       type: String
   - arguments:
