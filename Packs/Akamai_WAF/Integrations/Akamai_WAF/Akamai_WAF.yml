@@ -1234,7 +1234,7 @@ script:
     - contextPath: Akamai.PapiProperty.DefaultRule
       description: Papi Property default rule
   - arguments:
-    - description: The path that includes enrollmentId and changeId
+    - description: The path that includes enrollmentId and changeId.
       name: change_path
       required: true
     description: acknowledge pre verification warning
