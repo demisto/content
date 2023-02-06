@@ -28,19 +28,19 @@ To access the Security & Compliance Center, the user account needs to be a globa
 
 1. From the side menu, click **Permissions**.
 
-   ![side-menu](../../doc_files/security-and-compliance-side-menu.png)
+   ![side-menu](https://github.com/demisto/content/raw/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-side-menu.png)
 
 2. Search for and select the **Data Investigator** role.
 
 3. Click **Edit role group**. 
 
-   ![roles-edit-1](../../doc_files/security-and-compliance-edit-1.png)
+   ![roles-edit-1](https://github.com/demisto/content/raw/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-edit-1.png)
 
 4. Click **Choose Members** and click **Edit**. Add the user you intend to be used in the integration:
 
-   ![roles-edit-2](../../doc_files/security-and-compliance-edit-2.png)
+   ![roles-edit-2](https://github.com/demisto/content/raw/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-edit-2.png)
 5. Click **Add**.
-   ![roles-edit-3](../../doc_files/security-and-compliance-edit-3.png)
+   ![roles-edit-3](https://github.com/demisto/content/raw/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-edit-3.png)
 6. Choose which members to add from the displayed list and click **Add**.
 7. Click **Done**.
    
