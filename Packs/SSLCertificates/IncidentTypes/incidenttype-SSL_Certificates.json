@@ -17,7 +17,7 @@
     "locked": false,
     "name": "SSL Certificates",
     "onChangeRepAlg": 0,
-    "playbookId": "SSL Certificate Verification (XSOAR List)",
+    "playbookId": "2e7b0abd-18cd-4244-8608-b9be1199a642",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,
