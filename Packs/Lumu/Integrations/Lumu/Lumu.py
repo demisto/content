@@ -641,9 +641,6 @@ def consult_incidents_updates_through_rest_command(
 
 
 def fetch_incidents(client: Client, first_fetch_time, last_run, items, time):
-    # items = 30
-    # time = 4
-
     last_fetch = last_run.get("last_fetch", None)
     last_fetch = int(last_fetch or first_fetch_time)
 
