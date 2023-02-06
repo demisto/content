@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from typing import cast
 import urllib3
 import json
 from datetime import datetime
