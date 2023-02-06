@@ -12552,7 +12552,7 @@ def pan_os_list_pbf_rules_command(args):
         entries = do_pagination(entries, page=page, page_size=page_size, limit=limit)
 
     if action := args.get('action'):  # Due to API limitations, we need to filter the action manually.
-        entries = list(filter(lambda x: x.get('action', {}).get(action), entries))
+        entries = list(filter(lambda x: action in x.get('action', {}), entries))
 
     table, pbf_rules = parse_pan_os_list_pbf_rules(entries, show_uncommitted=show_uncommitted)
 
