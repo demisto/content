@@ -3,7 +3,7 @@
 alter tmp_create_format1 = replex(created_at, "th|rd|nt|st", "")
 | alter tmp_parset_created1 =  parse_timestamp("%b %d %Y %H:%M:%S", tmp_create_format1)
 // 2022-11-03T06:06:26
-| alter tmp_regex_event_time2 = arrayindex(regextract(createdAt ,"\d+\-\d+\-\d+T\d+\:\d+\:\d+"),0)
+| alter tmp_regex_event_time2 = arrayindex(regextract(created_at ,"\d+\-\d+\-\d+T\d+\:\d+\:\d+"),0)
 | alter tmp_event_time2 = parse_timestamp("%Y-%m-%dT%H:%M:%S",tmp_regex_event_time2)
 //
 | alter _time = coalesce(tmp_parset_created1,tmp_event_time2)
