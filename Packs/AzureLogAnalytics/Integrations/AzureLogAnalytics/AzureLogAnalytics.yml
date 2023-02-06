@@ -324,8 +324,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     execution: false
     name: azure-log-analytics-generate-login-url
-    arguments:
-    -
+    arguments: []
   dockerimage: demisto/crypto:1.0.0.46440
   feed: false
   isfetch: false

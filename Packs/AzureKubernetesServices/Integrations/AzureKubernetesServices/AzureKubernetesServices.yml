@@ -302,8 +302,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     execution: false
     name: azure-ks-generate-login-url
-    arguments:
-    -
+    arguments: []
   dockerimage: demisto/crypto:1.0.0.45575
   feed: false
   isfetch: false

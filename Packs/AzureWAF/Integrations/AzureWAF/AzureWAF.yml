@@ -512,8 +512,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     execution: false
     name: azure-waf-generate-login-url
-    arguments:
-    -
+    arguments: []
   dockerimage: demisto/crypto:1.0.0.42817
   feed: false
   isfetch: false
