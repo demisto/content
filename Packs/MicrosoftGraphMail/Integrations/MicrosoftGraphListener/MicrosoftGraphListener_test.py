@@ -1025,9 +1025,9 @@ def test_regular_chars_in_attachment_name(mocker, attachment_file_name):
 
 
 @pytest.mark.parametrize('str_to_check, expected_result', [('slabiky, ale liší se podle významu', False),
-                                                         ('English', True), ('ގެ ފުރަތަމަ ދެ އަކުރު ކަ', False),
-                                                         ('how about this one : 通 asfަ', False),
-                                                         ('?fd4))45s&', True)])
+                                                           ('English', True), ('ގެ ފުރަތަމަ ދެ އަކުރު ކަ', False),
+                                                           ('how about this one : 通 asfަ', False),
+                                                           ('?fd4))45s&', True)])
 def test_is_only_ascii(str_to_check, expected_result):
     """
     Given: A string which contains Latin alphabet + some other characters or some other alphabet.
@@ -1036,4 +1036,3 @@ def test_is_only_ascii(str_to_check, expected_result):
     """
     result = is_only_ascii(str_to_check)
     assert expected_result == result
-    
