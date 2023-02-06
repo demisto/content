@@ -2,8 +2,8 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: 'Demo playbook to take a list of addresses from a specified XSOAR list, process the status of the SSL certificate for each address, and generate war room and email outputs for the status of each certificate. '
-id: SSL Certificate Verification (XSOAR List)
+description: 'Demo playbook - takes list of addresses from an XSOAR list, process the status of each SSL certificate, and generate war room and email summary outputs.'
+id: 2e7b0abd-18cd-4244-8608-b9be1199a642
 inputs: []
 name: SSL Certificate Verification (XSOAR List)
 outputs: []
@@ -28,14 +28,13 @@ tasks:
       iscommand: false
       name: ""
       version: -1
-      description: ''
     taskid: f0b75a56-9b8e-4ea4-850a-c194e46d18d3
     timertriggers: []
     type: start
     view: |-
       {
         "position": {
-          "x": 837.5,
+          "x": 725,
           "y": 50
         }
       }
@@ -68,11 +67,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Use this automation to check for validity of your SSL certificate and get the time until expiration.
+      description: Use this automation to check for validity of your SSL certificate
+        and get the time until expiration.
       id: e6993720-eb0a-47a9-88aa-fbae58abe029
       iscommand: false
       name: Check certificate status for each domain
-      scriptName: SSLVerifierV2
+      script: 9cc2bd75-c959-4709-8c3b-d684ec2ee17d
       type: regular
       version: -1
     taskid: e6993720-eb0a-47a9-88aa-fbae58abe029
@@ -81,7 +81,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 837.5,
+          "x": 725,
           "y": 195
         }
       }
@@ -108,11 +108,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Parses the output from the !SSLVerifier automation into a markdown table and separate context key \n\n"
+      description: "Parses the output from the !SSLVerifier automation into a markdown
+        table and separate context key \n\n"
       id: 886eed48-8ee6-4c2d-8f6a-2433e1f6e0e1
       iscommand: false
       name: Parse SSLVerifierV2 Output
-      scriptName: SSLVerifierV2_ParseOutput
+      script: 352951c2-b0d4-41d3-8dce-4122883d3c02
       type: regular
       version: -1
     taskid: 886eed48-8ee6-4c2d-8f6a-2433e1f6e0e1
@@ -121,7 +122,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 837.5,
+          "x": 725,
           "y": 370
         }
       }
@@ -144,7 +145,7 @@ tasks:
       id: ee0cf87d-7eda-4b2e-8073-f2d98b8f15b6
       iscommand: false
       name: Generate Report Email (HTML)
-      scriptName: SSLVerifierV2_GenerateEmailBody
+      script: d8a653a4-e451-4eae-81b0-5d544ce9ec46
       type: regular
       version: -1
     taskid: ee0cf87d-7eda-4b2e-8073-f2d98b8f15b6
@@ -153,7 +154,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 837.5,
+          "x": 725,
           "y": 895
         }
       }
@@ -165,7 +166,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "8"
+      - "19"
     note: false
     quietmode: 0
     scriptarguments:
@@ -192,45 +193,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 837.5,
+          "x": 725,
           "y": 1070
-        }
-      }
-  "8":
-    continueonerrortype: ""
-    id: "8"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "14"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      OutputToWarRoom:
-        simple: "True"
-      StatusType:
-        simple: all
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: "Parses the output from the !SSLVerifier automation into a markdown table and separate context key \n\n"
-      id: e9d35420-1525-47ab-8b2a-762f7876e87f
-      iscommand: false
-      name: Output to War Room
-      scriptName: SSLVerifierV2_ParseOutput
-      type: regular
-      version: -1
-    taskid: e9d35420-1525-47ab-8b2a-762f7876e87f
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 837.5,
-          "y": 1245
         }
       }
   "10":
@@ -263,7 +227,7 @@ tasks:
       id: 2a695572-5883-4d50-8ea2-0b735ced3b41
       iscommand: false
       name: Set Expired Certificates Grid
-      scriptName: SetGridField
+      script: SetGridField
       type: regular
       version: -1
     taskid: 2a695572-5883-4d50-8ea2-0b735ced3b41
@@ -272,7 +236,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 720
         }
       }
@@ -306,7 +270,7 @@ tasks:
       id: 6fac48fe-8413-4176-85b5-5237d8542ae9
       iscommand: false
       name: Set Expiring Certificates Grid
-      scriptName: SetGridField
+      script: SetGridField
       type: regular
       version: -1
     taskid: 6fac48fe-8413-4176-85b5-5237d8542ae9
@@ -315,7 +279,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
+          "x": 612.5,
           "y": 720
         }
       }
@@ -349,7 +313,7 @@ tasks:
       id: 20f51842-d663-49da-86cd-729637a1f7ac
       iscommand: false
       name: Set Warning Certificates Grid
-      scriptName: SetGridField
+      script: SetGridField
       type: regular
       version: -1
     taskid: 20f51842-d663-49da-86cd-729637a1f7ac
@@ -358,7 +322,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
+          "x": 1062.5,
           "y": 720
         }
       }
@@ -392,7 +356,7 @@ tasks:
       id: 8ac08fdf-83be-45cf-84b8-af7e6cd6c257
       iscommand: false
       name: Set Good Certificates Grid
-      scriptName: SetGridField
+      script: SetGridField
       type: regular
       version: -1
     taskid: 8ac08fdf-83be-45cf-84b8-af7e6cd6c257
@@ -401,7 +365,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1400,
+          "x": 1512.5,
           "y": 720
         }
       }
@@ -422,14 +386,13 @@ tasks:
       name: Playbook Finished
       type: title
       version: -1
-      description: ''
     taskid: b4cbe90d-11b5-4a19-87af-b4104075b1d3
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 837.5,
+          "x": 725,
           "y": 1420
         }
       }
@@ -460,7 +423,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This script checks that a context key exists (and contains data), and optionally checks the value of the context key for a match against an input value. If a regex is not supplied, the script checks that the key is not empty. This script can be used with the "GenericPolling" playbook to poll for field population or that a field contains a specific value. This scripts does not support a context key which holds a list of values.
+      description: This script checks that a context key exists (and contains data),
+        and optionally checks the value of the context key for a match against an
+        input value. If a regex is not supplied, the script checks that the key is
+        not empty. This script can be used with the "GenericPolling" playbook to poll
+        for field population or that a field contains a specific value. This scripts
+        does not support a context key which holds a list of values.
       id: 3cff891b-3eeb-4822-8d3c-ff22abd027fb
       iscommand: false
       name: Were Expired Certificates Found?
@@ -472,7 +440,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 545
         }
       }
@@ -503,7 +471,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This script checks that a context key exists (and contains data), and optionally checks the value of the context key for a match against an input value. If a regex is not supplied, the script checks that the key is not empty. This script can be used with the "GenericPolling" playbook to poll for field population or that a field contains a specific value. This scripts does not support a context key which holds a list of values.
+      description: This script checks that a context key exists (and contains data),
+        and optionally checks the value of the context key for a match against an
+        input value. If a regex is not supplied, the script checks that the key is
+        not empty. This script can be used with the "GenericPolling" playbook to poll
+        for field population or that a field contains a specific value. This scripts
+        does not support a context key which holds a list of values.
       id: 224d869f-67db-468f-8b71-8f2193711dd4
       iscommand: false
       name: Were Expiring Certificates Found?
@@ -515,7 +488,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 612.5,
+          "x": 500,
           "y": 545
         }
       }
@@ -546,7 +519,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This script checks that a context key exists (and contains data), and optionally checks the value of the context key for a match against an input value. If a regex is not supplied, the script checks that the key is not empty. This script can be used with the "GenericPolling" playbook to poll for field population or that a field contains a specific value. This scripts does not support a context key which holds a list of values.
+      description: This script checks that a context key exists (and contains data),
+        and optionally checks the value of the context key for a match against an
+        input value. If a regex is not supplied, the script checks that the key is
+        not empty. This script can be used with the "GenericPolling" playbook to poll
+        for field population or that a field contains a specific value. This scripts
+        does not support a context key which holds a list of values.
       id: 4373cdbb-6054-406a-82e2-fc0fbadd8b7c
       iscommand: false
       name: Were Warning Certificates Found?
@@ -558,7 +536,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1062.5,
+          "x": 950,
           "y": 545
         }
       }
@@ -589,7 +567,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This script checks that a context key exists (and contains data), and optionally checks the value of the context key for a match against an input value. If a regex is not supplied, the script checks that the key is not empty. This script can be used with the "GenericPolling" playbook to poll for field population or that a field contains a specific value. This scripts does not support a context key which holds a list of values.
+      description: This script checks that a context key exists (and contains data),
+        and optionally checks the value of the context key for a match against an
+        input value. If a regex is not supplied, the script checks that the key is
+        not empty. This script can be used with the "GenericPolling" playbook to poll
+        for field population or that a field contains a specific value. This scripts
+        does not support a context key which holds a list of values.
       id: f435796d-9278-44a9-88e0-fd21853b7ada
       iscommand: false
       name: Were Good Certificates Found?
@@ -601,8 +584,43 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1512.5,
+          "x": 1400,
           "y": 545
+        }
+      }
+  "19":
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${SSLReport.md}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 1a365373-a1f7-4a84-82c1-eeb45f26009d
+      iscommand: false
+      name: Print output to War Room
+      script: Print
+      type: regular
+      version: -1
+    taskid: 1a365373-a1f7-4a84-82c1-eeb45f26009d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 1245
         }
       }
 version: -1
