@@ -8,7 +8,7 @@ DELIMETER = ","
 POLLING_TIME = 2  # Time in seconds to wait for indicator indexing
 
 
-def check_ip_internal(ip, ranges):
+def check_ip_internal(ip: str, ranges: list[str]):
     try:
         return any((IPv4Address(ip) in IPv4Network(cidr.split(DELIMETER)[0] if DELIMETER in cidr else cidr) for cidr in ranges))
     except ValueError:
