@@ -36,10 +36,7 @@ commonfields:
   version: -1
 dockerimage: demisto/ansible-runner:1.0.0.46481
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: GenerateCSR
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
