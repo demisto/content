@@ -10,15 +10,15 @@
         "Lacework Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Lacework Alert ID": {
+                "Alert ID": {
                     "complex": null,
                     "simple": "alertId"
                 },
-                "Lacework Alert Type": {
+                "Alert Type ID": {
                     "complex": null,
                     "simple": "alertType"
                 },
-                "Lacework Alert Category": {
+                "Alert Category": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -27,7 +27,7 @@
                     },
                     "simple": ""
                 },
-                "Lacework Alert Sub-Category": {
+                "Sub Category": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -36,7 +36,7 @@
                     },
                     "simple": ""
                 },
-                "Lacework Alert Source": {
+                "Alert Source": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
