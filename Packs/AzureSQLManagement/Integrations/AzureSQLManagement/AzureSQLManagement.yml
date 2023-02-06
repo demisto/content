@@ -652,7 +652,7 @@ script:
     execution: false
     name: azure-sql-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.42817
+  dockerimage: demisto/crypto:1.0.0.47103
   feed: false
   isfetch: false
   longRunning: false
