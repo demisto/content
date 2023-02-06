@@ -38,7 +38,13 @@ These scripts are wrapped around the incident table, so to wrap them around anot
    2. Under **Classifier**, select ServiceNow Classifier.
    3. Under **Mapper (incoming)**, select ServiceNow - Incoming Mapper.
    4. Under **Mapper (outgoing)**, select ServiceNow - Outgoing Mapper.
-   5. To enable mirroring to close a ticket in Cortex XSOAR, under the **Mirrored XSOAR Ticket closure method** dropdown, select the ticket closing method.
+   5. To enable mirroring to close a ticket in Cortex XSOAR, under the **Mirrored XSOAR Ticket closure method** dropdown, select the ticket closing method,
+      or set the *Mirrored XSOAR Ticket custom close state code* parameter, in order to override the default closure method with a custom state.
+      In order to use *Mirrored XSOAR Ticket custom close state code* parameter, it must follow this format: "custom_state_code1=custom_label1,custom_state_code2=custom_label2,...",
+      for example: “10=Design,11=Development,12=Testing”.
+      Also, a matching user-defined list of customized incident close reasons must be configured as a "Server configuration" in Cortex XSOAR. (Meaning each Service Now custom state label will have a matching Cortex XSOAR custom close reason with the same name). ***Not following this format will result in a server error!***
+      For more information about Customize Incident Close Reasons, see [this link](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Customize-Incident-Close-Reasons).
+      ![image](https://raw.githubusercontent.com/demisto/content/75395ba6d9118bc3a5a399a31d95de4dc27f0911/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-mirror-xsoar.png)
    6. To enable mirroring to close an incident in ServiceNow, under the **Mirrored ServiceNow Ticket closure method** dropdown, select the ticket closing method,
       or set the **Mirrored ServiceNow Ticket custom close state code** parameter, in order to override the default closure method with a custom state.
      
@@ -99,7 +105,8 @@ If MFA is enabled for your user, follow the next steps:
     | Timestamp field to query for updates as part of the mirroring flow | According to the timestamp in this field, records will be queried to check for updates. | False |
     | How many incidents to mirror incoming each time | If a greater number of incidents than the limit were modified, then they won't be mirrored in. | False |
     | Custom Fields to Mirror | Custom \(user defined\) fields in the format: u_fieldname1,u_fieldname2 custom fields start with a 'u_'. These fields will be included in the mirroring capabilities, if added here. | False |
-    | Mirrored XSOAR Ticket closure method | Define how to close the mirrored tickets in XSOAR, choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'. | False |
+    | Mirrored XSOAR Ticket closure method | Define how to close the mirrored tickets in Cortex XSOAR. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'. Choose 'None' to disable closing the mirrored tickets in Cortex XSOAR. | False |
+    | Mirrored XSOAR Ticket custom close state code | Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason. | False |
     | Mirrored ServiceNow Ticket closure method | Define how to close the mirrored tickets in ServiceNow, choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'. | False |
     | Mirrored ServiceNow Ticket custom close state code | Define how to close the mirrored tickets in ServiceNow with custom state. Enter here the custom closure state code \(should be an integer\) to override the default closure method. If the closure code does not exist, the default one will be used instead. | False |
     | Use system proxy settings |  | False |
@@ -108,8 +115,8 @@ If MFA is enabled for your user, follow the next steps:
     | Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
 
 
-5. Click **Test** to validate the URLs, token, and connection.
-6. Click **Done.**
+3. Click **Test** to validate the URLs, token, and connection.
+4. Click **Done.**
 
 ## Fetch Incidents
 The integration fetches newly created tickets according to the following parameters,

@@ -62,7 +62,6 @@ Playbook that enriches asset information for ASM alerts and provides means of re
 ![Cortex ASM - ASM Alert](https://raw.githubusercontent.com/demisto/content/d6d88d2066ef1f0868e8e61c5f20a71766f3cae1/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ASM_Alert.png)
 
 #### Cortex ASM - Detect Service
-
 Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP, SNMP).
 ![Cortex ASM - Detect Service](https://raw.githubusercontent.com/demisto/content/d6d88d2066ef1f0868e8e61c5f20a71766f3cae1/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Detect_Service.png)
 
@@ -94,6 +93,7 @@ Playbook that pulls remediation guidance off of a list based on ASM RuleID to be
 #### Cortex ASM - Remediation
 
 Playbook that is used as a container folder for all remediation of ASM alerts.	
+
 ![Cortex ASM - Remediation](https://raw.githubusercontent.com/demisto/content/23747a450237bb3762d7ec7788d5ff582c8576db/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation.png)
 
 #### Cortex ASM - Azure Enrichment
