@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Any, Dict, Tuple, List, Optional, cast
+import Any, Dict, Tuple, List, Optional, cast
 import urllib3
 import json
 from datetime import datetime
@@ -215,7 +215,7 @@ def fetch_incidents(
     # A dictionary to store last fetch values for each severity.
     next_run = {}
     # Sorting the severity levels and creating a list.
-    severity_levels = ZEROHACK_SEVERITIES[ZEROHACK_SEVERITIES.index(min_severity) :]
+    severity_levels = ZEROHACK_SEVERITIES[ZEROHACK_SEVERITIES.index(min_severity):]
     severity_levels.sort()
     # Initializating the incidents dictionary and setting the severity levels.
     incidents: List[Dict[str, Any]] = []
@@ -286,7 +286,8 @@ def fetch_incidents(
 
 def get_latest_incident(client: Client, severity_level: str):
     """
-    This function is responsible for fetching a single sample incident for study/inspection purposes by the analyser or the SOAR handler.
+    This function is responsible for fetching a single sample incident for study/inspection purposes by the analyser
+    or the SOAR handler.
     It can be run in playground and it gives output in readable format so you can evaluate the incident format.
 
     :param client: The client object to use for connection.
@@ -329,7 +330,8 @@ def main():
     """
     This function is the main control function.
     It is responsible for handling the core control logic of the XDR integration.
-    This component handles the command input and fetching control. Apart from command control it alkso handles the inputs from the integration settings.
+    This component handles the command input and fetching control.
+    Apart from command control it alkso handles the inputs from the integration settings.
     """
 
     # Collecting details for initializing the connection.
