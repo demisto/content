@@ -57,7 +57,7 @@ script:
       description: Username to logout. (Without domain name - e.g. jsmith)
     - name: domain
       required: false
-      description: Domain name of the user to logout. For some users, this field is requierd.
+      description: Domain name of the user to logout. For some users, this field is required.
     - name: computer
       required: true
       description: Computer name to logout.
