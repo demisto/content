@@ -251,8 +251,6 @@ class Client(BaseClient):
             data=payload
         )
 
-    # Created by C.L.
-
     def acknowledge_pre_verification_warning(self, change_path: str) -> dict:
         """
             Acknowledge the pre verification warning message after initiate an enrollment change
@@ -2743,7 +2741,7 @@ def acknowledge_warning_command(client: Client, change_path: str) -> Tuple[objec
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
 
-# Created by C.L.
+
 @logger
 def acknowledge_pre_verification_warning_command(client: Client, change_path: str) -> Tuple[object, dict, Union[List, Dict]]:
 
@@ -2756,8 +2754,6 @@ def acknowledge_pre_verification_warning_command(client: Client, change_path: st
     else:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
-
-# Created by C.L. Oct-06-22
 
 
 def get_production_deployment_command(client: Client, enrollment_id: str) -> Tuple[object, dict, Union[List, Dict]]:
