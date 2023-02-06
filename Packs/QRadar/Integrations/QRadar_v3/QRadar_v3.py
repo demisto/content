@@ -3555,8 +3555,8 @@ def add_modified_remote_offenses(client: Client,
 
         new_context_data.update({MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_offenses_queries})
         new_context_data.update({MIRRORED_OFFENSES_FINISHED_CTX_KEY: finished_offenses_queue})
-        new_context_data.update({LAST_MIRROR_KEY: current_last_update})
-
+    
+    new_context_data.update({LAST_MIRROR_KEY: current_last_update})
     print_context_data_stats(new_context_data, "Get Modified Remote Data - After update")
     safely_update_context_data(
         new_context_data, version, offense_ids=changed_ids_ctx, should_update_last_mirror=True
@@ -3624,7 +3624,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     last_update = get_time_parameter(last_update_time, epoch_format=True)
     # if this call fails, raise an error and stop command execution
     offenses = client.offenses_list(range_=range_,
-                                    filter_=f'id <= {highest_fetched_id} AND last_persisted_time > {last_update}',
+                                    filter_=f'id <= {highest_fetched_id} AND ((status!=closed AND last_persisted_time >= {last_update}) OR (status=closed AND close_time > {last_update}))',
                                     sort='+last_persisted_time',
                                     fields='id,start_time,event_count,last_persisted_time')
     new_modified_records_ids = {str(offense.get('id')) for offense in offenses if 'id' in offense}
