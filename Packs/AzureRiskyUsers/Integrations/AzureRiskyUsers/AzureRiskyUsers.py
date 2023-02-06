@@ -18,7 +18,8 @@ class Client:
     """
 
     def __init__(self, client_id: str, verify: bool, proxy: bool, authentication_type: str,
-                 tenant_id: str = None, client_secret: str = None):
+                 tenant_id: str = None, client_secret: str = None,
+                 managed_identities_client_id: str = None):
 
         if '@' in client_id:  # for use in test-playbook
             client_id, refresh_token = client_id.split('@')
@@ -39,7 +40,10 @@ class Client:
             token_retrieval_url=self.get_token_retrieval_url_by_auth_type(authentication_type),
             # used for client credentials flow
             tenant_id=tenant_id,
-            enc_key=client_secret
+            enc_key=client_secret,
+            managed_identities_client_id=managed_identities_client_id,
+            managed_identities_resource_uri=Resources.graph
+
         )
         self.ms_client = MicrosoftClient(**client_args)
 
@@ -392,9 +396,8 @@ def test_module(client: Client):
                                'the azure-risky-users-auth-start command. Follow the instructions that will be printed'
                                ' as the output of the command.')
 
-    else:  # Client credentials flow
-        test_connection(client)
-        return "ok"
+    test_connection(client)
+    return "ok"
 
 
 # Authentication Functions
@@ -427,10 +430,11 @@ def main():
     """
     params = demisto.params()
     args = demisto.args()
-    client_id = params.get('client_id').get('password', '')
+    client_id = params.get('client_id', {}).get('password', '')
     auth_type = params.get('authentication_type', 'Device Code')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
 
     # Params for Client Credentials flow only:
     tenant_id = params.get('tenant_id')
@@ -446,7 +450,8 @@ def main():
             proxy=proxy,
             authentication_type=auth_type,
             tenant_id=tenant_id,
-            client_secret=client_secret
+            client_secret=client_secret,
+            managed_identities_client_id=managed_identities_client_id
         )
 
         if command == 'test-module':
