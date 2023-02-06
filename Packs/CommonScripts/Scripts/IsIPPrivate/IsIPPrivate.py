@@ -10,7 +10,7 @@ POLLING_TIME = 2  # Time in seconds to wait for indicator indexing
 
 def check_ip_internal(ip, ranges):
     try:
-        return any((IPv4Address(ip) in IPv4Network(cidr.split(',')[0] if ',' in cidr else cidr) for cidr in ranges))
+        return any((IPv4Address(ip) in IPv4Network(cidr.split(DELIMETER)[0] if DELIMETER in cidr else cidr) for cidr in ranges))
     except ValueError:
         demisto.log("One or more IP ranges or IPs are invalid. Please make sure the list is in the correct structure.")
         return True
