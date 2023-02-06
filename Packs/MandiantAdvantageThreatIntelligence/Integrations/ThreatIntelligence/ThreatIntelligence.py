@@ -988,9 +988,9 @@ def enrich_indicators(
             + campaign_relationships
         )
 
-        indicator["relationships"] = relationships
+        indicator["relationships"] = indicator.get("relationships", []) + relationships
 
-        indicator["fields"]["publications"] = generate_publications(
+        indicator["fields"]["publications"] = indicator["fields"].get("publications", []) + generate_publications(
             reports_list=reports_list
         )
 
@@ -1039,8 +1039,7 @@ def get_indicator_list(
     client: MandiantClient,
     limit: int,
     first_fetch: str,
-    indicator_type: str,
-    update_context: bool = True,
+    indicator_type: str
 ) -> List[Dict]:
     """
     Get a list of indicators of the given type
@@ -1049,7 +1048,6 @@ def get_indicator_list(
         limit (int): number of indicators to return.
         first_fetch (str): Get indicators newer than first_fetch.
         indicator_type (str): indicator type
-        update_context (bool): Whether to save the LastFetch data to the context
     Returns:
         List[Dict]: list of indicators
     """
@@ -1069,8 +1067,7 @@ def get_indicator_list(
         date_key = "last_seen" if indicator_type == "Indicators" else "last_updated"
         last_run_dict[indicator_type + "LastFetch"] = new_indicators_list[-1][date_key]
 
-        if update_context:
-            demisto.setLastRun(last_run_dict)
+        demisto.setLastRun(last_run_dict)
 
         indicators_list = new_indicators_list
 
@@ -1078,7 +1075,7 @@ def get_indicator_list(
 
 
 def fetch_indicators(
-    client: MandiantClient, args: Dict = None, update_context: bool = True
+    client: MandiantClient, args: Dict = None
 ) -> List:
     """
     For each type the fetch indicator command will:
@@ -1091,7 +1088,6 @@ def fetch_indicators(
     Args:
         client (MandiantClient): client
         args (Dict): If provided, these arguments override those in the `client`
-        update_context (bool): Whether to update the context.
     Returns:
         List of all indicators
     """
@@ -1110,7 +1106,7 @@ def fetch_indicators(
     result = []
     for indicator_type in types:
         indicators_list = get_indicator_list(
-            client, limit, first_fetch, indicator_type, update_context
+            client, limit, first_fetch, indicator_type
         )
 
         if metadata and indicator_type != "Indicators":
@@ -1134,7 +1130,7 @@ def fetch_indicators(
 
 
 def batch_fetch_indicators(
-    client: MandiantClient, args: Dict = None, update_context: bool = True
+    client: MandiantClient, args: Dict = None
 ):
     """
     For each type the fetch indicator command will:
@@ -1147,13 +1143,12 @@ def batch_fetch_indicators(
     Args:
         client (MandiantClient): client
         args (Dict): If provided, these arguments override those in the `client`
-        update_context (bool): Whether to update the context.
     Returns:
         List of all indicators
     """
     args = args if args else {}
 
-    result = fetch_indicators(client=client, args=args, update_context=update_context)
+    result = fetch_indicators(client=client, args=args)
 
     for b in batch(result, batch_size=2000):
         demisto.createIndicators(b)
