@@ -58,7 +58,7 @@ class MicrosoftClient(BaseClient):
                  token_retrieval_url: str = '{endpoint}/{tenant_id}/oauth2/v2.0/token',
                  app_name: str = '',
                  refresh_token: str = '',
-                 refresh_token_param: str = '',
+                 refresh_token_param: Optional[str] = '',
                  auth_code: str = '',
                  scope: str = '{graph_endpoint}/.default',
                  grant_type: str = CLIENT_CREDENTIALS,

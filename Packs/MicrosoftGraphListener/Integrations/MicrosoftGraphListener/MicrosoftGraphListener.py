@@ -211,13 +211,14 @@ class MsGraphClient:
     MAX_ATTACHMENT_SIZE = 3145728  # 3mb = 3145728 bytes
 
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
-                 ok_codes, refresh_token, refresh_token_param, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit,
+                 ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit,
                  auth_code, redirect_uri,
                  certificate_thumbprint: Optional[str] = None,
                  private_key: Optional[str] = None,
                  display_full_email_body: bool = False,
                  fetch_mail_body_as_text: bool = True,
-                 mark_fetched_read: bool = False):
+                 mark_fetched_read: bool = False,
+                 refresh_token_param: Optional[str] = ''):
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
                                          proxy=proxy, ok_codes=ok_codes, refresh_token=refresh_token,
