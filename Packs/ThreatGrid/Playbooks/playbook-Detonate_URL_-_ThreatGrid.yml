@@ -1,7 +1,7 @@
 id: detonate_url_-_threatgrid
 version: -1
 name: Detonate URL - ThreatGrid
-description: Deprecated. Use the Detonate URL - ThreatGrid v2 playbook.
+description: Deprecated. Use Detonate URL - ThreatGrid v2 instead.
 starttaskid: "0"
 deprecated: true
 fromversion: "5.0.0"

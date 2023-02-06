@@ -1,7 +1,7 @@
 id: detonate_file_-_threatgrid
 version: -1
 name: Detonate File - ThreatGrid
-description: Deprecated. Use the Detonate File - ThreatGrid v2 playbook.
+description: Deprecated. Use Detonate File - ThreatGrid v2 instead.
 starttaskid: "0"
 tasks:
   "0":
