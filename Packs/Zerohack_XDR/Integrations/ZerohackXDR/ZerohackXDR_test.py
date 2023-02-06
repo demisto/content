@@ -98,8 +98,6 @@ def test_fetch_incidents(requests_mock):
 
 def test_convert_to_demisto_severity():
     from ZerohackXDR import convert_to_demisto_severity
-    
-
     severity_level = convert_to_demisto_severity("3.0")
     assert isinstance(severity_level, int)
     assert severity_level == 2
