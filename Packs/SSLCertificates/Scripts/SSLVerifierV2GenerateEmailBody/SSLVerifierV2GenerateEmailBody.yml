@@ -5,14 +5,11 @@ commonfields:
   version: -1
 dockerimage: demisto/python3:3.10.9.45313
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: SSLVerifierV2_GenerateEmailBody
 outputs:
 - contextPath: SSLReport.HTML
   description: Email body formatted in HTML
   type: string
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
