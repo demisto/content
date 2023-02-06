@@ -41,7 +41,7 @@ tasks:
       id: a3e7be3c-ca70-4e4d-8d75-531934d646b0
       version: -1
       name: Find the XDR RDP Brute Force incident
-      description: "Welcome to the second CTF challenge! \nIn this section, we are going to overview the XDR RDP Brute Force incident from an analyst's perspective.\n\nTo complete the challenge, please complete all the tasks in this playbook.\nIn order to complete the tasks you will need to find the XDR RDP Brute Force incident in your environment.\n*Note*: do not change anything in the incident itself since multiple students are working on the same one. \n\nOnce you find the relevant incident to work on -> complete this task and proceed to the questions. \n\nAs it was mentioned before, SLA for the answers will start once you mark this task as completed.\n\n"
+      description: "Welcome to the second CTF challenge! \nIn this section, we are going to overview the XDR RDP Brute Force incident from an analyst's perspective.\n\nTo complete the challenge, please complete all the tasks in this playbook.\nIn order to complete the tasks you will need to find the XDR RDP Brute Force incident in your environment.\n*Note*: do not change anything in the incident itself since multiple students are working on the same one. \n\nOnce you find the relevant incident to work on -> complete this task and proceed to the questions. \n\nAs it was mentioned before, SLA for the answers will start once you mark this task as completed.\n\n \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/the-office-the.gif)"
       type: regular
       iscommand: false
       brand: ""
@@ -167,7 +167,7 @@ tasks:
         tooltip: 'Once you have ran the command, the output should be displayed immediately . Remember to overwrite all missing params <> '
         readonly: false
       title: Using EDLs to export indicators
-      description: "Once the incident has been classified, you might use the indicators as you wish ( for blocking or approving them on your external systems).\nThe Export Indicator Generic Service can be very useful to accomplish such a mission but remember you have to configure that in advance. \n\nTo save you time we have already configured that for you.\nCheck the command provided to you in the questions themselves. Run it from your terminal on your machine (remember that you will need \"Curl\" for running this command.\n"
+      description: "Once the incident has been classified, you might use the indicators as you wish ( for blocking or approving them on your external systems).\nThe Export Indicator Generic Service can be very useful to accomplish such a mission but remember you have to configure that in advance. \n\nTo save you time we have already configured that for you.\nCheck the command provided to you in the questions themselves. Run it from your terminal on your machine (remember that you will need \"Curl\" for running this command.\n \n\n![myfile](https://github.com/demisto/content/blob/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/hacker-meme.gif)"
       sender: ""
       expired: false
       totalanswers: 0
@@ -257,7 +257,7 @@ tasks:
       id: 6b22d8b1-b558-47ca-81c0-a14b763b3bc7
       version: -1
       name: Hope you have enjoyed
-      description: "Thank you for participating in our workshop for the XSOAR. Hope that you have enjoyed the challenge and also gained some knowledge. \n\nTill next time :) \n\n "
+      description: "Thank you for participating in our workshop for the XSOAR. Hope that you have enjoyed the challenge and also gained some knowledge. \n\nTill next time :) \n\n \n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/until-next.gif)"
       type: regular
       iscommand: false
       brand: ""
@@ -339,7 +339,7 @@ tasks:
         tooltip: You can check the Work Plan entries or the Incident overview section
         readonly: false
       title: Check if there are any errors in the playbook?
-      description: Sometimes playbooks are stopped due to an issue whether it's because of the integration or missing information.  No matter what - the playbook should always run without errors so all the reliable information will be populated to the analyst properly.
+      description: "Sometimes playbooks are stopped due to an issue whether it's because of the integration or missing information.  No matter what - the playbook should always run without errors so all the reliable information will be populated to the analyst properly. \n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/despicable-me-minion.gif)"
       sender: ""
       expired: false
       totalanswers: 0
@@ -462,7 +462,7 @@ tasks:
         tooltip: You can see the relationship numbers in the on the relevant indicator . Remember that existing indicators are highlighted  with link.
         readonly: false
       title: Check the various indicators that are extracted from the incident
-      description: Indicators are our way to determine if the incident is malicious or not even before we deep dive into the details. Indicator extraction can be done in various ways.
+      description: "Indicators are our way to determine if the incident is malicious or not even before we deep dive into the details. Indicator extraction can be done in various ways. \n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/hmm-suspect.gif)"
       sender: ""
       expired: false
       totalanswers: 0
@@ -626,9 +626,8 @@ tasks:
         tooltip: You can do that by searching the campaign name in the Threat Intel Tab
         readonly: false
       title: Threat Camping
-      description: |-
-        Based on what we have found, this Malicious Indicator is also associated with a well-known campaign (based on a threat report we got from our amazing Unit42).
-        And now, let's dive into this finding.
+      description: "
+        Based on what we have found, this Malicious Indicator is also associated with a well-known campaign (based on a threat report we got from our amazing Unit42).\nAnd now, let's dive into this finding.\n\n![myfile](https://raw.githubusercontent.com/demisto/content/e89a247573e2d3927223be2ab2dc143cc1a40469/Packs/ctf01/doc_files/spinning-vortex.gif)"
       sender: ""
       expired: false
       totalanswers: 0
@@ -829,7 +828,7 @@ tasks:
         tooltip: 'Since you observed the Indicators, SandBox report and other related incidents, you should have all the right information '
         readonly: false
       title: Classification
-      description: "Now, once you covered the incident's details and more - you can classify the incident through this playbook! \nSo what's it going to be? True Or False Positive? \n\nSince you observed the Indicators, SandBox report, and other related incidents, you should have all the information to accomplish this mission."
+      description: "Now, once you covered the incident's details and more - you can classify the incident through this playbook! \nSo what's it going to be? True Or False Positive? \n\nSince you observed the Indicators, SandBox report, and other related incidents, you should have all the information to accomplish this mission. \n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/classified-topgun.gif)"
       sender: ""
       expired: false
       totalanswers: 0
@@ -1029,7 +1028,7 @@ tasks:
         tooltip: You can check indicators information from the incident's indicator quick view or through the Threat Intel section.
         readonly: false
       title: Check the tag associated with the malicious indicator
-      description: Once we have classified the incident as true positive, we would like to go and block all the relevant systems in our environment hence we want to be able to identify those indicators that we want to block. Therefore, we can tag our indicators with dedicated tags.
+      description: "Once we have classified the incident as true positive, we would like to go and block all the relevant systems in our environment hence we want to be able to identify those indicators that we want to block. Therefore, we can tag our indicators with dedicated tags. \n\n![myfile](https://github.com/demisto/content/blob/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/john-cena-tag-me-in.gif)"
       sender: ""
       expired: false
       totalanswers: 0
