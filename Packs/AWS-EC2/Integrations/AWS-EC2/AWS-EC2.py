@@ -1531,7 +1531,7 @@ def create_ip_permissions_dict(args):
     if args.get('IpRangesCidrIp') is not None:
         IpRanges_dict = {'CidrIp': args.get('IpRangesCidrIp')}
         if desc := args.get('IpRangesDesc', "") or args.get('IpRangesDescription', ""):
-            IpRanges_dict['Description']: desc
+            IpRanges_dict['Description'] = desc
         IpRanges = [IpRanges_dict]
         IpPermissions_dict.update({'IpRanges': IpRanges})  # type: ignore
     if args.get('Ipv6RangesCidrIp') is not None:
@@ -1543,7 +1543,7 @@ def create_ip_permissions_dict(args):
     if args.get('PrefixListId') is not None:
         PrefixListIds_dict = {'PrefixListId': args.get('PrefixListId')}
         if desc := args.get('PrefixListIdDesc', "") or args.get('PrefixListIdDescription', ""):
-            PrefixListIds_dict['Description']: desc
+            PrefixListIds_dict['Description'] = desc
         PrefixListIds = [PrefixListIds_dict]
         IpPermissions_dict.update({'PrefixListIds': PrefixListIds})  # type: ignore
     return IpPermissions_dict
