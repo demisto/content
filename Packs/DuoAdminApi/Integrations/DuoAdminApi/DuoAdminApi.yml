@@ -333,7 +333,7 @@ script:
     outputs: []
     description: Modify the user account.
     name: duoadmin-modify-user
-  dockerimage: demisto/duoadmin3:1.0.0.41021
+  dockerimage: demisto/duoadmin3:1.0.0.46430
   runonce: false
   script: ''
   type: python

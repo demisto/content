@@ -714,11 +714,8 @@ def auto_detect_indicator_type(indicator_value):
     if re.match(ipv6Regex, indicator_value):
         return FeedIndicatorType.IPv6
 
-    if re.match(sha256Regex, indicator_value):
-        return FeedIndicatorType.File
-
-    if re.match(urlRegex, indicator_value):
-        return FeedIndicatorType.URL
+    if re.match(cveRegex, indicator_value):
+        return FeedIndicatorType.CVE
 
     if re.match(md5Regex, indicator_value):
         return FeedIndicatorType.File
@@ -726,14 +723,17 @@ def auto_detect_indicator_type(indicator_value):
     if re.match(sha1Regex, indicator_value):
         return FeedIndicatorType.File
 
-    if re.match(emailRegex, indicator_value):
-        return FeedIndicatorType.Email
-
-    if re.match(cveRegex, indicator_value):
-        return FeedIndicatorType.CVE
+    if re.match(sha256Regex, indicator_value):
+        return FeedIndicatorType.File
 
     if re.match(sha512Regex, indicator_value):
         return FeedIndicatorType.File
+
+    if re.match(emailRegex, indicator_value):
+        return FeedIndicatorType.Email
+
+    if re.match(urlRegex, indicator_value):
+        return FeedIndicatorType.URL
 
     try:
         tldextract_version = tldextract.__version__
@@ -7579,11 +7579,13 @@ ipv4Regex = r'^(?P<ipv4>(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0
 ipv4cidrRegex = r'^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))$'
 ipv6Regex = r'^(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$'  # noqa: E501
 ipv6cidrRegex = r'^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))$'  # noqa: E501
-emailRegex = r'''(?:[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'''  # noqa: E501
+emailRegex = r'''(?i)(?:[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'''  # noqa: E501
 hashRegex = r'\b[0-9a-fA-F]+\b'
-urlRegex = r"(?i)^[\[({\"']*(?:(?P<url_with_path>(?P<scheme>(?:https?|hxxps?|s?ftps?|meows?)[:-](?:\/\/|\\\\|3A__))?(?P<host>(?P<simple_domain>(?:[\w\-_]+\[?\.\]?)+[^\W\d]{2,})|(?P<ipv4>(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\.){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)|[1])|(?P<HEXIPv4>0\[?x]?[\da-f]{8})|(?P<ipv6>\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))(?P<port>:(?:6[0-5][\d]{3}|[1-5][\d]{4}|[1-9][\d]{,3}))?(?P<path>\/(?:[^?#\s]+\/)*[^?#\s]+)(?P<query>\?[^\s#]*)?(?P<fragment>#[\w\d]*)?)|(?:https?|hxxps?|s?ftps?|meows?)[:-](?:\/\/|\\\\|3A__)(?:(?:[\w\-_]+\[?\.\]?)+[^\W\d]{2,})\/?)[\[({\"']*$"  # noqa: E501
+urlRegex = r'(?i)(?:(?P<url_with_path>(?P<scheme>(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))?(?P<userinfo>[\w]+@)?(?P<host>(?P<simple_domain>(?:(?:[^\W_]|-)+\[?\.\]?)+[^\W\d_-]{2,})|(?P<ipv4>(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\.){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)|[1])|(?P<HEXIPv4>0\[?x]?[\da-f]{8})|(?P<ipv6>\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))(?P<port>:(?:6[0-5][\d]{3}|[1-5][\d]{4}|[1-9][\d]{,3}))?/(?P<path>(?:[\w\/%.]+))?(?P<query>\?[^\s#]*)?(?P<fragment>#[\w\d]*)?)|(?P<no_path_url>(?:(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))(?:[\w]+@)?(?:(?:[^\W_]+\[?\.\]?)+[^\W\d_-]{2,})[\/.]?))'  # noqa: E501
 domainRegex = r"(?i)(?:(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?((?:[^\\\.@\s\"',(\[:?=]+(?:\.|\[\.\]))+[a-zA-Z]{2,})(?:[_/\s\"',)\]]|[.]\s|%2F|$)"
 cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
+domainRegex = r'(?i)(?P<scheme>(?:http|hxxp|s?ftp)s?(?::|%3A)(?:%2F%2F|//))?(?P<fqdn>(?:(?P<domain>(?:[^\W_]|-)+)\[?\.\]?)+(?P<tld>[^\W\d_-]{2,}))'
+hashRegex = r'\b[0-9a-fA-F]+\b'
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
 sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
 sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
@@ -10887,6 +10889,30 @@ def is_scheduled_command_retry():
     calling_context = demisto.callingContext.get('context', {})
     sm = get_schedule_metadata(context=calling_context)
     return True if sm.get('is_polling', False) else False
+
+
+def replace_spaces_in_credential(credential):
+    """
+    This function is used in case of credential from type: 9 is in the wrong format
+    of one line with spaces instead of multiple lines.
+
+    :type credential: ``str`` or ``None``
+    :param credential: the credential to replace spaces in.
+
+    :return: the credential with spaces replaced with new lines if the credential is in the correct format,
+             otherwise the credential will be returned as is.
+    :rtype: ``str`` or ``None``
+    """
+    if not credential:
+        return credential
+
+    match_begin = re.search("-----BEGIN(.*?)-----", credential)
+    match_end = re.search("-----END(.*?)-----", credential)
+
+    if match_begin and match_end:
+        return re.sub("(?<={0})(.*?)(?={1})".format(match_begin.group(0), match_end.group(0)),
+                      lambda match: match.group(0).replace(' ', '\n'), credential)
+    return credential
 
 
 ###########################################
