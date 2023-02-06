@@ -41,7 +41,7 @@ class Client(BaseClient):
             self._headers = {'Key': self.api_key}
 
     def get_alerts(self, severity_level: Optional[str] = None, max_results: Optional[int] = None,
-     offset: Optional[int] = None, start_time: Optional[str] = None) -> List[Dict[str, Any]]:
+    offset: Optional[int] = None, start_time: Optional[str] = None) -> List[Dict[str, Any]]:
         """
         This function is responsible for fetching all the alerts from the zerohack XDR between given timestamps.
         it takes various inputs and formats the request parameters for macthing the XDR api format.
@@ -66,7 +66,7 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix='/xdr-api', params=request_params)
 
     def get_alert(self, severity_level: Optional[str] = None, max_results: Optional[int] = None,
-     offset: Optional[int] = None, start_time: Optional[str] = None):
+    offset: Optional[int] = None, start_time: Optional[str] = None):
         """
         This function can be used to retrieve a singular incident for a severity level.
 
@@ -153,7 +153,7 @@ def test_module(client: Client) -> str:
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
- first_fetch: str, min_severity: str) -> Tuple[Dict[str, int], List[dict]]:
+first_fetch: str, min_severity: str) -> Tuple[Dict[str, int], List[dict]]:
     """
     This function continously fetches incidents from the Zerohack XDR api.
 
@@ -242,7 +242,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
 
 def get_latest_incident(client: Client, severity_level: str):
     """
-    This function is responsible for fetching a single sample incident 
+    This function is responsible for fetching a single sample incident
     for study/inspection purposes by the analyser or the SOAR handler.
     It can be run in playground and it gives output in readable format so you can evaluate the incident format.
 
@@ -282,7 +282,7 @@ def main() -> None:
     """
     This function is the main control function.
     It is responsible for handling the core control logic of the XDR integration.
-    This component handles the command input and fetching control. 
+    This component handles the command input and fetching control.
     Apart from command control it alkso handles the inputs from the integration settings.
     """
 
