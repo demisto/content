@@ -14,7 +14,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-# These severities go from info to high. (Reverse of Cortex severities notation.)
+# These severities go from low to high. (Reverse of Cortex severities notation.)
 ZEROHACK_SEVERITIES = ['4', '3', '2', '1']
 ZEROHACK_XDR_API_BASE_URL = "https://xdr.zerohack.in/api"
 MAX_INCIDENTS_TO_FETCH = 200
@@ -27,7 +27,7 @@ DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 class Client(BaseClient):
     """
     This class is responsible for dealing with the XDR api.
-    It performs all the fetching related commands andensure proper pre processing ebfore forward events.
+    It performs all the fetching related commands and ensure proper pre processing before forward events.
     """
 
     def __init__(self, api_key: Optional[str], base_url: Optional[str], proxy: Optional[bool], verify: Optional[bool]):
@@ -40,7 +40,8 @@ class Client(BaseClient):
         if self.api_key:
             self._headers = {'Key': self.api_key}
 
-    def get_alerts(self, severity_level: Optional[str] = None, max_results: Optional[int] = None, offset: Optional[int] = None, start_time: Optional[str] = None) -> List[Dict[str,Any]]:
+    def get_alerts(self, severity_level: Optional[str] = None, max_results: Optional[int] = None,
+     offset: Optional[int] = None, start_time: Optional[str] = None) -> List[Dict[str, Any]]:
         """
         This function is responsible for fetching all the alerts from the zerohack XDR between given timestamps.
         it takes various inputs and formats the request parameters for macthing the XDR api format.
@@ -64,7 +65,8 @@ class Client(BaseClient):
         # Querying the alerts and appending them to a list.
         return self._http_request(method='GET', url_suffix='/xdr-api', params=request_params)
 
-    def get_alert(self, severity_level: Optional[str] = None, max_results: Optional[int] = None, offset: Optional[int] = None, start_time: Optional[str] = None):
+    def get_alert(self, severity_level: Optional[str] = None, max_results: Optional[int] = None,
+     offset: Optional[int] = None, start_time: Optional[str] = None):
         """
         This function can be used to retrieve a singular incident for a severity level.
 
@@ -149,7 +151,9 @@ def test_module(client: Client) -> str:
 
     return 'ok'
 
-def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], first_fetch: str, min_severity: str) -> Tuple[Dict[str, int], List[dict]]:
+
+def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
+ first_fetch: str, min_severity: str) -> Tuple[Dict[str, int], List[dict]]:
     """
     This function continously fetches incidents from the Zerohack XDR api.
 
@@ -186,7 +190,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
     incidents: List[Dict[str, Any]] = []
 
     for severity in severity_levels:
-        # Get the last fetch time for each severity. 
+        # Get the last fetch time for each severity.
         # If not set then make use of the first fetch time.
         last_fetch = last_run.get(f'last_fetch_severity_{severity}', None)
         if last_fetch is None:
@@ -199,10 +203,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
         last_incident_time = cast(int, last_fetch)
         last_fetch_timestamp = cast(int, datetime.fromtimestamp(last_fetch))
         # Calculate the required results from this severity level.
-        required_results = math.floor(max_results/len(severity_levels))
+        required_results = math.floor(max_results / len(severity_levels))
 
         # Fetch the response from the API.
-        response = client.get_alerts(max_results = required_results, severity_level = severity, start_time = last_fetch_timestamp)
+        response = client.get_alerts(max_results=required_results, severity_level=severity, start_time=last_fetch_timestamp)
         response_status = response.get("message_type")
         if response_status != "d_not_f":
             response_data = response.get("data")
@@ -235,9 +239,11 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
 
     return next_run, incidents
 
+
 def get_latest_incident(client: Client, severity_level: str):
     """
-    This function is responsible for fetching a single sample incident for study/inspection purposes by the analyser or the SOAR handler.
+    This function is responsible for fetching a single sample incident 
+    for study/inspection purposes by the analyser or the SOAR handler.
     It can be run in playground and it gives output in readable format so you can evaluate the incident format.
 
     :param client: The client object to use for connection.
@@ -276,7 +282,8 @@ def main() -> None:
     """
     This function is the main control function.
     It is responsible for handling the core control logic of the XDR integration.
-    This component handles the command input and fetching control. Apart from command control it alkso handles the inputs from the integration settings.
+    This component handles the command input and fetching control. 
+    Apart from command control it alkso handles the inputs from the integration settings.
     """
 
     # Collecting details for initializing the connection.
