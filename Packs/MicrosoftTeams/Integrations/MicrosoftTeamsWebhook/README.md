@@ -1,4 +1,5 @@
-Integration for sending notifications to a Microsoft Teams channel via an incoming webhook. For information on how to create an incoming webhook, see the [Microsoft Create an Incoming Webhook Documentation](https://docs.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook).
+Integration for sending notifications to a Microsoft Teams channel via Incoming Webhook.
+This integration was integrated and tested with version 6.8 of Microsoft Teams via Webhook
 
 ## Configure Microsoft Teams via Webhook on Cortex XSOAR
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -17,13 +18,22 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ms-teams-message
 ***
-Send a message to Microsoft Teams via an incoming webhook.
+Send a message to Microsoft Teams via Incoming Webhook
+
+
 #### Base Command
+
 `ms-teams-message`
 #### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | message | The message to send.  For example: "This is a message from Cortex XSOAR". Default is None. | Optional | 
 | team_webhook | The alternative webhook for a different team.  If not defined, the integration's default webhook is used. | Optional | 
+| alternative_url | The alternative URL to send in place of the link to the XSOAR Investigation. | Optional | 
+| url_title | The title for the link, defaults to "Cortex XSOAR URL". Default is Cortex XSOAR URL. | Optional | 
+
+
 #### Context Output
+
 There is no context output for this command.
