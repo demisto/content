@@ -1,4 +1,4 @@
-fromversion: 6.10.0
+fromversion: 8.2.0
 id: Corelight_Zeek_Modeling_Rules
 name: Corelight Zeek Modeling Rules
 rules: ''

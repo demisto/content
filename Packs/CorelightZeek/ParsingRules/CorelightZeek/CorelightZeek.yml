@@ -1,6 +1,6 @@
 id: Corelight_Zeek_Parsing_Rules
 name: Corelight Zeek Parsing Rules
-fromversion: 6.10.0
+fromversion: 8.2.0
 tags: []
 rules: ''
 samples: ''
