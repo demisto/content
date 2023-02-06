@@ -94,3 +94,25 @@ def test_fetch_incidents(requests_mock):
     assert isinstance(incidents, list)
     # Bound checks.
     assert len(incidents) <= max_results_per_severity * len(severity_levels)
+
+
+def test_convert_to_demisto_severity():
+    from ZerohackXDR import Client, convert_to_demisto_severity
+    from ZerohackXDR import ZEROHACK_XDR_API_BASE_URL
+    from ZerohackXDR import ZEROHACK_SEVERITIES
+
+    severity_level = convert_to_demisto_severity("3.0")
+    assert isinstance(severity_level, int)
+    assert severity_level == 2
+
+    severity_level = convert_to_demisto_severity("4.0")
+    assert isinstance(severity_level, float)
+    assert severity_level == 0.5
+
+    severity_level = convert_to_demisto_severity("2.0")
+    assert isinstance(severity_level, int)
+    assert severity_level == 3
+
+    severity_level = convert_to_demisto_severity("1.0")
+    assert isinstance(severity_level, int)
+    assert severity_level == 4
