@@ -38,7 +38,7 @@ contentitemexportablefields:
 dockerimage: demisto/ansible-runner:1.0.0.46481
 enabled: true
 name: GenerateCSR
-runas: DBotRole
+runas: DBotWeakRole
 runonce: false
 script: ''
 scripttarget: 0
