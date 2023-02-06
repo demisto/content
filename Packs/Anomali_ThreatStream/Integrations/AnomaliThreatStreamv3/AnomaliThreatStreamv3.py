@@ -1329,6 +1329,8 @@ def search_intelligence(client: Client, **kwargs):
     if 'confidence' in kwargs:
         conf = kwargs.get('confidence').split(' ')
         if len(conf) > 1:
+            if conf[0] not in {'gt', 'lt'}:
+                raise DemistoException(f'{conf[0]} must be on of gt or lt.')
             kwargs[f'confidence__{conf[0]}'] = conf[1]
             del kwargs['confidence']
     intelligence_list = client.http_request('GET', url, params=kwargs).get('objects', None)
