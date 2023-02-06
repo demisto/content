@@ -187,9 +187,6 @@
 
 .default-job-settings:
   interruptible: true
-  rules:
-    - if: '$CI_COMMIT_BRANCH =~ /^(demisto\/[^\/]+)(?!.*-nightly).*$/'
-      when: never
   extends:
     - .default-cache
     - .default-before-script

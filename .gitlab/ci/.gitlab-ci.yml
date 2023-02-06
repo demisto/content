@@ -7,6 +7,9 @@ default:
       - /builds/xsoar/content/artifacts/*
       - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^(demisto\/[^\/]+)(?!.*-nightly).*$/'
+      when: never
 
 stages:
   - unittests-and-validations
