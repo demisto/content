@@ -6,7 +6,7 @@ import urllib3
 import json
 from datetime import datetime
 import math
-# register_module_line('Zerohack XDR', 'start', __line__())
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -40,8 +40,7 @@ class Client(BaseClient):
         if self.api_key:
             self._headers = {'Key': self.api_key}
 
-    def get_alerts(self, severity_level: Optional[str] = None, max_results: Optional[int] = None,
-                   offset: Optional[int] = None, start_time: Optional[str] = None) -> List[Dict[str, Any]]:
+    def get_alerts(self, severity_level: Optional[str] = None, max_results: Optional[int] = None, offset: Optional[int] = None, start_time: Optional[str] = None) -> List[Dict[str,Any]]:
         """
         This function is responsible for fetching all the alerts from the zerohack XDR between given timestamps.
         it takes various inputs and formats the request parameters for macthing the XDR api format.
@@ -65,8 +64,7 @@ class Client(BaseClient):
         # Querying the alerts and appending them to a list.
         return self._http_request(method='GET', url_suffix='/xdr-api', params=request_params)
 
-    def get_alert(self, severity_level: Optional[str] = None, max_results: Optional[int] = None,
-                  offset: Optional[int] = None, start_time: Optional[str] = None):
+    def get_alert(self, severity_level: Optional[str] = None, max_results: Optional[int] = None, offset: Optional[int] = None, start_time: Optional[str] = None):
         """
         This function can be used to retrieve a singular incident for a severity level.
 
@@ -111,7 +109,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def convert_to_demisto_severity(severity: str) -> float:
+def convert_to_demisto_severity(severity: str) -> int:
     """
     This function is designed to convert the Zerohack XDR severity to Cortex severity levels.
 
@@ -151,9 +149,7 @@ def test_module(client: Client) -> str:
 
     return 'ok'
 
-
-def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
-                    first_fetch_time: Optional[int], min_severity: str) -> Tuple[Dict[str, int], List[dict]]:
+def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], first_fetch: str, min_severity: str) -> Tuple[Dict[str, int], List[dict]]:
     """
     This function continously fetches incidents from the Zerohack XDR api.
 
@@ -167,7 +163,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     :type last_run: ``Dict[str, int]``
 
     :param first_fetch_time: This parameter contains the time from when to fetch incidents details in case last run is not setup.
-    :type first_fetch_time: ``Optional[int]``
+    :type first_fetch_time: ``str``
 
     :param min_severity: This is minimum level of the severity you want to query the zerohack XDR for.
     :type min_severity: ``int``
@@ -190,24 +186,27 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     incidents: List[Dict[str, Any]] = []
 
     for severity in severity_levels:
-        # Get the last fetch time for each severity.
+        # Get the last fetch time for each severity. 
         # If not set then make use of the first fetch time.
         last_fetch = last_run.get(f'last_fetch_severity_{severity}', None)
         if last_fetch is None:
-            last_fetch = first_fetch_time
+            first_fetch_timestamp = arg_to_datetime(first_fetch)
+            last_fetch = float(first_fetch_timestamp.timestamp()) if first_fetch else None
         else:
-            last_fetch = int(last_fetch)
+            last_fetch = cast(float, last_fetch)
 
         # Set the last incident time for this severity and start the calculations.
         last_incident_time = cast(int, last_fetch)
-        last_fetch_timestamp = str(datetime.fromtimestamp(last_fetch))
+        last_fetch_timestamp = cast(int, datetime.fromtimestamp(last_fetch))
         # Calculate the required results from this severity level.
-        required_results = math.floor(max_results / len(severity_levels))
+        required_results = math.floor(max_results/len(severity_levels))
 
         # Fetch the response from the API.
-        response = client.get_alerts(max_results=required_results, severity_level=severity, start_time=last_fetch_timestamp)
-        if response["message_type"] != "d_not_f":
-            for alert in response["data"]:
+        response = client.get_alerts(max_results = required_results, severity_level = severity, start_time = last_fetch_timestamp)
+        response_status = response.get("message_type")
+        if response_status != "d_not_f":
+            response_data = response.get("data")
+            for alert in response_data:
                 attack_time = datetime.strptime(alert.get('attack_timestamp', '0'), DATE_FORMAT)
                 incident_created_time = int((attack_time - datetime(1970, 1, 1)).total_seconds())
                 if incident_created_time > last_fetch:
@@ -236,11 +235,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
 
     return next_run, incidents
 
-
 def get_latest_incident(client: Client, severity_level: str):
     """
-    This function is responsible for fetching a single sample incident for study/inspection
-    purposes by the analyser or the SOAR handler.
+    This function is responsible for fetching a single sample incident for study/inspection purposes by the analyser or the SOAR handler.
     It can be run in playground and it gives output in readable format so you can evaluate the incident format.
 
     :param client: The client object to use for connection.
@@ -279,8 +276,7 @@ def main() -> None:
     """
     This function is the main control function.
     It is responsible for handling the core control logic of the XDR integration.
-    This component handles the command input and fetching control.
-    Apart from command control it alkso handles the inputs from the integration settings.
+    This component handles the command input and fetching control. Apart from command control it alkso handles the inputs from the integration settings.
     """
 
     # Collecting details for initializing the connection.
@@ -288,17 +284,6 @@ def main() -> None:
     base_url = ZEROHACK_XDR_API_BASE_URL
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
-
-    # Determining the first fetch timestamp for default settings of integration.
-    first_fetch_time = arg_to_datetime(arg=demisto.params().get('first_fetch', '1 day'),
-                                       arg_name='First fetch time', required=True)
-    first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
-
-    # Checking the first fetch value type.
-    try:
-        int(first_fetch_timestamp)
-    except TypeError:
-        raise DemistoException("the first fetch value is invalid")
 
     demisto.debug(f'The command initiated is: {demisto.command()}')
     try:
@@ -315,13 +300,14 @@ def main() -> None:
             # Getting parameters and checking if they conflict with defaults.
             min_severity = demisto.params().get('min_severity', None)
             max_results = arg_to_number(arg=demisto.params().get('max_fetch'), arg_name='max_fetch', required=False)
+            first_fetch = demisto.params().get("first_fetch", "1 day")
 
             if (not max_results) or (max_results > MAX_INCIDENTS_TO_FETCH):
                 max_results = MAX_INCIDENTS_TO_FETCH
 
             # Calling the fetch incidents command.
             next_run, incidents = fetch_incidents(client=client, max_results=max_results, last_run=demisto.getLastRun(
-            ), first_fetch_time=first_fetch_timestamp, min_severity=min_severity)
+            ), first_fetch=first_fetch, min_severity=min_severity)
 
             # Setting the last fetch timestamp.
             demisto.setLastRun(next_run)
@@ -349,5 +335,3 @@ def main() -> None:
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-# register_module_line('Zerohack XDR', 'end', __line__())
