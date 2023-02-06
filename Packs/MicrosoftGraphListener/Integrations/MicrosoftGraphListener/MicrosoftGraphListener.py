@@ -701,10 +701,10 @@ class MsGraphClient:
         """
         try:
             s.encode(encoding='utf-8').decode('ascii')
+            return True
+            
         except UnicodeDecodeError:
             return False
-        else:
-            return True
 
     def _get_email_attachments(self, message_id, user_id=None, overwrite_rate_limit_retry=False):
         """
