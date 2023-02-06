@@ -10,7 +10,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/py3-tools:1.0.0.46591
+dockerimage: demisto/py3-tools:1.0.0.47376
 enabled: true
 name: GZipFile
 outputs:
@@ -56,6 +56,6 @@ tags:
 - Utility
 - file
 type: python
-fromversion: 6.0.0
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
