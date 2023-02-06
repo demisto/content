@@ -8482,26 +8482,26 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - auto: PREDEFINED
-      description: Whether to retrieve the disabled rules. If not mentioned, will retrieve all the NAT rules.
-      name: disabled
+    - description: Whether to retrieve the disabled rules. If not mentioned, will retrieve all the NAT rules.
       isArray: false
+      name: disabled
       required: false
+      auto: PREDEFINED
       predefined:
       - yes
       - no
-    - auto: PREDEFINED
-      description: The type of the NAT rules to retrieve. If not mentioned, will retrieve all the NAT rules.
-      name: nat_type
+    - description: The type of the NAT rules to retrieve. If not mentioned, will retrieve all the NAT rules.
       isArray: false
+      name: nat_type
       required: false
+      auto: PREDEFINED
       predefined:
       - ipv4
       - nat64
       - nptv6
     - description: A comma-separated list of tags of the NAT rules to retrieve. If not mentioned, will retrieve all the NAT rules.
-      name: tags
       isArray: true
+      name: tags
       required: false
     - description: Free query to retrieve NAT rule. If not mentioned, will retrieve all the NAT rules.
       name: query
@@ -9055,26 +9055,26 @@ script:
       - 'false'
       name: show_uncommitted
       required: false
-    - auto: PREDEFINED
-      description: Whether to retrieve the disabled rules. If not mentioned, will retrieve all the PBF rules.
-      name: disabled
+    - description: Whether to retrieve the disabled rules. If not mentioned, will retrieve all the PBF rules.
       isArray: false
+      name: disabled
       required: false
+      auto: PREDEFINED
       predefined:
       - yes
       - no
-    - auto: PREDEFINED
-      description: The action of the PBF rules to retrieve. If not mentioned, will retrieve all the PBF rules.
-      name: action
+    - description: The action of the PBF rules to retrieve. If not mentioned, will retrieve all the PBF rules.
       isArray: false
+      name: action
       required: false
+      auto: PREDEFINED
       predefined:
       - discard
       - forward
       - no-pbf
     - description: A comma-separated list of tags of the PBF rules to retrieve. If not mentioned, will retrieve all the PBF rules.
-      name: tags
       isArray: true
+      name: tags
       required: false
     - description: Free query to retrieve PBF rule. If not mentioned, will retrieve all the PBF rules.
       name: query
@@ -9432,7 +9432,7 @@ script:
     description: Deletes an application-group
     name: pan-os-delete-application-group
     outputs: []
-  dockerimage: demisto/pan-os-python:1.0.0.46396
+  dockerimage: demisto/pan-os-python:1.0.0.47142
   feed: false
   isfetch: true
   longRunning: false
