@@ -3,9 +3,12 @@ if (serverURL.slice(-1) === '/') {
     serverURL = serverURL.slice(0,-1);
 }
 
+logDebug("$$$$$$$")
+logDebug(serverURL)
+logDebug(params.auth_id)
+logDebug(params.creds_apikey.identifier)
+
 if (params.auth_id || (params.creds_apikey && params.creds_apikey.identifier)) {
-    log("$$$$$$$")
-    log(serverURL)
     if (!serverURL.endsWith('/xsoar')){
         serverURL = serverURL + '/xsoar'
     }
