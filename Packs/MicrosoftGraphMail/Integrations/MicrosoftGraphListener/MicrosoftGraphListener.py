@@ -734,7 +734,6 @@ class MsGraphClient:
                     attachment_name = base64.b64decode(attachment_name)
                 except Exception as e:
                     demisto.debug(f"Could not decode the {attachment_name=}: error: {e}")
-                    pass
 
             if attachment_type == self.FILE_ATTACHMENT:
                 try:
