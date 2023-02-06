@@ -491,9 +491,8 @@ def get_modified_remote_data_command(client: AzureSentinelClient, args: Dict[str
     """
     Gets the modified remote incidents IDs.
     Args:
-        args:
-            client: The client object.
-            args: The command arguments.
+        client: The client object.
+        args: The command arguments.
 
     Returns:
         GetModifiedRemoteDataResponse object, which contains a list of the modified incidents IDs.
@@ -513,10 +512,7 @@ def get_modified_remote_data_command(client: AzureSentinelClient, args: Dict[str
         raw_incidents += response.get('value', [])
         next_link = response.get('nextLink')
 
-    modified_ids_to_mirror = []
-    for raw_incident in raw_incidents:
-        incident_id = raw_incident.get('name')
-        modified_ids_to_mirror.append(incident_id)
+    modified_ids_to_mirror = [raw_incident.get('name') for raw_incident in raw_incidents]
 
     demisto.debug(f'All ids to mirror in are: {modified_ids_to_mirror}')
     return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
@@ -539,7 +535,9 @@ def get_remote_incident_data(client: AzureSentinelClient, incident_id: str):
     updated_object: Dict[str, Any] = {}
 
     for field in INCOMING_MIRRORED_FIELDS:
-        updated_object[field] = incident_mirrored_data.get(field)
+        value = incident_mirrored_data.get(field)
+        if value:
+            updated_object[field] = value
 
     return mirrored_data, updated_object
 
@@ -1087,7 +1085,7 @@ def fetch_incidents_additional_info(client: AzureSentinelClient, incidents: List
         incidents = [incidents]
 
     for incident in incidents:
-        for additional_info in demisto.params().get('fetch_additional_info'):
+        for additional_info in demisto.params().get('fetch_additional_info', []):
             info_type = additional_info.lower()
             method = additional_fetch[additional_info]['method']
             results_key = additional_fetch[additional_info]['result_key']

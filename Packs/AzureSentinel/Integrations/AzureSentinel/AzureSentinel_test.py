@@ -13,7 +13,8 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     delete_incident_command, XSOAR_USER_AGENT, incident_delete_comment_command, \
     query_threat_indicators_command, create_threat_indicator_command, delete_threat_indicator_command, \
     append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command, \
-    list_threat_indicator_command, NEXTLINK_DESCRIPTION, process_incidents, fetch_incidents, \
+    list_threat_indicator_command, NEXTLINK_DESCRIPTION, process_incidents, fetch_incidents, fetch_incidents_additional_info, \
+    get_modified_remote_data_command, get_remote_data_command, get_remote_incident_data, set_xsoar_incident_entries, \
     build_threat_indicator_data, DEFAULT_SOURCE
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
@@ -1397,3 +1398,129 @@ class TestEdgeCases:
 
         # validate
         assert error.value.args[0] == f"[NotFound 404] Resource '{resource_id}' does not exist"
+
+
+@pytest.mark.parametrize("incidents", [
+    ([{'ID': 'incident-1'}]),
+    ([{'ID': 'incident-1'}, {'ID': 'incident-2'}]),
+    ({'ID': 'incident-1'}),
+    ([]),
+])
+def test_fetch_incidents_additional_info(mocker, incidents):
+    """
+    Given:
+        - A list of incidents
+    When:
+        - Calling fetch_incidents_additional_info
+    Then:
+        - Ensure the client's http_request method was called the expected number of times,
+          and the incidents were updated with the additional info
+    """
+    args = {'fetch_additional_info': ['Alerts', 'Entities']}
+    mocker.patch('demistomock.params', return_value=args)
+    client = mock_client()
+    mocker.patch.object(client, 'http_request', side_effect=[
+        {'value': [{'id': 'alert-1'}]},
+        {'entities': [{'id': 'entities-1'}]},
+        {'value': [{'id': 'alert-2'}]},
+        {'entities': [{'id': 'entities-2'}]}
+    ])
+
+    fetch_incidents_additional_info(client, incidents)
+
+    if isinstance(incidents, dict):
+        incidents = [incidents]
+
+    assert client.http_request.call_count == len(args['fetch_additional_info']) * len(incidents)
+    if incidents:
+        assert client.http_request.call_args_list[0][0][1] == 'incidents/incident-1/alerts'
+
+    for i, incident in enumerate(incidents):
+        assert 'alerts' in incident
+        assert incident['alerts'] == [{'id': f'alert-{i + 1}'}]
+        assert 'entities' in incident
+        assert incident['entities'] == [{'id': f'entities-{i + 1}'}]
+
+
+def test_get_modified_remote_data_command(mocker):
+    """
+    Given
+        - client
+        - args with lastUpdate
+    When
+        - running get_modified_remote_data_command
+    Then
+        - Ensure the client's http_request method was called with the expected filter,
+          and the modified_incident_ids were returned the expected list of ids.
+    """
+    client = mock_client()
+    mock_response = {'value': [{'name': 'incident-1'}, {'name': 'incident-2'}]}
+    mocker.patch.object(client, 'http_request', return_value=mock_response)
+
+    last_update = '2023-01-06T08:17:09Z'
+    result = get_modified_remote_data_command(client, {'lastUpdate': last_update})
+    assert last_update in client.http_request.call_args[1]['params']['$filter']
+    assert result.modified_incident_ids == [incident['name'] for incident in mock_response['value']]
+
+
+def test_get_remote_data_command(mocker):
+    """
+    Given
+        - client
+        - args with id and lastUpdate
+    When
+        - running get_remote_data_command
+    Then
+        - Ensure the mirrored object was returned the expected object
+    """
+
+    mocker.patch('AzureSentinel.get_remote_incident_data', return_value=({'name': 'incident-1'}, {'ID': 'incident-1'}))
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
+
+    result = get_remote_data_command(mock_client(), {'id': 'incident-1', 'lastUpdate': '2023-01-06T08:17:09Z'})
+    assert result.mirrored_object == {'ID': 'incident-1'}
+    assert result.entries == []
+
+
+def test_get_remote_incident_data(mocker):
+    """
+    Given
+        - client
+        - incident id
+    When
+        - running get_remote_incident_data
+    Then
+        Verify the function returns the expected mirrored data and updated object
+    """
+    client = mock_client()
+    mock_response = {'name': 'id-incident-1', 'properties': {'title': 'title-incident-1'}}
+    mocker.patch.object(client, 'http_request', return_value=mock_response)
+
+    result = get_remote_incident_data(client, 'id-incident-1')
+    assert result == (mock_response, {'ID': 'id-incident-1', 'Title': 'title-incident-1'})
+
+
+@pytest.mark.parametrize("incident, expected_contents", [
+    (
+        {'ID': 'id-incident-1', 'Status': 'Closed', 'classification': 'BenignPositive'},
+        {'dbotIncidentClose': True, 'closeReason': 'Resolved - Closed on Microsoft Sentinel', 'closeNotes': ''}
+    ),
+    (
+        {'ID': 'id-incident-1', 'Status': 'Active'},
+        {'dbotIncidentReopen': True}
+    ),
+])
+def test_set_xsoar_incident_entries(mocker, incident, expected_contents):
+    """
+    Given
+        - incident
+        - entries
+    When
+        - running set_xsoar_incident_entries
+    Then
+        - Ensure the entries were updated with the expected contents
+    """
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
+    entries: list = []
+    set_xsoar_incident_entries(incident, entries, 'id-incident-1')
+    assert entries[0].get('Contents') == expected_contents
