@@ -28,7 +28,7 @@ Organization Management role group). The Role Management role allows users to vi
 
 2. From the side menu, click **Permissions**.
 
-   ![side-menu](https://raw.githubusercontent.com/demisto/content/master/Packs/EWS/doc_imgs/security-and-compliance-side-menu.png)
+   ![side-menu](https://github.com/demisto/content/blob/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-side-menu.png)
 
 3. Search for and select the **Data Investigator** role.
 
