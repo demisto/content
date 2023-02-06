@@ -30,7 +30,7 @@ script:
     - description: The identifier of the asset to retrieve the details for.
       name: asset_id
       required: true
-    description: Returns the assessment and details of an asset (specified by id). Only assets which the caller has access to can be returned.
+    description: Returns the assessment and details of an asset (specified by ID). Only assets that the caller has access to can be returned.
     name: insightvm-cloud-get-asset
   - arguments:
     - description: The identifier of the scan.
@@ -67,32 +67,32 @@ script:
       description: The index of the page (zero-based) to retrieve.
       name: page
     - defaultValue: "10"
-      description: ' The number of records per page to retrieve.'
+      description: The number of records per page to retrieve.
       name: size
-    description: Returns the details for sites
+    description: Returns the details for sites.
     name: insightvm-cloud-last-sites
   - arguments:
     - defaultValue: "0"
-      description: The index of the page to retrieve
+      description: The index of the page to retrieve.
       name: page
     - defaultValue: "10"
       description: The number of records per page to retrieve
       name: size
-    - description: ' query to search vulnerabilities.'
+    - description: Query by which to search for vulnerabilities.
       name: query
       required: true
-    description: Returns all vulnerabilities that can be assessed.
+    description: Returns all vulnerabilities that can be accessed.
     name: insightvm-cloud-search-vulnerabilities
   - arguments:
-    - description: The identifiers of the assets to scan
+    - description: A comma-separated list of asset IDs to scan.
       name: asset_id
       required: true
-    - description: The name of the scan
+    - description: The name of the scan.
       name: name
     description: Starts a scan.
     name: insightvm-cloud-start-scan
   - arguments:
-    - description: The identifiers of the assets to stop scan
+    - description: The identifier of the asset used to stop the scan.
       name: id
       required: true
     description: Stops the scan with the specified identifier.
