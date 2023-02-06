@@ -33,9 +33,9 @@
             "mandatory": false,
             "display_name": "Microsoft Graph Mail"
         },
-        "EWS": {
+        "MicrosoftExchangeOnPremise": {
             "mandatory": false,
-            "display_name": "EWS"
+            "display_name": "Microsoft Exchange On-Premise"
         },
         "MicrosoftGraphListener": {
             "mandatory": false,
