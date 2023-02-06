@@ -9,7 +9,7 @@ license = "MIT"
 python = "^3.8,<3.11"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev="d121b6807ad9f5201324ec869af105146a60871e"}
+demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev="6f49ffcaaac7d7610c00a83d98fb69e15b06922d"}
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
 
