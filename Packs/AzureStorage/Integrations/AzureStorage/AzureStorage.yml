@@ -1029,7 +1029,7 @@ script:
     description: Run this command to delete a specific blob container.
     execution: false
     name: azure-storage-blob-container-delete
-  dockerimage: demisto/crypto:1.0.0.44762
+  dockerimage: demisto/crypto:1.0.0.47103
   feed: false
   isfetch: false
   longRunning: false

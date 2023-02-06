@@ -560,7 +560,7 @@ script:
     description: Run this command if for some reason you need to rerun the authentication process.
     execution: false
     name: azure-nsg-auth-reset
-  dockerimage: demisto/crypto:1.0.0.44762
+  dockerimage: demisto/crypto:1.0.0.47103
   feed: false
   isfetch: false
   longRunning: false
