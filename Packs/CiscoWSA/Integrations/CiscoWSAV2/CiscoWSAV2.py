@@ -1,4 +1,5 @@
 from requests import Response
+from http import HTTPStatus
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -53,20 +54,18 @@ class Client(BaseClient):
             return dict_safe_get(response, ["data", "jwtToken"])
 
         except DemistoException as e:
-            if e.res is not None and e.res.status_code == 401:
+            if e.res is not None and e.res.status_code == HTTPStatus.UNAUTHORIZED:
                 raise DemistoException(
                     "Authorization Error: make sure username and password are set correctly."
                 )
             raise e
 
-    def access_policy_list_request(
-        self, policy_names: Optional[str] = None
-    ) -> Dict[str, Any]:
+    def access_policy_list_request(self, policy_names: str | None) -> Dict[str, Any]:
         """
         Access Policies list.
 
         Args:
-            policy_names (str, optional): Policies names to retrieve. Defaults to None.
+            policy_names (str | None): Policies names to retrieve.
 
         Returns:
             Dict[str, Any]: API response from Cisco WSA.
@@ -82,10 +81,10 @@ class Client(BaseClient):
         policy_name: str,
         policy_status: str,
         identification_profile_name: str,
-        policy_order: Optional[int],
-        policy_description: Optional[str] = None,
-        policy_expiry: Optional[str] = None,
-    ):
+        policy_order: int,
+        policy_description: str | None,
+        policy_expiry: str | None,
+    ) -> Response:
         """
         Create an access policy.
 
@@ -94,8 +93,8 @@ class Client(BaseClient):
             policy_status (str): Policy status.
             identification_profile_name (str): Identification profile name.
             policy_order (int): Policy order.
-            policy_description (Optional[str], optional): Policy description. Defaults to None.
-            policy_expiry (Optional[str], optional): Policy expiration date. Defaults to None.
+            policy_description (str | None): Policy description.
+            policy_expiry (str | None): Policy expiration date.
 
         Returns:
             Response: API response from Cisco WSA.
@@ -127,27 +126,28 @@ class Client(BaseClient):
             f"{V3_PREFIX}/web_security/access_policies",
             json_data=data,
             resp_type="response",
+            ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
     def access_policy_update_request(
         self,
         policy_name: str,
-        new_policy_name: Optional[str] = None,
-        policy_status: Optional[str] = None,
-        policy_description: Optional[str] = None,
-        policy_order: Optional[int] = None,
-        policy_expiry: Optional[str] = None,
-    ):
+        new_policy_name: str | None,
+        policy_status: str | None,
+        policy_description: str | None,
+        policy_order: int | None,
+        policy_expiry: str | None,
+    ) -> Response:
         """
         Update an access policy.
 
         Args:
             policy_name (str): Policy name to update.
-            new_policy_name (Optional[str], optional): Policy status. Defaults to None.
-            policy_status (Optional[str], optional): Policy status. Defaults to None.
-            policy_description (Optional[str], optional): Policy description. Defaults to None.
-            policy_order (Optional[str], optional): Policy order. Defaults to None.
-            policy_expiry (Optional[str], optional): Policy expiry. Defaults to None.
+            new_policy_name (str | None): Policy status.
+            policy_status (str | None): Policy status.
+            policy_description (str | None): Policy description.
+            policy_order (int | None): Policy order.
+            policy_expiry (str | None): Policy expiry.
 
         Returns:
             Response: API response from Cisco WSA.
@@ -172,23 +172,24 @@ class Client(BaseClient):
             f"{V3_PREFIX}/web_security/access_policies",
             json_data=data,
             resp_type="response",
+            ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
     def access_policy_protocols_user_agents_update_request(
         self,
         policy_name: str,
-        block_custom_user_agents: Optional[List[str]] = None,
-        allow_connect_ports: Optional[List[str]] = None,
-        block_protocols: Optional[List[str]] = None,
-    ):
+        block_custom_user_agents: List[str] | None,
+        allow_connect_ports: List[str] | None,
+        block_protocols: List[str] | None,
+    ) -> Response:
         """
         Update access policy's objects settings.
 
         Args:
             policy_name (str): Policy name to update.
-            block_custom_user_agents (Optional[List[str]], optional): Block custom user agents. Defaults to None.
-            allow_connect_ports (Optional[List[str]], optional): Allow connect ports. Defaults to None.
-            block_protocols (Optional[List[str]], optional): Block protocols. Defaults to None.
+            block_custom_user_agents (List[str] | None): Block custom user agents.
+            allow_connect_ports (List[str] | None): Allow connect ports.
+            block_protocols (List[str] | None): Block protocols.
 
         Returns:
             Response: API response from Cisco WSA.
@@ -214,41 +215,42 @@ class Client(BaseClient):
             f"{V3_PREFIX}/web_security/access_policies",
             json_data=data,
             resp_type="response",
+            ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
     def access_policy_url_filtering_update_request(
         self,
         policy_name: str,
-        predefined_categories_action: Optional[str] = None,
-        predefined_categories: Optional[List[str]] = None,
-        youtube_categories_action: Optional[str] = None,
-        youtube_categories: Optional[List[str]] = None,
-        custom_categories_action: Optional[str] = None,
-        custom_categories: Optional[List[str]] = None,
-        uncategorized_url: Optional[str] = None,
-        update_categories_action: Optional[str] = None,
-        content_rating_action: Optional[str] = None,
-        content_rating_status: Optional[str] = None,
-        safe_search_status: Optional[str] = None,
-        unsupported_safe_search_engine: Optional[str] = None,
-    ):
+        predefined_categories_action: str | None,
+        predefined_categories: List[str] | None,
+        youtube_categories_action: str | None,
+        youtube_categories: List[str] | None,
+        custom_categories_action: str | None,
+        custom_categories: List[str] | None,
+        uncategorized_url: str | None,
+        update_categories_action: str | None,
+        content_rating_action: str | None,
+        content_rating_status: str | None,
+        safe_search_status: str | None,
+        unsupported_safe_search_engine: str | None,
+    ) -> Response:
         """
         Update access policy's URL filtering settings.
 
         Args:
             policy_name (str): Policy name to update.
-            predefined_categories_action (Optional[str], optional): Predefined categories action. Defaults to None.
-            predefined_categories (Optional[List[str]], optional): Predefined categories. Defaults to None.
-            youtube_categories_action (Optional[str], optional): YouTube categories action. Defaults to None.
-            youtube_categories (Optional[List[str]], optional): YouTube categories. Defaults to None.
-            custom_categories_action (Optional[str], optional): Custom categories action. Defaults to None.
-            custom_categories (Optional[List[str]], optional): Custom categories. Defaults to None.
-            uncategorized_url (Optional[str], optional): Uncategorized URL action. Defaults to None.
-            update_categories_action (Optional[str], optional): Update categories action. Defaults to None.
-            content_rating_action (Optional[str], optional): Content rating action. Defaults to None.
-            content_rating_status (Optional[str], optional): Content rating status. Defaults to None.
-            safe_search_status (Optional[str], optional): Safe search status. Defaults to None.
-            unsupported_safe_search_engine (Optional[str], optional): Unsupported safe search engine. Defaults to None.
+            predefined_categories_action (str | None): Predefined categories action.
+            predefined_categories (List[str] | None): Predefined categories.
+            youtube_categories_action (str | None): YouTube categories action.
+            youtube_categories (List[str] | None): YouTube categories.
+            custom_categories_action (str | None): Custom categories action.
+            custom_categories (List[str] | None): Custom categories.
+            uncategorized_url (str | None): Uncategorized URL action.
+            update_categories_action (str | None): Update categories action.
+            content_rating_action (str | None): Content rating action.
+            content_rating_status (str | None): Content rating status.
+            safe_search_status (str | None): Safe search status.
+            unsupported_safe_search_engine (str | None): Unsupported safe search engine.
 
         Returns:
             Response: API response from Cisco WSA.
@@ -288,6 +290,7 @@ class Client(BaseClient):
             f"{V3_PREFIX}/web_security/access_policies",
             json_data=data,
             resp_type="response",
+            ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
     def access_policy_applications_update_request(
@@ -330,29 +333,30 @@ class Client(BaseClient):
             f"{V3_PREFIX}/web_security/access_policies",
             json_data=data,
             resp_type="response",
+            ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
     def access_policy_objects_update_request(
         self,
         policy_name: str,
-        object_type: Optional[str] = None,
-        object_action: Optional[str] = None,
-        object_values: Optional[List[str]] = None,
-        block_custom_mime_types: Optional[List[str]] = None,
-        http_or_https_max_object_size_mb: Optional[int] = None,
-        ftp_max_object_size_mb: Optional[int] = None,
-    ):
+        object_type: str | None,
+        object_action: str | None,
+        object_values: List[str] | None,
+        block_custom_mime_types: List[str] | None,
+        http_or_https_max_object_size_mb: int | None,
+        ftp_max_object_size_mb: int | None,
+    ) -> Response:
         """
         Update access policy's objects settings.
 
         Args:
             policy_name (str): Policy name to update.
-            object_type (Optional[str], optional): Object type. Defaults to None.
-            object_action (Optional[str], optional): Object action. Defaults to None.
-            object_values (Optional[List[str]], optional): Object values. Defaults to None.
-            block_custom_mime_types (Optional[List[str]], optional): Block custom MIME types. Defaults to None.
-            http_or_https_max_object_size_mb (Optional[int], optional): HTTP(S) max object size MB. Defaults to None.
-            ftp_max_object_size_mb (Optional[int], optional): FTP max object size MB. Defaults to None.
+            object_type (str | None): Object type.
+            object_action (str | None): Object action.
+            object_values (List[str] | None): Object values.
+            block_custom_mime_types (List[str] | None): Block custom MIME types.
+            http_or_https_max_object_size_mb (int | None): HTTP(S) max object size MB.
+            ftp_max_object_size_mb (int | None): FTP max object size MB.
 
         Returns:
             Response: API response from Cisco WSA.
@@ -389,31 +393,32 @@ class Client(BaseClient):
             f"{V3_PREFIX}/web_security/access_policies",
             json_data=data,
             resp_type="response",
+            ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
     def access_policy_anti_malware_update_request(
         self,
         policy_name: str,
-        web_reputation_status: Optional[str] = None,
-        file_reputation_filtering_status: Optional[str] = None,
-        file_reputation_action: Optional[str] = None,
-        anti_malware_scanning_status: Optional[str] = None,
-        suspect_user_agent_scanning: Optional[str] = None,
-        block_malware_categories: Optional[List[str]] = None,
-        block_other_categories: Optional[List[str]] = None,
-    ):
+        web_reputation_status: str | None,
+        file_reputation_filtering_status: str | None,
+        file_reputation_action: str | None,
+        anti_malware_scanning_status: str | None,
+        suspect_user_agent_scanning: str | None,
+        block_malware_categories: List[str] | None,
+        block_other_categories: List[str] | None,
+    ) -> Response:
         """
         Update access policy's applications settings.
 
         Args:
             policy_name (str): Policy name to update.
-            web_reputation_status (Optional[str], optional): Web reputation status. Defaults to None.
-            file_reputation_filtering_status (Optional[str], optional): File reputation filtering status. Defaults to None.
-            file_reputation_action (Optional[str], optional): Filr reputation action. Defaults to None.
-            anti_malware_scanning_status (Optional[str], optional): Anti-malware scanning status. Defaults to None.
-            suspect_user_agent_scanning (Optional[str], optional): Suspect uset agent scanning. Defaults to None.
-            block_malware_categories (Optional[List[str]], optional): Malware categories to block. Defaults to None.
-            block_other_categories (Optional[List[str]], optional): Other categories to block. Defaults to None.
+            web_reputation_status (str | None): Web reputation status.
+            file_reputation_filtering_status (str | None): File reputation filtering status.
+            file_reputation_action (str | None): Filr reputation action.
+            anti_malware_scanning_status (str | None): Anti-malware scanning status.
+            suspect_user_agent_scanning (str | None): Suspect uset agent scanning.
+            block_malware_categories (List[str] | None): Malware categories to block.
+            block_other_categories (List[str] | None): Other categories to block.
 
         Returns:
             Response: API response from Cisco WSA.
@@ -431,8 +436,6 @@ class Client(BaseClient):
                                     file_reputation_action: [
                                         "Known Malicious and High-Risk Files"
                                     ]
-                                    if file_reputation_action
-                                    else None
                                 },
                             },
                             "cisco_dvs_amw": {
@@ -454,9 +457,10 @@ class Client(BaseClient):
             f"{V3_PREFIX}/web_security/access_policies",
             json_data=data,
             resp_type="response",
+            ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
-    def access_policy_delete_request(self, policy_names: str):
+    def access_policy_delete_request(self, policy_names: str) -> Response:
         """
         Delete access policy.
 
@@ -473,6 +477,7 @@ class Client(BaseClient):
             f"{V3_PREFIX}/web_security/access_policies",
             params=params,
             resp_type="response",
+            ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
     def domain_map_list_request(self) -> Dict[str, Any]:
@@ -487,7 +492,7 @@ class Client(BaseClient):
         )
 
     def domain_map_create_request(
-        self, domain_name: str, ip_addresses: List[str], order: Optional[int]
+        self, domain_name: str, ip_addresses: List[str], order: int
     ) -> Dict[str, Any]:
         """
         Create domain mapping.
@@ -511,18 +516,18 @@ class Client(BaseClient):
     def domain_map_update_request(
         self,
         domain_name: str,
-        new_domain_name: Optional[str] = None,
-        ip_addresses: Optional[str] = None,
-        order: Optional[int] = None,
+        new_domain_name: str | None,
+        ip_addresses: str | None,
+        order: int | None,
     ) -> Dict[str, Any]:
         """
         Update domain map.
 
         Args:
             domain_name (str): Domain name to update.
-            new_domain_name (Optional[str], optional): New domain name. Defaults to None.
-            ip_addresses (Optional[str], optional): IP addresses to map. Defaults to None.
-            order (Optional[str], optional): Index of domain map. Defaults to None.
+            new_domain_name (str | None): New domain name.
+            ip_addresses (str | None): IP addresses to map.
+            order (str | None): Index of domain map.
 
         Returns:
             Dict[str, Any]: API response from Cisco WSA.
@@ -562,13 +567,13 @@ class Client(BaseClient):
 
     def identification_profiles_list_request(
         self,
-        profile_names: Optional[List[str]] = None,
+        profile_names: List[str] | None,
     ) -> Dict[str, Any]:
         """
         Get identification profiles.
 
         Args:
-            profile_names (Optional[str], optional): Profile names to list. Defaults to None.
+            profile_names (str | None): Profile names to list.
 
         Returns:
             Dict[str, Any]: API response from Cisco WSA.
@@ -583,12 +588,12 @@ class Client(BaseClient):
 
     def identification_profiles_create_request(
         self,
-        profile_name: Optional[str] = None,
-        status: Optional[str] = None,
-        description: Optional[str] = None,
-        protocols: Optional[str] = None,
-        order: Optional[int] = None,
-    ):
+        profile_name: str,
+        status: str,
+        description: str,
+        protocols: str,
+        order: int,
+    ) -> Response:
         """
         Create identification profile.
 
@@ -597,7 +602,7 @@ class Client(BaseClient):
             status (str): Status - enable/disable.
             description (str): Description of identification profile.
             protocols (str): Protocols - HTTPS/SOCKS.
-            order (Optional[str]): Index of Identification profile in the collection.
+            order (int): Index of Identification profile in the collection.
 
         Returns:
             Response: API response from Cisco WSA.
@@ -624,32 +629,32 @@ class Client(BaseClient):
             f"{V3_PREFIX}/web_security/identification_profiles",
             json_data=data,
             resp_type="response",
+            ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
     def identification_profiles_update_request(
         self,
         profile_name: str,
-        new_profile_name: Optional[str] = None,
-        status: Optional[str] = None,
-        description: Optional[str] = None,
-        protocols: Optional[str] = None,
-        order: Optional[int] = None,
-    ):
+        new_profile_name: str | None,
+        status: str | None,
+        description: str | None,
+        protocols: str | None,
+        order: int | None,
+    ) -> Response:
         """
         Update identification profile.
 
         Args:
             profile_name (str): Identification profile name.
-            new_profile_name (str): Identification profile name to update.
-            status (str): Status - enable/disable.
-            description (str): Description of identification profile.
-            protocols (str): Protocols - HTTPS/SOCKS.
-            order (int): Index of Identification profile in the collection.
+            new_profile_name (str | None): Identification profile name to update.
+            status (str | None): Status - enable/disable.
+            description (str | None): Description of identification profile.
+            protocols (str | None): Protocols - HTTPS/SOCKS.
+            order (int | None): Index of Identification profile in the collection.
 
         Returns:
             Response: API response from Cisco WSA.
         """
-
         data = remove_empty_elements(
             {
                 "identification_profiles": [
@@ -675,9 +680,10 @@ class Client(BaseClient):
             f"{V3_PREFIX}/web_security/identification_profiles",
             json_data=data,
             resp_type="response",
+            ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
-    def identification_profiles_delete_request(self, profile_names: str):
+    def identification_profiles_delete_request(self, profile_names: str) -> Response:
         """
         Delete identification profiles.
 
@@ -694,6 +700,7 @@ class Client(BaseClient):
             f"{V3_PREFIX}/web_security/identification_profiles",
             params=params,
             resp_type="response",
+            ok_codes=[HTTPStatus.NO_CONTENT, HTTPStatus.MULTI_STATUS],
         )
 
     def url_categories_list_request(self) -> Dict[str, Any]:
@@ -717,38 +724,38 @@ def pagination(
 
     if page and page_size:
         offset = (page - 1) * page_size
-        return response[offset: offset + page_size]
+        return response[offset : offset + page_size]
     else:
         return response[:limit]
 
 
 def organize_policy_object_data(
     objects: Dict[str, Any],
-    object_type: Optional[str] = None,
-    object_action: Optional[str] = None,
-    object_values: Optional[List[str]] = None,
-    block_custom_mime_types: Optional[List[str]] = None,
-    http_or_https_max_object_size_mb: Optional[int] = None,
-    ftp_max_object_size_mb: Optional[int] = None,
+    object_type: str | None,
+    object_action: str | None,
+    object_values: List[str] | None,
+    block_custom_mime_types: List[str] | None,
+    http_or_https_max_object_size_mb: int | None,
+    ftp_max_object_size_mb: int | None,
 ):
     """
     Organize policy object update data.
 
     Args:
         objects (Dict[str, Any]): Original objects.
-        object_type (Optional[str], optional): Object type to update. Defaults to None.
-        object_action (Optional[str], optional): Object action to update. Defaults to None.
-        object_values (Optional[List[str]], optional): Object values to update. Defaults to None.
-        block_custom_mime_types (Optional[List[str]], optional): Block custom MIME types. Defaults to None.
-        http_or_https_max_object_size_mb (Optional[int], optional): HTTP(S) max object size MB. Defaults to None.
-        ftp_max_object_size_mb (Optional[int], optional): FTP max object size MB. Defaults to None.
+        object_type (str | None): Object type to update.
+        object_action (str | None): Object action to update.
+        object_values (List[str] | None): Object values to update.
+        block_custom_mime_types (List[str] | None): Block custom MIME types.
+        http_or_https_max_object_size_mb (int | None): HTTP(S) max object size MB.
+        ftp_max_object_size_mb (int | None): FTP max object size MB.
     """
     if object_type and object_action and object_values:
-        original_obj_actions = objects["object_type"][object_type]
+        original_obj_actions = dict_safe_get(objects, ["object_type", object_type])
         for original_obj_action in original_obj_actions:
             if original_obj_action == object_action:
                 object_values.extend(
-                    objects["object_type"][object_type].get(object_action, [])
+                    dict_safe_get(objects, ["object_type", object_type, object_action])
                 )
             else:
                 original_obj_actions[original_obj_action] = [
@@ -760,7 +767,7 @@ def organize_policy_object_data(
         objects["object_type"][object_type].update({object_action: object_values})
 
     elif any([object_type, object_action, object_values]):
-        raise DemistoException(
+        raise ValueError(
             "object_type, object_action, object_values should be used in conjunction."
         )
 
@@ -826,7 +833,7 @@ def access_policy_create_command(
     policy_description = args.get("policy_description")
     policy_expiry = args.get("policy_expiry")
 
-    response = client.access_policy_create_request(
+    client.access_policy_create_request(
         policy_name=policy_name,
         policy_status=policy_status,
         policy_order=policy_order,
@@ -835,12 +842,9 @@ def access_policy_create_command(
         policy_expiry=policy_expiry,
     )
 
-    if response.status_code == 204:
-        return CommandResults(
-            readable_output=f'Created "{policy_name}" access policy successfully.'
-        )
-    else:
-        raise DemistoException(response.json())
+    return CommandResults(
+        readable_output=f'Created "{policy_name}" access policy successfully.'
+    )
 
 
 def access_policy_update_command(
@@ -863,7 +867,7 @@ def access_policy_update_command(
     policy_order = arg_to_number(args.get("policy_order"))
     policy_expiry = args.get("policy_expiry")
 
-    response = client.access_policy_update_request(
+    client.access_policy_update_request(
         policy_name=policy_name,
         new_policy_name=new_policy_name,
         policy_status=policy_status,
@@ -872,13 +876,8 @@ def access_policy_update_command(
         policy_expiry=policy_expiry,
     )
 
-    if response.status_code == 204:
-        readable_output = f'Updated "{policy_name}" access policy successfully.'
-    else:
-        raise DemistoException(response.json())
-
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=f'Updated "{policy_name}" access policy successfully.',
     )
 
 
@@ -900,20 +899,15 @@ def access_policy_protocols_user_agents_update_command(
     allow_connect_ports = argToList(args.get("allow_connect_ports"))
     block_protocols = argToList(args.get("block_protocols"))
 
-    response = client.access_policy_protocols_user_agents_update_request(
+    client.access_policy_protocols_user_agents_update_request(
         policy_name=policy_name,
         block_custom_user_agents=block_custom_user_agents,
         allow_connect_ports=allow_connect_ports,
         block_protocols=block_protocols,
     )
 
-    if response.status_code == 204:
-        readable_output = f'"{policy_name}" access policy updated successfully.'
-    else:
-        raise DemistoException(response.json())
-
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=f'Updated "{policy_name}" access policy successfully.',
     )
 
 
@@ -944,7 +938,7 @@ def access_policy_url_filtering_update_command(
     safe_search_status = args.get("safe_search_status")
     unsupported_safe_search_engine = args.get("unsupported_safe_search_engine")
 
-    response = client.access_policy_url_filtering_update_request(
+    client.access_policy_url_filtering_update_request(
         policy_name=policy_name,
         predefined_categories_action=predefined_categories_action,
         predefined_categories=predefined_categories,
@@ -960,13 +954,8 @@ def access_policy_url_filtering_update_command(
         unsupported_safe_search_engine=unsupported_safe_search_engine,
     )
 
-    if response.status_code == 204:
-        readable_output = f'"{policy_name}" access policy updated successfully.'
-    else:
-        raise DemistoException(response.json())
-
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=f'Updated "{policy_name}" access policy successfully.',
     )
 
 
@@ -988,20 +977,15 @@ def access_policy_applications_update_command(
     action = args["action"]
     values = argToList(args["values"])
 
-    response = client.access_policy_applications_update_request(
+    client.access_policy_applications_update_request(
         policy_name=policy_name,
         application=application,
         action=action,
         values=values,
     )
 
-    if response.status_code == 204:
-        readable_output = f'"{policy_name}" access policy updated successfully.'
-    else:
-        raise DemistoException(response.json())
-
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=f'Updated "{policy_name}" access policy successfully.',
     )
 
 
@@ -1028,7 +1012,7 @@ def access_policy_objects_update_command(
     )
     ftp_max_object_size_mb = arg_to_number(args.get("ftp_max_object_size_mb"))
 
-    response = client.access_policy_objects_update_request(
+    client.access_policy_objects_update_request(
         policy_name=policy_name,
         object_type=object_type,
         object_action=object_action,
@@ -1038,13 +1022,8 @@ def access_policy_objects_update_command(
         ftp_max_object_size_mb=ftp_max_object_size_mb,
     )
 
-    if response.status_code == 204:
-        readable_output = f'"{policy_name}" access policy updated successfully.'
-    else:
-        raise DemistoException(response.json())
-
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=f'Updated "{policy_name}" access policy successfully.',
     )
 
 
@@ -1070,7 +1049,7 @@ def access_policy_anti_malware_update_command(
     block_malware_categories = argToList(args.get("block_malware_categories"))
     block_other_categories = argToList(args.get("block_other_categories"))
 
-    response = client.access_policy_anti_malware_update_request(
+    client.access_policy_anti_malware_update_request(
         policy_name=policy_name,
         web_reputation_status=web_reputation_status,
         file_reputation_filtering_status=file_reputation_filtering_status,
@@ -1081,13 +1060,8 @@ def access_policy_anti_malware_update_command(
         block_other_categories=block_other_categories,
     )
 
-    if response.status_code == 204:
-        readable_output = f'"{policy_name}" access policy updated successfully.'
-    else:
-        raise DemistoException(response.json())
-
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=f'Updated "{policy_name}" access policy successfully.',
     )
 
 
@@ -1106,15 +1080,12 @@ def access_policy_delete_command(
     """
     policy_names = argToList(args["policy_names"])
 
-    response = client.access_policy_delete_request(policy_names)
+    client.access_policy_delete_request(policy_names)
 
-    if response.status_code == 204:
-        readable_output = (
-            f'Access polic{"ies" if len(policy_names) > 1 else "y"} '
-            f'"{", ".join(policy_names)}" deleted successfully.'
-        )
-    else:
-        raise DemistoException(response.json())
+    readable_output = (
+        f'Access polic{"ies" if len(policy_names) > 1 else "y"} '
+        f'"{", ".join(policy_names)}" deleted successfully.'
+    )
 
     return CommandResults(
         readable_output=readable_output,
@@ -1185,7 +1156,7 @@ def domain_map_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
         order=order,
     )
 
-    if response.get("res_code") == 201:
+    if response.get("res_code") == HTTPStatus.CREATED:
         readable_output = f'Domain "{domain_name}" mapping created successfully.'
     else:
         raise DemistoException(response)
@@ -1216,7 +1187,7 @@ def domain_map_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
         order=order,
     )
 
-    if response.get("res_code") == 200:
+    if response.get("res_code") == HTTPStatus.OK:
         readable_output = f'Domain "{domain_name}" mapping updated successfully.'
     else:
         raise DemistoException(response)
@@ -1240,14 +1211,13 @@ def domain_map_delete_command(
     domain_name = argToList(args["domain_names"])
 
     response = client.domain_map_delete_request(domain_name=domain_name)
-
-    if response.get("res_code") == 200:
+    if response.get("res_code") == HTTPStatus.OK:
         readable_output = (
             f'Domain{"s" if len(domain_name) > 1 else ""} "{", ".join(domain_name)}" '
             "deleted successfully."
         )
         return CommandResults(readable_output=readable_output, raw_response=response)
-    elif response.get("res_code") == 206:
+    elif response.get("res_code") == HTTPStatus.PARTIAL_CONTENT:
         command_results_list = []
         for domain_map in dict_safe_get(response, ["res_data", "delete_success"]):
             readable_output = f'Domain "{domain_map}" mapping deleted successfully.'
@@ -1331,7 +1301,7 @@ def identification_profiles_create_command(
     protocols = args["protocols"]
     order = arg_to_number(args["order"])
 
-    response = client.identification_profiles_create_request(
+    client.identification_profiles_create_request(
         status=status,
         description=description,
         profile_name=profile_name,
@@ -1339,14 +1309,9 @@ def identification_profiles_create_command(
         order=order,
     )
 
-    if response.status_code == 204:
-        readable_output = (
-            f'Created identification profile "{profile_name}" successfully.'
-        )
-    else:
-        raise DemistoException(response.json())
-
-    return CommandResults(readable_output=readable_output)
+    return CommandResults(
+        readable_output=f'Created identification profile "{profile_name}" successfully.'
+    )
 
 
 def identification_profiles_update_command(
@@ -1369,7 +1334,7 @@ def identification_profiles_update_command(
     protocols = args.get("protocols")
     order = arg_to_number(args.get("order"))
 
-    response = client.identification_profiles_update_request(
+    client.identification_profiles_update_request(
         profile_name=profile_name,
         new_profile_name=new_profile_name,
         description=description,
@@ -1378,14 +1343,9 @@ def identification_profiles_update_command(
         order=order,
     )
 
-    if response.status_code == 204:
-        readable_output = (
-            f'Updated identification profile "{profile_name}" successfully.'
-        )
-    else:
-        raise DemistoException(response.json())
-
-    return CommandResults(readable_output=readable_output)
+    return CommandResults(
+        readable_output=f'Updated identification profile "{profile_name}" successfully.'
+    )
 
 
 def identification_profiles_delete_command(
@@ -1405,11 +1365,7 @@ def identification_profiles_delete_command(
 
     response = client.identification_profiles_delete_request(profile_names)
 
-    if response.status_code == 204:
-        return CommandResults(
-            readable_output="Deleted identification profiles successfully."
-        )
-    elif response.status_code == 207:
+    if response.status_code == HTTPStatus.MULTI_STATUS:
         response = response.json()
         command_results_list = []
         for profile in response.get("success_list"):
@@ -1427,7 +1383,9 @@ def identification_profiles_delete_command(
 
         return command_results_list
     else:
-        raise DemistoException(response.json())
+        return CommandResults(
+            readable_output="Deleted identification profiles successfully."
+        )
 
 
 def url_categories_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
