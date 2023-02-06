@@ -72,7 +72,7 @@ script:
         severity.
     description: Fetch a single incident of your choice of severity level to study
       the incidents structure before you start continously fecthing incidents.
-  dockerimage: demisto/python3:3.10.9.46032
+  dockerimage: demisto/python3:3.10.9.46807
   isfetch: true
   runonce: false
   subtype: python3
