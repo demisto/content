@@ -1,6 +1,6 @@
 {
     "name": "SSL Certificates",
-    "description": "SSL Certificate Content Pack for validating SSL Certificate statuses and automatically generating CSRs to renew expiring/expired certificates. ",
+    "description": "SSL Certificate Content Pack for performing SSL Certificate validation.",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Josh Levine",
