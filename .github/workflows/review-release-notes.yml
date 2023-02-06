@@ -24,41 +24,15 @@ jobs:
             Packs/**/ReleaseNotes/**
           since_last_remote_commit: false
 
-      - name: Print runner script directory
+      - name: Install SDK
+        if: steps.changed-files.outputs.all_changed_files != ""
         run: |
-          apt-fast install tree
-          tree /home/runner/work/_temp/
+          python3 -m pip install demisto-sdk
 
-      # TODO dev
-      - name: Print runner script contents
+      - name: Review Release Notes
+        if: steps.changed-files.outputs.all_changed_files != ""
         run: |
-          find /home/runner/work/_temp/ -type f -exec echo "====={}======" \; -exec file {} \; -exec cat {} \;
+          release_notes="${{ steps.changed-files.outputs.all_changed_files }}"
+          echo "Release notes found in PR: ${release_notes}. Starting docs review..."
 
-      # # TODO dev
-      # - name: Print runner script contents
-      #   run: |
-      #     find /home/runner/work/_temp/ -type f -exec file {} \; -exec cat {} \;
-
-      # # TODO delete after dev
-      # - name: Print changed files
-      #   run: |
-      #     if [ -z "${{ steps.changed-files.outputs.all_changed_files }}" ]
-      #     then
-      #           echo "all_changed_files is empty"
-      #           exit 0
-      #     else
-      #           echo "all_changed_files is NOT empty"
-      #           echo "${{ steps.changed-files.outputs.all_changed_files }}"
-      #     fi
-
-      # - name: Install SDK
-      #   run: |
-          
-      #     python3 -m pip install demisto-sdk
-
-      # - name: Review Release Notes
-      #   run: |
-      #     release_notes="${{ steps.changed-files.outputs.all_changed_files }}"
-      #     echo "Release notes found in PR: ${release_notes}. Starting docs review..."
-
-      #     Utils/github_workflow_scripts/run_docs_review.py --changed_files "$release_notes" --delimiter "${{ env.CHANGED_FILES_DELIMITER }}"
+          Utils/github_workflow_scripts/run_docs_review.py --changed_files "$release_notes" --delimiter "${{ env.CHANGED_FILES_DELIMITER }}"
