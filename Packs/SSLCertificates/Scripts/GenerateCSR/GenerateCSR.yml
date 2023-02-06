@@ -34,9 +34,9 @@ comment: "Generates a certificate signing request for fulfillment by an organiza
 commonfields:
   id: a69cc35d-103b-499d-85a9-09ca44e32368
   version: -1
-dockerimage: demisto/ansible-runner:1.0.0.46481
+dockerimage: demisto/ansible-runner:1.0.0.47001
 enabled: true
-name: GenerateCSR
+name: a69cc35d-103b-499d-85a9-09ca44e32368
 runas: DBotWeakRole
 runonce: false
 script: ''
