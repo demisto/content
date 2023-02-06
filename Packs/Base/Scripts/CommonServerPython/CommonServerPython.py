@@ -10764,7 +10764,7 @@ class YMLMetadataCollector:
         return command_wrapper
 
 
-def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', retries=3):
+def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -10786,8 +10786,8 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type url_key: ``str``
     :param url_key: The param dict key where the integration url is located at. the default is 'url'.
 
-    :type retries: ``int``
-    :param url_key: The num of retries to do in case there is an api limit (429 error codes)
+    :type num_of_attempts: ``int``
+    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
 
     :return: None
     :rtype: ``None``
@@ -10873,9 +10873,9 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     client = BaseClient(base_url=xsiam_url)
 
     # retry mechanism in case there is a rate limit (429) from xsiam.
-    for retry_num in range(1, retries + 1):
+    for attempt_num in range(1, num_of_attempts + 1):
         try:
-            demisto.debug('Sending events into xsiam: retry number {retry_num}'.format(retry_num=retry_num))
+            demisto.debug('Sending events into xsiam: attempt number {attempt_num}'.format(attempt_num=attempt_num))
             res = client._http_request(
                 method='POST',
                 full_url=urljoin(xsiam_url, '/logs/v1/xsiam'),
@@ -10885,7 +10885,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
             )
             break
         except DemistoException as err:
-            if err.res.status_code != 429 or retry_num == retries - 1:
+            if err.res.status_code != 429 or attempt_num == num_of_attempts:
                 raise err
             else:
                 time.sleep(1)  # pylint: disable=sleep-exists
