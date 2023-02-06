@@ -9,6 +9,7 @@ from CommonServerUserPython import *
 INTEGRATION_COMMAND_NAME = "lastline"
 INTEGRATION_NAME = "Lastline v2"
 
+
 SUFFIX_TRANSFORMER = {'/analysis/submit/file': {'url': 'papi/analysis/submit_file', 'method': 'POST'},
                       '/analysis/get': {'url': 'papi/analysis/get_result', 'method': 'GET'},
                       '/analysis/get_completed': {'url': 'papi/analysis/get_history', 'method': 'GET'},
