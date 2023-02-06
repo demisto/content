@@ -16,7 +16,7 @@ def check_ip_internal(ip: str, ranges: list[str]):
         return True
 
 
-def get_ip_tag(ip, ranges):
+def get_ip_tag(ip: str, ranges: list[str]):
     for cidr in ranges:
         tag = None
         if DELIMETER in cidr:
