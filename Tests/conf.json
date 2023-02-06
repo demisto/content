@@ -2718,6 +2718,11 @@
             "playbookID": "Zoom_Test"
         },
         {
+            "integrations": "Cisco WebEx Feed",
+            "playbookID": "Test_Cisco_WebEx_Feed",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "IP Enrichment - Generic v2 - Test",
             "integrations": "Threat Crowd",
             "fromversion": "4.1.0"
@@ -2829,7 +2834,6 @@
             "playbookID": "AWS - S3 Test Playbook",
             "memory_threshold": 80,
             "is_mockable": false
-
         },
         {
             "integrations": "AwsSecretsManager",
@@ -3640,7 +3644,7 @@
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
             "fromversion": "6.0.0",
-            "timeout" : 600
+            "timeout": 600
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
@@ -4598,7 +4602,7 @@
             "integrations": [
                 "Feodo Tracker IP Blocklist Feed"
             ],
-             "instance_names": [
+            "instance_names": [
                 "feodo_tracker_ip_currently__active",
                 "feodo_tracker_ip_30_days"
             ]
@@ -5300,7 +5304,7 @@
                 "UnpublishThreatIntelReport"
             ]
         },
-        {            
+        {
             "integrations": "Generic SQL",
             "playbookID": "generic-sql",
             "instance_names": "Microsoft SQL Server - MS ODBC Driver",
@@ -5313,7 +5317,7 @@
         }
     ],
     "skipped_tests": {
-        "RegPathReputationBasicLists_test" : "The D2 pack is deprecated",
+        "RegPathReputationBasicLists_test": "The D2 pack is deprecated",
         "CirclIntegrationTest": "No instance",
         "CrowdStrikeMalquery-Test": "Issue CRTX-71397",
         "playbook-CheckPointSandBlast_Test": "Checkpoint playbook no license",
