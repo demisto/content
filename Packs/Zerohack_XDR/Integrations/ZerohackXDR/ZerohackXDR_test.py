@@ -24,7 +24,7 @@
 # requests_mock instance to any function with an argument named requests_mock.
 
 # Note: The test module function has not been added to these set of tests as it is only used for checking if the
-# #       connection with Zerohack XDR is working correctly.
+#       connection with Zerohack XDR is working correctly.
 import json
 
 
@@ -43,12 +43,14 @@ def test_get_latest_incident(requests_mock):
         base_url=ZEROHACK_XDR_API_BASE_URL,
         verify=False,
         api_key="Some Random Key",
-        proxy=False
+        proxy=False,
     )
 
-    mock_response = util_load_json('test_data/get_latest_incident.json')
+    mock_response = util_load_json("test_data/get_latest_incident.json")
 
-    requests_mock.register_uri('GET', f'{ZEROHACK_XDR_API_BASE_URL}/xdr-api', json=mock_response)
+    requests_mock.register_uri(
+        "GET", f"{ZEROHACK_XDR_API_BASE_URL}/xdr-api", json=mock_response
+    )
     incident = get_latest_incident(client, severity_level=4)
     assert isinstance(incident, dict)
 
@@ -63,29 +65,29 @@ def test_fetch_incidents(requests_mock):
         base_url=ZEROHACK_XDR_API_BASE_URL,
         verify=False,
         api_key="Some Random Key",
-        proxy=False
+        proxy=False,
     )
     min_severity = "4"
-    severity_levels = ZEROHACK_SEVERITIES[ZEROHACK_SEVERITIES.index(min_severity):]
+    severity_levels = ZEROHACK_SEVERITIES[ZEROHACK_SEVERITIES.index(min_severity) :]
     max_results_per_severity = 10
-    mock_responses = util_load_json('test_data/fetch_incidents.json')
+    mock_responses = util_load_json("test_data/fetch_incidents.json")
 
     responses_list = []
     for response in mock_responses:
-        responses_list.append({'text': json.dumps(response)})
+        responses_list.append({"text": json.dumps(response)})
 
-    last_run = {
-        'last_fetch': 1662120898
-    }
+    last_run = {"last_fetch": 1662120898}
 
-    requests_mock.register_uri('GET', f'{ZEROHACK_XDR_API_BASE_URL}/xdr-api', responses_list)
+    requests_mock.register_uri(
+        "GET", f"{ZEROHACK_XDR_API_BASE_URL}/xdr-api", responses_list
+    )
 
     next_run, incidents = fetch_incidents(
         client=client,
         max_results=max_results_per_severity,
         min_severity=min_severity,
         last_run=last_run,
-        first_fetch="1 day"
+        first_fetch="1 day",
     )
     # Type checks.
     assert isinstance(next_run, dict)
