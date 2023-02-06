@@ -90,7 +90,7 @@ tasks:
         tooltip: Try to generate the report to see it's content
         readonly: false
       title: Practicing with Reports
-      description: "Sometimes reports can be very useful. Reports can contain widgets and customized data that can assist in demonstrating good teamwork in XSOAR and how efficient it can be. \nTherefore, we have a hidden flag in one of the reports - try to find it :sunglasses:"
+      description: "Sometimes reports can be very useful. Reports can contain widgets and customized data that can assist in demonstrating good teamwork in XSOAR and how efficient it can be. \nTherefore, we have a hidden flag in one of the reports - try to find it :sunglasses: \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/status-report-status-update.gif) "
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -176,7 +176,7 @@ tasks:
         tooltip: Check the advanced settings of the playbook.
         readonly: false
       title: Check the Playbooks
-      description: Navigate to the newly downloaded playbook ("CTF-X") and check the existing task
+      description: "Navigate to the newly downloaded playbook (\"CTF-X\") and check the existing task \n\n![myfile](https://github.com/demisto/content/blob/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/look-nobodys-following-the-playbook-gerard-butler.gif)"
       sender: ""
       expired: false
       totalanswers: 0
@@ -241,7 +241,7 @@ tasks:
         tooltip: Try to check the integration's python. Oh and remember that the answer isn't always on the wall.
         readonly: false
       title: Integration Settings
-      description: "As it used to be, the main method to ingest incidents into the system remains the 'Integrations'  in each pack. Each integration can support multiple instances and be configured \nTo get you familiar with the system, we have hidden a flag inside one of the integrations (customized it and brought it to our MP). "
+      description: "As it used to be, the main method to ingest incidents into the system remains the 'Integrations'  in each pack. Each integration can support multiple instances and be configured \nTo get you familiar with the system, we have hidden a flag inside one of the integrations (customized it and brought it to our MP). \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/integration-lsf-lsf.gif) "
       sender: ""
       expired: false
       totalanswers: 0
@@ -307,7 +307,7 @@ tasks:
         tooltip: 'hint: you probably can play with the filters'
         readonly: false
       title: Incident fields
-      description: Now navigate to the Incident's fields section (located in the Settings tab). let's see if you are truly worthy ;)
+      description: "Now navigate to the Incident's fields section (located in the Settings tab). let's see if you are truly worthy ;) \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/custom-custom-game.gif)"
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -372,9 +372,10 @@ tasks:
         tooltip: You can see that information easily from pack's overview
         readonly: false
       title: Get to know the Marketplace
-      description: |-
+      description: "
         Go to the marketplace.
-        Search and download pack "CTF 2".
+        Search and download pack \"CTF 2\".
+        \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/new_marketplace.gif)"
       sender: ""
       expired: false
       totalanswers: 0
@@ -418,7 +419,8 @@ tasks:
       id: 001b4d4c-025c-4edf-8888-3e27c88642af
       version: -1
       name: Create a new incident using the CTF incident type
-      description: "Congrats! You finished with the first CTF! Well Done!!\n<Add gif here>\n\nLet's continue with the next challenge :) \n\nIn order to proceed to the following challenge, please create a new incident with the following parameter:\n1. Incident name should be your\n`<name  / student_id> - CTF02  `\n2. incident type \"CTF02\""
+      description: "Congrats! You finished with the first CTF! Well Done!!\n<Add gif here>\n\nLet's continue with the next challenge :) \n\nIn order to proceed to the following challenge, please create a new incident with the following parameter:\n1. Incident name should be your\n`<name  / student_id> - CTF02  `\n2. incident type \"CTF02\"  \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/the-office-the.gif)
+"
       type: regular
       iscommand: false
       brand: ""
@@ -641,7 +643,7 @@ tasks:
         tooltip: In case you wonder - the password for the bundle is 'logsbundleprotect'
         readonly: false
       title: View and download logs
-      description: "It's pretty common to view logs and troubleshoot any strange issue that the system produces, but in this version, the way of looking at the support logs entirely changed... can you find a way to generate support logs :black_joker:?  \n\n"
+      description: "It's pretty common to view logs and troubleshoot any strange issue that the system produces, but in this version, the way of looking at the support logs entirely changed... can you find a way to generate support logs :black_joker:?  \n\n \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/discord-logs-logs.gif)"
       sender: Your SOC team
       expired: false
       totalanswers: 0
