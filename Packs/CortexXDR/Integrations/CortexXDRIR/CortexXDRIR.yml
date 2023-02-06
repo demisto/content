@@ -565,6 +565,9 @@ script:
       name: unassign_user
       predefined:
       - 'true'
+    - description: Add a comment to the incident.
+      name: add_comment
+      required: false
     description: Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
     name: xdr-update-incident
   - arguments:
