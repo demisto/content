@@ -1,7 +1,7 @@
 import pytest
 import demistomock as demisto
 import json
-from MicrosoftGraphListener import MsGraphClient
+from MicrosoftGraphListener import MsGraphClient, is_only_ascii
 from MicrosoftGraphListener import add_second_to_str_date
 import requests_mock
 from unittest.mock import mock_open
@@ -1034,6 +1034,6 @@ def test_is_only_ascii(str_to_check, expected_result):
     When: Running the `is_only_ascii` function.
     Then: Ensure the function works and returns true for English strings and false for everything else.
     """
-    result = MsGraphClient.is_only_ascii(str_to_check)
+    result = is_only_ascii(str_to_check)
     assert expected_result == result
     
