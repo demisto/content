@@ -6,15 +6,15 @@ args:
   defaultValue: "443"
   description: Port to check
   name: Port
-comment: Use this automation to check for validity of your SSL certificate and get the time until expiration.
+comment: Use this automation to check for validity of your SSL certificate and get
+  the time until expiration.
 commonfields:
-  id: SSLVerifierV2
+  id: 9cc2bd75-c959-4709-8c3b-d684ec2ee17d
   version: -1
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
 dockerimage: demisto/ansible-runner:1.0.0.46481
 enabled: true
+engineinfo: {}
+mainengineinfo: {}
 name: SSLVerifierV2
 outputs:
 - contextPath: SSLVerifierV2.Certificate.ExpirationDate
@@ -26,6 +26,7 @@ outputs:
 - contextPath: SSLVerifierV2.Certificate.TimeToExpiration
   description: Days to expiration
   type: string
+pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
