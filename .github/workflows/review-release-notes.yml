@@ -25,12 +25,12 @@ jobs:
           since_last_remote_commit: false
 
       - name: Install SDK
-        if: steps.changed-files.outputs.all_changed_files != ''
+        if: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           python3 -m pip install demisto-sdk
 
       - name: Review Release Notes
-        if: steps.changed-files.outputs.all_changed_files != ''
+        if: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           release_notes="${{ steps.changed-files.outputs.all_changed_files }}"
           echo "Release notes found in PR: ${release_notes}. Starting docs review..."
