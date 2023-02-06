@@ -164,8 +164,8 @@ class Client(BaseClient):
                 )
                 response.raise_for_status()
             except Exception as e:
-                LOG(e)
-                raise
+                raise DemistoException(f'Authorization Error: Please provide a valid Client ID and Client Secret. '
+                                       f'Error: {e}')
 
             new_access_token = response.json().get("access_token")
             self.access_token = new_access_token
@@ -1043,12 +1043,12 @@ def check_valid_indicator_value(indicator_type: str, indicator_value: str) -> bo
     return True
 
 
-def get_incident_raw_response(endpoint: str, client: Client, args: dict[str, Any], max_limit: int) -> dict:
+def get_incident_raw_response(client: Client, endpoint: str, args: dict[str, Any], max_limit: int) -> dict:
     """
     Request to Get Incident response Json Data
     Args:
-        endpoint : Endpoint API for request incident
         client: Symantec EDR on-premise client objectd to use.
+        endpoint : Endpoint API for request incident
         args: all command arguments, usually passed from ``demisto.args()``.
         max_limit (int): Limit the maximum number of incident return
     Returns:
@@ -1074,7 +1074,7 @@ def get_incident_uuid(client: Client, args: dict[str, Any]):
       Returns:
         Return Incident UUID
     """
-    data_list = get_incident_raw_response('/atpapi/v2/incidents', client, args, 1).get('result', [])
+    data_list = get_incident_raw_response(client, '/atpapi/v2/incidents', args, 1).get('result', [])
     if data_list:
         if uuid := data_list[0].get('uuid'):
             return uuid
@@ -1151,7 +1151,7 @@ def test_module(client: Client) -> str:
 
     except Exception as e:
         LOG(e)
-        raise
+        raise DemistoException('Server Error make sure Server URL and Server Port are correctly set')
     return message
 
 
@@ -2040,7 +2040,8 @@ def get_sandbox_verdict(client: Client, args: Dict[str, Any]) -> CommandResults:
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.SandboxVerdict',
         outputs_key_field='',
-        outputs=response
+        outputs=response,
+        raw_response=response
     )
 
 
