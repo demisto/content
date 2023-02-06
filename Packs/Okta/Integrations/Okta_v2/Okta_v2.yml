@@ -409,6 +409,12 @@ script:
     - contextPath: Account.PasswordChanged
       description: Timestamp for when the user's password was last changed.
       type: Date
+    - contextPath: Account.Manager
+      description: The manager.
+      type: String
+    - contextPath: Account.ManagerEmail
+      description: The manager email.
+      type: String
     deprecated: false
     execution: false
   - arguments:
