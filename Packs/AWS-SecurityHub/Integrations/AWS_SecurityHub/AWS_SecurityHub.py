@@ -778,8 +778,8 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
             response = client.get_findings(NextToken=next_token)
             demisto.debug('No problem with next token.')
         # In case a new request is made with another input the nextToken will be revoked
-        except client.exceptions.InvalidInputException:
-            demisto.debug(f'In except of next token. {filters=}')
+        except client.exceptions.InvalidInputException as e:
+            demisto.debug(f'In except of next token. {filters=}\nThe exception is {e}')
             response = client.get_findings(Filters=filters)
     else:
         response = client.get_findings(Filters=filters)

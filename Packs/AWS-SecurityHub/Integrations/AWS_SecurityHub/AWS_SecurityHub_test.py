@@ -287,7 +287,7 @@ def test_build_severity_label_obj(label, expected_result):
     assert result == expected_result
 
 
-def test_get_remote_data_command(mocker):
+def test_get_remote_data_command():
     """
     Given:
         - An incident id and the last update date
