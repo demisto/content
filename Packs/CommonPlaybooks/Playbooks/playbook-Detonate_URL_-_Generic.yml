@@ -436,7 +436,9 @@ tasks:
       polling:
         simple: "true"
       url:
-        simple: inputs.URL.Data
+        complex:
+            root: inputs.URL
+            accessor: Data
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -449,7 +451,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
