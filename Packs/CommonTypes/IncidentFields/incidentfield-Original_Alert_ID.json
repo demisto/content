@@ -16,7 +16,7 @@
 	"id": "incident_originalalertid",
 	"isReadOnly": false,
 	"locked": false,
-	"name": "original Alert ID",
+	"name": "Original Alert ID",
 	"neverSetAsRequired": false,
 	"ownerOnly": false,
 	"placeholder": "",
