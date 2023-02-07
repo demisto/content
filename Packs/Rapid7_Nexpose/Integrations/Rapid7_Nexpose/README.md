@@ -75,6 +75,73 @@ Returns the specified asset.
 | Endpoint.OS | string | Endpoint operating system. | 
 | CVE.ID | string | Common Vulnerabilities and Exposures IDs. | 
 
+`nexpose-get-asset-tags`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | Asset ID. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.AssetTag.type | string | Type of asset tag. |
+| Nexpose.AssetTag.created_time | string | Timestamp with the tag was create. |
+| Nexpose.AssetTag.name | string | The value of the tag. |
+| Nexpose.AssetTag.risk_modifier | string | The risk modifier value associated with criticality tag type. |
+
+#### Command example
+
+```!nexpose-get-asset-tags asset_id=1```
+
+#### Context Example
+
+```json
+{
+    "Nexpose":{
+        "AssetTag":[
+                {
+                    "created_time": "2023-00-00T00:00:00.000Z",
+                    "name": "Low",
+                    "risk_modifier": "0.75",
+                    "type": "criticality"
+                },
+                {
+                    "created_time": "2023-00-00T00:00:00.000Z",
+                    "name": "FAKELOCATION",
+                    "risk_modifier": null,
+                    "type": "location"
+                },
+                {
+                    "created_time": "2023-00-00T00:00:00.000Z",
+                    "name": "FAKEOWNER",
+                    "risk_modifier": null,
+                    "type": "owner"
+                },
+                {
+                    "created_time": "2023-00-00T00:00:00.000Z",
+                    "name": "AWS",
+                    "risk_modifier": null,
+                    "type": "custom"
+                }
+            ]
+    }
+}
+```
+
+#### Human Readable Output
+
+> ### Nexpose Asset Tags for Asset 1
+>
+> |type|name|risk_modifier|created_time|
+> |---|---|---|---|
+> | criticality | Low | 0.75 | 2023-00-00T00:00:00.000Z |
+> | location | FAKELOCATION |  | 2023-00-00T00:00:00.000Z |
+> | owner | FAKEOWNER |  | 2023-00-00T00:00:00.000Z |
+> | custom | AWS |  | 2023-00-00T00:00:00.000Z |
+
 ### nexpose-get-assets
 ***
 Returns all assets for which you have access.
