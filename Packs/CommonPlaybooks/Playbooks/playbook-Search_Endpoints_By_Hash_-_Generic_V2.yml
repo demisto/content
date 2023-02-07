@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: c185447e-549c-476e-8477-98c461dadd16
+    taskid: e540cdba-a994-4570-879c-17357fcbd5bf
     type: playbook
     task:
-      id: 77111675-2526-411e-88fb-6f1ea92d57b8
+      id: e540cdba-a994-4570-879c-17357fcbd5bf
       version: -1
       name: CrowdStrike Falcon - Search Endpoints By Hash
       playbookName: CrowdStrike Falcon - Search Endpoints By Hash
@@ -52,6 +52,7 @@ tasks:
         complex:
           root: inputs.SHA256Hash
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -60,8 +61,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 63,
-          "y": 320
+          "x": -117,
+          "y": 480
         }
       }
     note: false
@@ -69,6 +70,8 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: d3865a5d-6516-4d22-8134-a4cfca96bd3c
@@ -138,22 +141,22 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: ce67117f-133a-4da3-84be-14e4a831756a
+    taskid: f323a091-6307-4cc5-827e-9f501c1a2fea
     type: title
     task:
-      id: ce67117f-133a-4da3-84be-14e4a831756a
+      id: f323a091-6307-4cc5-827e-9f501c1a2fea
       version: -1
       name: MD5 / SHA1 / SHA256
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "5"
       - "13"
       - "15"
+      - "17"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -166,6 +169,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: 05df1d6e-f77e-4b06-8c62-2750064f5b00
@@ -380,17 +385,62 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 6c80c03e-8e2b-425c-8210-0e6ec39a86b5
+    type: condition
+    task:
+      id: 6c80c03e-8e2b-425c-8210-0e6ec39a86b5
+      version: -1
+      name: Is SHA256 hash?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.SHA256Hash
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
       "11_16_yes": 0.47,
-      "11_8_yes": 0.58
+      "11_8_yes": 0.58,
+      "17_12_#default#": 0.27
     },
     "paper": {
       "dimensions": {
         "height": 805,
-        "width": 2500,
-        "x": -350,
+        "width": 2660,
+        "x": -510,
         "y": -50
       }
     }
