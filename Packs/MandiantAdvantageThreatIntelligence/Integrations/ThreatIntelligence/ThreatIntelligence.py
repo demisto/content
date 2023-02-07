@@ -2,12 +2,13 @@ from typing import Callable
 from typing import Dict
 
 import dateutil.parser
+import pytz
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+requests.packages.urllib3.disable_warnings()  # type:ignore
 
 """ CONSTANTS """
 
@@ -285,6 +286,13 @@ def get_last_updated(indicator: dict) -> datetime:
 def filter_last_updated(indicator: dict, start_time: datetime) -> bool:
     indicator_last_updated = get_last_updated(indicator)
     return indicator_last_updated.timestamp() > start_time.timestamp()
+
+
+def last_updated_filter(start_time: datetime):
+    return (
+        lambda indicator: get_last_updated(indicator).timestamp()
+        > start_time.timestamp()
+    )
 
 
 def get_verdict(mscore: Optional[str]) -> int:
@@ -633,6 +641,7 @@ def create_actor_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
         "relationships": relationships,
     }
     return indicator_obj
+
 
 def parse_cvss(cve: dict) -> dict:
     """
@@ -990,9 +999,9 @@ def enrich_indicators(
 
         indicator["relationships"] = indicator.get("relationships", []) + relationships
 
-        indicator["fields"]["publications"] = indicator["fields"].get("publications", []) + generate_publications(
-            reports_list=reports_list
-        )
+        indicator["fields"]["publications"] = indicator["fields"].get(
+            "publications", []
+        ) + generate_publications(reports_list=reports_list)
 
 
 def get_new_indicators(
@@ -1016,7 +1025,15 @@ def get_new_indicators(
     if indicator_type == "Indicators":
         # for indicator type the earliest time to fetch is 90 days ago
         earliest_fetch = arg_to_datetime("90 days ago")
-        param_start_date: datetime = max(earliest_fetch, start_date)  # type:ignore
+        assert earliest_fetch is not None
+
+        param_start_date: datetime = datetime.fromtimestamp(0)
+        if start_date is not None:
+            param_start_date = max(
+                earliest_fetch.replace(tzinfo=pytz.UTC), start_date.replace(tzinfo=pytz.UTC)
+            )  # type:ignore
+        else:
+            param_start_date = earliest_fetch
         params = {
             "start_epoch": int(param_start_date.timestamp()),
             "limit": limit,
@@ -1029,17 +1046,14 @@ def get_new_indicators(
     if indicator_type != "Indicators":  # new to old
         new_indicators_list.sort(key=get_last_updated, reverse=True)  # type:ignore
         new_indicators_list = list(
-            filter(filter_last_updated, new_indicators_list)  # type: ignore
+            filter(last_updated_filter(start_date), new_indicators_list)  # type: ignore
         )
 
     return new_indicators_list
 
 
 def get_indicator_list(
-    client: MandiantClient,
-    limit: int,
-    first_fetch: str,
-    indicator_type: str
+    client: MandiantClient, limit: int, first_fetch: str, indicator_type: str
 ) -> List[Dict]:
     """
     Get a list of indicators of the given type
@@ -1074,9 +1088,7 @@ def get_indicator_list(
     return indicators_list
 
 
-def fetch_indicators(
-    client: MandiantClient, args: Dict = None
-) -> List:
+def fetch_indicators(client: MandiantClient, args: Dict = None) -> List:
     """
     For each type the fetch indicator command will:
         1. Fetch a list of indicators from the Mandiant Threat Intelligence API
@@ -1105,9 +1117,7 @@ def fetch_indicators(
 
     result = []
     for indicator_type in types:
-        indicators_list = get_indicator_list(
-            client, limit, first_fetch, indicator_type
-        )
+        indicators_list = get_indicator_list(client, limit, first_fetch, indicator_type)
 
         if metadata and indicator_type != "Indicators":
             indicators_list = [
@@ -1129,9 +1139,7 @@ def fetch_indicators(
     return result
 
 
-def batch_fetch_indicators(
-    client: MandiantClient, args: Dict = None
-):
+def batch_fetch_indicators(client: MandiantClient, args: Dict = None):
     """
     For each type the fetch indicator command will:
         1. Fetch a list of indicators from the Mandiant Threat Intelligence API
@@ -1170,7 +1178,6 @@ def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
 
     for indicator in indicators:
         indicator["value"] = indicators_value_to_clickable([indicator["value"]])
-
 
     return CommandResults(
         content_format=formats["json"],
@@ -1370,9 +1377,7 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(
-            f"Failed to execute {command} command.\nError:\n{str(e)}"
-        )
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
 """ ENTRY POINT """

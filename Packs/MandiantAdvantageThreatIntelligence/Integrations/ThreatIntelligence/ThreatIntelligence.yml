@@ -24,6 +24,7 @@ configuration:
   name: feed
   required: false
   type: 8
+  additionalInfo: Whether to automatically fetch new indicators as part of a feed
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation.
   display: Indicator Reputation
@@ -69,15 +70,18 @@ configuration:
   - suddenDeath
   required: false
   type: 17
+  additionalInfo: The Feed Expiration Policy
 - name: feedExpirationInterval
   display: Feed Expiration Interval
   required: false
   type: 1
+  additionalInfo: The Feed Expiration Interval
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
+  additionalInfo: The number of minutes between Feed Fetches
 - name: feedMinimumConfidence
   type: 0
   display: Feed Minimum Confidence Score
