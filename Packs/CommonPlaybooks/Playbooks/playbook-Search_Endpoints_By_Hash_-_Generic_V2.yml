@@ -43,6 +43,7 @@ tasks:
       playbookName: CrowdStrike Falcon - Search Endpoints By Hash
       type: playbook
       iscommand: false
+      description: ''
       brand: ""
     nexttasks:
       '#none#':
@@ -150,6 +151,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -398,6 +400,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "12"
