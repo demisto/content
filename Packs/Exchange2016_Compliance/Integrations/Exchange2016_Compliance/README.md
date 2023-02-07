@@ -1,5 +1,8 @@
 <!-- HTML_DOC -->
 <div class="cl-preview-section">
+<p>Deprecated, use EWS V2 instead.</p>
+</div>
+<div class="cl-preview-section">
 <p>Use this integration to run and manage compliance searches on your Exchange 2016 Server.</p>
 </div>
 <div class="cl-preview-section">
