@@ -124,13 +124,13 @@ class Client:
         for mitre_item in mitre_data:
             if 0 < limit <= counter:
                 break
-            mitre_item_json = json.loads(str(mitre_item))
-            # try:
-            #     mitre_item_json = json.loads(str(mitre_item))
-            # except Exception as e:
-            #     demisto.debug
-            #     (f'Could not parse mitre_item to json. Error: {str(e)}')
-            #     continue
+
+            try:
+                mitre_item_json = json.loads(str(mitre_item))
+            except Exception as e:
+                demisto.debug
+                (f'Could not parse mitre_item to json. Error: {str(e)}')
+                continue
             if mitre_item_json.get('id') not in mitre_id_list:
                 value = mitre_item_json.get('name')
                 item_type = get_item_type(mitre_item_json.get('type'), is_up_to_6_2)
