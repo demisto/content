@@ -1,11 +1,11 @@
 comment: 'Generates the HTML needed for a formatted email to be sent using the outputs
   of !SSLVerifierV2, as part of the SSLVerifierV2 content pack. '
 commonfields:
-  id: d8a653a4-e451-4eae-81b0-5d544ce9ec46
+  id: SSLVerifierV2_GenerateEmailBody
   version: -1
 dockerimage: demisto/ansible-runner:1.0.0.47001
 enabled: true
-name: d8a653a4-e451-4eae-81b0-5d544ce9ec46
+name: SSLVerifierV2_GenerateEmailBody
 outputs:
 - contextPath: SSLReport.HTML
   description: Email body formatted in HTML
