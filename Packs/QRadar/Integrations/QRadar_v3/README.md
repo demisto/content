@@ -89,6 +89,9 @@ Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adj
 ## Mirroring
 This integration supports in mirroring from QRadar offenses to Cortex XSOAR.  
 When a field of an offense is updated in QRadar services, the update is mirrored in Cortex XSOAR.
+
+**Note: If the fetch offense query contains status=OPEN, closed offenses will not be mirrored.**
+
 ### Mirroring Events
 * Mirroring events from QRadar to Cortex XSOAR is supported via the **Mirror Offense and Events** option.
 * Events will only be mirrored in the incoming direction.
