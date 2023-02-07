@@ -1,7 +1,12 @@
 name: Docker Update Auto Merge
 on:
-  schedule:
-    - cron: '30 10 * * *'
+  pull_request:
+    types: [opened, reopened, labeled, edited, synchronize, assigned]
+    branches:
+      - 'demisto/**'
+
+  check_suite:
+    types: [ completed ]
 
 permissions:
   pull-requests: write
@@ -10,7 +15,7 @@ permissions:
 jobs:
   auto_approve_and_merge:
     runs-on: ubuntu-latest
-    if: startsWith(github.head_ref, 'demisto/') && github.repository == 'demisto/content' && contains(github.event.pull_request.labels.*.name, 'docker') && contains(github.event.pull_request.labels.*.name, 'docker-image-auto-update')
+    if: startsWith(github.head_ref, 'demisto/') && github.repository == 'demisto/content' && contains(github.event.pull_request.labels.*.name, 'docker-image-auto-update')
     steps:
       - name: Print out context
         run: |
