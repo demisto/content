@@ -1377,7 +1377,7 @@ script:
       required: true
     description: Use this operation to view the highest peak values and highest average values for a protected IP range during a selected time period
     name: incap-get-infra-protection-top-items-table
-- system: true
+system: true
 tests:
 - No test
 fromversion: 5.0.0
