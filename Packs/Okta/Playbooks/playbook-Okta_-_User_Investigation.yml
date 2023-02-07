@@ -1433,14 +1433,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "42"
+      - "45"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1470,
-          "y": 265
+          "x": -1480,
+          "y": 275
         }
       }
     note: false
@@ -1473,8 +1473,6 @@ tasks:
         simple: securityContext.asNumber eq "${inputs.ASN}" and (eventType eq "user.authentication.sso" and outcome.result eq "FAILURE" or eventType eq "user.authentication.auth" and outcome.result eq "FAILURE")
       ignore-outputs:
         simple: "true"
-      limit:
-        simple: ${inputs.ASN}
       retry-count:
         simple: "6"
       retry-interval:
@@ -1495,8 +1493,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1470,
-          "y": 400
+          "x": -1480,
+          "y": 610
         }
       }
     note: false
@@ -1533,8 +1531,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1470,
-          "y": 805
+          "x": -1480,
+          "y": 1035
         }
       }
     note: false
@@ -1578,8 +1576,50 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1470,
-          "y": 585
+          "x": -1480,
+          "y": 815
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: bb29f22a-c8db-4192-8345-462cb2453443
+    type: condition
+    task:
+      id: bb29f22a-c8db-4192-8345-462cb2453443
+      version: -1
+      name: Does the ASN is defined?
+      description: Check if there are results from Okta.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ASN
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1480,
+          "y": 430
         }
       }
     note: false
@@ -1603,13 +1643,15 @@ view: |-
       "39_18_#default#": 0.16,
       "39_4_yes": 0.44,
       "44_18_#default#": 0.1,
-      "44_43_yes": 0.58
+      "44_43_yes": 0.58,
+      "45_18_#default#": 0.1,
+      "45_42_yes": 0.49
     },
     "paper": {
       "dimensions": {
         "height": 2525,
-        "width": 4100,
-        "x": -1470,
+        "width": 4110,
+        "x": -1480,
         "y": -880
       }
     }

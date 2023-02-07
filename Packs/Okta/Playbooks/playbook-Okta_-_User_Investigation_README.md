@@ -10,9 +10,9 @@ This playbook does not use any sub-playbooks.
 * Okta v2
 
 ### Scripts
+* GetTime
 * CountArraySize
 * Set
-* GetTime
 
 ### Commands
 * okta-get-logs
