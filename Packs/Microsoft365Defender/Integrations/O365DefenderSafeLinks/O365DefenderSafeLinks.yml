@@ -1077,6 +1077,6 @@ script:
   script: "-"
   type: powershell
   dockerimage: demisto/pwsh-exchange:1.0.0.34118
-fromversion: 5.5.0
+fromversion: 6.0.0
 tests:
 - No Test

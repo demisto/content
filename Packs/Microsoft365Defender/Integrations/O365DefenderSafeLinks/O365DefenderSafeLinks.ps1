@@ -493,16 +493,16 @@ class ExchangeOnlinePowershellV2Client {
         <#
         .DESCRIPTION
         Use this cmdlet to get the ATP policy.
-        
+
         .OUTPUTS
         PSObject- Raw response
-        
+
         .LINK
         https://docs.microsoft.com/en-us/powershell/module/exchange/get-atppolicyforo365
         #>
     }
     [PSObject]
-    SetAtpPolicy( 
+    SetAtpPolicy(
         [hashtable]$kwargs
     ) {
         try{
@@ -526,10 +526,10 @@ class ExchangeOnlinePowershellV2Client {
         <#
         .DESCRIPTION
         Use this cmdlet to set the ATP policy.
-        
+
         .OUTPUTS
         PSObject- Raw response
-        
+
         .LINK
         https://docs.microsoft.com/en-us/powershell/module/exchange/set-atppolicyforo365
         #>
@@ -671,7 +671,7 @@ function GetAtpPolicyCommand {
     Param (
         [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client
     )
-        
+
     $raw_response = $client.GetAtpPolicy()
     if (!$raw_response){
         return "#### No records were found.", @{}, @{}
@@ -679,7 +679,7 @@ function GetAtpPolicyCommand {
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.AtpPolicy" = CreateContextForReport $raw_response }
     return $human_readable, $entry_context, $raw_response
-    
+
 }
 
 function SetAtpPolicyCommand {
@@ -689,7 +689,7 @@ function SetAtpPolicyCommand {
         [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
         [hashtable]$kwargs
     )
-        
+
     $raw_response = $client.SetAtpPolicy($kwargs)
     # $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.AtpPolicy" = CreateContextForReport $raw_response }
@@ -762,7 +762,7 @@ function Main {
             }
             "$script:COMMAND_PREFIX-aggregate-report-get" {
                 ($human_readable, $entry_context, $raw_response) = GetAggregateReportCommand -client $exo_client -kwargs $command_arguments
-            }            
+            }
             "$script:COMMAND_PREFIX-atp-policy-get" {
                 ($human_readable, $entry_context, $raw_response) = GetAtpPolicyCommand -client $exo_client
             }

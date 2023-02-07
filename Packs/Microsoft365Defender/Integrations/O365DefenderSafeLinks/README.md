@@ -1087,3 +1087,49 @@ Known Limitations
 * Allow up to 30 minutes for a new or updated policy to be applied.
 * Organization - be sure to use an `.onmicrosoft.com` domain in the Organization parameter value. Otherwise, you might encounter cryptic permission issues when you run commands in the app context.
 
+### o365-defender-safelinks-atp-policy-get
+***
+Get APT policy. In order to manage BlockURLs please use the command o365-defender-safelinks-global-url-blocklist.
+
+
+#### Base Command
+
+`o365-defender-safelinks-atp-policy-get`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| O365Defender.SafeLinks.AtpPolicy.Name | String | ATP policy name. | 
+| O365Defender.SafeLinks.AtpPolicy.AdminDisplayName | String | ATP policy admin display name. | 
+| O365Defender.SafeLinks.AtpPolicy.EnableATPForSPOTeamsODB | String | ATP policy enable for SPOT teams. | 
+| O365Defender.SafeLinks.AtpPolicy.AllowSafeDocsOpen | String | ATP policy allow safe docs open. | 
+| O365Defender.SafeLinks.AtpPolicy.EnableSafeDocs | String | ATP policy enable safe docs. | 
+| O365Defender.SafeLinks.AtpPolicy.Identity | String | ATP policy id. | 
+| O365Defender.SafeLinks.AtpPolicy.IsValid | String | Is ATP policy valid. | 
+| O365Defender.SafeLinks.AtpPolicy.WhenCreatedUTC | String | When ATP policy created. | 
+| O365Defender.SafeLinks.AtpPolicy.WhenChangedUTC | String | When ATP policy changed. | 
+
+### o365-defender-safelinks-atp-policy-set
+***
+Set ATP policy.
+
+
+#### Base Command
+
+`o365-defender-safelinks-atp-policy-set`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| allow_safe_docs_open | Toggle mode for allow open safe documents. Possible values are: true, false. | Optional | 
+| enable_atp_spo_teams_odb | Toggle mode for enable_atp_spo_teams_odb. Possible values are: true, false. | Optional | 
+| enable_safe_docs | Toggle mode for enable_safe_docs. Possible values are: true, false. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
