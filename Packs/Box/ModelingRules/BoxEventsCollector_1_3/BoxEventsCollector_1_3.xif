@@ -17,7 +17,10 @@ filter
     xdm.target.user.username = json_extract_scalar(source, "$.owned_by.login"),
     xdm.source.user.user_type = json_extract_scalar(created_by, "$.type"),
     xdm.source.user.identifier = json_extract_scalar(created_by, "$.id"),
-    xdm.source.user.username = json_extract_scalar(created_by, "$.login"),
+    xdm.source.user.upn = json_extract_scalar(created_by, "$.login"),
+    xdm.source.user.username = json_extract_scalar(created_by, "$.name"),
+    xdm.source.user.first_name = arrayindex(split(json_extract_scalar(created_by, "$.name")), 0),
+    xdm.source.user.last_name = arrayindex(split(json_extract_scalar(created_by, "$.name")), 1),
     xdm.event.id = event_id,
     xdm.event.type = event_type,
     xdm.source.ipv4 = ip_address;
@@ -26,10 +29,11 @@ filter
     event_type in ("ADMIN_LOGIN","FAILED_LOGIN","LOGIN")
 | alter
     //_time = created_at,
-    xdm.source.user.identifier = json_extract_scalar(source, "$.id"),
-    xdm.source.user.first_name = arrayindex(split(json_extract_scalar(source, "$.name")), 0),
-    xdm.source.user.last_name = arrayindex(split(json_extract_scalar(source, "$.name")), 1),
-    xdm.source.user.username = json_extract_scalar(source, "$.login"),
+    xdm.source.user.identifier = json_extract_scalar(created_by, "$.id"),
+    xdm.source.user.first_name = arrayindex(split(json_extract_scalar(created_by, "$.name")), 0),
+    xdm.source.user.last_name = arrayindex(split(json_extract_scalar(created_by, "$.name")), 1),
+    xdm.source.user.upn = json_extract_scalar(created_by, "$.login"),
+    xdm.source.user.username = json_extract_scalar(created_by, "$.name"),
     xdm.event.id = event_id,
     xdm.event.type = event_type,
     xdm.source.ipv4 = ip_address;
