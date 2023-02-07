@@ -3,16 +3,22 @@ if (serverURL.slice(-1) === '/') {
     serverURL = serverURL.slice(0,-1);
 }
 
-logDebug("$$$$$$$")
-logDebug(serverURL)
-logDebug(params.auth_id)
-logDebug(params.creds_apikey.identifier)
+log("$$$$$$$1")
+log(serverURL)
+log(params.auth_id)
+log(params.creds_apikey.identifier)
+log("$$$$$$$1")
+logInfo("$$$$$$$2")
+logInfo(serverURL)
+logInfo(params.auth_id)
+logInfo(params.creds_apikey.identifier)
+logInfo("$$$$$$$2")
+
 
 if (params.auth_id || (params.creds_apikey && params.creds_apikey.identifier)) {
     if (!serverURL.endsWith('/xsoar')){
         serverURL = serverURL + '/xsoar'
     }
-    log(serverURL)
 }
 
 var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://storage.googleapis.com/marketplace-dist/content/packs/'
