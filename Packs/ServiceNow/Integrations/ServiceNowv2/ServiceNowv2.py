@@ -2446,15 +2446,20 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 'EntryContext': comments_context
             })
 
-    if ticket.get('closed_at'):
-        if params.get('close_incident'):
-            demisto.debug(f'ticket is closed: {ticket}')
+    # Handle closing ticket/incident in XSOAR
+    close_incident = params.get('close_incident')
+    if close_incident != 'None':
+        server_close_custom_state = params.get('server_close_custom_state')
+
+        if server_close_custom_state or (ticket.get('closed_at') and close_incident == 'closed') \
+                or (ticket.get('resolved_at') and close_incident == 'resolved'):
+            demisto.debug(f'SNOW ticket changed state- should be closed in XSOAR: {ticket}')
             entries.append({
                 'Type': EntryType.NOTE,
                 'Contents': {
                     'dbotIncidentClose': True,
                     'closeNotes': f'From ServiceNow: {ticket.get("close_notes")}',
-                    'closeReason': converts_state_close_reason(ticket.get("state"))
+                    'closeReason': converts_state_close_reason(ticket.get("state"), server_close_custom_state)
                 },
                 'ContentsFormat': EntryFormat.JSON
             })
@@ -2463,17 +2468,39 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     return [ticket] + entries
 
 
-def converts_state_close_reason(ticket_state: str):
+def converts_state_close_reason(ticket_state: Optional[str], server_close_custom_state: Optional[str]):
     """
-    converts between XSOAR and service now state.
+    determine the XSOAR incident close reason based on the Service Now ticket state.
+    if 'Mirrored XSOAR Ticket custom close state code' parameter is set, the function will try to use it to
+    determine the close reason (should be corresponding to a user-defined list of close reasons in the server configuration).
+    then it will try using 'closed' or 'resolved' state, if set using 'Mirrored XSOAR Ticket closure method' parameter.
+    otherwise, it will use the default 'out of the box' server incident close reason.
     Args:
-        ticket_state: Service now state
+        ticket_state: Service now ticket state
+        server_close_custom_state: server close custom state parameter
     Returns:
         The XSOAR state
     """
-    if ticket_state in ['6', '7']:
-        return 'Resolved'
 
+    custom_label = ''
+    # if custom state parameter is set and ticket state is returned from incident is not empty
+    if server_close_custom_state and ticket_state:
+        demisto.debug(f'trying to close XSOAR incident using custom states: {server_close_custom_state}, with \
+            received state code: {ticket_state}')
+        # parse custom state parameter into a dictionary of custom state codes and their names (label)
+        server_close_custom_state_dict = dict(item.split("=") for item in server_close_custom_state.split(","))
+        if ticket_state in server_close_custom_state_dict:
+            # check if state code is in the parsed dictionary
+            if custom_state_label := server_close_custom_state_dict.get(ticket_state):
+                custom_label = custom_state_label
+
+    if custom_label:
+        demisto.debug(f'incident should be closed using custom state. State Code: {ticket_state}, Label: {custom_label}')
+        return custom_label
+    elif ticket_state in ['6', '7']:  # default states for closed (6) and resolved (7)
+        demisto.debug(f'incident should be closed using default state. State Code: {ticket_state}')
+        return 'Resolved'
+    demisto.debug(f'incident is closed using default close reason "Other". State Code: {ticket_state}')
     return 'Other'
 
 
