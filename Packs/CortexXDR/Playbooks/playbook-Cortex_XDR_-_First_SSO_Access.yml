@@ -547,7 +547,6 @@ tasks:
       '#none#':
       - "172"
       - "173"
-      - "6"
     separatecontext: false
     continueonerrortype: ""
     view: |-

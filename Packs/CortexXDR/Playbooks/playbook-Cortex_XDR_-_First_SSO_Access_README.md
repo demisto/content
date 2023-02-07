@@ -14,24 +14,24 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Cortex XDR - First SSO Access - Set Verdict
-* Account Enrichment - Generic v2.1
-* Block Account - Generic v2
 * TIM - Indicator Relationships Analysis
+* Account Enrichment - Generic v2.1
 * User Investigation - Generic
+* Block Account - Generic v2
 
 ### Integrations
 * XDR_iocs
-* CortexXDRIR
 * XQLQueryingEngine
+* CortexXDRIR
 
 ### Scripts
 * Set
 
 ### Commands
 * ad-expire-password
-* xdr-endpoint-isolate
-* setIncident
 * ip
+* setIncident
+* xdr-endpoint-isolate
 
 ## Playbook Inputs
 ---
