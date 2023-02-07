@@ -1,8 +1,8 @@
 This playbook determines the alert’s verdict based on the results of multiple checks.
 By default, if at least two of the checks' results are true, the verdict is set to malicious.
 else if only one check's results are true, the verdict is set to suspicious.
-If none of the conditions is true,  the verdict is set to non-malicious.
-It possible to change the threshold value of the inputs to change the sensitivity of the verdict is set.
+If none of the conditions is true, the verdict is set to non-malicious.
+It is possible to change the threshold value of the inputs to change the sensitivity of the verdict.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -19,19 +19,19 @@ This playbook does not use any integrations.
 * Set
 
 ### Commands
-setIncident
+* setIncident
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| FailedlogonUserThreshold | The 'Failed login' threshold to determine the 'Check for massive failed logon' check result.<br/> |  | Optional |
-| FailedlogonFromASNThreshold | The 'Failed login from ASN' threshold to determine the 'Check for massive failed logon from the ASN' check result.<br/> |  | Optional |
-| XDRRelatedAlertsThreshold | The 'XDR related alerts' threshold to determine the 'Check for XDR related alerts' check result. |  | Optional |
-| MaliciousVerdictThreshold | The 'Malicious verdict' threshold to determine a malicious verdict.<br/>The default value is '2'. | 2 | Optional |
-| SuspiciousVerdictThreshold | The 'Suspicious verdict' threshold to determine a suspicious verdict.<br/>The default value is '1'. | 1 | Optional |
-| AlertName | Alert name. |  | Optional |
+| FailedlogonUserThreshold | This is the minimum threshold for failed login attempts by the user.<br/>example: If this input is set to '30', and the playbook has found 31 failed login attempts - It will classify this check as suspicious activity. |  | Optional |
+| FailedlogonFromASNThreshold | This is the minimum threshold for failed login attempts from ASN.<br/>example: If this input is set to '20', and the playbook has found 21 failed login attempts from ASN - It will classify this check as suspicious activity. |  | Optional |
+| XDRRelatedAlertsThreshold | This is the minimum threshold for XDR related alerts based on user activity to identify suspicious activity.<br/>example: If this input is set to '3', and the playbook has found 4 XDR related alerts - It will classify this check as suspicious activity. |  | Optional |
+| MaliciousVerdictThreshold | The 'Malicious verdict' threshold to determine a malicious verdict.<br/>Should be Greater than the "SuspiciousVerdictThreshold" input. |  | Optional |
+| SuspiciousVerdictThreshold | The 'Suspicious verdict' threshold to determine a suspicious verdict.<br/>Should be lower than the "MaliciousVerdictThreshold" input. |  | Optional |
+| AlertName | Alert Name. |  | Optional |
 | NumOfFailedLogonASN | The number of failed logins from the ASN. |  | Optional |
 | RelatedCampaign | Campaign related to the indicator. |  | Optional |
 | NumOfXDRAlerts | The number of XDR alerts for the user. |  | Optional |

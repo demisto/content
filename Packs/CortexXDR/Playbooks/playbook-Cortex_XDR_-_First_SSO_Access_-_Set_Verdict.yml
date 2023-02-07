@@ -36,7 +36,7 @@ tasks:
       {
         "position": {
           "x": -2340,
-          "y": 110
+          "y": 90
         }
       }
     note: false
@@ -74,8 +74,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2330,
-          "y": 730
+          "x": -2340,
+          "y": 620
         }
       }
     note: false
@@ -102,8 +102,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2330,
-          "y": 1790
+          "x": -2340,
+          "y": 1960
         }
       }
     note: false
@@ -139,8 +139,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2530,
-          "y": 1610
+          "x": -2540,
+          "y": 1780
         }
       }
     note: false
@@ -180,8 +180,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1730,
-          "y": 1610
+          "x": -1740,
+          "y": 1780
         }
       }
     note: false
@@ -290,8 +290,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2330,
-          "y": 1420
+          "x": -2340,
+          "y": 1590
         }
       }
     note: false
@@ -327,8 +327,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2930,
-          "y": 1610
+          "x": -2940,
+          "y": 1780
         }
       }
     note: false
@@ -357,7 +357,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "67"
+      - "118"
     scriptarguments:
       keys:
         simple: The user work from an unusual country?
@@ -413,8 +413,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2790,
-          "y": 280
+          "x": -900,
+          "y": 290
         }
       }
     note: false
@@ -439,7 +439,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "67"
+      - "118"
     scriptarguments:
       keys:
         simple: The user performs suspicious activities
@@ -473,8 +473,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3200,
-          "y": 280
+          "x": -1310,
+          "y": 290
         }
       }
     note: false
@@ -500,7 +500,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "67"
+      - "118"
     scriptarguments:
       keys:
         simple: massively failed logon by the user?
@@ -537,8 +537,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4020,
-          "y": 280
+          "x": -2130,
+          "y": 290
         }
       }
     note: false
@@ -563,7 +563,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "67"
+      - "118"
     scriptarguments:
       keys:
         simple: XDR related alerts exist?
@@ -600,8 +600,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4840,
-          "y": 280
+          "x": -2960,
+          "y": 290
         }
       }
     note: false
@@ -626,7 +626,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "67"
+      - "118"
     scriptarguments:
       keys:
         simple: Suspicious according to DBot Score?
@@ -663,8 +663,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4430,
-          "y": 280
+          "x": -2550,
+          "y": 290
         }
       }
     note: false
@@ -689,7 +689,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "67"
+      - "118"
     scriptarguments:
       keys:
         simple: Has related campaigns?
@@ -723,8 +723,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5250,
-          "y": 280
+          "x": -3370,
+          "y": 290
         }
       }
     note: false
@@ -749,7 +749,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "67"
+      - "118"
     scriptarguments:
       keys:
         simple: massively failed logon from the ASN?
@@ -786,8 +786,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5670,
-          "y": 280
+          "x": -3790,
+          "y": 290
         }
       }
     note: false
@@ -812,7 +812,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "67"
+      - "118"
     scriptarguments:
       keys:
         simple: Does the user perform login to an unusual application?
@@ -847,8 +847,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3610,
-          "y": 280
+          "x": -1720,
+          "y": 290
         }
       }
     note: false
@@ -900,8 +900,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2330,
-          "y": 1070
+          "x": -2340,
+          "y": 1110
         }
       }
     note: false
@@ -926,7 +926,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "110"
+      - "119"
     scriptarguments:
       columns:
         simple: Check,Result
@@ -942,8 +942,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2330,
-          "y": 900
+          "x": -2340,
+          "y": 790
         }
       }
     note: false
@@ -968,7 +968,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "95"
+      - "117"
     scriptarguments:
       key:
         simple: NumOfVerdictResult
@@ -982,8 +982,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2330,
-          "y": 1250
+          "x": -2340,
+          "y": 1290
         }
       }
     note: false
@@ -1019,8 +1019,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2130,
-          "y": 1610
+          "x": -2140,
+          "y": 1780
         }
       }
     note: false
@@ -1034,6 +1034,99 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+  "117":
+    id: "117"
+    taskid: 0ba35e93-e1eb-48a4-8f46-545221417c7a
+    type: title
+    task:
+      id: 0ba35e93-e1eb-48a4-8f46-545221417c7a
+      version: -1
+      name: Set Verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "95"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 1455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "118":
+    id: "118"
+    taskid: 60e6468a-0f38-4ff8-862b-d82c81df94e0
+    type: title
+    task:
+      id: 60e6468a-0f38-4ff8-862b-d82c81df94e0
+      version: -1
+      name: Set Fields to Layout
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "67"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "119":
+    id: "119"
+    taskid: 2d1d85aa-9a67-4b9c-8b4e-1aaad791ddc7
+    type: title
+    task:
+      id: 2d1d85aa-9a67-4b9c-8b4e-1aaad791ddc7
+      version: -1
+      name: Calc of results
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "110"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1042,10 +1135,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1745,
-        "width": 4320,
-        "x": -5670,
-        "y": 110
+        "height": 1935,
+        "width": 3270,
+        "x": -3790,
+        "y": 90
       }
     }
   }
@@ -1053,35 +1146,37 @@ inputs:
 - key: FailedlogonUserThreshold
   value: {}
   required: false
-  description: |
-    The 'Failed login' threshold to determine the 'Check for massive failed logon' check result.
+  description: |-
+    This is the minimum threshold for failed login attempts by the user.
+    example: If this input is set to '30', and the playbook has found 31 failed login attempts - It will classify this check as suspicious activity.
   playbookInputQuery:
 - key: FailedlogonFromASNThreshold
   value: {}
   required: false
-  description: |
-    The 'Failed login from ASN' threshold to determine the 'Check for massive failed logon from the ASN' check result.
+  description: |-
+    This is the minimum threshold for failed login attempts from ASN.
+    example: If this input is set to '20', and the playbook has found 21 failed login attempts from ASN - It will classify this check as suspicious activity.
   playbookInputQuery:
 - key: XDRRelatedAlertsThreshold
   value: {}
   required: false
-  description: The 'XDR related alerts' threshold to determine the 'Check for XDR related alerts' check result.
+  description: |-
+    This is the minimum threshold for XDR related alerts based on user activity to identify suspicious activity.
+    example: If this input is set to '3', and the playbook has found 4 XDR related alerts - It will classify this check as suspicious activity.
   playbookInputQuery:
 - key: MaliciousVerdictThreshold
-  value:
-    simple: "2"
+  value: {}
   required: false
   description: |-
     The 'Malicious verdict' threshold to determine a malicious verdict.
-    The default value is '2'.
+    Should be Greater than the "SuspiciousVerdictThreshold" input.
   playbookInputQuery:
 - key: SuspiciousVerdictThreshold
-  value:
-    simple: "1"
+  value: {}
   required: false
   description: |-
     The 'Suspicious verdict' threshold to determine a suspicious verdict.
-    The default value is '1'.
+    Should be lower than the "MaliciousVerdictThreshold" input.
   playbookInputQuery:
 - key: AlertName
   value: {}
