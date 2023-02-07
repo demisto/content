@@ -21,7 +21,7 @@
 | Your Reporting  Server URL  |             | true     |
 | Reporting API Key           |             | true     |
 | Your USer Events Server URL |             | true     |
-| USer Events API Key         |             | true     |
+| User Events API Key         |             | true     |
 
 ## Commands
 
