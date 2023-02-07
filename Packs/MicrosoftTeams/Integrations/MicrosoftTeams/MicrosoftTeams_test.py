@@ -2162,10 +2162,10 @@ def test_get_chat_id_and_type(mocker, requests_mock):
     """
     Given:
         The 'chat' argument as:
-      - case 1: chat ID -> return the given ID and the chat_type
-      - case 2: chat_name (topic) -> return the ID and 'group' chat_type
+      - case 1: chat ID -> returns the given ID and the chat_type
+      - case 2: chat_name (topic) -> returns the ID and 'group' chat_type
       - case 3: member -> returns the ID of a one-on-one chat and 'oneOnOne' chat_type
-      - case 4: non-existing member or chat_name (topic)  -> raise ValueError
+      - case 4: non-existing member/chat_name (topic)  -> raise ValueError
     When:
       - Calling the 'get_chat_id_and_type' function.
     Then:
