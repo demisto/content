@@ -62,7 +62,7 @@ tasks:
       id: 3fb995fa-a0bf-4054-8f8c-d829a5ceb5d2
       iscommand: true
       name: Download Custom Content Bundle from Dev
-      script: demisto-api-download
+      script: '|||demisto-api-download'
       tags:
       - devcontent
       type: regular

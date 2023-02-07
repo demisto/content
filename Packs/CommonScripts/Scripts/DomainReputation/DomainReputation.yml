@@ -17,9 +17,6 @@ args:
 scripttarget: 0
 runonce: false
 fromversion: 5.0.0
-marketplaces:
-- xsoar
-- marketplacev2
-dockerimage: demisto/python3:3.10.9.46807
+dockerimage: demisto/python3:3.10.9.40422
 tests:
 - No tests (auto formatted)
