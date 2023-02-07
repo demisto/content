@@ -1,4 +1,7 @@
 category: Messaging
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: EwsExtension
   version: -1
@@ -8,20 +11,25 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Email (Password for basic authentication only)
   name: credentials
   required: false
   type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-description: This integration enables you to manage and interact with Microsoft O365
-  - Exchange Online from within XSOAR.
+  section: Connect
+  advanced: true
+description: This integration enables you to manage and interact with Microsoft O365 - Exchange Online from within XSOAR.
 display: O365 - EWS - Extension
 name: EwsExtension
 script:
