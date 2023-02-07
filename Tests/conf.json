@@ -21,6 +21,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Twitter v2",
+            "playbookID": "playbook-Test_Twitter_v2",
+            "instance_names": "Twitter v2"
+        },
+        {
             "playbookID": "IndicatorFormatterFilterTest",
             "timeout": 1200
         },
@@ -3373,6 +3378,13 @@
             "timeout": 60000,
             "fromversion": "5.5.0"
         },
+        {
+            "integrations": "Palo Alto Networks - Prisma SASE",
+            "playbookID": "PrismaSASE Test",
+            "fromversion": "6.5.0",
+            "timeout": 3000
+        },
+
         {
             "integrations": "Prisma Access",
             "playbookID": "Prisma_Access-Test",
