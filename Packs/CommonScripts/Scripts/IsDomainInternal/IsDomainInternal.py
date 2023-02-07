@@ -3,8 +3,8 @@ from time import sleep
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-POLLING_TIME = 2  # Interval to wait in seconds when polling to check if indicator was created
 
+POLLING_TIME = 2  # Interval to wait in seconds when polling to check if indicator was created
 
 def check_domain_internal(domain, internal_domains):
     parts = domain.split(".")
@@ -59,14 +59,14 @@ for domain in domain_list:
 
     # Check if indicator exists:
     is_exist_res = demisto.executeCommand("CheckIndicatorValue", args_exists_check)
-    indicator_exists = is_exist_res[0].get("Contents", {})[0].get("Exists")
+    indicator_exists = is_exist_res[0].get("Contents", [])[0].get("Exists")
 
     # If indicator doesn't exist, create it and continuously poll for its creation (which happens asynchronously):
     if not indicator_exists:
         demisto.executeCommand("createNewIndicator", args_create_or_set_indicator)
         while not indicator_exists:  # Looping because it takes time for the indicator to be created
             is_exist_res = demisto.executeCommand("CheckIndicatorValue", args_exists_check)
-            indicator_exists = is_exist_res[0].get("Contents", {})[0].get("Exists")
+            indicator_exists = is_exist_res[0].get("Contents", [])[0].get("Exists")
             sleep(POLLING_TIME)
 
     # Once the indicator exists, update it with the correct Internal property:
