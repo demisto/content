@@ -31,6 +31,6 @@ filter
     xdm.target.user.upn = json_extract_scalar(description, "$.email"),
     xdm.auth.auth_method = json_extract_scalar(description, "$.factor"),
     xdm.source.ipv4 =  json_extract_scalar(description, "$.ip_address"),
-    xdm.target.user.user_type  = json_extract_scalar(description, "$.role"),
+    xdm.target.user.groups  = arraycreate(coalesce(json_extract_scalar(description, "$.role"),"")),
     xdm.target.user.username = json_extract_scalar(description, "$.email"),
     xdm.target.resource.type = json_extract_scalar(description, "$.factor");
