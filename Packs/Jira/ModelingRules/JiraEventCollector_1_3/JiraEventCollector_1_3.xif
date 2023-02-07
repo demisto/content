@@ -7,5 +7,5 @@ alter
 	xdm.event.operation_sub_type = category,
 	xdm.target.user.identifier = json_extract_scalar(objectItem, "$.id"),
 	xdm.target.user.username = json_extract_scalar(objectItem, "$.name"),
-	xdm.target.user.user_type = json_extract_scalar(objectItem, "$.typeName"),
+	xdm.target.resource.type = json_extract_scalar(objectItem, "$.typeName"),
 	xdm.event.outcome = json_extract_scalar(changedValues, "$.changedTo");
