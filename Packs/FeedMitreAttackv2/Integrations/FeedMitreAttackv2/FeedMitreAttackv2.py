@@ -116,18 +116,20 @@ class Client:
         return indicator_obj
 
     def _process_mitre_data(self, mitre_data, id_to_name, mitre_id_to_mitre_name,
-                            limit, counter, mitre_id_list, create_relationships, is_up_to_6_2) -> Tuple[
-        int, List, List[Dict]]:
+                            limit, counter, mitre_id_list, create_relationships, is_up_to_6_2) -> \
+            Tuple[int, List, List[Dict]]:
         mitre_relationships_list = []
         indicators: List[Dict] = list()
 
         for mitre_item in mitre_data:
             if 0 < limit <= counter:
                 break
+            mitre_item_json = json.loads(str(mitre_item))
             # try:
             #     mitre_item_json = json.loads(str(mitre_item))
             # except Exception as e:
-            #     demisto.debug(f'Could not parse mitre_item to json. Error: {str(e)}')
+            #     demisto.debug
+            #     (f'Could not parse mitre_item to json. Error: {str(e)}')
             #     continue
             if mitre_item_json.get('id') not in mitre_id_list:
                 value = mitre_item_json.get('name')
@@ -189,14 +191,17 @@ class Client:
                     mitre_data = tc_source.query(input_filter)
                 except Exception:
                     continue
-                temp_counter, temp_mitre_relationship_list, temp_indicators_list = self._process_mitre_data(mitre_data, id_to_name,
-                                                                                     mitre_id_to_mitre_name, limit,
-                                                                                     counter,
-                                                                                     mitre_id_list,
-                                                                                     create_relationships, is_up_to_6_2)
+                temp_counter, temp_mitre_relationship_list, temp_indicators = self._process_mitre_data(mitre_data,
+                                                                                                       id_to_name,
+                                                                                                       mitre_id_to_mitre_name,
+                                                                                                       limit,
+                                                                                                       counter,
+                                                                                                       mitre_id_list,
+                                                                                                       create_relationships,
+                                                                                                       is_up_to_6_2)
                 counter += temp_counter
                 mitre_relationships_list.extend(temp_mitre_relationship_list)
-                indicators.extend(temp_indicators_list)
+                indicators.extend(temp_indicators)
 
         return indicators, mitre_relationships_list, id_to_name, mitre_id_to_mitre_name
 
