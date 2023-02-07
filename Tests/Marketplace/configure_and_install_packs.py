@@ -43,11 +43,9 @@ def install_packs_from_content_packs_to_install_path(servers, pack_ids, marketpl
         pack_ids: the pack IDs to install.
         servers: XSIAM or XSOAR Servers to install packs on it.
     """
-    install_packs_one_by_one = False
+    install_packs_one_by_one: bool = marketplace_tag_name == XSIAM_MP
 
     for server in servers:
-        if marketplace_tag_name == XSIAM_MP:
-            install_packs_one_by_one = True
         logging.info(f'Starting to install all content packs in {hostname if hostname else server.internal_ip}')
         _, success = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname,
                                                                      install_packs_one_by_one)
