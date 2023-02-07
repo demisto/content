@@ -47,7 +47,7 @@ At end of the process you'll see a message that you've logged in successfully.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | app_id | Application ID | True |
+    | app_id | Application ID | False |
     | subscription_id | Subscription ID | True |
     | resource_group_name | Resource Group Name | True |
     | azure_ad_endpoint | Azure AD endpoint associated with a national cloud | False |
@@ -58,6 +58,8 @@ At end of the process you'll see a message that you've logged in successfully.
     | Authentication Type | The request authentication type for the instance | False |
     | Authorization code | as received from the authorization step | False |
     | Application redirect URI | the redirect URI entered in the Azure portal | False |
+    | Azure Managed Identities Client ID | False |
+
 
 4. Click **Test** to validate the URLs, token, and connection.
 

@@ -20,7 +20,8 @@ class Client:
 
     @logger
     def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy, auth_type, tenant_id=None,
-                 enc_key=None, auth_code=None, redirect_uri=None, azure_ad_endpoint='https://login.microsoftonline.com'):
+                 enc_key=None, auth_code=None, redirect_uri=None, azure_ad_endpoint='https://login.microsoftonline.com',
+                 managed_identities_client_id=None):
         self.resource_group_name = resource_group_name
         AUTH_TYPES_DICT: dict = {'Authorization Code': {
             'grant_type': AUTHORIZATION_CODE,
@@ -54,7 +55,9 @@ class Client:
             auth_code=auth_code,
             azure_ad_endpoint=azure_ad_endpoint,
             tenant_id=tenant_id,
-            enc_key=enc_key
+            enc_key=enc_key,
+            managed_identities_client_id=managed_identities_client_id,
+            managed_identities_resource_uri=Resources.management_azure
         )
         self.ms_client = MicrosoftClient(**client_args)
 
@@ -457,15 +460,19 @@ def test_module(client):
     Performs basic GET request to check if the API is reachable and authentication is successful.
     Returns ok if successful.
     """
-    if demisto.params().get('auth_type') == 'Device Code':
+    params = demisto.params()
+    if params.get('auth_type') == 'Device Code':
         raise Exception("When using device code flow configuration, "
                         "Please enable the integration and run `!azure-sql-auth-start` and `!azure-sql-auth-complete` to "
                         "log in. You can validate the connection by running `!azure-sql-auth-test`\n"
                         "For more details press the (?) button.")
 
-    elif demisto.params().get('auth_type') == 'Authorization Code':
+    elif params.get('auth_type') == 'Authorization Code':
         raise Exception("When using user auth flow configuration, "
                         "Please enable the integration and run the !msgraph-user-test command in order to test it")
+    elif params.get('auth_type') == 'Azure Managed Identities':
+        client.ms_client.get_access_token()
+        return 'ok'
 
 
 ''' MAIN FUNCTION '''
@@ -492,7 +499,8 @@ def main() -> None:
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
             azure_ad_endpoint=params.get('azure_ad_endpoint',
-                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com'
+                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com',
+            managed_identities_client_id=get_azure_managed_identities_client_id(params)
         )
         if command == 'test-module':
             return_results(test_module(client))

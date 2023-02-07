@@ -29,7 +29,7 @@ AUTH_CODE_SCOPE = 'https://api.loganalytics.io/Data.Read%20https://management.az
 class Client:
     def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key, redirect_uri, auth_code,
                  subscription_id, resource_group_name, workspace_name, verify, proxy, certificate_thumbprint,
-                 private_key, client_credentials):
+                 private_key, client_credentials, managed_identities_client_id=None):
 
         tenant_id = refresh_token if self_deployed else ''
         refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
@@ -54,7 +54,9 @@ class Client:
             multi_resource=True,
             resources=[AZURE_MANAGEMENT_RESOURCE, LOG_ANALYTICS_RESOURCE],
             certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key
+            private_key=private_key,
+            managed_identities_client_id=managed_identities_client_id,
+            managed_identities_resource_uri=Resources.management_azure
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None,
@@ -150,8 +152,10 @@ def tags_arg_to_request_format(tags):
 
 
 def test_connection(client, params):
-    if params.get('self_deployed', False) and not params.get('client_credentials') and not params.get('auth_code'):
-        return_error('You must enter an authorization code in a self-deployed configuration.')
+    if not client.ms_client.managed_identities_client_id:
+        if params.get('self_deployed', False) and not params.get('client_credentials') and not params.get('auth_code'):
+            return_error('You must enter an authorization code in a self-deployed configuration.')
+
     client.ms_client.get_access_token(AZURE_MANAGEMENT_RESOURCE)  # If fails, MicrosoftApiModule returns an error
     try:
         execute_query_command(client, {'query': 'Usage | take 1'})
@@ -159,7 +163,7 @@ def test_connection(client, params):
         return_error('Could not authorize to `api.loganalytics.io` resource. This could be due to one of the following:'
                      '\n1. Workspace ID is wrong.'
                      '\n2. Missing necessary grant IAM privileges in your workspace to the AAD Application.', e)
-    return_outputs('```✅ Success!```')
+    return 'ok'
 
 
 def execute_query_command(client, args):
@@ -324,14 +328,17 @@ def main():
         enc_key = params.get('enc_key') or params.get('credentials', {}).get('password')  # client_secret
         certificate_thumbprint = params.get('certificate_thumbprint')
         private_key = params.get('private_key')
-        self_deployed = self_deployed or client_credentials
-        if client_credentials and not enc_key:
-            raise DemistoException("Client Secret must be provided for client credentials flow.")
-        elif not self_deployed and not enc_key:
-            raise DemistoException('Key must be provided. For further information see '
-                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')  # noqa: E501
-        elif not enc_key and not (certificate_thumbprint and private_key):
-            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+        managed_identities_client_id = get_azure_managed_identities_client_id(params)
+        self_deployed = self_deployed or client_credentials or managed_identities_client_id is not None
+
+        if not managed_identities_client_id:
+            if client_credentials and not enc_key:
+                raise DemistoException("Client Secret must be provided for client credentials flow.")
+            elif not self_deployed and not enc_key:
+                raise DemistoException('Key must be provided. For further information see '
+                                       'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')  # noqa: E501
+            elif not enc_key and not (certificate_thumbprint and private_key):
+                raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
         client = Client(
             self_deployed=self_deployed,
@@ -348,6 +355,7 @@ def main():
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             client_credentials=client_credentials,
+            managed_identities_client_id=managed_identities_client_id,
         )
 
         commands = {
@@ -359,14 +367,20 @@ def main():
         }
 
         if demisto.command() == 'test-module':
-            # cannot use test module due to the lack of ability to set refresh token to integration context
-            raise Exception("Please use !azure-log-analytics-test instead")
+            if not managed_identities_client_id:
+                # cannot use test module if not using Managed Identities
+                # due to the lack of ability to set refresh token to integration context
+                raise Exception("Please use !azure-log-analytics-test instead")
+
+            test_connection(client, params)
+            return_results('ok')
 
         elif demisto.command() == 'azure-log-analytics-generate-login-url':
             return_results(generate_login_url(client.ms_client))
 
         elif demisto.command() == 'azure-log-analytics-test':
             test_connection(client, params)
+            return_outputs('```✅ Success!```')
 
         elif demisto.command() in commands:
             return_results(commands[demisto.command()](client, demisto.args()))  # type: ignore

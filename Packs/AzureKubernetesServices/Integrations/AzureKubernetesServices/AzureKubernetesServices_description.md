@@ -35,3 +35,17 @@ Follow these steps for a self-deployed configuration:
 5. Run the ***!azure-ks-auth-complete*** command.
 
 At end of the process you'll see a message that you've logged in successfully.
+
+### Azure Managed Identities Authentication
+##### Note: This option is relevant only if the integration is running on Azure VM.
+Follow one of these steps for authentication based on Azure Managed Identities:
+
+- ##### To use System Assigned Managed Identity
+   - In the **Authentication Type** drop-down list, select **Azure Managed Identities** and leave the **Azure Managed Identities Client ID** field empty.
+
+- ##### To use User Assigned Managed Identity
+   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**.
+   2. Select your User Assigned Managed Identity -> copy the Client ID -> paste it in the **Azure Managed Identities client ID** field in the instance configuration.
+   3. In the **Authentication Type** drop-down list, select **Azure Managed Identities**.
+
+For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).

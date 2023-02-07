@@ -2,6 +2,7 @@ In order to connect to the Azure Network Security Groups use one of the followin
 
 1. *Authorization Code Flow* (Recommended).
 2. *Device Code Flow*.
+3. *Azure Managed Identities Flow*.
 
 ### Authentication Using the Authorization Code Flow (recommended)
 
@@ -37,3 +38,17 @@ You only need to fill in your subscription ID and resource group name.
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
 
 The application must have *user_impersonation* permission and must allow public client flows (can be found under the **Authentication** section of the app).
+
+### Azure Managed Identities Authentication
+##### Note: This option is relevant only if the integration is running on Azure VM.
+Follow one of these steps for authentication based on Azure Managed Identities:
+
+- ##### To use System Assigned Managed Identity
+   - In the **Authentication Type** drop-down list, select **Azure Managed Identities**  and leave the **Azure Managed Identities Client ID** field empty.
+
+- ##### To use User Assigned Managed Identity
+   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+   2. Select your User Assigned Managed Identity -> copy the Client ID -> paste it in the **Azure Managed Identities client ID** field in the instance configuration.
+   3. In the **Authentication Type** drop-down list, select **Azure Managed Identities**.
+
+For information about Azure Managed Identities see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview)

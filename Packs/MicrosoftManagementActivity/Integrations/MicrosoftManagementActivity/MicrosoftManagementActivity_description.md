@@ -28,3 +28,19 @@ You will get an ID, Token, and Key, which you need to enter in the corresponding
 6. Enter your redirect URI in the ***Redirect URI*** parameter field.
 7. Save the instance.
 8. Run the `!ms-management-activity-generate-login-url` command in the War Room and follow the instruction.
+
+## Authentication using Azure Managed Identities 
+___
+##### Note: This option is relevant only if the integration is running on Azure VM.
+Follow one of these steps for authentication based on Azure Managed Identities:
+
+- ##### To use System Assigned Managed Identity
+   - Select the **Use Azure Managed Identities** checkbox and leave the **Azure Managed Identities Client ID** field empty.
+
+- ##### To use User Assigned Managed Identity
+   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**.
+   2. Select your User Assigned Managed Identity -> copy the Client ID -> paste it in the **Azure Managed Identities Client ID** field in the instance settings.
+   3. Select the **Use Azure Managed Identities** checkbox.
+
+For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
+
