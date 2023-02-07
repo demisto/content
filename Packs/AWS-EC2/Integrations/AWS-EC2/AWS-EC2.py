@@ -1530,22 +1530,22 @@ def create_ip_permissions_dict(args):
 
     if args.get('IpRangesCidrIp') is not None:
         IpRanges_dict = {'CidrIp': args.get('IpRangesCidrIp')}
-        if desc := args.get('IpRangesDesc', "") or args.get('IpRangesDescription', ""):
+        desc = args.get('IpRangesDesc', "") or args.get('IpRangesDescription', "")
+        if desc:
             IpRanges_dict['Description'] = desc
-        IpRanges = [IpRanges_dict]
-        IpPermissions_dict.update({'IpRanges': IpRanges})  # type: ignore
+        IpPermissions_dict.update({'IpRanges': [IpRanges_dict]})  # type: ignore
     if args.get('Ipv6RangesCidrIp') is not None:
         Ipv6Ranges_dict = {'CidrIp': args.get('Ipv6RangesCidrIp')}
-        if desc := args.get('Ipv6RangesDesc', "") or args.get('Ipv6RangesDescription', ""):
+        desc = args.get('Ipv6RangesDesc', "") or args.get('Ipv6RangesDescription', "")
+        if desc:
             Ipv6Ranges_dict['Description'] = desc
-        Ipv6Ranges = [Ipv6Ranges_dict]
-        IpPermissions_dict.update({'Ipv6Ranges': Ipv6Ranges})  # type: ignore
+        IpPermissions_dict.update({'Ipv6Ranges': [Ipv6Ranges_dict]})  # type: ignore
     if args.get('PrefixListId') is not None:
         PrefixListIds_dict = {'PrefixListId': args.get('PrefixListId')}
-        if desc := args.get('PrefixListIdDesc', "") or args.get('PrefixListIdDescription', ""):
+        desc = args.get('PrefixListIdDesc', "") or args.get('PrefixListIdDescription', "")
+        if desc:
             PrefixListIds_dict['Description'] = desc
-        PrefixListIds = [PrefixListIds_dict]
-        IpPermissions_dict.update({'PrefixListIds': PrefixListIds})  # type: ignore
+        IpPermissions_dict.update({'PrefixListIds': [PrefixListIds_dict]})  # type: ignore
     return IpPermissions_dict
 
 
