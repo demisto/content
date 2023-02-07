@@ -1215,6 +1215,7 @@ def output(result: Optional[CollectionResult]):
     packs_to_install.append('rasterize')
     packs_to_install.append('Phishing')
     packs_to_upload = sorted(result.packs_to_upload, key=lambda x: x.lower()) if result else ()
+    packs_to_upload.append('DemistoRESTAPI')
     modeling_rules_to_test = sorted(
         result.modeling_rules_to_test, key=lambda x: x.casefold() if isinstance(x, str) else x.as_posix().casefold()
     ) if result else ()
