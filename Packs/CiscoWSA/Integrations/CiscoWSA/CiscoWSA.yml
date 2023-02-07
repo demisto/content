@@ -4,7 +4,8 @@ commonfields:
 name: CiscoWSA
 display: CiscoWSA
 category: Utilities
-description: Cisco WSA
+deprecated: true
+description: Deprecated. Use CiscoWSAV2 instead.
 configuration:
 - display: ""
   name: url
