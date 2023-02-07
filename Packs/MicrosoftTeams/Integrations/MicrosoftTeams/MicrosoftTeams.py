@@ -818,8 +818,7 @@ def get_chat_id_and_type(chat: str) -> Tuple[str, str]:
     # case1 - chat = chat_id
     if chat.endswith(GROUP_CHAT_ID_SUFFIX) or chat.endswith(ONEONONE_CHAT_ID_SUFFIX):
         demisto.debug(f"Received chat id as chat: {chat=}")
-        response: dict = cast(Dict[Any, Any],
-                              http_request('GET', url + chat))  # returns 404 if the chat id was not found
+        response: dict = cast(Dict[Any, Any], http_request('GET', url + chat))  # raise 404 if the chat id was not found
         return response.get('id', ''), response.get('chatType', '')
 
     # case2 - chat = chat_name (topic) in case of "group" chat_type

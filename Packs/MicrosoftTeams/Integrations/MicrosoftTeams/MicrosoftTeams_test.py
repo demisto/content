@@ -112,8 +112,8 @@ integration_context: dict = {
 
 CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
 AUTHORIZATION_CODE_FLOW = 'Authorization Code'
-ONEONONE_CHAT_ID = "19%3A09ddc990-3821-4ceb-8019-24d39998f93e_48d31887-5fad-4d73-a9f5-3c356e68a038%40unq.gbl.spaces"
-GROUP_CHAT_ID = "19%3A2da4c29f6d7041eca70b638b43d45437%40thread.v2"
+ONEONONE_CHAT_ID = "19:09ddc990-3821-4ceb-8019-24d39998f93e_48d31887-5fad-4d73-a9f5-3c356e68a038@unq.gbl.spaces"
+GROUP_CHAT_ID = "19:2da4c29f6d7041eca70b638b43d45437@thread.v2"
 
 
 @pytest.fixture(autouse=True)
@@ -2005,8 +2005,7 @@ def test_chat_add_user_command(mocker, chat, member, expected_exit, expected_war
     mocker.patch.object(demisto, 'results')
     warning = mocker.patch.object(MicrosoftTeams, 'return_warning')
 
-    get_chat_id_and_type_mock = mocker.patch('MicrosoftTeams.get_chat_id_and_type',
-                                             return_value=(chat, chat.split('-')[0]))
+    get_chat_id_and_type_mock = mocker.patch('MicrosoftTeams.get_chat_id_and_type', return_value=(chat, chat))
     get_user_mock = mocker.patch('MicrosoftTeams.get_user', side_effect=mocked_get_user)
     add_user_to_chat_mock = mocker.patch('MicrosoftTeams.add_user_to_chat')
 
@@ -2031,7 +2030,7 @@ def test_chat_add_user_command(mocker, chat, member, expected_exit, expected_war
 def test_add_user_to_chat(requests_mock):
     """
     Given:
-      - The command arguments
+      - The function arguments
     When:
       - Calling the add_user_to_chats function
     Then:
@@ -2053,7 +2052,7 @@ def test_add_user_to_chat(requests_mock):
     [
         ({"chat": "test group 1", "filter": "test_filter"}, ValueError, "", ""),
         ({"chat": "test group 1"},
-         'get_chat', "https://graph.microsoft.com/v1.0/chats/19%3A2da4c29f6d7041eca70b638b43d45437%40thread.v2",
+         'get_chat', f"https://graph.microsoft.com/v1.0/chats/{GROUP_CHAT_ID}",
          'expected_outputs_get_chat'),
         ({"expand": 'members', "limit": 3}, 'list_chats_with_members',
          "https://graph.microsoft.com/v1.0/chats/?%24expand=members&%24top=3",
@@ -2084,8 +2083,9 @@ def test_chat_list_command(mocker, requests_mock, args, expected_response, expec
     mocker.patch.object(demisto, 'args', return_value=args)
 
     if expected_response == ValueError:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError) as e:
             chat_list_command()
+        assert str(e.value) == "Retrieve a single chat does not support the 'filter' ODate query parameter."
     else:
         requests_mock.get(
             expected_request_url,
@@ -2128,3 +2128,87 @@ def test_chat_message_list_command(mocker, requests_mock, args, expected_respons
     )
     chat_message_list_command()
     assert return_results.call_args[0][0].outputs == test_data.get(expected_outputs)
+
+
+def test_pages_puller(requests_mock):
+    """
+    Given:
+      - The function arguments: response, limit:
+          - The response has a nextLink URL.
+          - The limit is greater than the number of results in the first response.
+    When:
+      - Calling the 'pages_puller' function.
+    Then:
+      - Assert the request url is as expected - make an API request using the nextLink URL.
+      - Verify the function output is as expected
+    """
+    from MicrosoftTeams import pages_puller
+    response = test_data.get('list_messages')  # contains 2 results
+    limit = 4
+    expected_result = response.get('value') * 2
+
+    requests_mock.get(
+        response.get('@odata.nextLink'),
+        json=response
+    )
+
+    result, last_next_link = pages_puller(response, limit)
+    assert requests_mock.call_count == 1
+    assert result == expected_result
+    assert last_next_link == response.get('@odata.nextLink')
+
+
+def test_get_chat_id_and_type(mocker, requests_mock):
+    """
+    Given:
+        The 'chat' argument as:
+      - case 1: chat ID -> return the given ID and the chat_type
+      - case 2: chat_name (topic) -> return the ID and 'group' chat_type
+      - case 3: member -> returns the ID of a one-on-one chat and 'oneOnOne' chat_type
+      - case 4: non-existing member or chat_name (topic)  -> raise ValueError
+    When:
+      - Calling the 'get_chat_id_and_type' function.
+    Then:
+      - Assert the request url is as expected
+      - Verify the function output is as expected
+    """
+
+    from MicrosoftTeams import get_chat_id_and_type
+
+    # case 1: chat = chat_id [= GROUP_CHAT_ID]
+    requests_mock.get(
+        f"{GRAPH_BASE_URL}/v1.0/chats/{GROUP_CHAT_ID}",
+        json=test_data.get('get_chat')
+    )
+    assert get_chat_id_and_type(GROUP_CHAT_ID) == (GROUP_CHAT_ID, 'group')
+
+    # case 2: chat = chat_name (topic) [= "test"]
+    requests_mock.get(
+        "https://graph.microsoft.com/v1.0/chats/?$select=id, chatType&$filter=topic eq 'test'",
+        json=test_data.get('get_chat_id_and_type_response')
+    )
+    assert get_chat_id_and_type("test") == (GROUP_CHAT_ID, 'group')
+
+    # case 3: chat = member [= "test_admin"]
+    requests_mock.get(
+        "https://graph.microsoft.com/v1.0/chats/?$select=id, chatType&$filter=topic eq 'test_admin'",
+        json=test_data.get('get_chat_id_and_type_no_chat_response')
+    )
+    get_user_mock = mocker.patch('MicrosoftTeams.get_user', return_value=[{'id': 'user_id', 'userType': 'Member'}])
+    create_chat_mock = mocker.patch('MicrosoftTeams.create_chat', return_value=test_data.get('create_oneOnOne_chat'))
+
+    assert get_chat_id_and_type("test_admin") == \
+           ("19:82fe7758-5bb3-4f0d-a43f-e555fd399c6f_8c0a1a67-50ce-4114-bb6c-da9c5dbcf6ca@unq.gbl.spaces", 'oneOnOne')
+    assert create_chat_mock.call_args.args == ('oneOnOne', [('user_id', 'Member')])
+    assert get_user_mock.call_count == 1
+    assert create_chat_mock.call_count == 1
+
+    # case 4: chat = non-existing member or chat_name (topic)  [= "unknown"]
+    requests_mock.get(
+        "https://graph.microsoft.com/v1.0/chats/?$select=id, chatType&$filter=topic eq 'unknown'",
+        json=test_data.get('get_chat_id_and_type_no_chat_response')
+    )
+    get_user_mock = mocker.patch('MicrosoftTeams.get_user', return_value=[])
+    with pytest.raises(ValueError) as e:
+        get_chat_id_and_type('unknown')
+    assert str(e.value) == "Could not find chat: unknown"
