@@ -6,16 +6,16 @@ if (serverURL.slice(-1) === '/') {
 log("$$$$$$$1")
 log(serverURL)
 log(params.auth_id)
-log(params.creds_apikey.identifier)
+log(params.credentials.identifier)
 log("$$$$$$$1")
 logInfo("$$$$$$$2")
 logInfo(serverURL)
 logInfo(params.auth_id)
-logInfo(params.creds_apikey.identifier)
+logInfo(params.credentials.identifier)
 logInfo("$$$$$$$2")
 
 
-if (params.auth_id || (params.creds_apikey && params.creds_apikey.identifier)) {
+if (params.auth_id || (params.credentials && params.credentials.identifier)) {
     if (!serverURL.endsWith('/xsoar')){
         serverURL = serverURL + '/xsoar'
     }
@@ -86,11 +86,11 @@ sendMultipart = function (uri, entryID, body) {
         // do nothing, use the body as is in the request.
         logDebug('could not parse body as a JSON object, passing as is. body: ' + JSON.stringify(body));
     }
-    var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
+    var key = params.apikey? params.apikey : (params.credentials? params.credentials.password : '');
     if (key == ''){
         throw 'API Key must be provided.';
     }
-    var auth_id = params.auth_id? params.auth_id : (params.creds_apikey? params.creds_apikey.identifier : '');
+    var auth_id = params.auth_id? params.auth_id : (params.credentials? params.credentials.identifier : '');
     var headers = {}
     // in case the integration was installed before auth_method was added, the auth_method param will be empty so
     // we will use the standard auth method
@@ -131,11 +131,11 @@ sendMultipart = function (uri, entryID, body) {
 
 var sendRequest = function(method, uri, body, raw) {
     var requestUrl = getRequestURL(uri)
-    var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
+    var key = params.apikey? params.apikey : (params.credentials? params.credentials.password : '');
     if (key == ''){
         throw 'API Key must be provided.';
     }
-    var auth_id = params.auth_id? params.auth_id : (params.creds_apikey? params.creds_apikey.identifier : '');
+    var auth_id = params.auth_id? params.auth_id : (params.credentials? params.credentials.identifier : '');
     var headers = {}
     // in case the integration was installed before auth_method was added, the auth_method param will be empty so
     // we will use the standard auth method
