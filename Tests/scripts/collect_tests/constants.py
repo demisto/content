@@ -89,7 +89,7 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.LAYOUTS_CONTAINER,
     FileType.XDRC_TEMPLATE,
     FileType.PARSING_RULE_XIF,
-    FileType.LAYOUT_RULE
+    FileType.LAYOUT_RULE,
 }
 
 IGNORED_FILE_TYPES: set[FileType] = {
