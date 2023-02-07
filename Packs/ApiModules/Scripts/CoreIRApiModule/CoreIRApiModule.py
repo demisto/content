@@ -212,6 +212,74 @@ class CoreClient(BaseClient):
         endpoints = reply.get('reply').get('endpoints', [])
         return endpoints
 
+    def set_endpoints(self,
+                      endpoint_id_list=None,
+                      dist_name=None,
+                      ip_list=None,
+                      group_name=None,
+                      platform=None,
+                      alias_name=None,
+                      isolate=None,
+                      hostname=None,
+                      page_number=0,
+                      limit=30,
+                      first_seen_gte=None,
+                      first_seen_lte=None,
+                      last_seen_gte=None,
+                      last_seen_lte=None,
+                      sort_by_first_seen=None,
+                      sort_by_last_seen=None,
+                      status=None,
+                      username=None,
+                      new_alias_name=None
+                      ):
+
+        search_from = page_number * limit
+        search_to = search_from + limit
+
+        request_data = {
+            'search_from': search_from,
+            'search_to': search_to,
+        }
+
+        filters = create_request_filters(
+            status=status, username=username, endpoint_id_list=endpoint_id_list, dist_name=dist_name,
+            ip_list=ip_list, group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate,
+            hostname=hostname, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
+            last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte
+        )
+
+        if search_from:
+            request_data['search_from'] = search_from
+
+        if search_to:
+            request_data['search_to'] = search_to
+
+        if sort_by_first_seen:
+            request_data['sort'] = {
+                'field': 'first_seen',
+                'keyword': sort_by_first_seen
+            }
+        elif sort_by_last_seen:
+            request_data['sort'] = {
+                'field': 'last_seen',
+                'keyword': sort_by_last_seen
+            }
+        # TODO make sure if you want the ip_list to be the identifier
+        request_data['value'] = ip_list
+        request_data['filters'] = filters
+        request_data['alias'] = new_alias_name
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='endpoints/update_agent_name/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        endpoints = reply.get('reply')    # .get('endpoints', [])
+        return endpoints
+
     def isolate_endpoint(self, endpoint_id, incident_id=None):
         request_data = {
             'endpoint_id': endpoint_id,
@@ -1759,6 +1827,101 @@ def get_endpoints_command(client, args):
     return CommandResults(
         readable_output=tableToMarkdown('Endpoints', endpoints),
         outputs=context,
+        raw_response=endpoints
+    )
+
+
+def endpoint_alias_change_command(client, args):
+    integration_context_brand = args.pop('integration_context_brand', 'CoreApiModule')
+    integration_name = args.pop("integration_name", "CoreApiModule")
+    page_number = arg_to_int(
+        arg=args.get('page', '0'),
+        arg_name='Failed to parse "page". Must be a number.',
+        required=True
+    )
+
+    limit = arg_to_int(
+        arg=args.get('limit', '30'),
+        arg_name='Failed to parse "limit". Must be a number.',
+        required=True
+    )
+
+    endpoint_id_list = argToList(args.get('endpoint_id_list'))
+    dist_name = argToList(args.get('dist_name'))
+    ip_list = argToList(args.get('ip_list'))
+    group_name = argToList(args.get('group_name'))
+    platform = argToList(args.get('platform'))
+    alias_name = argToList(args.get('alias_name'))
+    isolate = args.get('isolate')
+    hostname = argToList(args.get('hostname'))
+    status = args.get('status')
+    new_alias_name = args.get('new_alias_name')
+
+    first_seen_gte = arg_to_timestamp(
+        arg=args.get('first_seen_gte'),
+        arg_name='first_seen_gte'
+    )
+
+    first_seen_lte = arg_to_timestamp(
+        arg=args.get('first_seen_lte'),
+        arg_name='first_seen_lte'
+    )
+
+    last_seen_gte = arg_to_timestamp(
+        arg=args.get('last_seen_gte'),
+        arg_name='last_seen_gte'
+    )
+
+    last_seen_lte = arg_to_timestamp(
+        arg=args.get('last_seen_lte'),
+        arg_name='last_seen_lte'
+    )
+
+    sort_by_first_seen = args.get('sort_by_first_seen')
+    sort_by_last_seen = args.get('sort_by_last_seen')
+
+    username = argToList(args.get('username'))
+
+    endpoints = client.set_endpoints(
+        endpoint_id_list=endpoint_id_list,
+        dist_name=dist_name,
+        ip_list=ip_list,
+        group_name=group_name,
+        platform=platform,
+        alias_name=alias_name,
+        isolate=isolate,
+        hostname=hostname,
+        page_number=page_number,
+        limit=limit,
+        first_seen_gte=first_seen_gte,
+        first_seen_lte=first_seen_lte,
+        last_seen_gte=last_seen_gte,
+        last_seen_lte=last_seen_lte,
+        sort_by_first_seen=sort_by_first_seen,
+        sort_by_last_seen=sort_by_last_seen,
+        status=status,
+        username=username,
+        new_alias_name=new_alias_name
+    )
+
+    standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False, integration_name)
+    endpoint_context_list = []
+    for endpoint in standard_endpoints:
+        endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
+        endpoint_context_list.append(endpoint_context)
+
+    context = {
+        f'{integration_context_brand}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
+        Common.Endpoint.CONTEXT_PATH: endpoint_context_list,
+        f'{integration_context_brand}.Endpoint.count': len(standard_endpoints)
+    }
+    account_context = create_account_context(endpoints)
+    if account_context:
+        context[Common.Account.CONTEXT_PATH] = account_context
+
+    return CommandResults(
+        readable_output="endpoint alias was changed successfully",
+        # outputs=context,
         raw_response=endpoints
     )
 
