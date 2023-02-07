@@ -1327,7 +1327,7 @@ def search_intelligence(client: Client, **kwargs):
     if 'query' in kwargs:
         url += f"?q={kwargs.pop('query')}"
     if 'confidence' in kwargs:
-        conf = kwargs.get('confidence').split(' ')
+        conf = kwargs.get('confidence', '').split(' ')
         if len(conf) > 1:
             if conf[0] not in {'gt', 'lt'}:
                 raise DemistoException(f'Confidence operator must be on of gt or lt, if used.{conf[0]} is not a legal value.')
