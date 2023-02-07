@@ -3,7 +3,7 @@ contentitemexportablefields:
     propagationLabels:
     - all
 id: 2e7b0abd-18cd-4244-8608-b9be1199a642
-name: SSL Certificate Verification - XSOAR List
+name: SSL Certificate Verification (XSOAR List)
 version: 64
 description: 'Demo playbook - takes list of addresses from an XSOAR list, process the status of each SSL certificate, and generate war room and email summary outputs.'
 starttaskid: "0"
