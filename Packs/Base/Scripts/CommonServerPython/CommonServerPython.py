@@ -6850,6 +6850,7 @@ class CommandResults:
             exec_metrics = self.execution_metrics
             self.entry_type = EntryType.EXECUTION_METRICS
             raw_response = 'Metrics reported successfully.'
+            content_format = EntryFormat.TEXT
         return_entry = {
             'Type': self.entry_type,
             'ContentsFormat': content_format,
