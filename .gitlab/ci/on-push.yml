@@ -163,7 +163,7 @@ validate-content-conf:
         echo "Skipping - not running in INSTANCE_TESTS build"
       else
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "$MARKETPLACE_VERSION" --service_account $GCS_MARKET_KEY --graph true
+        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "$MARKETPLACE_VERSION" --service_account $GCS_MARKET_KEY --graph true --override_all_packs $OVERRIDE_ALL_PACKS
       fi
     - section_end "Collect Tests"
 
@@ -415,7 +415,7 @@ slack-notify-nightly-build:
     - section_start "Test Modeling Rules"
     - |
       if [[ -s "$ARTIFACTS_FOLDER/modeling_rules_to_test.txt" ]]; then
-        ./Tests/scripts/test_modeling_rules.sh || echo "failed (known issue)"
+        ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
       else
         echo "No modeling rules were marked for testing during test collection"
       fi
