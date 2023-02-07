@@ -67,10 +67,13 @@ class MsGraphClient:
       """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
-                 handle_error, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
+                 handle_error, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None,
+                 managed_identities_client_id: Optional[str] = None):
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                                          base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
-                                         certificate_thumbprint=certificate_thumbprint, private_key=private_key)
+                                         certificate_thumbprint=certificate_thumbprint, private_key=private_key,
+                                         managed_identities_client_id=managed_identities_client_id,
+                                         managed_identities_resource_uri=Resources.graph)
         self.handle_error = handle_error
 
     def test_function(self):
@@ -206,14 +209,18 @@ def suppress_errors_with_404_code(func):
     return wrapper
 
 
-def test_function_command(client: MsGraphClient, args: Dict):
+def test_function_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
         client: Client object with request
         args: Usually demisto.args()
+
+    Returns:
+        Tuple.
     """
     client.test_function()
+    return 'ok', {}, {}
 
 
 def list_groups_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -436,20 +443,22 @@ def main():
     enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
     verify = not params.get('insecure', False)
     proxy = params.get('proxy')
-    self_deployed: bool = params.get('self_deployed', False)
     handle_error: bool = argToBoolean(params.get('handle_error', 'true'))
     certificate_thumbprint = params.get('certificate_thumbprint')
     private_key = params.get('private_key')
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
+    self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
 
-    if not self_deployed and not enc_key:
-        raise DemistoException('Key must be provided. For further information see '
-                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
-    elif not enc_key and not (certificate_thumbprint and private_key):
-        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
-    if not auth_and_token_url:
-        raise Exception('Authentication ID must be provided.')
-    if not tenant:
-        raise Exception('Token must be provided.')
+    if not managed_identities_client_id:
+        if not self_deployed and not enc_key:
+            raise DemistoException('Key must be provided. For further information see '
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+        elif not enc_key and not (certificate_thumbprint and private_key):
+            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+        if not auth_and_token_url:
+            raise Exception('Authentication ID must be provided.')
+        if not tenant:
+            raise Exception('Token must be provided.')
 
     commands = {
         'test-module': test_function_command,
@@ -467,7 +476,8 @@ def main():
     try:
         client = MsGraphClient(base_url=base_url, tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
                                app_name=APP_NAME, verify=verify, proxy=proxy, self_deployed=self_deployed,
-                               handle_error=handle_error, certificate_thumbprint=certificate_thumbprint, private_key=private_key)
+                               handle_error=handle_error, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
+                               managed_identities_client_id=managed_identities_client_id)
         # Run the command
         human_readable, entry_context, raw_response = commands[command](client, demisto.args())
         # create a war room entry
