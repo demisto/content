@@ -31,11 +31,11 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ## Required permissions
-This integration enables executing commands with different permission levels. plese look at the commands description for more information on the required permission. 
+This integration enables executing commands with different permission levels. See the commands' descriptions for more information on the required permission. 
 ### zendesk-user-list
 ***
 Gets the specified user's data. 
-Required permmisions: Admins, Agents and Light Agents.
+Required permissions: Admins, Agents and Light Agents.
 
 
 #### Base Command
@@ -46,7 +46,7 @@ Required permmisions: Admins, Agents and Light Agents.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | The user's ID to retrieve. | Optional | 
-| user_name | The user's name. <br/>Required permmisions to use this argument: Agents . | Optional | 
+| user_name | The user's name. <br/>Required permissions to use this argument: Agents . | Optional | 
 | external_id | The user's unique identifier from another system. | Optional | 
 | role | The user's role. Possible values are: end_user, agent, admin. | Optional | 
 | limit | Maximum number of results to return. Default is 50. | Optional | 
@@ -98,7 +98,7 @@ Required permmisions: Admins, Agents and Light Agents.
 ### zendesk-user-create
 ***
 Creates a new Zendesk user. 
-Required permissions: Agents, with restrictions on certain actions
+Required permissions: Agents, with restrictions on certain actions.
 
 
 #### Base Command
@@ -173,7 +173,7 @@ Required permissions: Agents, with restrictions on certain actions
 ### zendesk-user-update
 ***
 Update user data. 
-Required permissions: Agents, with restrictions on certain actions
+Required permissions: Agents, with restrictions on certain actions.
 
 
 #### Base Command
@@ -249,7 +249,7 @@ Required permissions: Agents, with restrictions on certain actions
 ### zendesk-user-delete
 ***
 Delete a user. 
-Required permissions: Admins 
+Required permissions: Admins.
 
 
 #### Base Command
@@ -269,7 +269,7 @@ There is no context output for this command.
 ***
 Get organization's data. 
 Required permissions: Agents, with certain restrictions. 
-If the agent has a custom agent role that restricts their access to only users in their own organization,
+If the agent has a custom agent role that restricts the agent's access to only users in their own organization,
 a 403 Forbidden error is returned. See Creating custom agent roles in Zendesk help.
 
 
@@ -280,7 +280,7 @@ a 403 Forbidden error is returned. See Creating custom agent roles in Zendesk he
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organization_id | The ID of a specific organization. <br/>Required permissions: Admins, Agents. . | Optional | 
+| organization_id | The ID of a specific organization. <br/>Required permissions: Admins, Agents.  | Optional | 
 | limit | Maximum number of results to return. Default is 50. | Optional | 
 | page_size | The page size (used for pagination). | Optional | 
 | page_number | The page number (used for pagination). | Optional | 
@@ -373,7 +373,7 @@ Required permissions: Agents.
 ### zendesk-ticket-create
 ***
 Create a new zendesk ticket.
-Required permissions: Agents
+Required permissions: Agents.
 
 
 #### Base Command
@@ -452,7 +452,7 @@ Required permissions: Agents
 ### zendesk-ticket-update
 ***
 Updates a Zendesk ticket.
-Required permissions: Agents 
+Required permissions: Agents.
 
 
 #### Base Command
@@ -528,7 +528,7 @@ Required permissions: Agents
 Delete ticket. 
 Required permissions: Admins, Agents with permission to delete tickets.
 Agent delete permissions are set in Support.
-See Deleting tickets in the Zendesk Support Help Cent
+See Deleting tickets in the Zendesk Support Help Center.
 
 
 #### Base Command
@@ -547,7 +547,7 @@ There is no context output for this command.
 ### zendesk-ticket-comment-list
 ***
 List comments for a given ticket.
-Required: Agents
+Required: Agents.
 
 
 #### Base Command
@@ -592,7 +592,7 @@ Required: Agents
 ### zendesk-ticket-attachment-add
 ***
 Attach file to ticket.
-Required permissions: End users
+Required permissions: End users.
 
 
 #### Base Command
@@ -657,7 +657,7 @@ Search in Zendesk.
 ### zendesk-article-list
 ***
 List all available articles.
-Rquired permissions: Agents, End users, Anonymous users.
+Required permissions: Agents, End users, Anonymous users.
 
 
 #### Base Command
