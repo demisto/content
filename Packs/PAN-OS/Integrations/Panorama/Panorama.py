@@ -3743,6 +3743,7 @@ def panorama_edit_rule_command(args: dict):
 
         if args.get('element_to_change') == 'audit-comment':
             new_audit_comment = args.get('element_value') or ''
+            # to update audit-comment of a security rule, it is required to build a 'cmd' parameter
             params = build_audit_comment_params(
                 rulename, new_audit_comment, pre_post='rulebase' if VSYS else pre_post
             )
