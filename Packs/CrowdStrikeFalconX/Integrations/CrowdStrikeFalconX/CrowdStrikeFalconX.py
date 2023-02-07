@@ -888,7 +888,7 @@ def send_uploaded_file_to_sandbox_analysis_command(
         result.output["submitted_id"] = result.output.pop("id")
 
     return CommandResults(
-        outputs_key_field='submitted_id',
+        outputs_key_field='sha256',
         outputs_prefix=OUTPUTS_PREFIX,
         outputs=result.output,
         readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output),
