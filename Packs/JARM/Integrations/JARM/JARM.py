@@ -13,8 +13,6 @@ from jarm.scanner.scanner import Scanner
 urllib3.disable_warnings()  # pylint: disable=no-member
 
 DEFAULT_PORT = 443
-### Adding a comment just to test
-## Adding something else
 """ CLIENT CLASS """
 
 
