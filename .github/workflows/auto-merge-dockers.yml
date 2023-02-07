@@ -1,11 +1,7 @@
 name: Docker Update Auto Merge
 on:
-  schedule:
-    - cron: '45 12 * * *'
-#  check_suite:
-#    types: [completed]
-#  pull_request:
-#    types: [opened, reopened, labeled, edited, synchronize, assigned]
+  pull_request:
+    types: [opened, reopened, labeled, edited, synchronize, assigned]
 
 
 permissions:
@@ -16,9 +12,6 @@ jobs:
   auto_approve_and_merge:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-          with:
-            ref: github.head_ref
       - name: Print out context
         run: |
           echo "$GITHUB_CONTEXT"
@@ -30,8 +23,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: startsWith(github.head_ref, 'demisto/') && github.repository == 'demisto/content' && contains(github.event.pull_request.labels.*.name, 'docker-image-auto-update')
         run: |
-          echo "Approving and merging"
+          echo "Approving the pull request"
           gh pr review --approve "$PR_URL"
+          echo "Waiting tii all the checks are done"
+          gh pr checks --watch "$PR_URL"
+          echo "Merging the pull request"
           gh pr merge --squash "$PR_URL"
       - name: Post to a Slack channel
         if: ${{ failure() }}
