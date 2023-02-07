@@ -83,7 +83,7 @@ class Client(BaseClient):
         """
         return self._http_request(
             method="GET",
-            url_suffix=f"/groups",
+            url_suffix="/groups",
             resp_type="json",
             ok_codes=(200,),
             params=params,

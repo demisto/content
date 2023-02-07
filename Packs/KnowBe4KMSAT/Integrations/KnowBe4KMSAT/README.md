@@ -13,6 +13,16 @@
 | 9. Allows adding an external event to a user's timeline inside of KMSAT |
 | 10. Allows deleting an event fom a user's timeline inside of KMSAT      |
 
+## Configuration
+
+| Parameter                   | Description | Required |
+| --------------------------- | ----------- | -------- |
+| Instance Name               |             | true     |
+| Your Reporting  Server URL  |             | true     |
+| Reporting API Key           |             | true     |
+| Your USer Events Server URL |             | true     |
+| USer Events API Key         |             | true     |
+
 ## Commands
 
 | Commands                                             | Description                                                            |
