@@ -1,0 +1,516 @@
+id: Tanium Threat Response V2 Test
+version: -1
+name: Tanium Threat Response V2 Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ee1da636-7beb-46d0-8a5e-3245cb49efbe
+    type: start
+    task:
+      id: ee1da636-7beb-46d0-8a5e-3245cb49efbe
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 5bb83a8f-bc5a-4de0-8c3a-f9b3564253e5
+    type: regular
+    task:
+      id: 5bb83a8f-bc5a-4de0-8c3a-f9b3564253e5
+      version: -1
+      name: Clear context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 80d70fa2-d182-489f-8fc4-d8bbc1413cac
+    type: regular
+    task:
+      id: 80d70fa2-d182-489f-8fc4-d8bbc1413cac
+      version: -1
+      name: Get intel doc by ID
+      description: Returns a intel document object based on ID.
+      script: '|||tanium-tr-get-intel-doc-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      intel_doc_id:
+        simple: "64"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 1e1bf6a1-f378-42eb-8473-6d0d2897505e
+    type: title
+    task:
+      id: 1e1bf6a1-f378-42eb-8473-6d0d2897505e
+      version: -1
+      name: Query lists commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 9af4dc17-fe64-4091-8786-23de4d4a4a91
+    type: title
+    task:
+      id: 9af4dc17-fe64-4091-8786-23de4d4a4a91
+      version: -1
+      name: Getters
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 012a2b17-203f-4bf7-8bd3-96253e83993b
+    type: regular
+    task:
+      id: 012a2b17-203f-4bf7-8bd3-96253e83993b
+      version: -1
+      name: Get intel docs list
+      description: Returns a list of all intel documents.
+      script: '|||tanium-tr-list-intel-docs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 7aa2726a-54d9-4e3e-81b1-993534a9ada0
+    type: regular
+    task:
+      id: 7aa2726a-54d9-4e3e-81b1-993534a9ada0
+      version: -1
+      name: Get alerts list
+      description: Returns a list of all alerts.
+      script: '|||tanium-tr-list-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 9257c9db-db14-412a-88ec-2c7830b9120f
+    type: regular
+    task:
+      id: 9257c9db-db14-412a-88ec-2c7830b9120f
+      version: -1
+      name: Get labels list
+      description: Returns all available labels in the system.
+      script: '|||tanium-tr-list-labels'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: f31aa94c-26f9-4e3a-89eb-82d893a5d0b4
+    type: title
+    task:
+      id: f31aa94c-26f9-4e3a-89eb-82d893a5d0b4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 53a575c7-8da5-422a-83ac-be9d521e1b6d
+    type: regular
+    task:
+      id: 53a575c7-8da5-422a-83ac-be9d521e1b6d
+      version: -1
+      name: Get alert by ID
+      description: Returns alert object based on ID.
+      script: '|||tanium-tr-get-alert-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      alert_id:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: fcd95c4a-ff25-4597-8cb2-baf42d60ff6b
+    type: regular
+    task:
+      id: fcd95c4a-ff25-4597-8cb2-baf42d60ff6b
+      version: -1
+      name: Update alert state
+      description: Update the state of a single alert.
+      script: '|||tanium-tr-alert-update-state'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      alert_ids:
+        simple: "1"
+      state:
+        simple: Resolved
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: d5e1ccab-5213-493d-8aaa-8c4918d406aa
+    type: condition
+    task:
+      id: d5e1ccab-5213-493d-8aaa-8c4918d406aa
+      version: -1
+      name: Validate alert state
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Tanium.Alert.State
+            iscontext: true
+          right:
+            value:
+              simple: Resolved
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: e3ca6ac3-f349-467b-8be0-45bc94ce5e72
+    type: regular
+    task:
+      id: e3ca6ac3-f349-467b-8be0-45bc94ce5e72
+      version: -1
+      name: Update alert state
+      description: Update the state of a single alert.
+      script: '|||tanium-tr-alert-update-state'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      alert_ids:
+        simple: "1"
+      state:
+        simple: Unresolved
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 56eccf98-4112-4f68-8f2b-44d832426987
+    type: regular
+    task:
+      id: 56eccf98-4112-4f68-8f2b-44d832426987
+      version: -1
+      name: Get label by ID
+      description: Returns label object based on ID.
+      script: '|||tanium-tr-get-label-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      label_id:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 8c837dc8-92a3-4a74-87c8-4f59210b23f4
+    type: title
+    task:
+      id: 8c837dc8-92a3-4a74-87c8-4f59210b23f4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1580,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''
