@@ -88,7 +88,7 @@ Returns the specified asset.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Nexpose.AssetTag.Type | string | Type of asset tag. |
-| Nexpose.AssetTag.CreatedTime | string | Timestamp with the tag was create. |
+| Nexpose.AssetTag.CreatedTime | string | Timestamp of when the tag was create. |
 | Nexpose.AssetTag.Name | string | The value of the tag. |
 | Nexpose.AssetTag.RiskModifier | string | The risk modifier value associated with criticality tag type. |
 
