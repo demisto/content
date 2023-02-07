@@ -1,0 +1,796 @@
+id: CiscoWSA
+name: CiscoWSA
+version: -1
+fromversion: 4.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position":{"x":50,"y":200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: cisco-wsa-access-policy-list
+      description: ''
+      script: CiscoWSA|||cisco-wsa-access-policy-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      page:
+        simple: '1'
+      page_size:
+        simple: '3'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '3'
+    type: condition
+    task:
+      id: '3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoWSA.AccessPolicy.policy_expiry
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoWSA.AccessPolicy.policy_status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoWSA.AccessPolicy.policy_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoWSA.AccessPolicy.policy_description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoWSA.AccessPolicy.membership.identification_profiles
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoWSA.AccessPolicy.objects
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoWSA.AccessPolicy.protocols_user_agents
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoWSA.AccessPolicy.http_rewrite_profile
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoWSA.AccessPolicy.avc.applications
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoWSA.AccessPolicy.url_filtering
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoWSA.AccessPolicy.amw_reputation
+            iscontext: true
+    view: '{"position":{"x":50,"y":600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '4'
+    type: regular
+    task:
+      id: '4'
+      version: -1
+      name: cisco-wsa-access-policy-create
+      description: ''
+      script: CiscoWSA|||cisco-wsa-access-policy-create
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      policy_name:
+        simple: test
+      policy_status:
+        simple: enable
+      policy_description:
+        simple: test
+      policy_order:
+        simple: '1'
+      identification_profile_name:
+        simple: global_identification_profile
+    separatecontext: false
+    view: '{"position":{"x":50,"y":800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: 5
+    taskid: '5'
+    type: regular
+    task:
+      id: '5'
+      version: -1
+      name: cisco-wsa-access-policy-update
+      description: ''
+      script: CiscoWSA|||cisco-wsa-access-policy-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      policy_name:
+        simple: test
+      policy_order:
+        simple: '2'
+      policy_description:
+        simple: testtest
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '6'
+    type: regular
+    task:
+      id: '6'
+      version: -1
+      name: cisco-wsa-access-policy-protocols-user-agents-update
+      description: ''
+      script: CiscoWSA|||cisco-wsa-access-policy-protocols-user-agents-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      policy_name:
+        simple: test
+      block_custom_user_agents:
+        simple: test
+      allow_connect_ports:
+        simple: 22,24
+      block_protocols:
+        simple: http
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: 7
+    taskid: '7'
+    type: regular
+    task:
+      id: '7'
+      version: -1
+      name: cisco-wsa-access-policy-url-filtering-update
+      description: ''
+      script: CiscoWSA|||cisco-wsa-access-policy-url-filtering-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      policy_name:
+        simple: test
+      predefined_categories_action:
+        simple: monitor
+      predefined_categories:
+        simple: Astrology
+      custom_categories_action:
+        simple: block
+      custom_categories:
+        simple: test
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '8'
+    type: regular
+    task:
+      id: '8'
+      version: -1
+      name: cisco-wsa-access-policy-applications-update
+      description: ''
+      script: CiscoWSA|||cisco-wsa-access-policy-applications-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      policy_name:
+        simple: test
+      application:
+        simple: Blogging
+      action:
+        simple: block
+      values:
+        simple: Blogger
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: 9
+    taskid: '9'
+    type: regular
+    task:
+      id: '9'
+      version: -1
+      name: cisco-wsa-access-policy-objects-update
+      description: ''
+      script: CiscoWSA|||cisco-wsa-access-policy-objects-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      policy_name:
+        simple: test
+      object_type:
+        simple: Media
+      object_action:
+        simple: block
+      object_values:
+        simple: Audio
+      block_custom_mime_types:
+        simple: test,test12
+      http_or_https_max_object_size_mb:
+        simple: '30'
+      ftp_max_object_size_mb:
+        simple: '20'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: '10'
+    type: regular
+    task:
+      id: '10'
+      version: -1
+      name: cisco-wsa-access-policy-anti-malware-update
+      description: ''
+      script: CiscoWSA|||cisco-wsa-access-policy-anti-malware-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      policy_name:
+        simple: test
+      web_reputation_status:
+        simple: enable
+      file_reputation_filtering_status:
+        simple: enable
+      file_reputation_action:
+        simple: block
+      anti_malware_scanning_status:
+        simple: enable
+      suspect_user_agent_scanning:
+        simple: block
+      block_malware_categories:
+        simple: Adware
+      block_other_categories:
+        simple: Unscannable
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: 11
+    taskid: '11'
+    type: regular
+    task:
+      id: '11'
+      version: -1
+      name: cisco-wsa-access-policy-delete
+      description: ''
+      script: CiscoWSA|||cisco-wsa-access-policy-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      policy_names:
+        simple: test
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: '12'
+    type: regular
+    task:
+      id: '12'
+      version: -1
+      name: cisco-wsa-domain-map-list
+      description: ''
+      script: CiscoWSA|||cisco-wsa-domain-map-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      limit:
+        simple: '5'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: '13'
+    type: condition
+    task:
+      id: '13'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoWSA.DomainMap.domain_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoWSA.DomainMap.IP_addresses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoWSA.DomainMap.order
+            iscontext: true
+    view: '{"position":{"x":50,"y":2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: '14'
+    type: regular
+    task:
+      id: '14'
+      version: -1
+      name: cisco-wsa-domain-map-create
+      description: ''
+      script: CiscoWSA|||cisco-wsa-domain-map-create
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      domain_name:
+        simple: test.com
+      order:
+        simple: '1'
+      ip_addresses:
+        simple: 1.1.1.1
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: 15
+    taskid: '15'
+    type: regular
+    task:
+      id: '15'
+      version: -1
+      name: cisco-wsa-domain-map-update
+      description: ''
+      script: CiscoWSA|||cisco-wsa-domain-map-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments:
+      domain_name:
+        simple: test.com
+      new_domain_name:
+        simple: test1.com
+      order:
+        simple: '2'
+      ip_addresses:
+        simple: 1.1.1.1,2.2.2.2
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: '16'
+    type: regular
+    task:
+      id: '16'
+      version: -1
+      name: cisco-wsa-domain-map-delete
+      description: ''
+      script: CiscoWSA|||cisco-wsa-domain-map-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      domain_names:
+        simple: test1.com
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: 17
+    taskid: '17'
+    type: regular
+    task:
+      id: '17'
+      version: -1
+      name: cisco-wsa-identification-profiles-list
+      description: ''
+      script: CiscoWSA|||cisco-wsa-identification-profiles-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    scriptarguments:
+      page:
+        simple: '1'
+      page_size:
+        simple: '2'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: '18'
+    taskid: '18'
+    type: condition
+    task:
+      id: '18'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '19'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoWSA.IdentificationProfile.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoWSA.IdentificationProfile.profile_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoWSA.IdentificationProfile.description
+            iscontext: true
+    view: '{"position":{"x":50,"y":3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: 19
+    taskid: '19'
+    type: regular
+    task:
+      id: '19'
+      version: -1
+      name: cisco-wsa-identification-profiles-create
+      description: ''
+      script: CiscoWSA|||cisco-wsa-identification-profiles-create
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '20'
+    scriptarguments:
+      profile_name:
+        simple: test
+      status:
+        simple: enable
+      description:
+        simple: test
+      protocols:
+        simple: HTTPS
+      order:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: 20
+    taskid: '20'
+    type: regular
+    task:
+      id: '20'
+      version: -1
+      name: cisco-wsa-identification-profiles-update
+      description: ''
+      script: CiscoWSA|||cisco-wsa-identification-profiles-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      profile_name:
+        simple: test
+      description:
+        simple: testtest
+      protocols:
+        simple: HTTPS,SOCKS
+      order:
+        simple: '2'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: 21
+    taskid: '21'
+    type: regular
+    task:
+      id: '21'
+      version: -1
+      name: cisco-wsa-identification-profiles-delete
+      description: ''
+      script: CiscoWSA|||cisco-wsa-identification-profiles-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '22'
+    scriptarguments:
+      profile_names:
+        simple: test
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: 22
+    taskid: '22'
+    type: regular
+    task:
+      id: '22'
+      version: -1
+      name: cisco-wsa-url-categories-list
+      description: ''
+      script: CiscoWSA|||cisco-wsa-url-categories-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '23':
+    id: '23'
+    taskid: '23'
+    type: condition
+    task:
+      id: '23'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '24'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoWSA.UrlCategory.predefined
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoWSA.UrlCategory.custom
+            iscontext: true
+    view: '{"position":{"x":50,"y":4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '24':
+    id: '24'
+    taskid: '24'
+    type: title
+    task:
+      id: '24'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
+inputs: []
+outputs: []

@@ -354,7 +354,7 @@ def test_access_policy_anti_malware_update_command(
             "file_reputation_action": "block",
             "anti_malware_scanning_status": "disable",
             "suspect_user_agent_scanning": "block",
-            "block_malware_categories": "Adware ",
+            "block_malware_categories": "Adware",
             "block_other_categories": "Encrypted File",
         },
     )

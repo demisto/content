@@ -448,6 +448,7 @@ class Client(BaseClient):
                                 "block_malware_categories": block_malware_categories,
                                 "block_other_categories": block_other_categories,
                             },
+                            "state": "custom"
                         },
                     }
                 ]
