@@ -2,8 +2,6 @@ name: Docker Update Auto Merge
 on:
   pull_request:
     types: [opened, reopened, labeled, edited, synchronize, assigned]
-    branches:
-      - 'demisto/**'
   check_run:
     types: [ completed ]
 
