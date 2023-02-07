@@ -1,6 +1,7 @@
 import json
 import os
 import pytest
+from http import HTTPStatus
 from unittest.mock import patch
 
 
@@ -40,6 +41,17 @@ def mock_client():
     from CiscoWSAV2 import Client
 
     return Client(BASE_URL, USERNAME, PASSWORD, verify=False, proxy=False)
+
+
+def mock_access_policies_list(client, policy_name):
+    return {
+        "access_policies": [
+            {
+                "policy_name": policy_name,
+                "objects": {"object_type": {"Media": {"block": ["Audio"]}}},
+            }
+        ]
+    }
 
 
 """ TESTING INTEGRATION COMMANDS"""
@@ -124,7 +136,7 @@ def test_access_policy_create_command(
     from CiscoWSAV2 import access_policy_create_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
-    requests_mock.post(url=url, status_code=204)
+    requests_mock.post(url=url, status_code=HTTPStatus.NO_CONTENT)
     result = access_policy_create_command(
         mock_client,
         {
@@ -152,14 +164,12 @@ def test_access_policy_update_command(
     When:
     - cisco-wsa-access-policy-update command called.
     Then:
-    - Ensure outputs prefix is correct.
-    - Ensure number of items is correct.
-    - Validate outputs' fields.
+    - Ensure readable output is correct.
     """
     from CiscoWSAV2 import access_policy_update_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
-    requests_mock.put(url=url, status_code=204)
+    requests_mock.put(url=url, status_code=HTTPStatus.NO_CONTENT)
     result = access_policy_update_command(
         mock_client,
         {
@@ -169,6 +179,183 @@ def test_access_policy_update_command(
             "identification_profile_name": "global_identification_profile",
             "policy_order": "2",
             "policy_description": "test description",
+        },
+    )
+
+    assert result.readable_output == 'Updated "test" access policy successfully.'
+
+
+def test_access_policy_protocols_user_agents_update_command(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Access policies protocols and user agents update.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-access-policy-protocols-user-agents-update command called.
+    Then:
+    - Ensure readable output is correct.
+    """
+    from CiscoWSAV2 import access_policy_protocols_user_agents_update_command
+
+    url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
+    requests_mock.put(url=url, status_code=HTTPStatus.NO_CONTENT)
+    result = access_policy_protocols_user_agents_update_command(
+        mock_client,
+        {
+            "policy_name": "test",
+            "block_custom_user_agents": "test",
+            "allow_connect_ports": "22",
+            "block_protocols": "http",
+        },
+    )
+
+    assert result.readable_output == 'Updated "test" access policy successfully.'
+
+
+def test_access_policy_url_filtering_update_command(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Access policies URL filtering update.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-access-policy-url-filtering-update command called.
+    Then:
+    - Ensure readable output is correct.
+    """
+    from CiscoWSAV2 import access_policy_url_filtering_update_command
+
+    url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
+    requests_mock.put(url=url, status_code=HTTPStatus.NO_CONTENT)
+    result = access_policy_url_filtering_update_command(
+        mock_client,
+        {
+            "policy_name": "test",
+            "predefined_categories_action": "block",
+            "predefined_categories": "Astrology,Arts",
+            "youtube_categories_action": "Gaming",
+            "youtube_categories": "monitor",
+            "custom_categories_action": "test",
+            "custom_categories": "block",
+            "uncategorized_url": "use_global",
+            "update_categories_action": "most restrictive",
+            "content_rating_status": "enable",
+            "content_rating_action": "block",
+            "safe_search_status": "disable",
+            "unsupported_safe_search_engine": "monitor",
+        },
+    )
+
+    assert result.readable_output == 'Updated "test" access policy successfully.'
+
+
+def test_access_policy_applications_update_command(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Access policies applications update.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-access-policy-applications-update command called.
+    Then:
+    - Ensure readable output is correct.
+    """
+    from CiscoWSAV2 import access_policy_applications_update_command
+
+    url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
+    requests_mock.put(url=url, status_code=HTTPStatus.NO_CONTENT)
+    result = access_policy_applications_update_command(
+        mock_client,
+        {
+            "policy_name": "test",
+            "action": "monitor",
+            "application": "Blogging",
+            "values": "Blogger",
+        },
+    )
+
+    assert result.readable_output == 'Updated "test" access policy successfully.'
+
+
+@patch("CiscoWSAV2.Client.access_policy_list_request", mock_access_policies_list)
+def test_access_policy_objects_update_command(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Access policies objects update.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-access-policy-objects-update command called.
+    Then:
+    - Ensure readable output is correct.
+    """
+    from CiscoWSAV2 import access_policy_objects_update_command
+
+    url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
+    requests_mock.put(url=url, status_code=HTTPStatus.NO_CONTENT)
+    result = access_policy_objects_update_command(
+        mock_client,
+        {
+            "policy_name": "test",
+            "object_type": "Media",
+            "object_action": "block",
+            "object_values": "Audio",
+            "block_custom_mime_types": "test,test12",
+            "http_or_https_max_object_size_mb": "30",
+            "ftp_max_object_size_mb": "20",
+        },
+    )
+
+    assert result.readable_output == 'Updated "test" access policy successfully.'
+
+
+def test_access_policy_anti_malware_update_command(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Access policies Anti-Malware and Reputation update.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-access-policy-anti-malware-update command called.
+    Then:
+    - Ensure readable output is correct.
+    """
+    from CiscoWSAV2 import access_policy_anti_malware_update_command
+
+    url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
+    requests_mock.put(url=url, status_code=HTTPStatus.NO_CONTENT)
+    result = access_policy_anti_malware_update_command(
+        mock_client,
+        {
+            "policy_name": "test",
+            "web_reputation_status": "disable",
+            "file_reputation_filtering_status": "enable",
+            "file_reputation_action": "block",
+            "anti_malware_scanning_status": "disable",
+            "suspect_user_agent_scanning": "block",
+            "block_malware_categories": "Adware ",
+            "block_other_categories": "Encrypted File",
         },
     )
 
@@ -195,7 +382,7 @@ def test_access_policy_delete_command(
     from CiscoWSAV2 import access_policy_delete_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
-    requests_mock.delete(url=url, status_code=204)
+    requests_mock.delete(url=url, status_code=HTTPStatus.NO_CONTENT)
     result = access_policy_delete_command(
         mock_client,
         {
@@ -300,7 +487,7 @@ def test_domain_map_create_command(
     )
 
     assert result.readable_output == 'Domain "test.com" mapping created successfully.'
-    assert result.raw_response["res_code"] == 201
+    assert result.raw_response["res_code"] == HTTPStatus.CREATED
 
 
 def test_domain_map_update_command(
@@ -336,7 +523,7 @@ def test_domain_map_update_command(
     )
 
     assert result.readable_output == 'Domain "test.com" mapping updated successfully.'
-    assert result.raw_response["res_code"] == 200
+    assert result.raw_response["res_code"] == HTTPStatus.OK
 
 
 def test_domain_map_delete_command(
@@ -367,7 +554,7 @@ def test_domain_map_delete_command(
     )
 
     assert result.readable_output == 'Domain "test.com" deleted successfully.'
-    assert result.raw_response["res_code"] == 200
+    assert result.raw_response["res_code"] == HTTPStatus.OK
 
 
 @pytest.mark.parametrize(
@@ -440,7 +627,7 @@ def test_identification_profiles_create_command(
     from CiscoWSAV2 import identification_profiles_create_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/identification_profiles"
-    requests_mock.post(url=url, status_code=204)
+    requests_mock.post(url=url, status_code=HTTPStatus.NO_CONTENT)
 
     result = identification_profiles_create_command(
         mock_client,
@@ -476,7 +663,7 @@ def test_identification_profiles_update_command(
     from CiscoWSAV2 import identification_profiles_update_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/identification_profiles"
-    requests_mock.put(url=url, status_code=204)
+    requests_mock.put(url=url, status_code=HTTPStatus.NO_CONTENT)
 
     result = identification_profiles_update_command(
         mock_client,
@@ -512,7 +699,7 @@ def test_identification_profiles_delete_command(
     from CiscoWSAV2 import identification_profiles_delete_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/identification_profiles"
-    requests_mock.delete(url=url, status_code=204)
+    requests_mock.delete(url=url, status_code=HTTPStatus.NO_CONTENT)
 
     result = identification_profiles_delete_command(
         mock_client,

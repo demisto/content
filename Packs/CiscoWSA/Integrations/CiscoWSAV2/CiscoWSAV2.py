@@ -7,6 +7,8 @@ from CommonServerPython import *  # noqa: F401
 JWT_TOKEN_EXPIRATION_PERIOD = 30
 V2_PREFIX = "v2.0"
 V3_PREFIX = "v3.0"
+HTTPS_PROTOCOLS = ["http", "https", "ftp"]
+SOCKS_PROTOCOL = ["socks"]
 
 
 class Client(BaseClient):
@@ -591,8 +593,12 @@ class Client(BaseClient):
         profile_name: str,
         status: str,
         description: str,
-        protocols: str,
         order: int,
+        protocols: List[str],
+        proxy_ports: List[str] | None,
+        members_by_subnet: List[str] | None,
+        predefined_url_categories: List[str] | None,
+        custom_url_categories: List[str] | None,
     ) -> Response:
         """
         Create identification profile.
@@ -601,28 +607,44 @@ class Client(BaseClient):
             profile_name (str): Identification profile name.
             status (str): Status - enable/disable.
             description (str): Description of identification profile.
-            protocols (str): Protocols - HTTPS/SOCKS.
             order (int): Index of Identification profile in the collection.
+            protocols (List[str]): Protocols - HTTPS/SOCKS.
+            proxy_ports (List[str] | None): Proxy ports.
+            members_by_subnet (List[str] | None): Members by subnet.
+            predefined_url_categories (List[str] | None): Predefined URL categories.
+            custom_url_categories (List[str] | None): Custom URL categories.
 
         Returns:
             Response: API response from Cisco WSA.
         """
 
-        data = {
-            "identification_profiles": [
-                {
-                    "description": description,
-                    "members": {
-                        "protocols": ["socks"]
-                        if protocols == "SOCKS"
-                        else ["http", "https", "ftp"]
-                    },
-                    "order": order,
-                    "profile_name": profile_name,
-                    "status": status,
-                }
-            ]
-        }
+        organized_protocols = []
+        if "HTTPS" in protocols:
+            organized_protocols.extend(HTTPS_PROTOCOLS)
+        if "SOCKS" in protocols:
+            organized_protocols.extend(SOCKS_PROTOCOL)
+
+        data = remove_empty_elements(
+            {
+                "identification_profiles": [
+                    {
+                        "profile_name": profile_name,
+                        "description": description,
+                        "status": status,
+                        "order": order,
+                        "members": {
+                            "protocols": organized_protocols,
+                            "proxy_ports": proxy_ports,
+                            "ip": members_by_subnet,
+                            "url_categories": {
+                                "predefined": predefined_url_categories,
+                                "custom": custom_url_categories,
+                            },
+                        },
+                    }
+                ]
+            }
+        )
 
         return self._http_request(
             "POST",
@@ -638,8 +660,12 @@ class Client(BaseClient):
         new_profile_name: str | None,
         status: str | None,
         description: str | None,
-        protocols: str | None,
         order: int | None,
+        protocols: List[str] | None,
+        proxy_ports: List[str] | None,
+        members_by_subnet: List[str] | None,
+        predefined_url_categories: List[str] | None,
+        custom_url_categories: List[str] | None,
     ) -> Response:
         """
         Update identification profile.
@@ -649,12 +675,23 @@ class Client(BaseClient):
             new_profile_name (str | None): Identification profile name to update.
             status (str | None): Status - enable/disable.
             description (str | None): Description of identification profile.
-            protocols (str | None): Protocols - HTTPS/SOCKS.
             order (int | None): Index of Identification profile in the collection.
+            protocols (List[str]): Protocols - HTTPS/SOCKS.
+            proxy_ports (List[str] | None): Proxy ports.
+            members_by_subnet (List[str] | None): Members by subnet.
+            predefined_url_categories (List[str] | None): Predefined URL categories.
+            custom_url_categories (List[str] | None): Custom URL categories.
 
         Returns:
             Response: API response from Cisco WSA.
         """
+
+        organized_protocols = []
+        if "HTTPS" in protocols:
+            organized_protocols.extend(HTTPS_PROTOCOLS)
+        if "SOCKS" in protocols:
+            organized_protocols.extend(SOCKS_PROTOCOL)
+
         data = remove_empty_elements(
             {
                 "identification_profiles": [
@@ -663,13 +700,16 @@ class Client(BaseClient):
                         "new_profile_name": new_profile_name,
                         "description": description,
                         "status": status,
-                        "identification_method": {},
-                        "members": {
-                            "protocols": ["socks"]
-                            if protocols == "SOCKS"
-                            else ["http", "https", "ftp"]
-                        },
                         "order": order,
+                        "members": {
+                            "protocols": organized_protocols,
+                            "proxy_ports": proxy_ports,
+                            "ip": members_by_subnet,
+                            "url_categories": {
+                                "predefined": predefined_url_categories,
+                                "custom": custom_url_categories,
+                            },
+                        },
                     }
                 ]
             }
@@ -1298,15 +1338,23 @@ def identification_profiles_create_command(
     profile_name = args["profile_name"]
     status = args["status"]
     description = args["description"]
-    protocols = args["protocols"]
     order = arg_to_number(args["order"])
+    protocols = argToList(args["protocols"])
+    proxy_ports = argToList(args.get("proxy_ports"))
+    members_by_subnet = argToList(args.get("members_by_subnet"))
+    predefined_url_categories = argToList(args.get("predefined_url_categories"))
+    custom_url_categories = argToList(args.get("custom_url_categories"))
 
     client.identification_profiles_create_request(
         status=status,
         description=description,
         profile_name=profile_name,
-        protocols=protocols,
         order=order,
+        protocols=protocols,
+        proxy_ports=proxy_ports,
+        members_by_subnet=members_by_subnet,
+        predefined_url_categories=predefined_url_categories,
+        custom_url_categories=custom_url_categories,
     )
 
     return CommandResults(
@@ -1331,8 +1379,12 @@ def identification_profiles_update_command(
     new_profile_name = args.get("new_profile_name")
     status = args.get("status")
     description = args.get("description")
-    protocols = args.get("protocols")
     order = arg_to_number(args.get("order"))
+    protocols = argToList(args.get("protocols"))
+    proxy_ports = argToList(args.get("proxy_ports"))
+    members_by_subnet = argToList(args.get("members_by_subnet"))
+    predefined_url_categories = argToList(args.get("predefined_url_categories"))
+    custom_url_categories = argToList(args.get("custom_url_categories"))
 
     client.identification_profiles_update_request(
         profile_name=profile_name,
@@ -1341,6 +1393,10 @@ def identification_profiles_update_command(
         status=status,
         protocols=protocols,
         order=order,
+        proxy_ports=proxy_ports,
+        members_by_subnet=members_by_subnet,
+        predefined_url_categories=predefined_url_categories,
+        custom_url_categories=custom_url_categories,
     )
 
     return CommandResults(

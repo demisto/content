@@ -632,15 +632,6 @@ script:
       description: Description of new identification profile.
       required: true
       isArray: false
-    - name: protocols
-      description: Network protocols of identification profile.
-      required: false
-      defaultValue: HTTPS
-      isArray: false
-      auto: PREDEFINED
-      predefined:
-      - HTTPS
-      - SOCKS
     - name: order
       description: |-
         Identification profile order, index of Identification profile in the collection.
@@ -648,6 +639,42 @@ script:
       defaultValue: 1
       required: true
       isArray: false
+    - name: protocols
+      description: Network protocols of identification profile.
+      required: false
+      defaultValue: HTTPS
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - HTTPS
+      - SOCKS
+    - name: proxy_ports
+      description: |- 
+        Membership is defined by proxy port for forward connections,
+        where certain clients have been configured to use a specific connecting port.
+        For transparent connections, membership by proxy port applies to the port of the destination URL.
+        Leave this field blank if membership by connecting proxy port is not needed.
+        e.g. 22-1000,3331
+      required: false
+      isArray: true
+    - name: members_by_subnet
+      description: Define Members by Subnet. e.g. 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5
+      required: false
+      isArray: true
+    - name: predefined_url_categories
+      description: |- 
+        Select URL Categories to use as membership criteria.
+        Leave blank if membership by URL Category is not needed.
+        You can list available options with cisco-wsa-url-categories-list command.
+      required: false
+      isArray: true
+    - name: custom_url_categories
+      description: |- 
+        Select URL Categories to use as membership criteria.
+        Leave blank if membership by URL Category is not needed.
+        You can list available options with cisco-wsa-url-categories-list command.
+      required: false
+      isArray: true
   - name: cisco-wsa-identification-profiles-update
     description: Update identification profile.
     arguments:
@@ -671,20 +698,48 @@ script:
       description: Updated description of identification profile.
       required: false
       isArray: false
-    - name: protocols
-      description: Network protocols of identification profile.
-      required: false
-      isArray: false
-      auto: PREDEFINED
-      predefined:
-      - HTTPS
-      - SOCKS
     - name: order
       description: |-
         Identification profile order, index of Identification profile in the collection.
         Not applicable for global_identification_profile.
       required: false
       isArray: false
+    - name: protocols
+      description: Network protocols of identification profile.
+      required: false
+      defaultValue: HTTPS
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - HTTPS
+      - SOCKS
+    - name: proxy_ports
+      description: |- 
+        Membership is defined by proxy port for forward connections,
+        where certain clients have been configured to use a specific connecting port.
+        For transparent connections, membership by proxy port applies to the port of the destination URL.
+        Leave this field blank if membership by connecting proxy port is not needed.
+        e.g. 22-1000,3331
+      required: false
+      isArray: true
+    - name: members_by_subnet
+      description: Define Members by Subnet. e.g. 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5
+      required: false
+      isArray: true
+    - name: predefined_url_categories
+      description: |- 
+        Select URL Categories to use as membership criteria.
+        Leave blank if membership by URL Category is not needed.
+        You can list available options with cisco-wsa-url-categories-list command.
+      required: false
+      isArray: true
+    - name: custom_url_categories
+      description: |- 
+        Select URL Categories to use as membership criteria.
+        Leave blank if membership by URL Category is not needed.
+        You can list available options with cisco-wsa-url-categories-list command.
+      required: false
+      isArray: true
   - name: cisco-wsa-identification-profiles-delete
     description: Delete identification profiles.
     arguments:
