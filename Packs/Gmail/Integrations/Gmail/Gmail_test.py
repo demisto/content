@@ -435,8 +435,8 @@ def test_mailboxes_to_entry(mailboxes, expected_result):
     from Gmail import mailboxes_to_entry
 
     result = mailboxes_to_entry(mailboxes)
-    assert result.get("Contents") == expected_result.get("except_contents")
-    assert result.get("HumanReadable") == expected_result.get("expected_human_readable")
+    assert result[0].outputs == expected_result.get("except_contents")
+    assert result[0].readable_output == expected_result.get("expected_human_readable")
 
 
 @pytest.mark.parametrize('title, raw_emails, format_data, mailbox, expected_result', [

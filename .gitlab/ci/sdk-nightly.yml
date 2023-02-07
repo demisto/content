@@ -81,6 +81,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - section_start "Calculate Packs Dependencies" --collapsed
     - demisto-sdk find-dependencies -idp $ARTIFACTS_FOLDER/id_set.json --output-path $ARTIFACTS_FOLDER/packs_dependencies.json --all-packs-dependencies
     - section_end "Calculate Packs Dependencies"
+    - job-done
 
 
 demisto-sdk-nightly:xsoar-prepare-testing-bucket:
@@ -101,6 +102,7 @@ demisto-sdk-nightly:xsoar-prepare-testing-bucket:
     - |
       [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
       python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
+    - job-done
 
 
 demisto-sdk-nightly:run-commands-against-instance:
@@ -154,6 +156,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     - section_start "Destroy instances"
     - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
     - section_end "Destroy instances"
+    - job-done
 
 
 demisto-sdk-nightly:run-end-to-end-tests:
@@ -182,6 +185,7 @@ demisto-sdk-nightly:run-end-to-end-tests:
       export DEMISTO_BASE_URL="https://localhost:$TUNNEL_PORT"
       echo "Server URL: $DEMISTO_BASE_URL"
       python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/ || EXIT_CODE=$?
+    - job-done
     - exit $EXIT_CODE
 
 demisto-sdk-nightly:fan-in:

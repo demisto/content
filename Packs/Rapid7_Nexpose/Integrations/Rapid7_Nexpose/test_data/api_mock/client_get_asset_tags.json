@@ -1,0 +1,89 @@
+{
+    "resources": [
+        {
+            "color": "default",
+            "created": "2000-01-01T00:00:00.000Z",
+            "id": 4,
+            "name": "Low",
+            "riskModifier": "0.75",
+            "source": "built-in",
+            "sources": [
+                {
+                    "id": 1,
+                    "links": [
+                        {
+                            "id": 1,
+                            "href": "https://fake_hostname_231792.net/api/3/sites/1",
+                            "rel": "Site"
+                        }
+                    ],
+                    "source": "site"
+                }
+            ],
+            "type": "criticality"
+        },
+        {
+            "color": "default",
+            "created": "2000-01-01T00:00:00.000Z",
+            "id": 6,
+            "name": "US-EAST",
+            "source": "custom",
+            "sources": [
+                {
+                    "id": 1,
+                    "links": [
+                        {
+                            "id": 1,
+                            "href": "https://fake_hostname_231792.net/api/3/sites/1",
+                            "rel": "Site"
+                        }
+                    ],
+                    "source": "site"
+                }
+            ],
+            "type": "location"
+        },
+        {
+            "color": "default",
+            "created": "2000-01-01T00:00:00.000Z",
+            "id": 7,
+            "name": "VM_OWNER_NAME",
+            "source": "custom",
+            "sources": [
+                {
+                    "id": 1,
+                    "links": [
+                        {
+                            "id": 1,
+                            "href": "https://fake_hostname_231792.net/api/3/sites/1",
+                            "rel": "Site"
+                        }
+                    ],
+                    "source": "site"
+                }
+            ],
+            "type": "owner"
+        },
+        {
+            "color": "orange",
+            "created": "2000-01-01T00:00:00.000Z",
+            "id": 8,
+            "name": "AWS",
+            "source": "custom",
+            "sources": [
+                {
+                    "id": 1,
+                    "links": [
+                        {
+                            "id": 1,
+                            "href": "https://fake_hostname_231792.net/api/3/sites/1",
+                            "rel": "Site"
+                        }
+                    ],
+                    "source": "site"
+                }
+            ],
+            "type": "custom"
+        }
+    ]
+}

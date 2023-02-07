@@ -10,7 +10,7 @@ configuration:
   display: Application ID (Client ID for Client credentials mode)
   hidden: false
   name: app_id
-  required: true
+  required: false
   type: 0
   section: Connect
 - display: Tenant ID (required for Client Credentials mode)
@@ -24,6 +24,22 @@ configuration:
   type: 9
   additionalinfo: "Client Secret. Required for Client Credentials mode)"
   hiddenusername: true
+  section: Connect
+- additionalinfo: Relevant only if the integration is running on Azure VM. 
+    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
+    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
+    For additional information, see the Help tab.
+  display: Use Azure Managed Identities
+  name: use_managed_identities
+  required: false
+  type: 8
+  section: Connect
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
   section: Connect
 - name: first_fetch
   display: First Fetch Time Interval
@@ -569,7 +585,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.31715
+  dockerimage: demisto/crypto:1.0.0.47103
 fromversion: 5.0.0
 defaultmapperin: Microsoft Graph Identity and Access Incoming Mapper
 defaultclassifier: Microsoft Graph Identity and Access

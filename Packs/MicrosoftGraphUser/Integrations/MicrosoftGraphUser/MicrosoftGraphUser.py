@@ -3,10 +3,11 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Dict
 from urllib.parse import quote
+import urllib3
 
 # disable insecure warnings
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'
@@ -86,6 +87,7 @@ class MsGraphClient:
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  redirect_uri, auth_code, handle_error, certificate_thumbprint: Optional[str] = None,
                  private_key: Optional[str] = None,
+                 managed_identities_client_id: Optional[str] = None,
                  ):
         grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
         resource = None if self_deployed else ''
@@ -93,7 +95,9 @@ class MsGraphClient:
                                          base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
                                          redirect_uri=redirect_uri, auth_code=auth_code, grant_type=grant_type,
                                          resource=resource, certificate_thumbprint=certificate_thumbprint,
-                                         private_key=private_key)
+                                         private_key=private_key,
+                                         managed_identities_client_id=managed_identities_client_id,
+                                         managed_identities_resource_uri=Resources.graph)
         self.handle_error = handle_error
 
     #  If successful, this method returns 204 No Content response code.
@@ -182,11 +186,14 @@ class MsGraphClient:
         except Exception as e:
             raise e
 
-    def list_users(self, properties, page_url):
+    def list_users(self, properties, page_url, filters):
         if page_url:
             response = self.ms_client.http_request(method='GET', url_suffix='users', full_url=page_url)
         else:
-            response = self.ms_client.http_request(method='GET', url_suffix='users', params={'$select': properties})
+            response = self.ms_client.http_request(method='GET', url_suffix='users',
+                                                   headers={"ConsistencyLevel": "eventual"},
+                                                   params={'$filter': filters, '$select': properties, "$count": "true"})
+
         next_page_url = response.get('@odata.nextLink')
         users = response.get('value')
         return users, next_page_url
@@ -389,7 +396,8 @@ def get_user_command(client: MsGraphClient, args: Dict):
 def list_users_command(client: MsGraphClient, args: Dict):
     properties = args.get('properties', 'id,displayName,jobTitle,mobilePhone,mail')
     next_page = args.get('next_page', None)
-    users_data, result_next_page = client.list_users(properties, next_page)
+    filters = args.get('filter', None)
+    users_data, result_next_page = client.list_users(properties, next_page, filters)
     users_readable, users_outputs = parse_outputs(users_data)
     accounts = create_account_outputs(users_outputs)
     metadata = None
@@ -463,25 +471,29 @@ def revoke_user_session_command(client: MsGraphClient, args: Dict):
 def main():
     params: dict = demisto.params()
     url = params.get('host', '').rstrip('/') + '/v1.0/'
-    tenant = params.get('tenant_id')
-    auth_and_token_url = params.get('auth_id', '')
-    enc_key = params.get('enc_key')
+    tenant = params.get('creds_tenant_id', {}).get('password', '') or params.get('tenant_id', '')
+    auth_and_token_url = params.get('creds_auth_id', {}).get('password', '') or params.get('auth_id', '')
+    enc_key = params.get('creds_enc_key', {}).get('password', '') or params.get('enc_key', '')
     verify = not params.get('insecure', False)
-    self_deployed: bool = params.get('self_deployed', False)
     redirect_uri = params.get('redirect_uri', '')
-    auth_code = params.get('auth_code', '')
+    auth_code = params.get('creds_auth_code', {}).get('password', '') or params.get('auth_code', '')
     proxy = params.get('proxy', False)
     handle_error = argToBoolean(params.get('handle_error', 'true'))
-    certificate_thumbprint = params.get('certificate_thumbprint')
-    private_key = params.get('private_key')
-    if not self_deployed and not enc_key:
-        raise DemistoException('Key must be provided. For further information see '
-                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
-    if self_deployed and ((auth_code and not redirect_uri) or (not auth_code and redirect_uri)):
-        raise DemistoException('Please provide both Application redirect URI and Authorization code '
-                               'for Authorization Code flow, or None for the Client Credentials flow')
-    elif not enc_key and not (certificate_thumbprint and private_key):
-        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+    certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or params.get('certificate_thumbprint', '')
+    private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
+                   or params.get('private_key', ''))
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
+    self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
+
+    if not managed_identities_client_id:
+        if not self_deployed and not enc_key:
+            raise DemistoException('Key must be provided. For further information see '
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+        if self_deployed and ((auth_code and not redirect_uri) or (not auth_code and redirect_uri)):
+            raise DemistoException('Please provide both Application redirect URI and Authorization code '
+                                   'for Authorization Code flow, or None for the Client Credentials flow')
+        elif not enc_key and not (certificate_thumbprint and private_key):
+            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
     commands = {
         'msgraph-user-test': test_function,
@@ -510,7 +522,8 @@ def main():
                                               self_deployed=self_deployed, redirect_uri=redirect_uri,
                                               auth_code=auth_code, handle_error=handle_error,
                                               certificate_thumbprint=certificate_thumbprint,
-                                              private_key=private_key)
+                                              private_key=private_key,
+                                              managed_identities_client_id=managed_identities_client_id)
         human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
         return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 

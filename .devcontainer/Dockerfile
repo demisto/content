@@ -16,13 +16,15 @@ RUN apt-get update && apt-get install dos2unix git python2 curl -y \
     && cd /features \
     # locking to the latest master commit in this repo to prevent breaking changes
     # We should update this commit hash from time to time to
-    && git checkout 42e5a013cc914f87d0ff7bf613a1f80d9ff57579
+    && git checkout fbdc4556d519512736a8e2abfb3e03fcb2c9e0c7
 
 # This is a workaround for VSCode devcontainer features in self signed certificate
 RUN UID="1000" GID="1000" bash /features/src/common-utils/install.sh
 RUN VERSION="os-provided" bash /features/src/git/install.sh
 RUN VERSION="latest" bash /features/src/docker-in-docker/install.sh
 RUN VERSION="lts" bash /features/src/node/install.sh
+RUN bash /features/src/sshd/install.sh
+RUN bash /features/src/github-cli/install.sh
 
 # install poetry, configure certificate for git and tools for oh my zsh
 RUN python -m pip install --user pipx \

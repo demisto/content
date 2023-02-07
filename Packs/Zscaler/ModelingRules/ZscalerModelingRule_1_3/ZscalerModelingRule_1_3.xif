@@ -25,7 +25,6 @@ alter
 	xdm.source.user_agent = requestClientApplication,
 	xdm.target.interface = destinationServiceName,
 	xdm.source.ipv4 = sourceTranslatedAddress,
+	xdm.target.ipv4=dst,
 	xdm.event.type = ZscalerNSSWeblogURLClass,
-	xdm.observer.product = _product,
-	xdm.observer.vendor = _vendor,
 	xdm.target.process.executable.file_type = fileType;

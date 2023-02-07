@@ -7,21 +7,35 @@ configuration:
   name: url
   required: true
   type: 0
+- display: ''
+  name: apikey_id_creds
+  required: false
+  type: 9
+  displaypassword: API Key ID
+  hiddenusername: true
+- display: ''
+  name: apikey_creds
+  required: false
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
 - display: API Key ID
   name: apikey_id
-  required: true
+  required: false
   type: 4
+  hidden: true
 - display: API Key
   name: apikey
-  required: true
+  required: false
   type: 4
-- defaultvalue: 'true'
-  display: Fetch indicators
+  hidden: true
+- display: Fetch indicators
   name: feed
   required: false
   type: 8
-- defaultvalue: 'true'
-  additionalinfo: When enabled, indicators will be synced from Cortex XSOAR to Cortex XDR. Disable if you prefer to use a playbook to sync indicators.
+  defaultvalue: 'true'
+- additionalinfo: When enabled, indicators will be synced from Cortex XSOAR to Cortex XDR. Disable if you prefer to use a playbook to sync indicators.
+  defaultvalue: 'true'
   display: Auto Sync
   name: autoSync
   required: false
@@ -30,28 +44,28 @@ configuration:
   display: Overriding severity value
   hidden: false
   name: severity
+  required: true
+  type: 15
   options:
   - info
   - low
   - medium
   - high
   - critical
-  required: true
-  type: 15
-- additionalinfo: Supports CSV values.
-  defaultvalue: Cortex XDR
-  display: Tags
-  hidden: false
+- display: Tags
   name: feedTags
   required: false
   type: 0
-- additionalinfo: The query used to collect indicators to sync from Cortex XSOAR to Cortex XDR.
-  defaultvalue: reputation:Bad and (type:File or type:Domain or type:IP)
-  display: Sync Query
+  additionalinfo: Supports CSV values.
+  defaultvalue: Cortex XDR
   hidden: false
+- display: Sync Query
   name: query
   required: true
   type: 0
+  additionalinfo: The query used to collect indicators to sync from Cortex XSOAR to Cortex XDR.
+  defaultvalue: reputation:Bad and (type:File or type:Domain or type:IP)
+  hidden: false
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -70,9 +84,7 @@ configuration:
   - Bad
   required: false
   type: 18
-- additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: A - Completely reliable
-  display: Source Reliability
+- display: 'Source Reliability'
   name: feedReliability
   options:
   - A - Completely reliable
@@ -83,35 +95,37 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
-  display: Traffic Light Protocol Color
+  additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: A - Completely reliable
+- display: 'Traffic Light Protocol Color'
   name: tlp_color
+  required: false
+  type: 15
   options:
   - RED
   - AMBER
   - GREEN
   - WHITE
-  required: false
-  type: 15
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
 - display: ''
   name: feedExpirationPolicy
+  required: false
+  type: 17
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-  required: false
-  type: 17
 - display: ''
   name: feedExpirationInterval
   required: false
   type: 1
 - display: Incremental Feed
-  defaultvalue: 'true'
-  hidden: true
   name: feedIncremental
   required: false
   type: 8
+  defaultvalue: 'true'
+  hidden: true
 - defaultvalue: '1'
   display: Feed Fetch Interval
   name: feedFetchInterval
@@ -123,12 +137,24 @@ configuration:
   required: false
   type: 0
   defaultvalue: 'sourceoriginalseverity'
-- defaultvalue: 'true'
-  additionalinfo: When enabled, the severity value will be taken from the `severity` parameter, regardless of the IOC severity value. Otherwise, the severity value will be taken according to the `xsoar_severity_field` parameter.
+- defaultvalue: 'comments'
+  additionalinfo: The Cortex XSOAR field where comments are stored. Default is `comments`. Expecting a Cortex XSOAR IOC format of a comment (nested dictionary). Specifying a different field name assumes the field has a list of strings to be used as comments, or a comma-separated string.
+  display: XSOAR Comment Field
+  name: xsoar_comments_field
+  required: false
+  type: 0
+- defaultvalue: 'false'
+  additionalinfo: Whether to consider the value at `xsoar_comments_field` as CSV. Requires specifying a xsoar_comments_field value different than the default `comments`.
+  display: Comments as tags (CSV)
+  name: comments_as_tags
+  required: false
+  type: 8
+- additionalinfo: When enabled, the severity value will be taken from the `severity` parameter, regardless of the IOC severity value. Otherwise, the severity value will be taken according to the `xsoar_severity_field` parameter.
   display: Override severity
   name: override_severity
   required: false
   type: 8
+  defaultvalue: 'true'
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
@@ -205,7 +231,7 @@ script:
     description: Disables IOCs in the XDR server.
     execution: false
     name: xdr-iocs-disable
-  dockerimage: demisto/python3:3.10.8.36650
+  dockerimage: demisto/python3:3.10.9.44472
   feed: true
   isfetch: false
   longRunning: false

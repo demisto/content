@@ -1,4 +1,7 @@
 category: Endpoint
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Microsoft Defender Advanced Threat Protection
   version: -1
@@ -8,29 +11,45 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: ID
   name: _auth_id
   required: false
   type: 0
+  section: Connect
 - display: Token
   name: _tenant_id
   required: false
   type: 0
+  section: Connect
 - displaypassword: Key
   name: credentials
   required: false
   type: 9
   hiddenusername: true
+- display: Certificate Thumbprint
+  name: creds_certificate
+  required: false
+  type: 9
+  displaypassword: Private Key
+  section: Connect
+  advanced: true
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
+  hidden: true
+  section: Connect
+  advanced: true
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
   required: false
   type: 14
+  hidden: true
+  section: Connect
+  advanced: true
 - additionalinfo: Type of authentication - either Authorization Code (recommended) or Client Credentials.
   display: Authentication Type
   name: auth_type
@@ -38,11 +57,16 @@ configuration:
   options:
   - Authorization Code
   - Client Credentials
+  - Azure Managed Identities
   type: 15
+  section: Connect
+  advanced: true
 - display: Application redirect URI (for authorization code mode)
   name: redirect_uri
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Authorization code
   displaypassword: Authorization code
   additionalinfo: for user-auth mode - received from the authorization step. see Detailed Instructions section
@@ -50,29 +74,41 @@ configuration:
   name: auth_code
   required: false
   type: 9
+  section: Connect
+  advanced: true
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
+  section: Connect
 - name: Reliability
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
   options:
-    - A+ - 3rd party enrichment
-    - A - Completely reliable
-    - B - Usually reliable
-    - C - Fairly reliable
-    - D - Not usually reliable
-    - E - Unreliable
-    - F - Reliability cannot be judged
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
   required: false
   type: 15
+  section: Collect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: 'true'
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - defaultvalue: New
   display: 'Status to filter out alerts for fetching as incidents. Comma-separated lists are supported, e.g., New,Resolved.'
   name: fetch_status
@@ -82,62 +118,84 @@ configuration:
   - Resolved
   required: false
   type: 16
+  section: Collect
+  advanced: true
 - defaultvalue: Informational,Low,Medium,High
   display: 'Severity to filter out alerts for fetching as incidents. Comma-separated lists are supported, e.g., Medium,High.'
   name: fetch_severity
+  required: false
+  type: 16
   options:
   - Informational
   - Low
   - Medium
   - High
-  required: false
-  type: 16
+  section: Collect
+  advanced: true
 - defaultvalue: '50'
   display: Maximum number of incidents to fetch
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Fetch alert evidence
   name: fetch_evidence
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use a self-deployed Azure Application
   name: self_deployed
   required: false
   type: 8
-- defaultvalue: 3 days
+  section: Connect
+  advanced: true
+- defaultvalue: '3 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch_timestamp
   required: false
   type: 0
+  section: Collect
 - defaultvalue: 'false'
   display: Using Microsoft GCC?
   name: is_gcc
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: ID (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
   name: auth_id
   required: false
   type: 4
   hidden: true
+  section: Connect
+  advanced: true
 - display: Token (received from the admin consent - see Detailed Instructions (?) (Deprecated) section)
   name: tenant_id
   required: false
   type: 4
   hidden: true
+  section: Connect
+  advanced: true
 - display: Key (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
   name: enc_key
   required: false
   type: 4
   hidden: true
+  section: Connect
+  advanced: true
 description: Microsoft Defender for Endpoint (previously Microsoft Defender Advanced Threat Protection (ATP)) is a unified platform for preventative protection, post-breach detection, automated investigation, and response.
 display: Microsoft Defender for Endpoint
 name: Microsoft Defender Advanced Threat Protection
@@ -4724,13 +4782,13 @@ script:
       secret: false
     - default: false
       defaultValue: '25'
-      description: Maximum number of results to retrieve. 
+      description: Maximum number of results to retrieve.
       isArray: false
       name: limit
       secret: false
     - default: false
       defaultValue: '0'
-      description: The number of items in the queried collection that are to be skipped and not included in the result. 
+      description: The number of items in the queried collection that are to be skipped and not included in the result.
       isArray: false
       name: offset
       secret: false
@@ -4804,13 +4862,13 @@ script:
       default: false
       secret: false
     - default: false
-      description: Maximum number of results to retrieve. 
+      description: Maximum number of results to retrieve.
       isArray: false
       name: limit
       defaultValue: '25'
       secret: false
     - default: false
-      description: The number of items in the queried collection that are to be skipped and not included in the result. 
+      description: The number of items in the queried collection that are to be skipped and not included in the result.
       isArray: false
       defaultValue: '0'
       name: offset
@@ -6623,7 +6681,7 @@ script:
       description: Troubleshooting information.
       type: String
     polling: true
-  dockerimage: demisto/crypto:1.0.0.42155
+  dockerimage: demisto/crypto:1.0.0.47103
   feed: false
   isfetch: true
   longRunning: false
@@ -6635,4 +6693,7 @@ script:
 defaultmapperin: Microsoft Defender For Endpoint Mapper
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- Microsoft Defender Advanced Threat Protection - Test
+- Microsoft Defender Advanced Threat Protection - Test dev
+- Microsoft Defender Advanced Threat Protection - Test self deployed
+- Microsoft Defender Advanced Threat Protection - Test prod

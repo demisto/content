@@ -7,7 +7,7 @@ configuration:
   display: App ID
   hidden: false
   name: app_id
-  required: true
+  required: false
   type: 0
 - display: Subscription ID
   hidden: false
@@ -19,7 +19,7 @@ configuration:
   name: resource_group_name
   required: true
   type: 0
-- additionalinfo: Type of authentication - could be Authorization Code Flow (recommended) or Device Code Flow.
+- additionalinfo: Type of authentication - can be Authorization Code Flow (recommended), Device Code Flow, or Azure Managed Identities.
   display: Authentication Type
   name: auth_type
   required: true
@@ -27,6 +27,7 @@ configuration:
   options:
   - Authorization Code
   - Device Code
+  - Azure Managed Identities
   type: 15
 - display: Tenant ID (for authorization code mode)
   name: tenant_id
@@ -49,6 +50,12 @@ configuration:
   hiddenusername: true
   name: auth_code
   required: false
+  type: 9
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
   type: 9
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
@@ -509,7 +516,7 @@ script:
     description: Tests connectivity to the Azure Web Application Firewall.
     execution: false
     name: azure-waf-auth-test
-  dockerimage: demisto/crypto:1.0.0.34720
+  dockerimage: demisto/crypto:1.0.0.47103
   feed: false
   isfetch: false
   longRunning: false

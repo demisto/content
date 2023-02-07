@@ -10,6 +10,9 @@ ignore=RM104
 [file:impossibleTravelerGetDistance.yml]
 ignore=CJ105
 
+[file:1_3_23.md]
+ignore=RN115,RN113
+
 [known_words]
 XSIAM
 CoreIRApiModule

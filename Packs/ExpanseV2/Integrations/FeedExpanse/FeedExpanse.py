@@ -641,7 +641,7 @@ def main() -> None:
 
     params = demisto.params()
     command = demisto.command()
-    api_key = params.get("apikey")
+    api_key = params.get('credentials', {}).get('password', '') or params.get("apikey", '')
     base_url = urljoin(params["url"], "/api")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)

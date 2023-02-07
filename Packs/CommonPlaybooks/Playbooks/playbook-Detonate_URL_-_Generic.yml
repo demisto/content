@@ -416,38 +416,31 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 07706e7e-800f-408e-8dfa-184841b701f4
-    type: playbook
+    taskid: 0ff5715e-873b-4d67-87da-2080cd4e5f34
+    type: regular
     task:
-      id: 07706e7e-800f-408e-8dfa-184841b701f4
+      id: 0ff5715e-873b-4d67-87da-2080cd4e5f34
       version: -1
-      name: Detonate URL - CrowdStrike Falcon X
-      playbookName: Detonate URL - CrowdStrike Falcon X
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: |-
-        'Detonates one or more URLs using the CrowdStrike Falcon sandbox integration.'
+      name: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
+      description: Submits a URL for analysis.
+      script: '|||cs-falcon-sandbox-submit-url'
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon Sandbox V2
     nexttasks:
-      "#none#":
-        - "3"
+      '#none#':
+      - "3"
     scriptarguments:
-      EnvironmentID:
+      environmentID:
         simple: "100"
-      Interval:
-        simple: "5"
-      Timeout:
-        simple: "30"
-      URL:
+      polling:
+        simple: "true"
+      url:
         complex:
-          root: inputs.URL
-          accessor: Data
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
+            root: inputs.URL
+            accessor: Data
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
