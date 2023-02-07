@@ -18,5 +18,14 @@
   "GoogleKeyManagementService",
   "GoogleCloudCompute",
   "Rapid7_Nexpose",
-  "Nmap"
+  "Nmap",
+  "Malware",
+  "AccessInvestigation",
+  "Asset",
+  "Identity",
+  "GoogleKeyManagementService",
+  "AWS-Route53",
+  "Azure-Enrichment-Remediation",
+  "MicrosoftGraphUser",
+  "AzureCompute"
 ]
