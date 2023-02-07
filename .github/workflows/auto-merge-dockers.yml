@@ -1,9 +1,10 @@
 name: Docker Update Auto Merge
 on:
-  pull_request:
-    types: [opened, reopened, labeled, edited, synchronize, assigned]
   check_suite:
     types: [completed]
+#  pull_request:
+#    types: [opened, reopened, labeled, edited, synchronize, assigned]
+
 
 permissions:
   pull-requests: write
