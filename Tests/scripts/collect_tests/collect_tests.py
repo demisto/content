@@ -423,6 +423,21 @@ class TestCollector(ABC):
             only_to_install=True,
         )
 
+    def _collect_all_marketplace_compatible_packs(self, is_nightly) -> Optional[CollectionResult]:
+        result = []
+        for pack_metadata in PACK_MANAGER.iter_pack_metadata():
+            try:
+                result.append(self._collect_pack(
+                    pack_id=pack_metadata.pack_id,
+                    reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
+                    reason_description=self.marketplace.value,
+                    allow_incompatible_marketplace=False,
+                    is_nightly=is_nightly,
+                ))
+            except (NothingToCollectException, NonXsoarSupportedPackException, IncompatibleMarketplaceException) as e:
+                logger.debug(str(e))
+        return CollectionResult.union(result)
+
     def __validate_compatibility(
             self,
             id_: str,
@@ -491,7 +506,7 @@ class TestCollector(ABC):
             only_to_install: bool = False,
     ) -> Optional[CollectionResult]:
         pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
-        collect_only_to_upload = False
+        collect_only_to_upload: bool = False
 
         try:
             self._validate_content_item_compatibility(pack_metadata, is_integration=False)
@@ -1039,7 +1054,7 @@ def find_pack_file_removed_from(old_path: Path, new_path: Path | None = None):
     return old_pack
 
 
-class UploadCollector(BranchTestCollector):
+class UploadBranchCollector(BranchTestCollector):
     def _collect(self) -> Optional[CollectionResult]:
         # same as BranchTestCollector, but without tests.
         if result := super()._collect():
@@ -1082,20 +1097,10 @@ class NightlyTestCollector(TestCollector, ABC):
 
         return CollectionResult.union(result)
 
-    def _collect_all_marketplace_compatible_packs(self) -> Optional[CollectionResult]:
-        result = []
-        for pack_metadata in PACK_MANAGER.iter_pack_metadata():
-            try:
-                result.append(self._collect_pack(
-                    pack_id=pack_metadata.pack_id,
-                    reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
-                    reason_description=self.marketplace.value,
-                    allow_incompatible_marketplace=False,
-                    is_nightly=True,
-                ))
-            except (NothingToCollectException, NonXsoarSupportedPackException) as e:
-                logger.debug(str(e))
-        return CollectionResult.union(result)
+
+class UploadAllCollector(TestCollector):
+    def _collect(self) -> Optional[CollectionResult]:
+        return self._collect_all_marketplace_compatible_packs(is_nightly=False)
 
 
 class XSIAMNightlyTestCollector(NightlyTestCollector):
@@ -1185,7 +1190,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
     def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((
             self._id_set_tests_matching_marketplace_value(),
-            self._collect_all_marketplace_compatible_packs(),
+            self._collect_all_marketplace_compatible_packs(is_nightly=True),
             self._collect_packs_of_content_matching_marketplace_value(),
             self._collect_modeling_rule_packs(),
             self.sanity_tests,  # XSIAM nightly always collects its sanity test(s)
@@ -1199,7 +1204,7 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
     def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((
             self._id_set_tests_matching_marketplace_value(),
-            self._collect_all_marketplace_compatible_packs(),
+            self._collect_all_marketplace_compatible_packs(is_nightly=True),
         ))
 
 
@@ -1251,7 +1256,7 @@ class XPANSENightlyTestCollector(NightlyTestCollector):
 
 
 if __name__ == '__main__':
-    logger.info('TestCollector v20221108')
+    logger.info('TestCollector v20230123')
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
@@ -1261,8 +1266,11 @@ if __name__ == '__main__':
                         default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
     parser.add_argument('--graph', '-g', type=str2bool, help='Should use graph', default=False, required=False)
+    parser.add_argument('--override_all_packs', '-a', type=str2bool, help='Collect all packs if override upload', default=False,
+                        required=False)
     args = parser.parse_args()
     args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())
+
     logger.debug(f'parsed args:\n{args_string}')
     logger.debug('CONTRIB_BRANCH=' + os.getenv('CONTRIB_BRANCH', '<undefined>'))
     branch_name = PATHS.content_repo.active_branch.name
@@ -1277,7 +1285,10 @@ if __name__ == '__main__':
         collector = BranchTestCollector('master', marketplace, service_account, args.changed_pack_path, graph=graph)
 
     elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
-        collector = UploadCollector(branch_name, marketplace, service_account, graph=graph)
+        if args.override_all_packs:
+            collector = UploadAllCollector(marketplace, graph)
+        else:
+            collector = UploadBranchCollector(branch_name, marketplace, service_account, graph=graph)
 
     else:
         match (nightly, marketplace):
