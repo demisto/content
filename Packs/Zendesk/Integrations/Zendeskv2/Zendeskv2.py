@@ -856,10 +856,16 @@ class ZendeskClient(BaseClient):
     # ---- demisto releated functions ---- #
 
     def test_module(self):  # pragma: no cover
+        exception = None
+        # If one of the endpoints work we will pass the test_module check. 
         for data_type in ['tickets', 'users', 'organizations']:
-            self._paged_request(url_suffix=data_type, data_field_name=data_type, limit=1)
-        UpdatedTickets(self, 0).tickets().__next__()
-        return 'ok'
+            try:
+                self._paged_request(url_suffix=data_type, data_field_name=data_type, limit=1)
+                return 'ok'
+            except Exception as e:
+                exception = e
+
+        raise exception from None
 
     @staticmethod
     def _ticket_to_incident(ticket: Dict):
