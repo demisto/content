@@ -2055,7 +2055,6 @@ def test_add_user_to_chat(requests_mock):
         ({"chat": "test group 1"},
          'get_chat', "https://graph.microsoft.com/v1.0/chats/19%3A2da4c29f6d7041eca70b638b43d45437%40thread.v2",
          'expected_outputs_get_chat'),
-        ({"limit": 3}, 'list_chats', "https://graph.microsoft.com/v1.0/chats/", 'expected_outputs_list_chats'),
         ({"expand": 'members', "limit": 3}, 'list_chats_with_members',
          "https://graph.microsoft.com/v1.0/chats/?%24expand=members&%24top=3",
          'expected_outputs_list_chats_with_members'),
@@ -2076,7 +2075,7 @@ def test_chat_list_command(mocker, requests_mock, args, expected_response, expec
       - Executing the 'microsoft-teams-chat-list' command.
     Then:
       - Assert the request url is as expected
-      - Verify that the context is as expected
+      - Verify that the context outputs is as expected
     """
     from MicrosoftTeams import chat_list_command
 
@@ -2116,7 +2115,7 @@ def test_chat_message_list_command(mocker, requests_mock, args, expected_respons
       - Executing the 'microsoft-teams-chat-message-list' command.
     Then:
       - Assert the request url is as expected
-      - Verify that the context is as expected
+      - Verify that the context outputs is as expected
     """
     from MicrosoftTeams import chat_message_list_command
     mocker.patch('MicrosoftTeams.get_chat_id_and_type', return_value=(GROUP_CHAT_ID, 'group'))

@@ -66,6 +66,8 @@ configuration:
   name: min_incident_severity
   required: false
   type: 15
+  section: Collect
+  advanced: true
   defaultvalue: 'Low'
   options:
   - Unknown
@@ -74,16 +76,14 @@ configuration:
   - Medium
   - High
   - Critical
-  section: Collect
-  advanced: true
 - display: Disable Automatic Notifications
   name: auto_notifications
   required: false
   type: 8
-  additionalinfo: Whether to disable automatic notifications to the configured notifications channel.
-  defaultvalue: 'false'
   section: Connect
   advanced: true
+  additionalinfo: Whether to disable automatic notifications to the configured notifications channel.
+  defaultvalue: 'false'
 - display: Allow external users to create incidents via direct message
   name: allow_external_incidents_creation
   required: false
@@ -405,8 +405,8 @@ script:
       name: content_type
       auto: PREDEFINED
       predefined:
-        - 'text'
-        - 'html'
+      - 'text'
+      - 'html'
       defaultValue: 'text'
       required: false
     - description: The type of chat message.
@@ -487,28 +487,28 @@ script:
       description: Reactions for this chat message (for example, Like).
       type: String
   - arguments:
-      - description: The chat ID or group chat name (topic) to which to add the member.
-        name: chat
-        required: true
-      - description: Display name/mail/UPN of user that should be added to the chat. Can be an array.
-        name: member
-        required: true
-        isArray: true
-      - description: Whether to share the whole history of the chat. Default is "true".
-        name: share_history
-        isArray: false
-        auto: PREDEFINED
-        predefined:
-        - 'true'
-        - 'false'
-        required: false
-        defaultValue: true
+    - description: The chat ID or group chat name (topic) to which to add the member.
+      name: chat
+      required: true
+    - description: Display name/mail/UPN of user that should be added to the chat. Can be an array.
+      name: member
+      required: true
+      isArray: true
+    - description: Whether to share the whole history of the chat. Default is "true".
+      name: share_history
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      defaultValue: true
     description: Adds a member (user) to a group chat.
     name: microsoft-teams-chat-add-user
   - arguments:
-      - description: The chat ID / group chat name (topic) / oneOnOne Member (Display name/mail/UPN)
-        name: chat
-        required: true
+    - description: The chat ID / group chat name (topic) / oneOnOne Member (Display name/mail/UPN)
+      name: chat
+      required: true
     description: Retrieves a list of members from a chat.
     name: microsoft-teams-chat-member-list
     outputs:
@@ -537,34 +537,34 @@ script:
       description: The timestamp denoting how far back a conversation's history is shared with the conversation member.
       type: String
   - arguments:
-      - description: The chat ID / group chat name (topic) / oneOnOne Member (Display name/mail/UPN)
-        name: chat
-        required: true
-      - description: The number of results to retrieve. Default value is 50.
-        name: limit
-        required: false
-        defaultValue: 50
-      - description: Orders results by lastModifiedDateTime (default) or createdDateTime in descending order.
-        name: order_by
-        auto: PREDEFINED
-        predefined:
-          - 'lastModifiedDateTime'
-          - 'createdDateTime'
-        required: false
-        defaultValue: 'lastModifiedDateTime'
-      - default: false
-        description: A link that specifies a starting point to use for subsequent calls.
-        isArray: false
-        name: next_link
-        required: false
-        secret: false
-      - default: false
-        description: Number of results to return per page.
-        isArray: false
-        name: page_size
-        required: false
-        secret: false
-        defaultValue: 50
+    - description: The chat ID / group chat name (topic) / oneOnOne Member (Display name/mail/UPN)
+      name: chat
+      required: true
+    - description: The number of results to retrieve. Default value is 50.
+      name: limit
+      required: false
+      defaultValue: 50
+    - description: Orders results by lastModifiedDateTime (default) or createdDateTime in descending order.
+      name: order_by
+      auto: PREDEFINED
+      predefined:
+      - 'lastModifiedDateTime'
+      - 'createdDateTime'
+      required: false
+      defaultValue: 'lastModifiedDateTime'
+    - default: false
+      description: A link that specifies a starting point to use for subsequent calls.
+      isArray: false
+      name: next_link
+      required: false
+      secret: false
+    - default: false
+      description: Number of results to return per page.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+      defaultValue: 50
     description: Retrieves a list of messages in a chat.
     name: microsoft-teams-chat-message-list
     outputs:
@@ -641,36 +641,36 @@ script:
       description: Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls.
       type: String
   - arguments:
-      - description: The chat ID / group chat name (topic) / oneOnOne Member (Display name/mail/UPN)
-        name: chat
-        required: false
-      - description: "Filters results. For example: topic eq 'testing'. For more query examples, see https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http "
-        name: filter
-        required: false
-      - description: Expands the results to include members or lastMessagePreview properties.
-        name: expand
-        auto: PREDEFINED
-        predefined:
-          - 'members'
-          - 'lastMessagePreview'
-        required: false
-      - description: The number of results to retrieve. Default value is 50.
-        name: limit
-        required: false
-        defaultValue: 50
-      - default: false
-        description: A link that specifies a starting point to use for subsequent calls.
-        isArray: false
-        name: next_link
-        required: false
-        secret: false
-      - default: false
-        description: Number of results to return per page.
-        isArray: false
-        name: page_size
-        required: false
-        secret: false
-        defaultValue: 50
+    - description: The chat ID / group chat name (topic) / oneOnOne Member (Display name/mail/UPN)
+      name: chat
+      required: false
+    - description: "Filters results. For example: topic eq 'testing'. For more query examples, see https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http "
+      name: filter
+      required: false
+    - description: Expands the results to include members or lastMessagePreview properties.
+      name: expand
+      auto: PREDEFINED
+      predefined:
+      - 'members'
+      - 'lastMessagePreview'
+      required: false
+    - description: The number of results to retrieve. Default value is 50.
+      name: limit
+      required: false
+      defaultValue: 50
+    - default: false
+      description: A link that specifies a starting point to use for subsequent calls.
+      isArray: false
+      name: next_link
+      required: false
+      secret: false
+    - default: false
+      description: Number of results to return per page.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+      defaultValue: 50
     description: Retrieves a list of chats that the user is part of. If 'chat' is specified - retrieves this chat only.
     name: microsoft-teams-chat-list
     outputs:
@@ -705,15 +705,15 @@ script:
       description: Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls.
       type: String
   - arguments:
-      - description: The chat ID / group chat name (topic)
-        name: chat
-        required: true
-      - description: The new chat name. Maximum length is 250 characters. Use of ':' is not allowed.
-        name: chat_name
-        required: true
+    - description: The chat ID / group chat name (topic)
+      name: chat
+      required: true
+    - description: The new chat name. Maximum length is 250 characters. Use of ':' is not allowed.
+      name: chat_name
+      required: true
     description: Updates the chat name. It can only be set for group chats.
     name: microsoft-teams-chat-update
-  dockerimage: demisto/teams:1.0.0.43500
+  dockerimage: demisto/teams:1.0.0.47279
   feed: false
   isfetch: false
   longRunning: true
