@@ -6,7 +6,7 @@ set -e
 CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
 CI_BUILD_ID=${CI_BUILD_ID:-00000}
 PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
-EXTRACT_FOLDER=$(mktemp -d)
+EXTRACT_FOLDER=$ARTIFACTS_FOLDER/index_extracted_zip
 
 
 if [[ ! -f "$GCS_MARKET_KEY" ]]; then

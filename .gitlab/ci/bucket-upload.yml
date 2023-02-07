@@ -281,7 +281,7 @@ upload-packs-to-marketplace:
     - section_start "Upload Packs To Marketplace Storage"
     - |
       if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_BUCKET" != "$GCS_PRODUCTION_BUCKET" ]]; then
-        EXTRACT_FOLDER=$(mktemp -d)
+        EXTRACT_FOLDER=$ARTIFACTS_FOLDER/index_extracted_zip
         PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
         PACKS_DEPENDENCIES=$ARTIFACTS_FOLDER/packs_dependencies.json
         CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
@@ -358,7 +358,7 @@ upload-packs-to-marketplace-v2:
     - section_start "Upload Packs To Marketplace Storage"
     - |
       if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_V2_BUCKET" != "$GCS_PRODUCTION_V2_BUCKET" ]]; then
-        EXTRACT_FOLDER=$(mktemp -d)
+        EXTRACT_FOLDER=$ARTIFACTS_FOLDER/index_extracted_zip
         PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
         PACKS_DEPENDENCIES=$ARTIFACTS_FOLDER/packs_dependencies.json
         CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
@@ -464,7 +464,7 @@ force-pack-upload:
     - .default-job-settings
   script:
     - *check_user_permissions_to_upload_packs
-    - EXTRACT_FOLDER=$(mktemp -d)
+    - EXTRACT_FOLDER=$ARTIFACTS_FOLDER/index_extracted_zip
     - PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
     - PACKS_DEPENDENCIES=$ARTIFACTS_FOLDER/packs_dependencies.json
     - CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
