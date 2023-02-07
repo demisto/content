@@ -9,11 +9,11 @@ args:
 comment: Use this automation to check for validity of your SSL certificate and get
   the time until expiration.
 commonfields:
-  id: 9cc2bd75-c959-4709-8c3b-d684ec2ee17d
+  id: SSLVerifierV2
   version: -1
 dockerimage: demisto/ansible-runner:1.0.0.47001
 enabled: true
-name: 9cc2bd75-c959-4709-8c3b-d684ec2ee17d
+name: SSLVerifierV2
 outputs:
 - contextPath: SSLVerifierV2.Certificate.ExpirationDate
   description: Date Certificate Expires
