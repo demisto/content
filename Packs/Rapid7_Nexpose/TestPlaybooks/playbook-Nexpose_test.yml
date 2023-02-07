@@ -1102,6 +1102,10 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
+      asset_id:
+        complex:
+          root: Nexpose.Asset
+          accessor: id
       id:
         complex:
           root: Nexpose.Asset
