@@ -1,6 +1,3 @@
-IT service management
-This integration was integrated and tested with version xx of Zendesk v2
-
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-zendesk-v2).
 

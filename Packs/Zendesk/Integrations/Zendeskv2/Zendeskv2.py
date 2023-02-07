@@ -857,7 +857,7 @@ class ZendeskClient(BaseClient):
 
     def test_module(self):  # pragma: no cover
         exception = None
-        # If one of the endpoints work we will pass the test_module check. 
+        # If one of the endpoints work we will pass the test_module check.
         for data_type in ['tickets', 'users', 'organizations']:
             try:
                 self._paged_request(url_suffix=data_type, data_field_name=data_type, limit=1)
