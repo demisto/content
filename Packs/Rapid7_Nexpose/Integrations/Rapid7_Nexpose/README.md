@@ -87,10 +87,10 @@ Returns the specified asset.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Nexpose.AssetTag.type | string | Type of asset tag. |
-| Nexpose.AssetTag.created_time | string | Timestamp with the tag was create. |
-| Nexpose.AssetTag.name | string | The value of the tag. |
-| Nexpose.AssetTag.risk_modifier | string | The risk modifier value associated with criticality tag type. |
+| Nexpose.AssetTag.Type | string | Type of asset tag. |
+| Nexpose.AssetTag.CreatedTime | string | Timestamp with the tag was create. |
+| Nexpose.AssetTag.Name | string | The value of the tag. |
+| Nexpose.AssetTag.RiskModifier | string | The risk modifier value associated with criticality tag type. |
 
 #### Command example
 
@@ -103,28 +103,28 @@ Returns the specified asset.
     "Nexpose":{
         "AssetTag":[
                 {
-                    "created_time": "2023-00-00T00:00:00.000Z",
-                    "name": "Low",
-                    "risk_modifier": "0.75",
-                    "type": "criticality"
+                    "CreatedTime": "2023-00-00T00:00:00.000Z",
+                    "Name": "Low",
+                    "RiskModifier": "0.75",
+                    "Type": "criticality"
                 },
                 {
-                    "created_time": "2023-00-00T00:00:00.000Z",
-                    "name": "FAKELOCATION",
-                    "risk_modifier": null,
-                    "type": "location"
+                    "CreatedTime": "2023-00-00T00:00:00.000Z",
+                    "Name": "FAKELOCATION",
+                    "RiskModifier": null,
+                    "Type": "location"
                 },
                 {
-                    "created_time": "2023-00-00T00:00:00.000Z",
-                    "name": "FAKEOWNER",
-                    "risk_modifier": null,
-                    "type": "owner"
+                    "CreatedTime": "2023-00-00T00:00:00.000Z",
+                    "Name": "FAKEOWNER",
+                    "RiskModifier": null,
+                    "Type": "owner"
                 },
                 {
-                    "created_time": "2023-00-00T00:00:00.000Z",
-                    "name": "AWS",
-                    "risk_modifier": null,
-                    "type": "custom"
+                    "CreatedTime": "2023-00-00T00:00:00.000Z",
+                    "Name": "AWS",
+                    "RiskModifier": null,
+                    "Type": "custom"
                 }
             ]
     }
@@ -135,7 +135,7 @@ Returns the specified asset.
 
 > ### Nexpose Asset Tags for Asset 1
 >
-> |type|name|risk_modifier|created_time|
+> |Type|Name|Risk Modifier|Created Time|
 > |---|---|---|---|
 > | criticality | Low | 0.75 | 2023-00-00T00:00:00.000Z |
 > | location | FAKELOCATION |  | 2023-00-00T00:00:00.000Z |

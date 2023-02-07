@@ -159,17 +159,17 @@ script:
     execution: false
     name: nexpose-get-asset-tags
     outputs:
-    - contextPath: Nexpose.Asset.type
-      description: The type of tag discovered on the asset.
+    - contextPath: Nexpose.AssetTag.Type
+      description: Type of asset tag.
       type: string
-    - contextPath: Nexpose.Asset.name
-      description: ID of the asset.
+    - contextPath: Nexpose.AssetTag.Name
+      description: The value of the tag.
       type: string
-    - contextPath: Nexpose.Asset.created_time
-      description: The created time of the tag.
+    - contextPath: Nexpose.AssetTag.CreatedTime
+      description: Timestamp of when the tag was created.
       type: string
-    - contextPath: Nexpose.Asset.risk_modifier
-      description: The risk modifier for a criticality typed tag.
+    - contextPath: Nexpose.AssetTag.RiskModifier
+      description: The risk modifier value associated with criticality tag type.
       type: string
   - arguments:
     - default: false
