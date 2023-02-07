@@ -1327,13 +1327,12 @@ script:
     arguments: []
     description: Use this operation to retrieve a list of all the client applications
   # Infrastructure Protection Test Alerts
-    system: true
   - arguments:
     - description: The customer's IP range.
       name: ip_range
       required: true
     - auto: PREDEFINED
-      description: "One of the following: BGP, NETFLOW, PROTECTED_IP\t"
+      description: One of the following: BGP, NETFLOW, PROTECTED_IP
       name: range_type
       predefined:
       - BGP
@@ -1347,7 +1346,7 @@ script:
       name: end
       required: true
     - auto: PREDEFINED
-      description: 'One of the following: SRC_IP, DST_IP, SRC_PORT_PROTOCOL, DST_PORT_PROTOCOL'
+      description: One of the following: SRC_IP, DST_IP, SRC_PORT_PROTOCOL, DST_PORT_PROTOCOL
       name: data_type
       predefined:
       - SRC_IP
@@ -1356,28 +1355,29 @@ script:
       - DST_PORT_PROTOCOL
       required: true
     - auto: PREDEFINED
-      description: 'One of the following: BW, PPS'
+      description: One of the following: BW, PPS
       name: metric_type
       predefined:
       - BW
       - PPS
       required: true
     - auto: PREDEFINED
-      description: 'One of the following: BLOCK, PASS'
+      description: One of the following: BLOCK, PASS
       name: mitigation_type
       predefined:
       - BLOCK
       - PASS
       required: true
     - auto: PREDEFINED
-      description: 'One of the following: PEAK, AVERAGE'
+      description: One of the following: PEAK, AVERAGE
       name: aggregation_type
       predefined:
       - PEAK
       - AVERAGE
       required: true
-    description: 'Use this operation to view the highest peak values and highest average values for a protected IP range during a selected time period. '
+    description: Use this operation to view the highest peak values and highest average values for a protected IP range during a selected time period
     name: incap-get-infra-protection-top-items-table
+- system: true
 tests:
 - No test
 fromversion: 5.0.0
