@@ -12,9 +12,9 @@ Supported Integrations:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* Okta - User Investigation
 * SIEM - Search for Failed logins
 * Cortex XDR - Get entity alerts by MITRE tactics
-* Okta - User Investigation
 
 ### Integrations
 This playbook does not use any integrations.
@@ -45,6 +45,7 @@ This playbook does not use any integrations.
 | XDRUsernameField | Cortex XDR User name Field. |  | Optional |
 | QRadarSearchTime | The Search Time for the QRadar search query. for example:  Last 1 days | Last 1 days | Optional |
 | AzureSearchTime | The Search Time for the Azure Log Analytics search query. for example: ago\(1d\) | ago(1d) | Optional |
+| ASN | The ASN from which the user logged in. |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -67,6 +68,7 @@ This playbook does not use any integrations.
 | QRadar.Search.Result | The result of the QRadar search  | unknown |
 | Splunk.Result | The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event. | unknown |
 | NumOfFailedLogon | Number of failed login. | unknown |
+| NumOfFailedLogonASN | Number of failed login from ASN by all users. | unknown |
 
 ## Playbook Image
 ---

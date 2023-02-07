@@ -892,6 +892,9 @@ tasks:
       '#none#':
       - "80"
     scriptarguments:
+      ASN:
+        complex:
+          root: inputs.ASN
       LoginCountry:
         complex:
           root: inputs.LoginCountry
@@ -1101,6 +1104,11 @@ inputs:
   required: false
   description: 'The Search Time for the Azure Log Analytics search query. for example: ago(1d)'
   playbookInputQuery:
+- key: ASN
+  value: {}
+  required: false
+  description: The ASN from which the user logged in.
+  playbookInputQuery:
 outputs:
 - contextPath: NumOfSiemFailedLogon
   description: Number of failed login from Siem.
@@ -1145,6 +1153,9 @@ outputs:
   description: The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event.
 - contextPath: NumOfFailedLogon
   description: Number of failed login.
+  type: unknown
+- contextPath: NumOfFailedLogonASN
+  description: Number of failed login from ASN by all users.
   type: unknown
 quiet: true
 tests:
