@@ -3640,6 +3640,8 @@ VALID_URL_INDICATORS = [
     '2001:0db8:0001:0000:0000:0ab9:C0A8:0102/resource.html',
     '2251:dbc:8fa3:8d3:1f19:8a2e:370:7348/80',
     'https[:]//www.test.com/test',  # defanged colon sign
+    "hxxp[:]//1[.]1[.]1[.]1/test[.]php",  # Defanged URL with ip as a domain
+    "hxxp[:]//test[.]com/test[.]php",  # Defanged URL with a file extension
 ]
 
 
