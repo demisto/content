@@ -586,25 +586,6 @@ def build_severity_label_obj(label: str) -> List:
     return severity_label_obj
 
 
-def last_update_to_time(last_update: str) -> int:
-    """
-    Converting the lastUpdate string to int
-    Args:
-        last_update: str
-    Returns:
-        The int representing the date.
-    """
-    if last_update is None:
-        raise ValueError('Missing lastUpdate')
-    else:
-        date_time = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
-        if date_time is None:
-            raise ValueError('Invalid date.')
-        else:
-            demisto.debug('In last_update_to_time returning the result')
-            return int(date_time.timestamp())
-
-
 def disable_security_hub_command(client, args):
     kwargs = safe_load_json(args.get('raw_json', "{ }")) if args.get('raw_json') else {}
     response = client.disable_security_hub(**kwargs)
@@ -792,13 +773,12 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
         filters['ProductName'] = create_filters_list_dictionaries(product_name, 'EQUALS')
     demisto.debug(f'The filters to the fetch are: {filters}')
     if next_token:
-        demisto.debug(f'{next_token=}')
         try:
             response = client.get_findings(NextToken=next_token)
-            demisto.debug('No problem with next token.')
+
         # In case a new request is made with another input the nextToken will be revoked
         except client.exceptions.InvalidInputException as e:
-            demisto.debug(f'In except of next token. {filters=}\nThe exception is {e}')
+            demisto.debug(f'The {next_token=} is not valid.\nThe exception is {e}')
             response = client.get_findings(Filters=filters)
     else:
         response = client.get_findings(Filters=filters)
@@ -857,9 +837,10 @@ def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRe
     """
     remote_args = GetRemoteDataArgs(args)
     remote_incident_id = remote_args.remote_incident_id
-    last_update_time = last_update_to_time(remote_args.last_update)
+    last_update = f'{remote_args.last_update[:19]}Z'  # removes the milliseconds in 2023-02-06T15:36:42.260588288Z
+    last_update_time = date_to_timestamp(last_update, '%Y-%m-%dT%H:%M:%SZ')
     demisto.debug(f'Performing get-remote-data command with incident id: {remote_incident_id} '
-                  f'and last_update: {remote_args.last_update} and int {last_update_time=}')
+                  f'and {last_update=} and {last_update_time=}')
 
     filters = {
         'Id': [
@@ -872,11 +853,10 @@ def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRe
     response = client.get_findings(Filters=filters)
     demisto.debug(f'The response is: {response} \nEnd of response.')
     finding = response.get('Findings')[0]  # a list with one dict in it
-    demisto.debug(f'The finding is: {finding} \nEnd of finding')
-    incident_last_update = finding.get('UpdatedAt', '')
-    incident_last_update_time = last_update_to_time(incident_last_update)
+    incident_last_update = f"{finding.get('UpdatedAt', '')[:19]}Z"  # removes the milliseconds in 2023-02-06T15:36:42.260588288Z
+    incident_last_update_time = date_to_timestamp(incident_last_update, '%Y-%m-%dT%H:%M:%SZ')
     demisto.debug(f'The incident last update time is: {incident_last_update}\nAnd {incident_last_update_time=}')
-    demisto.debug(f'if {last_update_time} < {incident_last_update_time=}')
+
     if last_update_time < incident_last_update_time:
         demisto.debug(f'Updated incident {remote_incident_id}')
         return GetRemoteDataResponse(mirrored_object=finding, entries=[{}])
@@ -981,7 +961,7 @@ def main():  # pragma: no cover
     aws_sh_severity = params.get('sh_severity')
     archive_findings = params.get('archiveFindings', False)
     additional_filters = params.get('additionalFilters', '')
-    mirror_direction = MIRROR_DIRECTION_MAPPING[params.get("mirror_direction")]
+    mirror_direction = MIRROR_DIRECTION_MAPPING[params.get('mirror_direction')]
     finding_type = params.get('finding_type', '')
     workflow_status = params.get('workflow_status', '')
     product_name = argToList(params.get('product_name', ''))
@@ -1027,10 +1007,6 @@ def main():  # pragma: no cover
         elif command == 'get-remote-data':
             return_results(get_remote_data_command(client, args))
             return
-        # elif command == 'get-modified-remote-data':
-        #     return_results(get_modified_remote_data_command(client, args, aws_sh_severity, additional_filters,
-        #                                                     finding_type, workflow_status, product_name))
-        #     return
         elif command == 'update-remote-system':
             return_results(update_remote_system_command(client, args))
             return
