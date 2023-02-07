@@ -262,6 +262,15 @@ def get_event_header(event_type):  # pragma: no cover
 
 
 def normalize_api_response(raw_response):
+    """ parse the api response. from 4.x version of the api, the response is returned with a data dict
+        :param raw_response:
+            The raw response returned from api call
+
+        :return: the parsed api response.
+        :rtype: ``dict or list``
+
+    """
+    # with version 4.x of the api, the response is returnd within a data dict
     return raw_response.get('data', raw_response) if type(raw_response) is dict else raw_response
 
 
@@ -279,7 +288,7 @@ def get_intel_doc_item(intel_doc: dict) -> dict:
         :rtype: ``dict``
 
     """
-    intel_doc_data = intel_doc.get("data", intel_doc)  # 4.x version parses info in a data dict into the intel_doc dict
+    intel_doc_data = normalize_api_response(intel_doc) # 4.x version parses info in a data dict into the intel_doc dict
     return {
         'ID': intel_doc_data.get('id'),
         'Name': intel_doc_data.get('name'),

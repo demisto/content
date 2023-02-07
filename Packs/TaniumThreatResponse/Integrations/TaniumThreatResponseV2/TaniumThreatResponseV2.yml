@@ -45,7 +45,7 @@ configuration:
   type: 0
   defaultvalue: ''
 - display: API Version
-  additionalinfo: what version of Tanium Threat Response your instance is supporting
+  additionalinfo: the version of Tanium Threat Response your instance supports.
   defaultvalue: 4.x
   name: api_version
   required: false
