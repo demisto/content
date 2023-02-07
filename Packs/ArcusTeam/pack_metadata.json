@@ -10,19 +10,16 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Threat Intelligence",
-        "Security Analytics",
-        "Security",
-        "IoT"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [
         "cve",
         "score",
         "Attack Surface Management",
         "IOT",
-        "Network Devices"
+        "Network Devices",
+        "Threat Intelligence",
+        "Security Analytics"
     ],
     "githubUser": [],
     "marketplaces": [

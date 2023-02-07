@@ -397,12 +397,19 @@ def prisma_access_logout_user(computer: str, domain: str, user: str) -> Dict[str
     if apiConfigured:
         xmlComputer = '<computer>%s</computer>' % b64encode(computer.encode('utf8')).decode('utf8') if computer else ''
         b64User = (b64encode(user.encode('utf8'))).decode('utf8')
+        cmd = ''
+        if domain:
+            cmd = '''<request><plugins><cloud_services><gpcs>
+                  <logout_mobile_user><gateway>%s<domain>%s</domain><user>%s</user></gateway></logout_mobile_user>
+                  </gpcs></cloud_services></plugins></request>''' % (xmlComputer, domain, b64User)
+        else:
+            cmd = '''<request><plugins><cloud_services><gpcs>
+                  <logout_mobile_user><gateway>%s<user>%s</user></gateway></logout_mobile_user>
+                  </gpcs></cloud_services></plugins></request>''' % (xmlComputer, b64User)
         params = {
             'type': 'op',
             'key': API_KEY,
-            'cmd': '''<request><plugins><cloud_services><gpcs>
-                    <logout_mobile_user><gateway>%s<domain>%s</domain><user>%s</user></gateway></logout_mobile_user>
-                    </gpcs></cloud_services></plugins></request>''' % (xmlComputer, domain, b64User)
+            'cmd': cmd
         }
         result = http_request(URL, 'GET', params=params)
         return result

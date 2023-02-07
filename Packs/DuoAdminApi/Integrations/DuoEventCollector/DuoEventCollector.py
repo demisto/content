@@ -6,6 +6,8 @@ from CommonServerPython import *
 
 VENDOR = "duo"
 PRODUCT = "duo"
+# This variable is used to convert the meantime for the v2 API for auth to milliseconds while the others use seconds
+AUTH_API_V2_TIME_MODIFIER = 1000
 
 
 class LogType(str, Enum):
@@ -25,6 +27,7 @@ class Params(BaseModel):
     mintime: dict
     limit: str = '1000'
     retries: Optional[str] = '5'
+    auth_api_version: Optional[str] = '1'
 
     def set_mintime_value(self, mintime: list, log_type: LogType) -> None:  # pragma: no cover
         self.mintime[log_type] = mintime
@@ -37,17 +40,25 @@ class Client:
 
     def __init__(self, params: Params):  # pragma: no cover type: ignore
         self.params = params.get('params')  # type: ignore[attr-defined]
-        self.admin_api = create_api_call(params.get('host'),   # type: ignore[attr-defined]
+        self.admin_api = create_api_call(params.get('host'),  # type: ignore[attr-defined]
                                          params.get('integration_key'),  # type: ignore[attr-defined]
                                          (params.get('secret_key')).get('password'))  # type: ignore[attr-defined]
 
     def call(self, request_order: list) -> dict:  # pragma: no cover
         retries = int(self.params.retries)
+        auth_api_version = int(self.params.auth_api_version)
         while retries != 0:
             try:
                 if request_order[0] == LogType.AUTHENTICATION:
-                    response = self.admin_api.get_authentication_log(
-                        mintime=self.params.mintime[LogType.AUTHENTICATION])
+                    if auth_api_version == 2:
+                        response = self.admin_api.get_authentication_log(
+                            mintime=self.params.mintime[LogType.AUTHENTICATION] * AUTH_API_V2_TIME_MODIFIER,
+                            api_version=2, limit='1000')
+                        # The v2 API returns a different object, so we do this to normalize it
+                        response = response.get('authlogs', [])
+                    elif auth_api_version == 1:
+                        response = self.admin_api.get_authentication_log(
+                            mintime=self.params.mintime[LogType.AUTHENTICATION])
                 elif request_order[0] == LogType.ADMINISTRATION:
                     response = self.admin_api.get_administrator_log(
                         mintime=self.params.mintime[LogType.ADMINISTRATION])
@@ -57,9 +68,11 @@ class Client:
                 return response
             except Exception as exc:
                 msg = f'something went wrong with the sdk call {exc}'
-                LOG(msg)
+                demisto.debug(msg)
                 if str(exc) == 'Received 429 Too Many Requests':
                     retries -= 1
+                else:
+                    retries = 0
         return {}
 
     def set_next_run_filter(self, mintime: int, log_type: LogType):  # pragma: no cover
@@ -99,7 +112,7 @@ class GetEvents:
             try:
                 assert events
             except (IndexError, AssertionError):
-                LOG('empty list, breaking')
+                demisto.debug('empty list, breaking')
                 break
 
     def aggregated_results(self) -> List[dict]:  # pragma: no cover
@@ -109,6 +122,7 @@ class GetEvents:
 
         stored_events = []
         for events in self._iter_events():  # type: ignore
+            demisto.debug(f'Got {len(events)}, events for {self.request_order[0]} logs')
             stored_events.extend(events)
             if len(stored_events) >= int(self.client.params.limit) or not events:
                 return stored_events
@@ -158,9 +172,13 @@ def create_api_call(host: str, integration_key: str, secrete_key: str):  # pragm
 def main():  # pragma: no cover
     try:
         demisto_params = demisto.params() | demisto.args()
+
         last_run = demisto.getLastRun()
-        request_order = last_run.get('request_order',
-                                     [LogType.AUTHENTICATION, LogType.ADMINISTRATION, LogType.TELEPHONY])
+
+        logs_type_array = demisto_params.get('logs_type_array',
+                                             f'{LogType.AUTHENTICATION},{LogType.ADMINISTRATION},{LogType.TELEPHONY}')
+        request_order = last_run.get('request_order', logs_type_array.split(','))
+        demisto.debug(f'The request order is : {request_order}')
         if 'after' not in last_run:
             after = dateparser.parse(demisto_params['after'].strip())
             last_run = after.timestamp()  # type: ignore
@@ -170,6 +188,7 @@ def main():  # pragma: no cover
 
         else:
             last_run = last_run['after']
+        demisto.debug(f'The last run is : {last_run}')
         demisto_params['params'] = Params(**demisto_params, mintime=last_run)
         client = Client(demisto_params)
 
@@ -192,6 +211,7 @@ def main():  # pragma: no cover
                 demisto.setLastRun(get_events.get_last_run())
                 demisto_params['push_events'] = True
             if demisto_params.get('push_events'):
+                demisto.debug(f'Sending {len(events)} events to XSIAM')
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')

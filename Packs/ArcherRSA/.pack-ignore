@@ -13,3 +13,6 @@ ignore=RM102,RM104,RM106
 
 [file:ArcherV2_image.png]
 ignore=IM111
+
+[file:RSAArcher_image.png]
+ignore=IM111

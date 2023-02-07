@@ -1,4 +1,4 @@
-from taxii2client.exceptions import TAXIIServiceException
+from taxii2client.exceptions import TAXIIServiceException, InvalidJSONError
 
 from CommonServerPython import *
 from TAXII2ApiModule import Taxii2FeedClient, TAXII_VER_2_1, HEADER_USERNAME
@@ -178,6 +178,26 @@ class TestBuildIterator:
         mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch=[])
         mocker.patch.object(mock_client, "collection_to_fetch", spec=v21.Collection)
         iocs = mock_client.build_iterator(limit=0)
+        assert iocs == []
+
+    def test_handle_json_error(self, mocker):
+        """
+        Scenario: Call build iterator when the collection raises an InvalidJSONError because the response is "筽"
+
+        Given:
+        - Collection to fetch is of type v21.Collection
+
+        When
+        - Initializing collection to fetch
+
+        Then:
+        - Ensure 0 iocs are returned
+        """
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch=[])
+        mocker.patch.object(mock_client, 'collection_to_fetch', spec=v21.Collection)
+        mocker.patch.object(mock_client, 'load_stix_objects_from_envelope', side_effect=InvalidJSONError('Invalid JSON'))
+
+        iocs = mock_client.build_iterator()
         assert iocs == []
 
 

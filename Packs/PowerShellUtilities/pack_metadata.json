@@ -1,13 +1,15 @@
 {
-    "name": "PowerShell Utilities",
-    "description": "Collection of automation scripts which wraps various built-in Powershell cmdlets for use in XSOAR.\n\nCalculateTimeSpan - Calculates the span of time between two dates.\nVersionEqualTo - Test if a version number is the same as another version number.\nVersionGreaterThan - Test if a version number is greater than another version number.\nVersionLessThan - Test if a version number is less than another version number.",
+    "name": "PowerShell Utilities (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Oliver Li",
     "url": "",
     "email": "",
     "created": "2022-04-03T19:10:08Z",
-    "categories": ["Utilities"],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
@@ -17,5 +19,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "hidden": true
 }

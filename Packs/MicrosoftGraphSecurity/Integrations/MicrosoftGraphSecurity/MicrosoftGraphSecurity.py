@@ -33,18 +33,21 @@ class MsGraphClient:
     """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
-                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
+                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None,
+                 managed_identities_client_id: Optional[str] = None):
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
             proxy=proxy, self_deployed=self_deployed, certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key)
+            private_key=private_key,
+            managed_identities_client_id=managed_identities_client_id,
+            managed_identities_resource_uri=Resources.graph)
 
     def search_alerts(self, last_modified, severity, category, vendor, time_from, time_to, filter_query):
         filters = []
         if last_modified:
             filters.append("lastModifiedDateTime gt {}".format(get_timestamp(last_modified)))
         if category:
-            filters.append("contains(category, '{}')".format(category))
+            filters.append("category eq '{}'".format(category))
         if severity:
             filters.append("severity eq '{}'".format(severity))
         if time_from:  # changed to ge and le in order to solve issue #27884
@@ -52,16 +55,7 @@ class MsGraphClient:
         if time_to:
             filters.append("createdDateTime le {}".format(time_to))
         if filter_query:
-            # Due to an issue (from Microsoft Graph API) with filtering alerts with the `eq` operator,
-            # We use the `contains` function instead of the `eq` operator (as a workaround), For example:
-            # "category eq 'Malware' and severity eq 'High'" => "contains(category, 'Malware') and severity eq 'High'".
-            # For more info please see: https://learn.microsoft.com/en-us/graph/filter-query-parameter.
-            filter_list = [f.strip() for f in filter_query.lower().split('and')]
-            for filter_item in filter_list:
-                if 'category eq' in filter_item:
-                    category = filter_item.split()[-1]
-                    filter_item = "contains(category, {})".format(category)
-                filters.append(filter_item)
+            filters.append("{}".format(filter_query))
         filters = " and ".join(filters)
         cmd_url = 'security/alerts'
         params = {'$filter': filters}
@@ -523,19 +517,22 @@ def test_function(client: MsGraphClient, args):
 def main():
     params: dict = demisto.params()
     url = params.get('host', '').rstrip('/') + '/v1.0/'
-    tenant = params.get('tenant_id')
-    auth_and_token_url = params.get('auth_id', '')
-    enc_key = params.get('enc_key')
+    tenant = params.get('creds_tenant_id', {}).get('password') or params.get('tenant_id')
+    auth_and_token_url = params.get('creds_auth_id', {}).get('password') or params.get('auth_id', '')
+    enc_key = params.get('creds_enc_key', {}).get('password') or params.get('enc_key')
     use_ssl = not params.get('insecure', False)
-    self_deployed: bool = params.get('self_deployed', False)
     proxy = params.get('proxy', False)
-    certificate_thumbprint = params.get('certificate_thumbprint')
-    private_key = params.get('private_key')
-    if not self_deployed and not enc_key:
-        raise DemistoException('Key must be provided. For further information see '
-                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
-    elif not enc_key and not (certificate_thumbprint and private_key):
-        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+    certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or params.get('certificate_thumbprint')
+    private_key = replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')) or params.get('private_key')
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
+    self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
+
+    if not managed_identities_client_id:
+        if not self_deployed and not enc_key:
+            raise DemistoException('Key must be provided. For further information see '
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+        elif not enc_key and not (certificate_thumbprint and private_key):
+            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
     commands = {
         'test-module': test_function,
@@ -554,6 +551,7 @@ def main():
                                               self_deployed=self_deployed,
                                               certificate_thumbprint=certificate_thumbprint,
                                               private_key=private_key,
+                                              managed_identities_client_id=managed_identities_client_id,
                                               )
         if command == "fetch-incidents":
             fetch_time = params.get('fetch_time', '1 day')

@@ -772,7 +772,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "59"
+      - "64"
       "yes":
       - "26"
     separatecontext: false
@@ -1496,7 +1496,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "59"
+      - "64"
     scriptarguments:
       custom_filter:
         simple: |-
@@ -1588,7 +1588,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 5320
+          "y": 5430
         }
       }
     note: false
@@ -1718,7 +1718,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 5110
+          "y": 5270
         }
       }
     note: false
@@ -1864,6 +1864,50 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 4371a3ef-940f-4aaa-8b02-2287c631d511
+    type: condition
+    task:
+      id: 4371a3ef-940f-4aaa-8b02-2287c631d511
+      version: -1
+      name: Has Results?
+      description: Found any alerts?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "52"
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR
+                accessor: Alert
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1871,7 +1915,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 6455,
+        "height": 6565,
         "width": 1020,
         "x": -190,
         "y": -1070

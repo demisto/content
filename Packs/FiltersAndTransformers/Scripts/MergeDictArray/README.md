@@ -21,6 +21,9 @@ Each entry in an array is merged into the existing array if the keyed-value matc
 | out_key | The key to the value where each of the destination value is to be set |
 | out_path | The relative path to the destination array where the marged array is set |
 | appendable | true if it allows to simply append source entries which doesn't match, otherwise false |
+| conflict_strategy | How to merge the values if the key conflicts. 'source' means data of 'merge_with', 'destination' means data of 'array_path'. Default is 'merge'.|
+| overwrite_by_source | The comma separeted list of keys to overwrite by source value if the key conflicts. |
+| overwrite_by_destination | The comma separeted list of keys to overwrite by destination value if the key conflicts. |
 
 ## Outputs
 ---

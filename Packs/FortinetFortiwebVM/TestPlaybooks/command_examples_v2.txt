@@ -1,0 +1,54 @@
+!fortiwebvm-protected-hostname-group-create name=ronhadad
+!fortiwebvm-protected-hostname-group-list name=ronhadad
+!fortiwebvm-protected-hostname-group-update name=${FortiwebVM.ProtectedHostnameGroup.id} default_action=Deny
+!fortiwebvm-protected-hostname-member-create group_name=${FortiwebVM.ProtectedHostnameGroup.id} host=1.2.3.4
+!fortiwebvm-protected-hostname-member-list group_name=${FortiwebVM.ProtectedHostnameGroup.id} member_id=${FortiwebVM.ProtectedHostnameMember.id}
+!fortiwebvm-protected-hostname-member-update group_name=${FortiwebVM.ProtectedHostnameGroup.id} member_id=${FortiwebVM.ProtectedHostnameMember.id} ignore_port=disable
+!fortiwebvm-protected-hostname-member-delete group_name=${FortiwebVM.ProtectedHostnameGroup.id} member_id=${FortiwebVM.ProtectedHostnameMember.id}
+!fortiwebvm-protected-hostname-group-delete name=${FortiwebVM.ProtectedHostnameGroup.id}
+!fortiwebvm-ip-list-group-create name=ronhadad
+!fortiwebvm-ip-list-group-list name=ronhadad
+!fortiwebvm-ip-list-group-update name=${FortiwebVM.IpListGroup.id} block_period=550
+!fortiwebvm-ip-list-member-create group_name=${FortiwebVM.IpListGroup.id} ip_address=1.2.3.4
+!fortiwebvm-ip-list-member-list group_name=${FortiwebVM.IpListGroup.id}
+!fortiwebvm-ip-list-member-update group_name=${FortiwebVM.IpListGroup.id} member_id=${FortiwebVM.IpListMember.id} ip_address=1.2.3.6
+!fortiwebvm-ip-list-member-delete group_name=${FortiwebVM.IpListGroup.id} member_id=${FortiwebVM.IpListMember.id}
+!fortiwebvm-ip-list-group-delete name=${FortiwebVM.IpListGroup.id}
+!fortiwebvm-geo-ip-group-create name=ronhadad
+!fortiwebvm-geo-ip-group-list name=ronhadad
+!fortiwebvm-geo-ip-group-update name=${FortiwebVM.GeoIpGroup.id}
+!fortiwebvm-geo-ip-member-add group_name=${FortiwebVM.GeoIpGroup.id} countries=Algeria
+!fortiwebvm-geo-ip-member-list group_name=${FortiwebVM.GeoIpGroup.id} member_id=${FortiwebVM.GeoIpMember.id}
+!fortiwebvm-geo-ip-member-delete group_name=${FortiwebVM.GeoIpGroup.id} member_id=${FortiwebVM.GeoIpMember.id}
+!fortiwebvm-custom-predefined-whitelist-list limit=1
+!fortiwebvm-custom-predefined-whitelist-update id=${FortiwebVM.CustomPredefinedGlobalWhitelist.id} status=disable
+!fortiwebvm-custom-whitelist-url-create request_url=/123
+!fortiwebvm-custom-whitelist-url-update id=${FortiwebVM.CustomGlobalWhitelist.id} status=disable
+!fortiwebvm-custom-whitelist-parameter-create name=ron
+!fortiwebvm-custom-whitelist-parameter-update id=${FortiwebVM.CustomGlobalWhitelist.[1].id} status=disable
+!fortiwebvm-custom-whitelist-cookie-create name=ronhadad domain=abc path=/abc
+!fortiwebvm-custom-whitelist-cookie-update id=${FortiwebVM.CustomGlobalWhitelist.[2].id} status=disable
+!fortiwebvm-custom-whitelist-header-field-create name=ronhadad
+!fortiwebvm-custom-whitelist-header-field-update id=${FortiwebVM.CustomGlobalWhitelist.[3].id} status=disable
+!fortiwebvm-custom-whitelist-list limit=1
+!fortiwebvm-custom-whitelist-delete id=${FortiwebVM.CustomGlobalWhitelist.id}
+!fortiwebvm-virtual-server-list limit=1
+!fortiwebvm-http-service-list limit=1
+!fortiwebvm-server-pool-list limit=1
+!fortiwebvm-inline-protection-profile-list limit=1
+!fortiwebvm-geo-exception-list limit=1
+!fortiwebvm-trigger-policy-list limit=1
+!fortiwebvm-certificate-intermediate-group-list limit=1
+!fortiwebvm-server-policy-create name=bdika virtual_server=${FortiwebVM.VirtualServer.id} http_service=${FortiwebVM.HttpServiceList.id}
+!fortiwebvm-server-policy-list name=bdika
+!fortiwebvm-server-policy-update name=${FortiwebVM.ServerPolicy.name}
+!fortiwebvm-content-routing-policy-list limit=1
+!fortiwebvm-http-content-routing-member-add policy_name=${FortiwebVM.ServerPolicy.name} http_content_routing_policy=${FortiwebVM.HttpContentRoutingPolicy.id}
+!fortiwebvm-http-content-routing-member-update policy_name=${FortiwebVM.ServerPolicy.name} id=${FortiwebVM.HttpContentRoutingMember.id}
+!fortiwebvm-http-content-routing-member-list policy_name=${FortiwebVM.ServerPolicy.name}
+!fortiwebvm-http-content-routing-member-delete policy_name=${FortiwebVM.ServerPolicy.name} id=${FortiwebVM.HttpContentRoutingMember.id}
+!fortiwebvm-server-policy-delete name=${FortiwebVM.ServerPolicy.name}
+!fortiwebvm-system-operation-status-get
+!fortiwebvm-system-status-get
+!fortiwebvm-system-policy-status-get
+!fortiwebvm-geo-ip-group-delete name=${FortiwebVM.GeoIpGroup.id}

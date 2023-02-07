@@ -20,7 +20,9 @@ SUSPICIOUS_CATEGORIES = ['SUSPICIOUS_DESTINATION', 'SPYWARE_OR_ADWARE']
 CLOUD_NAME = demisto.params()['cloud']
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
-API_KEY = str(demisto.params()['key'])
+API_KEY = str(demisto.params().get('creds_key', {}).get('password', '')) or str(demisto.params().get('key', ''))
+if not API_KEY:
+    raise Exception('API Key is missing. Please provide an API Key.')
 BASE_URL = CLOUD_NAME + '/api/v1'
 USE_SSL = not demisto.params().get('insecure', False)
 PROXY = demisto.params().get('proxy', True)

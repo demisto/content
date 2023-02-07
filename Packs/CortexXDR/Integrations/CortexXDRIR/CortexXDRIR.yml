@@ -565,6 +565,9 @@ script:
       name: unassign_user
       predefined:
       - 'true'
+    - description: Add a comment to the incident.
+      name: add_comment
+      required: false
     description: Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
     name: xdr-update-incident
   - arguments:
@@ -3046,7 +3049,7 @@ script:
     - defaultValue: '50'
       description: The page size.
       name: page_size
-    description: Retrieves contributing events for a specific alert.
+    description: Retrieves contributing events for a specific correlation alert.
     name: xdr-get-contributing-event
     outputs:
     - contextPath: PaloAltoNetworksXDR.ContributingEvent.alertID
@@ -3099,16 +3102,71 @@ script:
     description: Adds a tag to specified endpoint_ids
     name: xdr-endpoint-tag-add
   - arguments:
-    - description: List of endpoint IDs. Supports comma separated list.
+    - description: List of endpoint IDs. Supports comma-separated list.
       isArray: true
       required: true
       name: endpoint_ids
-    - description: Tag to remove from specified endpoint_ids
+    - description: Tag to remove from specified endpoint_ids.
       name: tag
       required: true
     description: Removes a tag from specified endpoint_ids.
     name: xdr-endpoint-tag-remove
-  dockerimage: demisto/python3:3.10.9.40422
+  - name: xdr-get-tenant-info
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.pro_per_endpoint_expiration
+      description: Expiration time pro per endpoint.
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_pro_per_endpoint.agents
+      description: Number of endpoints agent purchased.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.data_enabled_pro_per_endpoint
+      description: Enabled data per pro endpoint.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.prevent_expiration
+      description: Number of prevent expirations.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_prevent
+      description: Number of purchased prevents.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.installed_prevent
+      description: Number of installed prevents.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.pro_tb_expiration
+      description: pro_tb license expiration time.
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_pro_tb.tb
+      description: Number of pro_tbs purchased.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.installed_pro_tb
+      description: Number of pro_tbs installed.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.compute_unit_expiration
+      description: Compute unit expiration time.
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_compute_unit
+      description: Number of compute units purchased.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.compute_unit_is_trial
+      description: Whether the compute unit is a trial.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.host_insights_expiration
+      description: Host iInsight expiration time.
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.enabled_host_insights
+      description: Number of host insights enabled.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_host_insights
+      description: Number of purchased host insights.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.forensics_expiration
+      description: Forensic expiration time.
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_forensics
+      description: Number of forensics purchased.
+      type: Number
+    arguments: []
+    description: Provides information about the tenant.
+  dockerimage: demisto/python3:3.10.9.46807
   isfetch: true
   runonce: false
   script: ''
@@ -3118,7 +3176,10 @@ script:
   isremotesyncout: true
   type: python
 tests:
-- Test XDR Playbook
+- Test XDR Playbook execute script commands
+- Test XDR Playbook quarantine file command
+- Test XDR Playbook general commands
+- Test XDR Playbook retrieve file command
 defaultmapperin: Cortex XDR - IR-mapper
 defaultclassifier: Cortex XDR Incident Handler - Classifier
 defaultmapperout: Cortex XDR - IR-out-mapper

@@ -547,7 +547,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "24"
+      - "25"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -566,10 +566,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 4ecfc31d-027a-45fb-888a-0e8732685fd1
+    taskid: 85760b5e-dfe3-4a4c-8472-779ef4f9ae5e
     type: regular
     task:
-      id: 4ecfc31d-027a-45fb-888a-0e8732685fd1
+      id: 85760b5e-dfe3-4a4c-8472-779ef4f9ae5e
       version: -1
       name: Set tags grid field
       description: |-
@@ -598,6 +598,51 @@ tasks:
       val3:
         simple: Tenable.io
     separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 2fd8ef98-d7b0-4986-8ee2-23129d649998
+    type: condition
+    task:
+      id: 2fd8ef98-d7b0-4986-8ee2-23129d649998
+      version: -1
+      name: Was a tag present?
+      description: Check whether the last command returned Tenable.io asset with one or more tags.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: TenableIO.AssetDetails.tags
+                accessor: tag_key
+            iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -673,3 +718,7 @@ outputs:
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}
+marketplaces:
+  - marketplacev2
