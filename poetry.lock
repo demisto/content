@@ -613,8 +613,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "1c1ca73242f83f2b420c6a4674303a35ce77342c"
-resolved_reference = "1c1ca73242f83f2b420c6a4674303a35ce77342c"
+reference = "07018bb5031eff7ae1207fd477c4d7d76dc7468b"
+resolved_reference = "07018bb5031eff7ae1207fd477c4d7d76dc7468b"
 
 [[package]]
 name = "deprecated"
@@ -943,7 +943,7 @@ grpcio-gcp = ["grpcio-gcp (>=0.2.2,<1.0dev)"]
 
 [[package]]
 name = "google-api-python-client"
-version = "2.76.0"
+version = "2.77.0"
 description = "Google API Client Library for Python"
 category = "dev"
 optional = false
@@ -3450,7 +3450,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "4f55090ae423296efb9e86911ed4f7370792d14990ddb18fc7e7a3ae34ecd67c"
+content-hash = "4594da98057eda9af71f443f67d0dbcced6831bb1bc2aa59689ac5b69c4a31ac"
 
 [metadata.files]
 aiodns = [
@@ -4045,8 +4045,8 @@ google-api-core = [
     {file = "google_api_core-2.11.0-py3-none-any.whl", hash = "sha256:ce222e27b0de0d7bc63eb043b956996d6dccab14cc3b690aaea91c9cc99dc16e"},
 ]
 google-api-python-client = [
-    {file = "google-api-python-client-2.76.0.tar.gz", hash = "sha256:1446d8c618191afdb1190296a4f9648955460184c655da2bfa40c2968e6caac6"},
-    {file = "google_api_python_client-2.76.0-py2.py3-none-any.whl", hash = "sha256:514326068802f8e8b32c282c2c1f528cf007247ba19470de6d013731985a3d28"},
+    {file = "google-api-python-client-2.77.0.tar.gz", hash = "sha256:f18e9dbb365f0485194a8daf5d60da2cff6a80ce2c9a694efc2b279922cb3dd0"},
+    {file = "google_api_python_client-2.77.0-py2.py3-none-any.whl", hash = "sha256:42a44e9adfca6bb27540ce52348aa1d3b81e214bcc53d454a76ebfbe8eee1483"},
 ]
 google-auth = [
     {file = "google-auth-2.16.0.tar.gz", hash = "sha256:ed7057a101af1146f0554a769930ac9de506aeca4fd5af6543ebe791851a9fbd"},
