@@ -3,13 +3,11 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-import json
 from typing import Dict, Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-# flake8: noqa
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
@@ -35,7 +33,7 @@ class Client(BaseClient):
         picus_token_data = {"refresh_token": ""}
         picus_token_data["refresh_token"] = str(self.api_key)
 
-        picus_auth_endpoint = f"/v1/auth/token"
+        picus_auth_endpoint = "/v1/auth/token"
         picus_auth_response = self.http_request(method='POST', json_data=picus_token_data, url_suffix=picus_auth_endpoint)
         picus_accessToken = picus_auth_response["token"]
 
@@ -56,47 +54,52 @@ class Client(BaseClient):
             ok_codes=(200,)
         )
 
-    def get_agent_list(self,url_suffix: str):
-        return self.http_request(method="GET",url_suffix=url_suffix)
+    def get_agent_list(self):
+        return self.http_request(method="GET", url_suffix="/v1/agents")
 
-    def get_agent_detail(self,url_suffix: str):
-        return self.http_request(method="GET", url_suffix=url_suffix)
+    def get_agent_detail(self, agent_id: str):
+        return self.http_request(method="GET", url_suffix="/v1/agents/" + agent_id)
 
-    def get_integration_agent_list(self,url_suffix: str):
-        return self.http_request(method="GET",url_suffix=url_suffix)
+    def get_integration_agent_list(self):
+        return self.http_request(method="GET", url_suffix="/v1/integrations/agents")
 
-    def get_template_list(self,url_suffix: str):
-        return self.http_request(method="GET", url_suffix=url_suffix)
+    def get_template_list(self, query_parameters: str):
+        return self.http_request(method="GET", url_suffix="/v1/templates" + query_parameters)
 
-    def create_simulation(self,url_suffix: str, picus_post_data_simulation: Dict):
-        return self.http_request(method="POST",url_suffix=url_suffix, json_data=picus_post_data_simulation)
+    def create_simulation(self, picus_post_data_simulation: Dict):
+        return self.http_request(method="POST", url_suffix="/v1/simulations", json_data=picus_post_data_simulation)
 
-    def get_simulation_list(self,url_suffix: str):
-        return self.http_request(method="GET", url_suffix=url_suffix)
+    def get_simulation_list(self, query_parameters: str):
+        return self.http_request(method="GET", url_suffix="/v1/simulations" + query_parameters)
 
-    def simulate_now(self,url_suffix: str):
-        return self.http_request(method="POST", url_suffix=url_suffix)
+    def simulate_now(self, simulation_id: str):
+        return self.http_request(method="POST", url_suffix="/v1/simulations/" + simulation_id + "/simulate-now")
 
-    def get_simulation_detail(self,url_suffix: str):
-        return self.http_request(method="GET", url_suffix=url_suffix)
+    def get_simulation_detail(self, simulation_id: str):
+        return self.http_request(method="GET", url_suffix="/v1/simulations/" + simulation_id)
 
-    def get_latest_simulation_result(self,url_suffix: str):
-        return self.http_request(method="GET", url_suffix=url_suffix)
+    def get_latest_simulation_result(self, simulation_id: str):
+        return self.http_request(method="GET", url_suffix="/v1/simulations/" + simulation_id + "/run/latest")
 
-    def get_simulation_result(self,url_suffix: str):
-        return self.http_request(method="GET", url_suffix=url_suffix)
+    def get_simulation_result(self, simulation_id: str, run_id: str):
+        return self.http_request(method="GET", url_suffix="/v1/simulations/" + simulation_id + "/run/" + run_id)
 
-    def get_simulation_threats(self,url_suffix: str):
-        return self.http_request(method="GET", url_suffix=url_suffix)
+    def get_simulation_threats(self, query_parameters: str, simulation_id: str, run_id: str):
+        return self.http_request(method="GET", url_suffix="/v1/simulations/" + simulation_id
+                                                          + "/run/" + run_id + "/threats" + query_parameters)
 
-    def get_simulation_actions(self,url_suffix: str):
-        return self.http_request(method="GET", url_suffix=url_suffix)
+    def get_simulation_actions(self, query_parameters: str, simulation_id: str, run_id: str, threat_id: str):
+        return self.http_request(method="GET", url_suffix="/v1/simulations/" + simulation_id
+                                                          + "/run/" + run_id + "/threats/"
+                                                          + threat_id + "/actions" + query_parameters)
 
-    def get_mitigation_devices(self,url_suffix: str):
-        return self.http_request(method="GET", url_suffix=url_suffix)
+    def get_mitigation_devices(self, query_parameters: str):
+        return self.http_request(method="GET", url_suffix="/v1/mitigation/devices" + query_parameters)
 
-    def get_signature_list(self,url_suffix: str):
-        return self.http_request(method="GET", url_suffix=url_suffix)
+    def get_signature_list(self, query_parameters: str, device_id: str):
+        return self.http_request(method="GET", url_suffix="/v1/mitigation/devices/" + device_id
+                                                          + "/signatures" + query_parameters)
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -122,64 +125,69 @@ def test_module(client: Client) -> str:
         client.get_access_token()
         message = 'ok'
     except Exception as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e) or 'NewConnectionError' in str(e) or 'Unauthorized' in str(e) or picus_accessToken is None:
+        if 'Forbidden' in str(e) or 'Authorization' in str(e) or 'NewConnectionError'\
+                in str(e) or 'Unauthorized' in str(e) or picus_accessToken is None:
             message = 'Authorization Error: make sure API Key or Picus URL is correctly set'
         else:
             raise e
     return message
 
-def get_agent_list_command(client: Client) -> CommandResults:
-    picus_endpoint = f"/v1/agents"
 
-    picus_endpoint_response = client.get_agent_list(picus_endpoint)
+def get_agent_list_command(client: Client) -> CommandResults:
+    picus_endpoint_response = client.get_agent_list()
     picus_agents = picus_endpoint_response["agents"]
     for agent in picus_agents:
         agent["created_at"] = str(datetime.fromtimestamp(agent["created_at"] / 1000))
 
     table_name = "Picus Agent List"
-    table_headers = ['id','name','status','type','version','created_at','platform_name','platform_architecture']
-    md_table = tableToMarkdown(table_name, picus_agents, headers=table_headers, removeNull=True, headerTransform=string_to_table_header)
-    return CommandResults(readable_output=md_table, outputs=picus_agents, outputs_prefix="Picus.agentlist")
+    table_headers = ['id', 'name', 'status', 'type', 'version', 'created_at', 'platform_name', 'platform_architecture']
+    md_table = tableToMarkdown(table_name, picus_agents, headers=table_headers, removeNull=True,
+                               headerTransform=string_to_table_header)
+    return CommandResults(readable_output=md_table, outputs=picus_agents,
+                          outputs_prefix="Picus.agentlist")
+
 
 def get_agent_detail_command(client: Client) -> CommandResults:
-    picus_endpoint = "/v1/agents/"
     agent_id = demisto.args().get('id')
     tmp_attack_modules: Dict = {}
-    picus_endpoint = picus_endpoint + agent_id
 
-    picus_endpoint_response = client.get_agent_detail(picus_endpoint)
+    picus_endpoint_response = client.get_agent_detail(agent_id)
     picus_agent_detail = picus_endpoint_response
     picus_agent_attack_modules = picus_endpoint_response["attack_modules"]
     picus_agent_detail.pop("attack_modules")
 
     for modules in picus_agent_attack_modules:
-        tmp_attack_modules[modules["name"]]=modules["enabled"]
+        tmp_attack_modules[modules["name"]] = modules["enabled"]
 
     picus_agent_detail.update(tmp_attack_modules)
 
     table_name = "Picus Agent Details"
-    table_headers = ['id','name','status','File Download','Endpoint Scenario','Web Application','Email','Data Exfiltration']
-    md_table = tableToMarkdown(table_name, picus_agent_detail, headers=table_headers, removeNull=True, headerTransform=string_to_table_header)
-    results = CommandResults(readable_output=md_table, outputs=picus_agent_detail, outputs_prefix="Picus.agentdetail")
+    table_headers = ['id', 'name', 'status', 'File Download', 'Endpoint Scenario',
+                     'Web Application', 'Email', 'Data Exfiltration']
+    md_table = tableToMarkdown(table_name, picus_agent_detail, headers=table_headers, removeNull=True,
+                               headerTransform=string_to_table_header)
+    results = CommandResults(readable_output=md_table, outputs=picus_agent_detail,
+                             outputs_prefix="Picus.agentdetail")
     return results
 
-def get_integration_agent_list_command(client: Client) -> CommandResults:
-    picus_endpoint = "/v1/integrations/agents"
 
-    picus_endpoint_response = client.get_integration_agent_list(picus_endpoint)
+def get_integration_agent_list_command(client: Client) -> CommandResults:
+    picus_endpoint_response = client.get_integration_agent_list()
     picus_integration_agents = picus_endpoint_response["integration_agents"]
     for agent in picus_integration_agents:
         agent["created_at"] = str(datetime.fromtimestamp(agent["created_at"] / 1000))
         agent["updated_at"] = str(datetime.fromtimestamp(agent["updated_at"] / 1000))
 
     table_name = "Picus Integration Agent List"
-    table_headers = ['id','name','status','created_at','updated_at','installed','token_expired']
-    md_table = tableToMarkdown(table_name, picus_integration_agents, headers=table_headers, removeNull=True, headerTransform=string_to_table_header)
-    return CommandResults(readable_output=md_table, outputs=picus_integration_agents, outputs_prefix="Picus.integrationagentlist")
+    table_headers = ['id', 'name', 'status', 'created_at', 'updated_at', 'installed', 'token_expired']
+    md_table = tableToMarkdown(table_name, picus_integration_agents, headers=table_headers, removeNull=True,
+                               headerTransform=string_to_table_header)
+    return CommandResults(readable_output=md_table, outputs=picus_integration_agents,
+                          outputs_prefix="Picus.integrationagentlist")
+
 
 def get_template_list_command(client: Client) -> CommandResults:
-    picus_endpoint = "/v1/templates"
-
+    query_parameters: str = ""
     offset = demisto.args().get('offset')
     limit = demisto.args().get('limit')
 
@@ -190,18 +198,19 @@ def get_template_list_command(client: Client) -> CommandResults:
 
     if offset is not None and limit is not None:
         query_parameters = "?" + "limit=" + limit + "&" + "offset=" + offset
-        picus_endpoint = picus_endpoint + query_parameters
 
-    picus_endpoint_response = client.get_template_list(picus_endpoint)
+    picus_endpoint_response = client.get_template_list(query_parameters)
     picus_templates = picus_endpoint_response["templates"]
 
     table_name = "Picus Template List"
-    table_headers = ['id','name','description','threat_count','category_name','content_type','agent_types']
-    md_table = tableToMarkdown(table_name, picus_templates, headers=table_headers, removeNull=True, headerTransform=string_to_table_header)
-    return CommandResults(readable_output=md_table, outputs=picus_templates, outputs_prefix="Picus.templatelist")
+    table_headers = ['id', 'name', 'description', 'threat_count', 'category_name', 'content_type', 'agent_types']
+    md_table = tableToMarkdown(table_name, picus_templates, headers=table_headers, removeNull=True,
+                               headerTransform=string_to_table_header)
+    return CommandResults(readable_output=md_table, outputs=picus_templates,
+                          outputs_prefix="Picus.templatelist")
+
 
 def create_simulation_command(client: Client) -> CommandResults:
-    picus_endpoint = "/v1/simulations"
     picus_simulation_creation_results: Dict = {}
 
     agent_id = int(demisto.args().get('agent_id'))
@@ -210,8 +219,9 @@ def create_simulation_command(client: Client) -> CommandResults:
     schedule_now = bool(demisto.args().get('schedule_now'))
     template_id = int(demisto.args().get('template_id'))
 
-    picus_post_data_simulation = {"agent_id":agent_id,"description":simulation_description,"name":simulation_name,"schedule_now":schedule_now,"template_id":template_id}
-    picus_endpoint_response = client.create_simulation(picus_endpoint,picus_post_data_simulation)
+    picus_post_data_simulation = {"agent_id": agent_id, "description": simulation_description,
+                                  "name": simulation_name, "schedule_now": schedule_now, "template_id": template_id}
+    picus_endpoint_response = client.create_simulation(picus_post_data_simulation)
 
     picus_endpoint_response_all = picus_endpoint_response
     picus_created_simulation = picus_endpoint_response["simulation"]
@@ -223,13 +233,15 @@ def create_simulation_command(client: Client) -> CommandResults:
     picus_simulation_creation_results["simulation_status"] = picus_simulation_run_info["status"]
 
     table_name = "Picus Simulation Create Status"
-    table_headers = ['simulation_id','name','description','run_immediately','simulation_status']
-    md_table = tableToMarkdown(table_name, picus_simulation_creation_results, headers=table_headers, removeNull=True, headerTransform=string_to_table_header)
-    return CommandResults(readable_output=md_table, outputs=picus_simulation_creation_results, outputs_prefix="Picus.createsimulation")
+    table_headers = ['simulation_id', 'name', 'description', 'run_immediately', 'simulation_status']
+    md_table = tableToMarkdown(table_name, picus_simulation_creation_results, headers=table_headers, removeNull=True,
+                               headerTransform=string_to_table_header)
+    return CommandResults(readable_output=md_table, outputs=picus_simulation_creation_results,
+                          outputs_prefix="Picus.createsimulation")
+
 
 def get_simulation_list_command(client: Client) -> CommandResults:
-    picus_endpoint = "/v1/simulations"
-
+    query_parameters: str = ""
     offset = demisto.args().get('offset')
     limit = demisto.args().get('limit')
 
@@ -240,103 +252,139 @@ def get_simulation_list_command(client: Client) -> CommandResults:
 
     if offset is not None and limit is not None:
         query_parameters = "?" + "limit=" + limit + "&" + "offset=" + offset
-        picus_endpoint = picus_endpoint + query_parameters
 
-    picus_endpoint_response = client.get_simulation_list(picus_endpoint)
+    picus_endpoint_response = client.get_simulation_list(query_parameters)
     picus_simulations = picus_endpoint_response["simulations"]
 
     table_name = "Picus Simulation List"
-    table_headers = ['simulation_id','simulation_name','status','has_detection_analysis','has_last_run_detection_analysis','last_detection_security_score','last_prevention_security_score','agent']
-    md_table = tableToMarkdown(table_name, picus_simulations, headers=table_headers, removeNull=True, headerTransform=string_to_table_header)
-    return CommandResults(readable_output=md_table, outputs=picus_simulations, outputs_prefix="Picus.simulationlist")
+    table_headers = ['simulation_id', 'simulation_name', 'status', 'has_detection_analysis',
+                     'has_last_run_detection_analysis',
+                     'last_detection_security_score', 'last_prevention_security_score', 'agent']
+    md_table = tableToMarkdown(table_name, picus_simulations, headers=table_headers, removeNull=True,
+                               headerTransform=string_to_table_header)
+    return CommandResults(readable_output=md_table, outputs=picus_simulations,
+                          outputs_prefix="Picus.simulationlist")
+
 
 def simulate_now_command(client: Client) -> CommandResults:
-    picus_endpoint = "/v1/simulations/"
     simulation_id = demisto.args().get('id')
-    picus_endpoint = picus_endpoint + simulation_id + "/simulate-now"
 
-    picus_endpoint_response = client.simulate_now(picus_endpoint)
+    picus_endpoint_response = client.simulate_now(simulation_id)
     picus_simulateNow = picus_endpoint_response["run_info"]
 
     table_name = "Picus Simulate Now Status"
-    table_headers = ['browser','id','status']
-    md_table = tableToMarkdown(table_name, picus_simulateNow, headers=table_headers, removeNull=True, headerTransform=string_to_table_header)
-    return CommandResults(readable_output=md_table, outputs=picus_simulateNow, outputs_prefix="Picus.simulatenow")
+    table_headers = ['browser', 'id', 'status']
+    md_table = tableToMarkdown(table_name, picus_simulateNow, headers=table_headers, removeNull=True,
+                               headerTransform=string_to_table_header)
+    return CommandResults(readable_output=md_table, outputs=picus_simulateNow,
+                          outputs_prefix="Picus.simulatenow")
+
 
 def get_simulation_detail_command(client: Client) -> CommandResults:
-    picus_endpoint = "/v1/simulations/"
     simulation_id = demisto.args().get('id')
-    picus_endpoint = picus_endpoint + simulation_id
 
-    picus_endpoint_response = client.get_simulation_detail(picus_endpoint)
+    picus_endpoint_response = client.get_simulation_detail(simulation_id)
     picus_simulationDetail = picus_endpoint_response["simulation_run"]
     for sRun in picus_simulationDetail:
-        sRun["started_at"] = str(datetime.fromtimestamp(sRun["started_at"]/1000))
-        sRun["completed_at"] = str(datetime.fromtimestamp(sRun["completed_at"]/1000))
+        sRun["started_at"] = str(datetime.fromtimestamp(sRun["started_at"] / 1000))
+        sRun["completed_at"] = str(datetime.fromtimestamp(sRun["completed_at"] / 1000))
 
     table_name = "Picus Simulation Detail"
-    table_headers = ['id','started_at','completed_at','status']
-    md_table = tableToMarkdown(table_name, picus_simulationDetail, headers=table_headers, removeNull=True, headerTransform=string_to_table_header)
-    return CommandResults(readable_output=md_table, outputs=picus_simulationDetail, outputs_prefix="Picus.simulationDetail")
+    table_headers = ['id', 'started_at', 'completed_at', 'status']
+    md_table = tableToMarkdown(table_name, picus_simulationDetail, headers=table_headers, removeNull=True,
+                               headerTransform=string_to_table_header)
+    return CommandResults(readable_output=md_table, outputs=picus_simulationDetail,
+                          outputs_prefix="Picus.simulationDetail")
+
 
 def get_latest_simulation_result_command(client: Client) -> CommandResults:
-    picus_endpoint = "/v1/simulations/"
     simulation_id = demisto.args().get('id')
-    picus_endpoint = picus_endpoint + simulation_id + "/run/latest"
 
-    picus_latestSimulation = client.get_latest_simulation_result(url_suffix=picus_endpoint)
+    picus_latestSimulation = client.get_latest_simulation_result(simulation_id)
 
     if picus_latestSimulation["status"] == "COMPLETED":
-        picus_latestSimulation["started_at"] = str(datetime.fromtimestamp(picus_latestSimulation["started_at"]/1000))
-        picus_latestSimulation["completed_at"] = str(datetime.fromtimestamp(picus_latestSimulation["completed_at"]/1000))
-        picus_latestSimulation["prevention_security_score"] = picus_latestSimulation["results"]["prevention"]["security_score"]
-        picus_latestSimulation["prevention_total_threat"] = picus_latestSimulation["results"]["prevention"]["threat"]["total_count"]
-        picus_latestSimulation["prevention_blocked_threat"] = picus_latestSimulation["results"]["prevention"]["threat"]["blocked_count"]
-        picus_latestSimulation["prevention_not_blocked_threat"] = picus_latestSimulation["results"]["prevention"]["threat"]["not_blocked_count"]
-        picus_latestSimulation["prevention_not_tested_threat"] = picus_latestSimulation["results"]["prevention"]["threat"]["not_tested_count"]
-        picus_latestSimulation["prevention_total_attacker_objectives"] = picus_latestSimulation["results"]["prevention"]["attacker_objectives"]["total_count"]
-        picus_latestSimulation["prevention_achieved_objectives"] = picus_latestSimulation["results"]["prevention"]["attacker_objectives"]["achived_count"]
-        picus_latestSimulation["prevention_unachieved_objectives"] = picus_latestSimulation["results"]["prevention"]["attacker_objectives"]["unachived_count"]
-        picus_latestSimulation["prevention_not_tested_objectives"] = picus_latestSimulation["results"]["prevention"]["attacker_objectives"]["not_tested_count"]
-        picus_latestSimulation["has_detection_analysis"] = picus_latestSimulation["results"]["has_detection_analysis"]
+        picus_latestSimulation["started_at"] = str(datetime.fromtimestamp(picus_latestSimulation["started_at"] / 1000))
+        picus_latestSimulation["completed_at"] = str(datetime.fromtimestamp(picus_latestSimulation["completed_at"] / 1000))
+        picus_latestSimulation["prevention_security_score"] = \
+            picus_latestSimulation["results"]["prevention"]["security_score"]
+        picus_latestSimulation["prevention_total_threat"] = \
+            picus_latestSimulation["results"]["prevention"]["threat"]["total_count"]
+        picus_latestSimulation["prevention_blocked_threat"] = \
+            picus_latestSimulation["results"]["prevention"]["threat"]["blocked_count"]
+        picus_latestSimulation["prevention_not_blocked_threat"] = \
+            picus_latestSimulation["results"]["prevention"]["threat"]["not_blocked_count"]
+        picus_latestSimulation["prevention_not_tested_threat"] = \
+            picus_latestSimulation["results"]["prevention"]["threat"]["not_tested_count"]
+        picus_latestSimulation["prevention_total_attacker_objectives"] = \
+            picus_latestSimulation["results"]["prevention"]["attacker_objectives"]["total_count"]
+        picus_latestSimulation["prevention_achieved_objectives"] = \
+            picus_latestSimulation["results"]["prevention"]["attacker_objectives"]["achived_count"]
+        picus_latestSimulation["prevention_unachieved_objectives"] = \
+            picus_latestSimulation["results"]["prevention"]["attacker_objectives"]["unachived_count"]
+        picus_latestSimulation["prevention_not_tested_objectives"] = \
+            picus_latestSimulation["results"]["prevention"]["attacker_objectives"]["not_tested_count"]
+        picus_latestSimulation["has_detection_analysis"] = \
+            picus_latestSimulation["results"]["has_detection_analysis"]
     else:
         picus_latestSimulation["started_at"] = str(datetime.fromtimestamp(picus_latestSimulation["started_at"] / 1000))
 
     table_name = "Picus Latest Simulation Result"
-    table_headers = ['started_at','completed_at','simulation_id','simulation_run_id','template_id','status','prevention_security_score','prevention_total_threat','prevention_blocked_threat','prevention_not_blocked_threat','prevention_not_tested_threat','prevention_total_attacker_objectives','prevention_achieved_objectives','prevention_unachieved_objectives','prevention_not_tested_objectives','has_detection_analysis']
-    md_table = tableToMarkdown(table_name, picus_latestSimulation, headers=table_headers, removeNull=True, headerTransform=string_to_table_header)
-    return CommandResults(readable_output=md_table, outputs=picus_latestSimulation, outputs_prefix="Picus.latestSimulationResult")
+    table_headers = ['started_at', 'completed_at', 'simulation_id', 'simulation_run_id', 'template_id',
+                     'status', 'prevention_security_score', 'prevention_total_threat', 'prevention_blocked_threat',
+                     'prevention_not_blocked_threat', 'prevention_not_tested_threat', 'prevention_total_attacker_objectives',
+                     'prevention_achieved_objectives', 'prevention_unachieved_objectives',
+                     'prevention_not_tested_objectives', 'has_detection_analysis']
+    md_table = tableToMarkdown(table_name, picus_latestSimulation, headers=table_headers, removeNull=True,
+                               headerTransform=string_to_table_header)
+    return CommandResults(readable_output=md_table, outputs=picus_latestSimulation,
+                          outputs_prefix="Picus.latestSimulationResult")
+
 
 def get_simulation_result_command(client: Client) -> CommandResults:
-    picus_endpoint = "/v1/simulations/"
     simulation_id = demisto.args().get('id')
     run_id = demisto.args().get('run_id')
-    picus_endpoint = picus_endpoint + simulation_id + "/run/" + run_id
 
-    picus_latestSimulation = client.get_simulation_result(picus_endpoint)
-    picus_latestSimulation["started_at"] = str(datetime.fromtimestamp(picus_latestSimulation["started_at"]/1000))
-    picus_latestSimulation["completed_at"] = str(datetime.fromtimestamp(picus_latestSimulation["completed_at"]/1000))
-    picus_latestSimulation["prevention_security_score"] = picus_latestSimulation["results"]["prevention"]["security_score"]
-    picus_latestSimulation["prevention_total_threat"] = picus_latestSimulation["results"]["prevention"]["threat"]["total_count"]
-    picus_latestSimulation["prevention_blocked_threat"] = picus_latestSimulation["results"]["prevention"]["threat"]["blocked_count"]
-    picus_latestSimulation["prevention_not_blocked_threat"] = picus_latestSimulation["results"]["prevention"]["threat"]["not_blocked_count"]
-    picus_latestSimulation["prevention_not_tested_threat"] = picus_latestSimulation["results"]["prevention"]["threat"]["not_tested_count"]
-    picus_latestSimulation["prevention_total_attacker_objectives"] = picus_latestSimulation["results"]["prevention"]["attacker_objectives"]["total_count"]
-    picus_latestSimulation["prevention_achieved_objectives"] = picus_latestSimulation["results"]["prevention"]["attacker_objectives"]["achived_count"]
-    picus_latestSimulation["prevention_unachieved_objectives"] = picus_latestSimulation["results"]["prevention"]["attacker_objectives"]["unachived_count"]
-    picus_latestSimulation["prevention_not_tested_objectives"] = picus_latestSimulation["results"]["prevention"]["attacker_objectives"]["not_tested_count"]
-    picus_latestSimulation["has_detection_analysis"] = picus_latestSimulation["results"]["has_detection_analysis"]
+    picus_latestSimulation = client.get_simulation_result(simulation_id, run_id)
+
+    picus_latestSimulation["started_at"] = str(datetime.fromtimestamp(picus_latestSimulation["started_at"] / 1000))
+    picus_latestSimulation["completed_at"] = str(datetime.fromtimestamp(picus_latestSimulation["completed_at"] / 1000))
+    picus_latestSimulation["prevention_security_score"] = \
+        picus_latestSimulation["results"]["prevention"]["security_score"]
+    picus_latestSimulation["prevention_total_threat"] = \
+        picus_latestSimulation["results"]["prevention"]["threat"]["total_count"]
+    picus_latestSimulation["prevention_blocked_threat"] = \
+        picus_latestSimulation["results"]["prevention"]["threat"]["blocked_count"]
+    picus_latestSimulation["prevention_not_blocked_threat"] = \
+        picus_latestSimulation["results"]["prevention"]["threat"]["not_blocked_count"]
+    picus_latestSimulation["prevention_not_tested_threat"] = \
+        picus_latestSimulation["results"]["prevention"]["threat"]["not_tested_count"]
+    picus_latestSimulation["prevention_total_attacker_objectives"] = \
+        picus_latestSimulation["results"]["prevention"]["attacker_objectives"]["total_count"]
+    picus_latestSimulation["prevention_achieved_objectives"] = \
+        picus_latestSimulation["results"]["prevention"]["attacker_objectives"]["achived_count"]
+    picus_latestSimulation["prevention_unachieved_objectives"] = \
+        picus_latestSimulation["results"]["prevention"]["attacker_objectives"]["unachived_count"]
+    picus_latestSimulation["prevention_not_tested_objectives"] = \
+        picus_latestSimulation["results"]["prevention"]["attacker_objectives"]["not_tested_count"]
+    picus_latestSimulation["has_detection_analysis"] = \
+        picus_latestSimulation["results"]["has_detection_analysis"]
 
     table_name = "Picus Simulation Result"
-    table_headers = ['started_at','completed_at','simulation_id','simulation_run_id','template_id','status','prevention_security_score','prevention_total_threat','prevention_blocked_threat','prevention_not_blocked_threat','prevention_not_tested_threat','prevention_total_attacker_objectives','prevention_achieved_objectives','prevention_unachieved_objectives','prevention_not_tested_objectives','has_detection_analysis']
-    md_table = tableToMarkdown(table_name, picus_latestSimulation, headers=table_headers, removeNull=True, headerTransform=string_to_table_header)
-    return CommandResults(readable_output=md_table, outputs=picus_latestSimulation, outputs_prefix="Picus.SimulationResult")
+    table_headers = ['started_at', 'completed_at', 'simulation_id', 'simulation_run_id',
+                     'template_id', 'status', 'prevention_security_score', 'prevention_total_threat',
+                     'prevention_blocked_threat', 'prevention_not_blocked_threat', 'prevention_not_tested_threat',
+                     'prevention_total_attacker_objectives', 'prevention_achieved_objectives',
+                     'prevention_unachieved_objectives', 'prevention_not_tested_objectives', 'has_detection_analysis']
+    md_table = tableToMarkdown(table_name, picus_latestSimulation, headers=table_headers, removeNull=True,
+                               headerTransform=string_to_table_header)
+    return CommandResults(readable_output=md_table, outputs=picus_latestSimulation,
+                          outputs_prefix="Picus.SimulationResult")
+
 
 def get_simulation_threats_command(client: Client) -> CommandResults:
-    picus_endpoint = "/v1/simulations/"
+    query_parameters: str = ""
     simulation_id = str(demisto.args().get('id'))
     run_id = str(demisto.args().get('run_id'))
-    picus_endpoint = picus_endpoint + simulation_id + "/run/" + run_id + "/threats"
     picus_threat_list = ""
 
     offset = demisto.args().get('offset')
@@ -349,13 +397,12 @@ def get_simulation_threats_command(client: Client) -> CommandResults:
 
     if offset is not None and limit is not None:
         query_parameters = "?" + "limit=" + limit + "&" + "offset=" + offset
-        picus_endpoint = picus_endpoint + query_parameters
 
-    picus_endpoint_response = client.get_simulation_threats(picus_endpoint)
+    picus_endpoint_response = client.get_simulation_threats(query_parameters, simulation_id, run_id)
     picus_simulationThreats = picus_endpoint_response["threats"]
     for threat in picus_simulationThreats:
         action_count = 0
-        threat_objectives= threat["objectives"]
+        threat_objectives = threat["objectives"]
         for objective in threat_objectives:
             action_count += len(objective["actions"])
         threat["action_count"] = action_count
@@ -365,11 +412,15 @@ def get_simulation_threats_command(client: Client) -> CommandResults:
         picus_threat_list = picus_threat_list[:-1]
 
     table_name = "Picus Simulation Threats"
-    table_headers = ['threat_id','threat_name','severity','prevention','action_count']
-    md_table = tableToMarkdown(table_name, picus_simulationThreats, headers=table_headers, removeNull=True, headerTransform=string_to_table_header)
-    return CommandResults(readable_output=md_table, outputs=picus_threat_list, outputs_prefix="Picus.SimulationThreats")
+    table_headers = ['threat_id', 'threat_name', 'severity', 'prevention', 'action_count']
+    md_table = tableToMarkdown(table_name, picus_simulationThreats, headers=table_headers, removeNull=True,
+                               headerTransform=string_to_table_header)
+    return CommandResults(readable_output=md_table, outputs=picus_threat_list,
+                          outputs_prefix="Picus.SimulationThreats")
+
 
 def get_simulation_actions_command(client: Client) -> CommandResults:
+    query_parameters: str = ""
     simulation_id = demisto.args().get('id')
     run_id = demisto.args().get('run_id')
     threat_ids = demisto.args().get('threat_ids')
@@ -386,12 +437,9 @@ def get_simulation_actions_command(client: Client) -> CommandResults:
         raise DemistoException("offset sohuld be set.")
 
     for threat_id in threat_ids:
-        picus_endpoint = "/v1/simulations/"
-        picus_endpoint = picus_endpoint + str(simulation_id) + "/run/" + str(run_id) + "/threats/" + str(threat_id) + "/actions"
         if offset is not None and limit is not None:
             query_parameters = "?" + "limit=" + limit + "&" + "offset=" + offset
-            picus_endpoint = picus_endpoint + query_parameters
-        picus_endpoint_response = client.get_simulation_actions(picus_endpoint)
+        picus_endpoint_response = client.get_simulation_actions(query_parameters, simulation_id, run_id, threat_id)
         picus_simulationActions = picus_endpoint_response["actions"]
         for action in picus_simulationActions:
             picus_action_raw_results += str(action["action_id"]) + "=" + str(action["prevention"]) + ","
@@ -403,39 +451,40 @@ def get_simulation_actions_command(client: Client) -> CommandResults:
     picus_action_results = picus_action_results["results"]
 
     table_name = "Picus Simulation Actions"
-    table_headers = ['action_id','display_id','action_name','affected_os','attack_module','category','prevention']
-    md_table = tableToMarkdown(table_name, picus_action_results, headers=table_headers, removeNull=True, headerTransform=string_to_table_header)
-    return CommandResults(readable_output=md_table, outputs=picus_action_raw_results, outputs_prefix="Picus.SimulationActions")
+    table_headers = ['action_id', 'display_id', 'action_name', 'affected_os', 'attack_module', 'category', 'prevention']
+    md_table = tableToMarkdown(table_name, picus_action_results, headers=table_headers, removeNull=True,
+                               headerTransform=string_to_table_header)
+    return CommandResults(readable_output=md_table, outputs=picus_action_raw_results,
+                          outputs_prefix="Picus.SimulationActions")
+
 
 def get_mitigation_devices_command(client: Client) -> CommandResults:
-    picus_endpoint = "/v1/mitigation/devices"
+    query_parameters: str = ""
     simulation_ids = demisto.args().get('ids')
 
-    if not simulation_ids is None:
+    if simulation_ids is not None:
         query_parameters = "?" + "simulation_ids=" + simulation_ids
-        picus_endpoint = picus_endpoint + query_parameters
 
-    picus_mitigationDevices = client.get_mitigation_devices(picus_endpoint)
+    picus_mitigationDevices = client.get_mitigation_devices(query_parameters)
 
     table_name = "Picus Mitigation Devices"
-    table_headers = ['id','device_name','score','total_action_count','blocked_action_count','not_blocked_action_count']
-    md_table = tableToMarkdown(table_name, picus_mitigationDevices, headers=table_headers, removeNull=True, headerTransform=string_to_table_header)
-    return CommandResults(readable_output=md_table, outputs=picus_mitigationDevices, outputs_prefix="Picus.MitigationDevices")
+    table_headers = ['id', 'device_name', 'score', 'total_action_count', 'blocked_action_count', 'not_blocked_action_count']
+    md_table = tableToMarkdown(table_name, picus_mitigationDevices, headers=table_headers, removeNull=True,
+                               headerTransform=string_to_table_header)
+    return CommandResults(readable_output=md_table, outputs=picus_mitigationDevices,
+                          outputs_prefix="Picus.MitigationDevices")
+
 
 def get_signature_list_command(client: Client) -> CommandResults:
-    picus_endpoint = "/v1/mitigation/devices/"
     device_id = demisto.args().get('device_id')
     action_ids = demisto.args().get('action_ids')
-    picus_endpoint = picus_endpoint + device_id + "/signatures"
     picus_signature_raw_results: Dict[str, Any] = {"results": []}
     picus_signature_all_results: Dict[str, Any] = {"results": []}
 
     action_ids = action_ids.split(",")
     for action in action_ids:
-        tmp_req_url = ""
         query_parameters = "?" + "action_ids=" + action
-        tmp_req_url = picus_endpoint + query_parameters
-        picus_mitigationSignatures = client.get_signature_list(tmp_req_url)
+        picus_mitigationSignatures = client.get_signature_list(query_parameters, device_id)
         for mitigation in picus_mitigationSignatures:
             mitigation["action_id"] = action
         picus_signature_raw_results["results"].append(picus_mitigationSignatures)
@@ -447,17 +496,23 @@ def get_signature_list_command(client: Client) -> CommandResults:
     picus_signature_all_results = picus_signature_all_results["results"]
 
     table_name = "Picus Mitigation Signature List"
-    table_headers = ['action_id','signature_id','name','signature_category','signature_version','product_platform','product_version','vendor_severity']
-    md_table = tableToMarkdown(table_name, picus_signature_all_results, headers=table_headers, removeNull=True, headerTransform=string_to_table_header)
-    return CommandResults(readable_output=md_table, outputs=picus_signature_all_results, outputs_prefix="Picus.MitigationSignatures")
+    table_headers = ['action_id', 'signature_id', 'name', 'signature_category',
+                     'signature_version', 'product_platform', 'product_version', 'vendor_severity']
+    md_table = tableToMarkdown(table_name, picus_signature_all_results, headers=table_headers, removeNull=True,
+                               headerTransform=string_to_table_header)
+    return CommandResults(readable_output=md_table, outputs=picus_signature_all_results,
+                          outputs_prefix="Picus.MitigationSignatures")
+
 
 def setParamPB():
     agent_id = demisto.args().get('agent_id')
     device_id = demisto.args().get('device_id')
     simulation_id = demisto.args().get('simulation_id')
 
-    param_data = {"agent_id":agent_id,"device_id":device_id,"simulation_id":simulation_id}
-    return CommandResults(outputs=param_data,outputs_prefix="Picus.param")
+    param_data = {"agent_id": agent_id, "device_id": device_id, "simulation_id": simulation_id}
+    return CommandResults(outputs=param_data,
+                          outputs_prefix="Picus.param")
+
 
 def filterInsecureAttacks():
     threatinfo = demisto.args().get('threatinfo')
@@ -470,10 +525,11 @@ def filterInsecureAttacks():
         threat_id = th_info.split("=")[0]
         threat_ids += str(threat_id) + ","
 
-    if len(threat_ids)!=0:
+    if len(threat_ids) != 0:
         threat_ids = threat_ids[:-1]
 
-    return CommandResults(readable_output=threat_ids,outputs_prefix="Picus.filterinsecure",outputs=threat_ids)
+    return CommandResults(readable_output=threat_ids, outputs=threat_ids,
+                          outputs_prefix="Picus.filterinsecure")
 
 
 ''' MAIN FUNCTION '''
