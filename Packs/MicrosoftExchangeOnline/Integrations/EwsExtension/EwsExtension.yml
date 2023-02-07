@@ -1,7 +1,4 @@
 category: Messaging
-sectionorder:
-- Connect
-- Collect
 commonfields:
   id: EwsExtension
   version: -1
@@ -11,25 +8,20 @@ configuration:
   name: url
   required: true
   type: 0
-  section: Connect
 - display: Email (Password for basic authentication only)
   name: credentials
   required: false
   type: 9
-  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-  section: Connect
-  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-  section: Connect
-  advanced: true
-description: This integration enables you to manage and interact with Microsoft O365 - Exchange Online from within XSOAR.
+description: This integration enables you to manage and interact with Microsoft O365
+  - Exchange Online from within XSOAR.
 display: O365 - EWS - Extension
 name: EwsExtension
 script:
@@ -93,32 +85,37 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma-separated list of blocked senders and domains to add to the mailbox.
+      description: Comma-separated list of blocked senders and domains to add to the
+        mailbox.
       isArray: true
       name: add_blocked_senders_and_domains
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of blocked senders and domains to remove from the mailbox.
+      description: Comma-separated list of blocked senders and domains to remove from
+        the mailbox.
       isArray: true
       name: remove_blocked_senders_and_domains
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of trusted senders and domains to add to the mailbox.
+      description: Comma-separated list of trusted senders and domains to add to the
+        mailbox.
       isArray: true
       name: add_trusted_senders_and_domains
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of trusted senders and domains to remove from the mailbox.
+      description: Comma-separated list of trusted senders and domains to remove from
+        the mailbox.
       isArray: true
       name: remove_trusted_senders_and_domains
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If true, trust only lists defined in the trusted lists. Can be "true" or "false".
+      description: If true, trust only lists defined in the trusted lists. Can be
+        "true" or "false".
       isArray: false
       name: trusted_lists_only
       predefined:
@@ -152,32 +149,37 @@ script:
     name: ews-junk-rules-set
   - arguments:
     - default: false
-      description: Comma-separated list of blocked senders and domains to add to the mailbox.
+      description: Comma-separated list of blocked senders and domains to add to the
+        mailbox.
       isArray: true
       name: add_blocked_senders_and_domains
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of blocked senders and domains to remove from the mailbox.
+      description: Comma-separated list of blocked senders and domains to remove from
+        the mailbox.
       isArray: true
       name: remove_blocked_senders_and_domains
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of trusted senders and domains to add to the mailbox.
+      description: Comma-separated list of trusted senders and domains to add to the
+        mailbox.
       isArray: true
       name: add_trusted_senders_and_domains
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of trusted senders and domains to remove from the mailbox.
+      description: Comma-separated list of trusted senders and domains to remove from
+        the mailbox.
       isArray: true
       name: remove_trusted_senders_and_domains
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If true, trust only lists defined in the trusted lists. Can be "true" or "false".
+      description: If true, trust only lists defined in the trusted lists. Can be
+        "true" or "false".
       isArray: false
       name: trusted_lists_only
       predefined:
@@ -211,70 +213,110 @@ script:
     name: ews-global-junk-rules-set
   - arguments:
     - default: false
-      description: A comma-separated list of sender email addresses by which to filter the results.
+      description: A comma-separated list of sender email addresses by which to filter
+        the results.
       isArray: true
       name: sender_address
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of recipient email addresses by which to filter the results.
+      description: A comma-separated list of recipient email addresses by which to
+        filter the results.
       isArray: true
       name: recipient_address
       required: false
       secret: false
     - default: false
-      description: The source IP address by which to filter the results. For incoming messages, the value of from_ip is the public IP address of the SMTP email server that sent the message. For outgoing messages from Exchange Online, the value is blank.
+      description: The source IP address by which to filter the results. For incoming
+        messages, the value of from_ip is the public IP address of the SMTP email
+        server that sent the message. For outgoing messages from Exchange Online,
+        the value is blank.
       isArray: true
       name: from_ip
       required: false
       secret: false
     - default: false
-      description: The destination IP address by which to filter the results. For outgoing messages, the value of to_ip is the public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, the value is blank.
+      description: The destination IP address by which to filter the results. For
+        outgoing messages, the value of to_ip is the public IP address in the resolved
+        MX record for the destination domain. For incoming messages to Exchange Online,
+        the value is blank.
       isArray: true
       name: to_ip
       required: false
       secret: false
     - default: false
-      description: The Message-ID header field of the message by which to filter the results. This value is also known as the Client ID. The format of the Message-ID depends on the messaging server that sent the message. The value should be unique for each message. However, not all messaging servers create values for the Message-ID in the same way. Be sure to include the full Message ID string (which may include angle brackets) and enclose the value in quotation marks (for example,"d9683b4c-127b-413a-ae2e-fa7dfb32c69d@DM3NAM06BG401.Eop-nam06.prod.protection.outlook.com").        '
+      description: The Message-ID header field of the message by which to filter the
+        results. This value is also known as the Client ID. The format of the Message-ID
+        depends on the messaging server that sent the message. The value should be
+        unique for each message. However, not all messaging servers create values
+        for the Message-ID in the same way. Be sure to include the full Message ID
+        string (which may include angle brackets) and enclose the value in quotation
+        marks (for example,"d9683b4c-127b-413a-ae2e-fa7dfb32c69d@DM3NAM06BG401.Eop-nam06.prod.protection.outlook.com").        '
       isArray: false
       name: message_id
       required: false
       secret: false
     - default: false
-      description: The message trace ID to be used with the recipient address to uniquely identify a message trace and obtain more details. A message trace ID is generated for every message that''s processed by the system.
+      description: The message trace ID to be used with the recipient address to uniquely
+        identify a message trace and obtain more details. A message trace ID is generated
+        for every message that''s processed by the system.
       isArray: false
       name: message_trace_id
       required: false
       secret: false
     - default: false
       defaultValue: '1'
-      description: The page number of the results you want to view. Can be an integer between 1 and 1000.
+      description: The page number of the results you want to view. Can be an integer
+        between 1 and 1000.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '100'
-      description: The maximum number of entries per page. Can be an integer between 1 and 5000.
+      description: The maximum number of entries per page. Can be an integer between
+        1 and 5000.
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
-      description: "The start date of the date range. Use the short date format that''s defined in the Regional Options settings on the computer where you''re running the command. For example, if the computer is configured to use the short date format mm/dd/yyyy, enter 09/01/2018 to specify September 1, 2018.\nYou can enter the date only, or you can enter the date and time of day.\nIf you enter the date and time of day, enclose the value in quotation marks (\"), for example, \"09/01/2018 5:00 PM\".\nValid input for this parameter is from 10 days ago until now. Default is 48 hours ago."
+      description: "The start date of the date range. Use the short date format that''s\
+        \ defined in the Regional Options settings on the computer where you''re running\
+        \ the command. For example, if the computer is configured to use the short\
+        \ date format mm/dd/yyyy, enter 09/01/2018 to specify September 1, 2018.\n\
+        You can enter the date only, or you can enter the date and time of day.\n\
+        If you enter the date and time of day, enclose the value in quotation marks\
+        \ (\"), for example, \"09/01/2018 5:00 PM\".\nValid input for this parameter\
+        \ is from 10 days ago until now. Default is 48 hours ago."
       isArray: false
       name: start_date
       required: false
       secret: false
     - default: false
-      description: "The end date of the date range. Use the short date format that''s defined in the Regional Options settings on the computer where you''re running the command. For example, if the computer is configured to use the short date format mm/dd/yyyy, enter 09/01/2018 to specify September 1, 2018.\nYou can enter the date only, or you can enter the date and time of day.\nIf you enter the date and time of day, enclose the value in quotation marks (\"), for example, \"09/01/2018 5:00 PM\".\nValid input for this parameter is from the start_date - now. Default is now."
+      description: "The end date of the date range. Use the short date format that''s\
+        \ defined in the Regional Options settings on the computer where you''re running\
+        \ the command. For example, if the computer is configured to use the short\
+        \ date format mm/dd/yyyy, enter 09/01/2018 to specify September 1, 2018.\n\
+        You can enter the date only, or you can enter the date and time of day.\n\
+        If you enter the date and time of day, enclose the value in quotation marks\
+        \ (\"), for example, \"09/01/2018 5:00 PM\".\nValid input for this parameter\
+        \ is from the start_date - now. Default is now."
       isArray: false
       name: end_date
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "The status of the message. Can be one of the following:\n  * GettingStatus: The message is waiting for status update.\n  * Failed: Message delivery was attempted and it failed or the message was filtered as spam or malware, or by transport rules.\n  * Pending: Message delivery is underway or was deferred and is being retried.\n  * Delivered: The message was delivered to its destination.\n  * Expanded: There was no message delivery because the message was addressed to a distribution group and the membership of the distribution was expanded.\n  * Quarantined: The message was quarantined.\n  * FilteredAsSpam: The message was marked as spam.\n"
+      description: "The status of the message. Can be one of the following:\n  * GettingStatus:\
+        \ The message is waiting for status update.\n  * Failed: Message delivery\
+        \ was attempted and it failed or the message was filtered as spam or malware,\
+        \ or by transport rules.\n  * Pending: Message delivery is underway or was\
+        \ deferred and is being retried.\n  * Delivered: The message was delivered\
+        \ to its destination.\n  * Expanded: There was no message delivery because\
+        \ the message was addressed to a distribution group and the membership of\
+        \ the distribution was expanded.\n  * Quarantined: The message was quarantined.\n\
+        \  * FilteredAsSpam: The message was marked as spam.\n"
       isArray: false
       name: status
       predefined:
@@ -288,11 +330,15 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Searches message data for the last 10 days. If you run this command without any arguments, only data from the last 48 hours is returned.
+    description: 'Searches message data for the last 10 days. If you run this command
+      without any arguments, only data from the last 48 hours is returned.
 
-      If you enter a start date that is older than 10 days, you will receive an error and the command will return no results.
+      If you enter a start date that is older than 10 days, you will receive an error
+      and the command will return no results.
 
-      This command returns a maximum of 1,000,000 results, and will timeout on very large queries. If your query returns too many results, consider splitting it up using shorter start_date and end_date intervals.'
+      This command returns a maximum of 1,000,000 results, and will timeout on very
+      large queries. If your query returns too many results, consider splitting it
+      up using shorter start_date and end_date intervals.'
     execution: false
     name: ews-message-trace-get
     outputs:
@@ -300,7 +346,8 @@ script:
       description: The public IP address of the SMTP email server that sent the message.
       type: String
     - contextPath: EWS.MessageTrace.ToIP
-      description: The public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, the value is blank.
+      description: The public IP address in the resolved MX record for the destination
+        domain. For incoming messages to Exchange Online, the value is blank.
       type: String
     - contextPath: EWS.MessageTrace.Index
       description: Message index in pagination. (Index starts from 0.)
@@ -340,13 +387,16 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The domain controller identified by its fully qualified domain name (FQDN). For example, dc01.contoso.com. This argument is available only in on-premises Exchange.
+      description: The domain controller identified by its fully qualified domain
+        name (FQDN). For example, dc01.contoso.com. This argument is available only
+        in on-premises Exchange.
       isArray: false
       name: domain_controller
       required: false
       secret: false
     - default: false
-      description: The federation trust ID. If not specified, the command returns all federation trusts configured for the Exchange organization.
+      description: The federation trust ID. If not specified, the command returns
+        all federation trusts configured for the Exchange organization.
       isArray: false
       name: identity
       required: false
@@ -411,7 +461,8 @@ script:
       description: Object state of the federation trust.
       type: String
     - contextPath: EWS.FederationTrust.OrgCertificate.Archived
-      description: Whether the organization certificate of the federation trust is archived.
+      description: Whether the organization certificate of the federation trust is
+        archived.
       type: Boolean
     - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.Critical
       description: Whether the extensions of the organization certificate are critical.
@@ -432,16 +483,20 @@ script:
       description: Key usages of the organization certificate extensions.
       type: Number
     - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.EnhancedKeyUsages.FriendlyName
-      description: Friendly name of the enhanced key usages of the organization certificate extensions.
+      description: Friendly name of the enhanced key usages of the organization certificate
+        extensions.
       type: String
     - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.EnhancedKeyUsages.Value
-      description: Value of the enhanced key usages of the organization certificate extensions.
+      description: Value of the enhanced key usages of the organization certificate
+        extensions.
       type: String
     - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.CertificateAuthority
-      description: Whether the organization certificate extensions have a certificate authority.
+      description: Whether the organization certificate extensions have a certificate
+        authority.
       type: Boolean
     - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.HasPathLengthConstraint
-      description: Whether the organization certificate extensions have a path length constraint.
+      description: Whether the organization certificate extensions have a path length
+        constraint.
       type: Boolean
     - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.PathLengthConstraint
       description: Path length constraint of the organization certificate extensions.
@@ -462,7 +517,8 @@ script:
       description: Name of the issuer of the organization certificate.
       type: String
     - contextPath: EWS.FederationTrust.OrgCertificate.IssuerName.Oid.FriendlyName
-      description: Friendly Name of the OID of the issuer name of the organization certificate.
+      description: Friendly Name of the OID of the issuer name of the organization
+        certificate.
       type: Unknown
     - contextPath: EWS.FederationTrust.OrgCertificate.IssuerName.Oid.Value
       description: Value of the OID of the issuer name of the organization certificate.
@@ -480,7 +536,8 @@ script:
       description: Private key of the organization certificate.
       type: Unknown
     - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName
-      description: Friendly name of the OID of the encoded key value of the public key.
+      description: Friendly name of the OID of the encoded key value of the public
+        key.
       type: String
     - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedKeyValue.Oid.Value
       description: Value of the OID of the encoded key value of the public key.
@@ -489,7 +546,8 @@ script:
       description: Raw data of the encoded key value of the public key.
       type: Number
     - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedParameters.Oid.FriendlyName
-      description: Friendly name of the OID of the encoded parameters of the public key.
+      description: Friendly name of the OID of the encoded parameters of the public
+        key.
       type: String
     - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedParameters.Oid.Value
       description: Value of the OID of the encoded parameters of the public key.
@@ -561,10 +619,12 @@ script:
       description: Whether to archive the previous organization certificate.
       type: Boolean
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.Critical
-      description: Whether the extensions of the previous organization certificate are critical.
+      description: Whether the extensions of the previous organization certificate
+        are critical.
       type: Boolean
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.Oid.FriendlyName
-      description: Friendly name of the OID of the previous organization certificate extensions.
+      description: Friendly name of the OID of the previous organization certificate
+        extensions.
       type: String
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.Oid.Value
       description: Value of the OID of the previous organization certificate extensions.
@@ -573,16 +633,19 @@ script:
       description: Raw data of the previous organization certificate extensions.
       type: Number
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.SubjectKeyIdentifier
-      description: Subject key identifier of the previous organization certificate extensions.
+      description: Subject key identifier of the previous organization certificate
+        extensions.
       type: String
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.KeyUsages
       description: Key usages of the previous organization certificate extensions.
       type: Number
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.EnhancedKeyUsages.FriendlyName
-      description: Friendly name of the enhanced key usages of the previous organization certificate extensions.
+      description: Friendly name of the enhanced key usages of the previous organization
+        certificate extensions.
       type: String
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.EnhancedKeyUsages.Value
-      description: Value of the enhanced key usages of the previous organization certificate extensions.
+      description: Value of the enhanced key usages of the previous organization certificate
+        extensions.
       type: String
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.FriendlyName
       description: Friendly name of the previous organization certificate.
@@ -600,7 +663,8 @@ script:
       description: Name of the issuer of the previous organization certificate.
       type: String
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.IssuerName.Oid.FriendlyName
-      description: Friendly name of the OID of the issuer of the previous organization certificate.
+      description: Friendly name of the OID of the issuer of the previous organization
+        certificate.
       type: Unknown
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.IssuerName.Oid.Value
       description: Value of the OID of the issuer of the previous organization certificate.
@@ -618,25 +682,32 @@ script:
       description: Private Key of the previous organization certificate.
       type: Unknown
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName
-      description: Friendly Name of the OID of the encoded key value of the public key of the previous organization certificate.
+      description: Friendly Name of the OID of the encoded key value of the public
+        key of the previous organization certificate.
       type: String
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedKeyValue.Oid.Value
-      description: Value of the OID of the encoded key value of the public key of the previous organization certificate.
+      description: Value of the OID of the encoded key value of the public key of
+        the previous organization certificate.
       type: String
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedKeyValue.RawData
-      description: Raw Data of the encoded key value of the public key of the previous organization certificate.
+      description: Raw Data of the encoded key value of the public key of the previous
+        organization certificate.
       type: Number
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedParameters.Oid.FriendlyName
-      description: Friendly name of the OID of the encoded parameters of the public key of the previous organization certificate.
+      description: Friendly name of the OID of the encoded parameters of the public
+        key of the previous organization certificate.
       type: String
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedParameters.Oid.Value
-      description: Value of the OID of the encoded parameters of the public key of the previous organization certificate.
+      description: Value of the OID of the encoded parameters of the public key of
+        the previous organization certificate.
       type: String
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedParameters.RawData
-      description: Raw Data of the encoded parameters of the public key of the previous organization certificate.
+      description: Raw Data of the encoded parameters of the public key of the previous
+        organization certificate.
       type: Number
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.KeyExchangeAlgorithm
-      description: Key exchange algorithm of the public key of the previous organization certificate.
+      description: Key exchange algorithm of the public key of the previous organization
+        certificate.
       type: String
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.LegalKeySizes.MaxSize
       description: Maximum size of the public key of the previous organization certificate.
@@ -648,13 +719,16 @@ script:
       description: SkiPSize of the public key of the previous organization certificate.
       type: Number
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.SignatureAlgorithm
-      description: Signature algorithm of the public key of the previous organization certificate.
+      description: Signature algorithm of the public key of the previous organization
+        certificate.
       type: String
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Oid.FriendlyName
-      description: Friendly name of the OID of the public key of the previous organization certificate.
+      description: Friendly name of the OID of the public key of the previous organization
+        certificate.
       type: String
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Oid.Value
-      description: Value of the OID of the public key of the previous organization certificate.
+      description: Value of the OID of the public key of the previous organization
+        certificate.
       type: String
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.RawData
       description: Raw Data of the previous organization certificate.
@@ -663,7 +737,8 @@ script:
       description: Serial number of the previous organization certificate.
       type: String
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.SignatureAlgorithm.FriendlyName
-      description: Friendly name of the signature algorithm of the previous organization certificate.
+      description: Friendly name of the signature algorithm of the previous organization
+        certificate.
       type: String
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.SignatureAlgorithm.Value
       description: Value of the signature algorithm of the previous organization certificate.
@@ -675,10 +750,12 @@ script:
       description: Name of the subject of the previous organization certificate.
       type: String
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.SubjectName.Oid.FriendlyName
-      description: Friendly name of the OID of the subject of the previous organization certificate.
+      description: Friendly name of the OID of the subject of the previous organization
+        certificate.
       type: Unknown
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.SubjectName.Oid.Value
-      description: Value of the OID of the subject name of the previous organization certificate.
+      description: Value of the OID of the subject name of the previous organization
+        certificate.
       type: Unknown
     - contextPath: EWS.FederationTrust.OrgPrevCertificate.SubjectName.RawData
       description: Raw Data of the subject name of the previous organization certificate.
@@ -726,7 +803,8 @@ script:
       description: Whether the extensions of the token issuer certificate are critical.
       type: Boolean
     - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Extensions.Oid.FriendlyName
-      description: Friendly name of the OID of the extensions of the token issuer certificate.
+      description: Friendly name of the OID of the extensions of the token issuer
+        certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Extensions.Oid.Value
       description: Value of the OID of the extensions of the token issuer certificate.
@@ -774,22 +852,28 @@ script:
       description: Private key of the token issuer certificate.
       type: Unknown
     - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName
-      description: Friendly name of the OID of the encoded key value of the public key of the token issuer certificate.
+      description: Friendly name of the OID of the encoded key value of the public
+        key of the token issuer certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedKeyValue.Oid.Value
-      description: Value of the OID of the encoded key value of the public key of the token issuer certificate.
+      description: Value of the OID of the encoded key value of the public key of
+        the token issuer certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedKeyValue.RawData
-      description: Raw data of the encoded key value of the public key of the token issuer certificate.
+      description: Raw data of the encoded key value of the public key of the token
+        issuer certificate.
       type: Number
     - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedParameters.Oid.FriendlyName
-      description: Friendly name of the OID of the encoded parameters of the public key of the token issuer certificate.
+      description: Friendly name of the OID of the encoded parameters of the public
+        key of the token issuer certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedParameters.Oid.Value
-      description: Value of the OID of the encoded parameters of the public key of the token issuer certificate.
+      description: Value of the OID of the encoded parameters of the public key of
+        the token issuer certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedParameters.RawData
-      description: Raw Data of the encoded parameters of the public key of the token issuer certificate.
+      description: Raw Data of the encoded parameters of the public key of the token
+        issuer certificate.
       type: Number
     - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.KeyExchangeAlgorithm
       description: Key exchange algorithm of the public key of the token issuer certificate.
@@ -807,7 +891,8 @@ script:
       description: Signature algorithm of the public key of the token issuer certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Oid.FriendlyName
-      description: Friendly name of the OID of the public key of the token issuer certificate.
+      description: Friendly name of the OID of the public key of the token issuer
+        certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Oid.Value
       description: Value of the OID of the public key of the token issuer certificate.
@@ -858,19 +943,23 @@ script:
       description: Whether the token issuer previous certificate was archived.
       type: Boolean
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.Critical
-      description: Whether the extensions of the token issuer previous certificate was critical.
+      description: Whether the extensions of the token issuer previous certificate
+        was critical.
       type: Boolean
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.Oid.FriendlyName
-      description: Friendly name of the OID of the extensions of the token issuer previous certificate.
+      description: Friendly name of the OID of the extensions of the token issuer
+        previous certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.Oid.Value
-      description: Value of the OID of the extensions of the token issuer previous certificate.
+      description: Value of the OID of the extensions of the token issuer previous
+        certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.RawData
       description: Raw data of the extensions of the token issuer previous certificate.
       type: Number
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.SubjectKeyIdentifier
-      description: Subject key identifier of the extensions of the token issuer previous certificate.
+      description: Subject key identifier of the extensions of the token issuer previous
+        certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.KeyUsages
       description: Key usages of the extensions of the token issuer previous certificate.
@@ -891,10 +980,12 @@ script:
       description: Name of the issuer of the token issuer previous certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.IssuerName.Oid.FriendlyName
-      description: Friendly name of the OID of the issuer name of the token issuer previous certificate.
+      description: Friendly name of the OID of the issuer name of the token issuer
+        previous certificate.
       type: Unknown
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.IssuerName.Oid.Value
-      description: Value of the OID of the issuer name of the token issuer previous certificate.
+      description: Value of the OID of the issuer name of the token issuer previous
+        certificate.
       type: Unknown
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.IssuerName.RawData
       description: Raw Data of the issuer name of the token issuer previous certificate.
@@ -909,25 +1000,32 @@ script:
       description: Private Key of the token issuer previous certificate.
       type: Unknown
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName
-      description: Friendly name of the OID of the encoded key value of the public key of the token issuer previous certificate.
+      description: Friendly name of the OID of the encoded key value of the public
+        key of the token issuer previous certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedKeyValue.Oid.Value
-      description: Value of the OID of the encoded key value of the public key of the token issuer previous certificate.
+      description: Value of the OID of the encoded key value of the public key of
+        the token issuer previous certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedKeyValue.RawData
-      description: Raw data of the encoded key value of the public key of the token issuer previous certificate.
+      description: Raw data of the encoded key value of the public key of the token
+        issuer previous certificate.
       type: Number
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedParameters.Oid.FriendlyName
-      description: Friendly name of the OID of the encoded parameters of the public key of the token issuer previous certificate.
+      description: Friendly name of the OID of the encoded parameters of the public
+        key of the token issuer previous certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedParameters.Oid.Value
-      description: Value of the OID of the encoded parameters of the public key of the token issuer previous certificate.
+      description: Value of the OID of the encoded parameters of the public key of
+        the token issuer previous certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedParameters.RawData
-      description: Raw data of the encoded parameters of the public key of the token issuer previous certificate.
+      description: Raw data of the encoded parameters of the public key of the token
+        issuer previous certificate.
       type: Number
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.KeyExchangeAlgorithm
-      description: Key exchange algorithm of the public key of the token issuer previous certificate.
+      description: Key exchange algorithm of the public key of the token issuer previous
+        certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.LegalKeySizes.MaxSize
       description: Maximum size of the public key of the token issuer previous certificate.
@@ -939,13 +1037,16 @@ script:
       description: SkiPSize of the public key of the token issuer previous certificate.
       type: Number
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.SignatureAlgorithm
-      description: Signature algorithm of the public key of the token issuer previous certificate.
+      description: Signature algorithm of the public key of the token issuer previous
+        certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Oid.FriendlyName
-      description: Friendly Name of the OID of the public key of the token issuer previous certificate.
+      description: Friendly Name of the OID of the public key of the token issuer
+        previous certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Oid.Value
-      description: Value of the OID of teh public key of the token issuer previous certificate.
+      description: Value of the OID of teh public key of the token issuer previous
+        certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.RawData
       description: Raw Data of the token issuer previous certificate.
@@ -954,7 +1055,8 @@ script:
       description: Serial number of the token issuer previous certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SignatureAlgorithm.FriendlyName
-      description: Friendly name of the signature algorithm of the token issuer previous certificate.
+      description: Friendly name of the signature algorithm of the token issuer previous
+        certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SignatureAlgorithm.Value
       description: Value of the signature algorithm of the token issuer previous certificate.
@@ -966,10 +1068,12 @@ script:
       description: Name of the subject of the token issuer previous certificate.
       type: String
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SubjectName.Oid.FriendlyName
-      description: Friendly Name of the OID of the subject of the token issuer previous certificate.
+      description: Friendly Name of the OID of the subject of the token issuer previous
+        certificate.
       type: Unknown
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SubjectName.Oid.Value
-      description: Value of the OID of the subject name of the token issuer previous certificate.
+      description: Value of the OID of the subject name of the token issuer previous
+        certificate.
       type: Unknown
     - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SubjectName.RawData
       description: Raw data of the subject name of the token issuer previous certificate.
@@ -1003,13 +1107,16 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: 'The fully qualified domain name (FQDN) of the domain controller. For example, dc01.contoso.com. This argument is available only in on-premises Exchange.'
+      description: 'The fully qualified domain name (FQDN) of the domain controller.
+        For example, dc01.contoso.com. This argument is available only in on-premises
+        Exchange.'
       isArray: false
       name: domain_controller
       required: false
       secret: false
     - default: false
-      description: The federation trust ID. If not specified, all federation trusts configured for the Exchange organization are returned.
+      description: The federation trust ID. If not specified, all federation trusts
+        configured for the Exchange organization are returned.
       isArray: false
       name: identity
       required: false
@@ -1017,7 +1124,10 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'The IncludeExtendedDomainInfo switch specifies that the command query Microsoft Federation Gateway for the status of each accepted domain that''s federated. The status is returned with each domain in the Domains property. Possible values: "true" and "false".'
+      description: 'The IncludeExtendedDomainInfo switch specifies that the command
+        query Microsoft Federation Gateway for the status of each accepted domain
+        that''s federated. The status is returned with each domain in the Domains
+        property. Possible values: "true" and "false".'
       isArray: false
       name: include_extended_domain_info
       predefined:
@@ -1026,7 +1136,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves the Exchange organization's federated organization identifier and related details, such as federated domains, organization contact, and status.
+    description: Retrieves the Exchange organization's federated organization identifier
+      and related details, such as federated domains, organization contact, and status.
     execution: false
     name: ews-federation-configuration-get
     outputs:
@@ -1091,7 +1202,8 @@ script:
       description: PowerShell computer name of the federation configuration.
       type: String
     - contextPath: EWS.FederationConfiguration.PSShowComputerName
-      description: Whether to show the PowerShell computer name of the federation configuration.
+      description: Whether to show the PowerShell computer name of the federation
+        configuration.
       type: Boolean
     - contextPath: EWS.FederationConfiguration.RunspaceId
       description: Runspace ID of the federation configuration.
@@ -1100,13 +1212,15 @@ script:
       description: The date the federation configuration was changed.
       type: Date
     - contextPath: EWS.FederationConfiguration.WhenChangedUTC
-      description: The date in UTC format of when the federation configuration was changed.
+      description: The date in UTC format of when the federation configuration was
+        changed.
       type: Date
     - contextPath: EWS.FederationConfiguration.WhenCreated
       description: The date the federation configuration was created.
       type: Date
     - contextPath: EWS.FederationConfiguration.WhenCreatedUTC
-      description: The date in UTC format of when the federation configuration was created.
+      description: The date in UTC format of when the federation configuration was
+        created.
       type: Date
   - arguments:
     - default: false
@@ -1118,13 +1232,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The remote domain that you want to view. You can use the GUID, ID, or any other identifier.
+      description: The remote domain that you want to view. You can use the GUID,
+        ID, or any other identifier.
       isArray: false
       name: identity
       required: false
       secret: false
     deprecated: false
-    description: Gets the configuration information for the remote domains configured in your organization. This command is available only in the Exchange Online PowerShell V2 module.
+    description: Gets the configuration information for the remote domains configured
+      in your organization. This command is available only in the Exchange Online
+      PowerShell V2 module.
     execution: false
     name: ews-remote-domain-get
     outputs:
@@ -1186,7 +1303,8 @@ script:
       description: Line wrap size for the remote domain.
       type: String
     - contextPath: EWS.RemoteDomain.MeetingForwardNotificationEnabled
-      description: Whether meeting forward notification is enabled for the remote domain.
+      description: Whether meeting forward notification is enabled for the remote
+        domain.
       type: Boolean
     - contextPath: EWS.RemoteDomain.MessageCountThreshold
       description: Message count threshold  of the remote domain.
@@ -1237,7 +1355,8 @@ script:
       description: Whether TNEF is enabled for the remote domain.
       type: Unknown
     - contextPath: EWS.RemoteDomain.TargetDeliveryDomain
-      description: Whether the remote domain is used for the target email address of mail users that represent the users in the other forest.
+      description: Whether the remote domain is used for the target email address
+        of mail users that represent the users in the other forest.
       type: Boolean
     - contextPath: EWS.RemoteDomain.TrustedMailInboundEnabled
       description: Whether inbound trusted mail is enabled.
@@ -1268,7 +1387,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The object's location in Active Directory by which to filter the results.
+      description: The object's location in Active Directory by which to filter the
+        results.
       isArray: false
       name: organizational_unit
       required: false
@@ -1409,7 +1529,8 @@ script:
       description: Whether soft delete is disabled and hard (permanent) delete occurs.
       type: Boolean
     - contextPath: EWS.User.IsSoftDeletedByRemove
-      description: When the Exchange Online mailbox is deleted (soft delete), this property is set to True.
+      description: When the Exchange Online mailbox is deleted (soft delete), this
+        property is set to True.
       type: Boolean
     - contextPath: EWS.User.IsValid
       description: Whether the user object is valid.
@@ -1544,7 +1665,8 @@ script:
       description: Street address of the user object.
       type: String
     - contextPath: EWS.User.StsRefreshTokensValidFrom
-      description: The validation start date for the Security Token Service (STS) refresh tokens of the user object.
+      description: The validation start date for the Security Token Service (STS)
+        refresh tokens of the user object.
       type: Date
     - contextPath: EWS.User.TelephoneAssistant
       description: Telephone assistant of the user object.
@@ -1556,7 +1678,8 @@ script:
       description: Unified Messaging (UM) dial plan of the user object.
       type: Unknown
     - contextPath: EWS.User.UMDtmfMap
-      description: Unified Messaging (UM) dual tone multi-frequency (DTMF) map of the user object.
+      description: Unified Messaging (UM) dual tone multi-frequency (DTMF) map of
+        the user object.
       type: String
     - contextPath: EWS.User.UpgradeDetails
       description: Upgrade details of the user object.
@@ -1617,7 +1740,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: The domain controller that's used by this cmdlet to read data from or write data to Active Directory. You identify the domain controller by its fully qualified domain name (FQDN). This argument is available only in on-premises Exchange.
+      description: The domain controller that's used by this cmdlet to read data from
+        or write data to Active Directory. You identify the domain controller by its
+        fully qualified domain name (FQDN). This argument is available only in on-premises
+        Exchange.
       name: domain_controller
       required: false
       secret: false
@@ -1629,7 +1755,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves information about the AuditBypassEnabled property value for user accounts (on-premises Exchange and the cloud) and computer accounts (on-premises Exchange only).
+    description: Retrieves information about the AuditBypassEnabled property value
+      for user accounts (on-premises Exchange and the cloud) and computer accounts
+      (on-premises Exchange only).
     execution: false
     name: ews-mailbox-audit-bypass-association-list
     outputs:
@@ -1690,13 +1818,15 @@ script:
     - contextPath: EWS.MailboxAuditBypassAssociation.WhenChanged
       description: The date the mailbox audit bypass association was changed.
     - contextPath: EWS.MailboxAuditBypassAssociation.WhenChangedUTC
-      description: The date in UTC of when the mailbox audit bypass association was changed.
+      description: The date in UTC of when the mailbox audit bypass association was
+        changed.
       type: Date
     - contextPath: EWS.MailboxAuditBypassAssociation.WhenCreated
       description: The date the mailbox audit bypass association was created.
       type: Date
     - contextPath: EWS.MailboxAuditBypassAssociation.WhenCreatedUTC
-      description: The date in UTC format of when the mailbox audit bypass association was created.
+      description: The date in UTC format of when the mailbox audit bypass association
+        was created.
       type: Date
   dockerimage: demisto/powershell-ubuntu:7.2.2.29705
   feed: false
