@@ -1013,11 +1013,70 @@ script:
     - contextPath: O365Defender.SafeLinks.AggregateReport.ReportId
       description: "The report id, unique for every run"
       type: Number
+  - name: o365-defender-safelinks-atp-policy-get
+    description: Get APT policy. In order to manage BlockURLs please use the command o365-defender-safelinks-global-url-blocklist.
+    deprecated: false
+    outputs:
+    - contextPath: O365Defender.SafeLinks.AtpPolicy.Name
+      description: ATP policy name.
+      type: String
+    - contextPath: O365Defender.SafeLinks.AtpPolicy.AdminDisplayName
+      description: ATP policy admin display name.
+      type: String
+    - contextPath: O365Defender.SafeLinks.AtpPolicy.EnableATPForSPOTeamsODB
+      description: ATP policy enable for SPOT teams.
+      type: String
+    - contextPath: O365Defender.SafeLinks.AtpPolicy.AllowSafeDocsOpen
+      description: ATP policy allow safe docs open.
+      type: String
+    - contextPath: O365Defender.SafeLinks.AtpPolicy.EnableSafeDocs
+      description: ATP policy enable safe docs.
+      type: String
+    - contextPath: O365Defender.SafeLinks.AtpPolicy.Identity
+      description: ATP policy id.
+      type: String
+    - contextPath: O365Defender.SafeLinks.AtpPolicy.IsValid
+      description: Is ATP policy valid.
+      type: String
+    - contextPath: O365Defender.SafeLinks.AtpPolicy.WhenCreatedUTC
+      description: When ATP policy created.
+      type: String
+    - contextPath: O365Defender.SafeLinks.AtpPolicy.WhenChangedUTC
+      description: When ATP policy changed.
+      type: String
+  - name: o365-defender-safelinks-atp-policy-set
+    description: Set ATP policy.
+    deprecated: false
+    arguments:
+    - name: allow_safe_docs_open
+      description: Toggle mode for allow open safe documents.
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: enable_atp_spo_teams_odb
+      description: Toggle mode for enable_atp_spo_teams_odb.
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: enable_safe_docs
+      description: Toggle mode for enable_safe_docs.
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
   isfetch: false
   runonce: false
   script: "-"
   type: powershell
   dockerimage: demisto/pwsh-exchange:1.0.0.34118
-fromversion: 6.0.0
+fromversion: 5.5.0
 tests:
 - No Test
