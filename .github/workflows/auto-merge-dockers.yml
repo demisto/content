@@ -4,8 +4,7 @@ on:
     types: [opened, reopened, labeled, edited, synchronize, assigned]
     branches:
       - 'demisto/**'
-
-  check_suite:
+  check_run:
     types: [ completed ]
 
 permissions:
