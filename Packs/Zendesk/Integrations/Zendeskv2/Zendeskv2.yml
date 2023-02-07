@@ -1175,7 +1175,7 @@ script:
   - name: zendesk-ticket-comment-list
     description: |-
       List comments for a given ticket.
-      Required: Agents.
+      Required permissions: Agents.
     arguments:
     - name: ticket_id
       required: true

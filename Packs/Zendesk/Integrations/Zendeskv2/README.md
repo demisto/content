@@ -547,7 +547,7 @@ There is no context output for this command.
 ### zendesk-ticket-comment-list
 ***
 List comments for a given ticket.
-Required: Agents.
+Required permissions: Agents.
 
 
 #### Base Command
