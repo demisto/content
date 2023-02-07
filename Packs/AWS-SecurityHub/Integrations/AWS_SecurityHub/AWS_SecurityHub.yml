@@ -3406,7 +3406,7 @@ script:
       secret: false
   - name: get-mapping-fields
     description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
-  dockerimage: demisto/boto3py3:1.0.0.44742
+  dockerimage: demisto/boto3py3:1.0.0.47407
   feed: false
   isfetch: true
   ismappable: true

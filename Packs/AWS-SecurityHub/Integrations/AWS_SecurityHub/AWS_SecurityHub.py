@@ -586,6 +586,25 @@ def build_severity_label_obj(label: str) -> List:
     return severity_label_obj
 
 
+def last_update_to_time(last_update: str) -> int:
+    """
+    Converting the lastUpdate string to int
+    Args:
+        last_update: str
+    Returns:
+        The int representing the date.
+    """
+    if last_update is None:
+        raise ValueError('Missing lastUpdate')
+    else:
+        date_time = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
+        if date_time is None:
+            raise ValueError('Invalid date.')
+        else:
+            demisto.debug('In last_update_to_time returning the result')
+            return int(date_time.timestamp())
+
+
 def disable_security_hub_command(client, args):
     kwargs = safe_load_json(args.get('raw_json', "{ }")) if args.get('raw_json') else {}
     response = client.disable_security_hub(**kwargs)
@@ -838,7 +857,7 @@ def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRe
     """
     remote_args = GetRemoteDataArgs(args)
     remote_incident_id = remote_args.remote_incident_id
-    last_update_time = int(dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'}).timestamp())
+    last_update_time = last_update_to_time(remote_args.last_update)
     demisto.debug(f'Performing get-remote-data command with incident id: {remote_incident_id} '
                   f'and last_update: {remote_args.last_update} and int {last_update_time=}')
 
@@ -855,7 +874,7 @@ def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRe
     finding = response.get('Findings')[0]  # a list with one dict in it
     demisto.debug(f'The finding is: {finding} \nEnd of finding')
     incident_last_update = finding.get('UpdatedAt', '')
-    incident_last_update_time = int(dateparser.parse(incident_last_update, settings={'TIMEZONE': 'UTC'}).timestamp())
+    incident_last_update_time = last_update_to_time(incident_last_update)
     demisto.debug(f'The incident last update time is: {incident_last_update}\nAnd {incident_last_update_time=}')
     demisto.debug(f'if {last_update_time} < {incident_last_update_time=}')
     if last_update_time < incident_last_update_time:
