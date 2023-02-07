@@ -16,8 +16,9 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 class Client:  # pragma: no cover
     def __init__(self, app_id: str, verify: bool, proxy: bool,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com', client_credentials: bool = False,
-                 tenant_id: str = None, enc_key: str = None):
-        if '@' in app_id:
+                 tenant_id: str = None, enc_key: str = None,
+                 managed_identities_client_id: Optional[str] = None):
+        if app_id and '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
             integration_context['current_refresh_token'] = refresh_token
@@ -31,7 +32,9 @@ class Client:  # pragma: no cover
             "verify": verify,
             "proxy": proxy,
             "tenant_id": tenant_id,
-            "enc_key": enc_key
+            "enc_key": enc_key,
+            "managed_identities_client_id": managed_identities_client_id,
+            "managed_identities_resource_uri": Resources.graph
         }
         if not client_credentials:
             args["scope"] = 'offline_access RoleManagement.ReadWrite.Directory'
@@ -865,17 +868,22 @@ def main():  # pragma: no cover
         args = demisto.args()
         handle_proxy()
         client = Client(
-            app_id=params['app_id'],
+            app_id=params.get('app_id'),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
             azure_ad_endpoint=params.get('azure_ad_endpoint',
                                          'https://login.microsoftonline.com') or 'https://login.microsoftonline.com',
             tenant_id=params.get("tenant_id"),
             client_credentials=params.get("client_credentials", False),
-            enc_key=(params.get('credentials') or {}).get('password')
+            enc_key=(params.get('credentials') or {}).get('password'),
+            managed_identities_client_id=get_azure_managed_identities_client_id(params)
         )
         if command == 'test-module':
-            return_results('The test module is not functional, run the msgraph-identity-auth-start command instead.')
+            if client.ms_client.managed_identities_client_id:
+                test_connection(client=client)
+                return_results('ok')
+            else:
+                return_results('The test module is not functional, run the msgraph-identity-auth-start command instead.')
         elif command == 'msgraph-identity-auth-start':
             return_results(start_auth(client))
         elif command == 'msgraph-identity-auth-complete':
