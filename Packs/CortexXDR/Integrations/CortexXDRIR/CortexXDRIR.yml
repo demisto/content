@@ -594,6 +594,9 @@ script:
       name: unassign_user
       predefined:
       - 'true'
+    - description: Add a comment to the incident.
+      name: add_comment
+      required: false
     description: Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
     name: xdr-update-incident
   - arguments:
@@ -3192,7 +3195,7 @@ script:
       type: Number
     arguments: []
     description: Provides information about the tenant.
-  dockerimage: demisto/python3:3.10.9.46032
+  dockerimage: demisto/python3:3.10.9.46807
   isfetch: true
   runonce: false
   script: ''
