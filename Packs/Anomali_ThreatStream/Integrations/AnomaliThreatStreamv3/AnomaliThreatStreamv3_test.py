@@ -968,10 +968,14 @@ def test_search_intelligence(mocker):
 def test_search_intelligence_with_confidence(mocker):
     """
 
-    Args:
-        mocker:
+    Given:
+        - Various parameters to search intelligence by
 
-    Returns:
+    When:
+        - Call search_intelligence command
+
+    Then:
+        - Validate the params passed correctly
 
     """
     mocked_ip_result = util_load_json('test_data/mocked_ip_response.json')
@@ -980,7 +984,6 @@ def test_search_intelligence_with_confidence(mocker):
     args = {'uuid': '9807794e-3de0-4340-91ca-cd82dd7b6d24',
             'confidence': 'lt 80'}
     client = mock_client()
-    # run
     search_intelligence(client, **args)
     http_call_args = client.http_request.call_args.kwargs.get('params')
     assert 'confidence' not in http_call_args
