@@ -32,57 +32,53 @@ ALERT_CONTEXT = {
 
 
 # Evaluate Criteria Tests #
-def test_evaluate_criteria_severity():
-    cond = {"field": "severity", "operator": "eq", "value": "LOW"}
-    assert evaluate_criteria(cond, ALERT_CONTEXT) is True
-
-    cond = {"field": "severity", "operator": "eq", "value": "HIGH"}
-    assert evaluate_criteria(cond, ALERT_CONTEXT) is False
-
-    alert_context = {"severity": None}
-    cond = {"field": "severity", "operator": "eq", "value": "MEDIUM"}
-    assert evaluate_criteria(cond, alert_context) is False
-
-
-def test_evaluate_criteria_ip():
-    cond = {"field": "ip", "operator": "eq", "value": "1.1.1.1"}
-    assert evaluate_criteria(cond, ALERT_CONTEXT) is True
-
-    cond = {"field": "ip", "operator": "eq", "value": "2.2.2.2"}
-    assert evaluate_criteria(cond, ALERT_CONTEXT) is False
-
-    alert_context = {"ip": None}
-    cond = {"field": "ip", "operator": "eq", "value": "1.1.1.1"}
-    assert evaluate_criteria(cond, alert_context) is False
+@pytest.mark.parametrize(
+    "test_condition, test_alert_context, expected_result",
+    [
+        ({"field": "severity", "operator": "eq", "value": "LOW"}, ALERT_CONTEXT, True),
+        ({"field": "severity", "operator": "eq", "value": "HIGH"}, ALERT_CONTEXT, False),
+        ({"field": "severity", "operator": "eq", "value": "MEDIUM"}, {"severity": None}, False),
+    ]
+)
+def test_evaluate_criteria_severity(test_condition, test_alert_context, expected_result):
+    assert evaluate_criteria(test_condition, test_alert_context) is expected_result
 
 
-def test_evaluate_criteria_tag():
-    cond = {"field": "tag", "operator": "eq", "value": "rdp_server"}
-    assert evaluate_criteria(cond, ALERT_CONTEXT) is True
-
-    cond = {"field": "tag", "operator": "eq", "value": "env"}
-    assert evaluate_criteria(cond, ALERT_CONTEXT) is True
-
-    cond = {"field": "tag", "operator": "eq", "value": "wrong"}
-    assert evaluate_criteria(cond, ALERT_CONTEXT) is False
-
-    alert_context = {"tag": None}
-    cond = {"field": "tag", "operator": "eq", "value": "rdp_server"}
-    assert evaluate_criteria(cond, alert_context) is False
+@pytest.mark.parametrize(
+    "test_condition, test_alert_context, expected_result",
+    [
+        ({"field": "ip", "operator": "eq", "value": "1.1.1.1"}, ALERT_CONTEXT, True),
+        ({"field": "ip", "operator": "eq", "value": "2.2.2.2"}, ALERT_CONTEXT, False),
+        ({"field": "ip", "operator": "eq", "value": "1.1.1.1"}, {"ip": None}, False),
+    ]
+)
+def test_evaluate_criteria_ip(test_condition, test_alert_context, expected_result):
+    assert evaluate_criteria(test_condition, test_alert_context) is expected_result
 
 
-def test_evaluate_criteria_provider():
-    cond = {"field": "provider", "operator": "eq", "value": "amazon web services"}
-    assert evaluate_criteria(cond, ALERT_CONTEXT) is True
+@pytest.mark.parametrize(
+    "test_condition, test_alert_context, expected_result",
+    [
+        ({"field": "tag", "operator": "eq", "value": "rdp_server"}, ALERT_CONTEXT, True),
+        ({"field": "tag", "operator": "eq", "value": "env"}, ALERT_CONTEXT, True),
+        ({"field": "tag", "operator": "eq", "value": "wrong"}, ALERT_CONTEXT, False),
+    ]
+)
+def test_evaluate_criteria_tag(test_condition, test_alert_context, expected_result):
+    assert evaluate_criteria(test_condition, test_alert_context) is expected_result
 
-    alert_context = {"provider": "Amazon Web Services"}
-    assert evaluate_criteria(cond, alert_context) is True
 
-    alert_context = {"provider": None}
-    assert evaluate_criteria(cond, alert_context) is False
-
-    cond = {"field": "provider", "operator": "eq", "value": "aws"}
-    assert evaluate_criteria(cond, ALERT_CONTEXT) is False
+@pytest.mark.parametrize(
+    "test_condition, test_alert_context, expected_result",
+    [
+        ({"field": "provider", "operator": "eq", "value": "amazon web services"}, ALERT_CONTEXT, True),
+        ({"field": "provider", "operator": "eq", "value": "amazon web services"}, {"provider": "Amazon Web Services"}, True),
+        ({"field": "provider", "operator": "eq", "value": "amazon web services"}, {"provider": None}, False),
+        ({"field": "provider", "operator": "eq", "value": "aws"}, ALERT_CONTEXT, False),
+    ]
+)
+def test_evaluate_criteria_provider(test_condition, test_alert_context, expected_result):
+    assert evaluate_criteria(test_condition, test_alert_context) is expected_result
 
 
 test_data = [
