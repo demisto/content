@@ -98,7 +98,7 @@ def create_context_data_search_tweets(response: dict) -> tuple[List[dict], str]:
                     'id': data_item.get('id'),
                     'text': data_item.get('text'),
                     'conversation_id': data_item.get('conversation_id'),
-                    'created_at': data_item.get('created_at', ''),
+                    'created_at': data_item.get('created_at'),
                     'edit_history_tweet_ids': data_item.get('edit_history_tweet_ids'),
                     'author': {'id': user.get('id'),
                                'description': user.get('description'),
