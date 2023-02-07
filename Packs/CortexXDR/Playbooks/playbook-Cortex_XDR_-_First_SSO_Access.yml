@@ -8,7 +8,6 @@ description: |-
   The playbook executes the following:
   - IP and User Enrichment.
   - User Investigation - Using 'User Investigation - Generic' sub-playbook.
-  - First SSO Access investigation - Using 'Cortex XDR - First SSO Investigation' sub-playbook.
   - Set alert's verdict - Using 'Cortex XDR - First SSO access - Set Verdict' sub-playbook.
   - Response based on the verdict.
 
@@ -35,7 +34,7 @@ tasks:
       {
         "position": {
           "x": 267.5,
-          "y": -1850
+          "y": -1820
         }
       }
     note: false
@@ -62,6 +61,10 @@ tasks:
       '#none#':
       - "111"
     scriptarguments:
+      extend-context:
+        simple: IPEnrichment=
+      ignore-outputs:
+        simple: "true"
       ip:
         complex:
           root: inputs.IPAddress
@@ -71,7 +74,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": -1570
+          "y": -1540
         }
       }
     note: false
@@ -93,19 +96,6 @@ tasks:
         complex:
           root: IP
           accessor: ASOwner
-    - incidentfield: Country Name
-      output:
-        complex:
-          root: IP.Geo
-          accessor: Country
-          transformers:
-          - operator: ConvertCountryCodeCountryName
-            args:
-              country_code:
-                value:
-                  simple: IP.Geo.Country
-                iscontext: true
-              country_name: {}
     - incidentfield: IP Reputation
       output:
         complex:
@@ -149,13 +139,11 @@ tasks:
       {
         "position": {
           "x": 267.5,
-          "y": -1715
+          "y": -1685
         }
       }
     note: false
-    timertriggers:
-    - fieldname: containmentsla
-      action: start
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -182,7 +170,7 @@ tasks:
       {
         "position": {
           "x": 267.5,
-          "y": 550
+          "y": 590
         }
       }
     note: false
@@ -190,102 +178,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
-    taskid: eb03838a-92b2-49da-8e86-7ce9f4076878
-    type: condition
-    task:
-      id: eb03838a-92b2-49da-8e86-7ce9f4076878
-      version: -1
-      name: Action based on verdict
-      description: A conditional task whose action path is determined by the verdict output from the 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      Malicious:
-      - "72"
-      Non-malicious:
-      - "76"
-      Suspicious:
-      - "155"
-      Suspicious - Ask the Manager:
-      - "88"
-    separatecontext: false
-    conditions:
-    - label: Malicious
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Verdict
-            iscontext: true
-          right:
-            value:
-              simple: Malicious
-          ignorecase: true
-        - operator: greaterThanOrEqual
-          left:
-            value:
-              complex:
-                root: DBotScore
-                accessor: Score
-            iscontext: true
-          right:
-            value:
-              simple: "3"
-    - label: Suspicious
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Verdict
-            iscontext: true
-          right:
-            value:
-              simple: Suspicious
-          ignorecase: true
-    - label: Suspicious - Ask the Manager
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Verdict
-            iscontext: true
-          right:
-            value:
-              simple: Suspicious - Ask the Manager
-          ignorecase: true
-    - label: Non-malicious
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Verdict
-            iscontext: true
-          right:
-            value:
-              simple: Non-malicious
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 267.5,
-          "y": 870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
   "72":
@@ -302,14 +194,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "135"
+      - "160"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 677.5,
-          "y": 1920
+          "x": 657.5,
+          "y": 2250
         }
       }
     note: false
@@ -339,14 +231,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -230,
-          "y": 3210
+          "x": -112.5,
+          "y": 3260
         }
       }
     note: false
-    timertriggers:
-    - fieldname: remediationsla
-      action: stop
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -359,7 +249,7 @@ tasks:
     task:
       id: 966c70ad-4d4f-4c65-8623-44b00208ff4b
       version: -1
-      name: Manually reset account password
+      name: Manually Block Account
       description: Manually disable the user account.
       type: regular
       iscommand: false
@@ -372,8 +262,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 2470
+          "x": 850,
+          "y": 2580
         }
       }
     note: false
@@ -390,14 +280,14 @@ tasks:
     task:
       id: bebf269a-0586-4094-89be-b1f6a2eccabf
       version: -1
-      name: Can the manager be contacted for the user location approval?
+      name: Are the manager contact details exist?
       description: Check if the manager can be contacted for the user location approval.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "155"
+      - "176"
       "yes":
       - "100"
     separatecontext: false
@@ -412,22 +302,12 @@ tasks:
             iscontext: true
           right:
             value: {}
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.ContactUserManager
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 20,
-          "y": 1220
+          "x": 527.5,
+          "y": 1240
         }
       }
     note: false
@@ -487,7 +367,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -1570
+          "y": -1540
         }
       }
     note: false
@@ -513,14 +393,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "155"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 20,
-          "y": 1420
+          "x": 720,
+          "y": 1410
         }
       }
     note: false
@@ -571,51 +451,6 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-  "110":
-    id: "110"
-    taskid: 9f56f01f-eed3-49b8-8f4c-587385bb735f
-    type: playbook
-    task:
-      id: 9f56f01f-eed3-49b8-8f4c-587385bb735f
-      version: -1
-      name: Cortex XDR - First SSO Investigation
-      description: |
-        This playbook performs an investigation to Cortex XDR - First SSO Access alerts, using queries to Okta.
-        Supported integration:
-        - Okta
-      playbookName: Cortex XDR - First SSO Investigation
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      ASN:
-        complex:
-          root: IP
-          accessor: ASN
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": -160,
-          "y": 20
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "111":
     id: "111"
     taskid: 3b6bc054-4584-41a4-80b6-7a4e2842b490
@@ -637,7 +472,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: greaterThanOrEqual
+      - - operator: isEqualNumber
           left:
             value:
               complex:
@@ -647,12 +482,13 @@ tasks:
           right:
             value:
               simple: "3"
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 267.5,
-          "y": -1390
+          "y": -1360
         }
       }
     note: false
@@ -683,11 +519,13 @@ tasks:
       {
         "position": {
           "x": -112.5,
-          "y": -1200
+          "y": -1170
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: containmentsla
+      action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -707,16 +545,16 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "110"
-      - "151"
-      - "149"
+      - "172"
+      - "173"
+      - "6"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 267.5,
-          "y": -120
+          "y": -290
         }
       }
     note: false
@@ -761,8 +599,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 677.5,
-          "y": 2780
+          "x": 647.5,
+          "y": 2760
         }
       }
     note: false
@@ -786,14 +624,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "76"
+      - "161"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1087.5,
-          "y": 3000
+          "x": 850,
+          "y": 2940
         }
       }
     note: false
@@ -818,7 +656,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "76"
+      - "161"
     scriptarguments:
       endpoint_id:
         complex:
@@ -829,8 +667,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 677.5,
-          "y": 3000
+          "x": 420,
+          "y": 2940
         }
       }
     note: false
@@ -878,8 +716,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 267.5,
-          "y": 190
+          "x": 37.5,
+          "y": 200
         }
       }
     note: false
@@ -939,60 +777,13 @@ tasks:
       {
         "position": {
           "x": -110,
-          "y": -310
+          "y": -450
         }
       }
     note: false
     timertriggers:
     - fieldname: containmentsla
       action: stop
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "135":
-    id: "135"
-    taskid: db18d648-79a7-4da7-8d47-8a978832252d
-    type: condition
-    task:
-      id: db18d648-79a7-4da7-8d47-8a978832252d
-      version: -1
-      name: The incident was contained?
-      description: Check if the incident was contained.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "160"
-      "yes":
-      - "116"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: containmentstatus
-            iscontext: true
-          right:
-            value:
-              simple: Contained
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 677.5,
-          "y": 2050
-        }
-      }
-    note: false
-    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -1027,8 +818,6 @@ tasks:
       '#none#':
       - "116"
     scriptarguments:
-      Tag:
-        simple: Bad Account
       UserVerification:
         simple: "True"
       Username:
@@ -1053,8 +842,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 917.5,
-          "y": 2470
+          "x": 430,
+          "y": 2580
         }
       }
     note: false
@@ -1072,20 +861,20 @@ tasks:
       id: 8c539bb2-beb6-48ca-8e19-aacf87e28277
       version: -1
       name: Manually reset account password
-      description: Manually disable the user account, or expire the user's password.
+      description: Manually expire the user's password.
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "148"
+      - "123"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -520,
-          "y": -670
+          "y": -640
         }
       }
     note: false
@@ -1110,7 +899,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "148"
+      - "123"
     scriptarguments:
       username:
         complex:
@@ -1130,7 +919,7 @@ tasks:
       {
         "position": {
           "x": -110,
-          "y": -670
+          "y": -640
         }
       }
     note: false
@@ -1195,79 +984,13 @@ tasks:
       {
         "position": {
           "x": -110,
-          "y": -900
+          "y": -870
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "148":
-    id: "148"
-    taskid: 5da3b2a6-5d1a-447d-811f-b8d42c667d57
-    type: playbook
-    task:
-      id: 5da3b2a6-5d1a-447d-811f-b8d42c667d57
-      version: -1
-      name: Block Account - Generic v2
-      description: |-
-        This playbook blocks malicious usernames using all integrations that you have enabled.
-
-        Supported integrations for this playbook:
-        * Active Directory
-        * PAN-OS - This requires PAN-OS 9.1 or higher.
-        * SailPoint
-        * PingOne
-        * AWS IAM
-        * Clarizen IAM
-        * Envoy IAM
-        * ExceedLMS IAM
-        * Okta
-      playbookName: Block Account - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "123"
-    scriptarguments:
-      Tag:
-        simple: Bad Account
-      UserVerification:
-        simple: "True"
-      Username:
-        complex:
-          root: inputs.Username
-          transformers:
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: \
-              fields:
-                value:
-                  simple: "2"
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": -110,
-          "y": -480
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1309,7 +1032,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 707.5,
+          "x": 490,
           "y": 20
         }
       }
@@ -1354,8 +1077,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 700,
-          "y": 380
+          "x": 490,
+          "y": 410
         }
       }
     note: false
@@ -1400,25 +1123,39 @@ tasks:
       '#none#':
       - "122"
     scriptarguments:
+      ASN:
+        complex:
+          root: IPEnrichment.data.attributes
+          accessor: asn
+          transformers:
+          - operator: LastArrayElement
       AzureSearchTime:
-        simple: ago(1d)
+        complex:
+          root: inputs.AzureSearchTime
       LoginCountry:
         complex:
           root: inputs.LoginCountry
       OktaSearch:
-        simple: "True"
+        complex:
+          root: inputs.OktaSearch
       QRadarSearchTime:
-        simple: Last 1 days
+        complex:
+          root: inputs.QRadarSearchTime
       SIEMFailedLogonSearch:
-        simple: "True"
+        complex:
+          root: inputs.SIEMFailedLogonSearch
       SplunkEarliestTime:
-        simple: -1d
+        complex:
+          root: inputs.SplunkEarliestTime
       SplunkIndex:
-        simple: '*'
+        complex:
+          root: inputs.SplunkIndex
       SplunkLatestTime:
-        simple: now
+        complex:
+          root: inputs.SplunkLatestTime
       ThreatLogSearch:
-        simple: "True"
+        complex:
+          root: inputs.ThreatLogSearch
       UserEmail:
         complex:
           root: ActiveDirectory.Users
@@ -1436,9 +1173,11 @@ tasks:
                 value:
                   simple: "2"
       XDRAlertSearch:
-        simple: "True"
+        complex:
+          root: inputs.XDRAlertSearch
       XDRUsernameField:
-        simple: actor_effective_username
+        complex:
+          root: inputs.XDRUsernameField
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1449,7 +1188,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 267.5,
+          "x": 37.5,
           "y": 20
         }
       }
@@ -1458,129 +1197,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "153":
-    id: "153"
-    taskid: 70e067bf-24ad-4e4c-83a1-f02c15654562
-    type: condition
-    task:
-      id: 70e067bf-24ad-4e4c-83a1-f02c15654562
-      version: -1
-      name: Based On the Analyst's decision,  is this a true positive?
-      description: A conditional task whose action path is determined by the analyst's decision.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "76"
-      "yes":
-      - "72"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Based on the investigation details, is this a true positive?.Answers
-                accessor: "0"
-            iscontext: true
-          right:
-            value:
-              simple: "Yes"
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 267.5,
-          "y": 1750
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 2
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "155":
-    id: "155"
-    taskid: 21a97dfc-be3f-46de-8591-bc77d7c6be9e
-    type: collection
-    task:
-      id: 21a97dfc-be3f-46de-8591-bc77d7c6be9e
-      version: -1
-      name: Analyst decision
-      description: |-
-        Ask for the Analyst.
-        The manager cannot be contacted, is this a true positive?
-      type: collection
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "153"
-    scriptarguments:
-      ignore-outputs:
-        simple: "false"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 267.5,
-          "y": 1590
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-        simple: Analyst
-      subject:
-        simple: Based on the investigation details, is this a true positive?
-      body:
-      methods:
-      - email
-      format: ""
-      bcc:
-      cc:
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-        completeafterv2: true
-        completeaftersla: false
-    form:
-      questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Based on the investigation details, is this a true positive?
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: multiSelect
-        options: []
-        optionsarg:
-        - simple: "Yes"
-        - simple: "No"
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
-      title: Based on the investigation details, is this a true positive?
-      description: ""
-      sender: ""
-      expired: false
-      totalanswers: 0
-    skipunavailable: false
-    quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
   "157":
@@ -1603,7 +1219,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "34"
+      - "177"
     scriptarguments:
       AlertName:
         complex:
@@ -1615,7 +1231,8 @@ tasks:
         complex:
           root: inputs.FailedlogonUserThreshold
       MaliciousVerdictThreshold:
-        simple: "2"
+        complex:
+          root: inputs.MaliciousVerdictThreshold
       NumOfFailedLogon:
         complex:
           root: NumOfFailedLogon
@@ -1638,10 +1255,11 @@ tasks:
         complex:
           root: RelatedCampaign
       SuspiciousVerdictThreshold:
-        simple: "1"
+        complex:
+          root: inputs.SuspiciousVerdictThreshold
       XDRRelatedAlertsThreshold:
         complex:
-          root: inputs.NumOfXdrAlertsThreshold
+          root: inputs.XDRRelatedAlertsThreshold
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -1653,7 +1271,7 @@ tasks:
       {
         "position": {
           "x": 267.5,
-          "y": 680
+          "y": 720
         }
       }
     note: false
@@ -1696,8 +1314,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 707.5,
-          "y": 190
+          "x": 490,
+          "y": 200
         }
       }
     note: false
@@ -1714,7 +1332,7 @@ tasks:
     task:
       id: cd6ce59e-5a6a-42be-8cc3-3d4a347e1368
       version: -1
-      name: Should the Account be disabled automatically?
+      name: Should reset the account password automatically?
       description: Checks if the account can be disabled and reset the account's password automatically based on the input's value. (inputs.AutomaticallyBlockAccount)
       type: condition
       iscommand: false
@@ -1732,7 +1350,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.AutomaticallyBlockAccount
+                root: inputs.AutomaticallyResetPassword
             iscontext: true
           right:
             value:
@@ -1743,7 +1361,7 @@ tasks:
       {
         "position": {
           "x": -110,
-          "y": -1080
+          "y": -1050
         }
       }
     note: false
@@ -1788,8 +1406,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 917.5,
-          "y": 2230
+          "x": 657.5,
+          "y": 2400
         }
       }
     note: false
@@ -1799,31 +1417,401 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+  "161":
+    id: "161"
+    taskid: fb47202f-856e-430d-8dee-a41e85cd522e
+    type: title
+    task:
+      id: fb47202f-856e-430d-8dee-a41e85cd522e
+      version: -1
+      name: Remediation Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "76"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 647.5,
+          "y": 3120
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: remediationsla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "163":
+    id: "163"
+    taskid: 45b89b57-833e-402d-8b3e-d283a47c595a
+    type: condition
+    task:
+      id: 45b89b57-833e-402d-8b3e-d283a47c595a
+      version: -1
+      name: Analyst decision - Is this a True positive?
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "179"
+      "Yes":
+      - "72"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 267.5,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: Based on the investigation details, is this a true positive?
+      body:
+        simple: Based on the investigation details, is this a true positive?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "172":
+    id: "172"
+    taskid: 09ad9e20-3152-4df7-87df-2f88b1931877
+    type: title
+    task:
+      id: 09ad9e20-3152-4df7-87df-2f88b1931877
+      version: -1
+      name: User Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "151"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 37.5,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "173":
+    id: "173"
+    taskid: 567a518f-c8a7-42a4-830e-fd3562d254da
+    type: title
+    task:
+      id: 567a518f-c8a7-42a4-830e-fd3562d254da
+      version: -1
+      name: TIM - Indicator Relationships Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "149"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "175":
+    id: "175"
+    taskid: 08371615-4227-429f-8592-27f91586fdd4
+    type: title
+    task:
+      id: 08371615-4227-429f-8592-27f91586fdd4
+      version: -1
+      name: Manager Engagment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "88"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 527.5,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "176":
+    id: "176"
+    taskid: 41605197-33c9-42fb-887c-f75de60fe41e
+    type: title
+    task:
+      id: 41605197-33c9-42fb-887c-f75de60fe41e
+      version: -1
+      name: Action Based On Verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "178"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 267.5,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "177":
+    id: "177"
+    taskid: e8f8bda5-9fed-45e8-8aa3-5473750b4fbc
+    type: condition
+    task:
+      id: e8f8bda5-9fed-45e8-8aa3-5473750b4fbc
+      version: -1
+      name: Should engage with the manager?
+      description: Whether to ask the user manager for the legitimacy of the login events, in case of a user logged in from an unusual country.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "176"
+      "yes":
+      - "175"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ContactUserManager
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious - Ask the Manager
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 267.5,
+          "y": 905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "178":
+    id: "178"
+    taskid: 1a78241d-7c98-432c-8b12-ea760f4b6f03
+    type: condition
+    task:
+      id: 1a78241d-7c98-432c-8b12-ea760f4b6f03
+      version: -1
+      name: Should run remediation actions?
+      description: Action based on verdict.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "179"
+      'Manual decision ':
+      - "163"
+      "yes":
+      - "72"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+          ignorecase: true
+    - label: 'Manual decision '
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious - Ask the Manager
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 267.5,
+          "y": 1730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "179":
+    id: "179"
+    taskid: 4352685a-1322-4a25-8271-3f726a7f0580
+    type: title
+    task:
+      id: 4352685a-1322-4a25-8271-3f726a7f0580
+      version: -1
+      name: False positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "76"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -112.5,
+          "y": 2250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "111_112_yes": 0.4,
       "111_115_#default#": 0.11,
+      "116_117_#default#": 0.64,
       "116_120_yes": 0.56,
       "147_146_yes": 0.63,
-      "153_72_yes": 0.43,
-      "153_76_#default#": 0.1,
-      "158_150_yes": 0.49,
+      "158_150_yes": 0.54,
+      "158_6_#default#": 0.35,
       "159_147_yes": 0.44,
       "160_143_yes": 0.56,
-      "34_155_Suspicious": 0.4,
-      "34_72_Malicious": 0.23,
-      "34_76_Non-malicious": 0.18,
-      "34_88_Suspicious - Ask the Manager": 0.62,
-      "88_100_yes": 0.51,
-      "88_155_#default#": 0.34
+      "160_79_#default#": 0.54,
+      "163_179_False positive": 0.46,
+      "163_72_True positive": 0.42,
+      "177_175_yes": 0.37,
+      "177_176_#default#": 0.16,
+      "178_179_#default#": 0.32,
+      "178_72_yes": 0.32,
+      "88_100_yes": 0.46,
+      "88_176_#default#": 0.25
     },
     "paper": {
       "dimensions": {
-        "height": 5125,
-        "width": 2230,
+        "height": 5145,
+        "width": 1750,
         "x": -520,
-        "y": -1850
+        "y": -1820
       }
     }
   }
@@ -1834,12 +1822,14 @@ inputs:
   required: false
   description: Whether to isolate the endpoint automatically.
   playbookInputQuery:
-- key: NumOfXdrAlertsThreshold
+- key: XDRRelatedAlertsThreshold
   value:
     simple: "3"
   required: false
-  description: |-
-    The 'XDR related alerts' threshold to determine the 'Check for XDR related alerts' check result in the 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook.
+  description: |2-
+
+    This is the minimum threshold for XDR related alerts based on user activity to identify suspicious activity.
+    example: If this input is set to '3', and the 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook has found 4 XDR related alerts - It will classify this check as suspicious activity.
     The default value is '3'.
   playbookInputQuery:
 - key: FailedlogonUserThreshold
@@ -1847,7 +1837,8 @@ inputs:
     simple: "30"
   required: false
   description: |-
-    The 'Failed login' threshold to determine the 'Check for massive failed logon' check result in the 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook.
+    This is the minimum threshold for failed login attempts by the user.
+    example: If this input is set to '30', and the 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook has found 31 failed login attempts - It will classify this check as suspicious activity.
     The default value is '30'.
   playbookInputQuery:
 - key: FailedlogonFromASNThreshold
@@ -1855,7 +1846,8 @@ inputs:
     simple: "20"
   required: false
   description: |-
-    The 'Failed login from ASN' threshold to determine the 'Check for massively failed logon from the ASN' check result in the 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook.
+    This is the minimum threshold for failed login attempts from ASN.
+    example: If this input is set to '20', and the 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook has found 21 failed login attempts from ASN - It will classify this check as suspicious activity.
     The default value is '20'.
   playbookInputQuery:
 - key: EndpointID
@@ -1871,7 +1863,7 @@ inputs:
 - key: IPAddress
   value: {}
   required: false
-  description: IP address.
+  description: IP Address from the XDR Alert.
   playbookInputQuery:
 - key: AlertID
   value: {}
@@ -1887,18 +1879,102 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Whether to block the account and reset the password automatically.
+  description: Whether to block the account automatically.
   playbookInputQuery:
 - key: ContactUserManager
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: Whether to ask the user manager for the legitimacy of the login events, in case of a user logged in from an unusual country.
   playbookInputQuery:
 - key: AlertName
   value: {}
   required: false
-  description: Alert name.
+  description: Alert Name.
+  playbookInputQuery:
+- key: MaliciousVerdictThreshold
+  value:
+    simple: "2"
+  required: false
+  description: |-
+    The 'Malicious verdict' threshold to determine a malicious verdict.
+    The default value is '2'.
+    Should be Greater than the "SuspiciousVerdictThreshold" input.
+  playbookInputQuery:
+- key: SuspiciousVerdictThreshold
+  value:
+    simple: "1"
+  required: false
+  description: |-
+    The 'Suspicious verdict' threshold to determine a suspicious verdict.
+    The default value is '1'.
+    Should be lower than the "MaliciousVerdictThreshold" input.
+  playbookInputQuery:
+- key: SplunkIndex
+  value:
+    simple: '*'
+  required: false
+  description: Splunk's index name in which to search. Default is "*" - All.
+  playbookInputQuery:
+- key: SplunkEarliestTime
+  value:
+    simple: -1d
+  required: false
+  description: The earliest time for the Splunk search query.
+  playbookInputQuery:
+- key: SplunkLatestTime
+  value:
+    simple: now
+  required: false
+  description: The latest time for the Splunk search query.
+  playbookInputQuery:
+- key: QRadarSearchTime
+  value:
+    simple: Last 1 days
+  required: false
+  description: 'The Search Time for the QRadar search query. for example:  Last 1 days'
+  playbookInputQuery:
+- key: AzureSearchTime
+  value:
+    simple: ago(1d)
+  required: false
+  description: 'The Search Time for the Azure Log Analytics search query. for example: ago(1d)'
+  playbookInputQuery:
+- key: SIEMFailedLogonSearch
+  value:
+    simple: "True"
+  required: false
+  description: Whether to search for failed logon logs from Siem? Can be False or True.
+  playbookInputQuery:
+- key: ThreatLogSearch
+  value:
+    simple: "True"
+  required: false
+  description: Whether to search for threat logs from PAN-OS? Can be False or True.
+  playbookInputQuery:
+- key: XDRAlertSearch
+  value:
+    simple: "True"
+  required: false
+  description: Whether to search for Related alerts from XDR? Can be False or True.
+  playbookInputQuery:
+- key: OktaSearch
+  value:
+    simple: "True"
+  required: false
+  description: Whether to search for logs from Okta? Can be False or True.
+  playbookInputQuery:
+- key: XDRUsernameField
+  value:
+    simple: actor_effective_username
+  required: false
+  description: Cortex XDR User name Field.
+  playbookInputQuery:
+- key: AutomaticallyResetPassword
+  value:
+    simple: "False"
+  required: false
+  description: Whether to reset the account password automatically.
   playbookInputQuery:
 outputs: []
 tests:
