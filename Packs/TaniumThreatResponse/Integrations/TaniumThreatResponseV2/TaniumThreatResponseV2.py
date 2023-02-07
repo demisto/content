@@ -270,7 +270,6 @@ def normalize_api_response(raw_response):
         :rtype: ``dict or list``
 
     """
-    # with version 4.x of the api, the response is returnd within a data dict
     return raw_response.get('data', raw_response) if type(raw_response) is dict else raw_response
 
 
@@ -288,7 +287,7 @@ def get_intel_doc_item(intel_doc: dict) -> dict:
         :rtype: ``dict``
 
     """
-    intel_doc_data = normalize_api_response(intel_doc) # 4.x version parses info in a data dict into the intel_doc dict
+    intel_doc_data = normalize_api_response(intel_doc)  # 4.x version parses info in a data dict into the intel_doc dict
     return {
         'ID': intel_doc_data.get('id'),
         'Name': intel_doc_data.get('name'),
@@ -403,7 +402,7 @@ def alarm_to_incident(client, alarm):  # pragma: no cover
         raw_response = client.do_request('GET', '/plugin/products/'
                                                 f'{client.get_threat_response_endpoint()}'
                                                 f'/api/v1/intels/{intel_doc_id}')
-        raw_response_data = raw_response.get('data', raw_response)
+        raw_response_data = normalize_api_response(raw_response)
         intel_doc = raw_response_data.get('name')
         alarm['intelDocDetails'] = raw_response_data
         intel_doc_labels = []
@@ -592,9 +591,7 @@ def get_intel_docs(client: Client, data_args: dict) -> Tuple[str, dict, Union[li
     intel_docs = []
     intel_doc = {}
 
-    if client.api_version == '4.x':
-        raw_response = raw_response.get('data')
-
+    raw_response = normalize_api_response(raw_response)
     # append raw response to a list in case raw_response is a dictionary
     tmp_list = [raw_response] if type(raw_response) is dict else raw_response
     for item in tmp_list:
@@ -817,7 +814,7 @@ def update_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
         raw_response = client.do_request('GET', '/plugin/products/'
                                                 f'{client.get_threat_response_endpoint()}'
                                                 f'/api/v1/intels/{id_}')
-        raw_response_data = raw_response.get('data') if client.api_version == "4.x" else raw_response
+        raw_response_data = normalize_api_response(raw_response)
         intrinsic_id = raw_response_data.get('intrinsicId')
     # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
     # with a "Not Found" message.
@@ -880,7 +877,7 @@ def start_quick_scan(client, data_args):
     # get computer group ID from computer group name
     computer_group_name = data_args.get('computer_group_name')
     raw_response = client.do_request('GET', f"/api/v2/groups/by-name/{computer_group_name}")
-    raw_response_data = raw_response.get('data')
+    raw_response_data = normalize_api_response(raw_response)
     if not raw_response_data:
         msg = f'No group exists with name {computer_group_name} or' \
               f' your account does not have sufficient permissions to access the groups'
@@ -1003,7 +1000,7 @@ def get_alerts(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
                                             f'/api/v1/alerts/', params=params)
 
     alerts = []
-    raw_response_data = raw_response.get("data") if client.api_version == '4.x' else raw_response
+    raw_response_data = normalize_api_response(raw_response)
     for item in raw_response_data:
         alert = get_alert_item(item)
         alerts.append(alert)
@@ -1407,7 +1404,7 @@ def get_label(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
                                             f'{client.get_threat_response_endpoint()}'
                                             f'/api/v1/labels/{label_id}')
 
-    raw_response_data = raw_response.get("data", raw_response)
+    raw_response_data = normalize_api_response(raw_response)
     context = createContext(raw_response_data, removeNull=True)
     outputs = {'Tanium.Label(val.id && val.id === obj.id)': context}
     headers = ['name', 'description', 'id', 'indicatorCount', 'signalCount', 'createdAt', 'updatedAt']
