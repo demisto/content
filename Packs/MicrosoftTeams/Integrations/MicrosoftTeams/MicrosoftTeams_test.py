@@ -1736,7 +1736,9 @@ def test_channel_user_list_command(mocker):
     results_outputs = return_results.call_args[0][0].outputs
     assert results_hr == expected_hr_user_list
     [member.pop('@odata.type', None) for member in get_channel_members_expected_response]
-    assert results_outputs == get_channel_members_expected_response
+    expected_outputs = {'channelName': "Test Channel", "channelId": channel_id,
+                        'members': get_channel_members_expected_response}
+    assert results_outputs == expected_outputs
 
 
 def test_get_channel_members(requests_mock):
@@ -1803,9 +1805,8 @@ def test_user_remove_from_channel_command(mocker, requests_mock, channel_type, e
         assert results_hr == 'The user "itayadmin" has been removed from channel "test channel" successfully.'
 
 
-# TODO
 # All the responses based on: https://learn.microsoft.com/en-us/graph/api/
-test_data = load_test_data('./test_data/chat_responses_and_requests.json')
+test_data = load_test_data('./test_data/chats_test_data.json')
 
 
 def test_chat_create_command(mocker):
@@ -1860,8 +1861,7 @@ def test_creat_chat(mocker, requests_mock, chat_type, users, expected_request_js
         'https://graph.microsoft.com/v1.0/chats',
         json=chat_response
     )
-    create_chat(chat_type, users,
-                "Group chat title")  # the chat name will not be used in oneOnOne chats (Only available for group chats.)
+    create_chat(chat_type, users, "Group chat title")  # the chat name will not be used in oneOnOne chats - only in group
 
     assert requests_mock.request_history[0].json() == test_data.get(expected_request_json)
 
@@ -1897,7 +1897,8 @@ def test_message_send_to_chat_command(mocker, requests_mock):
     results_outputs = return_results.call_args[0][0].outputs
     assert results_hr == test_data.get('expected_hr_send_message')
     mock_response.pop('@odata.context', '')
-    assert results_outputs == mock_response
+    expected_outputs = {'chatId': GROUP_CHAT_ID, 'messages': mock_response}
+    assert results_outputs == expected_outputs
 
 
 def test_chat_member_list_command(mocker, requests_mock):
@@ -1915,15 +1916,15 @@ def test_chat_member_list_command(mocker, requests_mock):
     mocker.patch.object(demisto, 'args', return_value={"chat": ONEONONE_CHAT_ID})
     return_results = mocker.patch('MicrosoftTeams.return_results')
 
-    chat_members = test_data.get('list_members')
+    mock_response = test_data.get('list_members')
     expected_hr_chat_member_list = test_data.get('expected_hr_chat_member_list')
-    get_chat_members_expected_response = chat_members.get('value', [])
+    get_chat_members_expected_response = mock_response.get('value', [])
 
     mocker.patch('MicrosoftTeams.get_chat_id_and_type', return_value=(ONEONONE_CHAT_ID, 'oneOnOne'))
 
     requests_mock.get(
         f'{GRAPH_BASE_URL}/v1.0/chats/{ONEONONE_CHAT_ID}/members',
-        json=chat_members
+        json=mock_response
     )
     chat_member_list_command()
 
@@ -1931,7 +1932,8 @@ def test_chat_member_list_command(mocker, requests_mock):
     results_outputs = return_results.call_args[0][0].outputs
     assert results_hr == expected_hr_chat_member_list
     [member.pop('@odata.type', None) for member in get_chat_members_expected_response]
-    assert results_outputs == get_chat_members_expected_response
+    expected_outputs = {'chatId': ONEONONE_CHAT_ID, 'members': get_chat_members_expected_response}
+    assert results_outputs == expected_outputs
 
 
 @pytest.mark.parametrize('chat_id, chat_type, expected_exception',
@@ -1968,61 +1970,162 @@ def test_chat_update_command(mocker, requests_mock, chat_id, chat_type, expected
         assert requests_mock.request_history[0].method == 'PATCH'
         assert requests_mock.request_history[0].json() == {'topic': 'XsoarChat'}
         results_hr = return_results.call_args[0][0]
-        assert results_hr == f"The chat '{chat_id}' name has been successfully changed to 'XsoarChat'."
+        assert results_hr == f"The name of chat '{chat_id}' has been successfully changed to 'XsoarChat'."
 
 
-# @pytest.mark.parametrize('chat_id, chat_type, expected_exception, member',
-#                          [(GROUP_CHAT_ID, "group", False, '), (ONEONONE_CHAT_ID, 'oneOnOne', True)])
-# def test_chat_add_user_command(mocker, chat_id, chat_type, ):
-#     """
-#     Given:
-#       - The command arguments:
-#     When:
-#       - Executing the 'microsoft-teams-chat-add-user' command.
-#     Then:
-#       - Assert the request url is as expected
-#       - Verify human-readable output
-#     """
-#     from MicrosoftTeams import chat_add_user_command
+@pytest.mark.parametrize("chat, member, expected_exit, expected_warning, expected_result, mocked_get_user", [
+    ('group', 'user1', False, None, 'The User "user1" has been added to chat "group" successfully.',
+     [[{'id': 1, 'userType': 'Member'}]]),
+    ('group', 'user1,user2', False, None, 'The Users "user1, user2" have been added to chat "group" successfully.',
+     [[{'id': 1, 'userType': 'Member'}], [{'id': 2, 'userType': 'Member'}]]),
+    ('group', 'user1,unknown', False, 'The following members were not found: unknown',
+     'The User "user1" has been added to chat "group" successfully.', [[{'id': 1, 'userType': 'Member'}], []]),
+    ('group', 'unknown1,unknown2', True, 'The following members were not found: unknown1, unknown2',
+     None, [[], []]),
+    ('oneOnOne', 'user1', True, ValueError, "Adding a member is allowed only on group chat.", []),
+])
+def test_chat_add_user_command(mocker, chat, member, expected_exit, expected_warning, expected_result, mocked_get_user):
+    """
+    Given:
+      - Adding a single member to a group chat
+      - Adding multiple members to a group chat
+      - Adding a non-existing member to a group chat
+      - Adding multiple non-existing members to a group chat
+      - Adding a member to a oneOnOne chat
+    When:
+      - Executing the 'microsoft-teams-chat-add-user' command.
+    Then:
+      - verify that the relevant functions are called correctly based on the inputs and expected results.
+      - checks if the correct warning or result is returned, or if the correct exception is raised,
+        based on the inputs and expected outcomes.
+    """
+    import MicrosoftTeams
+    from MicrosoftTeams import chat_add_user_command
+    mocker.patch.object(demisto, 'args', return_value={'chat': chat, 'member': member})
+    mocker.patch.object(demisto, 'results')
+    warning = mocker.patch.object(MicrosoftTeams, 'return_warning')
+
+    get_chat_id_and_type_mock = mocker.patch('MicrosoftTeams.get_chat_id_and_type',
+                                             return_value=(chat, chat.split('-')[0]))
+    get_user_mock = mocker.patch('MicrosoftTeams.get_user', side_effect=mocked_get_user)
+    add_user_to_chat_mock = mocker.patch('MicrosoftTeams.add_user_to_chat')
+
+    if expected_warning == ValueError:
+        with pytest.raises(ValueError) as e:
+            chat_add_user_command()
+        assert str(e.value) == expected_result
+
+    else:
+        chat_add_user_command()
+        if expected_warning:
+            warning.assert_called_once_with(expected_warning, exit=expected_exit)
+        if expected_result:
+            demisto.results.assert_called_once_with(expected_result)
+
+    get_chat_id_and_type_mock.assert_called_once_with(chat)
+    if not expected_warning:
+        get_user_mock.assert_called()
+        add_user_to_chat_mock.assert_called()
 
 
-# def test_chat_list_command():
-#     """
-#     Given:
-#       - The command arguments:
-#     When:
-#       - Executing the 'microsoft-teams-chat-list' command.
-#     Then:
-#       - Assert the request url is as expected
-#       - Verify human-readable output
-#     """
-#     from MicrosoftTeams import chat_list_command
-#     req = "GET https://graph.microsoft.com/v1.0/users/8b081ef6-4792-4def-b2c9-c363a1bf41d5/chats?$expand=members"
+def test_add_user_to_chat(requests_mock):
+    """
+    Given:
+      - The command arguments
+    When:
+      - Calling the add_user_to_chats function
+    Then:
+      - Ensure expected request body is sent
+    """
+    from MicrosoftTeams import add_user_to_chat
+    expected_request_json = test_data.get('add_member_request')
+
+    requests_mock.post(
+        f'https://graph.microsoft.com/v1.0/chats/{GROUP_CHAT_ID}/members',
+        status_code=201
+    )
+    add_user_to_chat(GROUP_CHAT_ID, 'Member', '8b081ef6-4792-4def-b2c9-c363a1bf41d5', True)
+    assert requests_mock.request_history[0].json() == expected_request_json
 
 
-# def test_chat_message_list_command():
-#     """
-#     Given:
-#       - The command arguments:
-#     When:
-#       - Executing the 'microsoft-teams-chat-message-list' command.
-#     Then:
-#       - Assert the request url is as expected
-#       - Verify human-readable output
-#     """
-#     from MicrosoftTeams import chat_message_list_command
-#      req = "GET https://graph.microsoft.com/v1.0/chats/19:2da4c29f6d7041eca70b638b43d45437@thread.v2
-#      /messages?$top=2&$orderBy=createdDateTime desc"
+@pytest.mark.parametrize(
+    "args, expected_response, expected_request_url, expected_outputs",
+    [
+        ({"chat": "test group 1", "filter": "test_filter"}, ValueError, "", ""),
+        ({"chat": "test group 1"},
+         'get_chat', "https://graph.microsoft.com/v1.0/chats/19%3A2da4c29f6d7041eca70b638b43d45437%40thread.v2",
+         'expected_outputs_get_chat'),
+        ({"limit": 3}, 'list_chats', "https://graph.microsoft.com/v1.0/chats/", 'expected_outputs_list_chats'),
+        ({"expand": 'members', "limit": 3}, 'list_chats_with_members',
+         "https://graph.microsoft.com/v1.0/chats/?%24expand=members&%24top=3",
+         'expected_outputs_list_chats_with_members'),
+        ({"expand": 'lastMessagePreview', "limit": 3}, 'list_chats_with_lastMessagePreview',
+         "https://graph.microsoft.com/v1.0/chats/?%24expand=lastMessagePreview&%24top=3",
+         'expected_outputs_list_chats_with_lastMessagePreview'),
+        ({"limit": 3}, 'list_chats', "https://graph.microsoft.com/v1.0/chats/?%24top=3", 'expected_outputs_list_chats'),
+        ({}, 'list_chats', "https://graph.microsoft.com/v1.0/chats/?%24top=50", 'expected_outputs_list_chats'),
+        ({"next_link": "https://graph.microsoft.com/v1.0/chats/test_next_link", "page_size": 3},
+         'list_chats', "https://graph.microsoft.com/v1.0/chats/test_next_link", 'expected_outputs_list_chats'),
+    ]
+)
+def test_chat_list_command(mocker, requests_mock, args, expected_response, expected_request_url, expected_outputs):
+    """
+    Given:
+      - The command arguments
+    When:
+      - Executing the 'microsoft-teams-chat-list' command.
+    Then:
+      - Assert the request url is as expected
+      - Verify that the context is as expected
+    """
+    from MicrosoftTeams import chat_list_command
+
+    mocker.patch('MicrosoftTeams.get_chat_id_and_type', return_value=(GROUP_CHAT_ID, 'group'))
+    return_results = mocker.patch('MicrosoftTeams.return_results')
+    mocker.patch.object(demisto, 'args', return_value=args)
+
+    if expected_response == ValueError:
+        with pytest.raises(ValueError):
+            chat_list_command()
+    else:
+        requests_mock.get(
+            expected_request_url,
+            json=test_data.get(expected_response)
+        )
+        chat_list_command()
+        assert return_results.call_args[0][0].outputs == test_data.get(expected_outputs)
 
 
-# def test_get_chat_id_and_type():
-#     """
-#     Given:
-#       - The command arguments:
-#     When:
-#       - Calling the get_chat_id_and_type function
-#     Then:
-#       - Assert the request url is as expected
-#       - Verify human-readable output
-#     """
-#     from MicrosoftTeams import get_chat_id_and_type
+@pytest.mark.parametrize(
+    "args, expected_response, expected_request_url, expected_outputs",
+    [
+        ({"limit": 2, "order_by": "createdDateTime"}, 'list_messages',
+         f'https://graph.microsoft.com/v1.0/chats/{GROUP_CHAT_ID}/messages?$top=2&$orderBy=createdDateTime desc',
+         'expected_outputs_list_messages'),
+        ({"next_link": "https://graph.microsoft.com/v1.0/chats/test_next_link", "page_size": 2},
+         'list_messages', "https://graph.microsoft.com/v1.0/chats/test_next_link", 'expected_outputs_list_messages'),
+
+    ]
+)
+def test_chat_message_list_command(mocker, requests_mock, args, expected_response, expected_request_url,
+                                   expected_outputs):
+    """
+    Given:
+      - The command arguments
+    When:
+      - Executing the 'microsoft-teams-chat-message-list' command.
+    Then:
+      - Assert the request url is as expected
+      - Verify that the context is as expected
+    """
+    from MicrosoftTeams import chat_message_list_command
+    mocker.patch('MicrosoftTeams.get_chat_id_and_type', return_value=(GROUP_CHAT_ID, 'group'))
+    return_results = mocker.patch('MicrosoftTeams.return_results')
+    mocker.patch.object(demisto, 'args', return_value=args)
+
+    requests_mock.get(
+        expected_request_url,
+        json=test_data.get(expected_response)
+    )
+    chat_message_list_command()
+    assert return_results.call_args[0][0].outputs == test_data.get(expected_outputs)

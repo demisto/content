@@ -68,7 +68,7 @@ CHANNEL_SPECIAL_MARKDOWN_HEADERS: dict = {
 }
 
 CHAT_SPECIAL_MARKDOWN_HEADERS: dict = {
-    'id': 'Chat id',
+    'id': 'Chat Id',
     'topic': 'Chat name',
     'webUrl': 'webUrl',
     'roles': 'User roles',
@@ -813,7 +813,6 @@ def get_chat_id_and_type(chat: str) -> Tuple[str, str]:
     :return: chat_id, chat_type
     """
     demisto.debug(f'Given chat: {chat}')
-
     url: str = f"{GRAPH_BASE_URL}/v1.0/chats/"
 
     # case1 - chat = chat_id
@@ -826,7 +825,7 @@ def get_chat_id_and_type(chat: str) -> Tuple[str, str]:
     # case2 - chat = chat_name (topic) in case of "group" chat_type
     params = {'$filter': f"topic eq '{chat}'", '$select': 'id, chatType', '$top': MAX_ITEMS_PER_RESPONSE}
     chats_response = cast(Dict[Any, Any], http_request('GET', url, params=params))
-    chats = pages_puller(chats_response)
+    chats, _ = pages_puller(chats_response)
     if chats and chats[0]:
         demisto.debug(f"Received chat's topic as chat: {chat=}")
         return chats[0].get('id', ''), chats[0].get('chatType', '')
@@ -835,7 +834,7 @@ def get_chat_id_and_type(chat: str) -> Tuple[str, str]:
     # Check if the given "chat" argument is representing an existing member
     user_data: list = get_user(chat)
     if not (user_data and user_data[0].get('id')):
-        raise ValueError(f'Could not find requested "{chat}" chat.')
+        raise ValueError(f'Could not find chat: {chat}')
     demisto.debug(f"Received member as chat: {chat=}")
     # Find the chat_id in case of 'oneOnOne' chat by calling "create_chat"
     # If a one-on-one chat already exists, this operation will return the existing chat and not create a new one
@@ -1102,11 +1101,13 @@ def add_user_to_chat(chat_id: str, user_type: str, user_id: str, share_history: 
     http_request('POST', url, json_=request_json)
 
 
-def pages_puller(response: Dict[str, Any], limit: int = 1) -> list:
+def pages_puller(response: Dict[str, Any], limit: int = 1) -> Tuple[list, str]:
     """
+    Retrieves a limited number of pages by repeatedly making requests to the API using the nextLink URL
+    until it has reached the specified limit or there are no more pages to retrieve,
     :param response: response body, contains collection of chat/message objects
     :param limit: the requested limit
-    :return: the limited response_data
+    :return: tuple of the limited response_data and the last nextLink URL.
     """
 
     response_data = response.get('value', [])
@@ -1117,7 +1118,7 @@ def pages_puller(response: Dict[str, Any], limit: int = 1) -> list:
         response = cast(Dict[str, Any], http_request('GET', next_link))
         response_data.extend(response.get('value', []))
     demisto.debug(f'The limited response contains: {len(response_data[:limit])}')
-    return response_data[:limit]
+    return response_data[:limit], next_link
 
 
 def get_chats_list(odata_params: dict, chat_id: Optional[str] = None) -> Dict[str, Any]:
@@ -1271,9 +1272,9 @@ def channel_user_list_command():
             headers=['userId', 'email', 'tenantId', 'id', 'roles', 'displayName', 'visibleHistoryStartDateTime'],
             headerTransform=lambda h: CHANNEL_SPECIAL_MARKDOWN_HEADERS.get(h, pascalToSpace(h)),
         ),
-        outputs_prefix=f'MicrosoftTeams.ChannelMembers.{channel_name}',
-        outputs_key_field='id',
-        outputs=channel_members
+        outputs_prefix='MicrosoftTeams.ChannelList',
+        outputs_key_field='channelId',
+        outputs={'members': channel_members, 'channelName': channel_name, 'channelId': channel_id}
     )
     return_results(result)
 
@@ -1296,26 +1297,29 @@ def chat_create_command():
             invalid_members.append(member)
         else:
             users.append((user_data[0].get('id'), user_data[0].get('userType')))
+
     if invalid_members:
         return_warning(f'The following members were not found: {", ".join(invalid_members)}')
     if chat_type == 'oneOnOne' and len(users) != 1:
-        raise ValueError(
-            "Creation of 'oneOnOne' chat requires 2 members. Please enter one 'member'.")
+        raise ValueError("Creation of 'oneOnOne' chat requires 2 members. Please enter one 'member'.")
 
     chat_data: dict = create_chat(chat_type, users, chat_name)
     chat_data.pop('@odata.context', '')
-    hr_title = f'The chat {chat_name} was created successfully' if chat_type == 'group' else \
+    chat_data['chatId'] = chat_data.pop('id', '')
+
+    hr_title = f"The chat '{chat_name}' was created successfully" if chat_type == 'group' else \
         f'The chat with "{members[0]}" was created successfully'
+
     result = CommandResults(
         readable_output=tableToMarkdown(
             hr_title,
             chat_data,
-            headers=['id', 'topic', 'createdDateTime', 'lastUpdatedDateTime', 'webUrl', 'tenantId'],
+            headers=['chatId', 'topic', 'createdDateTime', 'lastUpdatedDateTime', 'webUrl', 'tenantId'],
             url_keys=['webUrl'],
             headerTransform=lambda h: CHAT_SPECIAL_MARKDOWN_HEADERS.get(h, pascalToSpace(h)),
         ),
-        outputs_prefix='MicrosoftTeams.ChatInfo',
-        outputs_key_field='id',
+        outputs_prefix='MicrosoftTeams.ChatList',
+        outputs_key_field='chatId',
         outputs=chat_data
     )
     return_results(result)
@@ -1340,9 +1344,9 @@ def message_send_to_chat_command():
             hr,
             removeNull=True
         ),
-        outputs_prefix='MicrosoftTeams.ChatMessage',
-        outputs_key_field='id',
-        outputs=message_data
+        outputs_prefix='MicrosoftTeams.ChatList',
+        outputs_key_field='chatId',
+        outputs={"messages": message_data, "chatId": chat_id}
     )
     return_results(result)
 
@@ -1384,23 +1388,23 @@ def chat_add_user_command():
     chat: str = demisto.args().get('chat', '')
     chat_id, chat_type = get_chat_id_and_type(chat)
     if chat_type != 'group':
-        raise ValueError("Adding a member is allowed only on group Chat.")
-    members: set = set(argToList(demisto.args().get('member', '')))
+        raise ValueError("Adding a member is allowed only on group chat.")
+    members: list = argToList(demisto.args().get('member', ''))
     share_history = argToBoolean(demisto.args().get('share_history', True))
 
-    invalid_members = set()
+    invalid_members, hr_members = [], []
     for member in members:
         user_data: list = get_user(member)
         if not (user_data and user_data[0].get('id')):
-            invalid_members.add(member)
+            invalid_members.append(member)
         else:
             add_user_to_chat(chat_id, user_data[0].get('userType'), user_data[0].get('id'), share_history)
+            hr_members.append(member)
 
     if invalid_members:
         return_warning(f'The following members were not found: {", ".join(invalid_members)}',
                        exit=len(members) == len(invalid_members))
 
-    hr_members = members - invalid_members
     hr: str = f'The Users "{", ".join(hr_members)}" have been added to chat "{chat}" successfully.' \
         if len(hr_members) > 1 else f'The User "{", ".join(hr_members)}" has been added to chat "{chat}" successfully.'
     demisto.results(hr)
@@ -1413,24 +1417,36 @@ def chat_message_list_command():
     args = demisto.args()
     chat = args.get('chat')
     chat_id, _ = get_chat_id_and_type(chat)
+    next_link = args.get('next_link', '')
+
     limit = arg_to_number(args.get('limit')) or MAX_ITEMS_PER_RESPONSE
-    messages_list_response: dict = get_messages_list(chat_id=chat_id,
-                                                     odata_params={'$orderBy': args.get('order_by') + " desc",
-                                                                   '$top': MAX_ITEMS_PER_RESPONSE})
-    messages_data = pages_puller(messages_list_response, limit)
+    page_size = arg_to_number(args.get('page_size')) or MAX_ITEMS_PER_RESPONSE
+
+    top = MAX_ITEMS_PER_RESPONSE if limit >= MAX_ITEMS_PER_RESPONSE else limit
+
+    if next_link and page_size:
+        limit = page_size
+        messages_list_response: dict = cast(Dict[str, Any], http_request('GET', next_link))
+    else:
+        messages_list_response = get_messages_list(chat_id=chat_id,
+                                                   odata_params={'$orderBy': args.get('order_by') + " desc",
+                                                                 '$top': top})
+    messages_data, next_link = pages_puller(messages_list_response, limit)
 
     hr = [get_message_human_readable(message) for message in messages_data]
-
     result = CommandResults(
         readable_output=tableToMarkdown(
             f'Messages list in "{chat}" chat:',
             hr,
             url_keys=['webUrl'],
-            removeNull=True,
-        ),
-        outputs_prefix='MicrosoftTeams.ChatMessage',
-        outputs_key_field='id',
-        outputs=messages_data
+            removeNull=True) + (f"\nThere are more results than shown. "
+                                f"For more data please enter the next_link argument:\n "
+                                f"next_link={next_link}" if next_link else ""),
+        outputs_key_field='chatId',
+        outputs={'MicrosoftTeams(true)': {'MessageListNextLink': next_link},
+                 'MicrosoftTeams.ChatList(val.chatId && val.chatId === obj.chatId)': {'messages': messages_data,
+                                                                                      'chatId': chat_id}}
+
     )
     return_results(result)
 
@@ -1442,6 +1458,10 @@ def chat_list_command():
     args = demisto.args()
     chat = args.get('chat')
     filter_query = args.get('filter')
+    next_link = args.get('next_link')
+    page_size = arg_to_number(args.get('page_size')) or MAX_ITEMS_PER_RESPONSE
+    limit = arg_to_number(args.get('limit')) or MAX_ITEMS_PER_RESPONSE
+
     if chat:
         if filter_query:
             raise ValueError("Retrieve a single chat does not support the 'filter' ODate query parameter.")
@@ -1451,28 +1471,38 @@ def chat_list_command():
         chats_list_response.pop('@odata.context', '')
         chats_data = [chats_list_response]
     else:
-        limit = arg_to_number(args.get('limit')) or MAX_ITEMS_PER_RESPONSE
-        chats_list_response = get_chats_list(odata_params={'$filter': filter_query,
-                                                           '$expand': args.get('expand'),
-                                                           '$top': MAX_ITEMS_PER_RESPONSE})
-        chats_data = pages_puller(chats_list_response, limit)
+        if next_link and page_size:
+            demisto.debug(f"Get chat-list using the given arguments: {next_link=} and {page_size=}")
+            limit = page_size
+            # the $top in the request will be as in the previous query.
+            chats_list_response = cast(Dict[str, Any], http_request('GET', next_link))
+        else:
+            demisto.debug(f"Get chat-list using the given arguments: {limit=}")
+            top = MAX_ITEMS_PER_RESPONSE if limit >= MAX_ITEMS_PER_RESPONSE else limit
+            chats_list_response = get_chats_list(odata_params={'$filter': filter_query,
+                                                               '$expand': args.get('expand'),
+                                                               '$top': top})
 
-    hr = [{**chat, 'lastMessageReadDateTime': demisto.get(chat, "viewpoint.lastMessageReadDateTime")}
-          for chat in chats_data]
+        chats_data, next_link = pages_puller(chats_list_response, limit)
 
+    hr = [{**chat_data, 'lastMessageReadDateTime': demisto.get(chat_data, "viewpoint.lastMessageReadDateTime")}
+          for chat_data in chats_data]
+    for chat_data in chats_data:
+        chat_data['chatId'] = chat_data.pop('id', '')
     result = CommandResults(
         readable_output=tableToMarkdown(
-            "Chat Data:" if chat else "Chats List:",
+            ("Chat Data:" if chat else "Chats List:"),
             hr,
             url_keys=['webUrl'],
             removeNull=True,
             headers=['id', 'topic', 'createdDateTime', 'lastUpdatedDateTime', 'chatType', 'webUrl', 'onlineMeetingInfo',
                      'tenantId', 'lastMessageReadDateTime'],
-            headerTransform=lambda h: CHAT_SPECIAL_MARKDOWN_HEADERS.get(h, pascalToSpace(h)),
-        ),
-        outputs_prefix='MicrosoftTeams.ChatList',
-        outputs_key_field='id',
-        outputs=chats_data
+            headerTransform=lambda h: CHAT_SPECIAL_MARKDOWN_HEADERS.get(h, pascalToSpace(h))
+        ) + (f"\nThere are more results than shown. "
+             f"For more data please enter the next_link argument:\n next_link={next_link}" if next_link else ""),
+        outputs_key_field='chatId',
+        outputs={'MicrosoftTeams(true)': {'ChatListNextLink': next_link},
+                 'MicrosoftTeams.ChatList(val.chatId && val.chatId == obj.chatId)': chats_data}
     )
     return_results(result)
 
@@ -1494,9 +1524,9 @@ def chat_member_list_command():
             headers=['userId', 'roles', 'displayName', 'email', 'tenantId'],
             headerTransform=lambda h: CHAT_SPECIAL_MARKDOWN_HEADERS.get(h, pascalToSpace(h)),
         ),
-        outputs_prefix=f'MicrosoftTeams.ChatMember.{chat}',
-        outputs_key_field='id',
-        outputs=chat_members
+        outputs_prefix='MicrosoftTeams.ChatList',
+        outputs_key_field='chatId',
+        outputs={"members": chat_members, "chatId": chat_id}
     )
     return_results(result)
 
@@ -1513,7 +1543,7 @@ def chat_update_command():
         raise ValueError("Setting chat name is allowed only on group chats.")
 
     chat_update_name(chat_id, new_name)
-    hr = f"The chat '{chat}' name has been successfully changed to '{new_name}'."
+    hr = f"The name of chat '{chat}' has been successfully changed to '{new_name}'."
     return_results(hr)
 
 

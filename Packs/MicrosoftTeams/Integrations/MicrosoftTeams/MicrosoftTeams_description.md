@@ -32,5 +32,5 @@ In order to use the following commands, you must use the ****Authorization Code 
 **Note:** When using the Authorization Code flow, make sure the user you authenticate with has the relevant roles in Azure AD in order to execute the operation.
 
 #### Self deployed configuration
-- [Client Credentials flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)
-- [Authorization Code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorize-on-behalf-of-a-user)
+- [Client Credentials flow](https://github.com/demisto/content/blob/4934c888873f507e4788b2a95fa4e39c87995395/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/README.md#client-credentials-flow)
+- [Authorization Code flow](https://github.com/demisto/content/blob/4934c888873f507e4788b2a95fa4e39c87995395/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/README.md#authorization-code-flow)
