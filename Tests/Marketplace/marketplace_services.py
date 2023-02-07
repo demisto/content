@@ -3355,12 +3355,12 @@ class Pack(object):
             self.cleanup()
             return False
 
-        task_status = self.upload_readme_images(storage_bucket, storage_base_path, diff_files_list, detect_changes,
-                                                marketplace)
-        if not task_status:
-            self._status = PackStatus.FAILED_README_IMAGE_UPLOAD.name
-            self.cleanup()
-            return False
+        # task_status = self.upload_readme_images(storage_bucket, storage_base_path, diff_files_list, detect_changes,
+        #                                         marketplace)
+        # if not task_status:
+        #     self._status = PackStatus.FAILED_README_IMAGE_UPLOAD.name
+        #     self.cleanup()
+        #     return False
 
         return True
 
