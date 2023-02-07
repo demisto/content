@@ -27,7 +27,8 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     RESPONSE_CREATE_ITEM_ORDER, RESPONSE_DOCUMENT_ROUTE, RESPONSE_FETCH, RESPONSE_FETCH_ATTACHMENTS_FILE, \
     RESPONSE_FETCH_ATTACHMENTS_TICKET, RESPONSE_TICKET_MIRROR, MIRROR_COMMENTS_RESPONSE, RESPONSE_MIRROR_FILE_ENTRY, \
     RESPONSE_ASSIGNMENT_GROUP, RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR, MIRROR_COMMENTS_RESPONSE_FROM_XSOAR, \
-    MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR, RESPONSE_TICKET_ASSIGNED, OAUTH_PARAMS, \
+    MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR_CLOSED, RESPONSE_CLOSING_TICKET_MIRROR_RESOLVED, \
+    RESPONSE_CLOSING_TICKET_MIRROR_CUSTOM, RESPONSE_TICKET_ASSIGNED, OAUTH_PARAMS, \
     RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, MIRROR_ENTRIES_WITH_EMPTY_USERNAME, USER_RESPONSE, \
     RESPONSE_GENERIC_TICKET, RESPONSE_COMMENTS_DISPLAY_VALUE, RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
@@ -1285,15 +1286,26 @@ def test_assigned_to_field_user_exists():
     assert res == 'oscar@example.com'
 
 
-CLOSING_RESPONSE = {'dbotIncidentClose': True, 'closeNotes': 'From ServiceNow: Test', 'closeReason': 'Other'}
+CLOSING_RESPONSE = {'dbotIncidentClose': True, 'closeNotes': 'From ServiceNow: Test', 'closeReason': 'Resolved'}
+CLOSING_RESPONSE_CUSTOM = {'dbotIncidentClose': True, 'closeNotes': 'From ServiceNow: Test', 'closeReason': 'Test'}
+
+closed_ticket_state = (RESPONSE_CLOSING_TICKET_MIRROR_CLOSED, {
+                       'close_incident': 'closed'}, 'closed_at', CLOSING_RESPONSE)
+resolved_ticket_state = (RESPONSE_CLOSING_TICKET_MIRROR_RESOLVED, {
+                         'close_incident': 'resolved'}, 'resolved_at', CLOSING_RESPONSE)
+custom_ticket_state = (RESPONSE_CLOSING_TICKET_MIRROR_CUSTOM,
+                       {'close_incident': 'closed', 'server_close_custom_state': '9=Test'}, '', CLOSING_RESPONSE_CUSTOM)
 
 
-def test_get_remote_data_closing_incident(mocker):
+@pytest.mark.parametrize('response_closing_ticket_mirror, parameters, time, closing_response',
+                         [closed_ticket_state, resolved_ticket_state, custom_ticket_state])
+def test_get_remote_data_closing_incident(mocker, response_closing_ticket_mirror, parameters, time, closing_response):
     """
     Given:
         -  ServiceNow client
         -  arguments: id and LastUpdate(set to lower then the modification time).
-        -  ServiceNow ticket
+        -  ServiceNow ticket in closed state
+        -  close_incident parameter is set to closed
     When
         - running get_remote_data_command.
     Then
@@ -1309,14 +1321,15 @@ def test_get_remote_data_closing_incident(mocker):
                     ticket_type='sc_task', get_attachments=False, incident_name='description')
 
     args = {'id': 'sys_id', 'lastUpdate': 0}
-    params = {'close_incident': True}
-    mocker.patch.object(client, 'get', return_value=RESPONSE_CLOSING_TICKET_MIRROR)
+    params = parameters
+    mocker.patch.object(client, 'get', return_value=response_closing_ticket_mirror)
     mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
     mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
 
     res = get_remote_data_command(client, args, params)
-    assert 'closed_at' in res[0]
-    assert CLOSING_RESPONSE == res[2]['Contents']
+    if time:
+        assert time in res[0]
+    assert closing_response == res[2]['Contents']
 
 
 def test_get_remote_data_no_attachment(mocker):
@@ -1810,18 +1823,28 @@ def test_get_closure_case(params, expected):
     assert get_closure_case(params) == expected
 
 
-@pytest.mark.parametrize('ticket_state, expected_res', [('1', 'Other'),
-                                                        ('7', 'Resolved')])
-def test_converts_state_close_reason(ticket_state, expected_res):
+@pytest.mark.parametrize('ticket_state, server_close_custom_state, expected_res',
+                         [('1', '', 'Other'),
+                          ('7', '', 'Resolved'),
+                          ('6', '', 'Resolved'),
+                          ('10', '10=Test', 'Test'),
+                          ('10', '10=Test,11=Test2', 'Test'),
+                          ('6', '6=Test', 'Test'),  # If builtin state was override by custom state.
+                          ('corrupt_state', '', 'Other'),
+                          ('corrupt_state', 'custom_state=Test', 'Other'),
+                          ('6', 'custom_state=Test', 'Resolved'),
+                          ])
+def test_converts_state_close_reason(ticket_state, server_close_custom_state, expected_res):
     """
-    Givne:
+    Given:
         - ticket_state: The state for the closed service now ticket
+        - server_close_custom_state: The custom state for the closed service now ticket
     When:
         - closing a ticket on service now
     Then:
         - return the matching XSOAR incident state.
     """
-    assert converts_state_close_reason(ticket_state) == expected_res
+    assert converts_state_close_reason(ticket_state, server_close_custom_state) == expected_res
 
 
 def ticket_fields_mocker(*args, **kwargs):
