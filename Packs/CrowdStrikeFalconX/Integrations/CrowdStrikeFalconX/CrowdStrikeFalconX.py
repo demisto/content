@@ -931,6 +931,7 @@ def send_url_to_sandbox_analysis_command(
     if result.output:  # the "if" is here to calm mypy down
         # in order identify the id source, upload or submit command, the id name changed
         result.output["submitted_id"] = result.output.pop("id")
+        result.output['url'] = url
 
     return CommandResults(
         outputs_key_field='submitted_id',
