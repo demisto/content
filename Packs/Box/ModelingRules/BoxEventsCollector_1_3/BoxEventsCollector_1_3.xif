@@ -7,6 +7,9 @@ filter
     xdm.target.resource.id = coalesce(json_extract_scalar(source, "$.id"), json_extract_scalar(source, "$.item_id")),
     xdm.target.resource.name = coalesce(json_extract_scalar(source,"$.name"),
         json_extract_scalar(source,"$.item_name"),
+        json_extract_scalar(source,"$.file_name"),
+        json_extract_scalar(source,"$.folder_name"),
+        json_extract_scalar(source,"$.group_name"),
         json_extract_scalar(additional_details,"$.shield_alert.alert_summary.alert_activities.item_name"),
         json_extract_scalar(additional_details,"$.shield_alert.alert_summary.upload_activity.item_name"),
         json_extract_scalar(additional_details,"$.shield_download_enforcment.item.name"),
@@ -23,7 +26,8 @@ filter
     xdm.source.user.last_name = arrayindex(split(json_extract_scalar(created_by, "$.name")), 1),
     xdm.event.id = event_id,
     xdm.event.type = event_type,
-    xdm.source.ipv4 = ip_address;
+    xdm.source.ipv4 = ip_address,
+    xdm.target.resource.type = json_extract_scalar(source, "$.type");
 
 filter
     event_type in ("ADMIN_LOGIN","FAILED_LOGIN","LOGIN")
@@ -36,4 +40,5 @@ filter
     xdm.source.user.username = json_extract_scalar(created_by, "$.name"),
     xdm.event.id = event_id,
     xdm.event.type = event_type,
-    xdm.source.ipv4 = ip_address;
+    xdm.source.ipv4 = ip_address,
+    xdm.target.resource.type = json_extract_scalar(source, "$.type");
