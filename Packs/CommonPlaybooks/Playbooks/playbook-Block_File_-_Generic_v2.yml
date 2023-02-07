@@ -348,12 +348,6 @@ inputs:
       accessor: SHA256
   required: false
   description: The SHA256 hash of the file you want to block.
-  playbookInputQuery:
-- key: EventId
-  value: {}
-  required: false
-  description: Traps event ID that contains the malicious file to block.
-  playbookInputQuery:
 outputs:
 - contextPath: CbResponse.BlockedHashes.LastBlock.Time
   description: Last block time
