@@ -327,7 +327,7 @@ Get a paginated list of all the labels created for the company and its details s
 
 #### Human Readable Output
 
->### Incidents
+>### Labels
 >|Id|Name|Relevance|
 >|---|---|---|
 >| 51 | Mi Ofi | 1 |
@@ -425,7 +425,7 @@ Get details such as id, name and business relevance from a specific label.
 
 #### Human Readable Output
 
->### Incidents
+>### Label
 >|Id|Name|Relevance|
 >|---|---|---|
 >| 51 | Mi Ofi | 1 |
@@ -1039,6 +1039,30 @@ Get details of a specific Incident.
         "RetrieveASpecificIncidentDetails": {
             "actions": [
                 {
+                    "action": "close",
+                    "comment": "from XSOAR Cortex 20230207_232042 closed from Cortex, hmacsha256:03e3787c1bd05e2d0712ab524633e8ca3f0caffd683b5ef3c84ace7a241936ba",
+                    "datetime": "2023-02-07T23:20:42.817Z",
+                    "userId": 0
+                },
+                {
+                    "action": "comment",
+                    "comment": "from XSOAR Cortex 20230207_232040 from cortex, palo alto, hmacsha256:0c7a0308aeb33cf36b52fb0d1efa18f9eb71ecd6b5b6987c53cbc460b6d19a99",
+                    "datetime": "2023-02-07T23:20:40.912Z",
+                    "userId": 0
+                },
+                {
+                    "action": "unmute",
+                    "comment": "from XSOAR Cortex 20230207_232038 unmute from cortex, hmacsha256:170cdef0d2caa8297e585f438c084c31713fd910941117465a1db7a2af323c06",
+                    "datetime": "2023-02-07T23:20:38.919Z",
+                    "userId": 0
+                },
+                {
+                    "action": "mute",
+                    "comment": "from XSOAR Cortex 20230207_232036 mute from cortex, hmacsha256:7faef97643c44288b9bcaa2017f8ba31c12fa5b9380e29b0e7458521438bfd2b",
+                    "datetime": "2023-02-07T23:20:37.018Z",
+                    "userId": 0
+                },
+                {
                     "action": "read",
                     "comment": "",
                     "datetime": "2023-02-07T23:18:50.305Z",
@@ -1105,8 +1129,8 @@ Get details of a specific Incident.
                 ],
                 "uuid": "c45b8540-8073-11ed-9a2f-0f9b6b993ffe"
             },
-            "status": "open",
-            "statusTimestamp": "2023-02-07T23:17:41.358Z",
+            "status": "closed",
+            "statusTimestamp": "2023-02-07T23:20:42.817Z",
             "timestamp": "2023-02-07T23:17:41.358Z",
             "totalEndpoints": 1
         }
@@ -1116,10 +1140,10 @@ Get details of a specific Incident.
 
 #### Human Readable Output
 
->### Incidents
+>### Incident
 >|Actions|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact Details|Has Playback Contacts|Id|Is Unread|Label Distribution|Last Contact|Last Contact Details|Status|Status Timestamp|Timestamp|Total Endpoints|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| {'datetime': '2023-02-07T23:18:50.305Z', 'userId': 6252, 'action': 'read', 'comment': ''} | activity.lumu.io | activity.lumu.io | Spam | 2 | Activity Test Query | uuid: c45b8540-8073-11ed-9a2f-0f9b6b993ffe<br/>datetime: 2022-12-20T14:37:02.228Z<br/>host: activity.lumu.io<br/>types: Spam<br/>details: Activity Test Query<br/>endpointIp: 192.168.110.113<br/>endpointName: Loacal-nesfapdm<br/>label: 0<br/>sourceType: custom_collector<br/>sourceId: 6d942a7a-d287-415e-9c09-3d6632a6a976<br/>sourceData: {"DNSQueryExtraInfo": {"queryType": "A"}}<br/>isPlayback: false | false | 9e9238e0-a73d-11ed-9fd0-e5fb50c818f6 | false | 0: 2 | 2022-12-20T14:37:02.228Z | uuid: c45b8540-8073-11ed-9a2f-0f9b6b993ffe<br/>datetime: 2022-12-20T14:37:02.228Z<br/>host: activity.lumu.io<br/>types: Spam<br/>details: Activity Test Query<br/>endpointIp: 192.168.110.113<br/>endpointName: Loacal-nesfapdm<br/>label: 0<br/>sourceType: custom_collector<br/>sourceId: 6d942a7a-d287-415e-9c09-3d6632a6a976<br/>sourceData: {"DNSQueryExtraInfo": {"queryType": "A"}}<br/>isPlayback: false | open | 2023-02-07T23:17:41.358Z | 2023-02-07T23:17:41.358Z | 1 |
+>| {'datetime': '2023-02-07T23:20:42.817Z', 'userId': 0, 'action': 'close', 'comment': 'from XSOAR Cortex 20230207_232042 closed from Cortex, hmacsha256:03e3787c1bd05e2d0712ab524633e8ca3f0caffd683b5ef3c84ace7a241936ba'},<br/>{'datetime': '2023-02-07T23:20:40.912Z', 'userId': 0, 'action': 'comment', 'comment': 'from XSOAR Cortex 20230207_232040 from cortex, palo alto, hmacsha256:0c7a0308aeb33cf36b52fb0d1efa18f9eb71ecd6b5b6987c53cbc460b6d19a99'},<br/>{'datetime': '2023-02-07T23:20:38.919Z', 'userId': 0, 'action': 'unmute', 'comment': 'from XSOAR Cortex 20230207_232038 unmute from cortex, hmacsha256:170cdef0d2caa8297e585f438c084c31713fd910941117465a1db7a2af323c06'},<br/>{'datetime': '2023-02-07T23:20:37.018Z', 'userId': 0, 'action': 'mute', 'comment': 'from XSOAR Cortex 20230207_232036 mute from cortex, hmacsha256:7faef97643c44288b9bcaa2017f8ba31c12fa5b9380e29b0e7458521438bfd2b'},<br/>{'datetime': '2023-02-07T23:18:50.305Z', 'userId': 6252, 'action': 'read', 'comment': ''} | activity.lumu.io | activity.lumu.io | Spam | 2 | Activity Test Query | uuid: c45b8540-8073-11ed-9a2f-0f9b6b993ffe<br/>datetime: 2022-12-20T14:37:02.228Z<br/>host: activity.lumu.io<br/>types: Spam<br/>details: Activity Test Query<br/>endpointIp: 192.168.110.113<br/>endpointName: Loacal-nesfapdm<br/>label: 0<br/>sourceType: custom_collector<br/>sourceId: 6d942a7a-d287-415e-9c09-3d6632a6a976<br/>sourceData: {"DNSQueryExtraInfo": {"queryType": "A"}}<br/>isPlayback: false | false | 9e9238e0-a73d-11ed-9fd0-e5fb50c818f6 | false | 0: 2 | 2022-12-20T14:37:02.228Z | uuid: c45b8540-8073-11ed-9a2f-0f9b6b993ffe<br/>datetime: 2022-12-20T14:37:02.228Z<br/>host: activity.lumu.io<br/>types: Spam<br/>details: Activity Test Query<br/>endpointIp: 192.168.110.113<br/>endpointName: Loacal-nesfapdm<br/>label: 0<br/>sourceType: custom_collector<br/>sourceId: 6d942a7a-d287-415e-9c09-3d6632a6a976<br/>sourceData: {"DNSQueryExtraInfo": {"queryType": "A"}}<br/>isPlayback: false | closed | 2023-02-07T23:20:42.817Z | 2023-02-07T23:17:41.358Z | 1 |
 
 
 ### lumu-retrieve-a-specific-incident-context
@@ -1220,7 +1244,7 @@ Get details of a specific Incident.
             "threat_triggers": [
                 "https://jits.ac.in/TS.php"
             ],
-            "timestamp": "2023-02-07T23:20:15.726Z"
+            "timestamp": "2023-02-07T23:46:09.442Z"
         }
     }
 }
@@ -1228,10 +1252,10 @@ Get details of a specific Incident.
 
 #### Human Readable Output
 
->### Incidents
+>### Incident
 >|Adversary _ Id|Currently _ Active|External _ Resources|Mitre|Playbooks|Threat _ Details|Threat _ Triggers|Timestamp|
 >|---|---|---|---|---|---|---|---|
->| jits.ac.in | true | https:<span>//</span>blog.morphisec.com/qakbot-qbot-maldoc-two-new-techniques,<br/>https:<span>//</span>media.scmagazine.com/documents/225/bae_qbot_report_56053.pdf,<br/>https:<span>//</span>web.archive.org/web/20201207094648/https:<span>//</span>go.group-ib.com/rs/689-LRE-818/images/Group-IB_Egregor_Ransomware.pdf,<br/>https:<span>//</span>urlhaus.abuse.ch/host/jits.ac.in/,<br/>https:<span>//</span>malwareandstuff.com/an-old-enemy-diving-into-qbot-part-3/,<br/>https:<span>//</span>malwareandstuff.com/an-old-enemy-diving-into-qbot-part-1/,<br/>https:<span>//</span>twitter.com/redcanary/status/1334224861628039169,<br/>https:<span>//</span>www.vkremez.com/2018/07/lets-learn-in-depth-reversing-of-qakbot.html,<br/>https:<span>//</span>malpedia.caad.fkie.fraunhofer.de/details/win.qakbot,<br/>https:<span>//</span>unit42.paloaltonetworks.com/wireshark-tutorial-emotet-infection/,<br/>https:<span>//</span>elis531989.medium.com/funtastic-packers-and-where-to-find-them-41429a7ef9a7,<br/>https:<span>//</span>research.checkpoint.com/2020/exploring-qbots-latest-attack-methods/,<br/>https:<span>//</span>www.hornetsecurity.com/en/security-information/qakbot-malspam-leading-to-prolock/,<br/>https:<span>//</span>raw.githubusercontent.com/fboldewin/When-ransomware-hits-an-ATM-giant---The-Diebold-Nixdorf-case-dissected/main/When%20ransomware%20hits%20an%20ATM%20giant%20-%20The%20Diebold%20Nixdorf%20case%20dissected%20-%20Group-IB%20CyberCrimeCon2020.pdf,<br/>https:<span>//</span>www.cert.ssi.gouv.fr/uploads/CERTFR-2020-CTI-010.pdf,<br/>https:<span>//</span>blog.quosec.net/posts/grap_qakbot_navigation/,<br/>https:<span>//</span>www.virustotal.com/gui/domain/jits.ac.in/relations | details: {'tactic': 'command-and-control', 'techniques': ['T1071']}<br/>matrix: enterprise<br/>version: 8.2 | https:<span>//</span>docs.lumu.io/portal/en/kb/articles/malware-incident-response-playbook | qbot,<br/>Pinkslipbot,<br/>gayfgt,<br/>Gafgyt,<br/>Qbot,<br/>Bashlite,<br/>PinkSlipBot,<br/>Qakbot,<br/>lizkebab,<br/>Quakbot,<br/>Akbot,<br/>torlus,<br/>Qbot  | https:<span>//</span>jits.ac.in/TS.php | 2023-02-07T23:20:15.726Z |
+>| jits.ac.in | true | https:<span>//</span>blog.morphisec.com/qakbot-qbot-maldoc-two-new-techniques,<br/>https:<span>//</span>media.scmagazine.com/documents/225/bae_qbot_report_56053.pdf,<br/>https:<span>//</span>web.archive.org/web/20201207094648/https:<span>//</span>go.group-ib.com/rs/689-LRE-818/images/Group-IB_Egregor_Ransomware.pdf,<br/>https:<span>//</span>urlhaus.abuse.ch/host/jits.ac.in/,<br/>https:<span>//</span>malwareandstuff.com/an-old-enemy-diving-into-qbot-part-3/,<br/>https:<span>//</span>malwareandstuff.com/an-old-enemy-diving-into-qbot-part-1/,<br/>https:<span>//</span>twitter.com/redcanary/status/1334224861628039169,<br/>https:<span>//</span>www.vkremez.com/2018/07/lets-learn-in-depth-reversing-of-qakbot.html,<br/>https:<span>//</span>malpedia.caad.fkie.fraunhofer.de/details/win.qakbot,<br/>https:<span>//</span>unit42.paloaltonetworks.com/wireshark-tutorial-emotet-infection/,<br/>https:<span>//</span>elis531989.medium.com/funtastic-packers-and-where-to-find-them-41429a7ef9a7,<br/>https:<span>//</span>research.checkpoint.com/2020/exploring-qbots-latest-attack-methods/,<br/>https:<span>//</span>www.hornetsecurity.com/en/security-information/qakbot-malspam-leading-to-prolock/,<br/>https:<span>//</span>raw.githubusercontent.com/fboldewin/When-ransomware-hits-an-ATM-giant---The-Diebold-Nixdorf-case-dissected/main/When%20ransomware%20hits%20an%20ATM%20giant%20-%20The%20Diebold%20Nixdorf%20case%20dissected%20-%20Group-IB%20CyberCrimeCon2020.pdf,<br/>https:<span>//</span>www.cert.ssi.gouv.fr/uploads/CERTFR-2020-CTI-010.pdf,<br/>https:<span>//</span>blog.quosec.net/posts/grap_qakbot_navigation/,<br/>https:<span>//</span>www.virustotal.com/gui/domain/jits.ac.in/relations | details: {'tactic': 'command-and-control', 'techniques': ['T1071']}<br/>matrix: enterprise<br/>version: 8.2 | https:<span>//</span>docs.lumu.io/portal/en/kb/articles/malware-incident-response-playbook | qbot,<br/>Pinkslipbot,<br/>gayfgt,<br/>Gafgyt,<br/>Qbot,<br/>Bashlite,<br/>PinkSlipBot,<br/>Qakbot,<br/>lizkebab,<br/>Quakbot,<br/>Akbot,<br/>torlus,<br/>Qbot  | https:<span>//</span>jits.ac.in/TS.php | 2023-02-07T23:46:09.442Z |
 
 
 ### lumu-comment-a-specific-incident
@@ -7867,7 +7891,7 @@ Get a paginated summary of the endpoints affected by a specified incident.
 
 #### Human Readable Output
 
->### Incidents
+>### Incident endpoints
 >|Endpoint|First|Label|Last|Last Source Id|Last Source Type|Total|
 >|---|---|---|---|---|---|---|
 >| Loacal-nesfapdm | 2022-12-20T14:37:02.228Z | 0 | 2022-12-20T14:37:02.228Z | 6d942a7a-d287-415e-9c09-3d6632a6a976 | custom_collector | 2 |
@@ -8660,10 +8684,7 @@ Lumu get cache
         "GetCache": {
             "cache": [],
             "lumu_incidentsId": [
-                "9e9238e0-a73d-11ed-9fd0-e5fb50c818f6",
-                "099a9e80-2ec0-11ed-9b90-a51546bb08b5",
-                "6d06a650-a709-11ed-9fd0-e5fb50c818f6",
-                "080189f0-a64b-11ed-a0c7-dd6f8e69d343"
+                "460dd2d0-a740-11ed-9fd0-e5fb50c818f6"
             ]
         }
     }
@@ -8672,10 +8693,10 @@ Lumu get cache
 
 #### Human Readable Output
 
->### Incidents
+>### Cache
 >|Lumu _ Incidents Id|
 >|---|
->| 9e9238e0-a73d-11ed-9fd0-e5fb50c818f6,<br/>099a9e80-2ec0-11ed-9b90-a51546bb08b5,<br/>6d06a650-a709-11ed-9fd0-e5fb50c818f6,<br/>080189f0-a64b-11ed-a0c7-dd6f8e69d343 |
+>| 460dd2d0-a740-11ed-9fd0-e5fb50c818f6 |
 
 
 ## Incident Mirroring
