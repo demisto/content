@@ -322,7 +322,7 @@ def test_retrieve_labels_command(mock_retrieve_labels_request):
     response = retrieve_labels_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveLabels'
-    assert response.outputs_key_field == 'id'
+    assert response.outputs_key_field == 'labels.id'
     assert 'labels' in response.outputs
     assert 'paginationInfo' in response.outputs
     assert response.outputs == official_response_retrieve_labels_request
@@ -335,7 +335,7 @@ def test_retrieve_a_specific_label_command(mock_retrieve_a_specific_label_reques
     response = retrieve_a_specific_label_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveASpecificLabel'
-    assert response.outputs_key_field == 'id'
+    assert response.outputs_key_field == 'name'
     assert 'id' in response.outputs
     assert 'name' in response.outputs
     assert response.outputs == official_response_retrieve_a_specific_label_request
@@ -354,7 +354,7 @@ def test_retrieve_incidents_command(mock_retrieve_incidents_request):
     response = retrieve_incidents_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveIncidents'
-    assert response.outputs_key_field == 'id'
+    assert response.outputs_key_field == 'items.id'
     assert 'items' in response.outputs
     assert 'timestamp' in response.outputs
     assert 'paginationInfo' in response.outputs
@@ -389,7 +389,6 @@ def test_comment_a_specific_incident_command(mock_comment_a_specific_incident_re
 
     response = comment_a_specific_incident_command(client, args)
     assert response.outputs_prefix == 'Lumu.CommentASpecificIncident'
-    assert response.outputs_key_field == ''
     assert 'statusCode' in response.outputs
     assert response.outputs["statusCode"] == 200
 
@@ -406,7 +405,6 @@ def test_comment_a_specific_incident_command_known_error(mock_comment_a_specific
 
     response = comment_a_specific_incident_command(client, args)
     assert response.outputs_prefix == 'Lumu.CommentASpecificIncident'
-    assert response.outputs_key_field == ''
     assert 'statusCode' in response.outputs
     assert response.outputs["statusCode"] == 200
 
@@ -432,7 +430,7 @@ def test_retrieve_open_incidents_command(mock_retrieve_open_incidents_request):
     response = retrieve_open_incidents_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveOpenIncidents'
-    assert response.outputs_key_field == 'id'
+    assert response.outputs_key_field == 'items.id'
     assert 'items' in response.outputs
     assert 'timestamp' in response.outputs
     assert 'paginationInfo' in response.outputs
@@ -447,7 +445,7 @@ def test_retrieve_muted_incidents_command(mock_retrieve_muted_incidents_request)
     response = retrieve_muted_incidents_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveMutedIncidents'
-    assert response.outputs_key_field == 'id'
+    assert response.outputs_key_field == 'items.id'
     assert 'items' in response.outputs
     assert 'timestamp' in response.outputs
     assert 'paginationInfo' in response.outputs
@@ -462,7 +460,7 @@ def test_retrieve_closed_incidents_command(mock_retrieve_closed_incidents_reques
     response = retrieve_closed_incidents_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveClosedIncidents'
-    assert response.outputs_key_field == 'id'
+    assert response.outputs_key_field == 'items.id'
     assert 'items' in response.outputs
     assert 'timestamp' in response.outputs
     assert 'paginationInfo' in response.outputs
@@ -478,7 +476,7 @@ def test_retrieve_endpoints_by_incident_command(mock_retrieve_endpoints_by_incid
     response = retrieve_endpoints_by_incident_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveEndpointsByIncident'
-    assert response.outputs_key_field == 'id'
+    assert response.outputs_key_field == 'items.label'
     assert 'items' in response.outputs
     assert 'paginationInfo' in response.outputs
     assert response.outputs == official_response_retrieve_endpoints_by_incident_request
@@ -492,7 +490,6 @@ def test_mark_incident_as_read_command(mock_mark_incident_as_read_request):
 
     response = mark_incident_as_read_command(client, args)
     assert response.outputs_prefix == 'Lumu.MarkIncidentAsRead'
-    assert response.outputs_key_field == ''
     assert 'statusCode' in response.outputs
     assert response.outputs["statusCode"] == 200
 
@@ -504,7 +501,6 @@ def test_mark_incident_as_read_command_known_error(mock_mark_incident_as_read_re
 
     response = mark_incident_as_read_command(client, args)
     assert response.outputs_prefix == 'Lumu.MarkIncidentAsRead'
-    assert response.outputs_key_field == ''
     assert 'statusCode' in response.outputs
     assert response.outputs["statusCode"] == 200
 
@@ -527,7 +523,6 @@ def test_mute_incident_command(mock_mute_incident_request, mock_prefix, mock_has
 
     response = mute_incident_command(client, args)
     assert response.outputs_prefix == 'Lumu.MuteIncident'
-    assert response.outputs_key_field == ''
     assert 'statusCode' in response.outputs
     assert response.outputs["statusCode"] == 200
 
@@ -542,7 +537,6 @@ def test_mute_incident_command_known_error(mock_mute_incident_request, mock_pref
 
     response = mute_incident_command(client, args)
     assert response.outputs_prefix == 'Lumu.MuteIncident'
-    assert response.outputs_key_field == ''
     assert 'statusCode' in response.outputs
     assert response.outputs["statusCode"] == 200
 
@@ -568,7 +562,6 @@ def test_unmute_incident_command(mock_unmute_incident_request, mock_prefix, mock
 
     response = unmute_incident_command(client, args)
     assert response.outputs_prefix == 'Lumu.UnmuteIncident'
-    assert response.outputs_key_field == ''
     assert 'statusCode' in response.outputs
     assert response.outputs["statusCode"] == 200
 
@@ -583,7 +576,6 @@ def test_unmute_incident_command_known_error(mock_unmute_incident_request, mock_
 
     response = unmute_incident_command(client, args)
     assert response.outputs_prefix == 'Lumu.UnmuteIncident'
-    assert response.outputs_key_field == ''
     assert 'statusCode' in response.outputs
     assert response.outputs["statusCode"] == 200
 
@@ -609,7 +601,6 @@ def test_close_incident_command(mock_close_incident_request, mock_prefix, mock_h
 
     response = close_incident_command(client, args)
     assert response.outputs_prefix == 'Lumu.CloseIncident'
-    assert response.outputs_key_field == ''
     assert 'statusCode' in response.outputs
     assert response.outputs["statusCode"] == 200
 
@@ -624,7 +615,6 @@ def test_close_incident_command_known_error(mock_close_incident_request, mock_pr
 
     response = close_incident_command(client, args)
     assert response.outputs_prefix == 'Lumu.CloseIncident'
-    assert response.outputs_key_field == ''
     assert 'statusCode' in response.outputs
     assert response.outputs["statusCode"] == 200
 
@@ -649,7 +639,6 @@ def test_consult_incidents_updates_through_rest_command(mock_consult_incidents_u
     response = consult_incidents_updates_through_rest_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.ConsultIncidentsUpdatesThroughRest'
-    assert response.outputs_key_field == 'id'
     assert 'updates' in response.outputs
     assert 'offset' in response.outputs
     assert len(response.outputs['updates']) == 2
@@ -829,7 +818,6 @@ def test_clear_cache_command(mock_integration_context, mock_set_integration_cont
 def test_get_cache_command(mock_integration_context):
     response = get_cache_command()
     assert response.outputs_prefix == 'Lumu.GetCache'
-    assert response.outputs_key_field == 'cache'
     assert response.outputs == {'cache': [], 'lumu_incidentsId': []}
 
 

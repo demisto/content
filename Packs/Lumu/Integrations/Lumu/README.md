@@ -1,5 +1,5 @@
 SecOps operations - Reflect and manage the Lumu Incidents either from XSOAR Cortex or viceversa using the mirroring integration flow, https://lumu.io/
-This integration was integrated and tested with version 20230206 of Lumu
+This integration was integrated and tested with version 20230207 of Lumu
 
 ## Configure Lumu on Cortex XSOAR
 
@@ -17,7 +17,7 @@ This integration was integrated and tested with version 20230206 of Lumu
     | API Key |  | True |
     | Incident Offset |  | False |
     | Total Incident per fecthing using lumu endpoint |  | False |
-    | max time in seconds per fecthing using lumu endpoint |  | False |
+    | Max time in seconds per fecthing using lumu endpoint |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | Incidents Fetch Interval |  | False |
@@ -486,6 +486,170 @@ Get a paginated list of incidents for the company. The items are listed by the m
                     "adversaryTypes": [
                         "Spam"
                     ],
+                    "contacts": 2,
+                    "description": "Activity Test Query",
+                    "firstContact": "2022-12-20T14:37:02.228Z",
+                    "hasPlaybackContacts": false,
+                    "id": "9e9238e0-a73d-11ed-9fd0-e5fb50c818f6",
+                    "labelDistribution": {
+                        "0": 2
+                    },
+                    "lastContact": "2022-12-20T14:37:02.228Z",
+                    "status": "open",
+                    "statusTimestamp": "2023-02-07T23:17:41.358Z",
+                    "timestamp": "2023-02-07T23:17:41.358Z",
+                    "totalEndpoints": 1,
+                    "unread": false
+                },
+                {
+                    "adversaries": [
+                        "104.156.63.145"
+                    ],
+                    "adversaryId": "104.156.63.145",
+                    "adversaryTypes": [
+                        "C2C"
+                    ],
+                    "contacts": 5,
+                    "description": "Malware family Agentemis",
+                    "firstContact": "2023-02-08T03:10:49Z",
+                    "hasPlaybackContacts": false,
+                    "id": "eef6afd0-a72b-11ed-9fd0-e5fb50c818f6",
+                    "labelDistribution": {
+                        "2144": 5
+                    },
+                    "lastContact": "2023-02-08T03:10:51Z",
+                    "status": "open",
+                    "statusTimestamp": "2023-02-07T21:11:05.293Z",
+                    "timestamp": "2023-02-07T21:11:05.293Z",
+                    "totalEndpoints": 1,
+                    "unread": false
+                },
+                {
+                    "adversaries": [
+                        "104.156.63.145"
+                    ],
+                    "adversaryId": "104.156.63.145",
+                    "adversaryTypes": [
+                        "C2C"
+                    ],
+                    "contacts": 5,
+                    "description": "Malware family Agentemis",
+                    "firstContact": "2023-02-08T03:09:07Z",
+                    "hasPlaybackContacts": false,
+                    "id": "b22ba330-a72b-11ed-9fd0-e5fb50c818f6",
+                    "labelDistribution": {
+                        "2144": 5
+                    },
+                    "lastContact": "2023-02-08T03:09:09Z",
+                    "status": "closed",
+                    "statusTimestamp": "2023-02-07T21:10:17.404Z",
+                    "timestamp": "2023-02-07T21:09:23.299Z",
+                    "totalEndpoints": 1,
+                    "unread": false
+                },
+                {
+                    "adversaries": [
+                        "104.156.63.145"
+                    ],
+                    "adversaryId": "104.156.63.145",
+                    "adversaryTypes": [
+                        "C2C"
+                    ],
+                    "contacts": 10,
+                    "description": "Malware family Agentemis",
+                    "firstContact": "2023-02-08T00:50:58Z",
+                    "hasPlaybackContacts": false,
+                    "id": "65a131f0-a718-11ed-9fd0-e5fb50c818f6",
+                    "labelDistribution": {
+                        "2144": 10
+                    },
+                    "lastContact": "2023-02-08T00:52:12Z",
+                    "status": "closed",
+                    "statusTimestamp": "2023-02-07T21:07:38.628Z",
+                    "timestamp": "2023-02-07T18:51:14.447Z",
+                    "totalEndpoints": 1,
+                    "unread": false
+                },
+                {
+                    "adversaries": [
+                        "www.spotifyvault.com"
+                    ],
+                    "adversaryId": "www.spotifyvault.com",
+                    "adversaryTypes": [
+                        "Phishing"
+                    ],
+                    "contacts": 4,
+                    "description": "Phishing domain",
+                    "firstContact": "2023-02-07T17:02:29Z",
+                    "hasPlaybackContacts": false,
+                    "id": "6d06a650-a709-11ed-9fd0-e5fb50c818f6",
+                    "labelDistribution": {
+                        "147": 2,
+                        "2144": 2
+                    },
+                    "lastContact": "2023-02-07T23:10:10.721Z",
+                    "status": "open",
+                    "statusTimestamp": "2023-02-07T17:04:04.405Z",
+                    "timestamp": "2023-02-07T17:04:04.405Z",
+                    "totalEndpoints": 2,
+                    "unread": false
+                },
+                {
+                    "adversaries": [
+                        "activity.lumu.io"
+                    ],
+                    "adversaryId": "activity.lumu.io",
+                    "adversaryTypes": [
+                        "Spam"
+                    ],
+                    "contacts": 12,
+                    "description": "Activity Test Query",
+                    "firstContact": "2023-02-07T15:51:15.463Z",
+                    "hasPlaybackContacts": false,
+                    "id": "826dd220-a6ff-11ed-9fd0-e5fb50c818f6",
+                    "labelDistribution": {
+                        "0": 11,
+                        "989": 1
+                    },
+                    "lastContact": "2023-02-07T15:51:15.463Z",
+                    "status": "closed",
+                    "statusTimestamp": "2023-02-07T23:08:53.658Z",
+                    "timestamp": "2023-02-07T15:53:05.346Z",
+                    "totalEndpoints": 3,
+                    "unread": false
+                },
+                {
+                    "adversaries": [
+                        "ics-nett.com"
+                    ],
+                    "adversaryId": "ics-nett.com",
+                    "adversaryTypes": [
+                        "Malware"
+                    ],
+                    "contacts": 3,
+                    "description": "Malicious Content",
+                    "firstContact": "2023-01-27T19:00:23.897Z",
+                    "hasPlaybackContacts": true,
+                    "id": "080189f0-a64b-11ed-a0c7-dd6f8e69d343",
+                    "labelDistribution": {
+                        "2144": 2,
+                        "4301": 1
+                    },
+                    "lastContact": "2023-02-07T23:10:30.115Z",
+                    "status": "open",
+                    "statusTimestamp": "2023-02-06T18:21:10.543Z",
+                    "timestamp": "2023-02-06T18:21:10.543Z",
+                    "totalEndpoints": 2,
+                    "unread": false
+                },
+                {
+                    "adversaries": [
+                        "activity.lumu.io"
+                    ],
+                    "adversaryId": "activity.lumu.io",
+                    "adversaryTypes": [
+                        "Spam"
+                    ],
                     "contacts": 3,
                     "description": "Activity Test Query",
                     "firstContact": "2022-12-20T14:37:02.228Z",
@@ -495,8 +659,8 @@ Get a paginated list of incidents for the company. The items are listed by the m
                         "0": 3
                     },
                     "lastContact": "2022-12-20T14:37:02.228Z",
-                    "status": "open",
-                    "statusTimestamp": "2023-02-06T16:15:29.370Z",
+                    "status": "closed",
+                    "statusTimestamp": "2023-02-06T16:19:52.211Z",
                     "timestamp": "2023-02-06T16:11:31.574Z",
                     "totalEndpoints": 1,
                     "unread": false
@@ -648,20 +812,21 @@ Get a paginated list of incidents for the company. The items are listed by the m
                     "adversaryTypes": [
                         "Malware"
                     ],
-                    "contacts": 1,
+                    "contacts": 4,
                     "description": "QakBot",
                     "firstContact": "2023-01-13T17:37:32.767Z",
                     "hasPlaybackContacts": true,
                     "id": "17d791d0-a353-11ed-a0c7-dd6f8e69d343",
                     "labelDistribution": {
-                        "4055": 1
+                        "4055": 1,
+                        "51": 3
                     },
-                    "lastContact": "2023-01-13T17:37:32.767Z",
+                    "lastContact": "2023-02-07T08:10:51.125Z",
                     "status": "open",
                     "statusTimestamp": "2023-02-02T23:41:19.597Z",
                     "timestamp": "2023-02-02T23:41:19.597Z",
-                    "totalEndpoints": 1,
-                    "unread": true
+                    "totalEndpoints": 2,
+                    "unread": false
                 },
                 {
                     "adversaries": [
@@ -710,36 +875,13 @@ Get a paginated list of incidents for the company. The items are listed by the m
                     "timestamp": "2023-02-01T05:05:26.051Z",
                     "totalEndpoints": 1,
                     "unread": false
-                },
-                {
-                    "adversaries": [
-                        "ibf.tw"
-                    ],
-                    "adversaryId": "ibf.tw",
-                    "adversaryTypes": [
-                        "Malware"
-                    ],
-                    "contacts": 1,
-                    "description": "Malware family Vidar",
-                    "firstContact": "2023-01-28T05:31:53.849Z",
-                    "hasPlaybackContacts": true,
-                    "id": "2a00ca40-a194-11ed-a0c7-dd6f8e69d343",
-                    "labelDistribution": {
-                        "4301": 1
-                    },
-                    "lastContact": "2023-01-28T05:31:53.849Z",
-                    "status": "open",
-                    "statusTimestamp": "2023-01-31T18:22:05.028Z",
-                    "timestamp": "2023-01-31T18:22:05.028Z",
-                    "totalEndpoints": 1,
-                    "unread": false
                 }
             ],
             "paginationInfo": {
                 "items": 50,
                 "page": 1
             },
-            "timestamp": "2023-02-06T16:19:09.746Z"
+            "timestamp": "2023-02-07T23:20:07.544Z"
         }
     }
 }
@@ -750,17 +892,23 @@ Get a paginated list of incidents for the company. The items are listed by the m
 >### Incidents
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact|Has Playback Contacts|Id|Label Distribution|Last Contact|Status|Status Timestamp|Timestamp|Total Endpoints|Unread|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| activity.lumu.io | activity.lumu.io | Spam | 3 | Activity Test Query | 2022-12-20T14:37:02.228Z | false | eb611160-a638-11ed-a0c7-dd6f8e69d343 | 0: 3 | 2022-12-20T14:37:02.228Z | open | 2023-02-06T16:15:29.370Z | 2023-02-06T16:11:31.574Z | 1 | false |
+>| activity.lumu.io | activity.lumu.io | Spam | 2 | Activity Test Query | 2022-12-20T14:37:02.228Z | false | 9e9238e0-a73d-11ed-9fd0-e5fb50c818f6 | 0: 2 | 2022-12-20T14:37:02.228Z | open | 2023-02-07T23:17:41.358Z | 2023-02-07T23:17:41.358Z | 1 | false |
+>| 104.156.63.145 | 104.156.63.145 | C2C | 5 | Malware family Agentemis | 2023-02-08T03:10:49Z | false | eef6afd0-a72b-11ed-9fd0-e5fb50c818f6 | 2144: 5 | 2023-02-08T03:10:51Z | open | 2023-02-07T21:11:05.293Z | 2023-02-07T21:11:05.293Z | 1 | false |
+>| 104.156.63.145 | 104.156.63.145 | C2C | 5 | Malware family Agentemis | 2023-02-08T03:09:07Z | false | b22ba330-a72b-11ed-9fd0-e5fb50c818f6 | 2144: 5 | 2023-02-08T03:09:09Z | closed | 2023-02-07T21:10:17.404Z | 2023-02-07T21:09:23.299Z | 1 | false |
+>| 104.156.63.145 | 104.156.63.145 | C2C | 10 | Malware family Agentemis | 2023-02-08T00:50:58Z | false | 65a131f0-a718-11ed-9fd0-e5fb50c818f6 | 2144: 10 | 2023-02-08T00:52:12Z | closed | 2023-02-07T21:07:38.628Z | 2023-02-07T18:51:14.447Z | 1 | false |
+>| www.spotifyvault.com | www.spotifyvault.com | Phishing | 4 | Phishing domain | 2023-02-07T17:02:29Z | false | 6d06a650-a709-11ed-9fd0-e5fb50c818f6 | 147: 2<br/>2144: 2 | 2023-02-07T23:10:10.721Z | open | 2023-02-07T17:04:04.405Z | 2023-02-07T17:04:04.405Z | 2 | false |
+>| activity.lumu.io | activity.lumu.io | Spam | 12 | Activity Test Query | 2023-02-07T15:51:15.463Z | false | 826dd220-a6ff-11ed-9fd0-e5fb50c818f6 | 989: 1<br/>0: 11 | 2023-02-07T15:51:15.463Z | closed | 2023-02-07T23:08:53.658Z | 2023-02-07T15:53:05.346Z | 3 | false |
+>| ics-nett.com | ics-nett.com | Malware | 3 | Malicious Content | 2023-01-27T19:00:23.897Z | true | 080189f0-a64b-11ed-a0c7-dd6f8e69d343 | 4301: 1<br/>2144: 2 | 2023-02-07T23:10:30.115Z | open | 2023-02-06T18:21:10.543Z | 2023-02-06T18:21:10.543Z | 2 | false |
+>| activity.lumu.io | activity.lumu.io | Spam | 3 | Activity Test Query | 2022-12-20T14:37:02.228Z | false | eb611160-a638-11ed-a0c7-dd6f8e69d343 | 0: 3 | 2022-12-20T14:37:02.228Z | closed | 2023-02-06T16:19:52.211Z | 2023-02-06T16:11:31.574Z | 1 | false |
 >| www.chg.com.br | www.chg.com.br | Malware | 5 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-03T19:01:00Z | false | d0ce2800-a3f5-11ed-a0c7-dd6f8e69d343 | 989: 3<br/>0: 2 | 2023-02-03T19:22:57.892Z | open | 2023-02-03T19:06:08.384Z | 2023-02-03T19:06:08.384Z | 1 | false |
 >| www.chg.com.br | www.chg.com.br | Malware | 3 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-03T19:01:00Z | false | 608c0ee0-a3f5-11ed-a0c7-dd6f8e69d343 | 989: 3 | 2023-02-03T19:01:30Z | closed | 2023-02-03T19:05:06.851Z | 2023-02-03T19:03:00.046Z | 2 | false |
 >| www.chg.com.br | www.chg.com.br | Malware | 6 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-26T18:57:00Z | false | 6afd9ee0-a3f3-11ed-a0c7-dd6f8e69d343 | 989: 6 | 2023-02-26T18:57:30Z | closed | 2023-02-03T19:01:12.035Z | 2023-02-03T18:48:58.574Z | 2 | false |
 >| try2hack.nl | try2hack.nl | Malware | 1 | Malware family Trojan.Win32.Cl.B.Tilken | 2023-02-03T18:17:59.597Z | false | 22dccb80-a3ef-11ed-a0c7-dd6f8e69d343 | 147: 1 | 2023-02-03T18:17:59.597Z | open | 2023-02-03T18:18:19.576Z | 2023-02-03T18:18:19.576Z | 1 | false |
 >| www.ascentive.com | www.ascentive.com | Malware | 2 | Malware family Trojan.Win32.Generic | 2023-02-02T23:51:26.644Z | false | 967c43e0-a354-11ed-a0c7-dd6f8e69d343 | 989: 2 | 2023-02-02T23:51:26.645Z | open | 2023-02-03T15:22:35.368Z | 2023-02-02T23:52:01.566Z | 1 | false |
 >| musicaitaliana.com | musicaitaliana.com | Malware | 1 | QakBot | 2023-01-28T04:46:11.531Z | true | cffb7650-a353-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T04:46:11.531Z | open | 2023-02-02T23:46:28.533Z | 2023-02-02T23:46:28.533Z | 1 | false |
->| soardigital.net | soardigital.net | Malware | 1 | QakBot | 2023-01-13T17:37:32.767Z | true | 17d791d0-a353-11ed-a0c7-dd6f8e69d343 | 4055: 1 | 2023-01-13T17:37:32.767Z | open | 2023-02-02T23:41:19.597Z | 2023-02-02T23:41:19.597Z | 1 | true |
+>| soardigital.net | soardigital.net | Malware | 4 | QakBot | 2023-01-13T17:37:32.767Z | true | 17d791d0-a353-11ed-a0c7-dd6f8e69d343 | 4055: 1<br/>51: 3 | 2023-02-07T08:10:51.125Z | open | 2023-02-02T23:41:19.597Z | 2023-02-02T23:41:19.597Z | 2 | false |
 >| activity.lumu.io | activity.lumu.io | Spam | 22 | Activity Test Query | 2023-02-01T15:13:41.904Z | false | 182f3950-a243-11ed-a0c7-dd6f8e69d343 | 1792: 1<br/>989: 12<br/>0: 9 | 2023-02-03T16:44:00.395Z | closed | 2023-02-06T16:04:22.570Z | 2023-02-01T15:14:17.061Z | 5 | false |
 >| smartvizx.com | smartvizx.com | Malware | 1 | QakBot | 2023-01-28T03:04:15.908Z | true | 0a017730-a1ee-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T03:04:15.908Z | closed | 2023-02-02T17:08:28.378Z | 2023-02-01T05:05:26.051Z | 1 | false |
->| ibf.tw | ibf.tw | Malware | 1 | Malware family Vidar | 2023-01-28T05:31:53.849Z | true | 2a00ca40-a194-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T05:31:53.849Z | open | 2023-01-31T18:22:05.028Z | 2023-01-31T18:22:05.028Z | 1 | false |
 
 
 #### Command example
@@ -776,7 +924,7 @@ Get a paginated list of incidents for the company. The items are listed by the m
                 "page": 2,
                 "prev": 1
             },
-            "timestamp": "2023-02-06T16:19:11.916Z"
+            "timestamp": "2023-02-07T23:20:10.242Z"
         }
     }
 }
@@ -883,7 +1031,7 @@ Get details of a specific Incident.
 | Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.isPlayback | Boolean | Lumu lastContactDetails.isPlayback | 
 
 #### Command example
-```!lumu-retrieve-a-specific-incident-details lumu_incident_id=eb611160-a638-11ed-a0c7-dd6f8e69d343```
+```!lumu-retrieve-a-specific-incident-details lumu_incident_id=9e9238e0-a73d-11ed-9fd0-e5fb50c818f6```
 #### Context Example
 ```json
 {
@@ -891,21 +1039,9 @@ Get details of a specific Incident.
         "RetrieveASpecificIncidentDetails": {
             "actions": [
                 {
-                    "action": "unmute",
-                    "comment": "first unmute for the inc",
-                    "datetime": "2023-02-06T16:15:29.370Z",
-                    "userId": 6252
-                },
-                {
-                    "action": "mute",
-                    "comment": "first mute of inc",
-                    "datetime": "2023-02-06T16:13:02.104Z",
-                    "userId": 6252
-                },
-                {
                     "action": "read",
                     "comment": "",
-                    "datetime": "2023-02-06T16:12:52.032Z",
+                    "datetime": "2023-02-07T23:18:50.305Z",
                     "userId": 6252
                 }
             ],
@@ -916,15 +1052,15 @@ Get details of a specific Incident.
             "adversaryTypes": [
                 "Spam"
             ],
-            "contacts": 3,
+            "contacts": 2,
             "description": "Activity Test Query",
             "firstContactDetails": {
                 "datetime": "2022-12-20T14:37:02.228Z",
                 "details": [
                     "Activity Test Query"
                 ],
-                "endpointIp": "192.168.0.13",
-                "endpointName": "Loacal-nesfpdm",
+                "endpointIp": "192.168.110.113",
+                "endpointName": "Loacal-nesfapdm",
                 "host": "activity.lumu.io",
                 "isPlayback": false,
                 "label": 0,
@@ -938,13 +1074,13 @@ Get details of a specific Incident.
                 "types": [
                     "Spam"
                 ],
-                "uuid": "c45b8540-8073-11ed-ac28-23f2029a5f3b"
+                "uuid": "c45b8540-8073-11ed-9a2f-0f9b6b993ffe"
             },
             "hasPlaybackContacts": false,
-            "id": "eb611160-a638-11ed-a0c7-dd6f8e69d343",
+            "id": "9e9238e0-a73d-11ed-9fd0-e5fb50c818f6",
             "isUnread": false,
             "labelDistribution": {
-                "0": 3
+                "0": 2
             },
             "lastContact": "2022-12-20T14:37:02.228Z",
             "lastContactDetails": {
@@ -952,8 +1088,8 @@ Get details of a specific Incident.
                 "details": [
                     "Activity Test Query"
                 ],
-                "endpointIp": "192.168.0.13",
-                "endpointName": "Loacal-nesfpdm",
+                "endpointIp": "192.168.110.113",
+                "endpointName": "Loacal-nesfapdm",
                 "host": "activity.lumu.io",
                 "isPlayback": false,
                 "label": 0,
@@ -967,11 +1103,11 @@ Get details of a specific Incident.
                 "types": [
                     "Spam"
                 ],
-                "uuid": "c45b8540-8073-11ed-ac28-23f2029a5f3b"
+                "uuid": "c45b8540-8073-11ed-9a2f-0f9b6b993ffe"
             },
             "status": "open",
-            "statusTimestamp": "2023-02-06T16:15:29.370Z",
-            "timestamp": "2023-02-06T16:11:31.574Z",
+            "statusTimestamp": "2023-02-07T23:17:41.358Z",
+            "timestamp": "2023-02-07T23:17:41.358Z",
             "totalEndpoints": 1
         }
     }
@@ -983,7 +1119,7 @@ Get details of a specific Incident.
 >### Incidents
 >|Actions|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact Details|Has Playback Contacts|Id|Is Unread|Label Distribution|Last Contact|Last Contact Details|Status|Status Timestamp|Timestamp|Total Endpoints|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| {'datetime': '2023-02-06T16:15:29.370Z', 'userId': 6252, 'action': 'unmute', 'comment': 'first unmute for the inc'},<br/>{'datetime': '2023-02-06T16:13:02.104Z', 'userId': 6252, 'action': 'mute', 'comment': 'first mute of inc'},<br/>{'datetime': '2023-02-06T16:12:52.032Z', 'userId': 6252, 'action': 'read', 'comment': ''} | activity.lumu.io | activity.lumu.io | Spam | 3 | Activity Test Query | uuid: c45b8540-8073-11ed-ac28-23f2029a5f3b<br/>datetime: 2022-12-20T14:37:02.228Z<br/>host: activity.lumu.io<br/>types: Spam<br/>details: Activity Test Query<br/>endpointIp: 192.168.0.13<br/>endpointName: Loacal-nesfpdm<br/>label: 0<br/>sourceType: custom_collector<br/>sourceId: 6d942a7a-d287-415e-9c09-3d6632a6a976<br/>sourceData: {"DNSQueryExtraInfo": {"queryType": "A"}}<br/>isPlayback: false | false | eb611160-a638-11ed-a0c7-dd6f8e69d343 | false | 0: 3 | 2022-12-20T14:37:02.228Z | uuid: c45b8540-8073-11ed-ac28-23f2029a5f3b<br/>datetime: 2022-12-20T14:37:02.228Z<br/>host: activity.lumu.io<br/>types: Spam<br/>details: Activity Test Query<br/>endpointIp: 192.168.0.13<br/>endpointName: Loacal-nesfpdm<br/>label: 0<br/>sourceType: custom_collector<br/>sourceId: 6d942a7a-d287-415e-9c09-3d6632a6a976<br/>sourceData: {"DNSQueryExtraInfo": {"queryType": "A"}}<br/>isPlayback: false | open | 2023-02-06T16:15:29.370Z | 2023-02-06T16:11:31.574Z | 1 |
+>| {'datetime': '2023-02-07T23:18:50.305Z', 'userId': 6252, 'action': 'read', 'comment': ''} | activity.lumu.io | activity.lumu.io | Spam | 2 | Activity Test Query | uuid: c45b8540-8073-11ed-9a2f-0f9b6b993ffe<br/>datetime: 2022-12-20T14:37:02.228Z<br/>host: activity.lumu.io<br/>types: Spam<br/>details: Activity Test Query<br/>endpointIp: 192.168.110.113<br/>endpointName: Loacal-nesfapdm<br/>label: 0<br/>sourceType: custom_collector<br/>sourceId: 6d942a7a-d287-415e-9c09-3d6632a6a976<br/>sourceData: {"DNSQueryExtraInfo": {"queryType": "A"}}<br/>isPlayback: false | false | 9e9238e0-a73d-11ed-9fd0-e5fb50c818f6 | false | 0: 2 | 2022-12-20T14:37:02.228Z | uuid: c45b8540-8073-11ed-9a2f-0f9b6b993ffe<br/>datetime: 2022-12-20T14:37:02.228Z<br/>host: activity.lumu.io<br/>types: Spam<br/>details: Activity Test Query<br/>endpointIp: 192.168.110.113<br/>endpointName: Loacal-nesfapdm<br/>label: 0<br/>sourceType: custom_collector<br/>sourceId: 6d942a7a-d287-415e-9c09-3d6632a6a976<br/>sourceData: {"DNSQueryExtraInfo": {"queryType": "A"}}<br/>isPlayback: false | open | 2023-02-07T23:17:41.358Z | 2023-02-07T23:17:41.358Z | 1 |
 
 
 ### lumu-retrieve-a-specific-incident-context
@@ -1033,23 +1169,23 @@ Get details of a specific Incident.
             "adversary_id": "jits.ac.in",
             "currently_active": true,
             "external_resources": [
+                "https://blog.morphisec.com/qakbot-qbot-maldoc-two-new-techniques",
+                "https://media.scmagazine.com/documents/225/bae_qbot_report_56053.pdf",
                 "https://web.archive.org/web/20201207094648/https://go.group-ib.com/rs/689-LRE-818/images/Group-IB_Egregor_Ransomware.pdf",
                 "https://urlhaus.abuse.ch/host/jits.ac.in/",
-                "https://malwareandstuff.com/an-old-enemy-diving-into-qbot-part-1/",
-                "https://media.scmagazine.com/documents/225/bae_qbot_report_56053.pdf",
-                "https://elis531989.medium.com/funtastic-packers-and-where-to-find-them-41429a7ef9a7",
-                "https://www.cert.ssi.gouv.fr/uploads/CERTFR-2020-CTI-010.pdf",
-                "https://blog.morphisec.com/qakbot-qbot-maldoc-two-new-techniques",
-                "https://blog.quosec.net/posts/grap_qakbot_navigation/",
-                "https://www.virustotal.com/gui/domain/jits.ac.in/relations",
-                "https://unit42.paloaltonetworks.com/wireshark-tutorial-emotet-infection/",
-                "https://www.hornetsecurity.com/en/security-information/qakbot-malspam-leading-to-prolock/",
-                "https://malpedia.caad.fkie.fraunhofer.de/details/win.qakbot",
-                "https://research.checkpoint.com/2020/exploring-qbots-latest-attack-methods/",
-                "https://twitter.com/redcanary/status/1334224861628039169",
-                "https://raw.githubusercontent.com/fboldewin/When-ransomware-hits-an-ATM-giant---The-Diebold-Nixdorf-case-dissected/main/When%20ransomware%20hits%20an%20ATM%20giant%20-%20The%20Diebold%20Nixdorf%20case%20dissected%20-%20Group-IB%20CyberCrimeCon2020.pdf",
                 "https://malwareandstuff.com/an-old-enemy-diving-into-qbot-part-3/",
-                "https://www.vkremez.com/2018/07/lets-learn-in-depth-reversing-of-qakbot.html"
+                "https://malwareandstuff.com/an-old-enemy-diving-into-qbot-part-1/",
+                "https://twitter.com/redcanary/status/1334224861628039169",
+                "https://www.vkremez.com/2018/07/lets-learn-in-depth-reversing-of-qakbot.html",
+                "https://malpedia.caad.fkie.fraunhofer.de/details/win.qakbot",
+                "https://unit42.paloaltonetworks.com/wireshark-tutorial-emotet-infection/",
+                "https://elis531989.medium.com/funtastic-packers-and-where-to-find-them-41429a7ef9a7",
+                "https://research.checkpoint.com/2020/exploring-qbots-latest-attack-methods/",
+                "https://www.hornetsecurity.com/en/security-information/qakbot-malspam-leading-to-prolock/",
+                "https://raw.githubusercontent.com/fboldewin/When-ransomware-hits-an-ATM-giant---The-Diebold-Nixdorf-case-dissected/main/When%20ransomware%20hits%20an%20ATM%20giant%20-%20The%20Diebold%20Nixdorf%20case%20dissected%20-%20Group-IB%20CyberCrimeCon2020.pdf",
+                "https://www.cert.ssi.gouv.fr/uploads/CERTFR-2020-CTI-010.pdf",
+                "https://blog.quosec.net/posts/grap_qakbot_navigation/",
+                "https://www.virustotal.com/gui/domain/jits.ac.in/relations"
             ],
             "mitre": {
                 "details": [
@@ -1067,24 +1203,24 @@ Get details of a specific Incident.
                 "https://docs.lumu.io/portal/en/kb/articles/malware-incident-response-playbook"
             ],
             "threat_details": [
-                "Akbot",
-                "Qakbot",
-                "Bashlite",
-                "torlus",
-                "Quakbot",
+                "qbot",
                 "Pinkslipbot",
                 "gayfgt",
-                "Qbot",
-                "Qbot ",
                 "Gafgyt",
+                "Qbot",
+                "Bashlite",
+                "PinkSlipBot",
+                "Qakbot",
                 "lizkebab",
-                "qbot",
-                "PinkSlipBot"
+                "Quakbot",
+                "Akbot",
+                "torlus",
+                "Qbot "
             ],
             "threat_triggers": [
                 "https://jits.ac.in/TS.php"
             ],
-            "timestamp": "2023-02-06T16:19:16.904Z"
+            "timestamp": "2023-02-07T23:20:15.726Z"
         }
     }
 }
@@ -1095,7 +1231,7 @@ Get details of a specific Incident.
 >### Incidents
 >|Adversary _ Id|Currently _ Active|External _ Resources|Mitre|Playbooks|Threat _ Details|Threat _ Triggers|Timestamp|
 >|---|---|---|---|---|---|---|---|
->| jits.ac.in | true | https:<span>//</span>web.archive.org/web/20201207094648/https:<span>//</span>go.group-ib.com/rs/689-LRE-818/images/Group-IB_Egregor_Ransomware.pdf,<br/>https:<span>//</span>urlhaus.abuse.ch/host/jits.ac.in/,<br/>https:<span>//</span>malwareandstuff.com/an-old-enemy-diving-into-qbot-part-1/,<br/>https:<span>//</span>media.scmagazine.com/documents/225/bae_qbot_report_56053.pdf,<br/>https:<span>//</span>elis531989.medium.com/funtastic-packers-and-where-to-find-them-41429a7ef9a7,<br/>https:<span>//</span>www.cert.ssi.gouv.fr/uploads/CERTFR-2020-CTI-010.pdf,<br/>https:<span>//</span>blog.morphisec.com/qakbot-qbot-maldoc-two-new-techniques,<br/>https:<span>//</span>blog.quosec.net/posts/grap_qakbot_navigation/,<br/>https:<span>//</span>www.virustotal.com/gui/domain/jits.ac.in/relations,<br/>https:<span>//</span>unit42.paloaltonetworks.com/wireshark-tutorial-emotet-infection/,<br/>https:<span>//</span>www.hornetsecurity.com/en/security-information/qakbot-malspam-leading-to-prolock/,<br/>https:<span>//</span>malpedia.caad.fkie.fraunhofer.de/details/win.qakbot,<br/>https:<span>//</span>research.checkpoint.com/2020/exploring-qbots-latest-attack-methods/,<br/>https:<span>//</span>twitter.com/redcanary/status/1334224861628039169,<br/>https:<span>//</span>raw.githubusercontent.com/fboldewin/When-ransomware-hits-an-ATM-giant---The-Diebold-Nixdorf-case-dissected/main/When%20ransomware%20hits%20an%20ATM%20giant%20-%20The%20Diebold%20Nixdorf%20case%20dissected%20-%20Group-IB%20CyberCrimeCon2020.pdf,<br/>https:<span>//</span>malwareandstuff.com/an-old-enemy-diving-into-qbot-part-3/,<br/>https:<span>//</span>www.vkremez.com/2018/07/lets-learn-in-depth-reversing-of-qakbot.html | details: {'tactic': 'command-and-control', 'techniques': ['T1071']}<br/>matrix: enterprise<br/>version: 8.2 | https:<span>//</span>docs.lumu.io/portal/en/kb/articles/malware-incident-response-playbook | Akbot,<br/>Qakbot,<br/>Bashlite,<br/>torlus,<br/>Quakbot,<br/>Pinkslipbot,<br/>gayfgt,<br/>Qbot,<br/>Qbot ,<br/>Gafgyt,<br/>lizkebab,<br/>qbot,<br/>PinkSlipBot | https:<span>//</span>jits.ac.in/TS.php | 2023-02-06T16:19:16.904Z |
+>| jits.ac.in | true | https:<span>//</span>blog.morphisec.com/qakbot-qbot-maldoc-two-new-techniques,<br/>https:<span>//</span>media.scmagazine.com/documents/225/bae_qbot_report_56053.pdf,<br/>https:<span>//</span>web.archive.org/web/20201207094648/https:<span>//</span>go.group-ib.com/rs/689-LRE-818/images/Group-IB_Egregor_Ransomware.pdf,<br/>https:<span>//</span>urlhaus.abuse.ch/host/jits.ac.in/,<br/>https:<span>//</span>malwareandstuff.com/an-old-enemy-diving-into-qbot-part-3/,<br/>https:<span>//</span>malwareandstuff.com/an-old-enemy-diving-into-qbot-part-1/,<br/>https:<span>//</span>twitter.com/redcanary/status/1334224861628039169,<br/>https:<span>//</span>www.vkremez.com/2018/07/lets-learn-in-depth-reversing-of-qakbot.html,<br/>https:<span>//</span>malpedia.caad.fkie.fraunhofer.de/details/win.qakbot,<br/>https:<span>//</span>unit42.paloaltonetworks.com/wireshark-tutorial-emotet-infection/,<br/>https:<span>//</span>elis531989.medium.com/funtastic-packers-and-where-to-find-them-41429a7ef9a7,<br/>https:<span>//</span>research.checkpoint.com/2020/exploring-qbots-latest-attack-methods/,<br/>https:<span>//</span>www.hornetsecurity.com/en/security-information/qakbot-malspam-leading-to-prolock/,<br/>https:<span>//</span>raw.githubusercontent.com/fboldewin/When-ransomware-hits-an-ATM-giant---The-Diebold-Nixdorf-case-dissected/main/When%20ransomware%20hits%20an%20ATM%20giant%20-%20The%20Diebold%20Nixdorf%20case%20dissected%20-%20Group-IB%20CyberCrimeCon2020.pdf,<br/>https:<span>//</span>www.cert.ssi.gouv.fr/uploads/CERTFR-2020-CTI-010.pdf,<br/>https:<span>//</span>blog.quosec.net/posts/grap_qakbot_navigation/,<br/>https:<span>//</span>www.virustotal.com/gui/domain/jits.ac.in/relations | details: {'tactic': 'command-and-control', 'techniques': ['T1071']}<br/>matrix: enterprise<br/>version: 8.2 | https:<span>//</span>docs.lumu.io/portal/en/kb/articles/malware-incident-response-playbook | qbot,<br/>Pinkslipbot,<br/>gayfgt,<br/>Gafgyt,<br/>Qbot,<br/>Bashlite,<br/>PinkSlipBot,<br/>Qakbot,<br/>lizkebab,<br/>Quakbot,<br/>Akbot,<br/>torlus,<br/>Qbot  | https:<span>//</span>jits.ac.in/TS.php | 2023-02-07T23:20:15.726Z |
 
 
 ### lumu-comment-a-specific-incident
@@ -1121,7 +1257,7 @@ Get a paginated list of open incidents for the company. The items are listed by 
 | Lumu.CommentASpecificIncident.statusCode | number | Lumu statusCode | 
 
 #### Command example
-```!lumu-comment-a-specific-incident comment="from cortex, palo alto" lumu_incident_id=eb611160-a638-11ed-a0c7-dd6f8e69d343```
+```!lumu-comment-a-specific-incident comment="from cortex, palo alto" lumu_incident_id=9e9238e0-a73d-11ed-9fd0-e5fb50c818f6```
 #### Context Example
 ```json
 {
@@ -1191,19 +1327,90 @@ Get a paginated list of open incidents for the company. The items are listed by 
                     "adversaryTypes": [
                         "Spam"
                     ],
-                    "contacts": 3,
+                    "contacts": 2,
                     "description": "Activity Test Query",
                     "firstContact": "2022-12-20T14:37:02.228Z",
                     "hasPlaybackContacts": false,
-                    "id": "eb611160-a638-11ed-a0c7-dd6f8e69d343",
+                    "id": "9e9238e0-a73d-11ed-9fd0-e5fb50c818f6",
                     "labelDistribution": {
-                        "0": 3
+                        "0": 2
                     },
                     "lastContact": "2022-12-20T14:37:02.228Z",
                     "status": "open",
-                    "statusTimestamp": "2023-02-06T16:15:29.370Z",
-                    "timestamp": "2023-02-06T16:11:31.574Z",
+                    "statusTimestamp": "2023-02-07T23:17:41.358Z",
+                    "timestamp": "2023-02-07T23:17:41.358Z",
                     "totalEndpoints": 1,
+                    "unread": false
+                },
+                {
+                    "adversaries": [
+                        "104.156.63.145"
+                    ],
+                    "adversaryId": "104.156.63.145",
+                    "adversaryTypes": [
+                        "C2C"
+                    ],
+                    "contacts": 5,
+                    "description": "Malware family Agentemis",
+                    "firstContact": "2023-02-08T03:10:49Z",
+                    "hasPlaybackContacts": false,
+                    "id": "eef6afd0-a72b-11ed-9fd0-e5fb50c818f6",
+                    "labelDistribution": {
+                        "2144": 5
+                    },
+                    "lastContact": "2023-02-08T03:10:51Z",
+                    "status": "open",
+                    "statusTimestamp": "2023-02-07T21:11:05.293Z",
+                    "timestamp": "2023-02-07T21:11:05.293Z",
+                    "totalEndpoints": 1,
+                    "unread": false
+                },
+                {
+                    "adversaries": [
+                        "www.spotifyvault.com"
+                    ],
+                    "adversaryId": "www.spotifyvault.com",
+                    "adversaryTypes": [
+                        "Phishing"
+                    ],
+                    "contacts": 4,
+                    "description": "Phishing domain",
+                    "firstContact": "2023-02-07T17:02:29Z",
+                    "hasPlaybackContacts": false,
+                    "id": "6d06a650-a709-11ed-9fd0-e5fb50c818f6",
+                    "labelDistribution": {
+                        "147": 2,
+                        "2144": 2
+                    },
+                    "lastContact": "2023-02-07T23:10:10.721Z",
+                    "status": "open",
+                    "statusTimestamp": "2023-02-07T17:04:04.405Z",
+                    "timestamp": "2023-02-07T17:04:04.405Z",
+                    "totalEndpoints": 2,
+                    "unread": false
+                },
+                {
+                    "adversaries": [
+                        "ics-nett.com"
+                    ],
+                    "adversaryId": "ics-nett.com",
+                    "adversaryTypes": [
+                        "Malware"
+                    ],
+                    "contacts": 3,
+                    "description": "Malicious Content",
+                    "firstContact": "2023-01-27T19:00:23.897Z",
+                    "hasPlaybackContacts": true,
+                    "id": "080189f0-a64b-11ed-a0c7-dd6f8e69d343",
+                    "labelDistribution": {
+                        "2144": 2,
+                        "4301": 1
+                    },
+                    "lastContact": "2023-02-07T23:10:30.115Z",
+                    "status": "open",
+                    "statusTimestamp": "2023-02-06T18:21:10.543Z",
+                    "timestamp": "2023-02-06T18:21:10.543Z",
+                    "totalEndpoints": 2,
                     "unread": false
                 },
                 {
@@ -1330,20 +1537,21 @@ Get a paginated list of open incidents for the company. The items are listed by 
                     "adversaryTypes": [
                         "Malware"
                     ],
-                    "contacts": 1,
+                    "contacts": 4,
                     "description": "QakBot",
                     "firstContact": "2023-01-13T17:37:32.767Z",
                     "hasPlaybackContacts": true,
                     "id": "17d791d0-a353-11ed-a0c7-dd6f8e69d343",
                     "labelDistribution": {
-                        "4055": 1
+                        "4055": 1,
+                        "51": 3
                     },
-                    "lastContact": "2023-01-13T17:37:32.767Z",
+                    "lastContact": "2023-02-07T08:10:51.125Z",
                     "status": "open",
                     "statusTimestamp": "2023-02-02T23:41:19.597Z",
                     "timestamp": "2023-02-02T23:41:19.597Z",
-                    "totalEndpoints": 1,
-                    "unread": true
+                    "totalEndpoints": 2,
+                    "unread": false
                 },
                 {
                     "adversaries": [
@@ -1505,7 +1713,7 @@ Get a paginated list of open incidents for the company. The items are listed by 
                     "statusTimestamp": "2023-01-28T05:35:35.016Z",
                     "timestamp": "2023-01-28T05:35:35.016Z",
                     "totalEndpoints": 1,
-                    "unread": true
+                    "unread": false
                 },
                 {
                     "adversaries": [
@@ -1528,7 +1736,7 @@ Get a paginated list of open incidents for the company. The items are listed by 
                     "statusTimestamp": "2023-01-28T05:34:41.031Z",
                     "timestamp": "2023-01-28T05:34:41.031Z",
                     "totalEndpoints": 1,
-                    "unread": true
+                    "unread": false
                 },
                 {
                     "adversaries": [
@@ -1551,7 +1759,7 @@ Get a paginated list of open incidents for the company. The items are listed by 
                     "statusTimestamp": "2023-01-28T05:31:26.089Z",
                     "timestamp": "2023-01-28T05:31:26.089Z",
                     "totalEndpoints": 1,
-                    "unread": true
+                    "unread": false
                 },
                 {
                     "adversaries": [
@@ -2265,77 +2473,7 @@ Get a paginated list of open incidents for the company. The items are listed by 
                     "statusTimestamp": "2023-01-28T04:27:38.030Z",
                     "timestamp": "2023-01-28T04:27:38.030Z",
                     "totalEndpoints": 1,
-                    "unread": true
-                },
-                {
-                    "adversaries": [
-                        "ransen.com"
-                    ],
-                    "adversaryId": "ransen.com",
-                    "adversaryTypes": [
-                        "Malware"
-                    ],
-                    "contacts": 1,
-                    "description": "Malware family Adware.Win32.A.Adload",
-                    "firstContact": "2023-01-28T04:25:55.091Z",
-                    "hasPlaybackContacts": false,
-                    "id": "e4a344f0-9ec3-11ed-a0c7-dd6f8e69d343",
-                    "labelDistribution": {
-                        "4301": 1
-                    },
-                    "lastContact": "2023-01-28T04:25:55.091Z",
-                    "status": "open",
-                    "statusTimestamp": "2023-01-28T04:26:11.007Z",
-                    "timestamp": "2023-01-28T04:26:11.007Z",
-                    "totalEndpoints": 1,
-                    "unread": true
-                },
-                {
-                    "adversaries": [
-                        "peterstrobos.com"
-                    ],
-                    "adversaryId": "peterstrobos.com",
-                    "adversaryTypes": [
-                        "C2C",
-                        "Malware"
-                    ],
-                    "contacts": 1,
-                    "description": "Malware family Sodinokibi",
-                    "firstContact": "2023-01-28T04:24:01.385Z",
-                    "hasPlaybackContacts": false,
-                    "id": "a7da8240-9ec3-11ed-a0c7-dd6f8e69d343",
-                    "labelDistribution": {
-                        "4301": 1
-                    },
-                    "lastContact": "2023-01-28T04:24:01.385Z",
-                    "status": "open",
-                    "statusTimestamp": "2023-01-28T04:24:29.028Z",
-                    "timestamp": "2023-01-28T04:24:29.028Z",
-                    "totalEndpoints": 1,
-                    "unread": true
-                },
-                {
-                    "adversaries": [
-                        "disconova.com"
-                    ],
-                    "adversaryId": "disconova.com",
-                    "adversaryTypes": [
-                        "Malware"
-                    ],
-                    "contacts": 1,
-                    "description": "Malware family Trojan.Win32.Ml.C.Wacatac",
-                    "firstContact": "2023-01-28T04:23:55.520Z",
-                    "hasPlaybackContacts": false,
-                    "id": "a7d949c0-9ec3-11ed-a0c7-dd6f8e69d343",
-                    "labelDistribution": {
-                        "4301": 1
-                    },
-                    "lastContact": "2023-01-28T04:23:55.520Z",
-                    "status": "open",
-                    "statusTimestamp": "2023-01-28T04:24:29.020Z",
-                    "timestamp": "2023-01-28T04:24:29.020Z",
-                    "totalEndpoints": 1,
-                    "unread": true
+                    "unread": false
                 }
             ],
             "paginationInfo": {
@@ -2343,7 +2481,7 @@ Get a paginated list of open incidents for the company. The items are listed by 
                 "next": 2,
                 "page": 1
             },
-            "timestamp": "2023-02-06T16:19:21.437Z"
+            "timestamp": "2023-02-07T23:20:17.696Z"
         }
     }
 }
@@ -2354,22 +2492,25 @@ Get a paginated list of open incidents for the company. The items are listed by 
 >### Incidents
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact|Has Playback Contacts|Id|Label Distribution|Last Contact|Status|Status Timestamp|Timestamp|Total Endpoints|Unread|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| activity.lumu.io | activity.lumu.io | Spam | 3 | Activity Test Query | 2022-12-20T14:37:02.228Z | false | eb611160-a638-11ed-a0c7-dd6f8e69d343 | 0: 3 | 2022-12-20T14:37:02.228Z | open | 2023-02-06T16:15:29.370Z | 2023-02-06T16:11:31.574Z | 1 | false |
+>| activity.lumu.io | activity.lumu.io | Spam | 2 | Activity Test Query | 2022-12-20T14:37:02.228Z | false | 9e9238e0-a73d-11ed-9fd0-e5fb50c818f6 | 0: 2 | 2022-12-20T14:37:02.228Z | open | 2023-02-07T23:17:41.358Z | 2023-02-07T23:17:41.358Z | 1 | false |
+>| 104.156.63.145 | 104.156.63.145 | C2C | 5 | Malware family Agentemis | 2023-02-08T03:10:49Z | false | eef6afd0-a72b-11ed-9fd0-e5fb50c818f6 | 2144: 5 | 2023-02-08T03:10:51Z | open | 2023-02-07T21:11:05.293Z | 2023-02-07T21:11:05.293Z | 1 | false |
+>| www.spotifyvault.com | www.spotifyvault.com | Phishing | 4 | Phishing domain | 2023-02-07T17:02:29Z | false | 6d06a650-a709-11ed-9fd0-e5fb50c818f6 | 147: 2<br/>2144: 2 | 2023-02-07T23:10:10.721Z | open | 2023-02-07T17:04:04.405Z | 2023-02-07T17:04:04.405Z | 2 | false |
+>| ics-nett.com | ics-nett.com | Malware | 3 | Malicious Content | 2023-01-27T19:00:23.897Z | true | 080189f0-a64b-11ed-a0c7-dd6f8e69d343 | 4301: 1<br/>2144: 2 | 2023-02-07T23:10:30.115Z | open | 2023-02-06T18:21:10.543Z | 2023-02-06T18:21:10.543Z | 2 | false |
 >| obobbo.com | obobbo.com | Spam | 1 | Disposable email host | 2023-01-28T04:29:57.692Z | false | 790f0700-9ec4-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T04:29:57.692Z | open | 2023-02-06T15:03:06.017Z | 2023-01-28T04:30:20.016Z | 1 | false |
 >| www.chg.com.br | www.chg.com.br | Malware | 5 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-03T19:01:00Z | false | d0ce2800-a3f5-11ed-a0c7-dd6f8e69d343 | 989: 3<br/>0: 2 | 2023-02-03T19:22:57.892Z | open | 2023-02-03T19:06:08.384Z | 2023-02-03T19:06:08.384Z | 1 | false |
 >| try2hack.nl | try2hack.nl | Malware | 1 | Malware family Trojan.Win32.Cl.B.Tilken | 2023-02-03T18:17:59.597Z | false | 22dccb80-a3ef-11ed-a0c7-dd6f8e69d343 | 147: 1 | 2023-02-03T18:17:59.597Z | open | 2023-02-03T18:18:19.576Z | 2023-02-03T18:18:19.576Z | 1 | false |
 >| www.ascentive.com | www.ascentive.com | Malware | 2 | Malware family Trojan.Win32.Generic | 2023-02-02T23:51:26.644Z | false | 967c43e0-a354-11ed-a0c7-dd6f8e69d343 | 989: 2 | 2023-02-02T23:51:26.645Z | open | 2023-02-03T15:22:35.368Z | 2023-02-02T23:52:01.566Z | 1 | false |
 >| musicaitaliana.com | musicaitaliana.com | Malware | 1 | QakBot | 2023-01-28T04:46:11.531Z | true | cffb7650-a353-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T04:46:11.531Z | open | 2023-02-02T23:46:28.533Z | 2023-02-02T23:46:28.533Z | 1 | false |
->| soardigital.net | soardigital.net | Malware | 1 | QakBot | 2023-01-13T17:37:32.767Z | true | 17d791d0-a353-11ed-a0c7-dd6f8e69d343 | 4055: 1 | 2023-01-13T17:37:32.767Z | open | 2023-02-02T23:41:19.597Z | 2023-02-02T23:41:19.597Z | 1 | true |
+>| soardigital.net | soardigital.net | Malware | 4 | QakBot | 2023-01-13T17:37:32.767Z | true | 17d791d0-a353-11ed-a0c7-dd6f8e69d343 | 4055: 1<br/>51: 3 | 2023-02-07T08:10:51.125Z | open | 2023-02-02T23:41:19.597Z | 2023-02-02T23:41:19.597Z | 2 | false |
 >| mediaworld.pro | mediaworld.pro | Malware | 1 | Malware family Spam.Pdf | 2023-01-13T19:43:16.549Z | false | 945eb000-937a-11ed-b0f8-a7e340234a4e | 1580: 1 | 2023-01-13T19:43:16.549Z | open | 2023-02-02T14:08:55.775Z | 2023-01-13T19:43:40.288Z | 1 | false |
 >| ibf.tw | ibf.tw | Malware | 1 | Malware family Vidar | 2023-01-28T05:31:53.849Z | true | 2a00ca40-a194-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T05:31:53.849Z | open | 2023-01-31T18:22:05.028Z | 2023-01-31T18:22:05.028Z | 1 | false |
 >| ep.com.pl | ep.com.pl | Malware | 15 | Malware family Trojan.Downloader.Win32.Sjt.Codecpack | 2023-01-28T05:37:04.281Z | false | bda17930-a099-11ed-a0c7-dd6f8e69d343 | 4301: 1<br/>989: 14 | 2023-02-02T22:33:46.643Z | open | 2023-01-30T12:29:29.027Z | 2023-01-30T12:29:29.027Z | 2 | false |
 >| ny.hideip.co | ny.hideip.co | Phishing | 1 | Phishing domain | 2022-03-08T03:45:12Z | true | 593c12e0-a015-11ed-a0c7-dd6f8e69d343 | 1651: 1 | 2022-03-08T03:45:12Z | open | 2023-01-29T20:41:47.022Z | 2023-01-29T20:41:47.022Z | 1 | false |
 >| wetraq.ca | wetraq.ca | Phishing | 1 | Phishing domain | 2023-01-13T17:18:02.525Z | true | 44f29180-9f6e-11ed-a0c7-dd6f8e69d343 | 4055: 1 | 2023-01-13T17:18:02.525Z | open | 2023-01-29T00:45:47.032Z | 2023-01-29T00:45:47.032Z | 1 | true |
 >| berm.co.nz | berm.co.nz | Malware | 1 | Malware family Trojan.Win32.B.Bitrep | 2023-01-28T05:36:23.885Z | false | ca731f60-9ecd-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T05:36:23.885Z | open | 2023-01-28T05:37:02.038Z | 2023-01-28T05:37:02.038Z | 1 | false |
->| politerm.com | politerm.com | Malware | 1 | Malware family Trojan.TR/Crypt.XPACK.Gen3 | 2023-01-28T05:35:05.622Z | false | 96949e80-9ecd-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T05:35:05.622Z | open | 2023-01-28T05:35:35.016Z | 2023-01-28T05:35:35.016Z | 1 | true |
->| abyssmail.com | abyssmail.com | Spam | 1 | Disposable email host | 2023-01-28T05:34:25.436Z | false | 76672970-9ecd-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T05:34:25.436Z | open | 2023-01-28T05:34:41.031Z | 2023-01-28T05:34:41.031Z | 1 | true |
->| mainsite.org | mainsite.org | C2C | 1 | Malware family Kwampirs | 2023-01-28T05:31:08.541Z | false | 02355f90-9ecd-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T05:31:08.541Z | open | 2023-01-28T05:31:26.089Z | 2023-01-28T05:31:26.089Z | 1 | true |
+>| politerm.com | politerm.com | Malware | 1 | Malware family Trojan.TR/Crypt.XPACK.Gen3 | 2023-01-28T05:35:05.622Z | false | 96949e80-9ecd-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T05:35:05.622Z | open | 2023-01-28T05:35:35.016Z | 2023-01-28T05:35:35.016Z | 1 | false |
+>| abyssmail.com | abyssmail.com | Spam | 1 | Disposable email host | 2023-01-28T05:34:25.436Z | false | 76672970-9ecd-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T05:34:25.436Z | open | 2023-01-28T05:34:41.031Z | 2023-01-28T05:34:41.031Z | 1 | false |
+>| mainsite.org | mainsite.org | C2C | 1 | Malware family Kwampirs | 2023-01-28T05:31:08.541Z | false | 02355f90-9ecd-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T05:31:08.541Z | open | 2023-01-28T05:31:26.089Z | 2023-01-28T05:31:26.089Z | 1 | false |
 >| zainmax.net | zainmax.net | Spam | 1 | Disposable email host | 2023-01-28T05:29:30.313Z | false | ce58b370-9ecc-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T05:29:30.313Z | open | 2023-01-28T05:29:59.079Z | 2023-01-28T05:29:59.079Z | 1 | false |
 >| ac20mail.in | ac20mail.in | Spam | 1 | Disposable email host | 2023-01-28T05:29:26.009Z | false | ce5753e0-9ecc-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T05:29:26.009Z | open | 2023-01-28T05:29:59.070Z | 2023-01-28T05:29:59.070Z | 1 | true |
 >| wronghead.com | wronghead.com | Spam | 1 | Disposable email host | 2023-01-28T05:25:59.209Z | false | 54b776a0-9ecc-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T05:25:59.209Z | open | 2023-01-28T05:26:35.018Z | 2023-01-28T05:26:35.018Z | 1 | true |
@@ -2400,10 +2541,7 @@ Get a paginated list of open incidents for the company. The items are listed by 
 >| hammerofgod.com | hammerofgod.com | Malware | 1 | Malware family Hacktool.Win32.A.Tsgrinder | 2023-01-28T04:31:04.578Z | false | a2395b80-9ec4-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T04:31:04.578Z | open | 2023-01-28T04:31:29.080Z | 2023-01-28T04:31:29.080Z | 1 | true |
 >| myemailboxy.com | myemailboxy.com | Spam | 1 | Disposable email host | 2023-01-28T04:28:15.191Z | false | 41a870d0-9ec4-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T04:28:15.191Z | open | 2023-01-28T04:28:47.069Z | 2023-01-28T04:28:47.069Z | 1 | true |
 >| pecinan.com | pecinan.com | Spam | 1 | Disposable email host | 2023-01-28T04:27:21.290Z | false | 18837380-9ec4-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T04:27:21.290Z | open | 2023-01-28T04:27:38.040Z | 2023-01-28T04:27:38.040Z | 1 | false |
->| nospamfor.us | nospamfor.us | Spam | 1 | Disposable email host | 2023-01-28T04:27:06.840Z | false | 1881ece0-9ec4-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T04:27:06.840Z | open | 2023-01-28T04:27:38.030Z | 2023-01-28T04:27:38.030Z | 1 | true |
->| ransen.com | ransen.com | Malware | 1 | Malware family Adware.Win32.A.Adload | 2023-01-28T04:25:55.091Z | false | e4a344f0-9ec3-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T04:25:55.091Z | open | 2023-01-28T04:26:11.007Z | 2023-01-28T04:26:11.007Z | 1 | true |
->| peterstrobos.com | peterstrobos.com | C2C,<br/>Malware | 1 | Malware family Sodinokibi | 2023-01-28T04:24:01.385Z | false | a7da8240-9ec3-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T04:24:01.385Z | open | 2023-01-28T04:24:29.028Z | 2023-01-28T04:24:29.028Z | 1 | true |
->| disconova.com | disconova.com | Malware | 1 | Malware family Trojan.Win32.Ml.C.Wacatac | 2023-01-28T04:23:55.520Z | false | a7d949c0-9ec3-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T04:23:55.520Z | open | 2023-01-28T04:24:29.020Z | 2023-01-28T04:24:29.020Z | 1 | true |
+>| nospamfor.us | nospamfor.us | Spam | 1 | Disposable email host | 2023-01-28T04:27:06.840Z | false | 1881ece0-9ec4-11ed-a0c7-dd6f8e69d343 | 4301: 1 | 2023-01-28T04:27:06.840Z | open | 2023-01-28T04:27:38.030Z | 2023-01-28T04:27:38.030Z | 1 | false |
 
 
 #### Command example
@@ -2414,31 +2552,6 @@ Get a paginated list of open incidents for the company. The items are listed by 
     "Lumu": {
         "RetrieveOpenIncidents": {
             "items": [
-                {
-                    "adversaries": [
-                        "jits.ac.in"
-                    ],
-                    "adversaryId": "jits.ac.in",
-                    "adversaryTypes": [
-                        "Malware"
-                    ],
-                    "contacts": 5,
-                    "description": "QakBot",
-                    "firstContact": "2023-01-13T21:51:12.190Z",
-                    "hasPlaybackContacts": false,
-                    "id": "6eddaf40-938c-11ed-b0f8-a7e340234a4e",
-                    "labelDistribution": {
-                        "1791": 1,
-                        "4301": 1,
-                        "548": 3
-                    },
-                    "lastContact": "2023-01-27T21:23:34.329Z",
-                    "status": "open",
-                    "statusTimestamp": "2023-01-16T12:13:23.292Z",
-                    "timestamp": "2023-01-13T21:51:28.308Z",
-                    "totalEndpoints": 3,
-                    "unread": false
-                },
                 {
                     "adversaries": [
                         "msgos.com"
@@ -3629,6 +3742,30 @@ Get a paginated list of open incidents for the company. The items are listed by 
                     "timestamp": "2023-01-13T17:14:58.239Z",
                     "totalEndpoints": 4,
                     "unread": true
+                },
+                {
+                    "adversaries": [
+                        "slimcleaner.com"
+                    ],
+                    "adversaryId": "slimcleaner.com",
+                    "adversaryTypes": [
+                        "Malware"
+                    ],
+                    "contacts": 5,
+                    "description": "Malware family M.Slimware.Potentialrisk.PUA",
+                    "firstContact": "2023-01-13T17:14:23.518Z",
+                    "hasPlaybackContacts": false,
+                    "id": "c3b0d780-9365-11ed-b0f8-a7e340234a4e",
+                    "labelDistribution": {
+                        "1791": 4,
+                        "4301": 1
+                    },
+                    "lastContact": "2023-01-27T19:00:11.457Z",
+                    "status": "open",
+                    "statusTimestamp": "2023-01-13T17:14:40.248Z",
+                    "timestamp": "2023-01-13T17:14:40.248Z",
+                    "totalEndpoints": 4,
+                    "unread": true
                 }
             ],
             "paginationInfo": {
@@ -3636,7 +3773,7 @@ Get a paginated list of open incidents for the company. The items are listed by 
                 "next": 2,
                 "page": 1
             },
-            "timestamp": "2023-02-06T16:19:23.670Z"
+            "timestamp": "2023-02-07T23:20:19.924Z"
         }
     }
 }
@@ -3647,7 +3784,6 @@ Get a paginated list of open incidents for the company. The items are listed by 
 >### Incidents
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact|Has Playback Contacts|Id|Label Distribution|Last Contact|Status|Status Timestamp|Timestamp|Total Endpoints|Unread|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| jits.ac.in | jits.ac.in | Malware | 5 | QakBot | 2023-01-13T21:51:12.190Z | false | 6eddaf40-938c-11ed-b0f8-a7e340234a4e | 1791: 1<br/>548: 3<br/>4301: 1 | 2023-01-27T21:23:34.329Z | open | 2023-01-16T12:13:23.292Z | 2023-01-13T21:51:28.308Z | 3 | false |
 >| msgos.com | msgos.com | Spam | 3 | Disposable email host | 2023-01-13T21:51:10.312Z | false | 6edc4fb0-938c-11ed-b0f8-a7e340234a4e | 1791: 1<br/>4055: 1<br/>4301: 1 | 2023-01-27T21:16:25.261Z | open | 2023-01-13T21:51:28.299Z | 2023-01-13T21:51:28.299Z | 3 | false |
 >| netwonder.net | netwonder.net | Malware | 9 | Malware family Nivdort | 2023-01-13T21:50:53.247Z | false | 642934c0-938c-11ed-b0f8-a7e340234a4e | 1791: 2<br/>2144: 6<br/>4301: 1 | 2023-01-27T21:21:19.861Z | open | 2023-01-13T21:51:10.348Z | 2023-01-13T21:51:10.348Z | 3 | false |
 >| subwaybookreview.com | subwaybookreview.com | Malware | 2 | Malware family Exploit.Msoffice.Generic | 2023-01-13T21:50:38.599Z | false | 59641870-938c-11ed-b0f8-a7e340234a4e | 1791: 1<br/>4301: 1 | 2023-01-27T21:33:59.964Z | open | 2023-01-13T21:50:52.279Z | 2023-01-13T21:50:52.279Z | 2 | true |
@@ -3697,6 +3833,7 @@ Get a paginated list of open incidents for the company. The items are listed by 
 >| ige.es | ige.es | Spam | 4 | Disposable email host | 2023-01-13T17:17:09.658Z | false | 260cbe30-9366-11ed-b0f8-a7e340234a4e | 1791: 3<br/>4301: 1 | 2023-01-27T19:00:15.153Z | open | 2023-01-13T17:17:25.267Z | 2023-01-13T17:17:25.267Z | 4 | true |
 >| shorturl.ac | shorturl.ac | Phishing | 9 | Phishing domain | 2023-01-13T17:14:44.779Z | false | ce6c7df0-9365-11ed-b0f8-a7e340234a4e | 1791: 8<br/>4301: 1 | 2023-01-27T19:00:14.931Z | open | 2023-01-13T17:14:58.255Z | 2023-01-13T17:14:58.255Z | 4 | true |
 >| recipeforfailure.com | recipeforfailure.com | Spam | 7 | Disposable email host | 2023-01-13T17:14:43.996Z | false | ce6a0cf0-9365-11ed-b0f8-a7e340234a4e | 1791: 5<br/>4301: 2 | 2023-01-27T19:00:23.405Z | open | 2023-01-13T17:14:58.239Z | 2023-01-13T17:14:58.239Z | 4 | true |
+>| slimcleaner.com | slimcleaner.com | Malware | 5 | Malware family M.Slimware.Potentialrisk.PUA | 2023-01-13T17:14:23.518Z | false | c3b0d780-9365-11ed-b0f8-a7e340234a4e | 1791: 4<br/>4301: 1 | 2023-01-27T19:00:11.457Z | open | 2023-01-13T17:14:40.248Z | 2023-01-13T17:14:40.248Z | 4 | true |
 
 
 ### lumu-retrieve-muted-incidents
@@ -3745,6 +3882,31 @@ Get a paginated list of muted incidents for the company. The items are listed by
     "Lumu": {
         "RetrieveMutedIncidents": {
             "items": [
+                {
+                    "adversaries": [
+                        "jits.ac.in"
+                    ],
+                    "adversaryId": "jits.ac.in",
+                    "adversaryTypes": [
+                        "Malware"
+                    ],
+                    "contacts": 5,
+                    "description": "QakBot",
+                    "firstContact": "2023-01-13T21:51:12.190Z",
+                    "hasPlaybackContacts": false,
+                    "id": "6eddaf40-938c-11ed-b0f8-a7e340234a4e",
+                    "labelDistribution": {
+                        "1791": 1,
+                        "4301": 1,
+                        "548": 3
+                    },
+                    "lastContact": "2023-01-27T21:23:34.329Z",
+                    "status": "muted",
+                    "statusTimestamp": "2023-02-06T16:58:11.034Z",
+                    "timestamp": "2023-01-13T21:51:28.308Z",
+                    "totalEndpoints": 3,
+                    "unread": false
+                },
                 {
                     "adversaries": [
                         "12finance.com"
@@ -4910,31 +5072,6 @@ Get a paginated list of muted incidents for the company. The items are listed by
                     "timestamp": "2021-05-29T05:22:59.170Z",
                     "totalEndpoints": 2,
                     "unread": false
-                },
-                {
-                    "adversaries": [
-                        "shrtm.nu"
-                    ],
-                    "adversaryId": "shrtm.nu",
-                    "adversaryTypes": [
-                        "Malware",
-                        "Phishing"
-                    ],
-                    "contacts": 21,
-                    "description": "Malicious domain",
-                    "hasPlaybackContacts": false,
-                    "id": "e00e25c0-e8aa-11eb-b203-75dda93b7328",
-                    "labelDistribution": {
-                        "1179": 1,
-                        "805": 19,
-                        "864": 1
-                    },
-                    "lastContact": "2021-09-22T12:58:55Z",
-                    "status": "muted",
-                    "statusTimestamp": "2021-07-28T19:09:18.445Z",
-                    "timestamp": "2021-07-19T16:03:36.604Z",
-                    "totalEndpoints": 3,
-                    "unread": false
                 }
             ],
             "paginationInfo": {
@@ -4942,7 +5079,7 @@ Get a paginated list of muted incidents for the company. The items are listed by
                 "next": 2,
                 "page": 1
             },
-            "timestamp": "2023-02-06T16:19:25.862Z"
+            "timestamp": "2023-02-07T23:20:22.014Z"
         }
     }
 }
@@ -4953,6 +5090,7 @@ Get a paginated list of muted incidents for the company. The items are listed by
 >### Incidents
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact|Has Playback Contacts|Id|Label Distribution|Last Contact|Status|Status Timestamp|Timestamp|Total Endpoints|Unread|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| jits.ac.in | jits.ac.in | Malware | 5 | QakBot | 2023-01-13T21:51:12.190Z | false | 6eddaf40-938c-11ed-b0f8-a7e340234a4e | 1791: 1<br/>548: 3<br/>4301: 1 | 2023-01-27T21:23:34.329Z | muted | 2023-02-06T16:58:11.034Z | 2023-01-13T21:51:28.308Z | 3 | false |
 >| 12finance.com | 12finance.com | Mining | 11 | CryptoMining domain | 2022-12-23T14:46:54Z | false | 721ed640-82d2-11ed-a600-d53ba4d2bb70 | 2148: 1<br/>2254: 10 | 2022-12-23T22:30:10.448Z | muted | 2022-12-27T02:39:14.360Z | 2022-12-23T14:59:48.772Z | 4 | false |
 >| www.digeus.com | www.digeus.com | Malware | 2 | Malware family Application.Deceptor.ANL | 2022-12-12T23:20:56.706Z | false | ab056a80-7a73-11ed-a600-d53ba4d2bb70 | 147: 1<br/>218: 1 | 2022-12-22T20:37:02.228Z | muted | 2022-12-15T20:59:51.796Z | 2022-12-12T23:21:12.744Z | 2 | false |
 >| jameshallybone.co.uk | jameshallybone.co.uk | Malware | 8 | Malicious domain | 2022-11-21T21:46:01.425Z | false | f06a50c0-69e5-11ed-89c2-6136df938368 | 989: 6<br/>1651: 1<br/>3811: 1 | 2022-12-05T16:03:05.322Z | muted | 2022-12-13T20:48:09.825Z | 2022-11-21T21:46:22.028Z | 3 | false |
@@ -5002,7 +5140,6 @@ Get a paginated list of muted incidents for the company. The items are listed by
 >| saner.com.au | saner.com.au | C2C,<br/>Malware | 7 | Malware family P2PZeuS |  | false | e37738d0-7b0f-11ec-b95a-431da32564f1 | 218: 4<br/>1885: 1<br/>1988: 1<br/>1851: 1 | 2022-03-07T21:21:01Z | muted | 2022-01-21T23:18:45.525Z | 2022-01-21T23:14:31.261Z | 2 | false |
 >| tempmail.co | tempmail.co | Spam | 1953 | Disposable email host | 2022-01-05T22:58:12.900Z | false | e727df00-6e7d-11ec-a2fc-7f6e039c5267 | 989: 1952<br/>864: 1 | 2022-06-24T14:17:43.651Z | muted | 2022-01-06T15:13:22.379Z | 2022-01-05T23:19:16.976Z | 2 | false |
 >| vcdb.org | vcdb.org | Phishing | 5 | Phishing domain | 2021-06-01T22:51:14Z | false | ee7dec20-c03d-11eb-b377-eba5fa4be63d | 864: 1<br/>989: 4 | 2021-06-02T23:05:33Z | closed | 2022-01-05T23:07:53.632Z | 2021-05-29T05:22:59.170Z | 2 | false |
->| shrtm.nu | shrtm.nu | Malware,<br/>Phishing | 21 | Malicious domain |  | false | e00e25c0-e8aa-11eb-b203-75dda93b7328 | 864: 1<br/>805: 19<br/>1179: 1 | 2021-09-22T12:58:55Z | muted | 2021-07-28T19:09:18.445Z | 2021-07-19T16:03:36.604Z | 3 | false |
 
 
 #### Command example
@@ -5114,7 +5251,7 @@ Get a paginated list of muted incidents for the company. The items are listed by
                 "items": 50,
                 "page": 1
             },
-            "timestamp": "2023-02-06T16:19:28.348Z"
+            "timestamp": "2023-02-07T23:20:24.161Z"
         }
     }
 }
@@ -5178,6 +5315,123 @@ Get a paginated list of closed incidents for the company. The items are listed b
     "Lumu": {
         "RetrieveClosedIncidents": {
             "items": [
+                {
+                    "adversaries": [
+                        "activity.lumu.io"
+                    ],
+                    "adversaryId": "activity.lumu.io",
+                    "adversaryTypes": [
+                        "Spam"
+                    ],
+                    "contacts": 12,
+                    "description": "Activity Test Query",
+                    "firstContact": "2023-02-07T15:51:15.463Z",
+                    "hasPlaybackContacts": false,
+                    "id": "826dd220-a6ff-11ed-9fd0-e5fb50c818f6",
+                    "labelDistribution": {
+                        "0": 11,
+                        "989": 1
+                    },
+                    "lastContact": "2023-02-07T15:51:15.463Z",
+                    "status": "closed",
+                    "statusTimestamp": "2023-02-07T23:08:53.658Z",
+                    "timestamp": "2023-02-07T15:53:05.346Z",
+                    "totalEndpoints": 3,
+                    "unread": false
+                },
+                {
+                    "adversaries": [
+                        "104.156.63.145"
+                    ],
+                    "adversaryId": "104.156.63.145",
+                    "adversaryTypes": [
+                        "C2C"
+                    ],
+                    "contacts": 5,
+                    "description": "Malware family Agentemis",
+                    "firstContact": "2023-02-08T03:09:07Z",
+                    "hasPlaybackContacts": false,
+                    "id": "b22ba330-a72b-11ed-9fd0-e5fb50c818f6",
+                    "labelDistribution": {
+                        "2144": 5
+                    },
+                    "lastContact": "2023-02-08T03:09:09Z",
+                    "status": "closed",
+                    "statusTimestamp": "2023-02-07T21:10:17.404Z",
+                    "timestamp": "2023-02-07T21:09:23.299Z",
+                    "totalEndpoints": 1,
+                    "unread": false
+                },
+                {
+                    "adversaries": [
+                        "104.156.63.145"
+                    ],
+                    "adversaryId": "104.156.63.145",
+                    "adversaryTypes": [
+                        "C2C"
+                    ],
+                    "contacts": 10,
+                    "description": "Malware family Agentemis",
+                    "firstContact": "2023-02-08T00:50:58Z",
+                    "hasPlaybackContacts": false,
+                    "id": "65a131f0-a718-11ed-9fd0-e5fb50c818f6",
+                    "labelDistribution": {
+                        "2144": 10
+                    },
+                    "lastContact": "2023-02-08T00:52:12Z",
+                    "status": "closed",
+                    "statusTimestamp": "2023-02-07T21:07:38.628Z",
+                    "timestamp": "2023-02-07T18:51:14.447Z",
+                    "totalEndpoints": 1,
+                    "unread": false
+                },
+                {
+                    "adversaries": [
+                        "104.156.63.145"
+                    ],
+                    "adversaryId": "104.156.63.145",
+                    "adversaryTypes": [
+                        "C2C"
+                    ],
+                    "contacts": 19,
+                    "description": "Malware family Agentemis",
+                    "firstContact": "2022-09-07T14:51:00.858Z",
+                    "hasPlaybackContacts": false,
+                    "id": "9b992df0-2ebc-11ed-9b90-a51546bb08b5",
+                    "labelDistribution": {
+                        "2144": 17,
+                        "2280": 2
+                    },
+                    "lastContact": "2023-02-08T00:49:59Z",
+                    "status": "closed",
+                    "statusTimestamp": "2023-02-07T18:50:39.534Z",
+                    "timestamp": "2022-09-07T14:51:51.759Z",
+                    "totalEndpoints": 2,
+                    "unread": false
+                },
+                {
+                    "adversaries": [
+                        "activity.lumu.io"
+                    ],
+                    "adversaryId": "activity.lumu.io",
+                    "adversaryTypes": [
+                        "Spam"
+                    ],
+                    "contacts": 3,
+                    "description": "Activity Test Query",
+                    "firstContact": "2022-12-20T14:37:02.228Z",
+                    "hasPlaybackContacts": false,
+                    "id": "eb611160-a638-11ed-a0c7-dd6f8e69d343",
+                    "labelDistribution": {
+                        "0": 3
+                    },
+                    "lastContact": "2022-12-20T14:37:02.228Z",
+                    "status": "closed",
+                    "statusTimestamp": "2023-02-06T16:19:52.211Z",
+                    "timestamp": "2023-02-06T16:11:31.574Z",
+                    "totalEndpoints": 1,
+                    "unread": false
+                },
                 {
                     "adversaries": [
                         "activity.lumu.io"
@@ -6233,122 +6487,6 @@ Get a paginated list of closed incidents for the company. The items are listed b
                     "timestamp": "2022-12-16T16:26:42.901Z",
                     "totalEndpoints": 2,
                     "unread": false
-                },
-                {
-                    "adversaries": [
-                        "upch.mx"
-                    ],
-                    "adversaryId": "upch.mx",
-                    "adversaryTypes": [
-                        "Malware"
-                    ],
-                    "contacts": 32,
-                    "description": "Malware family Agent.Tr.5e6f.Wm",
-                    "firstContact": "2022-12-20T23:36:42.101Z",
-                    "hasPlaybackContacts": false,
-                    "id": "3197e360-80bf-11ed-a600-d53ba4d2bb70",
-                    "labelDistribution": {
-                        "3077": 32
-                    },
-                    "lastContact": "2022-12-21T00:16:08.153Z",
-                    "status": "closed",
-                    "statusTimestamp": "2022-12-21T00:16:44.129Z",
-                    "timestamp": "2022-12-20T23:36:57.750Z",
-                    "totalEndpoints": 2,
-                    "unread": false
-                },
-                {
-                    "adversaries": [
-                        "upch.mx"
-                    ],
-                    "adversaryId": "upch.mx",
-                    "adversaryTypes": [
-                        "Malware"
-                    ],
-                    "contacts": 1,
-                    "description": "Malware family Agent.Tr.5e6f.Wm",
-                    "firstContact": "2022-12-20T23:32:36.743Z",
-                    "hasPlaybackContacts": false,
-                    "id": "9ef6cf30-80be-11ed-a600-d53ba4d2bb70",
-                    "labelDistribution": {
-                        "3077": 1
-                    },
-                    "lastContact": "2022-12-20T23:32:36.743Z",
-                    "status": "closed",
-                    "statusTimestamp": "2022-12-20T23:35:41.292Z",
-                    "timestamp": "2022-12-20T23:32:51.747Z",
-                    "totalEndpoints": 1,
-                    "unread": false
-                },
-                {
-                    "adversaries": [
-                        "activity.lumu.io"
-                    ],
-                    "adversaryId": "activity.lumu.io",
-                    "adversaryTypes": [
-                        "Spam"
-                    ],
-                    "contacts": 2,
-                    "description": "Activity Test Query",
-                    "firstContact": "2022-10-20T14:37:02.228Z",
-                    "hasPlaybackContacts": false,
-                    "id": "86515610-7d4b-11ed-a600-d53ba4d2bb70",
-                    "labelDistribution": {
-                        "0": 2
-                    },
-                    "lastContact": "2022-10-20T14:37:02.228Z",
-                    "status": "closed",
-                    "statusTimestamp": "2022-12-16T14:13:21.021Z",
-                    "timestamp": "2022-12-16T14:11:24.785Z",
-                    "totalEndpoints": 1,
-                    "unread": false
-                },
-                {
-                    "adversaries": [
-                        "activity.lumu.io"
-                    ],
-                    "adversaryId": "activity.lumu.io",
-                    "adversaryTypes": [
-                        "Spam"
-                    ],
-                    "contacts": 18,
-                    "description": "Activity Test Query",
-                    "firstContact": "2022-10-20T14:37:02.228Z",
-                    "hasPlaybackContacts": false,
-                    "id": "2082d5a0-7960-11ed-89c2-6136df938368",
-                    "labelDistribution": {
-                        "0": 17,
-                        "3938": 1
-                    },
-                    "lastContact": "2022-12-12T19:29:12.308Z",
-                    "status": "closed",
-                    "statusTimestamp": "2022-12-16T14:09:27.416Z",
-                    "timestamp": "2022-12-11T14:28:48.762Z",
-                    "totalEndpoints": 3,
-                    "unread": false
-                },
-                {
-                    "adversaries": [
-                        "curlhph.tk"
-                    ],
-                    "adversaryId": "curlhph.tk",
-                    "adversaryTypes": [
-                        "Spam"
-                    ],
-                    "contacts": 6,
-                    "description": "Disposable email host",
-                    "firstContact": "2022-11-21T21:45:50.011Z",
-                    "hasPlaybackContacts": false,
-                    "id": "f0580140-69e5-11ed-89c2-6136df938368",
-                    "labelDistribution": {
-                        "989": 6
-                    },
-                    "lastContact": "2022-12-05T16:03:05.316Z",
-                    "status": "closed",
-                    "statusTimestamp": "2022-12-14T01:33:23.102Z",
-                    "timestamp": "2022-11-21T21:46:21.908Z",
-                    "totalEndpoints": 1,
-                    "unread": false
                 }
             ],
             "paginationInfo": {
@@ -6356,7 +6494,7 @@ Get a paginated list of closed incidents for the company. The items are listed b
                 "next": 2,
                 "page": 1
             },
-            "timestamp": "2023-02-06T16:19:33.327Z"
+            "timestamp": "2023-02-07T23:20:26.085Z"
         }
     }
 }
@@ -6367,6 +6505,11 @@ Get a paginated list of closed incidents for the company. The items are listed b
 >### Incidents
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact|Has Playback Contacts|Id|Label Distribution|Last Contact|Status|Status Timestamp|Timestamp|Total Endpoints|Unread|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| activity.lumu.io | activity.lumu.io | Spam | 12 | Activity Test Query | 2023-02-07T15:51:15.463Z | false | 826dd220-a6ff-11ed-9fd0-e5fb50c818f6 | 989: 1<br/>0: 11 | 2023-02-07T15:51:15.463Z | closed | 2023-02-07T23:08:53.658Z | 2023-02-07T15:53:05.346Z | 3 | false |
+>| 104.156.63.145 | 104.156.63.145 | C2C | 5 | Malware family Agentemis | 2023-02-08T03:09:07Z | false | b22ba330-a72b-11ed-9fd0-e5fb50c818f6 | 2144: 5 | 2023-02-08T03:09:09Z | closed | 2023-02-07T21:10:17.404Z | 2023-02-07T21:09:23.299Z | 1 | false |
+>| 104.156.63.145 | 104.156.63.145 | C2C | 10 | Malware family Agentemis | 2023-02-08T00:50:58Z | false | 65a131f0-a718-11ed-9fd0-e5fb50c818f6 | 2144: 10 | 2023-02-08T00:52:12Z | closed | 2023-02-07T21:07:38.628Z | 2023-02-07T18:51:14.447Z | 1 | false |
+>| 104.156.63.145 | 104.156.63.145 | C2C | 19 | Malware family Agentemis | 2022-09-07T14:51:00.858Z | false | 9b992df0-2ebc-11ed-9b90-a51546bb08b5 | 2280: 2<br/>2144: 17 | 2023-02-08T00:49:59Z | closed | 2023-02-07T18:50:39.534Z | 2022-09-07T14:51:51.759Z | 2 | false |
+>| activity.lumu.io | activity.lumu.io | Spam | 3 | Activity Test Query | 2022-12-20T14:37:02.228Z | false | eb611160-a638-11ed-a0c7-dd6f8e69d343 | 0: 3 | 2022-12-20T14:37:02.228Z | closed | 2023-02-06T16:19:52.211Z | 2023-02-06T16:11:31.574Z | 1 | false |
 >| activity.lumu.io | activity.lumu.io | Spam | 22 | Activity Test Query | 2023-02-01T15:13:41.904Z | false | 182f3950-a243-11ed-a0c7-dd6f8e69d343 | 1792: 1<br/>989: 12<br/>0: 9 | 2023-02-03T16:44:00.395Z | closed | 2023-02-06T16:04:22.570Z | 2023-02-01T15:14:17.061Z | 5 | false |
 >| www.chg.com.br | www.chg.com.br | Malware | 3 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-03T19:01:00Z | false | 608c0ee0-a3f5-11ed-a0c7-dd6f8e69d343 | 989: 3 | 2023-02-03T19:01:30Z | closed | 2023-02-03T19:05:06.851Z | 2023-02-03T19:03:00.046Z | 2 | false |
 >| www.chg.com.br | www.chg.com.br | Malware | 6 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-26T18:57:00Z | false | 6afd9ee0-a3f3-11ed-a0c7-dd6f8e69d343 | 989: 6 | 2023-02-26T18:57:30Z | closed | 2023-02-03T19:01:12.035Z | 2023-02-03T18:48:58.574Z | 2 | false |
@@ -6412,11 +6555,6 @@ Get a paginated list of closed incidents for the company. The items are listed b
 >| activity.lumu.io | activity.lumu.io | Spam | 4 | Activity Test Query | 2022-12-21T16:39:34.419Z | false | 159b60d0-814e-11ed-a600-d53ba4d2bb70 | 2254: 4 | 2022-12-21T16:39:34.696Z | closed | 2022-12-22T18:28:39.879Z | 2022-12-21T16:39:48.829Z | 1 | false |
 >| ibu.com.uy | ibu.com.uy | Phishing | 1 | Phishing domain | 2022-12-20T23:20:59.367Z | false | fe5c9240-80bc-11ed-a600-d53ba4d2bb70 | 147: 1 | 2022-12-20T23:20:59.367Z | closed | 2022-12-21T16:26:11.582Z | 2022-12-20T23:21:12.804Z | 1 | false |
 >| activity.lumu.io | activity.lumu.io | Spam | 2 | Activity Test Query | 2022-10-20T14:37:02.228Z | false | 6d178850-7d5e-11ed-a600-d53ba4d2bb70 | 0: 1<br/>2254: 1 | 2022-12-16T19:20:59.642Z | closed | 2022-12-21T16:23:38.937Z | 2022-12-16T16:26:42.901Z | 2 | false |
->| upch.mx | upch.mx | Malware | 32 | Malware family Agent.Tr.5e6f.Wm | 2022-12-20T23:36:42.101Z | false | 3197e360-80bf-11ed-a600-d53ba4d2bb70 | 3077: 32 | 2022-12-21T00:16:08.153Z | closed | 2022-12-21T00:16:44.129Z | 2022-12-20T23:36:57.750Z | 2 | false |
->| upch.mx | upch.mx | Malware | 1 | Malware family Agent.Tr.5e6f.Wm | 2022-12-20T23:32:36.743Z | false | 9ef6cf30-80be-11ed-a600-d53ba4d2bb70 | 3077: 1 | 2022-12-20T23:32:36.743Z | closed | 2022-12-20T23:35:41.292Z | 2022-12-20T23:32:51.747Z | 1 | false |
->| activity.lumu.io | activity.lumu.io | Spam | 2 | Activity Test Query | 2022-10-20T14:37:02.228Z | false | 86515610-7d4b-11ed-a600-d53ba4d2bb70 | 0: 2 | 2022-10-20T14:37:02.228Z | closed | 2022-12-16T14:13:21.021Z | 2022-12-16T14:11:24.785Z | 1 | false |
->| activity.lumu.io | activity.lumu.io | Spam | 18 | Activity Test Query | 2022-10-20T14:37:02.228Z | false | 2082d5a0-7960-11ed-89c2-6136df938368 | 0: 17<br/>3938: 1 | 2022-12-12T19:29:12.308Z | closed | 2022-12-16T14:09:27.416Z | 2022-12-11T14:28:48.762Z | 3 | false |
->| curlhph.tk | curlhph.tk | Spam | 6 | Disposable email host | 2022-11-21T21:45:50.011Z | false | f0580140-69e5-11ed-89c2-6136df938368 | 989: 6 | 2022-12-05T16:03:05.316Z | closed | 2022-12-14T01:33:23.102Z | 2022-11-21T21:46:21.908Z | 1 | false |
 
 
 #### Command example
@@ -6427,6 +6565,53 @@ Get a paginated list of closed incidents for the company. The items are listed b
     "Lumu": {
         "RetrieveClosedIncidents": {
             "items": [
+                {
+                    "adversaries": [
+                        "activity.lumu.io"
+                    ],
+                    "adversaryId": "activity.lumu.io",
+                    "adversaryTypes": [
+                        "Spam"
+                    ],
+                    "contacts": 12,
+                    "description": "Activity Test Query",
+                    "firstContact": "2023-02-07T15:51:15.463Z",
+                    "hasPlaybackContacts": false,
+                    "id": "826dd220-a6ff-11ed-9fd0-e5fb50c818f6",
+                    "labelDistribution": {
+                        "0": 11,
+                        "989": 1
+                    },
+                    "lastContact": "2023-02-07T15:51:15.463Z",
+                    "status": "closed",
+                    "statusTimestamp": "2023-02-07T23:08:53.658Z",
+                    "timestamp": "2023-02-07T15:53:05.346Z",
+                    "totalEndpoints": 3,
+                    "unread": false
+                },
+                {
+                    "adversaries": [
+                        "activity.lumu.io"
+                    ],
+                    "adversaryId": "activity.lumu.io",
+                    "adversaryTypes": [
+                        "Spam"
+                    ],
+                    "contacts": 3,
+                    "description": "Activity Test Query",
+                    "firstContact": "2022-12-20T14:37:02.228Z",
+                    "hasPlaybackContacts": false,
+                    "id": "eb611160-a638-11ed-a0c7-dd6f8e69d343",
+                    "labelDistribution": {
+                        "0": 3
+                    },
+                    "lastContact": "2022-12-20T14:37:02.228Z",
+                    "status": "closed",
+                    "statusTimestamp": "2023-02-06T16:19:52.211Z",
+                    "timestamp": "2023-02-06T16:11:31.574Z",
+                    "totalEndpoints": 1,
+                    "unread": false
+                },
                 {
                     "adversaries": [
                         "activity.lumu.io"
@@ -7551,54 +7736,6 @@ Get a paginated list of closed incidents for the company. The items are listed b
                     "timestamp": "2022-12-07T20:47:27.799Z",
                     "totalEndpoints": 3,
                     "unread": false
-                },
-                {
-                    "adversaries": [
-                        "activity.lumu.io"
-                    ],
-                    "adversaryId": "activity.lumu.io",
-                    "adversaryTypes": [
-                        "Spam"
-                    ],
-                    "contacts": 16,
-                    "description": "Activity Test Query",
-                    "firstContact": "2022-12-06T20:27:21.461Z",
-                    "hasPlaybackContacts": false,
-                    "id": "6fb9fe60-75a4-11ed-89c2-6136df938368",
-                    "labelDistribution": {
-                        "0": 12,
-                        "989": 4
-                    },
-                    "lastContact": "2022-12-06T22:40:04.671Z",
-                    "status": "closed",
-                    "statusTimestamp": "2022-12-07T20:46:55.216Z",
-                    "timestamp": "2022-12-06T20:27:42.790Z",
-                    "totalEndpoints": 1,
-                    "unread": false
-                },
-                {
-                    "adversaries": [
-                        "javxr.com"
-                    ],
-                    "adversaryId": "javxr.com",
-                    "adversaryTypes": [
-                        "Mining"
-                    ],
-                    "contacts": 3,
-                    "description": "CryptoMining domain",
-                    "firstContact": "2022-12-06T22:00:16.389Z",
-                    "hasPlaybackContacts": false,
-                    "id": "65540620-75b1-11ed-89c2-6136df938368",
-                    "labelDistribution": {
-                        "0": 1,
-                        "989": 2
-                    },
-                    "lastContact": "2022-12-06T22:11:15.294Z",
-                    "status": "closed",
-                    "statusTimestamp": "2022-12-06T22:40:06.511Z",
-                    "timestamp": "2022-12-06T22:00:28.802Z",
-                    "totalEndpoints": 1,
-                    "unread": false
                 }
             ],
             "paginationInfo": {
@@ -7606,7 +7743,7 @@ Get a paginated list of closed incidents for the company. The items are listed b
                 "next": 2,
                 "page": 1
             },
-            "timestamp": "2023-02-06T16:19:35.633Z"
+            "timestamp": "2023-02-07T23:20:28.283Z"
         }
     }
 }
@@ -7617,6 +7754,8 @@ Get a paginated list of closed incidents for the company. The items are listed b
 >### Incidents
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact|Has Playback Contacts|Id|Label Distribution|Last Contact|Status|Status Timestamp|Timestamp|Total Endpoints|Unread|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| activity.lumu.io | activity.lumu.io | Spam | 12 | Activity Test Query | 2023-02-07T15:51:15.463Z | false | 826dd220-a6ff-11ed-9fd0-e5fb50c818f6 | 989: 1<br/>0: 11 | 2023-02-07T15:51:15.463Z | closed | 2023-02-07T23:08:53.658Z | 2023-02-07T15:53:05.346Z | 3 | false |
+>| activity.lumu.io | activity.lumu.io | Spam | 3 | Activity Test Query | 2022-12-20T14:37:02.228Z | false | eb611160-a638-11ed-a0c7-dd6f8e69d343 | 0: 3 | 2022-12-20T14:37:02.228Z | closed | 2023-02-06T16:19:52.211Z | 2023-02-06T16:11:31.574Z | 1 | false |
 >| activity.lumu.io | activity.lumu.io | Spam | 22 | Activity Test Query | 2023-02-01T15:13:41.904Z | false | 182f3950-a243-11ed-a0c7-dd6f8e69d343 | 1792: 1<br/>989: 12<br/>0: 9 | 2023-02-03T16:44:00.395Z | closed | 2023-02-06T16:04:22.570Z | 2023-02-01T15:14:17.061Z | 5 | false |
 >| activity.lumu.io | activity.lumu.io | Spam | 1 | Activity Test Query | 2022-12-20T14:37:02.228Z | false | f55f27b0-9e36-11ed-a0c7-dd6f8e69d343 | 0: 1 | 2022-12-20T14:37:02.228Z | closed | 2023-01-27T11:56:03.516Z | 2023-01-27T11:37:20.043Z | 1 | false |
 >| activity.lumu.io | activity.lumu.io | Spam | 1 | Activity Test Query | 2022-12-20T14:37:02.228Z | false | d9bd1450-9dcc-11ed-a0c7-dd6f8e69d343 | 0: 1 | 2022-12-20T14:37:02.228Z | closed | 2023-01-26T23:17:50.720Z | 2023-01-26T22:57:47.029Z | 1 | false |
@@ -7665,8 +7804,6 @@ Get a paginated list of closed incidents for the company. The items are listed b
 >| activity.lumu.io | activity.lumu.io | Spam | 46 | Activity Test Query | 2022-12-09T17:58:14.664Z | false | 1ab96150-77eb-11ed-89c2-6136df938368 | 0: 46 | 2022-12-09T22:35:38.305Z | closed | 2022-12-09T22:40:19.890Z | 2022-12-09T17:58:36.773Z | 2 | false |
 >| activity.lumu.io | activity.lumu.io | Spam | 2 | Activity Test Query | 2022-12-09T17:53:25.070Z | false | 6d490cf0-77ea-11ed-89c2-6136df938368 | 0: 2 | 2022-12-09T17:53:30.786Z | closed | 2022-12-09T17:55:55.295Z | 2022-12-09T17:53:45.791Z | 1 | false |
 >| activity.lumu.io | activity.lumu.io | Spam | 13 | Activity Test Query | 2022-12-07T20:47:07.573Z | false | 5c75c470-7670-11ed-89c2-6136df938368 | 0: 2<br/>2254: 1<br/>989: 10 | 2022-12-09T17:14:35.344Z | closed | 2022-12-09T17:52:49.935Z | 2022-12-07T20:47:27.799Z | 3 | false |
->| activity.lumu.io | activity.lumu.io | Spam | 16 | Activity Test Query | 2022-12-06T20:27:21.461Z | false | 6fb9fe60-75a4-11ed-89c2-6136df938368 | 0: 12<br/>989: 4 | 2022-12-06T22:40:04.671Z | closed | 2022-12-07T20:46:55.216Z | 2022-12-06T20:27:42.790Z | 1 | false |
->| javxr.com | javxr.com | Mining | 3 | CryptoMining domain | 2022-12-06T22:00:16.389Z | false | 65540620-75b1-11ed-89c2-6136df938368 | 989: 2<br/>0: 1 | 2022-12-06T22:11:15.294Z | closed | 2022-12-06T22:40:06.511Z | 2022-12-06T22:00:28.802Z | 1 | false |
 
 
 ### lumu-retrieve-endpoints-by-incident
@@ -7702,7 +7839,7 @@ Get a paginated summary of the endpoints affected by a specified incident.
 | Lumu.RetrieveEndpointsByIncident.paginationInfo.items | Number | current items  | 
 
 #### Command example
-```!lumu-retrieve-endpoints-by-incident lumu_incident_id=eb611160-a638-11ed-a0c7-dd6f8e69d343```
+```!lumu-retrieve-endpoints-by-incident lumu_incident_id=9e9238e0-a73d-11ed-9fd0-e5fb50c818f6```
 #### Context Example
 ```json
 {
@@ -7710,13 +7847,13 @@ Get a paginated summary of the endpoints affected by a specified incident.
         "RetrieveEndpointsByIncident": {
             "items": [
                 {
-                    "endpoint": "Loacal-nesfpdm",
+                    "endpoint": "Loacal-nesfapdm",
                     "first": "2022-12-20T14:37:02.228Z",
                     "label": 0,
                     "last": "2022-12-20T14:37:02.228Z",
                     "lastSourceId": "6d942a7a-d287-415e-9c09-3d6632a6a976",
                     "lastSourceType": "custom_collector",
-                    "total": 3
+                    "total": 2
                 }
             ],
             "paginationInfo": {
@@ -7733,7 +7870,7 @@ Get a paginated summary of the endpoints affected by a specified incident.
 >### Incidents
 >|Endpoint|First|Label|Last|Last Source Id|Last Source Type|Total|
 >|---|---|---|---|---|---|---|
->| Loacal-nesfpdm | 2022-12-20T14:37:02.228Z | 0 | 2022-12-20T14:37:02.228Z | 6d942a7a-d287-415e-9c09-3d6632a6a976 | custom_collector | 3 |
+>| Loacal-nesfapdm | 2022-12-20T14:37:02.228Z | 0 | 2022-12-20T14:37:02.228Z | 6d942a7a-d287-415e-9c09-3d6632a6a976 | custom_collector | 2 |
 
 
 ### lumu-mark-incident-as-read
@@ -7763,7 +7900,7 @@ This transaction does not require any additional body parameters.
 | Lumu.MarkIncidentAsRead.statusCode | unknown | Lumu statusCode | 
 
 #### Command example
-```!lumu-mark-incident-as-read lumu_incident_id=eb611160-a638-11ed-a0c7-dd6f8e69d343 ```
+```!lumu-mark-incident-as-read lumu_incident_id=9e9238e0-a73d-11ed-9fd0-e5fb50c818f6 ```
 #### Context Example
 ```json
 {
@@ -7805,7 +7942,7 @@ This transaction does not require any additional body parameters.
 | Lumu.MuteIncident.statusCode | unknown | Lumu statusCode | 
 
 #### Command example
-```!lumu-mute-incident lumu_incident_id=eb611160-a638-11ed-a0c7-dd6f8e69d343 comment="mute from cortex"```
+```!lumu-mute-incident lumu_incident_id=9e9238e0-a73d-11ed-9fd0-e5fb50c818f6 comment="mute from cortex"```
 #### Context Example
 ```json
 {
@@ -7847,7 +7984,7 @@ This transaction does not require any additional body parameters.
 | Lumu.UnmuteIncident.statusCode | unknown | Lumu statusCode | 
 
 #### Command example
-```!lumu-unmute-incident lumu_incident_id=eb611160-a638-11ed-a0c7-dd6f8e69d343 comment="unmute from cortex"```
+```!lumu-unmute-incident lumu_incident_id=9e9238e0-a73d-11ed-9fd0-e5fb50c818f6 comment="unmute from cortex"```
 #### Context Example
 ```json
 {
@@ -7963,18 +8100,25 @@ Note: the date format in the updates received from the endpoint is in the UTC ti
 | Lumu.ConsultIncidentsUpdatesThroughRest.offset | Number | Lumu next offset | 
 
 #### Command example
-```!lumu-consult-incidents-updates-through-rest items=50 offset=1096605 time=2```
+```!lumu-consult-incidents-updates-through-rest items=4 offset=1096305 time=4```
 #### Context Example
 ```json
 {
     "Lumu": {
         "ConsultIncidentsUpdatesThroughRest": {
-            "offset": 1096609,
+            "offset": 1096566,
             "updates": [
                 {
-                    "IncidentUnmuted": {
-                        "comment": "first unmute for the inc",
+                    "IncidentUpdated": {
                         "companyId": "10228d9c-ff18-4251-ac19-514185e00f17",
+                        "contactSummary": {
+                            "adversaryHost": "activity.lumu.io",
+                            "endpointIp": "192.168.0.13",
+                            "endpointName": "Loacal-nesfpdm",
+                            "fromPlayback": false,
+                            "timestamp": "2022-12-20T14:37:02.228Z",
+                            "uuid": "c45b8540-8073-11ed-b5ad-23f20297b7bb"
+                        },
                         "incident": {
                             "adversaries": [
                                 "activity.lumu.io"
@@ -7983,27 +8127,24 @@ Note: the date format in the updates received from the endpoint is in the UTC ti
                             "adversaryTypes": [
                                 "Spam"
                             ],
-                            "contacts": 3,
+                            "contacts": 15,
                             "description": "Activity Test Query",
-                            "firstContact": "2022-12-20T14:37:02.228Z",
+                            "firstContact": "2023-02-01T15:13:41.904Z",
                             "hasPlaybackContacts": false,
-                            "id": "eb611160-a638-11ed-a0c7-dd6f8e69d343",
+                            "id": "182f3950-a243-11ed-a0c7-dd6f8e69d343",
                             "labelDistribution": {
-                                "0": 3
+                                "0": 2,
+                                "1792": 1,
+                                "989": 12
                             },
-                            "lastContact": "2022-12-20T14:37:02.228Z",
+                            "lastContact": "2023-02-03T16:44:00.395Z",
                             "status": "open",
-                            "statusTimestamp": "2023-02-06T16:15:29.370Z",
-                            "timestamp": "2023-02-06T16:11:31.574Z",
-                            "totalEndpoints": 1,
+                            "statusTimestamp": "2023-02-01T15:14:17.061Z",
+                            "timestamp": "2023-02-01T15:14:17.061Z",
+                            "totalEndpoints": 5,
                             "unread": false
-                        }
-                    }
-                },
-                {
-                    "OpenIncidentsStatusUpdated": {
-                        "companyId": "10228d9c-ff18-4251-ac19-514185e00f17",
-                        "openIncidentsStatus": {
+                        },
+                        "openIncidentsStats": {
                             "labelDistribution": {
                                 "0": 35,
                                 "1179": 2,
@@ -8011,7 +8152,7 @@ Note: the date format in the updates received from the endpoint is in the UTC ti
                                 "1580": 147,
                                 "1651": 14,
                                 "1791": 81,
-                                "1792": 1,
+                                "1792": 2,
                                 "1885": 3,
                                 "2144": 29,
                                 "2148": 247,
@@ -8038,11 +8179,278 @@ Note: the date format in the updates received from the endpoint is in the UTC ti
                                 "548": 25,
                                 "805": 9,
                                 "864": 3,
-                                "989": 71
+                                "989": 72
                             },
                             "openIncidents": 1124,
-                            "totalContacts": 10299,
-                            "totalEndpoints": 207,
+                            "totalContacts": 10311,
+                            "totalEndpoints": 209,
+                            "typeDistribution": {
+                                "C2C": 106,
+                                "DGA": 10,
+                                "Inappropriate content": 1,
+                                "Malware": 666,
+                                "Mining": 274,
+                                "Network Scan": 6,
+                                "Phishing": 31,
+                                "Spam": 265
+                            }
+                        }
+                    }
+                },
+                {
+                    "IncidentUpdated": {
+                        "companyId": "10228d9c-ff18-4251-ac19-514185e00f17",
+                        "contactSummary": {
+                            "adversaryHost": "activity.lumu.io",
+                            "endpointIp": "192.168.0.13",
+                            "endpointName": "Loacal-nesfpdm",
+                            "fromPlayback": false,
+                            "timestamp": "2022-12-20T14:37:02.228Z",
+                            "uuid": "c45b8540-8073-11ed-ab18-23f2022bdf77"
+                        },
+                        "incident": {
+                            "adversaries": [
+                                "activity.lumu.io"
+                            ],
+                            "adversaryId": "activity.lumu.io",
+                            "adversaryTypes": [
+                                "Spam"
+                            ],
+                            "contacts": 16,
+                            "description": "Activity Test Query",
+                            "firstContact": "2023-02-01T15:13:41.904Z",
+                            "hasPlaybackContacts": false,
+                            "id": "182f3950-a243-11ed-a0c7-dd6f8e69d343",
+                            "labelDistribution": {
+                                "0": 3,
+                                "1792": 1,
+                                "989": 12
+                            },
+                            "lastContact": "2023-02-03T16:44:00.395Z",
+                            "status": "open",
+                            "statusTimestamp": "2023-02-01T15:14:17.061Z",
+                            "timestamp": "2023-02-01T15:14:17.061Z",
+                            "totalEndpoints": 5,
+                            "unread": false
+                        },
+                        "openIncidentsStats": {
+                            "labelDistribution": {
+                                "0": 35,
+                                "1179": 2,
+                                "147": 27,
+                                "1580": 147,
+                                "1651": 14,
+                                "1791": 81,
+                                "1792": 2,
+                                "1885": 3,
+                                "2144": 29,
+                                "2148": 247,
+                                "218": 4,
+                                "2254": 89,
+                                "2267": 11,
+                                "2280": 28,
+                                "2692": 1,
+                                "2821": 1,
+                                "2974": 20,
+                                "3005": 1,
+                                "3077": 30,
+                                "3179": 1,
+                                "3182": 4,
+                                "3628": 1,
+                                "3635": 2,
+                                "3771": 1,
+                                "3774": 1,
+                                "3811": 7,
+                                "4055": 134,
+                                "4061": 10,
+                                "4232": 2,
+                                "4301": 393,
+                                "548": 25,
+                                "805": 9,
+                                "864": 3,
+                                "989": 72
+                            },
+                            "openIncidents": 1124,
+                            "totalContacts": 10312,
+                            "totalEndpoints": 209,
+                            "typeDistribution": {
+                                "C2C": 106,
+                                "DGA": 10,
+                                "Inappropriate content": 1,
+                                "Malware": 666,
+                                "Mining": 274,
+                                "Network Scan": 6,
+                                "Phishing": 31,
+                                "Spam": 265
+                            }
+                        }
+                    }
+                },
+                {
+                    "IncidentUpdated": {
+                        "companyId": "10228d9c-ff18-4251-ac19-514185e00f17",
+                        "contactSummary": {
+                            "adversaryHost": "activity.lumu.io",
+                            "endpointIp": "192.168.0.13",
+                            "endpointName": "Loacal-nesfpdm",
+                            "fromPlayback": false,
+                            "timestamp": "2022-12-20T14:37:02.228Z",
+                            "uuid": "c45b8540-8073-11ed-a675-23f2020a8d4c"
+                        },
+                        "incident": {
+                            "adversaries": [
+                                "activity.lumu.io"
+                            ],
+                            "adversaryId": "activity.lumu.io",
+                            "adversaryTypes": [
+                                "Spam"
+                            ],
+                            "contacts": 17,
+                            "description": "Activity Test Query",
+                            "firstContact": "2023-02-01T15:13:41.904Z",
+                            "hasPlaybackContacts": false,
+                            "id": "182f3950-a243-11ed-a0c7-dd6f8e69d343",
+                            "labelDistribution": {
+                                "0": 4,
+                                "1792": 1,
+                                "989": 12
+                            },
+                            "lastContact": "2023-02-03T16:44:00.395Z",
+                            "status": "open",
+                            "statusTimestamp": "2023-02-01T15:14:17.061Z",
+                            "timestamp": "2023-02-01T15:14:17.061Z",
+                            "totalEndpoints": 5,
+                            "unread": false
+                        },
+                        "openIncidentsStats": {
+                            "labelDistribution": {
+                                "0": 35,
+                                "1179": 2,
+                                "147": 27,
+                                "1580": 147,
+                                "1651": 14,
+                                "1791": 81,
+                                "1792": 2,
+                                "1885": 3,
+                                "2144": 29,
+                                "2148": 247,
+                                "218": 4,
+                                "2254": 89,
+                                "2267": 11,
+                                "2280": 28,
+                                "2692": 1,
+                                "2821": 1,
+                                "2974": 20,
+                                "3005": 1,
+                                "3077": 30,
+                                "3179": 1,
+                                "3182": 4,
+                                "3628": 1,
+                                "3635": 2,
+                                "3771": 1,
+                                "3774": 1,
+                                "3811": 7,
+                                "4055": 134,
+                                "4061": 10,
+                                "4232": 2,
+                                "4301": 393,
+                                "548": 25,
+                                "805": 9,
+                                "864": 3,
+                                "989": 72
+                            },
+                            "openIncidents": 1124,
+                            "totalContacts": 10313,
+                            "totalEndpoints": 209,
+                            "typeDistribution": {
+                                "C2C": 106,
+                                "DGA": 10,
+                                "Inappropriate content": 1,
+                                "Malware": 666,
+                                "Mining": 274,
+                                "Network Scan": 6,
+                                "Phishing": 31,
+                                "Spam": 265
+                            }
+                        }
+                    }
+                },
+                {
+                    "IncidentUpdated": {
+                        "companyId": "10228d9c-ff18-4251-ac19-514185e00f17",
+                        "contactSummary": {
+                            "adversaryHost": "activity.lumu.io",
+                            "endpointIp": "192.168.0.13",
+                            "endpointName": "Loacal-nesfpdm",
+                            "fromPlayback": false,
+                            "timestamp": "2022-12-20T14:37:02.228Z",
+                            "uuid": "c45b8540-8073-11ed-ba29-23f202e1cb1a"
+                        },
+                        "incident": {
+                            "adversaries": [
+                                "activity.lumu.io"
+                            ],
+                            "adversaryId": "activity.lumu.io",
+                            "adversaryTypes": [
+                                "Spam"
+                            ],
+                            "contacts": 18,
+                            "description": "Activity Test Query",
+                            "firstContact": "2023-02-01T15:13:41.904Z",
+                            "hasPlaybackContacts": false,
+                            "id": "182f3950-a243-11ed-a0c7-dd6f8e69d343",
+                            "labelDistribution": {
+                                "0": 5,
+                                "1792": 1,
+                                "989": 12
+                            },
+                            "lastContact": "2023-02-03T16:44:00.395Z",
+                            "status": "open",
+                            "statusTimestamp": "2023-02-01T15:14:17.061Z",
+                            "timestamp": "2023-02-01T15:14:17.061Z",
+                            "totalEndpoints": 5,
+                            "unread": false
+                        },
+                        "openIncidentsStats": {
+                            "labelDistribution": {
+                                "0": 35,
+                                "1179": 2,
+                                "147": 27,
+                                "1580": 147,
+                                "1651": 14,
+                                "1791": 81,
+                                "1792": 2,
+                                "1885": 3,
+                                "2144": 29,
+                                "2148": 247,
+                                "218": 4,
+                                "2254": 89,
+                                "2267": 11,
+                                "2280": 28,
+                                "2692": 1,
+                                "2821": 1,
+                                "2974": 20,
+                                "3005": 1,
+                                "3077": 30,
+                                "3179": 1,
+                                "3182": 4,
+                                "3628": 1,
+                                "3635": 2,
+                                "3771": 1,
+                                "3774": 1,
+                                "3811": 7,
+                                "4055": 134,
+                                "4061": 10,
+                                "4232": 2,
+                                "4301": 393,
+                                "548": 25,
+                                "805": 9,
+                                "864": 3,
+                                "989": 72
+                            },
+                            "openIncidents": 1124,
+                            "totalContacts": 10314,
+                            "totalEndpoints": 209,
                             "typeDistribution": {
                                 "C2C": 106,
                                 "DGA": 10,
@@ -8067,7 +8475,7 @@ Note: the date format in the updates received from the endpoint is in the UTC ti
 >### Results
 >|offset|updates|
 >|---|---|
->| 1096609 | {'IncidentUnmuted': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incident': {'id': 'eb611160-a638-11ed-a0c7-dd6f8e69d343', 'timestamp': '2023-02-06T16:11:31.574Z', 'statusTimestamp': '2023-02-06T16:15:29.370Z', 'status': 'open', 'contacts': 3, 'adversaries': ['activity.lumu.io'], 'adversaryId': 'activity.lumu.io', 'adversaryTypes': ['Spam'], 'description': 'Activity Test Query', 'labelDistribution': {'0': 3}, 'totalEndpoints': 1, 'lastContact': '2022-12-20T14:37:02.228Z', 'unread': False, 'hasPlaybackContacts': False, 'firstContact': '2022-12-20T14:37:02.228Z'}, 'comment': 'first unmute for the inc'}},<br/>{'OpenIncidentsStatusUpdated': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'openIncidentsStatus': {'openIncidents': 1124, 'totalContacts': 10299, 'typeDistribution': {'DGA': 10, 'C2C': 106, 'Network Scan': 6, 'Mining': 274, 'Inappropriate content': 1, 'Phishing': 31, 'Spam': 265, 'Malware': 666}, 'labelDistribution': {'1792': 1, '147': 27, '3771': 1, '2254': 89, '4061': 10, '3774': 1, '3077': 30, '2280': 28, '3182': 4, '1885': 3, '2267': 11, '805': 9, '1791': 81, '2148': 247, '548': 25, '3635': 2, '989': 71, '3179': 1, '3005': 1, '4055': 134, '4301': 393, '1179': 2, '864': 3, '2144': 29, '1580': 147, '3811': 7, '4232': 2, '0': 35, '2974': 20, '3628': 1, '218': 4, '2692': 1, '1651': 14, '2821': 1}, 'totalEndpoints': 207}}} |
+>| 1096566 | {'IncidentUpdated': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incident': {'id': '182f3950-a243-11ed-a0c7-dd6f8e69d343', 'timestamp': '2023-02-01T15:14:17.061Z', 'statusTimestamp': '2023-02-01T15:14:17.061Z', 'status': 'open', 'contacts': 15, 'adversaries': ['activity.lumu.io'], 'adversaryId': 'activity.lumu.io', 'adversaryTypes': ['Spam'], 'description': 'Activity Test Query', 'labelDistribution': {'1792': 1, '989': 12, '0': 2}, 'totalEndpoints': 5, 'lastContact': '2023-02-03T16:44:00.395Z', 'unread': False, 'hasPlaybackContacts': False, 'firstContact': '2023-02-01T15:13:41.904Z'}, 'openIncidentsStats': {'openIncidents': 1124, 'totalContacts': 10311, 'typeDistribution': {'DGA': 10, 'C2C': 106, 'Network Scan': 6, 'Mining': 274, 'Inappropriate content': 1, 'Phishing': 31, 'Spam': 265, 'Malware': 666}, 'labelDistribution': {'1792': 2, '147': 27, '3771': 1, '2254': 89, '4061': 10, '3774': 1, '3077': 30, '2280': 28, '3182': 4, '1885': 3, '2267': 11, '805': 9, '1791': 81, '2148': 247, '548': 25, '3635': 2, '989': 72, '3179': 1, '3005': 1, '4055': 134, '4301': 393, '1179': 2, '864': 3, '2144': 29, '1580': 147, '3811': 7, '4232': 2, '0': 35, '2974': 20, '3628': 1, '218': 4, '2692': 1, '1651': 14, '2821': 1}, 'totalEndpoints': 209}, 'contactSummary': {'uuid': 'c45b8540-8073-11ed-b5ad-23f20297b7bb', 'timestamp': '2022-12-20T14:37:02.228Z', 'adversaryHost': 'activity.lumu.io', 'endpointIp': '192.168.0.13', 'endpointName': 'Loacal-nesfpdm', 'fromPlayback': False}}},<br/>{'IncidentUpdated': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incident': {'id': '182f3950-a243-11ed-a0c7-dd6f8e69d343', 'timestamp': '2023-02-01T15:14:17.061Z', 'statusTimestamp': '2023-02-01T15:14:17.061Z', 'status': 'open', 'contacts': 16, 'adversaries': ['activity.lumu.io'], 'adversaryId': 'activity.lumu.io', 'adversaryTypes': ['Spam'], 'description': 'Activity Test Query', 'labelDistribution': {'1792': 1, '989': 12, '0': 3}, 'totalEndpoints': 5, 'lastContact': '2023-02-03T16:44:00.395Z', 'unread': False, 'hasPlaybackContacts': False, 'firstContact': '2023-02-01T15:13:41.904Z'}, 'openIncidentsStats': {'openIncidents': 1124, 'totalContacts': 10312, 'typeDistribution': {'DGA': 10, 'C2C': 106, 'Network Scan': 6, 'Mining': 274, 'Inappropriate content': 1, 'Phishing': 31, 'Spam': 265, 'Malware': 666}, 'labelDistribution': {'1792': 2, '147': 27, '3771': 1, '2254': 89, '4061': 10, '3774': 1, '3077': 30, '2280': 28, '3182': 4, '1885': 3, '2267': 11, '805': 9, '1791': 81, '2148': 247, '548': 25, '3635': 2, '989': 72, '3179': 1, '3005': 1, '4055': 134, '4301': 393, '1179': 2, '864': 3, '2144': 29, '1580': 147, '3811': 7, '4232': 2, '0': 35, '2974': 20, '3628': 1, '218': 4, '2692': 1, '1651': 14, '2821': 1}, 'totalEndpoints': 209}, 'contactSummary': {'uuid': 'c45b8540-8073-11ed-ab18-23f2022bdf77', 'timestamp': '2022-12-20T14:37:02.228Z', 'adversaryHost': 'activity.lumu.io', 'endpointIp': '192.168.0.13', 'endpointName': 'Loacal-nesfpdm', 'fromPlayback': False}}},<br/>{'IncidentUpdated': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incident': {'id': '182f3950-a243-11ed-a0c7-dd6f8e69d343', 'timestamp': '2023-02-01T15:14:17.061Z', 'statusTimestamp': '2023-02-01T15:14:17.061Z', 'status': 'open', 'contacts': 17, 'adversaries': ['activity.lumu.io'], 'adversaryId': 'activity.lumu.io', 'adversaryTypes': ['Spam'], 'description': 'Activity Test Query', 'labelDistribution': {'1792': 1, '989': 12, '0': 4}, 'totalEndpoints': 5, 'lastContact': '2023-02-03T16:44:00.395Z', 'unread': False, 'hasPlaybackContacts': False, 'firstContact': '2023-02-01T15:13:41.904Z'}, 'openIncidentsStats': {'openIncidents': 1124, 'totalContacts': 10313, 'typeDistribution': {'DGA': 10, 'C2C': 106, 'Network Scan': 6, 'Mining': 274, 'Inappropriate content': 1, 'Phishing': 31, 'Spam': 265, 'Malware': 666}, 'labelDistribution': {'1792': 2, '147': 27, '3771': 1, '2254': 89, '4061': 10, '3774': 1, '3077': 30, '2280': 28, '3182': 4, '1885': 3, '2267': 11, '805': 9, '1791': 81, '2148': 247, '548': 25, '3635': 2, '989': 72, '3179': 1, '3005': 1, '4055': 134, '4301': 393, '1179': 2, '864': 3, '2144': 29, '1580': 147, '3811': 7, '4232': 2, '0': 35, '2974': 20, '3628': 1, '218': 4, '2692': 1, '1651': 14, '2821': 1}, 'totalEndpoints': 209}, 'contactSummary': {'uuid': 'c45b8540-8073-11ed-a675-23f2020a8d4c', 'timestamp': '2022-12-20T14:37:02.228Z', 'adversaryHost': 'activity.lumu.io', 'endpointIp': '192.168.0.13', 'endpointName': 'Loacal-nesfpdm', 'fromPlayback': False}}},<br/>{'IncidentUpdated': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incident': {'id': '182f3950-a243-11ed-a0c7-dd6f8e69d343', 'timestamp': '2023-02-01T15:14:17.061Z', 'statusTimestamp': '2023-02-01T15:14:17.061Z', 'status': 'open', 'contacts': 18, 'adversaries': ['activity.lumu.io'], 'adversaryId': 'activity.lumu.io', 'adversaryTypes': ['Spam'], 'description': 'Activity Test Query', 'labelDistribution': {'1792': 1, '989': 12, '0': 5}, 'totalEndpoints': 5, 'lastContact': '2023-02-03T16:44:00.395Z', 'unread': False, 'hasPlaybackContacts': False, 'firstContact': '2023-02-01T15:13:41.904Z'}, 'openIncidentsStats': {'openIncidents': 1124, 'totalContacts': 10314, 'typeDistribution': {'DGA': 10, 'C2C': 106, 'Network Scan': 6, 'Mining': 274, 'Inappropriate content': 1, 'Phishing': 31, 'Spam': 265, 'Malware': 666}, 'labelDistribution': {'1792': 2, '147': 27, '3771': 1, '2254': 89, '4061': 10, '3774': 1, '3077': 30, '2280': 28, '3182': 4, '1885': 3, '2267': 11, '805': 9, '1791': 81, '2148': 247, '548': 25, '3635': 2, '989': 72, '3179': 1, '3005': 1, '4055': 134, '4301': 393, '1179': 2, '864': 3, '2144': 29, '1580': 147, '3811': 7, '4232': 2, '0': 35, '2974': 20, '3628': 1, '218': 4, '2692': 1, '1651': 14, '2821': 1}, 'totalEndpoints': 209}, 'contactSummary': {'uuid': 'c45b8540-8073-11ed-ba29-23f202e1cb1a', 'timestamp': '2022-12-20T14:37:02.228Z', 'adversaryHost': 'activity.lumu.io', 'endpointIp': '192.168.0.13', 'endpointName': 'Loacal-nesfpdm', 'fromPlayback': False}}} |
 
 
 ### lumu-close-incident
@@ -8096,7 +8504,7 @@ Note: the date format in the updates received from the endpoint is in the UTC ti
 | Lumu.CloseIncident.statusCode | unknown | Lumu statusCode | 
 
 #### Command example
-```!lumu-close-incident lumu_incident_id=eb611160-a638-11ed-a0c7-dd6f8e69d343 comment="closed from Cortex"```
+```!lumu-close-incident lumu_incident_id=9e9238e0-a73d-11ed-9fd0-e5fb50c818f6 comment="closed from Cortex"```
 #### Context Example
 ```json
 {
@@ -8252,7 +8660,10 @@ Lumu get cache
         "GetCache": {
             "cache": [],
             "lumu_incidentsId": [
-                "eb611160-a638-11ed-a0c7-dd6f8e69d343"
+                "9e9238e0-a73d-11ed-9fd0-e5fb50c818f6",
+                "099a9e80-2ec0-11ed-9b90-a51546bb08b5",
+                "6d06a650-a709-11ed-9fd0-e5fb50c818f6",
+                "080189f0-a64b-11ed-a0c7-dd6f8e69d343"
             ]
         }
     }
@@ -8264,7 +8675,7 @@ Lumu get cache
 >### Incidents
 >|Lumu _ Incidents Id|
 >|---|
->| eb611160-a638-11ed-a0c7-dd6f8e69d343 |
+>| 9e9238e0-a73d-11ed-9fd0-e5fb50c818f6,<br/>099a9e80-2ec0-11ed-9b90-a51546bb08b5,<br/>6d06a650-a709-11ed-9fd0-e5fb50c818f6,<br/>080189f0-a64b-11ed-a0c7-dd6f8e69d343 |
 
 
 ## Incident Mirroring

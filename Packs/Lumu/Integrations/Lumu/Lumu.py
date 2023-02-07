@@ -41,23 +41,20 @@ class Client(BaseClient):
 
     def retrieve_labels_request(self, page, items):
         params = assign_params(page=page, items=items, key=self.api_key)
-        headers = self._headers
 
         response = self._http_request(
-            "GET", "api/administration/labels", params=params, headers=headers
+            "GET", "api/administration/labels", params=params
         )
 
         return response
 
     def retrieve_a_specific_label_request(self, label_id):
         params = assign_params(key=self.api_key)
-        headers = self._headers
 
         response = self._http_request(
             "GET",
             f"api/administration/labels/{label_id}",
-            params=params,
-            headers=headers,
+            params=params
         )
 
         return response
@@ -73,36 +70,31 @@ class Client(BaseClient):
             "status": status,
             "toDate": todate,
         }
-        headers = self._headers
 
         response = self._http_request(
-            "POST", "api/incidents/all", params=params, json_data=data, headers=headers
+            "POST", "api/incidents/all", params=params, json_data=data
         )
 
         return response
 
     def retrieve_a_specific_incident_details_request(self, lumu_incident_id):
         params = assign_params(key=self.api_key)
-        headers = self._headers
 
         response = self._http_request(
             "GET",
             f"api/incidents/{lumu_incident_id}/details",
-            params=params,
-            headers=headers,
+            params=params
         )
 
         return response
 
     def retrieve_a_specific_incident_context_request(self, lumu_incident_id, hash):
         params = assign_params(hash=hash, key=self.api_key)
-        headers = self._headers
 
         response = self._http_request(
             "GET",
             f"api/incidents/{lumu_incident_id}/context",
-            params=params,
-            headers=headers,
+            params=params
         )
 
         return response
@@ -110,15 +102,12 @@ class Client(BaseClient):
     def comment_a_specific_incident_request(self, lumu_incident_id, comment):
         params = assign_params(key=self.api_key)
         data = {"comment": comment}
-        headers = self._headers
-        headers["Content-Type"] = "application/json"
 
         response = self._http_request(
             "POST",
             f"api/incidents/{lumu_incident_id}/comment",
             params=params,
-            json_data=data,
-            headers=headers,
+            json_data=data
         )
 
         return response
@@ -126,10 +115,9 @@ class Client(BaseClient):
     def retrieve_open_incidents_request(self, page, items, adversary_types, labels):
         params = assign_params(page=page, items=items, key=self.api_key)
         data = {"adversary-types": adversary_types, "labels": labels}
-        headers = self._headers
 
         response = self._http_request(
-            "POST", "api/incidents/open", params=params, json_data=data, headers=headers
+            "POST", "api/incidents/open", params=params, json_data=data
         )
 
         return response
@@ -137,14 +125,12 @@ class Client(BaseClient):
     def retrieve_muted_incidents_request(self, page, items, adversary_types, labels):
         params = assign_params(page=page, items=items, key=self.api_key)
         data = {"adversary-types": adversary_types, "labels": labels}
-        headers = self._headers
 
         response = self._http_request(
             "POST",
             "api/incidents/muted",
             params=params,
             json_data=data,
-            headers=headers,
         )
 
         return response
@@ -152,40 +138,34 @@ class Client(BaseClient):
     def retrieve_closed_incidents_request(self, page, items, adversary_types, labels):
         params = assign_params(page=page, items=items, key=self.api_key)
         data = {"adversary-types": adversary_types, "labels": labels}
-        headers = self._headers
 
         response = self._http_request(
             "POST",
             "api/incidents/closed",
             params=params,
-            json_data=data,
-            headers=headers,
+            json_data=data
         )
 
         return response
 
     def retrieve_endpoints_by_incident_request(self, lumu_incident_id, page, items):
         params = assign_params(page=page, items=items, key=self.api_key)
-        headers = self._headers
 
         response = self._http_request(
             "POST",
             f"api/incidents/{lumu_incident_id}/endpoints-contacts",
-            params=params,
-            headers=headers,
+            params=params
         )
 
         return response
 
     def mark_incident_as_read_request(self, lumu_incident_id):
         params = assign_params(key=self.api_key)
-        headers = self._headers
 
         response = self._http_request(
             "POST",
             f"api/incidents/{lumu_incident_id}/mark-as-read",
-            params=params,
-            headers=headers,
+            params=params
         )
 
         return response
@@ -193,14 +173,12 @@ class Client(BaseClient):
     def mute_incident_request(self, lumu_incident_id, comment):
         params = assign_params(key=self.api_key)
         data = {"comment": comment}
-        headers = self._headers
 
         response = self._http_request(
             "POST",
             f"api/incidents/{lumu_incident_id}/mute",
             params=params,
-            json_data=data,
-            headers=headers,
+            json_data=data
         )
 
         return response
@@ -208,27 +186,23 @@ class Client(BaseClient):
     def unmute_incident_request(self, lumu_incident_id, comment):
         params = assign_params(key=self.api_key)
         data = {"comment": comment}
-        headers = self._headers
 
         response = self._http_request(
             "POST",
             f"api/incidents/{lumu_incident_id}/unmute",
             params=params,
-            json_data=data,
-            headers=headers,
+            json_data=data
         )
 
         return response
 
     def consult_incidents_updates_through_rest_request(self, offset, items, time):
         params = assign_params(offset=offset, items=items, time=time, key=self.api_key)
-        headers = self._headers
 
         response = self._http_request(
             "GET",
             "api/incidents/open-incidents/updates",
-            params=params,
-            headers=headers,
+            params=params
         )
 
         return response
@@ -236,14 +210,12 @@ class Client(BaseClient):
     def close_incident_request(self, lumu_incident_id, comment):
         params = assign_params(key=self.api_key)
         data = {"comment": comment}
-        headers = self._headers
 
         response = self._http_request(
             "POST",
             f"api/incidents/{lumu_incident_id}/close",
             params=params,
-            json_data=data,
-            headers=headers,
+            json_data=data
         )
 
         return response
@@ -302,10 +274,10 @@ def retrieve_labels_command(client: Client, args: Dict[str, Any]) -> CommandResu
     response = client.retrieve_labels_request(page, items)
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveLabels",
-        outputs_key_field="id",
+        outputs_key_field="labels.id",
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Incidents', response.get('labels', []), headerTransform=pascalToSpace, removeNull=True)
+        readable_output=tableToMarkdown('Labels', response.get('labels', []), headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -320,10 +292,10 @@ def retrieve_a_specific_label_command(
 
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveASpecificLabel",
-        outputs_key_field="id",
+        outputs_key_field="name",
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Incidents', response, headerTransform=pascalToSpace, removeNull=True)
+        readable_output=tableToMarkdown('Label', response, headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -340,15 +312,15 @@ def retrieve_incidents_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     status = argToList(status)
     adversary_types = argToList(adversary_types)
-    if labels and isinstance(labels, str):
-        labels = [int(label) for label in labels.split(",")]
+    labels = argToList(labels)
+    labels = [int(label) for label in labels]
 
     response = client.retrieve_incidents_request(
         page, items, fromdate, todate, status, adversary_types, labels
     )
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveIncidents",
-        outputs_key_field="id",
+        outputs_key_field="items.id",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
@@ -368,7 +340,7 @@ def retrieve_a_specific_incident_details_command(
         outputs_key_field="id",
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Incidents', response, headerTransform=pascalToSpace, removeNull=True)
+        readable_output=tableToMarkdown('Incident', response, headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -385,10 +357,10 @@ def retrieve_a_specific_incident_context_command(
     )
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveASpecificIncidentContext",
-        outputs_key_field="id",
+        outputs_key_field="adversary_id",
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Incidents', response, headerTransform=pascalToSpace, removeNull=True)
+        readable_output=tableToMarkdown('Incident', response, headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -413,7 +385,6 @@ def comment_a_specific_incident_command(
             raise DemistoException(err)
     command_results = CommandResults(
         outputs_prefix="Lumu.CommentASpecificIncident",
-        outputs_key_field="",
         outputs=response,
         raw_response=response,
         readable_output='Comment added to the incident successfully.'
@@ -431,15 +402,15 @@ def retrieve_open_incidents_command(
     labels = args.get("labels")
 
     adversary_types = argToList(adversary_types)
-    if labels and isinstance(labels, str):
-        labels = [int(label) for label in labels.split(",")]
+    labels = argToList(labels)
+    labels = [int(label) for label in labels]
 
     response = client.retrieve_open_incidents_request(
         page, items, adversary_types, labels
     )
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveOpenIncidents",
-        outputs_key_field="id",
+        outputs_key_field="items.id",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
@@ -457,15 +428,15 @@ def retrieve_muted_incidents_command(
     labels = args.get("labels")
 
     adversary_types = argToList(adversary_types)
-    if labels and isinstance(labels, str):
-        labels = [int(label) for label in labels.split(",")]
+    labels = argToList(labels)
+    labels = [int(label) for label in labels]
 
     response = client.retrieve_muted_incidents_request(
         page, items, adversary_types, labels
     )
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveMutedIncidents",
-        outputs_key_field="id",
+        outputs_key_field="items.id",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
@@ -483,15 +454,15 @@ def retrieve_closed_incidents_command(
     labels = args.get("labels")
 
     adversary_types = argToList(adversary_types)
-    if labels and isinstance(labels, str):
-        labels = [int(label) for label in labels.split(",")]
+    labels = argToList(labels)
+    labels = [int(label) for label in labels]
 
     response = client.retrieve_closed_incidents_request(
         page, items, adversary_types, labels
     )
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveClosedIncidents",
-        outputs_key_field="id",
+        outputs_key_field="items.id",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
@@ -512,10 +483,11 @@ def retrieve_endpoints_by_incident_command(
     )
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveEndpointsByIncident",
-        outputs_key_field="id",
+        outputs_key_field="items.label",
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
+        readable_output=tableToMarkdown('Incident endpoints', response.get('items', []),
+                                        headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -536,7 +508,6 @@ def mark_incident_as_read_command(
             raise DemistoException(err)
     command_results = CommandResults(
         outputs_prefix="Lumu.MarkIncidentAsRead",
-        outputs_key_field="",
         outputs=response,
         raw_response=response,
         readable_output='Marked as read the incident successfully.'
@@ -561,7 +532,6 @@ def mute_incident_command(client: Client, args: Dict[str, Any]) -> CommandResult
             raise DemistoException(err)
     command_results = CommandResults(
         outputs_prefix="Lumu.MuteIncident",
-        outputs_key_field="",
         outputs=response,
         raw_response=response,
         readable_output='Muted the incident successfully.'
@@ -586,7 +556,6 @@ def unmute_incident_command(client: Client, args: Dict[str, Any]) -> CommandResu
             raise DemistoException(err)
     command_results = CommandResults(
         outputs_prefix="Lumu.UnmuteIncident",
-        outputs_key_field="",
         outputs=response,
         raw_response=response,
         readable_output='Unmute the incident successfully.'
@@ -611,7 +580,6 @@ def close_incident_command(client: Client, args: Dict[str, Any]) -> CommandResul
             raise DemistoException(err)
     command_results = CommandResults(
         outputs_prefix="Lumu.CloseIncident",
-        outputs_key_field="",
         outputs=response,
         raw_response=response,
         readable_output='Closed the incident successfully.'
@@ -632,7 +600,6 @@ def consult_incidents_updates_through_rest_command(
     )
     command_results = CommandResults(
         outputs_prefix="Lumu.ConsultIncidentsUpdatesThroughRest",
-        outputs_key_field="id",
         outputs=response,
         raw_response=response,
     )
@@ -963,7 +930,6 @@ def clear_cache_command():
     set_integration_context(cache)
     command_results = CommandResults(
         outputs_prefix="Lumu.ClearCache",
-        outputs_key_field="",
         outputs=f"cache cleared {get_integration_context()=}",
         raw_response=f"cache cleared {get_integration_context()=}",
         readable_output=f"cache cleared {get_integration_context()=}"
@@ -977,10 +943,9 @@ def get_cache_command():
     cache = get_integration_context()
     command_results = CommandResults(
         outputs_prefix="Lumu.GetCache",
-        outputs_key_field="cache",
         outputs=cache,
         raw_response=cache,
-        readable_output=tableToMarkdown('Incidents', cache, headerTransform=pascalToSpace, removeNull=True)
+        readable_output=tableToMarkdown('Cache', cache, headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
