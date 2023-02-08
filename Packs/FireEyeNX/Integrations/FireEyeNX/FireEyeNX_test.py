@@ -1027,7 +1027,7 @@ def test_is_supported_context_type_failure(client):
     When is_supported_context_type() method called invalid argument then should return False.
     """
     assert (
-        client.is_supported_context_type('application/octet-stream') is False
+        client.is_supported_context_type('image/png') is False
     )
 
 
@@ -1036,6 +1036,7 @@ def test_is_supported_context_type_success(client):
     When is_supported_context_type() method called valid argument then should return True.
     """
     assert client.is_supported_context_type(CONTENT_TYPE_ZIP) is True
+    assert client.is_supported_context_type('application/octet-stream') is True
 
 
 @patch('FireEyeNX.Client.http_request')

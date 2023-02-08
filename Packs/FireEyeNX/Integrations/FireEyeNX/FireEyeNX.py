@@ -224,6 +224,7 @@ class Client(BaseClient):
             content_type == 'application/pdf'
             or content_type == 'text/csv'
             or content_type == CONTENT_TYPE_ZIP
+            or content_type == 'application/octet-stream'
         ):
             return True
         return False
@@ -1166,7 +1167,7 @@ def get_artifacts_by_alert_command(
 
     # Preparing header
     headers = {
-        'accept': CONTENT_TYPE_ZIP,
+        'Content-Type': CONTENT_TYPE_ZIP,
         'X-FeApi-Token': client.get_api_token(),
     }
 
