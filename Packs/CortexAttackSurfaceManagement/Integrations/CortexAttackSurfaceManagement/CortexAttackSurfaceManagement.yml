@@ -376,8 +376,5 @@ script:
   subtype: python3
   type: python
 fromversion: 6.5.0
-marketplaces:
-- marketplacev2
-- xpanse
 tests:
 - CortexAttackSurfaceManagement_Test
