@@ -37,8 +37,7 @@ def create_html_table(headers, certList, listType):
         tableBody += "\t\t\t\t<tr>\n\t\t\t\t\t<td style=\"text-align: center;\">" + cert['Domain']
         tableBody += "</td>\n\t\t\t\t\t<td style=\"text-align: center;\">" + cert['ExpirationDate']
         tableBody += "</td>\n\t\t\t\t\t<td style=\"text-align: center;\">" + str(
-            cert['TimeToExpiration']) + " days</td>" \
-                     + "\n\t\t\t\t</tr>\n"
+            cert['TimeToExpiration']) + " days</td>" + "\n\t\t\t\t</tr>\n"
 
     tableBody += "\t\t\t</tbody>\n\t\t</table>\n"
 
@@ -48,7 +47,6 @@ def create_html_table(headers, certList, listType):
 def main():
     try:
         emailHTMLBody = ""
-        results = {}
         headers = ("Site", "Expiration Date", "Days to Expiration")
         good = demisto.get(demisto.context(), "SSLReport.Good")
         warning = demisto.get(demisto.context(), "SSLReport.Warning")
@@ -59,9 +57,10 @@ def main():
         emailHTMLBody += "<html>\n\t<head>\n\t\t<style>\n\t\t\tp {\n\t\t\t\ttext-align: center;\n\t\t\t}" \
                          + "\n\t\t\th1 {\n\t\t\t\ttext-align: center;\n\t\t\t\tcolor: #ff0000;\n\t\t\t}" \
                          + "\n\t\t\th2 {\n\t\t\t\ttext-align: center;\n\t\t\t\tcolor: #ff0000;\n\t\t\t}" \
-                         + "\n\t\t\th3 {\n\t\t\t\ttext-align: center;\n\t\t\t\tcolor: #000000;\n\t\t\t\tfont-weight: bold;\n\t\t\t\t" \
-                         + "font-size: 1.5em;\n\t\t\t\ttext-decoration: underline;\n\t\t\t}</style></head>\n\t<body>\n\t\t<h3>\n" \
-                         + "\t\t\tSSL Certificate Report for " + datetime.today().strftime('%Y/%m/%d') + '\n\t\t</h3>\n'
+                         + "\n\t\t\th3 {\n\t\t\t\ttext-align: center;\n\t\t\t\tcolor: #000000;\n\t\t\t\tfont-weight:" \
+                           " bold;\n\t\t\t\t" + "font-size: 1.5em;\n\t\t\t\ttext-decoration: underline;\n\t\t\t}" \
+                           "</style></head>\n\t<body>\n\t\t<h3>\n" + "\t\t\tSSL Certificate Report for " \
+                         + datetime.today().strftime('%Y/%m/%d') + '\n\t\t</h3>\n'
 
         # Setup tables
         if expired:
