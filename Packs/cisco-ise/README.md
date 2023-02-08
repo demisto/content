@@ -5,7 +5,7 @@ This pack includes Cortex XSIAM content.
 Complete the following to configure basic log syslog collection:
 1. Go to **Administration** > **System** > **Logging** > **Remote Logging Targets**
 2. Click **Add** and then fill the required details.
-3. Click **Save**, and then verify the creation of the new target by going to **Remote Logging Targets** page. 
+3. Click **Save**, and then verify the creation of the new target by going to the **Remote Logging Targets** page. 
 
 Note:
 To prevent log segmentation, please set the Maximum Length of the log to **8096**.
