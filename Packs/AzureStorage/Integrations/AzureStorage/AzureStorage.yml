@@ -10,7 +10,7 @@ configuration:
   display: Application ID
   hidden: false
   name: app_id
-  required: true
+  required: false
   type: 0
   section: Connect
 - display: Subscription ID
@@ -42,10 +42,11 @@ configuration:
   required: true
   defaultvalue: Device Code
   type: 15
-  additionalinfo: Type of authentication - could be Authorization Code flow (recommended) or Device Code flow.
+  additionalinfo: Type of authentication - can be Authorization Code Flow (recommended), Device Code Flow, or Azure Managed Identities.
   options:
   - Authorization Code
   - Device Code
+  - Azure Managed Identities
   section: Connect
 - name: tenant_id
   display: Tenant ID (for user-auth mode)
@@ -79,6 +80,13 @@ configuration:
   additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions section.
   displaypassword: Authorization code
   hiddenusername: true
+  section: Connect
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
   section: Connect
 description: Deploy and manage storage accounts and blob services.
 display: Azure Storage Management
@@ -1021,7 +1029,7 @@ script:
     description: Run this command to delete a specific blob container.
     execution: false
     name: azure-storage-blob-container-delete
-  dockerimage: demisto/crypto:1.0.0.42817
+  dockerimage: demisto/crypto:1.0.0.47103
   feed: false
   isfetch: false
   longRunning: false
