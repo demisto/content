@@ -15,6 +15,20 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 ''' PARSING PROCESS EVENT COMPLEX FIELDS CLASS'''
 
+XSOAR_STATUS_TO_CBR = {
+    'Resolved': 'Resolved',
+    'False Positive': 'False Positive',
+}
+
+
+MIRROR_DIRECTION_DICT = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Both': 'Both'
+}
+
+MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
 
 class ProcessEventDetail:
     """
@@ -498,6 +512,7 @@ def alert_update_command(client: Client, alert_ids: str, status: str = None, set
                          set_ignored=set_ignored,
                          query=query
                          )
+
     res = client.http_request(url=url, method='POST', json_data=body)
     if not res:
         raise Exception(f"{INTEGRATION_NAME} - Could not find alerts: {', '.join(alert_ids)}.")
@@ -796,6 +811,24 @@ def endpoint_command(client: Client, id: str = None, ip: str = None, hostname: s
     return command_results
 
 
+def update_remote_system_command(client: Client, args: Dict):
+    parsed_args = UpdateRemoteSystemArgs(args)
+    if parsed_args.delta:
+        demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
+
+    try:
+        if parsed_args.inc_status == IncidentStatus.DONE:
+            close_reason = parsed_args.data.get('closeReason')
+            status = XSOAR_STATUS_TO_CBR.get(close_reason, 'Resolved')
+            alert_id = parsed_args.remote_incident_id
+            alert_update_command(client, alert_ids=alert_id, status=status)
+    except Exception as e:
+        demisto.debug(f"Error in outgoing mirror for incident {parsed_args.remote_incident_id} \n"
+                              f"Error message: {str(e)}")
+    finally:
+        return parsed_args.remote_incident_id
+
+
 def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetch_time: str, status: str = None,
                     feedname: str = None, query: str = ''):
     if (status or feedname) and query:
@@ -845,6 +878,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     demisto.debug(f'{INTEGRATION_NAME} - Got total of {len(alerts)} alerts from CB server.')
     for alert in alerts:
         incident_created_time = dateparser.parse(alert.get('created_time'))
+        alert['mirror_direction'] = MIRROR_DIRECTION
+        alert['mirror_instance'] = demisto.integrationInstance()
+        alert['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
         assert incident_created_time is not None
         incident_created_time_ms = incident_created_time.timestamp()
 
@@ -877,6 +913,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'last_fetch': latest_created_time}
     return next_run, incidents
+
+
 
 
 def test_module(client: Client, params: dict) -> str:
@@ -954,8 +992,12 @@ def main() -> None:
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
+        elif command == 'update-remote-system':
+            return_results(update_remote_system_command(client, args))
+
         elif command in commands:
             return_results(commands[command](client, **args))
+
         else:
             raise NotImplementedError(f'command {command} was not implemented in this integration.')
     # Log exceptions and return errors

@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: VMware Carbon Black EDR v2
+  id: VMware Carbon Black EDR v3
   version: -1
 configuration:
 - display: Server URL
@@ -73,6 +73,14 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+- defaultvalue: None
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Outgoing
+  required: false
+  type: 15
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -80,8 +88,8 @@ configuration:
   section: Connect
   advanced: true
 description: VMware Carbon Black EDR (formerly known as Carbon Black Response)
-display: VMware Carbon Black EDR v2
-name: VMware Carbon Black EDR v2
+display: VMware Carbon Black EDR v3
+name: VMware Carbon Black EDR v3
 script:
   commands:
   - arguments:
@@ -2069,6 +2077,7 @@ script:
   dockerimage: demisto/python3:3.10.9.44472
   feed: false
   isfetch: true
+  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false
