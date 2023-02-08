@@ -343,7 +343,8 @@ def install_packs(client: demisto_client,
             self.error_msg = error_msg
             super().__init__()
 
-    def call_install_packs_request(packs):
+    def call_install_packs_request(packs, retries=1):
+        retries -= 1
         try:
             logging.debug(f'Installing the following packs on server {host}:\n{[pack["id"] for pack in packs]}')
             response_data, status_code, _ = demisto_client.generic_request_func(client,
@@ -362,20 +363,26 @@ def install_packs(client: demisto_client,
 
         except ApiException as ex:
             try:
-                if 'timeout awaiting response' in ex.body:
+                if ex.status == [502, 599]:
+                    if retries <= 0:
+                        raise ex
+                    else:
+                        call_install_packs_request(packs, retries)
+                elif 'timeout awaiting response' in ex.body:
                     raise GCPTimeOutException(ex.body)
-                if malformed_ids := find_malformed_pack_id(ex.body):
+                elif malformed_ids := find_malformed_pack_id(ex.body):
                     raise MalformedPackException(malformed_ids)
-                if 'Item not found' in ex.body:
+                elif 'Item not found' in ex.body:
                     raise GeneralItemNotFoundError(ex.body)
-                raise ex
+                else:
+                    raise ex
             except Exception:
                 logging.debug(f'The error occurred during parsing the install error: {str(ex)}')
                 raise ex
     try:
         logging.info(f'Installing packs {", ".join([p.get("id") for p in packs_to_install])} on server {host}')
         try:
-            call_install_packs_request(packs_to_install)
+            call_install_packs_request(packs_to_install, retries=3)
 
         except MalformedPackException as e:
             # if this is malformed pack error, remove malformed packs and retry until success
@@ -457,7 +464,11 @@ def search_pack_and_its_dependencies(client: demisto_client,
 
         lock.acquire()
         if one_pack_and_its_dependencies_in_batch:
-            batch_packs_install_request_body.append(current_packs_to_install)      # type:ignore[union-attr]
+            pack_and_its_dependencies = []
+            for pack in current_packs_to_install:
+                if pack['id'] not in [p['id'] for p in pack_and_its_dependencies]:
+                    pack_and_its_dependencies.append(pack)
+            batch_packs_install_request_body.append(pack_and_its_dependencies)      # type:ignore[union-attr]
         else:
             for pack in current_packs_to_install:
                 if pack['id'] not in packs_to_install:
@@ -685,6 +696,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         batch_packs_install_request_body = [installation_request_body]
 
     for packs_to_install_body in batch_packs_install_request_body:
+        logging.info(f'For loop on batch packs: {", ".join([p.get("id") for p in packs_to_install])} ')
         install_packs(client, host, packs_to_install_body)
 
     return packs_to_install, SUCCESS_FLAG
