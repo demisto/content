@@ -865,6 +865,7 @@ def get_uploaded_file_name(hash_file: str) -> str | None:
             context = [context]
         if filtered_context := list(filter(lambda x: x.get('sha256') == hash_file, context)):
             return filtered_context[0].get('file_name')
+    return None
 
 
 def send_uploaded_file_to_sandbox_analysis_command(
