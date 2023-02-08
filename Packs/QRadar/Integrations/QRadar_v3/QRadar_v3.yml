@@ -74,7 +74,7 @@ configuration:
   defaultvalue: '20'
   section: Collect
   advanced: true
-- display: Query to fetch offenses. Configuring "status=OPEN" won't mirror closed offenses to the Cortex XSOAR platform.
+- display: Query to fetch offenses.
   name: query
   required: false
   type: 0
@@ -2926,7 +2926,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.9.46807
   feed: false
   isfetch: false
   isremotesyncin: true

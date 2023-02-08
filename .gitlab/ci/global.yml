@@ -252,7 +252,7 @@
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -vvv -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER
+          demisto-sdk lint -vvv -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER --docker-image all
         else
           if [[ -n $BUCKET_UPLOAD ]]; then
             demisto-sdk lint -vvv -p 8 -g --no-mypy --prev-ver $LAST_UPLOAD_COMMIT -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam
@@ -291,27 +291,6 @@
     - section_start "Look For Secrets"
     - demisto-sdk secrets --post-commit --ignore-entropy
     - section_end "Look For Secrets"
-    - section_start "Create id set"
-    - *create-id-set
-    - section_end "Create id set"
-    - section_start "Merge public and private id sets"
-    - |
-      if [[ $CI_COMMIT_BRANCH =~ pull/[0-9]+ ]]; then
-          echo "Skipping, Should not run on contributor's branch."
-      else
-        gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
-        echo "successfully activated google cloud service account"
-
-        echo "Download private ID set"
-        gsutil cp "gs://marketplace-dist/content/private_id_set.json" $ARTIFACTS_FOLDER/unified_id_set.json
-        echo "successfully downloaded private ID set"
-        gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
-
-        echo "Merge public and private ID sets"
-        demisto-sdk merge-id-sets -i1 ./Tests/id_set.json -i2 $ARTIFACTS_FOLDER/unified_id_set.json -o $ARTIFACTS_FOLDER/unified_id_set.json
-        echo "successfully merged public and private ID sets"
-      fi
-    - section_end "Merge public and private id sets"
     - section_start "Copy Tests To Artifact Folder"
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Copy Tests To Artifact Folder"
@@ -339,6 +318,7 @@
             echo "No such branch in content-test-conf: $UNDERSCORE_CI_BRANCH"
           else
             echo "ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo."
+            job-done
             exit 1
           fi
         }

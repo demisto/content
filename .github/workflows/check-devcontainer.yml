@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - .devcontainer/**
+      - pyproject.toml
+      - poetry.lock
   push:
     branches:
       - master
@@ -10,10 +12,34 @@ on:
       - .devcontainer/**
 jobs:
   Build-Devcontainer:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Check if pyproject.toml or poetry.lock has been changed
+      id: changed-files-poetry
+      uses: tj-actions/changed-files@v35
+      with:
+        files: |
+          pyproject.toml
+          poetry.lock
+    - name: Update .devcontainer.json description
+      if: steps.changed-files-poetry.outputs.any_changed == 'true'
+      run: |
+        # replace the first line of .devcontainer/devcontainer.json with the new description
+        POETRY_LOCK_HASH=${{ hashFiles('poetry.lock') }}
+        sed -i "1s/^.*$/\/\/ Development container for Content. Poetry hash $POETRY_LOCK_HASH/" .devcontainer/devcontainer.json 
+    - name: commit file
+      if: steps.changed-files-poetry.outputs.any_changed == 'true' && github.ref == 'refs/heads/master'
+      uses: stefanzweifel/git-auto-commit-action@v4
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        commit_message: Update .devcontainer.json name
     - name: Run demisto-sdk in devcontainer
       uses: devcontainers/ci@v0.2
       with:    
