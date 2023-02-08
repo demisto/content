@@ -936,7 +936,7 @@
   "get_chat_id_and_type_response": {
     "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#chats(id,chatType)",
     "@odata.count": 1,
-    "@odata.nextLink": "https://graph.microsoft.com/v1.0/chats/?$select=id%2c+chatType&$filter=topic+eq+%27test%27&$skiptoken=1.kscDYs0BEcYAAAEU8P8DgapQcm9wZXJ0aWVzgqlTeW5jU3RhdGXZ6GV5SmtaV3hwZG1WeVpXUlRaV2R0Wlc1MGN5STZXM3NpYzNSaGNuUWlPaUl5TURJekxUQXhMVEE0VkRFME9qRXpPalEwTGpFek5pc3dNRG93TUNJc0ltVnVaQ0k2SWpJd01qTXRNREl0TURkVU1UUTZNVE02TkRrdU5UWXlLekF3T2pBd0luMWRMQ0o2WlhKdlRFMVRWRVJsYkdsMlpYSmxaRk5sWjIxbGJuUnpJanBiWFN3aWMyOXlkRTl5WkdWeUlqb3dMQ0pwYm1Oc2RXUmxXbVZ5YjB4TlUxUWlPbVpoYkhObGZRPT2sTGFzdFBhZ2VTaXplojIw",
+    "@odata.nextLink": "https://graph.microsoft.com/v1.0/chats/?$select=id%2c+chatType&$filter=topic+eq+%27test%27&$skiptoken=M2UyZDAwMDAwMDMxMzkzYTMyNjQ2MTM0NjMzMjM5NjYzNjY0MzczMDM0MzE2NTYzNjEzNzMwNjIzNjMzMzg2MjM0MzM2NDM0MzUzNDMzMzc0MDc0Njg3MjY1NjE2NDJlNzYzMjAxZThmYjY4M2Y3ODAxMDAwMDg4NjA5ODdhNzgwMTAwMDB8MTYxNjk2NDUwOTgzMg%3d%3dtest",
     "value": [
       {
         "id": "19:2da4c29f6d7041eca70b638b43d45437@thread.v2",
