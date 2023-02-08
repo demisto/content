@@ -364,7 +364,7 @@ def install_packs(client: demisto_client,
         except ApiException as ex:
             try:
                 logging.info(f'{ex.status=} {type(ex.status)=}')
-                if ex.status == [502, 599]:
+                if ex.status in [502, 599]:
                     if attempts_count <= 1:
                         raise ex
                     else:
