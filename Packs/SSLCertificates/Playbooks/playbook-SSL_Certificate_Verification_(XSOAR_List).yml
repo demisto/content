@@ -179,7 +179,7 @@ tasks:
       subject:
         simple: SSL Certificate Report
       to:
-        simple: josh0x90@gmail.com
+        simple: test1@gmail.com
     separatecontext: false
     continueonerrortype: ""
     view: |-
