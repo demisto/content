@@ -2,7 +2,7 @@
   "rule_id": "IronDefense_Event_Notification_layout_rule",
   "layout_id": "IronDefense Event Notification",
   "description": "",
-  "rule_name": "IronDefense Event Notification",
+  "rule_name": "IronDefense Event Notification Layout Rule",
   "alerts_filter": {
     "filter": {
       "AND": [
