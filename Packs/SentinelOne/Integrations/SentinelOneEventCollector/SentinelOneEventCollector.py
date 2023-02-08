@@ -215,7 +215,7 @@ def fetch_events(client: Client, last_run: dict[str, str],
     if not event_type:
         event_type = ['activities', 'threats', 'alerts']
 
-    demisto.info(f'Fetched event of type: {event_type} from time {last_run}.')
+    demisto.debug(f'Fetched event of type: {event_type} from time {last_run}.')
     events = []
     if 'activities' in event_type:
         if activities := client.get_activities(last_run['last_activity_created']):

@@ -10,7 +10,7 @@ configuration:
   section: Connect
 - display: ''
   name: credentials
-  required: false
+  required: true
   type: 9
   hiddenusername: true
   displaypassword: API Token
