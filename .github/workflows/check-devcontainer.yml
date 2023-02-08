@@ -35,7 +35,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         commit_message: Update .devcontainer.json name
-        commit_options: --force
+        push_options: --force
         branch: master
     - name: Run demisto-sdk in devcontainer
       uses: devcontainers/ci@v0.2
