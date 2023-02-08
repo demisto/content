@@ -6,7 +6,7 @@ filter
     xdm.source.ipv4 = dvc,
     xdm.event.description = if(cefName = "Violation", cs2, cefName = "Audit", msg),
     xdm.target.user.username = duser,
-    xdm.event.outcome = outcome,
+    xdm.event.outcome = if(outcome ~= "fail", XDM_CONST.OUTCOME_FAILED, outcome = "SUCCESS", XDM_CONST.OUTCOME_SUCCESS, outcome = null, null, to_string(outcome)),
     xdm.event.operation_sub_type = cefName,
     xdm.alert.severity = cefSeverity,
     xdm.source.cloud.project = cefDeviceProduct,
