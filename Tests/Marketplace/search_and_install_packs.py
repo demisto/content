@@ -381,7 +381,7 @@ def install_packs(client: demisto_client,
     try:
         logging.info(f'Installing packs {", ".join([p.get("id") for p in packs_to_install])} on server {host}')
         try:
-            call_install_packs_request(packs_to_install, retries=3)
+            call_install_packs_request(packs_to_install, attempts_count =3)
 
         except MalformedPackException as e:
             # if this is malformed pack error, remove malformed packs and retry until success
