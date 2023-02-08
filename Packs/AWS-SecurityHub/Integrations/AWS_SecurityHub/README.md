@@ -810,7 +810,7 @@ If a user updated an incident it won't show in the Cortex XSOAR incident.
 
 ### Mirroring Out Notes
 The supported fields in the mirroring out process are:
-1. AWS Security Hub Confidence.
+- AWS Security Hub Confidence.
 2. Risk Score
 3. Comment
 4. Severity
