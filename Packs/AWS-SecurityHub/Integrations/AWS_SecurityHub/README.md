@@ -819,5 +819,5 @@ The supported fields in the mirroring out process are:
 
 **Important Note:**Mirroring out updates do not affect the value of UpdatedAt for a finding. These updates can be overwritten by the security-findings provider.
 
-* Note: Before updating the comment, make sure that you chose an owner to the incident, in the Case Details section. Otherwise, the comment update won't work.
+* Before updating a comment, make sure that you chose an owner to the incident in the Case Details section. Otherwise, the comment update won't work.
 * Note: AWS Security Hub Verification State, AWS Security Hub Workflow Status fields can contain only 1 state/status.
