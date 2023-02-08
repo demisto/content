@@ -1,6 +1,6 @@
 id: Process Email - Generic for Rasterize
 version: -1
-name: Process Email - Generic for Rasterize
+name: Process Email - Generic for Rasterize - Test
 description: Add email details to the relevant context entities and handle the case where original emails are attached.
 starttaskid: "0"
 tasks:
