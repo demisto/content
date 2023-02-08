@@ -1,99 +1,97 @@
+def include_keys(dictionary, keys):
+    key_set = set(keys) & set(dictionary.keys())
+    return {key: dictionary[key] for key in key_set}
 
 
-  def include_keys(dictionary, keys):
-      key_set = set(keys) & set(dictionary.keys())
-      return {key: dictionary[key] for key in key_set}
+def create_md_table(headers, certList):
+    counter = 0
+    md = ""
+
+    # Build header
+    for arg in headers:
+        md += "|**" + arg + "**"
+    md += "|\n"
+
+    # Close out markdown header
+    for arg in headers:
+        md += "|--------------"
+    md += "|\n"
+
+    # Fill in tabular data
+    for cert in certList:
+        md += "|" + certList[counter]["Domain"]
+        md += "|" + certList[counter]["ExpirationDate"]
+        md += "|" + str(certList[counter]["TimeToExpiration"]) + " days"
+        counter += 1
+        md += "|\n"
+
+    return md
 
 
-  def create_md_table(headers, certList):
-      counter = 0
-      md = ""
+def main():
+    try:
+        md = ""
+        results = {}
+        keyName = demisto.getArg('SSLVerifierKey')
+        statusCode = demisto.getArg('StatusType')
 
-      # Build header
-      for arg in headers:
-          md += "|**" + arg + "**"
-      md += "|\n"
+        SSLVerifier_json = demisto.get(demisto.context(), keyName)
 
-      # Close out markdown header
-      for arg in headers:
-          md += "|--------------"
-      md += "|\n"
+        good = []
+        warning = []
+        expiring = []
+        expired = []
 
-      # Fill in tabular data
-      for cert in certList:
-          md += "|" + certList[counter]["Domain"]
-          md += "|" + certList[counter]["ExpirationDate"]
-          md += "|" + str(certList[counter]["TimeToExpiration"]) + " days"
-          counter += 1
-          md += "|\n"
+        interestingKeys = ("Domain", "ExpirationDate", "TimeToExpiration")
 
-      return md
+        for cert in SSLVerifier_json["Certificate"]:
+            expTime = int(cert["TimeToExpiration"])
+            if expTime <= 90 and expTime > 0:
+                expiring.append(include_keys(cert, interestingKeys))
+            elif expTime > 90 and expTime <= 180:
+                warning.append(include_keys(cert, interestingKeys))
+            elif expTime > 180:
+                good.append(include_keys(cert, interestingKeys))
+            elif expTime <= 0:
+                expired.append(include_keys(cert, interestingKeys))
 
+        # Update Context and create markdown table for good, warning, expiring, and expired certificates
 
-  def main():
-      try:
-          md = ""
-          results = {}
-          keyName = demisto.getArg('SSLVerifierKey')
-          statusCode = demisto.getArg('StatusType')
+        if ((statusCode == "expired" or statusCode == "all") and expired):
+            tblExpired = create_md_table(("Site", "Expiration Date", "Days Expired"), expired)
+            md += "# {{color:red}}(** EXPIRED SSL CERTIFICATES **) #\n\n" + tblExpired
+            results['Expired'] = expired
+            results['ExpiredTable'] = tblExpired
 
-          SSLVerifier_json = demisto.get(demisto.context(), keyName)
+        if ((statusCode == "expiring" or statusCode == "all") and expiring):
+            tblExpiring = create_md_table(("Site", "Expiration Date", "Days to Expiration"), expiring)
+            md += "### {{color:red}}(** SSL Certificates expiring in 90 days or less **) ###\n\n" + tblExpiring
+            results['Expiring'] = expiring
+            results['ExpiringTable'] = tblExpiring
 
-          good = []
-          warning = []
-          expiring = []
-          expired = []
+        if ((statusCode == "warning" or statusCode == "all") and warning):
+            tblWarn = create_md_table(("Site", "Expiration Date", "Days to Expiration"), warning)
+            md += "### {{color:yellow}}(** SSL Certificates expiring between 91 and 180 days from now **) ###\n\n" + tblWarn
+            results['Warning'] = warning
+            results['WarningTable'] = tblWarn
 
-          interestingKeys = ("Domain", "ExpirationDate", "TimeToExpiration")
+        if ((statusCode == "good" or statusCode == "all") and good):
+            tblGood = create_md_table(("Site", "Expiration Date", "Days to Expiration"), good)
+            md += "### {{color:green}}(** SSL Certificates expiring in greater than 180 days **) ###\n\n" + tblGood
+            results['Good'] = good
+            results['GoodTable'] = tblGood
 
-          for cert in SSLVerifier_json["Certificate"]:
-              expTime = int(cert["TimeToExpiration"])
-              if expTime <= 90 and expTime > 0:
-                  expiring.append(include_keys(cert, interestingKeys))
-              elif expTime > 90 and expTime <= 180:
-                  warning.append(include_keys(cert, interestingKeys))
-              elif expTime > 180:
-                  good.append(include_keys(cert, interestingKeys))
-              elif expTime <= 0:
-                  expired.append(include_keys(cert, interestingKeys))
+        results['md'] = md
 
-          # Update Context and create markdown table for good, warning, expiring, and expired certificates
-
-          if ((statusCode == "expired" or statusCode == "all") and expired):
-              tblExpired = create_md_table(("Site", "Expiration Date", "Days Expired"), expired)
-              md += "# {{color:red}}(** EXPIRED SSL CERTIFICATES **) #\n\n" + tblExpired
-              results['Expired'] = expired
-              results['ExpiredTable'] = tblExpired
-
-          if ((statusCode == "expiring" or statusCode == "all") and expiring):
-              tblExpiring = create_md_table(("Site", "Expiration Date", "Days to Expiration"), expiring)
-              md += "### {{color:red}}(** SSL Certificates expiring in 90 days or less **) ###\n\n" + tblExpiring
-              results['Expiring'] = expiring
-              results['ExpiringTable'] = tblExpiring
-
-          if ((statusCode == "warning" or statusCode == "all") and warning):
-              tblWarn = create_md_table(("Site", "Expiration Date", "Days to Expiration"), warning)
-              md += "### {{color:yellow}}(** SSL Certificates expiring between 91 and 180 days from now **) ###\n\n" + tblWarn
-              results['Warning'] = warning
-              results['WarningTable'] = tblWarn
-
-          if ((statusCode == "good" or statusCode == "all") and good):
-              tblGood = create_md_table(("Site", "Expiration Date", "Days to Expiration"), good)
-              md += "### {{color:green}}(** SSL Certificates expiring in greater than 180 days **) ###\n\n" + tblGood
-              results['Good'] = good
-              results['GoodTable'] = tblGood
-
-          results['md'] = md
-
-          return_results(CommandResults(
-              outputs_prefix = "SSLReport",
-              outputs = results,
-              readable_output = md
-              )
-          )
-      except Exception as ex:
-          return_error(f'An Error occured: {ex}', error=ex)
+        return_results(CommandResults(
+            outputs_prefix="SSLReport",
+            outputs=results,
+            readable_output=md
+        )
+        )
+    except Exception as ex:
+        return_error(f'An Error occured: {ex}', error=ex)
 
 
-  if __name__ in ('__main__', '__builtin__', 'builtins'):
-      main()
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
