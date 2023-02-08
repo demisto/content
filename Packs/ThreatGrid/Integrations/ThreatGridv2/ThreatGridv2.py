@@ -445,15 +445,13 @@ def search_submission_command(
         limit=limit,
         offset=offset,
     )
-    submissions = []
-
-    for sample in response["data"]["items"]:
-        submissions.append(
-            delete_keys_from_dict(
-                sample["item"],
-                ["login", "organization_id", "vm_runtime", "login", "tags"],
-            ))
-
+    submissions = [
+        delete_keys_from_dict(
+            sample["item"],
+            ["login", "organization_id", "vm_runtime", "login", "tags"],
+        )
+        for sample in response["data"]["items"]
+    ]
     readable_output = tableToMarkdown(
         name="Samples Submitted :",
         metadata=pagination_message,
@@ -969,7 +967,7 @@ def get_dbotscore(
         score = Common.DBotScore.BAD
     elif api_score >= 50:
         score = Common.DBotScore.SUSPICIOUS
-    elif api_score < 50:
+    else:
         score = Common.DBotScore.GOOD
 
     return Common.DBotScore(
@@ -1051,19 +1049,18 @@ def is_day_diff_valid(sample_analysis_date: str) -> bool:
         bool: Return True is diff smaller than 14.
     """
     try:
-        analysis_date = str(sample_analysis_date).split("T")[0]
+        analysis_date = sample_analysis_date.split("T")[0]
         today_date = str(datetime.now()).split(" ")[0]
     except IndexError as exc:
-        raise IndexError(f'The time doesnt match the expected format {TIME_FORMAT} \n {exc}')
+        raise IndexError(
+            f'The time doesnt match the expected format {TIME_FORMAT} \n {exc}'
+        ) from exc
 
     start = datetime.strptime(analysis_date, TIME_FORMAT)
     end = datetime.strptime(today_date, TIME_FORMAT)
     diff = end - start
 
-    if diff.days > MAX_DAYS_DIFF:
-        return False
-
-    return True
+    return diff.days <= MAX_DAYS_DIFF
 
 
 def url_to_sha256(url: str) -> str:
@@ -1269,11 +1266,7 @@ def delete_keys_from_dict(dictionary: MutableMapping,
 
             elif (isinstance(value, MutableSequence) and value
                   and isinstance(value[0], MutableMapping)):
-                modified_dict[key] = []
-
-                for val in value:
-                    modified_dict[key].append(delete_keys_from_dict(val, keys_set))
-
+                modified_dict[key] = [delete_keys_from_dict(val, keys_set) for val in value]
             else:
                 modified_dict[key] = copy.deepcopy(value)
 
@@ -1293,19 +1286,16 @@ def validate_pagination_arguments(
     Raises:
         ValueError: Appropriate error message.
     """
-    if page_size:
-        if page_size < MIN_PAGE_SIZE or page_size > MAX_PAGE_SIZE:
-            raise ValueError(
-                f"page size argument must be greater than {MIN_PAGE_SIZE} and smaller than {MAX_PAGE_SIZE}."
-            )
+    if page_size and (page_size < MIN_PAGE_SIZE or page_size > MAX_PAGE_SIZE):
+        raise ValueError(
+            f"page size argument must be greater than {MIN_PAGE_SIZE} and smaller than {MAX_PAGE_SIZE}."
+        )
 
-    if page is not None:
-        if page < MIN_PAGE_NUM:
-            raise ValueError(f"page argument must be greater than {MIN_PAGE_NUM-1}.")
+    if page is not None and page < MIN_PAGE_NUM:
+        raise ValueError(f"page argument must be greater than {MIN_PAGE_NUM-1}.")
 
-    if limit is not None:
-        if limit <= MIN_LIMIT:
-            raise ValueError(f"limit argument must be greater than {MIN_LIMIT}.")
+    if limit is not None and limit <= MIN_LIMIT:
+        raise ValueError(f"limit argument must be greater than {MIN_LIMIT}.")
 
 
 def pagination(args: Dict[str, Any]) -> Tuple:
@@ -1443,7 +1433,7 @@ def get_arg_from_command_name(
     except IndexError as exc:
         raise IndexError(
             f'Argument name from command {command_name} in position {position_number} dose not exist.\n Error: {exc}'
-        )
+        ) from exc
 
 
 def delete_key_from_list(items: list, keys_to_delete: list) -> List[dict]:
@@ -1487,7 +1477,7 @@ def main() -> None:
 
     reliability = params.get("integrationReliability")
 
-    args.update({"reliability": reliability})
+    args["reliability"] = reliability
 
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
@@ -1530,7 +1520,7 @@ def main() -> None:
 
     try:
         client: Client = Client(base_url, api_token, proxy, verify_certificate)
-        args.update({"command_name": str(command)})
+        args["command_name"] = str(command)
 
         if command == "test-module":
             return_results(test_module(client))
