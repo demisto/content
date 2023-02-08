@@ -27,5 +27,6 @@
   "AWS-Route53",
   "Azure-Enrichment-Remediation",
   "MicrosoftGraphUser",
-  "AzureCompute"
+  "AzureCompute",
+  "SplunkPy"
 ]
