@@ -2,9 +2,9 @@ commonfields:
   id: Threat Grid
   version: -1
 name: Threat Grid
-display: Cisco Threat Grid
+display: Cisco Threat Grid (Deprecated)
 category: Forensics & Malware Analysis
-description: Query and upload samples to Cisco threat grid.
+description: Deprecated. Use Cisco Threat Grid v2 instead.
 detaileddescription: |-
   1. In your threat grid instance, click your user name at the right top corner.
   2. Select my account.
@@ -491,7 +491,6 @@ script:
       description: The tags of the IOC
     description: Returns a JSON list of the Indicators of Compromise identified in this sample run
   - name: threat-grid-download-artifact
-    deprecated: true
     arguments:
     - name: aid
       required: true
@@ -552,7 +551,6 @@ script:
       description: File containing result
     description: Gets a specific threat feed
   - name: threat-grid-detonate-file
-    deprecated: true
     arguments:
     - name: file-entry-id
       required: true
@@ -1042,11 +1040,11 @@ script:
     outputs:
     - contextPath: Threatgrid.SearchResult
       description: Result for the searched query
-    description: Advanced search that allows searching URLS, Submissions, Samples
-      etc...
-  
+    description: Advanced search that allows searching URLS, Submissions, Samples etc...
+
   runonce: false
   dockerimage: demisto/python3:3.10.9.42476
 tests:
 - ThreatGridTest
 fromversion: 5.0.0
+deprecated: true
