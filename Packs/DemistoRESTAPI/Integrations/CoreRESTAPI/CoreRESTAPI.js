@@ -6,7 +6,7 @@ if (serverURL.slice(-1) === '/') {
 log("$$$$$$$1")
 log(serverURL)
 log(params.auth_id)
-log(params.credentials)
+log(JSON.stringify(params.credentials)),
 log(params.credentials.identifier)
 log(params.credentials.password)
 log("$$$$$$$1")
