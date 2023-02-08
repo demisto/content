@@ -59,4 +59,4 @@ alter raw_data = to_string(json_extract_scalar(event_data , "$.param2"))
     xdm.source.user.user_type =  to_string(json_extract_scalar(user, "$.type")),
     xdm.source.host.hostname = host_name,
     xdm.alert.severity = coalesce(opcode, log_level),
-    xdm.event.outcome = event_result;
+    xdm.event.outcome = if(event_result = "failure", XDM_CONST.OUTCOME_FAILED, event_result = "success", XDM_CONST.OUTCOME_SUCCESS, event_result = null, null, to_string(event_result));
