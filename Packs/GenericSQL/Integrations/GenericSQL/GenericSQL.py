@@ -24,6 +24,7 @@ except Exception:
 pymysql.install_as_MySQLdb()
 
 GLOBAL_CACHE_ATTR = '_generic_sql_engine_cache'
+demisto.error(f'######### credentials: {demisto.params().get("credentials")}')
 DEFAULT_POOL_TTL = 600
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR

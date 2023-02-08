@@ -10,11 +10,7 @@ log(JSON.stringify(params.credentials)),
 log(params.credentials.identifier)
 log(params.credentials.password)
 log("$$$$$$$1")
-logInfo("$$$$$$$2")
-logInfo(serverURL)
-logInfo(params.auth_id)
-logInfo(params.credentials.identifier)
-logInfo("$$$$$$$2")
+
 
 
 if (params.auth_id || (params.credentials && params.credentials.identifier)) {
