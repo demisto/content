@@ -99,8 +99,8 @@ def conflict_only_in_rn_metadata_files(pr: PullRequest, repo: Repo) -> bool:
     except GitCommandError as e:
         error = e.stdout
         conflicting_files = [line.replace('Auto-merging ', '') for line in error.split('\n') if 'Auto-merging ' in line]
-        if len(conflicting_files) != 2 or f"\\{RELEASE_NOTES_DIR}\\" not in ' '.join(conflicting_files) or\
-                f"\\{PACK_METADATA_FILE}" not in ' '.join(conflicting_files):
+        if len(conflicting_files) != 2 or f"/{RELEASE_NOTES_DIR}/" not in ' '.join(conflicting_files) or\
+                f"/{PACK_METADATA_FILE}" not in ' '.join(conflicting_files):
             rn_conflict_exists = False
         else:
             rn_conflict_exists = True
@@ -126,6 +126,8 @@ def main():
     t = Terminal()
 
     git_repo_obj = Repo(os.getcwd())
+    # todo: delete it
+    git_repo_obj.git.checkout(BASE)
     git_repo_obj.remote().fetch()
 
     github_client: Github = Github(github_token, verify=False)
@@ -142,7 +144,7 @@ def main():
                   f'{SKIPPING_MESSAGE}')
         elif NOT_UPDATE_RN_LABEL in [label.name for label in pr.labels]:
             print(f'{t.red}Label {NOT_UPDATE_RN_LABEL} exist in PR {pr_number}. {SKIPPING_MESSAGE}')
-        elif f"\\{RELEASE_NOTES_DIR}\\" not in ' '.join(pr_files_names):
+        elif f"/{RELEASE_NOTES_DIR}/" not in ' '.join(pr_files_names):
             print(f'{t.red}No changes were detected on {RELEASE_NOTES_DIR} directory in PR {pr_number}. '
                   f'{SKIPPING_MESSAGE}')
         elif not conflict_only_in_rn_metadata_files(pr, git_repo_obj):
