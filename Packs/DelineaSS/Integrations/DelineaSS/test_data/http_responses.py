@@ -14,6 +14,10 @@ GET_USERNAME_BY_ID_RAW_RESPONSE = {
     }
 }
 
+SEARCH_SECERT_RAW_RESPONSE ={
+
+}
+
 SECRET_GET_RAW_RESPONSE = {
     'id': 4,
     'name': 'g1-machine',
@@ -394,7 +398,7 @@ SECRET_GET_CREDENTIALS_RAW_RESPONSE = {
                 'itemId': 14,
                 'fileAttachmentId': None,
                 'filename': None,
-                'itemValue': 'andy',
+                'itemValue': 'user',
                 'fieldId': 111,
                 'fieldName': 'Username',
                 'slug': 'username',
@@ -407,7 +411,7 @@ SECRET_GET_CREDENTIALS_RAW_RESPONSE = {
                 'itemId': 15,
                 'fileAttachmentId': None,
                 'filename': None,
-                'itemValue': 'test00111',
+                'itemValue': 'password',
                 'fieldId': 110,
                 'fieldName': 'Password',
                 'slug': 'password',
@@ -507,3 +511,106 @@ SECRET_SEARCH_NAME_RAW_RESPONSE = {
     'success': True,
     'severity': 'None'
 }
+
+SECRET_SEARCH_RAW_RESPONSE = {
+  "filter": {
+    "secretTemplateIds": [
+      -1
+    ],
+    "hasLauncher": None,
+    "searchText": "app.zipbooks.com",
+    "searchField": "name",
+    "searchFieldSlug": None,
+    "includeInactive": False,
+    "includeActive": None,
+    "includeRestricted": False,
+    "secretTemplateId": None,
+    "folderId": None,
+    "includeSubFolders": False,
+    "heartbeatStatus": None,
+    "siteId": None,
+    "scope": None,
+    "recentMinDateTime": None,
+    "onlySharedWithMe": None,
+    "extendedFields": None,
+    "permissionRequired": None,
+    "extendedTypeId": None,
+    "passwordTypeIds": None,
+    "onlyRPCEnabled": None,
+    "doubleLockId": None,
+    "isExactMatch": None,
+    "allowDoubleLocks": None,
+    "doNotCalculateTotal": None
+  },
+  "skip": 0,
+  "take": 10,
+  "total": 2,
+  "pageCount": 1,
+  "currentPage": 1,
+  "batchCount": 1,
+  "prevSkip": 0,
+  "nextSkip": 10,
+  "hasPrev": False,
+  "hasNext": False,
+  "records": [
+    {
+      "id": 967,
+      "name": "app.zipbooks.com",
+      "secretTemplateId": 9,
+      "secretTemplateName": "Web Password",
+      "folderId": -1,
+      "siteId": 1,
+      "active": True,
+      "checkedOut": False,
+      "isRestricted": False,
+      "isOutOfSync": False,
+      "outOfSyncReason": "",
+      "lastHeartBeatStatus": "Disabled",
+      "lastPasswordChangeAttempt": "0001-01-01T00:00:00",
+      "responseCodes": None,
+      "lastAccessed": None,
+      "extendedFields": None,
+      "checkOutEnabled": False,
+      "autoChangeEnabled": False,
+      "doubleLockEnabled": False,
+      "requiresApproval": False,
+      "requiresComment": False,
+      "inheritsPermissions": False,
+      "hidePassword": False,
+      "createDate": "2021-07-08T05:48:33.83",
+      "daysUntilExpiration": -519,
+      "hasLauncher": True
+    },
+    {
+      "id": 966,
+      "name": "app.zipbooks.com",
+      "secretTemplateId": 9,
+      "secretTemplateName": "Web Password",
+      "folderId": -1,
+      "siteId": 1,
+      "active": True,
+      "checkedOut": False,
+      "isRestricted": False,
+      "isOutOfSync": False,
+      "outOfSyncReason": "",
+      "lastHeartBeatStatus": "Disabled",
+      "lastPasswordChangeAttempt": "0001-01-01T00:00:00",
+      "responseCodes": None,
+      "lastAccessed": None,
+      "extendedFields": None,
+      "checkOutEnabled": False,
+      "autoChangeEnabled": False,
+      "doubleLockEnabled": False,
+      "requiresApproval": False,
+      "requiresComment": False,
+      "inheritsPermissions": False,
+      "hidePassword": False,
+      "createDate": "2021-07-08T05:47:44.233",
+      "daysUntilExpiration": -519,
+      "hasLauncher": True
+    }
+  ],
+  "sortBy": [],
+  "success": True,
+  "severity": "None"
+ }

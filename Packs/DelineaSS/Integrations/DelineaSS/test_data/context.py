@@ -420,8 +420,8 @@ SECRET_GET_CREDENTIALS_CONTEXT = {
     'Delinea.Secret.Fetch.Credentials(val.credentials && val.credentials == obj.credentials)': [
         {
             'name': '4',
-            'password': 'test00111',
-            'user': 'andy'
+            'password': 'password',
+            'user': 'user'
         }
     ]
 
@@ -434,3 +434,12 @@ SECRET_SEARCH_NAME_CONTEXT = {
         4241
     ]
 }
+
+
+SECRET_SEARCH_CONTEXT = {
+    'Delinea.Secret.Secret(val.search_secret && val.search_secret == obj.search_secret)': [
+        967,
+        966
+    ]
+}
+
