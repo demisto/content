@@ -220,14 +220,12 @@ class Client(BaseClient):
         :param content_type: content type of header.
         :return: boolean flag, whether content type is supported or not.
         """
-        if (
+        return (
             content_type == 'application/pdf'
             or content_type == 'text/csv'
             or content_type == CONTENT_TYPE_ZIP
             or content_type == 'application/octet-stream'
-        ):
-            return True
-        return False
+        )
 
     @staticmethod
     def handle_demisto_exception(e):
