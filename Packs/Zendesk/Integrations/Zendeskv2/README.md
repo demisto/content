@@ -32,6 +32,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ## Required permissions
 This integration enables executing commands with different permission levels. See the commands' descriptions for more information on the required permission. 
+To learn more on Zendesk roles refer to:
+[Understanding Zendesk Support user roles](https://support.zendesk.com/hc/en-us/articles/4408883763866-Understanding-Zendesk-Support-user-roles#topic_ibd_fdq_cc)
+[About team member product roles and access](https://support.zendesk.com/hc/en-us/articles/4408832171034)
+
 ### zendesk-user-list
 ***
 Gets the specified user's data. 
