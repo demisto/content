@@ -39,7 +39,7 @@ class MsGraphClient:
             proxy=proxy, self_deployed=self_deployed, certificate_thumbprint=certificate_thumbprint,
             private_key=private_key)
 
-    def search_alerts(self, last_modified, severity, category, vendor, time_from, time_to, filter_query):
+    def search_alerts(self, last_modified, severity, category, vendor, time_from, time_to, filter_query, use_alerts_v2=False):
         filters = []
         if last_modified:
             filters.append("lastModifiedDateTime gt {}".format(get_timestamp(last_modified)))
@@ -54,26 +54,7 @@ class MsGraphClient:
         if filter_query:
             filters.append("{}".format(filter_query))
         filters = " and ".join(filters)
-        cmd_url = 'security/alerts'
-        params = {'$filter': filters}
-        demisto.debug(f'Fetching MS Graph Security incidents with params: {params}')
-        response = self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
-        return response
-
-    def search_alerts_v2(self, last_modified, severity, time_from, time_to, filter_query):
-        filters = []
-        if last_modified:
-            filters.append("lastUpdateDateTime gt {}".format(get_timestamp(last_modified)))
-        if severity:
-            filters.append("severity eq '{}'".format(severity))
-        if time_from:  # changed to ge and le in order to solve issue #27884
-            filters.append("createdDateTime ge {}".format(time_from))
-        if time_to:
-            filters.append("createdDateTime le {}".format(time_to))
-        if filter_query:
-            filters.append("{}".format(filter_query))
-        filters = " and ".join(filters)
-        cmd_url = 'security/alerts_v2'
+        cmd_url = 'security/alerts_v2' if use_alerts_v2 else 'security/alerts'
         params = {'$filter': filters}
         demisto.debug(f'Fetching MS Graph Security incidents with params: {params}')
         response = self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
@@ -211,7 +192,7 @@ def search_alerts_v2_command(client: MsGraphClient, args):
     time_from = args.get('time_from')
     time_to = args.get('time_to')
     filter_query = args.get('filter')
-    alerts = client.search_alerts_v2(last_modified, severity, time_from, time_to, filter_query)['value']
+    alerts = client.search_alerts(last_modified, severity, None, None, time_from, time_to, filter_query, True)['value']
     outputs = []
     for alert in alerts:
         outputs.append({
@@ -455,49 +436,47 @@ def get_alert_details_command(client: MsGraphClient, args):
 
 def get_alert_details_v2_command(client: MsGraphClient, args):
     alert_id = args.get('alert_id')
-    alerts_v2 = True
 
-    alert_details = client.get_alert_details(alert_id, alerts_v2)
+    alert_details = client.get_alert_details(alert_id, True)
 
     hr = '## Microsoft Security Graph Alert Details - {}\n'.format(alert_id)
 
     basic_properties_title = 'Basic Properties'
     basic_properties = {
-        'ActorDisplayName': alert_details['actorDisplayName'],
-        'AssignedTo': alert_details['assignedTo'],
-        'TenantID': alert_details['tenantId'],
-        'Category': alert_details['category'],
-        'ClosedDate': alert_details['lastUpdateDateTime'] if alert_details['status'] == 'resolved' else None,
-        'CreatedDate': alert_details['createdDateTime'],
-        'Description': alert_details['description'],
-        'RecommendedAction': alert_details['recommendedActions'],
-        'FirstActivityDateTime': alert_details['firstActivityDateTime'],
-        'LastActivityDateTime': alert_details['lastActivityDateTime'],
-        'LastModifiedDate': alert_details['lastUpdateDateTime'],
-        'Severity': alert_details['severity'],
-        'Status': alert_details['status'],
-        'Title': alert_details['title']
+        'ActorDisplayName': alert_details.get('actorDisplayName'),
+        'AssignedTo': alert_details.get('assignedTo'),
+        'TenantID': alert_details.get('tenantId'),
+        'Category': alert_details.get('category'),
+        'ClosedDate': alert_details.get('lastUpdateDateTime') if alert_details.get('status') == 'resolved' else None,
+        'CreatedDate': alert_details.get('createdDateTime'),
+        'Description': alert_details.get('description'),
+        'RecommendedAction': alert_details.get('recommendedActions'),
+        'FirstActivityDateTime': alert_details.get('firstActivityDateTime'),
+        'LastActivityDateTime': alert_details.get('lastActivityDateTime'),
+        'LastModifiedDate': alert_details.get('lastUpdateDateTime'),
+        'Severity': alert_details.get('severity'),
+        'Status': alert_details.get('status'),
+        'Title': alert_details.get('title')
     }
     hr += tableToMarkdown(basic_properties_title, basic_properties, removeNull=True)
 
-    if alert_details['comments']:
-        comments = alert_details['comments']
-        if comments:
-            comments_hr = '### Comments provided for Alert\n'
-            for comment in comments:
+    if alert_details.get('comments'):
+        comments_hr = '### Comments provided for Alert\n'
+        for comment in alert_details['comments']:
+            if comment.get('comment'):
                 comments_hr += '- {}\n'.format(comment['comment'])
-            hr += comments_hr
+        hr += comments_hr
 
     context = {
-        'ID': alert_details['id'],
-        'Title': alert_details['title'],
-        'Category': alert_details['category'],
-        'Severity': alert_details['severity'],
-        'CreatedDate': alert_details['createdDateTime'],
-        'FirstActivityDateTime': alert_details['firstActivityDateTime'],
-        'LastActivityDateTime': alert_details['lastActivityDateTime'],
-        'Status': alert_details['status'],
-        'Provider': alert_details['serviceSource']
+        'ID': alert_details.get('id'),
+        'Title': alert_details.get('title'),
+        'Category': alert_details.get('category'),
+        'Severity': alert_details.get('severity'),
+        'CreatedDate': alert_details.get('createdDateTime'),
+        'FirstActivityDateTime': alert_details.get('firstActivityDateTime'),
+        'LastActivityDateTime': alert_details.get('lastActivityDateTime'),
+        'Status': alert_details.get('status'),
+        'Provider': alert_details.get('serviceSource')
     }
     ec = {
         'MsGraph.Alert(val.ID && val.ID === obj.ID)': context

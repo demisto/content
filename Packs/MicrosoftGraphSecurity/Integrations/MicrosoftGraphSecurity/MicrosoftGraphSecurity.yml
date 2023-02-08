@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Microsoft Graph
   version: -1
@@ -181,7 +184,7 @@ script:
       name: filter
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: List alerts (security issues) within a customer's tenant that Microsoft or partner security solutions have identified.
     execution: false
     name: msg-search-alerts
@@ -308,7 +311,7 @@ script:
       required: false
       secret: false
       defaultValue: All
-    deprecated: true
+    deprecated: false
     description: Get details for a specific alert.
     execution: false
     name: msg-get-alert-details
@@ -498,7 +501,7 @@ script:
     - contextPath: MsGraph.User.Name
       description: User name
       type: string
-  dockerimage: demisto/crypto:1.0.0.47103
+  dockerimage: demisto/crypto:1.0.0.47585
   feed: false
   isfetch: true
   longRunning: false
@@ -511,6 +514,3 @@ tests:
 - Microsoft Graph Security Test dev
 - Microsoft Graph Security Test prod
 fromversion: 5.0.0
-sectionOrder:
-- Connect
-- Collect

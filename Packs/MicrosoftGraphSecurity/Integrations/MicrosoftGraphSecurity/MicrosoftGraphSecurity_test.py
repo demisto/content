@@ -590,7 +590,7 @@ def test_search_alerts_v2_command(mocker):
     Validate the contents of the output.
     """
     from MicrosoftGraphSecurity import search_alerts_v2_command
-    mocker.patch.object(client_mocker, 'search_alerts_v2', return_value=ALERTS_V2_RAW_RESPONSE)
+    mocker.patch.object(client_mocker, 'search_alerts', return_value=ALERTS_V2_RAW_RESPONSE)
     _, ec, _ = search_alerts_v2_command(client_mocker, {})
     assert ec == EXPECTED_ALERTS_V2_OUTPUT
 
