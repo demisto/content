@@ -780,7 +780,7 @@ def edit_issue_status(client: JiraBaseClient, issue_id_or_key: str, status_name:
             res = client.transition_issue(issue_id_or_key=issue_id_or_key, json_data=json_data)
             return res
 
-    return_error(f'Status "{status_name}" not found. \nValid statuses are: {statuses_name} \n')
+    raise DemistoException(f'Status "{status_name}" not found. \nValid statuses are: {statuses_name} \n')
 
 
 def apply_issue_transition(client: JiraBaseClient, issue_id_or_key: str, transition_name: str) -> Any:
@@ -797,7 +797,7 @@ def apply_issue_transition(client: JiraBaseClient, issue_id_or_key: str, transit
             res = client.transition_issue(issue_id_or_key=issue_id_or_key, json_data=json_data)
             return res
 
-    return_error(f'Transition "{transition_name}" not found. \nValid transitions are: {transitions_name} \n')
+    raise DemistoException(f'Transition "{transition_name}" not found. \nValid transitions are: {transitions_name} \n')
 
 
 # Issues Commands
@@ -805,7 +805,7 @@ def add_link_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandRes
     # TODO Need to ask TPM what to do with this command
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
-        return_error(ID_OR_KEY_MISSING_ERROR)
+        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
     url = args.get('url', '')
     title = args.get('title', '')
     summary = args.get('summary', '')
@@ -862,7 +862,7 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Co
         # "in" operator a lot, and it is faster to determine if an object is present in a set than a list.
         specific_fields_set = set(field.lower() for field in specific_fields)
     issue_fields_id_name_mapping, _ = get_issue_fields_mapping(client=client)
-
+    # TODO Should we output the fields that were not found?
     # This will hold the mapping between the ids of the issue fields supplied by the user to their human readable names
     specific_fields_mapping = {field_key: field_value for
                                field_key, field_value in issue_fields_id_name_mapping.items()
@@ -915,7 +915,7 @@ def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Comm
     """
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
-        return_error(ID_OR_KEY_MISSING_ERROR)
+        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
     headers = args.get('headers', '')
     get_attachments = argToBoolean(args.get('get_attachments', False))
     expand_links = argToBoolean(args.get('expand_links', False))
@@ -970,9 +970,9 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
 def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
-        return_error(ID_OR_KEY_MISSING_ERROR)
+        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
     if args.get('status', '') and args.get('transition', ''):
-        return_error("Please provide only status or transition, but not both.")
+        raise DemistoException("Please provide only status or transition, but not both.")
     action = args.get('action', 'rewrite')
     status = args.get('status', '')
     transition = args.get('transition', '')
@@ -988,7 +988,7 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
     issue_fields = create_issue_update(issue_args=args, issue_fields_mapper=client.ISSUE_UPDATE_MAPPER, action=action)
     if(action == 'append' and (args.get('description', '') or args.get('environment', ''))):
         # Description and Environment do not support the add operation
-        return_error('Description and Environment do not support the add operation')
+        raise DemistoException('Description and Environment do not support the add operation')
     else:
         issue_fields.get('update', {})['description'] = [{'set': text_to_adf(text=args.get('description', ''))}]
         issue_fields.get('update', {})['environment'] = [{'set': text_to_adf(text=args.get('environment', ''))}]
@@ -1012,7 +1012,7 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
 def delete_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
-        return_error(ID_OR_KEY_MISSING_ERROR)
+        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
     client.delete_issue(issue_id_or_key=issue_id_or_key)
     return CommandResults(readable_output='Issue deleted successfully.')
 
@@ -1020,7 +1020,7 @@ def delete_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
 def delete_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
-        return_error(ID_OR_KEY_MISSING_ERROR)
+        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
     comment_id = args.get('comment_id', '')
     client.delete_comment(issue_id_or_key=issue_id_or_key, comment_id=comment_id)
     return CommandResults(readable_output='Comment deleted successfully.')
@@ -1077,7 +1077,7 @@ def get_comments_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
 def edit_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
-        return_error(ID_OR_KEY_MISSING_ERROR)
+        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
     comment_id = args.get('comment_id', '')
     comment = args.get('comment', '')
     visibility = args.get('visibility', '')
@@ -1121,7 +1121,7 @@ def edit_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
 def add_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
-        return_error(ID_OR_KEY_MISSING_ERROR)
+        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
     comment = args.get('comment', '')
     visibility = args.get('visibility', )
     payload = {
@@ -1146,7 +1146,7 @@ def add_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
 def get_transitions_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
-        return_error(ID_OR_KEY_MISSING_ERROR)
+        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
     res = client.get_transitions(issue_id_or_key=issue_id_or_key)
     transitions_names: List[str] = []
     for transition in res.get('transitions', []):
@@ -1173,7 +1173,7 @@ def get_id_offset_command(client: JiraBaseClient, args: Dict[str, Any]) -> Comma
     res = client.run_query(query_params=query_params)
     first_issue_id = res.get('issues', [])[0].get('id', '')
     if not first_issue_id:
-        return_results('No ID offset was found')
+        return CommandResults(readable_output='No ID offset was found')
     return CommandResults(
         outputs_prefix='Ticket',
         readable_output=f'ID Offset: {first_issue_id}',
@@ -1187,7 +1187,7 @@ def upload_file_command(client: JiraBaseClient, args: Dict[str, str]):
     entry_id = args.get('entry_id', '')
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
-        return_error(ID_OR_KEY_MISSING_ERROR)
+        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
     attachment_name = args.get('attachment_name', '')
     file_name, file_bytes = get_file_name_and_content(entry_id=entry_id)
     files = {'file': (attachment_name or file_name, file_bytes, 'application-type')}
@@ -1223,7 +1223,7 @@ def issue_get_attachment_command(client: JiraBaseClient, args: Dict[str, str]) -
 def get_specific_fields_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
-        return_error(ID_OR_KEY_MISSING_ERROR)
+        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
     fields = argToList(args.get('fields', ''))
     res = client.get_issue(issue_id_or_key=issue_id_or_key)
     # Get the general fields of the issue

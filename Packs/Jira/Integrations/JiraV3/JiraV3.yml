@@ -768,6 +768,7 @@ script:
       description: The number of results to return. Default is 50 and maximum is 5000.
       isArray: false
       name: limit
+      hidden: true
       required: false
       secret: false
       defaultValue: '50'
