@@ -268,7 +268,7 @@ class CoreClient(BaseClient):
         # TODO make sure if you want the ip_list to be the identifier
         request_data['value'] = ip_list
         request_data['filters'] = filters
-        request_data['alias'] = new_alias_name
+        request_data['alias'] = new_alias
 
         reply = self._http_request(
             method='POST',
@@ -277,7 +277,7 @@ class CoreClient(BaseClient):
             timeout=self.timeout
         )
 
-        endpoints = reply.get('reply')    # .get('endpoints', [])
+        endpoints = reply.get('reply')   # .get('endpoints', [])
         return endpoints
 
     def isolate_endpoint(self, endpoint_id, incident_id=None):
