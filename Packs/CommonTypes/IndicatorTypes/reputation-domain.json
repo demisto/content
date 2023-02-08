@@ -1,7 +1,7 @@
 {
     "id": "domainRepUnified",
     "version": -1,
-    "fromVersion": "5.5.0",
+    "fromVersion": "6.0.0",
     "modified": "2021-02-28T15:07:20.215835509Z",
     "sortValues": null,
     "commitMessage": "",
