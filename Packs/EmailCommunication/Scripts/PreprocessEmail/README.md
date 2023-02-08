@@ -4,8 +4,7 @@ This script checks incoming emails from the incident type. If the emails contain
 If you wish to extend this period, navigate to Settings->Advanced->Lists and add a new list with the name `XSOAR - Email Communication Days To Query`. In the `Data` field fill in a single number representing the number of days to query back, for example: 90.
 
 The script is a part of the Email Communication pack.
-
-For more information about the preprocessing rules, please refer to https://xsoar.pan.dev/docs/incidents/incident-pre-processing. 
+For more information, see the section about permissions here: [https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations)
 
 ## Script Data
 ---
