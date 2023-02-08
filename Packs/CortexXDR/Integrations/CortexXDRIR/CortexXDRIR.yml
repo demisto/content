@@ -1011,7 +1011,7 @@ script:
       isArray: true
     - name: new_alias_name
       description: The requested alias name to change to.
-    description: Gets a list of endpoints according to the passed filters, and change their alias name. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+    description: Gets a list of endpoints according to the passed filters, and changes their alias name. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
     name: xdr-endpoint-alias-change
   - description: Gets a list of all the agent versions to use for creating a distribution list.
     name: xdr-get-distribution-versions
