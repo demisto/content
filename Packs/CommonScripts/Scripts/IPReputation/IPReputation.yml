@@ -20,6 +20,7 @@ fromversion: 5.0.0
 marketplaces:
 - xsoar
 - marketplacev2
+- xpanse
 dockerimage: demisto/python3:3.10.7.33922
 tests:
 - No tests (auto formatted)
