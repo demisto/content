@@ -1133,8 +1133,8 @@ tasks:
     task:
       id: 970372d5-8ad5-4989-8fba-0a3a2af7ff36
       version: -1
-      name: Isolate Endpoint - Generic
-      playbookName: Isolate Endpoint - Generic
+      name: Isolate Endpoint - Generic V2
+      playbookName: Isolate Endpoint - Generic V2
       type: playbook
       iscommand: false
       brand: ""
@@ -1142,18 +1142,23 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      EndpointId:
-        simple: ${incident.deviceid}
-      Hostname:
+      Endpoint_hostname:
         simple: ${incident.hostname}
-      IP:
+      Endpoint_id:
+        complex:
+          root: incident
+          accessor: deviceid
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_id
+                iscontext: true
+      Endpoint_ip:
         complex:
           root: IP
           accessor: Address
-      xdr_endpoint_id:
-        complex:
-          root: PaloAltoNetworksXDR
-          accessor: Endpoint.endpoint_id
     separatecontext: true
     loop:
       iscommand: false
@@ -1179,8 +1184,8 @@ tasks:
     task:
       id: eda97e92-1226-4fee-8739-a71cf5fd259b
       version: -1
-      name: Isolate Endpoint - Generic
-      playbookName: Isolate Endpoint - Generic
+      name: Isolate Endpoint - Generic V2
+      playbookName: Isolate Endpoint - Generic V2
       type: playbook
       iscommand: false
       brand: ""
@@ -1188,17 +1193,7 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      EndpointId:
-        complex:
-          root: Splunk
-          accessor: Result
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: device
-      Hostname:
+      Endpoint_hostname:
         complex:
           root: Splunk
           accessor: Result
@@ -1208,14 +1203,26 @@ tasks:
               field:
                 value:
                   simple: host
-      IP:
+      Endpoint_id:
+        complex:
+          root: Splunk
+          accessor: Result
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: device
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_id
+                iscontext: true
+      Endpoint_ip:
         complex:
           root: IP
           accessor: Address
-      xdr_endpoint_id:
-        complex:
-          root: PaloAltoNetworksXDR
-          accessor: Endpoint.endpoint_id
     separatecontext: true
     loop:
       iscommand: false
