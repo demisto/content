@@ -395,22 +395,6 @@ def test_comment_a_specific_incident_command(mock_comment_a_specific_incident_re
 
 @patch('Lumu.generate_hmac_sha256_msg')
 @patch('Lumu.add_prefix_to_comment')
-@patch.object(Client, 'comment_a_specific_incident_request', side_effect=DemistoException("Failed to parse json object from response: b''"))  # noqa: E501
-def test_comment_a_specific_incident_command_known_error(mock_comment_a_specific_incident_request,
-                                                         mock_prefix,
-                                                         mock_hash_gen):
-    client = Client('server_url', False, 'proxy', {})
-    args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343",
-            "comment": "comment"}
-
-    response = comment_a_specific_incident_command(client, args)
-    assert response.outputs_prefix == 'Lumu.CommentASpecificIncident'
-    assert 'statusCode' in response.outputs
-    assert response.outputs["statusCode"] == 200
-
-
-@patch('Lumu.generate_hmac_sha256_msg')
-@patch('Lumu.add_prefix_to_comment')
 @patch.object(Client, 'comment_a_specific_incident_request', side_effect=DemistoException("unknown error"))
 def test_comment_a_specific_incident_command_raise_error(mock_comment_a_specific_incident_request,
                                                          mock_prefix,
@@ -529,20 +513,6 @@ def test_mute_incident_command(mock_mute_incident_request, mock_prefix, mock_has
 
 @patch('Lumu.generate_hmac_sha256_msg')
 @patch('Lumu.add_prefix_to_comment')
-@patch.object(Client, 'mute_incident_request', side_effect=DemistoException("Failed to parse json object from response: b''"))
-def test_mute_incident_command_known_error(mock_mute_incident_request, mock_prefix, mock_hash_gen):
-    client = Client('server_url', False, 'proxy', {})
-    args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343",
-            "comment": "comment"}
-
-    response = mute_incident_command(client, args)
-    assert response.outputs_prefix == 'Lumu.MuteIncident'
-    assert 'statusCode' in response.outputs
-    assert response.outputs["statusCode"] == 200
-
-
-@patch('Lumu.generate_hmac_sha256_msg')
-@patch('Lumu.add_prefix_to_comment')
 @patch.object(Client, 'mute_incident_request', side_effect=DemistoException("unknown error"))
 def test_mute_incident_command_raise_error(mock_mute_incident_request, mock_prefix, mock_hash_gen):
     client = Client('server_url', False, 'proxy', {})
@@ -568,20 +538,6 @@ def test_unmute_incident_command(mock_unmute_incident_request, mock_prefix, mock
 
 @patch('Lumu.generate_hmac_sha256_msg')
 @patch('Lumu.add_prefix_to_comment')
-@patch.object(Client, 'unmute_incident_request', side_effect=DemistoException("Failed to parse json object from response: b''"))
-def test_unmute_incident_command_known_error(mock_unmute_incident_request, mock_prefix, mock_hash_gen):
-    client = Client('server_url', False, 'proxy', {})
-    args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343",
-            "comment": "comment"}
-
-    response = unmute_incident_command(client, args)
-    assert response.outputs_prefix == 'Lumu.UnmuteIncident'
-    assert 'statusCode' in response.outputs
-    assert response.outputs["statusCode"] == 200
-
-
-@patch('Lumu.generate_hmac_sha256_msg')
-@patch('Lumu.add_prefix_to_comment')
 @patch.object(Client, 'unmute_incident_request', side_effect=DemistoException("unknown error"))
 def test_unmute_incident_command_raise_error(mock_unmute_incident_request, mock_prefix, mock_hash_gen):
     client = Client('server_url', False, 'proxy', {})
@@ -595,20 +551,6 @@ def test_unmute_incident_command_raise_error(mock_unmute_incident_request, mock_
 @patch('Lumu.add_prefix_to_comment')
 @patch.object(Client, 'close_incident_request', return_value={'statusCode': 200})
 def test_close_incident_command(mock_close_incident_request, mock_prefix, mock_hash_gen):
-    client = Client('server_url', False, 'proxy', {})
-    args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343",
-            "comment": "comment"}
-
-    response = close_incident_command(client, args)
-    assert response.outputs_prefix == 'Lumu.CloseIncident'
-    assert 'statusCode' in response.outputs
-    assert response.outputs["statusCode"] == 200
-
-
-@patch('Lumu.generate_hmac_sha256_msg')
-@patch('Lumu.add_prefix_to_comment')
-@patch.object(Client, 'close_incident_request', side_effect=DemistoException("Failed to parse json object from response: b''"))
-def test_close_incident_command_known_error(mock_close_incident_request, mock_prefix, mock_hash_gen):
     client = Client('server_url', False, 'proxy', {})
     args = {"lumu_incident_id": "14fd84b0-9bdd-11ed-a0c7-dd6f8e69d343",
             "comment": "comment"}
@@ -755,31 +697,6 @@ def test_update_remote_system_command(mock_args, mock_debug,
     mock_args.return_value.delta = {'comment': 'w', 'lumu_status': 'other'}
     response = update_remote_system_command(client, args)
     assert response == 'abcdefgh'
-
-
-@patch('Lumu.generate_hmac_sha256_msg')
-@patch('Lumu.add_prefix_to_comment')
-@patch.object(Client, 'comment_a_specific_incident_request', return_value={'statusCode': 200})
-@patch.object(Client, 'close_incident_request', return_value={'statusCode': 200})
-@patch.object(Client, 'unmute_incident_request', return_value={'statusCode': 200})
-@patch.object(Client, 'mute_incident_request', side_effect=DemistoException("Failed to parse json object from response: b''"))
-@patch('Lumu.demisto.debug')
-@patch('Lumu.UpdateRemoteSystemArgs')
-def test_update_remote_system_command_known_error(mock_args, mock_debug,
-                                                  mock_mute_incident_request, mock_unmute_incident_request,
-                                                  mock_close_incident_request,
-                                                  mock_comment_a_specific_incident_request,
-                                                  mock_prefix,
-                                                  mock_hash_gen):
-    client = Client('server_url', False, 'proxy', {})
-    args = {'data': 'dummy', 'entries': [], 'incidentChanged': True, 'remoteId': 'dummy'}
-
-    mock_args.return_value.entries = []
-    mock_args.return_value.delta = {'lumu_status': 'mute'}
-    mock_args.return_value.remote_incident_id = 'abc123'
-    mock_args.return_value.delta = {'lumu_status': 'mute'}
-    response = update_remote_system_command(client, args)
-    assert response == 'abc123'
 
 
 @patch('Lumu.generate_hmac_sha256_msg')

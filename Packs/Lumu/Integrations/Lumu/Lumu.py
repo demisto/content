@@ -107,7 +107,8 @@ class Client(BaseClient):
             "POST",
             f"api/incidents/{lumu_incident_id}/comment",
             params=params,
-            json_data=data
+            json_data=data,
+            resp_type="text"
         )
 
         return response
@@ -165,7 +166,8 @@ class Client(BaseClient):
         response = self._http_request(
             "POST",
             f"api/incidents/{lumu_incident_id}/mark-as-read",
-            params=params
+            params=params,
+            resp_type="text"
         )
 
         return response
@@ -178,7 +180,8 @@ class Client(BaseClient):
             "POST",
             f"api/incidents/{lumu_incident_id}/mute",
             params=params,
-            json_data=data
+            json_data=data,
+            resp_type="text"
         )
 
         return response
@@ -191,7 +194,8 @@ class Client(BaseClient):
             "POST",
             f"api/incidents/{lumu_incident_id}/unmute",
             params=params,
-            json_data=data
+            json_data=data,
+            resp_type="text"
         )
 
         return response
@@ -215,7 +219,8 @@ class Client(BaseClient):
             "POST",
             f"api/incidents/{lumu_incident_id}/close",
             params=params,
-            json_data=data
+            json_data=data,
+            resp_type="text"
         )
 
         return response
@@ -373,16 +378,10 @@ def comment_a_specific_incident_command(
     comment = generate_hmac_sha256_msg(
         client.api_key, add_prefix_to_comment(args.get("comment"))
     )
-    try:
 
-        response = client.comment_a_specific_incident_request(lumu_incident_id, comment)
-    except DemistoException as err:
+    response = client.comment_a_specific_incident_request(lumu_incident_id, comment)
+    response = {"statusCode": 200, "response": response}
 
-        error_msg = "Failed to parse json object from response: b''"
-        if str(err) == error_msg:
-            response = {"statusCode": 200}
-        else:
-            raise DemistoException(err)
     command_results = CommandResults(
         outputs_prefix="Lumu.CommentASpecificIncident",
         outputs=response,
@@ -521,15 +520,9 @@ def mute_incident_command(client: Client, args: Dict[str, Any]) -> CommandResult
     comment = generate_hmac_sha256_msg(
         client.api_key, add_prefix_to_comment(args.get("comment"))
     )
-    try:
-        response = client.mute_incident_request(lumu_incident_id, comment)
-    except DemistoException as err:
+    response = client.mute_incident_request(lumu_incident_id, comment)
+    response = {"statusCode": 200, "response": response}
 
-        error_msg = "Failed to parse json object from response: b''"
-        if str(err) == error_msg:
-            response = {"statusCode": 200}
-        else:
-            raise DemistoException(err)
     command_results = CommandResults(
         outputs_prefix="Lumu.MuteIncident",
         outputs=response,
@@ -545,15 +538,9 @@ def unmute_incident_command(client: Client, args: Dict[str, Any]) -> CommandResu
     comment = generate_hmac_sha256_msg(
         client.api_key, add_prefix_to_comment(args.get("comment"))
     )
-    try:
-        response = client.unmute_incident_request(lumu_incident_id, comment)
-    except DemistoException as err:
+    response = client.unmute_incident_request(lumu_incident_id, comment)
+    response = {"statusCode": 200, "response": response}
 
-        error_msg = "Failed to parse json object from response: b''"
-        if str(err) == error_msg:
-            response = {"statusCode": 200}
-        else:
-            raise DemistoException(err)
     command_results = CommandResults(
         outputs_prefix="Lumu.UnmuteIncident",
         outputs=response,
@@ -569,15 +556,9 @@ def close_incident_command(client: Client, args: Dict[str, Any]) -> CommandResul
     comment = generate_hmac_sha256_msg(
         client.api_key, add_prefix_to_comment(args.get("comment"))
     )
-    try:
-        response = client.close_incident_request(lumu_incident_id, comment)
-    except DemistoException as err:
+    response = client.close_incident_request(lumu_incident_id, comment)
+    response = {"statusCode": 200, "response": response}
 
-        error_msg = "Failed to parse json object from response: b''"
-        if str(err) == error_msg:
-            response = {"statusCode": 200}
-        else:
-            raise DemistoException(err)
     command_results = CommandResults(
         outputs_prefix="Lumu.CloseIncident",
         outputs=response,
@@ -867,6 +848,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
                 new_comment += f", {notes=}, {reason=}, {user=}"
                 new_comment = generate_hmac_sha256_msg(key, new_comment)
                 response = client.close_incident_request(new_incident_id, new_comment)
+                response = {"statusCode": 200, "response": response}
 
             elif (lumu_status := parsed_args.delta.get("lumustatus")) or (
                 lumu_status := parsed_args.delta.get("lumu_status")
@@ -878,12 +860,14 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
                     response = client.mute_incident_request(
                         new_incident_id, new_comment
                     )
+                    response = {"statusCode": 200, "response": response}
 
                 elif lumu_status in ["unmute", "unmuted"]:
                     new_comment = generate_hmac_sha256_msg(key, new_comment)
                     response = client.unmute_incident_request(
                         new_incident_id, new_comment
                     )
+                    response = {"statusCode": 200, "response": response}
 
                 elif lumu_status in ["close", "closed"]:
                     msg = "to close an incident, it has to be in the CLOSE INCIDENT option in the ACTION button"
@@ -895,6 +879,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
                     response = client.comment_a_specific_incident_request(
                         new_incident_id, new_comment
                     )
+                    response = {"statusCode": 200, "response": response}
 
                 else:
                     response = {"statusCode": 404, "reason": "lumu status not found"}
@@ -906,15 +891,10 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
                 response = client.comment_a_specific_incident_request(
                     new_incident_id, new_comment
                 )
+                response = {"statusCode": 200, "response": response}
 
         except DemistoException as err:
-            response = repr(err)
-            error_msg = "Failed to parse json object from response: b''"
-            if str(err) == error_msg:
-                response = {"statusCode": 200}
-            else:
-                response = repr(err)
-                raise DemistoException(err)
+            raise DemistoException(repr(err))
 
     demisto.debug(
         f"{response=}, {parsed_args.delta=}, {parsed_args.remote_incident_id=}, {parsed_args.incident_changed}"
@@ -984,8 +964,7 @@ def main() -> None:
 
     try:
         urllib3.disable_warnings()
-        client: Client = Client(
-            urljoin(url, ""), verify_certificate, proxy, headers=headers)
+        client: Client = Client(url, verify_certificate, proxy, headers=headers)
         client.api_key = params.get("api_key")
         commands = {
             "lumu-retrieve-labels": retrieve_labels_command,
