@@ -995,7 +995,7 @@ script:
       required: true
     - description: Specifies whether the application rules should be migrated to the latest version.
       name: rule_update
-      required: true
+      required: false
       auto: PREDEFINED
       defaultValue: 'True'
       predefined:
