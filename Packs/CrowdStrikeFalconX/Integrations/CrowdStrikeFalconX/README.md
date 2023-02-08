@@ -279,6 +279,7 @@ Notice that the file identifiers, SHA and ID are not the same.
             "environment_id": 160,
             "sha256": "d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee",
             "state": "created",
+            "file_name": "test.pdf",
             "submitted_id": "20879a8064904ecfbb62c118a6a19411_5d620c1322444253ad2be284de3756fa"
         }
     }
@@ -288,9 +289,9 @@ Notice that the file identifiers, SHA and ID are not the same.
 #### Human Readable Output
 
 >### CrowdStrike Falcon Intelligence Sandbox response:
->|created_timestamp|environment_id|sha256|state|submitted_id|
+>|created_timestamp|environment_id|sha256|state|submitted_id|file_name|
 >|---|---|---|---|---|
->| 2022-03-09T08:58:33Z | 160 | d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee | created | 20879a8064904ecfbb62c118a6a19411_5d620c1322444253ad2be284de3756fa |
+>| 2022-03-09T08:58:33Z | 160 | d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee | created | 20879a8064904ecfbb62c118a6a19411_5d620c1322444253ad2be284de3756fa | test.pdf |
 
 
 ### cs-fx-get-full-report
