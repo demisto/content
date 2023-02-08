@@ -170,6 +170,29 @@ List alerts (security issues) within a customer's tenant that Microsoft or part
 | MsGraph.Alert.Status | string | Alert status. | 
 | MsGraph.Alert.Provider | string | Alert provider. | 
 
+##### Command example
+```!msg-search-alerts-v2 time_from=2021-04-27 time_to=2021-04-27```
+##### Context Example
+```json
+{
+    "MsGraph": {
+        "Alert": [
+            {
+                "ID": "da637551227677560813_-961444813",
+                "Title": "Suspicious execution of hidden file",
+                "Category": "DefenseEvasion",
+                "Severity": "low",
+                "CreatedDate": "2021-04-27T12:19:27.7211305Z",
+                "FirstActivityDateTime": "2021-04-26T07:45:50.116Z",
+                "LastActivityDateTime": "2021-05-02T07:56:58.222Z",
+                "Status": "new",
+                "Provider": "microsoftDefenderForEndpoint"
+            }
+        ]
+    }
+}
+```
+
 ### msg-get-alert-details-v2
 ***
 Get details for a specific alert.
@@ -177,7 +200,7 @@ Get details for a specific alert.
 
 #### Base Command
 
-`msg-get-alert-details`
+`msg-get-alert-details-v2`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -198,3 +221,26 @@ Get details for a specific alert.
 | MsGraph.Alert.LastActivityDateTime | date | Alert last activity time. | 
 | MsGraph.Alert.Status | string | Alert status. | 
 | MsGraph.Alert.Provider | Unknown | Alert provider .| 
+
+##### Command example
+```!msg-get-alert-details-v2 alert_id=da637551227677560813_-961444813```
+##### Context Example
+```json
+{
+    "MsGraph": {
+        "Alert": [
+            {
+                "ID": "da637551227677560813_-961444813",
+                "Title": "Suspicious execution of hidden file",
+                "Category": "DefenseEvasion",
+                "Severity": "low",
+                "CreatedDate": "2021-04-27T12:19:27.7211305Z",
+                "FirstActivityDateTime": "2021-04-26T07:45:50.116Z",
+                "LastActivityDateTime": "2021-05-02T07:56:58.222Z",
+                "Status": "new",
+                "Provider": "microsoftDefenderForEndpoint"
+            }
+        ]
+    }
+}
+```
