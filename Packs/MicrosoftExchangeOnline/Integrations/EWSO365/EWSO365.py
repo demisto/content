@@ -21,11 +21,6 @@ import warnings
 import email
 from requests.exceptions import ConnectionError
 from multiprocessing import Process
-from typing import Dict
-
-import chardet
-import dateparser
-import demistomock as demisto  # noqa: F401
 import exchangelib
 from exchangelib.errors import (
     ErrorItemNotFound,
@@ -2223,7 +2218,7 @@ def parse_incident_from_item(item):     # pragma: no cover
     return incident
 
 
-def fetch_emails_as_incidents(client: EWSClient, last_run, incidentFilter):
+def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter):
     """
     Fetch incidents
     :param client: EWS Client
@@ -2239,7 +2234,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incidentFilter):
             client.folder_name,
             last_run.get(LAST_RUN_TIME),
             excluded_ids,
-            incidentFilter,
+            incident_filter,
         )
 
         incidents = []
@@ -2260,7 +2255,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incidentFilter):
                 incident = parse_incident_from_item(item)
                 incidents.append(incident)
 
-                if incidentFilter == MODIFIED_FILTER:
+                if incident_filter == MODIFIED_FILTER:
                     item_modified_time = item.last_modified_time.ewsformat()
                     if last_modification_time is None or last_modification_time < item_modified_time:
                         last_modification_time = item_modified_time
@@ -2273,7 +2268,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incidentFilter):
 
         demisto.debug(f'{APP_NAME} - ending fetch - got {len(incidents)} incidents.')
 
-        if incidentFilter == MODIFIED_FILTER:
+        if incident_filter == MODIFIED_FILTER:
             last_incident_run_time = last_modification_time
         else:  # default case - using 'received' time
             last_incident_run_time = incident.get("occurred", last_fetch_time)
@@ -2323,7 +2318,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incidentFilter):
 
 
 def fetch_last_emails(
-        client: EWSClient, folder_name="Inbox", since_datetime=None, exclude_ids=None, incidentFilter=RECEIVED_FILTER
+        client: EWSClient, folder_name="Inbox", since_datetime=None, exclude_ids=None, incident_filter=RECEIVED_FILTER
 ):
     """
     Fetches last emails
@@ -2337,7 +2332,7 @@ def fetch_last_emails(
     demisto.debug(f"Finished getting the folder named {folder_name} by path")
     log_memory()
     if since_datetime:
-        if incidentFilter == MODIFIED_FILTER:
+        if incident_filter == MODIFIED_FILTER:
             qs = qs.filter(last_modified_time__gte=since_datetime)
         else:  # default to "received" time
             qs = qs.filter(datetime_received__gte=since_datetime)
@@ -2453,10 +2448,10 @@ def sub_main():     # pragma: no cover
             demisto.results(test_module(client, params.get('max_fetch')))
         elif command == "fetch-incidents":
             last_run = demisto.getLastRun()
-            incidentFilter = params.get('incidentFilter', RECEIVED_FILTER)
-            if incidentFilter not in [RECEIVED_FILTER,MODIFIED_FILTER]: # Ensure it's one of the allowed filter values
-                incidentFilter = RECEIVED_FILTER # or if not, force it to the default, RECEIVED_FILTER
-            incidents = fetch_emails_as_incidents(client, last_run, incidentFilter)
+            incident_filter = params.get('incidentFilter', RECEIVED_FILTER)
+            if incident_filter not in [RECEIVED_FILTER, MODIFIED_FILTER]:  # Ensure it's one of the allowed filter values
+                incident_filter = RECEIVED_FILTER  # or if not, force it to the default, RECEIVED_FILTER
+            incidents = fetch_emails_as_incidents(client, last_run, incident_filter)
             demisto.debug(f"Saving incidents with size {sys.getsizeof(incidents)}")
 
             demisto.incidents(incidents)
