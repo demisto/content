@@ -82,7 +82,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -95,7 +94,6 @@
                     {
                         "h": 2,
                         "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -104,14 +102,13 @@
                         "type": "notes",
                         "w": 1,
                         "x": 1,
-                        "y": 6
+                        "y": 7
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -119,14 +116,13 @@
                         "static": false,
                         "type": "linkedIncidents",
                         "w": 1,
-                        "x": 1,
-                        "y": 0
+                        "x": 2,
+                        "y": 7
                     },
                     {
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 5,
                         "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -137,7 +133,7 @@
                         "type": "indicators",
                         "w": 3,
                         "x": 0,
-                        "y": 4
+                        "y": 2
                     },
                     {
                         "displayType": "CARD",
@@ -190,7 +186,6 @@
                                 "startCol": 1
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -234,7 +229,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -242,7 +236,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 6
+                        "y": 7
                     },
                     {
                         "displayType": "CARD",
@@ -251,24 +245,47 @@
                         "isVisible": true,
                         "items": [
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "details",
-                                "height": 22,
+                                "height": 106,
                                 "id": "incident-details-field",
                                 "index": 0,
+                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "alertid",
+                                "height": 53,
+                                "id": "4d79bc20-a7bb-11ed-84f9-e78549e0646a",
+                                "index": 1,
+                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "analysisreport",
+                                "height": 53,
+                                "id": "00a161e0-a7bc-11ed-84f9-e78549e0646a",
+                                "index": 0,
+                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                                "sectionItemType": "field",
+                                "startCol": 2
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
                         "name": "Investigation Data",
                         "static": false,
-                        "w": 3,
-                        "x": 0,
-                        "y": 2
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
                     }
                 ],
                 "type": "custom"
