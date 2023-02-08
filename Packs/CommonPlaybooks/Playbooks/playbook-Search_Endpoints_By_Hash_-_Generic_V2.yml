@@ -1,6 +1,5 @@
 id: Search Endpoints By Hash - Generic V2
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Search Endpoints By Hash - Generic V2
 description: Hunt using available tools
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "9"
@@ -135,6 +135,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "11"
@@ -165,6 +166,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "13"
@@ -241,6 +243,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -362,6 +365,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "12"
@@ -397,6 +401,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "12"
@@ -476,3 +481,4 @@ outputs:
 - contextPath: Endpoint
   description: The endpoint
   type: unknown
+fromversion: 5.0.0
