@@ -1,6 +1,2 @@
 [INGEST:vendor="corelight", product="zeek", target_dataset="corelight_zeek_raw", no_hit=keep]
-alter 
-    tmp_epoch_convert = to_epoch(ts, "millis")
-| alter
-    _time = to_timestamp(tmp_epoch_convert, "millis")
-| fields -tmp_epoch_convert;
+alter _time = ts;
