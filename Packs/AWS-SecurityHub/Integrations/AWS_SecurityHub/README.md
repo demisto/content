@@ -813,7 +813,7 @@ The supported fields in the mirroring out process are:
 - AWS Security Hub Confidence.
 - Risk Score
 - Comment
-4. Severity
+- Severity
 5. AWS Security Hub Verification State
 6. AWS Security Hub Workflow Status
 
