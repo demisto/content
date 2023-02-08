@@ -482,3 +482,5 @@ outputs:
   description: The endpoint
   type: unknown
 fromversion: 5.0.0
+tests:
+ -  No tests
