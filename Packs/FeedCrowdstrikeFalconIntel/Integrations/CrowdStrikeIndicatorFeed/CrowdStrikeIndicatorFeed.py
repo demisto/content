@@ -122,6 +122,7 @@ class Client(CrowdStrikeClient):
         Returns:
             (list): parsed indicators
         """
+        sort = 'last_updated|asc'
         filter = f'({self.filter})' if self.filter else ''
         if self.type:
             type_fql = self.build_type_fql(self.type)
@@ -132,14 +133,15 @@ class Client(CrowdStrikeClient):
                                                  for item in self.malicious_confidence])
             filter = f"{filter}+({malicious_confidence_fql})" if filter else f'({malicious_confidence_fql})'
 
-        if fetch_command:
-            offset = demisto.getIntegrationContext().get('offset', 0)
-            demisto.info(f' current offset: {offset}')
+        # if fetch_command:
+        #     offset = demisto.getIntegrationContext().get('offset', 0)
+        #     demisto.info(f' current offset: {offset}')
 
         if manual_last_run:
             filter = f'{filter}+(last_updated:>={manual_last_run})' if filter else f'(last_updated:>={manual_last_run})'
 
         if fetch_command:
+            sort = '_marker|asc'
             if last_run := self.get_last_run():
                 filter = f'{filter}+({last_run})' if filter else f'({last_run})'
             elif self.first_fetch:
@@ -151,33 +153,34 @@ class Client(CrowdStrikeClient):
                                limit=limit,
                                offset=offset, q=self.generic_phrase,
                                filter=filter,
-                               sort='last_updated|asc')
+                               sort=sort)
 
         response = self.get_indicators(params=params)
-        timestamp = self.set_last_run()
+        # timestamp = self.set_last_run()
 
-        last_modified_time = demisto.getIntegrationContext().get('last_modified_time')
-        resources = response.get('resources', [])
-        if fetch_command and resources and resources[-1].get('last_updated') == last_modified_time:
-            offset = demisto.getIntegrationContext().get('offset', 0) + limit
-        else:
-            offset = 0
-        demisto.info(f' set new offset: {offset}')
+        # resources = response.get('resources', [])
+        # if fetch_command and resources and resources[-1].get('last_updated') == last_modified_time:
+        #     offset = demisto.getIntegrationContext().get('offset', 0) + limit
+        # else:
+        #     offset = 0
+        # demisto.info(f' set new offset: {offset}')
 
         # need to fetch all indicators after the limit
         if pagination := response.get('meta', {}).get('pagination'):
-            pagination_offset = pagination.get('offset', 0)
+            # pagination_offset = pagination.get('offset', 0)
             pagination_limit = pagination.get('limit')
             total = pagination.get('total', 0)
-            if pagination_offset + pagination_limit < total:
-                timestamp = response.get('resources', [])[-1].get('last_updated')
+            if pagination_limit < total:
+                new_last_marker_time = response.get('resources', [])[-1].get('_marker')
+            else:
+                new_last_marker_time = demisto.getIntegrationContext().get('last_marker_time')
 
         if response.get('meta', {}).get('pagination', {}).get('total', 0) and fetch_command:
             ctx = demisto.getIntegrationContext()
-            ctx.update({'last_modified_time': timestamp})
-            ctx.update({'offset': offset})
+            ctx.update({'last_marker_time': new_last_marker_time})
+            # ctx.update({'offset': offset})
             demisto.setIntegrationContext(ctx)
-            demisto.info(f'set last_run: {timestamp}')
+            demisto.info(f'set last_run: {new_last_marker_time}')
 
         indicators = self.create_indicators_from_response(response, self.tlp_color, self.feed_tags, self.create_relationships)
         return indicators
@@ -199,9 +202,9 @@ class Client(CrowdStrikeClient):
         Returns:
             last run in timestamp, or '' if no last run
         """
-        if last_run := demisto.getIntegrationContext().get('last_modified_time'):
+        if last_run := demisto.getIntegrationContext().get('last_marker_time'):
             demisto.info(f'get last_run: {last_run}')
-            params = f'last_updated:>={last_run}'
+            params = f"_marker:>'{last_run}'"
         else:
             params = ''
         return params
@@ -481,4 +484,7 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    main()
+    print(date_to_timestamp('2023-02-08T15:08:49'))
+    print(arg_to_datetime('1 day').timestamp())
+    print(timestamp_to_datestring('1675780276.098688'))
+    # main()
