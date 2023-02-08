@@ -48,7 +48,8 @@ In order to connect to the Azure SQL Management using either Cortex XSOAR Azure 
    
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Application ID |  | True |
+    | Application ID |  | False |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
     | Subscription ID |  | True |
     | Resource Group Name |  | True |
     | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
