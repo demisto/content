@@ -1,10 +1,10 @@
 {
-    "id": "incident_alertsource",
+    "id": "incident_originalalertsource",
     "version": -1,
     "modified": "2021-11-09T16:15:54.292557+02:00",
-    "name": "Alert Source",
+    "name": "Original Alert Source",
     "ownerOnly": false,
-    "cliName": "alertsource",
+    "cliName": "originalalertsource",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -25,7 +25,14 @@
     "sla": 0,
     "threshold": 72,
     "fromVersion": "5.5.0",
+    "Aliases": [
+        {
+            "cliName": "alertsource",
+            "type": "shortText",
+            "name": "Alert Source"
+        }
+    ],
     "marketplaces": [
-        "xsoar"
+        "marketplacev2"
     ]
 }
