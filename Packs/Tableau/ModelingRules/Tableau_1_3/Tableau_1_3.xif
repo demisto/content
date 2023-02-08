@@ -30,7 +30,7 @@ alter
     xdm.event.outcome = requestStatus,
     xdm.event.operation_sub_type = requestType,
     xdm.session_context_id = coalesce(sessionID,requestPayload),
-    xdm.source.user.user_type = serviceName,
+    xdm.source.process.name = serviceName,
     xdm.event.id = coalesce(RequestID,messageID),
     xdm.source.host.hostname = hostname,
     xdm.event.operation = requestStatusCode;
