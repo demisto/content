@@ -815,7 +815,7 @@ The supported fields in the mirroring out process are:
 - Comment
 - Severity
 - AWS Security Hub Verification State
-6. AWS Security Hub Workflow Status
+- AWS Security Hub Workflow Status
 
 **Important Note:** that the mirror out updates do not affect the value of UpdatedAt for a finding. These updates can be overwritten by the security-findings provider.
 
