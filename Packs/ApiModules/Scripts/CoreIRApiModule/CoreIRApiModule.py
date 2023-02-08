@@ -268,7 +268,7 @@ class CoreClient(BaseClient):
         # TODO make sure if you want the ip_list to be the identifier
         request_data['value'] = ip_list
         request_data['filters'] = filters
-        request_data['alias'] = new_alias
+        request_data['alias'] = new_alias_name
 
         reply = self._http_request(
             method='POST',
