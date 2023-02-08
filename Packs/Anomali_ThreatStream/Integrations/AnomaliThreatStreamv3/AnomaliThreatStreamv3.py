@@ -1326,6 +1326,13 @@ def search_intelligence(client: Client, **kwargs):
     url = 'v2/intelligence/'
     if 'query' in kwargs:
         url += f"?q={kwargs.pop('query')}"
+    if 'confidence' in kwargs:
+        conf = kwargs.get('confidence', '').split(' ')
+        if len(conf) > 1:
+            if conf[0] not in {'gt', 'lt'}:
+                raise DemistoException(f'Confidence operator must be on of gt or lt, if used.{conf[0]} is not a legal value.')
+            kwargs[f'confidence__{conf[0]}'] = conf[1]
+            del kwargs['confidence']
     intelligence_list = client.http_request('GET', url, params=kwargs).get('objects', None)
     if not intelligence_list:
         return 'No intelligence found from ThreatStream'
