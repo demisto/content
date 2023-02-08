@@ -35,19 +35,19 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- description: Incidents SaaS Source
+- additionalinfo: Incidents SaaS Source
   name: source
   required: false
   type: 0
-- description: Created At time before which incidents will be fetched
+- additionalinfo: Created At time before which incidents will be fetched
   name: before
   required: false
   type: 0
-- description: Created At time after which incidents will be fetched
+- additionalinfo: Created At time after which incidents will be fetched
   name: after
   required: false
   type: 0
-- description: Risk level of the incidents to fetch
+- additionalinfo: Risk level of the incidents to fetch
   name: risk_level
   required: false
   type: 0

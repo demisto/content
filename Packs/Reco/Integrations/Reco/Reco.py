@@ -51,6 +51,14 @@ class RecoClient(BaseClient):
                     "relationship": FILTER_RELATIONSHIP_AND,
                     "filters": {"filters": []},
                 },
+                "fieldSorts": {
+                    "sorts": [
+                        {
+                            "sortBy": "updated_at",
+                            "sortDirection": "SORT_DIRECTION_ASC"
+                        }
+                    ]
+                }
             }
         }
         if risk_level:
@@ -257,7 +265,7 @@ def fetch_incidents(
     ]  # type: ignore
 
     incidents_sorted = sorted(incidents, key=lambda k: k["occurred"])
-    next_run["lastRun"] = incidents_sorted[-1]["occurred"] if incidents_sorted else last_run_time
+    next_run["lastRun"] = incidents_sorted[0]["occurred"] if incidents_sorted else last_run_time
     next_run["incident_ids"] = existing_incidents + [incident["dbotMirrorId"] for incident in incidents]
     return next_run, incidents
 
