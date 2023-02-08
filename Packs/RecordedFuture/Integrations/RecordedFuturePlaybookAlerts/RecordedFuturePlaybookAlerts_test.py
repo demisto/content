@@ -305,13 +305,13 @@ class TestRFClient:
         response = client.entity_search()
 
         mock_call.assert_called_once_with(
-            url_suffix='/v2/search'
+            url_suffix='/v2/playbook_alert/search'
         )
 
         assert response == mock_call_response
         
     # TODO REWRITE THIS TO WORK WITH PLAYBOOK ALERTS (DETAILS)
-    def test_get_intelligence(self, mocker):
+    def test_get_details(self, mocker):
         import os
         import demistomock as demisto
 
@@ -337,13 +337,11 @@ class TestRFClient:
         response = client.get_intelligence()
 
         mock_call.assert_called_once_with(
-            url_suffix='/v2/lookup/intelligence'
+            url_suffix='/v2/playbook_alert/lookup'
         )
 
         assert response == mock_call_response
-    
-    # TODO REWRITE THIS TO WORK WITH PLAYBOOK ALERTS (update)
-    def test_alert_set_status(self, mocker):
+    def test_update_status(self, mocker):
         import os
         import demistomock as demisto
 
@@ -366,35 +364,14 @@ class TestRFClient:
         }
         mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
 
-        alert_data = {
-            'mock': 'data'
-        }
-        response = client.alert_set_status(alert_data)
+        response = client.get_intelligence()
 
         mock_call.assert_called_once_with(
-            url_suffix='/v2/alert/set_status',
-            json_data={
-                'demisto_command': mock_command_name,
-                'demisto_args': mock_command_args,
-                'alerts_update_data': alert_data
-            },
+            url_suffix='/v2/playbook_alert/update'
         )
 
         assert response == mock_call_response
-
-        response = client.alert_set_status()
-
-        mock_call.assert_called_with(
-            url_suffix='/v2/alert/set_status',
-            json_data={
-                'demisto_command': mock_command_name,
-                'demisto_args': mock_command_args,
-                'alerts_update_data': None
-            },
-        )
-
-        assert response == mock_call_response
-
+    
 class TestActions:
 
     def test_init(self, mocker):
@@ -543,16 +520,16 @@ class TestActions:
         # Verify that we update alert status.
         mock_client_alert_set_status.assert_called_once_with(mock_alerts_update_data_value)
 
-    def test_get_single_alert_command_with_result_actions(self, mocker):
+    def test_playbook_alert_details_command_with_result_actions(self, mocker):
         from RecordedFuture import Actions
 
         client = create_client()
 
         mock_response = 'mock_response'
 
-        mock_client_get_single_alert = mocker.patch.object(
+        mock_client_playbook_alert_details = mocker.patch.object(
             client,
-            'get_single_alert',
+            'playbook_alert_details',
             return_value=mock_response
         )
 
@@ -565,25 +542,25 @@ class TestActions:
             return_value=mock_process_result_actions_return_value
         )
 
-        result = actions.get_single_alert_command()
+        result = actions.playbook_alert_details_command()
 
-        mock_client_get_single_alert.assert_called_once_with()
+        mock_client_playbook_alert_details.assert_called_once_with()
 
         mock_process_result_actions.assert_called_once_with(response=mock_response)
 
         # As there are some result actions - return those result actions.
         assert result == mock_process_result_actions_return_value
 
-    def test_get_single_alert_command_without_result_actions(self, mocker):
+    def test_playbook_alert_details_command_without_result_actions(self, mocker):
         from RecordedFuture import Actions
 
         client = create_client()
 
         mock_response = 'mock_response'
 
-        mock_client_get_single_alert = mocker.patch.object(
+        mock_client_playbook_alert_details = mocker.patch.object(
             client,
-            'get_single_alert',
+            'playbook_alert_details',
             return_value=mock_response
         )
 
@@ -596,38 +573,48 @@ class TestActions:
             return_value=mock_process_result_actions_return_value
         )
 
-        result = actions.get_single_alert_command()
+        result = actions.playbook_alert_details_command()
 
-        mock_client_get_single_alert.assert_called_once_with()
+        mock_client_playbook_alert_details.assert_called_once_with()
 
         mock_process_result_actions.assert_called_once_with(response=mock_response)
 
         # As there is no result actions - just return response.
         assert result == mock_response
 
-    def test_get_alerts_command(self, mocker):
+    def test_playbook_alert_search_command_without_result_actions(self, mocker):
         from RecordedFuture import Actions
 
         client = create_client()
 
         mock_response = 'mock_response'
 
-        mock_client_get_alerts = mocker.patch.object(
+        mock_client_playbook_alert_search = mocker.patch.object(
             client,
-            'get_alerts',
+            'playbook_alert_search',
             return_value=mock_response
         )
 
         actions = Actions(client)
 
-        result = actions.get_alerts_command()
+        mock_process_result_actions_return_value = None
+        mock_process_result_actions = mocker.patch.object(
+            actions,
+            '_process_result_actions',
+            return_value=mock_process_result_actions_return_value
+        )
 
-        mock_client_get_alerts.assert_called_once_with()
+        result = actions.playbook_alert_search_command()
 
+        mock_client_playbook_alert_search.assert_called_once_with()
+
+        mock_process_result_actions.assert_called_once_with(response=mock_response)
+
+        # As there is no result actions - just return response.
         assert result == mock_response
 
 
-    def test_alert_set_status_command(self, mocker):
+    def test_playbook_alert_update_command(self, mocker):
         from RecordedFuture import Actions
 
         client = create_client()
@@ -636,7 +623,7 @@ class TestActions:
 
         mock_client_alert_set_status = mocker.patch.object(
             client,
-            'alert_set_status',
+            'playbook_alert_update',
             return_value=mock_response
         )
 

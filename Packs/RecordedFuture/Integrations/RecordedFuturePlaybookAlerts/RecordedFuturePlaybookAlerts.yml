@@ -90,8 +90,8 @@ script:
             - action
             - summary
             - log
-            - domain_abuse-whois
-            - domain_abuse-dns
+            - whois
+            - dns
       outputs: 
         - contextPath: RecordedFuture.PlaybookAlerts.playbook_alert_id
           description: Unique id of the playbook alert
@@ -220,13 +220,16 @@ script:
         - contextPath: RecordedFuture.PlaybookAlerts.panel_summary.resolved_record_list.risk_score
           description: Risk score of the entity in Recorded Future
           type: String
+        - contextPath: RecordedFuture.PlaybookAlerts.panel_summary.screenshots.description
+          description: Description of the image
+          type: String
         - contextPath: RecordedFuture.PlaybookAlerts.panel_summary.screenshots.image_id
-          description: The record type
+          description: ID of the screenshot in recorded future
           type: String
         - contextPath: RecordedFuture.PlaybookAlerts.panel_summary.screenshots.tag
           description: Image Analisys tag 
           type: String
-        - contextPath: RecordedFuture.PlaybookAlerts.panel_summary.screenshots.created_time
+        - contextPath: RecordedFuture.PlaybookAlerts.panel_summary.screenshots.created
           description: When the image was created
           type: String
         - contextPath: RecordedFuture.PlaybookAlerts.panel_summary.screenshots.base64
@@ -262,7 +265,6 @@ script:
         - contextPath: RecordedFuture.PlaybookAlerts.panel_summary.insikt_notes.fragment
           description: A fragment of the Insikt note text
           type: String
-
         # Log panel contexts
         - contextPath: RecordedFuture.PlaybookAlerts.panel_log.id
           description: Log id in Recorded Future
@@ -363,7 +365,6 @@ script:
         - contextPath: RecordedFuture.PlaybookAlerts.panel_log.changes.external_id_change.type
           description: Type of change
           type: String
-
         # Action panel contexts
         - contextPath: RecordedFuture.PlaybookAlerts.panel_action.action
           description: The name of the action
@@ -386,7 +387,6 @@ script:
         - contextPath: RecordedFuture.PlaybookAlerts.panel_action.link
           description: A link associated with the action
           type: String
-
         # Panel DNS
         - contextPath: RecordedFuture.PlaybookAlerts.panel_dns.ip_list.record
           description: The DNS record
@@ -521,8 +521,12 @@ script:
       arguments: 
         - name: category
           required: false
-          isArray: true
           description: filter what playbook alert categories that is wanted. (default = all available)
+          auto: PREDEFINED
+          predefined:
+            - all_available
+            - domain_abuse
+            - vulnerability
         - name: limit
           required: false
           description: Limits the number of alerts to fetch.
@@ -531,7 +535,6 @@ script:
           description: Time between now and e.g. "2 hours" or "7 days" ago
         - name: playbook_alert_status
           required: false
-          isArray: true
           auto: PREDEFINED
           predefined:
             - new
