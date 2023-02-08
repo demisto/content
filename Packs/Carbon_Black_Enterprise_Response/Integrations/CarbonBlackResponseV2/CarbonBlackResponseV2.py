@@ -914,8 +914,6 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     return next_run, incidents
 
 
-
-
 def test_module(client: Client, params: dict) -> str:
     try:
         client.get_processes(limit='5', allow_empty=True)
