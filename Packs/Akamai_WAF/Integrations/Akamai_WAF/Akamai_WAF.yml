@@ -1239,7 +1239,7 @@ script:
       required: true
     description: acknowledge pre verification warning
     name: akamai-acknowledge-pre-verification-warning
-  dockerimage: demisto/akamai:1.0.0.46743
+  dockerimage: demisto/akamai:1.0.0.47257
   runonce: false
   script: ''
   subtype: python3
