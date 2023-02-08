@@ -8,7 +8,7 @@ def isDemistoAPIIntegrationAvailable():
     brandNames = ["Demisto REST API", "Core REST API"]
     allInstances = demisto.getModules()
     brandInstances = [
-        instanceName for instanceName in allInstances 
+        instanceName for instanceName in allInstances
         if allInstances[instanceName]['brand'].lower() in [brandName.lower() for brandName in brandNames]
         and demisto.get(allInstances[instanceName], 'state') and allInstances[instanceName]['state'] == 'active'
     ]
