@@ -3,7 +3,7 @@
 	"associatedTypes": [],
 	"breachScript": "",
 	"caseInsensitive": true,
-	"cliName": "alertname",
+	"cliName": "originalalertname",
 	"closeForm": false,
 	"columns": null,
 	"content": true,
@@ -13,10 +13,10 @@
 	"fieldCalcScript": "",
 	"group": 0,
 	"hidden": false,
-	"id": "incident_alertname",
+	"id": "incident_originalalertname",
 	"isReadOnly": false,
 	"locked": false,
-	"name": "Alert Name",
+	"name": "Original Alert Name",
 	"neverSetAsRequired": false,
 	"ownerOnly": false,
 	"placeholder": "",
@@ -34,7 +34,14 @@
 	"validationRegex": "",
 	"version": -1,
 	"fromVersion": "5.0.0",
+	"Aliases": [
+		{
+			"cliName": "alertname",
+			"type": "shortText",
+			"name": "Alert Name"
+		}
+	],
 	"marketplaces": [
-		"xsoar"
+		"marketplacev2"
 	]
 }

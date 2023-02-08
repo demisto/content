@@ -5,7 +5,7 @@
     ],
     "breachScript": "",
     "caseInsensitive": true,
-    "cliName": "events",
+    "cliName": "originalevents",
     "closeForm": false,
     "columns": null,
     "content": true,
@@ -16,12 +16,12 @@
     "fieldCalcScript": "",
     "group": 0,
     "hidden": false,
-    "id": "incident_events",
+    "id": "incident_originalevents",
     "isExtractingSpecificIndicatorTypes": false,
     "isReadOnly": false,
     "itemVersion": "",
     "locked": false,
-    "name": "Events",
+    "name": "Original Events",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "placeholder": "",
@@ -44,7 +44,14 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "openEnded": true,
-	"marketplaces": [
-		"xsoar"
+	"Aliases": [
+		{
+			"cliName": "events",
+			"type": "shortText",
+			"name": "Events"
+		}
+	],
+    "marketplaces": [
+		"marketplacev2"
 	]
 }
