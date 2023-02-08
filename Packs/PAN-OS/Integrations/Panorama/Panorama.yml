@@ -5186,6 +5186,7 @@ script:
       - profile-setting
       - source-user
       - service
+      - audit-comment
       required: true
     - description: The new value for the parameter.
       name: element_value
