@@ -794,6 +794,29 @@ script:
     - type: String
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.impactedEntityName
       description: 'The alarm summary impacted entity name.'
+  - name: lr-get-alarm-details
+    description: 'Get the details of an alarm by the specified alarm ID.'
+    arguments:
+    - name: alarm_id
+      description: 'Numeric ID of the alarm to get.'
+      required: true
+      isArray: false
+    outputs:
+    - type: Date
+      contextPath: LogRhythm.AlarmDetails.dateInserted
+      description: 'The date the alarm was inserted.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDetails.rbpMax
+      description: 'The alarm rbp max.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDetails.rbpAvg
+      description: 'The alarm rbp average.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDetails.alarmRuleId
+      description: 'The alarm rule ID.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDetails.alarmId
+      description: 'The alarm ID.'
   - name: lr-cases-list
     description: 'Get cases details using filter criteria.'
     arguments:

@@ -1099,6 +1099,12 @@ class Client(BaseClient):
 
         alarm_summary = response.get('alarmSummaryDetails')
         return alarm_summary, response
+    
+    def get_alarm_details_request(self, alarm_id):  # pragma: no cover
+        response = self._http_request('GET', f'lr-alarm-api/alarms/{alarm_id}')
+
+        alarm_details = response.get('alarmDetails')
+        return alarm_details, response
 
     def cases_list_request(self, case_id=None, timestamp_filter_type=None, timestamp=None, priority=None, status=None,
                            owners=None, tags=None, text=None, evidence_type=None, reference_id=None, external_id=None,
@@ -1622,6 +1628,30 @@ def alarm_summary_command(client: Client, args: Dict[str, Any]) -> CommandResult
     command_results = CommandResults(
         readable_output=hr,
         outputs_prefix='LogRhythm.AlarmSummary',
+        outputs_key_field='alarmId',
+        outputs=ec,
+        raw_response=raw_response,
+    )
+
+    return command_results
+
+
+def get_alarm_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
+    alarm_id = args.get('alarm_id')
+    if not alarm_id:
+        raise DemistoException('Invalid alarm_id')
+
+    alarm_details, raw_response = client.get_alarm_details_request(alarm_id)
+    alarm_details['alarmId'] = int(alarm_id)
+    ec = alarm_details.copy()
+
+    hr = tableToMarkdown(f'Alarm {alarm_id} details', alarm_details, headerTransform=pascalToSpace)
+
+    alarm_details['alarmId'] = int(alarm_id)
+
+    command_results = CommandResults(
+        readable_output=hr,
+        outputs_prefix='LogRhythm.AlarmDetails',
         outputs_key_field='alarmId',
         outputs=ec,
         raw_response=raw_response,
@@ -2513,6 +2543,7 @@ def main() -> None:  # pragma: no cover
             'lr-alarm-history-list': alarm_history_list_command,
             'lr-alarm-events-list': alarm_events_list_command,
             'lr-alarm-summary': alarm_summary_command,
+            'lr-get-alarm-details': get_alarm_details_command,
             'lr-cases-list': cases_list_command,
             'lr-case-create': case_create_command,
             'lr-case-update': case_update_command,
