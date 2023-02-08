@@ -509,23 +509,23 @@ def test_watchlist_update_action_command(mocker, requests_mock):
     assert result.readable_output == 'success'
 
 
-
-@pytest.mark.parametrize('delta',
-                         [(True, {'closeReason': 'Other'}),
-                          (False, {})])
-def test_update_remote_system_command(mocker, requests_mock):
+@pytest.mark.parametrize('status, data',
+                         [(2, {'closeReason': 'False Positive'}),
+                          (2, {'closeReason': 'Duplicate'}),
+                          (2, {'closeReason': 'Resolved'}),
+                          (1, {})])
+def test_update_remote_system_command(status, data):
     from CarbonBlackResponseV2 import Client, update_remote_system_command
     client = Client(base_url='https://test.com', apitoken='api_key', use_ssl=True, use_proxy=False)
-    data = {'closeReason': 'False Positive'}
+    delta = {'closeNotes': 'test'}
     expected_remote_id = 'remote_id'
     args = {
         'remoteId': expected_remote_id,
         'data': data,
         'entries': [],
         'delta': delta,
-        'status': 2
+        'status': status
     }
 
     actual_remote_id = update_remote_system_command(client, args)
     assert actual_remote_id == expected_remote_id
-

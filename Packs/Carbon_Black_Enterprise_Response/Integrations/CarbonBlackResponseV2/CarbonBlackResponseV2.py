@@ -822,7 +822,7 @@ def update_remote_system_command(client: Client, args: Dict):
             alert_update_command(client, alert_ids=alert_id, status=status)
     except Exception as e:
         demisto.debug(f"Error in outgoing mirror for incident {parsed_args.remote_incident_id} \n"
-                              f"Error message: {str(e)}")
+                      f"Error message: {str(e)}")
     finally:
         return parsed_args.remote_incident_id
 
