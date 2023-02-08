@@ -196,15 +196,15 @@ def search_alerts_v2_command(client: MsGraphClient, args):
     outputs = []
     for alert in alerts:
         outputs.append({
-            'ID': alert['id'],
-            'Title': alert['title'],
-            'Category': alert['category'],
-            'Severity': alert['severity'],
-            'CreatedDate': alert['createdDateTime'],
-            'FirstActivityDateTime': alert['firstActivityDateTime'],
-            'LastActivityDateTime': alert['lastActivityDateTime'],
-            'Status': alert['status'],
-            'Provider': alert['serviceSource']
+            'ID': alert.get('id'),
+            'Title': alert.get('title'),
+            'Category': alert.get('category'),
+            'Severity': alert.get('severity'),
+            'CreatedDate': alert.get('createdDateTime'),
+            'FirstActivityDateTime': alert.get('firstActivityDateTime'),
+            'LastActivityDateTime': alert.get('lastActivityDateTime'),
+            'Status': alert.get('status'),
+            'Provider': alert.get('serviceSource')
         })
     ec = {
         'MsGraph.Alert(val.ID && val.ID === obj.ID)': outputs
