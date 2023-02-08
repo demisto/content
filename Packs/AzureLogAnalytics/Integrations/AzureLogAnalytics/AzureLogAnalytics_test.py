@@ -62,6 +62,7 @@ def mock_client():
     client = Client(
         self_deployed=True,
         refresh_token='refresh_token',
+        refresh_token_param='refresh_token_param',
         auth_and_token_url='auth_id',
         redirect_uri='redirect_uri',
         enc_key='enc_key',
