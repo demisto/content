@@ -28,7 +28,6 @@ MIRROR_DIRECTION_DICT = {
     'Both': 'Both'
 }
 
-MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
 
 class ProcessEventDetail:
     """
@@ -878,7 +877,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     demisto.debug(f'{INTEGRATION_NAME} - Got total of {len(alerts)} alerts from CB server.')
     for alert in alerts:
         incident_created_time = dateparser.parse(alert.get('created_time'))
-        alert['mirror_direction'] = MIRROR_DIRECTION
+
+        alert['mirror_direction'] = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
         alert['mirror_instance'] = demisto.integrationInstance()
         alert['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
         assert incident_created_time is not None

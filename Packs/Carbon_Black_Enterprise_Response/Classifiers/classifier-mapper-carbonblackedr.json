@@ -82,9 +82,17 @@
                     "complex": null,
                     "simple": "unique_id"
                 },
+                "dbotMirrorDirection": {
+                    "complex": null,
+                    "simple": "mirror_direction"
+                },
                 "dbotMirrorId": {
                     "complex": null,
                     "simple": "unique_id"
+                },
+                "dbotMirrorInstance": {
+                    "complex": null,
+                    "simple": "mirror_instance"
                 },
                 "severity": {
                     "complex": null,
