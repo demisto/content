@@ -3,7 +3,7 @@ commonfields:
   version: -1
 deprecated: true
 name: Zendesk
-display: Zendesk
+display: Zendesk - Deprecated
 category: Case Management
 description: Deprecated. Use the Zendesk v2 integration instead.
 configuration:
