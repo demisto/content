@@ -2248,7 +2248,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter):
         last_modification_time = last_fetch_time
         if isinstance(last_modification_time, EWSDateTime):
             last_modification_time = last_modification_time.ewsformat()
-            
+
         for item in last_emails:
             if item.message_id:
                 current_fetch_ids.add(item.message_id)

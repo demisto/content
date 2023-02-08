@@ -249,7 +249,7 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
         return MockObject()
-    from EWSO365 import MODIFIED_FILTER, RECEIVED_FILTER
+    from EWSO365 import RECEIVED_FILTER
     client = TestNormalCommands.MockClient()
     client.max_fetch = 1
     client.get_folder_by_path = mock_get_folder_by_path
@@ -258,6 +258,7 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
     fetch_emails_as_incidents(client, current_last_run, RECEIVED_FILTER)
     assert last_run.call_args[0][0].get('lastRunTime') == expected_last_run.get('lastRunTime')
     assert set(last_run.call_args[0][0].get('ids')) == set(expected_last_run.get('ids'))
+
 
 def test_fetch_and_mark_as_read(mocker):
     """
