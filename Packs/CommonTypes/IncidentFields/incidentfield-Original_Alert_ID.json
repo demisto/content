@@ -3,20 +3,20 @@
 	"associatedTypes": [],
 	"breachScript": "",
 	"caseInsensitive": true,
-	"cliName": "alertname",
+	"cliName": "originalalertid",
 	"closeForm": false,
 	"columns": null,
 	"content": true,
 	"defaultRows": null,
-	"description": "Alert name as received from the integration JSON",
+	"description": "Alert ID as received from the integration JSON",
 	"editForm": true,
 	"fieldCalcScript": "",
 	"group": 0,
 	"hidden": false,
-	"id": "incident_alertname",
+	"id": "incident_originalalertid",
 	"isReadOnly": false,
 	"locked": false,
-	"name": "Alert Name",
+	"name": "Original Alert ID",
 	"neverSetAsRequired": false,
 	"ownerOnly": false,
 	"placeholder": "",
@@ -34,7 +34,19 @@
 	"validationRegex": "",
 	"version": -1,
 	"fromVersion": "5.0.0",
+	"Aliases": [
+		{
+			"cliName": "alertid",
+			"type": "shortText",
+			"name": "Alert ID"
+		},
+		{
+			"cliName": "externalid",
+			"type": "shortText",
+			"name": "External ID"
+		}
+	],
 	"marketplaces": [
-		"xsoar"
+		"marketplacev2"
 	]
 }
