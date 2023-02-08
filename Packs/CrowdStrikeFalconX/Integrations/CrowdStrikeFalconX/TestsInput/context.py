@@ -6,7 +6,7 @@ SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT = {
     'created_timestamp': '2020-05-12T15:34:11Z',
     'environment_id': 160,
     'sha256': 'sha256',
-    'url': 'https://www.google.com'
+    'file_name': 'test.pdf'
 }
 
 SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT = {

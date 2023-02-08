@@ -185,6 +185,7 @@ def test_cs_falcon_x_polling_related_commands(command, args, http_response, cont
     - validate the expected_result and the created context
     """
     mocker.patch.object(Client, '_get_access_token')
+    mocker.patch.object(demisto, 'get', return_value={'sha256': 'sha256', 'file_name': 'test.pdf'})
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
                     proxy=False, reliability=DBotScoreReliability.B)
 
@@ -352,10 +353,10 @@ def test_running_polling_command_new_search_for_url(mocker):
                     proxy=False, reliability=DBotScoreReliability.B)
 
     mocker.patch.object(Client, 'send_url_to_sandbox_analysis',
-                        return_value=SEND_UPLOADED_FILE_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE)
+                        return_value=SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE)
     mocker.patch.object(Client, 'get_full_report', return_value=GET_FULL_REPORT_HTTP_RESPONSE)
 
-    expected_outputs = SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT
+    expected_outputs = SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT
     command_results = run_polling_command(client, args, 'cs-fx-submit-url', send_url_to_sandbox_analysis_command,
                                           get_full_report_command, 'URL')
 
@@ -377,6 +378,7 @@ def test_running_polling_command_new_search_for_file(mocker):
     args = SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS_POLLING
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
     mocker.patch.object(Client, '_get_access_token')
+    mocker.patch.object(demisto, 'get', return_value={'sha256': 'sha256', 'file_name': 'test.pdf'})
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
                     proxy=False, reliability=DBotScoreReliability.B)
 
