@@ -45,6 +45,8 @@ def get_edl(instance_name):
 
 def record_edl_log(edl_name, edl_length):
     check_exists = demisto.executeCommand("getList", {"listName": "EDLMetrics_Size"})
+    if is_error(check_exists):
+        return_error(check_exists)
     existing_list = check_exists[0]['HumanReadable']
     result = {
         "name": str(date.today()),
@@ -55,13 +57,19 @@ def record_edl_log(edl_name, edl_length):
         }
     }
     if existing_list is None:
-        demisto.executeCommand("createList", {"listName": "EDLMetrics_Size", "listData": (json.dumps(result) + ';')})
+        cl = demisto.executeCommand("createList", {"listName": "EDLMetrics_Size", "listData": (json.dumps(result) + ';')})
+        if is_error(cl):
+            return_error(cl)
     else:
-        demisto.executeCommand("addToList", {"listName": "EDLMetrics_Size", "listData": (json.dumps(result) + ';')})
+        al = demisto.executeCommand("addToList", {"listName": "EDLMetrics_Size", "listData": (json.dumps(result) + ';')})
+        if is_error(al):
+            return_error(al)
 
 
 def build_widget():
     str_entries = demisto.executeCommand("getList", {"listName": "EDLMetrics_Size"})[0]['Contents']
+    if is_error(str_entries):
+        return_error(str_entries)
     entries = str_entries.split(';,')
     entries[-1] = entries[-1].rstrip(';')
     builder: List[dict] = []
@@ -94,6 +102,8 @@ def main():
         instances = demisto.executeCommand("GetInstanceName", {
             "integration_name": "EDL", "return_all_instances": "True"
         })[0]['Contents']
+        if is_error(instances):
+            return_error(instances)
         for instance in instances:
             edl_name = instance['instanceName']
             edl_exclusions = demisto.args()['edl_exclusions'].split(',')
