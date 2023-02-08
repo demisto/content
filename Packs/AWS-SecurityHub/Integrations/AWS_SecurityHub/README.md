@@ -806,7 +806,7 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 
 ### Mirroring In Notes
 The mirroring in works when the security-findings provider last updated the finding record. 
-If a user updated an incident it won't show in the XSOAR incident.
+If a user updated an incident it won't show in the Cortex XSOAR incident.
 
 ### Mirroring Out Notes
 The supported fields in the mirroring out process are:
