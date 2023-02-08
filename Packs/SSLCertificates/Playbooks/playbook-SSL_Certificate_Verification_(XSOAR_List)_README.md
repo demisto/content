@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![SSL Certificate Verification (XSOAR List)](../doc_files/SSL_Certificate_Verification_(XSOAR_List).png)
+![SSL Certificate Verification (XSOAR List)](../doc_files/SSL_Certificate_Verification.png)

@@ -2,8 +2,8 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-id: SSL_Certificate_Verification_(XSOAR_List)
-name: SSL_Certificate_Verification_(XSOAR_List)
+id: SSL_Certificate_Verification
+name: SSL_Certificate_Verification
 description: 'Demo playbook - takes list of addresses from an XSOAR list, process the status of each SSL certificate, and generate war room and email summary outputs.'
 starttaskid: "0"
 tasks:
