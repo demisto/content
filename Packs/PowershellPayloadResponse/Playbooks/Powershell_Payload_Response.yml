@@ -1,6 +1,6 @@
 id: Powershell Payload Response
 version: -1
-name: Powershell Payload Response
+name: Powershell Payload Response - Test
 description: The Powershell Payload Response playbook is designed to be used when
   file payload executions are detected from an endpoint machines Powershell and begins
   the remediation process.
