@@ -424,11 +424,11 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
         (MockerCases.S, ('myOtherTestPlaybook',), ('myXSOAROnlyPack', 'myXSOAROnlyPack2',), None, None,
          XSOAR_BRANCH_ARGS, ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',), (),
          ('myXSOAROnlyPack',)),
-        
+
         # (35) see T definition at the top of this file - reputation indicator type test
-        (MockerCases.T, ("FormattingPerformance - Test", "Email extraction test", "Domain extraction test")
-        , ('Base', 'DeveloperTools', 'CommonTypes'), None, None, XSOAR_BRANCH_ARGS, 
-        ('Packs/CommonTypes/IndicatorTypes/reputation-domain.json',), (), ('CommonTypes',)),
+        (MockerCases.T, ("FormattingPerformance - Test", "Email extraction test", "Domain extraction test"),
+         ('Base', 'DeveloperTools', 'CommonTypes'), None, None, XSOAR_BRANCH_ARGS,
+         ('Packs/CommonTypes/IndicatorTypes/reputation-domain.json',), (), ('CommonTypes',)),
     )
 )
 def test_branch(
