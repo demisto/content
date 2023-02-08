@@ -1,5 +1,5 @@
 This integration fetches activities, threats, and alerts from SentinelOne.
-This integration was integrated and tested with version 2.1 of SentinelOneEventCollector
+This integration was integrated and tested with API version 2.1 of SentinelOne.
 
 ## Configure SentinelOne Event Collector on Cortex XSIAM
 
