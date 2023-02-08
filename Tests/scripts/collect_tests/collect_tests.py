@@ -1219,6 +1219,7 @@ def output(result: Optional[CollectionResult]):
     packs_to_install.append('DeveloperTools')
     packs_to_install.append('rasterize')
     packs_to_install.append('Phishing')
+    packs_to_install.append('Forcepoint')
     packs_to_upload = sorted(result.packs_to_upload, key=lambda x: x.lower()) if result else ()
     packs_to_upload.append('DemistoRESTAPI')
     modeling_rules_to_test = sorted(

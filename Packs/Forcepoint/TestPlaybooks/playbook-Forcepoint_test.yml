@@ -37,7 +37,7 @@ tasks:
       id: 3fee81c5-3b59-4e8e-8ee7-e5e09da65c8a
       version: -1
       name: Delete Context
-      description: 'Deletes previous context '
+      description: ' Deletes previous context '
       script: DeleteContext
       type: regular
       iscommand: false
