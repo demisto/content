@@ -2,22 +2,16 @@
   "name": "Cofense Vision",
   "description": "Cofense Vision empowers security teams to hunt for email messages and quarantine threats in mailboxes. Analysts can setup jobs to remove emerging phishing campaigns based on trusted and credible IOCs through an automated workflow.",
   "support": "partner",
-  "currentVersion": "1.0.0",
+  "currentVersion": "1.0.1",
   "author": "Cofense",
   "url": "https://cofense.com/contact-support/",
   "email": "support@cofense.com",
   "categories": [
     "Data Enrichment & Threat Intelligence"
   ],
-  "tags": [
-    "Email",
-    "Spam",
-    "Threat Intelligence",
-    "Incident Mirroring"
-  ],
+  "tags": [],
   "useCases": [
-    "Phishing",
-    "Hunting"
+    "Phishing"
   ],
   "keywords": [
     "phishing",
