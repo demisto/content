@@ -243,7 +243,7 @@ Returns a list of findings that match the specified criteria.
 | created_at_end | An end date for the date filter. | Optional | 
 | updated_at_start | A start date for the date filter. | Optional | 
 | updated_at_end | An end date for the date filter. | Optional | 
-| date_range_unit | A date range unit for the date filter. Possible values are: DAYS. | Optional | 
+| date_range_unit | A date range unit for the date filter. Possible value is: DAYS. | Optional | 
 | severity_label_value | The string filter value. | Optional | 
 | severity_label_comparison | The condition to be applied to a string value when querying for findings. Possible values are: EQUALS, PREFIX. | Optional | 
 | title_value | The string filter value. | Optional | 
