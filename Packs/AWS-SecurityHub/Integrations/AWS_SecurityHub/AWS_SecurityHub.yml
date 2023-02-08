@@ -150,7 +150,7 @@ configuration:
   type: 15
   section: Collect
 - display: Finding Type
-  additionalinfo: 'You can set the type of the findings to be fetched or mirrored: "Software and Configuration Checks", "TTPs", "Effects", "Unusual Behaviors", "Sensitive Data Identifications". For example, if you set the finding type to "TTPs", the integration will only fetch or mirror findings with finding type that match TTPs.'
+  additionalinfo: 'You can set the type of the findings to be fetched or mirrored: "Software and Configuration Checks", "TTPs", "Effects", "Unusual Behaviors", "Sensitive Data Identifications". For example, if you set the finding type to "TTPs", the integration will only fetch or mirror findings with the finding type that match TTPs.'
   name: finding_type
   type: 16
   required: false
