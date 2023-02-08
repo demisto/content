@@ -8478,7 +8478,7 @@ class TestSendEventsToXSIAMTest:
             ),
             (
                 [
-                    (401, None), (401, None)
+                    (401, None)
                 ],
                 1,
                 1,
