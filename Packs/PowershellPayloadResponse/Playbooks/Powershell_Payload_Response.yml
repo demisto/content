@@ -1354,37 +1354,7 @@ view: |-
       }
     }
   }
-inputs:
-- key: Endpoint ID
-  value:
-    simple: ${incident.endpointid}
-  required: false
-  description: ID of the endpoint in question.
-  playbookInputQuery: null
-- key: Hostname
-  value:
-    simple: ${incident.hostname}
-  required: false
-  description: Hostname of the endpoint in question.
-  playbookInputQuery: null
-- key: Email
-  value:
-    simple: ${incident.email}
-  required: false
-  description: Email attachment.
-  playbookInputQuery: null
-- key: File
-  value:
-    simple: ${File}
-  required: false
-  description: Payload file that was executed.
-  playbookInputQuery: null
-- key: File Path
-  value:
-    simple: ${incident.filepath}
-  required: false
-  description: File Path of the Executed Payload.
-  playbookInputQuery: null
+inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
