@@ -153,6 +153,7 @@ script:
       isArray: true
       description: "choose types: c2c,malware,dga,mining,spam,phishing"
     - name: labels
+      isArray: true
       description: "choose labels"
     outputs:
     - contextPath: Lumu.RetrieveIncidents.items.id
@@ -493,6 +494,7 @@ script:
       isArray: true
       description: "Lumu adversary-types requested"
     - name: labels
+      isArray: true
       description: "Lumu labels requested"
     outputs:
     - contextPath: Lumu.RetrieveOpenIncidents.items.id
@@ -551,6 +553,7 @@ script:
       isArray: true
       description: "Lumu adversary-types requested "
     - name: labels
+      isArray: true
       description: "Lumu labels requested "
     outputs:
     - contextPath: Lumu.RetrieveMutedIncidents.items.id
@@ -609,6 +612,7 @@ script:
       isArray: true
       description: "Lumu adversary-types requested"
     - name: labels
+      isArray: true
       description: "Lumu labels requested"
     outputs:
     - contextPath: Lumu.RetrieveClosedIncidents.items.id
