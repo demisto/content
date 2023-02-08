@@ -345,7 +345,8 @@ def install_packs(client: demisto_client,
 
     def call_install_packs_request(packs, attempts_count=1):
         try:
-            logging.debug(f'Installing the following packs on server {host}:\n{[pack["id"] for pack in packs]}')
+            logging.info(f'Installing packs {", ".join([p.get("id") for p in packs_to_install])} on server {host}. '
+                         f'Attempts left: {attempts_count}')
             response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                                 path='/contentpacks/marketplace/install',
                                                                                 method='POST',
@@ -362,6 +363,7 @@ def install_packs(client: demisto_client,
 
         except ApiException as ex:
             try:
+                logging.info(f'{ex.status=} {type(ex.status)=}')
                 if ex.status == [502, 599]:
                     if attempts_count <= 1:
                         raise ex
@@ -379,7 +381,6 @@ def install_packs(client: demisto_client,
                 logging.debug(f'An error occurred during parsing the install error: {str(ex)}')
                 raise ex
     try:
-        logging.info(f'Installing packs {", ".join([p.get("id") for p in packs_to_install])} on server {host}')
         try:
             call_install_packs_request(packs_to_install, attempts_count=3)
 
