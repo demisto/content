@@ -2741,7 +2741,6 @@ def acknowledge_warning_command(client: Client, change_path: str) -> Tuple[objec
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
 
-
 @logger
 def acknowledge_pre_verification_warning_command(client: Client, change_path: str) -> Tuple[object, dict, Union[List, Dict]]:
 
@@ -2753,7 +2752,6 @@ def acknowledge_pre_verification_warning_command(client: Client, change_path: st
         return human_readable, {"Akamai.Acknowledge": raw_response}, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
-
 
 
 def get_production_deployment_command(client: Client, enrollment_id: str) -> Tuple[object, dict, Union[List, Dict]]:
