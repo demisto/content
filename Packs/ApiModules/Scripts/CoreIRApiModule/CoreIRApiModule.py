@@ -212,27 +212,27 @@ class CoreClient(BaseClient):
         endpoints = reply.get('reply').get('endpoints', [])
         return endpoints
 
-    def set_endpoints(self,
-                      endpoint_id_list=None,
-                      dist_name=None,
-                      ip_list=None,
-                      group_name=None,
-                      platform=None,
-                      alias_name=None,
-                      isolate=None,
-                      hostname=None,
-                      page_number=0,
-                      limit=30,
-                      first_seen_gte=None,
-                      first_seen_lte=None,
-                      last_seen_gte=None,
-                      last_seen_lte=None,
-                      sort_by_first_seen=None,
-                      sort_by_last_seen=None,
-                      status=None,
-                      username=None,
-                      new_alias_name=None
-                      ):
+    def set_endpoints_alias(self,
+                            endpoint_id_list=None,
+                            dist_name=None,
+                            ip_list=None,
+                            group_name=None,
+                            platform=None,
+                            alias_name=None,
+                            isolate=None,
+                            hostname=None,
+                            page_number=0,
+                            limit=30,
+                            first_seen_gte=None,
+                            first_seen_lte=None,
+                            last_seen_gte=None,
+                            last_seen_lte=None,
+                            sort_by_first_seen=None,
+                            sort_by_last_seen=None,
+                            status=None,
+                            username=None,
+                            new_alias_name=None
+                            ):
 
         search_from = page_number * limit
         search_to = search_from + limit
@@ -1888,7 +1888,7 @@ def endpoint_alias_change_command(client, args):
 
     username = argToList(args.get('username'))
 
-    endpoints = client.set_endpoints(
+    endpoints = client.set_endpoints_alias(
         endpoint_id_list=endpoint_id_list,
         dist_name=dist_name,
         ip_list=ip_list,
@@ -1910,23 +1910,23 @@ def endpoint_alias_change_command(client, args):
         new_alias_name=new_alias_name
     )
 
-    standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False, integration_name)
-    endpoint_context_list = []
-    for endpoint in standard_endpoints:
-        endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
-        endpoint_context_list.append(endpoint_context)
+    # standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False, integration_name)
+    # endpoint_context_list = []
+    # for endpoint in standard_endpoints:
+    #     endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
+    #     endpoint_context_list.append(endpoint_context)
 
-    context = {
-        f'{integration_context_brand}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
-        Common.Endpoint.CONTEXT_PATH: endpoint_context_list,
-        f'{integration_context_brand}.Endpoint.count': len(standard_endpoints)
-    }
-    account_context = create_account_context(endpoints)
-    if account_context:
-        context[Common.Account.CONTEXT_PATH] = account_context
+    # context = {
+    #     f'{integration_context_brand}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
+    #     Common.Endpoint.CONTEXT_PATH: endpoint_context_list,
+    #     f'{integration_context_brand}.Endpoint.count': len(standard_endpoints)
+    # }
+    # account_context = create_account_context(endpoints)
+    # if account_context:
+    #     context[Common.Account.CONTEXT_PATH] = account_context
 
     return CommandResults(
-        readable_output="endpoint alias was changed successfully",
+        readable_output="The alias was changed successfully",
         # outputs=context,
         raw_response=endpoints
     )
