@@ -176,11 +176,7 @@ tasks:
         }
       }
     note: false
-    timertriggers:
-    - fieldname: triagesla
-      action: stop
-    - fieldname: detectionsla
-      action: start
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
