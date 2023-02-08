@@ -228,24 +228,6 @@
                 "id": "workPlan",
                 "name": "Work Plan",
                 "type": "workPlan"
-            },
-            {
-                "hidden": true,
-                "id": "evidenceBoard",
-                "name": "Evidence Board",
-                "type": "evidenceBoard"
-            },
-            {
-                "hidden": true,
-                "id": "relatedIncidents",
-                "name": "Related Incidents",
-                "type": "relatedIncidents"
-            },
-            {
-                "hidden": true,
-                "id": "canvas",
-                "name": "Canvas",
-                "type": "canvas"
             }
         ]
     },
