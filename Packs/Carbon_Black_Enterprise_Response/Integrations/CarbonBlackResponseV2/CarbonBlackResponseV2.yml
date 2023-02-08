@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: VMware Carbon Black EDR v3
+  id: VMware Carbon Black EDR v2
   version: -1
 configuration:
 - display: Server URL
@@ -88,8 +88,8 @@ configuration:
   section: Connect
   advanced: true
 description: VMware Carbon Black EDR (formerly known as Carbon Black Response)
-display: VMware Carbon Black EDR v3
-name: VMware Carbon Black EDR v3
+display: VMware Carbon Black EDR v2
+name: VMware Carbon Black EDR v2
 script:
   commands:
   - arguments:
