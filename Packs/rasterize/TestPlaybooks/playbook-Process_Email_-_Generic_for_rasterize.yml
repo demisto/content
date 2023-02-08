@@ -1199,4 +1199,4 @@ outputs:
 - contextPath: File
   description: The File object
   type: unknown
-fromversion: 5.0.0
+fromversion: 6.0.0
