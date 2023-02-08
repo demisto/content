@@ -511,7 +511,6 @@ def alert_update_command(client: Client, alert_ids: str, status: str = None, set
                          set_ignored=set_ignored,
                          query=query
                          )
-
     res = client.http_request(url=url, method='POST', json_data=body)
     if not res:
         raise Exception(f"{INTEGRATION_NAME} - Could not find alerts: {', '.join(alert_ids)}.")
