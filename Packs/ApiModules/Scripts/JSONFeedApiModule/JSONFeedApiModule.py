@@ -1,3 +1,4 @@
+# pylint: disable=E9010
 from CommonServerPython import *
 
 ''' IMPORTS '''
