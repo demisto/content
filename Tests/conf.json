@@ -4531,7 +4531,7 @@
                 "classifier_id": "EWS v2",
                 "incoming_mapper_id": "EWS v2-mapper"
             },
-            "memory_threshold": 160,
+            "memory_threshold": 300,
             "pid_threshold": 80
         },
         {
