@@ -763,7 +763,7 @@ Get remote data from a remote incident. This method does not update the current 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The remote incident ID. | Required | 
-| lastUpdate | The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time. Default is 0. | Optional | 
+| lastUpdate | The UTC timestamp in seconds since the last update. The incident is only updated if it was modified after the last update time. Default is 0. | Optional | 
 
 
 #### Context Output
