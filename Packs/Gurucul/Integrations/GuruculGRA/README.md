@@ -1078,6 +1078,55 @@ Retrieve analytical features for specified entity value and model name.
 ```
 
 #### Human Readable Output
+ 
+### gra-cases-anomaly
+***
+Retrieve anomalies for specified case id from GRA and update in XSOAR.
 
+#### Base Command
+
+`gra-cases-anomaly`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+|-------------------|-----------------| --- |
+| caseId            | GRA Case Id     | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description**    |
+| --- |----------|--------------------|
+|Gra.Cases.anomalies | Grid     | GRA Case Anomalies | 
+
+
+#### Command Example
+```!gra-cases-anomaly caseId=10```
+
+#### Context Example
+```
+[
+    {
+        "anomalyName": "Anomaly Name 1",
+        "riskAcceptedDate": "2023-02-01T18:30:00Z",
+        "resourceName": "Resource Name 1",
+        "riskScore": 0,
+        "assignee": "Assignee 1",
+        "assigneeType": "User",
+        "status": "Open"
+    },
+    {
+        "anomalyName": "Anomaly Name 2",
+        "riskAcceptedDate": null,
+        "resourceName": "Resource Name 2",
+        "riskScore": 0,
+        "assignee": "Assignee 2",
+        "assigneeType": "User",
+        "status": "Closed"
+    }
+]
+```
+
+#### Human Readable Output
 
 

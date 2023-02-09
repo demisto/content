@@ -1,12 +1,13 @@
 commonfields:
-  id: GRAAnalyticalFeatureDisplay
+  id: GRAAnomaliesDisplay
   version: -1
-name: GRAAnalyticalFeatureDisplay
-script: |
+name: GRAAnomaliesDisplay
+script: '-'
+system: false
 type: python
 tags:
 - dynamic-section
-comment: Display GRA analytical feature on the layout
+comment: Retrieve anomalies for specified case id from GRA and update in XSOAR
 enabled: true
 scripttarget: 0
 subtype: python3
@@ -14,6 +15,6 @@ timeout: 900ns
 runonce: false
 dockerimage: demisto/python3:3.10.9.46807
 runas: DBotWeakRole
-fromversion: 5.5.0
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

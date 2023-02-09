@@ -1,7 +1,7 @@
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 import json
 from datetime import datetime
-import demistomock as demisto
+
 
 
 def _get_incident():
