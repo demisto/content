@@ -16,6 +16,5 @@ fromversion: 5.0.0
 marketplaces:
 - xsoar
 - marketplacev2
-- xpanse
 tests:
 - No tests
