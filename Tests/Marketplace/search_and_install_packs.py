@@ -312,7 +312,7 @@ def install_packs_private(client: demisto_client,
 def install_packs(client: demisto_client,
                   host: str,
                   packs_to_install: list,
-                  request_timeout: int = 999999,
+                  request_timeout: int = 10800,
                   ):
     """ Make a packs installation request.
        If a pack fails to install due to malformed pack, this function catches the corrupted pack and call another
@@ -361,16 +361,19 @@ def install_packs(client: demisto_client,
                 logging.debug(f'The packs that were successfully installed on server {host}:\n{packs_data}')
 
         except ApiException as ex:
-            if 'timeout awaiting response' in ex.body:
-                raise GCPTimeOutException(ex.body)
-            if malformed_ids := find_malformed_pack_id(ex.body):
-                raise MalformedPackException(malformed_ids)
-            if 'Item not found' in ex.body:
-                raise GeneralItemNotFoundError(ex.body)
-            raise ex
-
+            try:
+                if 'timeout awaiting response' in ex.body:
+                    raise GCPTimeOutException(ex.body)
+                if malformed_ids := find_malformed_pack_id(ex.body):
+                    raise MalformedPackException(malformed_ids)
+                if 'Item not found' in ex.body:
+                    raise GeneralItemNotFoundError(ex.body)
+                raise ex
+            except Exception:
+                logging.debug(f'The error occurred during parsing the install error: {str(ex)}')
+                raise ex
     try:
-        logging.info(f'Installing packs on server {host}')
+        logging.info(f'Installing packs {", ".join([p.get("id") for p in packs_to_install])} on server {host}')
         try:
             call_install_packs_request(packs_to_install)
 
@@ -407,7 +410,10 @@ def search_pack_and_its_dependencies(client: demisto_client,
                                      packs_to_install: list,
                                      installation_request_body: list,
                                      lock: Lock,
-                                     after_update: bool):
+                                     one_pack_and_its_dependencies_in_batch: bool = False,
+                                     batch_packs_install_request_body: list = None,
+                                     after_update: bool = True,
+                                     ):
     """ Searches for the pack of the specified file path, as well as its dependencies,
         and updates the list of packs to be installed accordingly.
 
@@ -417,6 +423,11 @@ def search_pack_and_its_dependencies(client: demisto_client,
         packs_to_install (list) A list of the packs to be installed in this iteration.
         installation_request_body (list): A list of packs to be installed, in the request format.
         lock (Lock): A lock object.
+        one_pack_and_its_dependencies_in_batch(bool): Whether to install packs in small batches.
+            If false - install all packs in one batch.
+        batch_packs_install_request_body (list): A list of lists packs to be installed, in the request format.
+            Each list contain one pack and its dependencies.
+
         after_update (bool): True to fail on deprecated dependencies. False to just print info message.
     """
     pack_data = {}
@@ -453,10 +464,13 @@ def search_pack_and_its_dependencies(client: demisto_client,
                     current_packs_to_install.extend(dependencies)
 
         lock.acquire()
-        for pack in current_packs_to_install:
-            if pack['id'] not in packs_to_install:
-                packs_to_install.append(pack['id'])
-                installation_request_body.append(pack)
+        if one_pack_and_its_dependencies_in_batch:
+            batch_packs_install_request_body.append(current_packs_to_install)      # type:ignore[union-attr]
+        else:
+            for pack in current_packs_to_install:
+                if pack['id'] not in packs_to_install:
+                    packs_to_install.append(pack['id'])
+                    installation_request_body.append(pack)
         lock.release()
 
 
@@ -639,8 +653,8 @@ def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
 
 
 def search_and_install_packs_and_their_dependencies(pack_ids: list,
-                                                    client: demisto_client,
-                                                    hostname: str = '',
+                                                    client: demisto_client, hostname: str = '',
+                                                    install_packs_one_by_one=False,
                                                     after_update: bool = True):
     """ Searches for the packs from the specified list, searches their dependencies, and then
     installs them.
@@ -648,6 +662,8 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         pack_ids (list): A list of the pack ids to search and install.
         client (demisto_client): The client to connect to.
         hostname (str): Hostname of instance. Using for logs.
+        install_packs_one_by_one(bool): Whether to install packs in small batches.
+            If false - install all packs in one batch.
         after_update (bool): True if marketplace was updated, false otherwise.
 
     Returns (list, bool):
@@ -660,6 +676,8 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
 
     packs_to_install: list = []  # we save all the packs we want to install, to avoid duplications
     installation_request_body: list = []  # the packs to install, in the request format
+    batch_packs_install_request_body: list = []    # list of lists of packs to install if install packs one by one.
+    # Each list contain one pack and its dependencies.
 
     lock = Lock()
 
@@ -669,10 +687,14 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
                 logging.debug(f'pack {pack_id} is hidden, skipping installation and not searching for dependencies')
                 continue
             pool.submit(search_pack_and_its_dependencies,
-                        client, pack_id, packs_to_install, installation_request_body, lock, after_update)
+                        client, pack_id, packs_to_install, installation_request_body, lock,
+                        install_packs_one_by_one,
+                        batch_packs_install_request_body, after_update)
 
-    request_timeout = 1800 if host and host.startswith('qa2-test') else 999999   # hot-fix for xsiam packs install issue
+    if not install_packs_one_by_one:
+        batch_packs_install_request_body = [installation_request_body]
 
-    install_packs(client, host, installation_request_body, request_timeout)
+    for packs_to_install_body in batch_packs_install_request_body:
+        install_packs(client, host, packs_to_install_body)
 
     return packs_to_install, SUCCESS_FLAG

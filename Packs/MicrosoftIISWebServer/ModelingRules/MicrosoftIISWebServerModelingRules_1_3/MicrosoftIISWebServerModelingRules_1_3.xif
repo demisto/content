@@ -26,7 +26,7 @@ alter timestamp = arrayindex(regextract(_raw_log,"(\d+\-\d+\-\d+\s\d+\:\d+\:\d+)
     xdm.target.host.hostname = S_computername,
     xdm.network.http.url = cs_uri_stem,
     xdm.target.ipv4 = s_ip,
-    xdm.source.port = to_number(s_port),
+    xdm.source.port = to_integer(s_port),
     xdm.network.http.method = cs_method,
     xdm.network.http.response_code = sc_status,
     xdm.event.duration = to_number(time_taken),
@@ -55,6 +55,8 @@ alter event_type = arrayindex(regextract(_raw_log, "(\S+\s\d+\s\S+\s\d+)"),0)
 | alter
     xdm.source.ipv4 = c_ip,
     xdm.target.ipv4 = s_ip,
+    xdm.source.port = to_integer(s_port),
+    xdm.target.port = to_integer(c_port),
     xdm.target.resource.sub_type = s_port,
     xdm.network.http.method = cs_method,
     xdm.target.resource.id = streamid,
