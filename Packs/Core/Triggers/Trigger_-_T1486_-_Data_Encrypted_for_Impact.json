@@ -1,0 +1,19 @@
+{
+  "trigger_id": "437fc412eafbec9c69d8af8322895b69",
+  "playbook_id": "T1486 - Data Encrypted for Impact",
+  "suggestion_reason": "Recommended for Alerts with evidence of MITRE technique “Impact”",
+  "description": "This trigger is responsible for handling T1486 - Data Encrypted for Impact",
+  "trigger_name": "T1486 - Data Encrypted for Impact",
+  "alerts_filter": {
+    "filter": {
+      "OR": [
+        {
+            "SEARCH_FIELD": "mitre_technique_id_and_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "T1486 - Data Encrypted for Impact"
+        }
+      ]
+    }
+  }
+}
+
