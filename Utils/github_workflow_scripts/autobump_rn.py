@@ -1,4 +1,6 @@
 import json
+from abc import ABC, abstractmethod
+from enum import Enum
 from packaging.version import Version
 from typing import List, Tuple
 import urllib3
@@ -18,6 +20,15 @@ urllib3.disable_warnings()
 
 print = timestamped_print
 
+'''@@ -2,7 +2,7 @@
+     "name": "Common Types",
+     "description": "This Content Pack will get you up and running in no-time and provide you with the most commonly used incident & indicator fields and types.",
+     "support": "xsoar",
+-    "currentVersion": "3.3.47",
++    "currentVersion": "3.3.48",
+     "author": "Cortex XSOAR",
+     "url": "https://www.paloaltonetworks.com/cortex",
+     "email": "",'''
 ORGANIZATION_NAME = 'demisto'
 REPO_MANE = 'content'
 BASE = 'master'
@@ -28,26 +39,52 @@ LAST_SUITABLE_UPDATE_TIME_DAYS = 14
 RELEASE_NOTES_DIR = "ReleaseNotes"
 PACK_METADATA_FILE = 'pack_metadata.json'
 NOT_XSOAR_SUPPORTED_PACK = 'Pack is not xsoar supported'
-"""
-  stdout: 'Auto-merging pyproject.toml
-CONFLICT (content): Merge conflict in pyproject.toml
-Auto-merging poetry.lock
-CONFLICT (content): Merge conflict in poetry.lock
-Auto-merging Tests/scripts/infrastructure_tests/test_collect_tests.py
-CONFLICT (content): Merge conflict in Tests/scripts/infrastructure_tests/test_collect_tests.py
-Auto-merging Tests/scripts/collect_tests/constants.py
-CONFLICT (content): Merge conflict in Tests/scripts/collect_tests/constants.py
-Auto-merging Tests/Marketplace/marketplace_services.py
-CONFLICT (content): Merge conflict in Tests/Marketplace/marketplace_services.py
-Auto-merging Tests/Marketplace/marketplace_constants.py
-CONFLICT (content): Merge conflict in Tests/Marketplace/marketplace_constants.py
-Auto-merging .gitlab/ci/global.yml
-CONFLICT (content): Merge conflict in .gitlab/ci/global.yml
-Automatic merge failed; fix conflicts and then commit the result.'
-"""
 
 
 # todo: skip reasons class
+class SkipReason(str, Enum):
+    NOT_XSOAR_SUPPORTED_PACK = 'Pack is not xsoar supported'
+    LAST_MODIFIED_TIME = 'The PR was not updated in last {} days.'
+
+
+# todo:dataclass
+class ConditionResult:
+    def __int__(self, should_skip, reason):
+        self._should_skip = should_skip
+        self._reason = reason
+
+
+# todo: class for Base Condition
+class BaseCondition(ABC):
+
+    @property
+    @abstractmethod
+    def skip_reason(self) -> SkipReason:
+        raise NotImplementedError
+
+    @abstractmethod
+    def check(self, **kwargs) -> ConditionResult:
+        raise NotImplementedError
+
+
+class LastModifiedCondition(BaseCondition):
+    LAST_SUITABLE_UPDATE_TIME_DAYS = 14
+
+    @property
+    def skip_reason(self) -> SkipReason:
+        return SkipReason.LAST_MODIFIED_TIME.format(self.LAST_SUITABLE_UPDATE_TIME_DAYS)
+
+    def check(self, **kwargs) -> ConditionResult:
+        pass
+
+
+class PackSupportCondition(BaseCondition):
+    @property
+    def skip_reason(self) -> SkipReason:
+        return SkipReason.NOT_XSOAR_SUPPORTED_PACK
+
+    def check(self, **kwargs) -> ConditionResult:
+        pass
 
 
 class checkout:
@@ -89,28 +126,30 @@ def arguments_handler():
     return parser.parse_args()
 
 
-def conflict_only_in_rn_metadata_files(pr: PullRequest, repo: Repo,
-                                       allowed_conflicting_files: list) -> Tuple[bool, list]:
+def has_conflict_on_given_files(pr: PullRequest, repo: Repo,
+                                files_check_to_conflict_with: list) -> Tuple[bool, list]:
     """Checks if a pull request contains merge conflicts with a local branch.
     Arguments:
         pr: The pull request branch to check for merge conflicts.
         repo: The name of the local branch to check against.
-        allowed_conflicting_files:
+        files_check_to_conflict_with:
     Returns:
-        True if the pull request contains merge conflicts with the specified branch and false otherwise.
+        True if the pull request contains merge conflicts with specified files only.
     """
     pr_branch = pr.head.ref
+    conflicting_files = []
+    conflict_only_with_given_files = True
     try:
         repo.git.merge(f'origin/{pr_branch}', '--no-ff', '--no-commit')
     except GitCommandError as e:
         error = e.stdout
-        conflicting_files = [line.replace('Auto-merging ', '') for line in error.split('\n') if 'Auto-merging ' in line]
+        conflicting_files = [line.replace('Auto-merging ', '').strip()
+                             for line in error.splitlines() if 'Auto-merging ' in line]
         for file_name in conflicting_files:
-            if file_name not in allowed_conflicting_files:
-                return False, conflicting_files
-        # todo: change
-        return True, conflicting_files
-    return False, []
+            if file_name not in files_check_to_conflict_with:
+                conflict_only_with_given_files = False
+    repo.git.merge('--abort')
+    return (conflict_only_with_given_files and conflicting_files), conflicting_files
 
 
 def autobump_release_notes(packs_rn_to_update_in_this_pr):
@@ -142,13 +181,16 @@ def main():
         if NOT_UPDATE_RN_LABEL in [label.name for label in pr.labels]:
             print(f'{t.red}Label {NOT_UPDATE_RN_LABEL} exist in PR {pr_number}. {SKIPPING_MESSAGE}')
             continue
+
+        # todo: check that both rn and metadata files changed at the pr for same pack
         if f"/{RELEASE_NOTES_DIR}/" not in ' '.join(pr_files_names):
             print(f'{t.red}No changes were detected on {RELEASE_NOTES_DIR} directory in PR {pr_number}. '
                   f'{SKIPPING_MESSAGE}')
             continue
+
         changed_rn_files = [f for f in pr_files_names if RELEASE_NOTES_DIR in f]
         changed_metadata_files = [f for f in pr_files_names if PACK_METADATA_FILE in f]
-        conflict_only_rn_and_metadata, conflict_files = conflict_only_in_rn_metadata_files(
+        conflict_only_rn_and_metadata, conflict_files = has_conflict_on_given_files(
             pr, git_repo_obj,
             changed_metadata_files + changed_rn_files
         )
@@ -158,10 +200,12 @@ def main():
                   f'{SKIPPING_MESSAGE}')
             continue
 
-        conflicting_metadata_files = [f for f in conflict_files if PACK_METADATA_FILE in f]
         packs_rn_to_update_in_this_pr = set()
-        for metadata_file in conflicting_metadata_files:
-            pack = get_pack_name(metadata_file)
+        for conflict_file in conflict_files:
+            # todo check if already cheked
+            pack = get_pack_name(conflict_file)
+            metadata_file = conflict_file if PACK_METADATA_FILE in conflict_file \
+                else f'Packs/{pack}/{PACK_METADATA_FILE}'
             with open(metadata_file) as f:
                 base_pack_metadata = json.load(f)
             with checkout(git_repo_obj, pr_branch):
@@ -170,22 +214,26 @@ def main():
             if base_pack_metadata.get('support') != 'xsoar':
                 print(NOT_XSOAR_SUPPORTED_PACK)
                 continue
-            if Version(base_pack_metadata.get('currentVersion', '1.0.0')).major != Version(branch_pack_metadata.get('currentVersion', '1.0.0')).major:
+            if Version(base_pack_metadata.get('currentVersion', '1.0.0')).major != Version(
+                    branch_pack_metadata.get('currentVersion', '1.0.0')).major:
                 print('todo: Different major.')
                 continue
             if '99' in f"{base_pack_metadata.get('currentVersion', '1.0.0')}, {base_pack_metadata.get('currentVersion', '1.0.0')}":
                 print('todo: 99 error.')
                 continue
+
+            # conditions are done! now should find witch version to bump
             # todo: check how to bump? minor, revision?
             head_sha = pr.head.sha
+
             for file in pr_files:
                 path = file.filename
                 patch = file.patch
-                contents = github_repo_obj.get_contents(path, ref=head_sha)
-                content = contents.decoded_content.decode()
-                # todo: debug and see the content and patch here
-                print(f'{content}, {patch}')
-
+                # todo maybe better to take base?
+                for diff_line in patch.splitlines():
+                    if '"currentVersion": ' in diff_line and diff_line.startswith('+'):
+                        new_version = diff_line
+                        old_version = ''
             packs_rn_to_update_in_this_pr.add(pack)
 
         print('got here')
