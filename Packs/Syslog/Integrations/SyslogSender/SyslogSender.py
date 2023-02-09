@@ -1,6 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+import base64
+
 ''' IMPORTS '''
 
 from contextlib import contextmanager
@@ -10,11 +12,8 @@ from logging import Logger, getLogger, INFO, DEBUG, WARNING, ERROR, CRITICAL
 from socket import SOCK_STREAM
 from typing import Union, Tuple, Dict, Any, Generator
 from tempfile import NamedTemporaryFile
-import logging.config
-import logging
 from rfc5424logging import Rfc5424SysLogHandler
-import syslogmp
-# from gevent.server import StreamServer
+import socket
 
 
 ''' CONSTANTS '''
@@ -68,7 +67,7 @@ PROTOCOLS = {TCP, UDP, TLS}
 
 
 class SyslogManager:
-    def __init__(self, address: str, port: int, protocol: str, logging_level: int, facility: int, syslog_cert_path: str | None):
+    def __init__(self, address: str, port: int, protocol: str, logging_level: int, facility: int, cert_path: str | None, key_path: str | None):
         """
         Class for managing instances of a syslog logger.
         :param address: The IP address of the syslog server.
@@ -81,7 +80,8 @@ class SyslogManager:
         self.protocol = protocol
         self.logging_level = logging_level
         self.facility = facility
-        self.syslog_cert_path = syslog_cert_path
+        self.syslog_cert_path = cert_path
+        self.syslog_key_path = key_path
 
     @contextmanager  # type: ignore[misc, arg-type]
     def get_logger(self) -> Generator:
@@ -89,21 +89,15 @@ class SyslogManager:
         Get a new instance of a syslog logger.
         :return: syslog logger
         """
-        if self.protocol == 'tls':
-            syslog_logger_tls = self._init_logger_tls()
-            try:
-                yield syslog_logger_tls
-            finally:
-                demisto.debug('Finished sending message')
-        else:
-            handler = self._get_handler()
-            syslog_logger = self._init_logger(handler)
-
-            try:
-                yield syslog_logger
-            finally:
-                syslog_logger.removeHandler(handler)
-                handler.close()
+        demisto.debug('get_logger start')
+        handler = self.init_handler_udp_tcp_fix() if self.protocol != TLS else self.init_handler_tls()
+        syslog_logger = self._init_logger(handler)
+        demisto.debug('before try get_logger')
+        try:
+            yield syslog_logger
+        finally:
+            syslog_logger.removeHandler(handler)
+            handler.close()
 
     def _get_handler(self) -> SysLogHandler:
         """
@@ -124,40 +118,29 @@ class SyslogManager:
 
         return SysLogHandler(**kwargs)
 
-    def _init_logger_tls(self):
-        # SyslogHandlerTLS
-        demisto.debug('wtf')
-        log_settings = {
-            'version': 1,
-            'formatters': {
-                'console': {
-                    'format': '[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s',
-                },
-            },
-            'handlers': {
-                'syslog': {
-                    'level': self.logging_level,
-                    'class': 'rfc5424logging.handler.Rfc5424SysLogHandler',
-                    'formatter': 'console',
-                    'address': (self.address, self.port),
-                    'ssl_kwargs': {
-                        'cert_reqs': ssl.CERT_REQUIRED,
-                        'ssl_version': ssl.PROTOCOL_TLS,
-                        'ca_certs': self.syslog_cert_path,
-                    },
-                },
-            },
-            'loggers': {
-                'SysLogLoggerTLS': {
-                    'handlers': ['console', 'syslog'],
-                    'level': 'self.logging_level',
-                },
-            }}
-        logging.config.dictConfig(log_settings)
-        demisto.debug('wtf2')
-        return logging.getLogger('SysLogLoggerTLS')
+    def init_handler_udp_tcp_fix(self):
+        demisto.debug('init_handler_udp_tcp_fix')
+        sock_kind = SOCK_STREAM if self.protocol == TCP else socket.SOCK_DGRAM
+        demisto.debug('init_handler_udp_tcp_fix 2')
+        sh = Rfc5424SysLogHandler(address=(self.address, self.port),
+                                  facility=self.facility,
+                                  socktype=sock_kind,
+                                  timeout=10)
+        demisto.debug('init_handler_udp_tcp_fix after sh')
+        if sh is None:
+            demisto.debug('init_handler_udp_tcp_fix  sh is None !')
+        return sh
 
-    def _init_logger(self, handler: SysLogHandler) -> Logger:
+    def init_handler_tls(self):
+        return Rfc5424SysLogHandler(address=(self.address, self.port),
+                                    facility=self.facility,
+                                    tls_enable=True,
+                                    tls_verify=True,
+                                    tls_ca_bundle=self.syslog_cert_path,
+                                    tls_client_key=self.syslog_key_path,
+                                    timeout=50)
+
+    def _init_logger(self, handler: SysLogHandler | Rfc5424SysLogHandler) -> Logger:
         """
         Initialize a logger with a syslog handler.
         :param handler: A syslog handler
@@ -166,32 +149,30 @@ class SyslogManager:
         syslog_logger = getLogger('SysLogLogger')
         syslog_logger.setLevel(self.logging_level)
         syslog_logger.addHandler(handler)
-
         return syslog_logger
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def prepare_certificate_file(certificate: str):
+def prepare_certificate_file(certificate: str, private_key: str):
     """
-    Prepares the certificate file for ssl connection.
+    Prepares the certificate file and key for ssl connection.
     Args:
         certificate (str): Certificate. For SSL connection.
     Returns:
         (str, str): certificate_path.
-    """
+    """ 
     certificate_file = NamedTemporaryFile(delete=False)
     certificate_path = certificate_file.name
     certificate_file.write(bytes(certificate, 'utf-8'))
     certificate_file.close()
-    demisto.debug('Starting HTTPS Server')
-    return certificate_path
-
-
-def handle(socket, address):
-    #  syslog = syslogmp.Syslog(socket)
-    return 'syslog'
+    private_key_file = NamedTemporaryFile(delete=False)
+    private_key_path = private_key_file.name
+    private_key_file.write(bytes(private_key, 'utf-8'))
+    private_key_file.close()
+    demisto.debug('Successfully preparing the private key and certificate')
+    return certificate_path, private_key_path
 
 
 def init_manager(params: dict) -> SyslogManager:
@@ -206,7 +187,9 @@ def init_manager(params: dict) -> SyslogManager:
     facility = FACILITY_DICT.get(params.get('facility', 'LOG_SYSLOG'), SysLogHandler.LOG_SYSLOG)
     logging_level = LOGGING_LEVEL_DICT.get(params.get('priority', 'LOG_INFO'), INFO)
     certificate: Optional[str] = params.get('certificate')
+    key: Optional[str] = params.get('key')
     certificate_path: Optional[str] = None
+    key_path: Optional[str] = None
     max_port = 65535
     default_port = 6514 if protocol == 'tls' else 514
     try:
@@ -215,12 +198,14 @@ def init_manager(params: dict) -> SyslogManager:
         raise DemistoException(f'Invalid listen port - {port}. Make sure your port is a number')
     if port < 0 or max_port < port:
         raise DemistoException(f'Given port: {port} is not valid and must be between 0-{max_port}')
-    if protocol == 'tls' and not certificate:
-        raise DemistoException('A certificate must be provided in TLS protocol.')
-    if certificate and protocol == 'tls':
-        certificate_path = prepare_certificate_file(certificate)
+    if len(address) > 64:
+        address = base64.b64encode(address.encode()).decode("utf-8")
+    if protocol == 'tls' and ((not key) or (not certificate)):
+        raise DemistoException('A certificate and a key must be provided in TLS protocol.')
+    if certificate and key and protocol == 'tls':
+        certificate_path, key_path = prepare_certificate_file(certificate, key)
         demisto.debug('Starting HTTPS Server')
-    return SyslogManager(address, port, protocol, logging_level, facility, certificate_path)
+    return SyslogManager(address, port, protocol, logging_level, facility, certificate_path, key_path)
 
 
 def send_log(manager: SyslogManager, message: str, log_level: str):
@@ -340,9 +325,8 @@ def main():
         if demisto.command() == 'test-module':
             syslog_manager = init_manager(demisto.params())
             with syslog_manager.get_logger() as syslog_logger:  # type: Logger
+                demisto.debug('Successfully before info func')
                 syslog_logger.info('This is a test')
-                demisto.debug(syslog_manager)
-            demisto.results('ok')
         elif demisto.command() == 'mirror-investigation':
             mirror_investigation()
         elif demisto.command() == 'syslog-send':
@@ -357,7 +341,7 @@ def main():
             syslog_manager = init_manager(demisto.params())
             syslog_send_notification(syslog_manager, min_severity)
     except Exception as e:
-        return_error(str(e))
+        return_error("hi" + str(e))
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
