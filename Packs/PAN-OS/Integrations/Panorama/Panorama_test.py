@@ -1007,7 +1007,7 @@ class TestPanoramaListApplicationsCommand:
         mocker.patch('Panorama.get_pan_os_major_version', return_value=panorama_version)
 
         res = mocker.patch('demistomock.results')
-        panorama_list_applications_command(predefined='false')
+        panorama_list_applications_command({}, predefined='false')
 
         assert res.call_args.args[0]['Contents'] == {
             '@name': 'test-playbook-app', '@loc': 'Lab-Devices', 'subcategory': 'infrastructure',
@@ -6380,3 +6380,55 @@ class TestFetchIncidentsFlows:
         assert last_id_dict.get('X_log_type', '') == '000000002'
         assert last_fetch_dict.get('Y_log_type', '') == '2022-01-01 13:00:00'
         assert last_id_dict.get('Y_log_type', '') == '000000002'
+
+
+case_only_name = (
+    'name',
+    None,
+    {},
+    "@name='name'"
+)
+
+case_only_name_match: tuple = (
+    None,
+    'name_match',
+    {},
+    "contains(@name,'name_match')"
+)
+
+case_with_characteristics = (
+    'name',
+    None,
+    {'category': 'some_category',
+     'characteristics': ['file-type-ident', 'consume-big-bandwidth', 'used-by-malware'],
+     'risk': '5',
+     'sub_category': 'some_sub_category',
+     'technology': 'browser-based'
+     },
+    "@name='name'and(category='some_category')and(file-type-ident='yes')and(consume-big-bandwidth='yes')"
+    "and(used-by-malware='yes')and(risk='5')and(technology='browser-based')"
+)
+case_empty: tuple = (
+    '',
+    '',
+    {},
+    ''
+)
+get_mock_rules = [case_only_name, case_only_name_match, case_with_characteristics, case_empty]
+
+
+@pytest.mark.parametrize('name_match, name_contains, filters, expected_result', get_mock_rules)
+def test_build_xpath_filter(name_match, name_contains, filters, expected_result):
+    """
+    Given
+    - Filters: str and dict.
+
+    When -
+        running the pan-os-list-applictions command.
+
+    Then
+     - make sure the str xpath is correct.
+    """
+    from Panorama import build_xpath_filter
+    mock_result = build_xpath_filter(name_match, name_contains, filters)
+    assert mock_result == expected_result

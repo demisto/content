@@ -2561,21 +2561,30 @@ Returns a list of applications.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-|-------------------| --- | --- |
-| predefined        | Whether to list predefined applications or not. | Optional | 
-| device-group      | The device group for which to return applications. | Optional |
+| --- | --- | --- |
+| predefined | Whether to list predefined applications. Possible values are: true, false. Default is false. | Optional | 
+| device-group | The device group for which to return applications. | Optional | 
+| name_match | When specified, returned in the list are limited to applications whose name match the specified string. | Optional | 
+| name_contain | When specified, returned in the list are limited to applications whose name contains the specified string. | Optional | 
+| risk | The application risk (1 to 5). Possible values are: 1, 2, 3, 4, 5. | Optional | 
+| category | The application category. Possible values are: collaboration, business-systems, networking, media. | Optional | 
+| sub_category | The application sub-category. | Optional | 
+| technology | The application technology. Possible values are: browser-based, client-server, network-protocol, peer-to-peer. | Optional | 
+| characteristics | A comma-separated list, possible values are: 'virus-ident', 'evasive-behavior', 'file-type-ident', 'consume-big-bandwidth', 'used-by-malware', 'able-to-transfer-file', 'has-known-vulnerability', 'tunnel-other-application', 'prone-to-misuse', 'pervasive-use', 'file-forward', 'is-saas'. | Optional | 
+| limit | The maximum number of results to retrieve. Default is 50. | Optional | 
+
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Applications.Name | string | Application name. | 
-| Panorama.Applications.Id | number | Application ID. | 
-| Panorama.Applications.Category | string | Application category. | 
-| Panorama.Applications.SubCategory | string | Application sub-category. | 
-| Panorama.Applications.Technology | string | Application technology. | 
-| Panorama.Applications.Risk | number | Application risk \(1 to 5\). | 
-| Panorama.Applications.Description | string | Application description. | 
+| Panorama.Applications.Name | string | The application name. | 
+| Panorama.Applications.Id | number | The application ID. | 
+| Panorama.Applications.Category | string | The application category. | 
+| Panorama.Applications.SubCategory | string | The application sub-category. | 
+| Panorama.Applications.Technology | string | The application technology. | 
+| Panorama.Applications.Risk | number | The application risk \(1 to 5\). | 
+| Panorama.Applications.Description | string | The application description. | 
 
 
 #### Command Example

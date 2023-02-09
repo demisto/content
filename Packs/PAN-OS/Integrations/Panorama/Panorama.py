@@ -193,6 +193,7 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'ransomware'
 }
 
+APPILICATION_FILTERS = ('risk', 'category', 'subcategory', 'technology')
 class PAN_OS_Not_Found(Exception):
     """ PAN-OS Error. """
 
@@ -689,6 +690,30 @@ def get_pan_os_major_version() -> int:
 
 
 ''' FUNCTIONS'''
+
+def build_xpath_filter(name_match: str = None, name_contains: str = None, filters: dict = None) -> str:
+    """Builds xpath according to the filters.
+
+    Returns:
+        xpath str
+    """
+    xpath_prefix = ''
+    if name_match:
+        xpath_prefix = f"@name='{name_match}'"
+    if name_contains:
+        xpath_prefix = f"contains(@name,'{name_contains}')"
+    if filters:
+        for key, value in filters.items():
+            if key in APPILICATION_FILTERS:
+                if xpath_prefix:
+                    xpath_prefix += 'and'
+                xpath_prefix += f"({key}='{value}')"
+            if key == 'characteristics':
+                for characteristic in value:
+                    if xpath_prefix:
+                        xpath_prefix += 'and'
+                    xpath_prefix += f"({characteristic}='yes')"
+    return xpath_prefix
 
 
 def panorama_test(fetch_params):
@@ -4081,6 +4106,7 @@ def prettify_applications_arr(applications_arr: Union[List[dict], dict]):
     for i in range(len(applications_arr)):
         application = applications_arr[i]
         pretty_application_arr.append({
+            'Category': application.get('category'),
             'SubCategory': application.get('subcategory'),
             'Risk': application.get('risk'),
             'Technology': application.get('technology'),
@@ -4092,29 +4118,49 @@ def prettify_applications_arr(applications_arr: Union[List[dict], dict]):
 
 
 @logger
-def panorama_list_applications(predefined: bool) -> Union[List[dict], dict]:
+def panorama_list_applications(args:Dict[str, str], predefined: bool) -> Union[List[dict], dict]:
     major_version = get_pan_os_major_version()
     params = {
         'type': 'config',
         'action': 'get',
         'key': API_KEY
     }
+    filters = assign_params(
+        name_match=args.get('name_match'),
+        risk=args.get('risk'),
+        category=args.get('category'),
+        subcategory=args.get('sub_category'),
+        technology=args.get('technology'),
+        characteristics=argToList(args.get('characteristics')),
+    )
+    name_match = args.get('name_match')
+    name_contain = args.get('name_contain')
+    xpath_filter = build_xpath_filter(name_match,name_contain,filters)
+    demisto.debug("xpath_filter", xpath_filter)
     if predefined:  # if predefined = true, no need for device group.
         if major_version < 9:
             raise Exception('Listing predefined applications is only available for PAN-OS 9.X and above versions.')
         else:
-            params['xpath'] = '/config/predefined/application'
+                if xpath_filter:
+                    params['xpath'] = f'/config/predefined/application/entry[{xpath_filter}]'
+                else:
+                    params['xpath'] = '/config/predefined/application'
     else:
         # if device-group was provided it will be set in initialize_instance function.
-        params['xpath'] = XPATH_OBJECTS + "application/entry"
-
+        if xpath_filter:
+            params['xpath'] = XPATH_OBJECTS + f"application/entry[{xpath_filter}]"
+        else:
+            params['xpath'] = XPATH_OBJECTS + "application/entry"
+    demisto.debug(params['xpath'])
     result = http_request(
         URL,
         'POST',
         body=params
     )
     applications_api_response = result['response']['result']
-    if predefined:
+    if filters or name_match or name_contain:
+        applications = applications_api_response.get('entry') or []
+    elif predefined:
         applications = applications_api_response.get('application', {}).get('entry') or []
     else:
         applications = applications_api_response.get('entry') or []
@@ -4124,13 +4170,15 @@ def panorama_list_applications(predefined: bool) -> Union[List[dict], dict]:
     return applications
 
 
-def panorama_list_applications_command(predefined: Optional[str] = None):
+def panorama_list_applications_command(args:Dict[str, str] ,predefined: Optional[str] = None):
     """
     List all applications
     """
     predefined = predefined == 'true'
-    applications_arr = panorama_list_applications(predefined)
+    applications_arr = panorama_list_applications(args,predefined)
     applications_arr_output = prettify_applications_arr(applications_arr)
+    limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT_PAGE_SIZE
+    applications_arr_output=applications_arr_output[:limit]
     headers = ['Id', 'Name', 'Risk', 'Category', 'SubCategory', 'Technology', 'Description']
 
     return_results({
@@ -13464,7 +13512,7 @@ def main(): # pragma: no cover
 
         # Application
         elif command == 'panorama-list-applications' or command == 'pan-os-list-applications':
-            panorama_list_applications_command(args.get('predefined'))
+            panorama_list_applications_command(args,args.get('predefined'))
 
         # Test security policy match
         elif command == 'panorama-security-policy-match' or command == 'pan-os-security-policy-match':
