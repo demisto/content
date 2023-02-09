@@ -24,5 +24,5 @@ filter xsiam_type = "vulnerability"
     xdm.source.ipv4 = arraystring(arraymap(json_extract_array(`fields`, "$."), if(json_extract_scalar("@element", "$.key") = "X-Forwarded-For",json_extract_scalar("@element", "$.value"), null)),","),
     xdm.source.agent.identifier = arraystring(arraymap(json_extract_array(`fields`, "$."), if(json_extract_scalar("@element", "$.key") = "X-Request-Uuid",json_extract_scalar("@element", "$.value"), null)),","),
     xdm.event.outcome = arraystring(arraymap(json_extract_array(`fields`, "$."), if(json_extract_scalar("@element", "$.key") = "message",json_extract_scalar("@element", "$.value"), null)),","),
-    xdm.source.user.user_type = arraystring(arraymap(json_extract_array(`fields`, "$."), if(json_extract_scalar("@element", "$.key") = "serviceName",json_extract_scalar("@element", "$.value"), null)),","),
+    xdm.event.operation_sub_type = arraystring(arraymap(json_extract_array(`fields`, "$."), if(json_extract_scalar("@element", "$.key") = "serviceName",json_extract_scalar("@element", "$.value"), null)),","),
     xdm.session_context_id = arraystring(arraymap(json_extract_array(`fields`, "$."), if(json_extract_scalar("@element", "$.key") = "X-Session-Uuid",json_extract_scalar("@element", "$.value"), null)),",");
