@@ -266,7 +266,7 @@ class CoreClient(BaseClient):
                 'keyword': sort_by_last_seen
             }
         # TODO make sure if you want the ip_list to be the identifier
-        request_data['value'] = ip_list
+        # request_data['value'] = ip_list
         request_data['filters'] = filters
         request_data['alias'] = new_alias_name
 
