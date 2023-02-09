@@ -1837,19 +1837,17 @@ def get_endpoints_command(client, args):
 
 
 def endpoint_alias_change_command(client, args):
-    integration_context_brand = args.pop('integration_context_brand', 'CoreApiModule')
-    integration_name = args.pop("integration_name", "CoreApiModule")
-    page_number = arg_to_int(
-        arg=args.get('page', '0'),
-        arg_name='Failed to parse "page". Must be a number.',
-        required=True
-    )
+    # page_number = arg_to_int(
+    #     arg=args.get('page', '0'),
+    #     arg_name='Failed to parse "page". Must be a number.',
+    #     required=True
+    # )
 
-    limit = arg_to_int(
-        arg=args.get('limit', '30'),
-        arg_name='Failed to parse "limit". Must be a number.',
-        required=True
-    )
+    # limit = arg_to_int(
+    #     arg=args.get('limit', '30'),
+    #     arg_name='Failed to parse "limit". Must be a number.',
+    #     required=True
+    # )
 
     endpoint_id_list = argToList(args.get('endpoint_id_list'))
     dist_name = argToList(args.get('dist_name'))
@@ -1882,12 +1880,12 @@ def endpoint_alias_change_command(client, args):
         arg_name='last_seen_lte'
     )
 
-    sort_by_first_seen = args.get('sort_by_first_seen')
-    sort_by_last_seen = args.get('sort_by_last_seen')
+    # sort_by_first_seen = args.get('sort_by_first_seen')
+    # sort_by_last_seen = args.get('sort_by_last_seen')
 
     username = argToList(args.get('username'))
 
-    endpoints = client.set_endpoints_alias(
+    client.set_endpoints_alias(
         endpoint_id_list=endpoint_id_list,
         dist_name=dist_name,
         ip_list=ip_list,
@@ -1896,14 +1894,14 @@ def endpoint_alias_change_command(client, args):
         alias_name=alias_name,
         isolate=isolate,
         hostname=hostname,
-        page_number=page_number,
-        limit=limit,
+        # page_number=page_number,
+        # limit=limit,
         first_seen_gte=first_seen_gte,
         first_seen_lte=first_seen_lte,
         last_seen_gte=last_seen_gte,
         last_seen_lte=last_seen_lte,
-        sort_by_first_seen=sort_by_first_seen,
-        sort_by_last_seen=sort_by_last_seen,
+        # sort_by_first_seen=sort_by_first_seen,
+        # sort_by_last_seen=sort_by_last_seen,
         status=status,
         username=username,
         new_alias_name=new_alias_name
@@ -1925,10 +1923,7 @@ def endpoint_alias_change_command(client, args):
     #     context[Common.Account.CONTEXT_PATH] = account_context
 
     return CommandResults(
-        readable_output="The alias was changed successfully",
-        # outputs=context,
-        raw_response=endpoints
-    )
+        readable_output="The endpoint alias was changed successfully.")
 
 
 def unisolate_endpoint_command(client, args):
