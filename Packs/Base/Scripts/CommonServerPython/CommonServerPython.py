@@ -10886,7 +10886,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
             ok_codes=ok_codes,
             resp_type='response'
         )
-        demisto.debug(f'received status code: {response.status_code}')
+        demisto.debug('received status code: {status_code}'.format(status_code=response.status_code))
         if response.status_code == 200:
             break
         else:
