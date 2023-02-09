@@ -135,9 +135,9 @@ class SyslogManager:
         return Rfc5424SysLogHandler(address=(self.address, self.port),
                                     facility=self.facility,
                                     tls_enable=True,
-                                    tls_verify=True,
+                                    tls_verify=False,
                                     tls_ca_bundle=self.syslog_cert_path,
-                                    tls_client_key=self.syslog_key_path,
+                                    # tls_client_key=self.syslog_key_path,
                                     timeout=50)
 
     def _init_logger(self, handler: SysLogHandler | Rfc5424SysLogHandler) -> Logger:
@@ -187,7 +187,7 @@ def init_manager(params: dict) -> SyslogManager:
     facility = FACILITY_DICT.get(params.get('facility', 'LOG_SYSLOG'), SysLogHandler.LOG_SYSLOG)
     logging_level = LOGGING_LEVEL_DICT.get(params.get('priority', 'LOG_INFO'), INFO)
     certificate: Optional[str] = params.get('certificate')
-    key: Optional[str] = params.get('key')
+    key: Optional[str] = params.get('private_key')
     certificate_path: Optional[str] = None
     key_path: Optional[str] = None
     max_port = 65535
@@ -325,8 +325,8 @@ def main():
         if demisto.command() == 'test-module':
             syslog_manager = init_manager(demisto.params())
             with syslog_manager.get_logger() as syslog_logger:  # type: Logger
-                demisto.debug('Successfully before info func')
                 syslog_logger.info('This is a test')
+            demisto.results('ok')
         elif demisto.command() == 'mirror-investigation':
             mirror_investigation()
         elif demisto.command() == 'syslog-send':

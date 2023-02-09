@@ -166,3 +166,30 @@ def test_send_with_non_default_log_level(mocker):
     assert debug_send_args[0] == '1, eyy https://www.eizelulz.com:8443/#/WarRoom/727'
     assert not info_send_args
     assert results == 'Message sent to Syslog successfully.'
+
+
+def test_ip():
+    from SyslogSender import init_manager
+    #  socket.gethostbyname(hostname)
+    params = {
+        'address': 'https://www.example.com/tests/stillexample/testthisexapmle123456789',
+        'port': '514',
+        'protocol': 'tcp',
+        'priority': 'LOG_DEBUG',
+        'facility': 'LOG_SYSLOG'
+    }
+    x = 'https://www.google.com/search?q=how+to+create+a+socket&rlz=1C5GCEM_enIL1018IL1018&oq=how+to+create+a+socket&aqs=chrome..69i57j0i512l6j69i64.6820j0j7&sourceid=chrome&ie=UTF-8'
+    size = len(x.encode('utf-8'))
+    if len(x.encode('utf-8')) >= 64: 
+        x = 'what'
+    s.connect(("www.python.org", 80))
+
+    # Arrange
+    manager = init_manager(params)
+    # urllib.parse.urlparse
+    assert manager.address == 'aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vdGVzdHMvc3RpbGxleGFtcGxlL3Rlc3R0aGlzZXhhcG1sZTEyMzQ1Njc4OQ=='
+    assert manager.port == 514
+    assert manager.protocol == 'tcp'
+    assert manager.logging_level == 10
+    assert manager.facility == 5
+    
