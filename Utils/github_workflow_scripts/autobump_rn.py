@@ -112,23 +112,6 @@ def conflict_only_in_rn_metadata_files(pr: PullRequest, repo: Repo,
     return False, []
 
 
-def packs_pass_metadata_conditions(metadata_files):
-    files_to_update = []
-    for metadata_file in metadata_files:
-        with open(metadata_file) as f:
-            base_pack_metadata = json.load(f)
-    # todo: check xsoar supported
-        if base_pack_metadata.get('support') != 'xsoar':
-            return [], NOT_XSOAR_SUPPORTED_PACK
-    # todo: check update version (not 99)
-    # todo: check major in master
-
-
-    conflict_packs = get_pack_names_from_files(files_to_update)
-
-    return conflict_packs, ''
-
-
 def autobump_release_notes(packs_rn_to_update_in_this_pr):
     pass
 
