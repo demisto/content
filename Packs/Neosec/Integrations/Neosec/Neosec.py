@@ -267,7 +267,7 @@ def fetch_incidents(
             if incident_created_time <= last_fetch:
                 continue
 
-        alert_timestamp = dateparser.parse(alert["timestamp"])
+        alert_timestamp = dateparser.parse(alert.get("timestamp"))
         if not alert_timestamp:
             raise ValueError("Alert's timestamp is not valid")
 
