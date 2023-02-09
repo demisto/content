@@ -7,6 +7,7 @@
     "CommonScripts",
     "CommonPlaybooks",
     "CommonTypes",
+    "FiltersAndTransformers",
     "ServiceNow",
     "Tenable_io",
     "AWS-Route53",

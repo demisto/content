@@ -56,6 +56,31 @@ references:
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
       GCS_MARKET_BUCKET: << pipeline.parameters.gcs_market_bucket >>
 
+  install_neo4j: &install_neo4j
+    run:
+      name: Install Neo4j
+      command: |
+        # workaround for 402 Payment required issue: https://github.com/actions/runner-images/issues/1983
+        sudo rm -fv /etc/apt/sources.list.d/github_git-lfs.list
+        sudo rm -fv /etc/apt/sources.list.d/github_git-lfs.list.save
+        wget -O - https://debian.neo4j.com/neotechnology.gpg.key | sudo apt-key add -
+        echo 'deb https://debian.neo4j.com stable 4.4' | sudo tee /etc/apt/sources.list.d/neo4j.list
+        sudo apt-get update
+        apt list -a neo4j
+        sudo apt-get install neo4j
+        sudo chown -R circleci /var/log/neo4j
+        sudo chown -R circleci /var/lib/neo4j
+        sudo chown -R circleci /etc/neo4j
+        mkdir -p /var/lib/neo4j/plugins
+        wget -O /var/lib/neo4j/plugins/apoc-4.4.0.8-all.jar https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/4.4.0.8/apoc-4.4.0.8-all.jar
+        neo4j_conf_file="/etc/neo4j/neo4j.conf"
+        sudo echo "dbms.security.procedures.unrestricted=apoc.*" >> $neo4j_conf_file
+        sudo echo "dbms.security.procedures.allowlist=apoc.*" >> $neo4j_conf_file
+        apoc_conf_file="/etc/neo4j/apoc.conf"
+        sudo echo "apoc.export.file.enabled=true" > $apoc_conf_file
+        sudo echo "apoc.import.file.enabled=true" >> $apoc_conf_file
+        sudo echo "apoc.import.file.use_neo4j_config=true" >> $apoc_conf_file
+        neo4j-admin set-initial-password test
 
   container_config: &container_config
     docker:
@@ -168,6 +193,10 @@ references:
           exit 0
         fi
 
+        neo4j start
+        # poll for neo4j status until available
+        while ! neo4j status; do sleep 1; done
+
         ./Tests/scripts/linters_runner.sh
         ./Tests/scripts/validate.sh
 
@@ -227,32 +256,6 @@ references:
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
           ./Tests/scripts/sdk_pylint_check.sh
         fi
-
-  create_id_set: &create_id_set
-    run:
-      name: Create ID Set
-      when: always
-      command: |
-        demisto-sdk create-id-set -o ./Tests/id_set.json --fail-duplicates
-        cp ./Tests/id_set.json $CIRCLE_ARTIFACTS
-
-  merge_public_and_private_id_sets: &merge_public_and_private_id_sets
-    run:
-      name: Merge public and private ID sets
-      when: always
-      command: |
-        if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-            echo "Skipping, Should not run on contributor's branch."
-            exit 0
-        fi
-
-        # Download private ID set
-        gsutil cp gs://marketplace-dist/content/private_id_set.json $CIRCLE_ARTIFACTS/unified_id_set.json
-        echo "successfully downloaded private ID set"
-
-        # Merge public and private ID sets
-        demisto-sdk merge-id-sets -i1 ./Tests/id_set.json -i2 $CIRCLE_ARTIFACTS/unified_id_set.json -o $CIRCLE_ARTIFACTS/unified_id_set.json
-        echo "successfully merged public and private ID sets"
 
   get_contribution_pack: &get_contribution_pack
     when:
@@ -322,6 +325,7 @@ jobs:
       - *remote_docker
       - *restore_cache
       - *prepare_environment
+      - *install_neo4j
       - *infrastructure_testing
       - *run_unit_testing_and_lint
       - *generate_coverage_reports
@@ -331,15 +335,14 @@ jobs:
 
   Run Validations:
     <<: *container_config
-    resource_class: medium
+    resource_class: large
     <<: *environment
     steps:
       - *attach_workspace
       - *restore_cache
       - *prepare_environment
+      - *install_neo4j
       - *secrets
-      - *create_id_set
-      - *merge_public_and_private_id_sets
       - *validate_files_and_yaml
       - run:
           name: Spell Checks
@@ -407,4 +410,3 @@ workflows:
     when: << pipeline.parameters.nightly >>
     jobs:
       *nightly_jobs
-
