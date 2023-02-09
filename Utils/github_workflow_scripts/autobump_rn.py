@@ -1,4 +1,6 @@
-from typing import List
+import json
+from packaging.version import Version
+from typing import List, Tuple
 import urllib3
 import argparse
 from blessings import Terminal
@@ -9,9 +11,10 @@ import sys
 from utils import timestamped_print
 from datetime import datetime, timedelta
 from git import Repo, GitCommandError
+from demisto_sdk.commands.common.tools import get_pack_names_from_files, get_pack_name
 import os
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+urllib3.disable_warnings()
 
 print = timestamped_print
 
@@ -21,10 +24,10 @@ BASE = 'master'
 
 SKIPPING_MESSAGE = 'Skipping Auto-Bumping release notes.'
 NOT_UPDATE_RN_LABEL = 'ignore-auto-bump-version'
-LAST_SUITABLE_UPDATE_TIME_DAYS = 700
+LAST_SUITABLE_UPDATE_TIME_DAYS = 14
 RELEASE_NOTES_DIR = "ReleaseNotes"
 PACK_METADATA_FILE = 'pack_metadata.json'
-
+NOT_XSOAR_SUPPORTED_PACK = 'Pack is not xsoar supported'
 """
   stdout: 'Auto-merging pyproject.toml
 CONFLICT (content): Merge conflict in pyproject.toml
@@ -42,6 +45,8 @@ Auto-merging .gitlab/ci/global.yml
 CONFLICT (content): Merge conflict in .gitlab/ci/global.yml
 Automatic merge failed; fix conflicts and then commit the result.'
 """
+
+
 # todo: skip reasons class
 
 
@@ -84,38 +89,47 @@ def arguments_handler():
     return parser.parse_args()
 
 
-def conflict_only_in_rn_metadata_files(pr: PullRequest, repo: Repo) -> bool:
+def conflict_only_in_rn_metadata_files(pr: PullRequest, repo: Repo,
+                                       allowed_conflicting_files: list) -> Tuple[bool, list]:
     """Checks if a pull request contains merge conflicts with a local branch.
     Arguments:
         pr: The pull request branch to check for merge conflicts.
         repo: The name of the local branch to check against.
+        allowed_conflicting_files:
     Returns:
         True if the pull request contains merge conflicts with the specified branch and false otherwise.
     """
-    rn_conflict_exists = False
     pr_branch = pr.head.ref
     try:
-        repo.git.merge(pr_branch, '--no-ff', '--no-commit')
+        repo.git.merge(f'origin/{pr_branch}', '--no-ff', '--no-commit')
     except GitCommandError as e:
         error = e.stdout
         conflicting_files = [line.replace('Auto-merging ', '') for line in error.split('\n') if 'Auto-merging ' in line]
-        if len(conflicting_files) != 2 or f"/{RELEASE_NOTES_DIR}/" not in ' '.join(conflicting_files) or\
-                f"/{PACK_METADATA_FILE}" not in ' '.join(conflicting_files):
-            rn_conflict_exists = False
-        else:
-            rn_conflict_exists = True
-    return rn_conflict_exists
+        for file_name in conflicting_files:
+            if file_name not in allowed_conflicting_files:
+                return False, conflicting_files
+        return True, conflicting_files
+    return False, []
 
 
-def check_metadata_conditions():
+def packs_pass_metadata_conditions(metadata_files):
+    files_to_update = []
+    for metadata_file in metadata_files:
+        with open(metadata_file) as f:
+            base_pack_metadata = json.load(f)
     # todo: check xsoar supported
+        if base_pack_metadata.get('support') != 'xsoar':
+            return [], NOT_XSOAR_SUPPORTED_PACK
     # todo: check update version (not 99)
     # todo: check major in master
-    # todo print log why skip and return false
-    pass
 
 
-def autobump_release_notes():
+    conflict_packs = get_pack_names_from_files(files_to_update)
+
+    return conflict_packs, ''
+
+
+def autobump_release_notes(packs_rn_to_update_in_this_pr):
     pass
 
 
@@ -126,8 +140,6 @@ def main():
     t = Terminal()
 
     git_repo_obj = Repo(os.getcwd())
-    # todo: delete it
-    git_repo_obj.git.checkout(BASE)
     git_repo_obj.remote().fetch()
 
     github_client: Github = Github(github_token, verify=False)
@@ -142,20 +154,59 @@ def main():
         if pr.updated_at < datetime.now() - timedelta(days=LAST_SUITABLE_UPDATE_TIME_DAYS):
             print(f'{t.red}The PR {pr_number} was not updated in last {LAST_SUITABLE_UPDATE_TIME_DAYS} days.'
                   f'{SKIPPING_MESSAGE}')
-        elif NOT_UPDATE_RN_LABEL in [label.name for label in pr.labels]:
+            continue
+        if NOT_UPDATE_RN_LABEL in [label.name for label in pr.labels]:
             print(f'{t.red}Label {NOT_UPDATE_RN_LABEL} exist in PR {pr_number}. {SKIPPING_MESSAGE}')
-        elif f"/{RELEASE_NOTES_DIR}/" not in ' '.join(pr_files_names):
+            continue
+        if f"/{RELEASE_NOTES_DIR}/" not in ' '.join(pr_files_names):
             print(f'{t.red}No changes were detected on {RELEASE_NOTES_DIR} directory in PR {pr_number}. '
                   f'{SKIPPING_MESSAGE}')
-        elif not conflict_only_in_rn_metadata_files(pr, git_repo_obj):
+            continue
+        changed_rn_files = [f for f in pr_files_names if RELEASE_NOTES_DIR in f]
+        changed_metadata_files = [f for f in pr_files_names if PACK_METADATA_FILE in f]
+        conflict_only_rn_and_metadata, conflict_files = conflict_only_in_rn_metadata_files(
+            pr, git_repo_obj,
+            changed_metadata_files + changed_rn_files
+        )
+        if not conflict_only_rn_and_metadata:
             print(f'{t.red}The pr {pr_number} has conflicts not only at {RELEASE_NOTES_DIR} and {PACK_METADATA_FILE}. '
+                  f'The conflicting files are: {conflict_files}.'
                   f'{SKIPPING_MESSAGE}')
-        elif not check_metadata_conditions():
-            print('todo')
-        else:
-            print('got here')
+            continue
+
+        conflicting_metadata_files = [f for f in conflict_files if PACK_METADATA_FILE in f]
+        packs_rn_to_update_in_this_pr = set()
+        for metadata_file in conflicting_metadata_files:
+            pack = get_pack_name(metadata_file)
+            with open(metadata_file) as f:
+                base_pack_metadata = json.load(f)
             with checkout(git_repo_obj, pr_branch):
-                autobump_release_notes()
+                with open(metadata_file) as f:
+                    branch_pack_metadata = json.load(f)
+            if base_pack_metadata.get('support') != 'xsoar':
+                print(NOT_XSOAR_SUPPORTED_PACK)
+                continue
+            if Version(base_pack_metadata.get('currentVersion', '1.0.0')).major != Version(branch_pack_metadata.get('currentVersion', '1.0.0')).major:
+                print('todo: Different major.')
+                continue
+            if '99' in f"{base_pack_metadata.get('currentVersion', '1.0.0')}, {base_pack_metadata.get('currentVersion', '1.0.0')}":
+                print('todo: 99 error.')
+                continue
+            # todo: check how to bump? minor, revision?
+            head_sha = pr.head.sha
+            for file in pr_files:
+                path = file.filename
+                patch = file.patch
+                contents = github_repo_obj.get_contents(path, ref=head_sha)
+                content = contents.decoded_content.decode()
+                # todo: debug and see the content and patch here
+                print(f'{content}, {patch}')
+
+            packs_rn_to_update_in_this_pr.add(pack)
+
+        print('got here')
+        with checkout(git_repo_obj, pr_branch):
+            autobump_release_notes(packs_rn_to_update_in_this_pr)
 
     # todo: slack notify success or print success logs
     sys.exit(0)
