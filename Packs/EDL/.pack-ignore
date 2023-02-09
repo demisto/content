@@ -6,6 +6,3 @@ ignore=RM106
 
 [file:playbook-PAN-OS_EDL_Service_Configuration.yml]
 ignore=PB116
-
-[known_words]
-ignore=EDLMetricWidget
