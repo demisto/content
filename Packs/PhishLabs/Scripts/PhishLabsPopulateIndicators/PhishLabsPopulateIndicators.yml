@@ -73,7 +73,7 @@ tags:
 - PhishLabs
 timeout: 3.6µs
 type: python
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.9.46807
 subtype: python3
 runonce: false
 dependson:
@@ -81,3 +81,5 @@ dependson:
   should:
   - PhishLabs IOC|||phishlabs-global-feed
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

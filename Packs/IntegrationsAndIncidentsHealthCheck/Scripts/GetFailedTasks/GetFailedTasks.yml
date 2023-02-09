@@ -36,7 +36,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.9.40422
+dockerimage: demisto/python3:3.10.9.46807
 runonce: false
 tests:
 - No tests

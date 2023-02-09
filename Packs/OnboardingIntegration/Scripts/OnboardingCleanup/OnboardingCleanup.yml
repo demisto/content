@@ -14,7 +14,7 @@ tags: []
 enabled: true
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.9.46807
 subtype: python3
 tests:
 - No Tests

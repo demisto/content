@@ -10,7 +10,7 @@ comment: |-
 commonfields:
   id: Cyren-Find-Similar-Incidents
   version: -1
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.9.46807
 enabled: true
 name: Cyren-Find-Similar-Incidents
 outputs:

@@ -47,7 +47,7 @@ comment: "Assigns analysts who are not out of the office to the shift handover i
 commonfields:
   id: AssignAnalystToIncidentOOO
   version: -1
-dockerimage: demisto/python3:3.9.9.25564
+dockerimage: demisto/python3:3.10.9.46807
 enabled: true
 name: AssignAnalystToIncidentOOO
 script: '-'
