@@ -9,7 +9,7 @@ configuration:
 - defaultvalue: 3307a0ab-612c-47af-b3b5-8208247562db
   display: Application ID
   name: app_id
-  required: true
+  required: false
   type: 0
   section: Connect
 - defaultvalue: https://login.microsoftonline.com
@@ -48,6 +48,7 @@ configuration:
   options:
   - Device Code
   - Client Credentials
+  - Azure Managed Identities
   section: Connect
   advanced: true
 - name: tenant_id
@@ -66,6 +67,13 @@ configuration:
   defaultvalue:
   type: 9
   additionalinfo: ""
+  section: Connect
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
   section: Connect
 description: Manage teams and members in Microsoft Teams.
 display: Microsoft Teams Management
@@ -985,7 +993,7 @@ script:
     - contextPath: MicrosoftTeams.Team.description
       description: An optional description for the group.
       type: String
-  dockerimage: demisto/crypto:1.0.0.42817
+  dockerimage: demisto/crypto:1.0.0.47103
   feed: false
   isfetch: false
   longRunning: false
