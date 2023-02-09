@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: CrowdStrike Falcon X -dev
+  id: CrowdStrike Falcon X
   version: -1
 configuration:
 - defaultvalue: https://api.crowdstrike.com
@@ -45,8 +45,8 @@ configuration:
   type: 15
   section: Collect
 description: Use the CrowdStrike Falcon Intelligence Sandbox integration to submit files, file hashes, URLs, and FTPs for sandbox analysis, and to retrieve reports.
-display: CrowdStrike Falcon Intelligence Sandbox -dev
-name: CrowdStrike Falcon X -dev
+display: CrowdStrike Falcon Intelligence Sandbox
+name: CrowdStrike Falcon X
 script:
   commands:
   - arguments:
