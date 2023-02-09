@@ -225,13 +225,27 @@ class Client(BaseClient):
                             threat_ids=None, limit=20, classifications=None, site_ids=None, rank=None):
         keys_to_ignore = ['displayName__like' if IS_VERSION_2_1 else 'displayName']
 
+        created_before_parsed = None
+        created_after_parsed = None
+        created_until_parsed = None
+        created_from_parsed = None
+
+        if created_before:
+            created_before_parsed = dateparser.parse(created_before, settings={'TIMEZONE': 'UTC'})
+        if created_after:
+            created_after_parsed = dateparser.parse(created_after, settings={'TIMEZONE': 'UTC'})
+        if created_until:
+            created_until_parsed = dateparser.parse(created_until, settings={'TIMEZONE': 'UTC'})
+        if created_from:
+            created_from_parsed = dateparser.parse(created_from, settings={'TIMEZONE': 'UTC'})
+
         params = assign_params(
             contentHashes=argToList(content_hash),
             mitigationStatuses=argToList(mitigation_status),
-            createdAt__lt=created_before,
-            createdAt__gt=created_after,
-            createdAt__lte=created_until,
-            createdAt__gte=created_from,
+            createdAt__lt=created_before_parsed,
+            createdAt__gt=created_after_parsed,
+            createdAt__lte=created_until_parsed,
+            createdAt__gte=created_from_parsed,
             resolved=argToBoolean(resolved),
             displayName__like=display_name,
             displayName=display_name,
@@ -1848,16 +1862,26 @@ def get_alerts(client: Client, args: dict) -> CommandResults:
     """
     Get the Alerts from server. Relevant to API Version 2.1
     """
+    created_until = None
+    created_from = None
+
     context_entries = []
     headers = ['AlertId', 'EventType', 'RuleName', 'EndpointName', 'SrcProcName', 'SrcProcPath', 'SrcProcCommandline',
                'SrcProcSHA1', 'SrcProcStartTime', 'SrcProcStorylineId', 'SrcParentProcName',
                'AlertCreatedAt', 'AgentId', 'AgentUUID', 'RuleName']
+
+    if args.get('created_until'):
+        created_until = dateparser.parse(args.get('created_until'), settings={'TIMEZONE': 'UTC'})
+
+    if args.get('created_from'):
+        created_from = dateparser.parse(args.get('created_from'), settings={'TIMEZONE': 'UTC'})
+
     query_params = assign_params(
         ruleName__contains=args.get('ruleName'),
         incidentStatus=args.get('incidentStatus'),
         analystVerdict=args.get('analystVerdict'),
-        createdAt__lte=args.get('created_until'),
-        createdAt__gte=args.get('created_from'),
+        createdAt__lte=created_until,
+        createdAt__gte=created_from,
         ids=argToList(args.get('alert_ids')),
         limit=int(args.get('limit', 1000)),
         siteIds=args.get('site_ids'),
@@ -2889,22 +2913,14 @@ def download_fetched_file(client: Client, args: dict) -> List[CommandResults]:
             fileResult(f"{path.replace('/', '_')}", file_data)]
 
 
-def fetch_incidents(client: Client, fetch_limit: int, first_fetch: str, fetch_threat_rank: int, fetch_site_ids: str):
-    last_run = demisto.getLastRun()
-    last_fetch = last_run.get('time')
+def fetch_threats(client: Client, args: dict):
 
-    # handle first time fetch
-    if last_fetch is None:
-        last_fetch = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})
-        if not last_fetch:
-            raise DemistoException('Please provide an initial First fetch timestamp')
-        last_fetch = int(last_fetch.timestamp() * 1000)
+    incidents_threats = []
+    current_fetch = args.get('current_fetch')
 
-    current_fetch = last_fetch
-    incidents = []
-    last_fetch_date_string = timestamp_to_datestring(last_fetch, '%Y-%m-%dT%H:%M:%S.%fZ')
-
-    threats = client.get_threats_request(limit=fetch_limit, created_after=last_fetch_date_string, site_ids=fetch_site_ids)
+    threats = client.get_threats_request(limit=args.get('fetch_limit'),
+                                         created_after=args.get('last_fetch_date_string'),
+                                         site_ids=args.get('fetch_site_ids'))
     for threat in threats:
         rank = threat.get('rank')
         try:
@@ -2912,26 +2928,99 @@ def fetch_incidents(client: Client, fetch_limit: int, first_fetch: str, fetch_th
         except TypeError:
             rank = 0
         # If no fetch threat rank is provided, bring everything, else only fetch above the threshold
-        if IS_VERSION_2_1 or rank >= fetch_threat_rank:
-            incident = threat_to_incident(threat)
+        if IS_VERSION_2_1 or rank >= args.get('fetch_threat_rank'):
+            incident = to_incident('Threat', threat)
             date_occurred_dt = parse(incident['occurred'])
             incident_date = int(date_occurred_dt.timestamp() * 1000)
-            if incident_date > last_fetch:
-                incidents.append(incident)
+            if incident_date > args.get('last_fetch'):
+                incidents_threats.append(incident)
 
             if incident_date > current_fetch:
                 current_fetch = incident_date
+
+    return incidents_threats, current_fetch
+
+
+def fetch_alerts(client: Client, args: dict):
+
+    incidents_alerts = []
+    current_fetch = args.get('current_fetch')
+
+    query_params = assign_params(
+        incidentStatus=','.join(args.get('fetch_incidentStatus')),
+        createdAt__gte=args.get('last_fetch_date_string'),
+        limit=args.get('fetch_limit'),
+        siteIds=args.get('fetch_site_ids')
+    )
+
+    alerts, pagination = client.get_alerts_request(query_params)
+    for alert in alerts:
+        severity = alert.get('ruleInfo').get('severity')
+
+        if severity in args.get('fetch_severity'):
+            incident = to_incident('Alert', alert)
+            date_occurred_dt = parse(incident['occurred'])
+            incident_date = int(date_occurred_dt.timestamp() * 1000)
+            if incident_date > args.get('last_fetch'):
+                incidents_alerts.append(incident)
+
+            if incident_date > current_fetch:
+                current_fetch = incident_date
+
+    return incidents_alerts, current_fetch
+
+
+def fetch_handler(client: Client, args: dict):
+
+    last_run = demisto.getLastRun()
+    last_fetch = last_run.get('time')
+
+    if last_fetch is None:
+        last_fetch = dateparser.parse(args.get('first_fetch_time'), settings={'TIMEZONE': 'UTC'})
+        if not last_fetch:
+            raise DemistoException('Please provide an initial First fetch timestamp')
+        last_fetch = int(last_fetch.timestamp() * 1000)
+
+    current_fetch = last_fetch
+    last_fetch_date_string = timestamp_to_datestring(last_fetch, '%Y-%m-%dT%H:%M:%S.%fZ')
+
+    args['last_fetch'] = last_fetch
+    args['last_fetch_date_string'] = last_fetch_date_string
+    args['current_fetch'] = current_fetch
+
+    if len(args.get('fetch_type')) == 1:
+        if 'Alerts' in args.get('fetch_type'):
+            incidents, current_fetch = fetch_alerts(client, args)
+        elif 'Threats' in args.get('fetch_type'):
+            incidents, current_fetch = fetch_threats(client, args)
+    else:
+        alert_incidents, alert_current_fetch = fetch_alerts(client, args)
+        threat_incidents, threat_current_fetch = fetch_threats(client, args)
+
+        if alert_current_fetch > threat_current_fetch:
+            current_fetch = alert_current_fetch
+        else:
+            current_fetch = threat_current_fetch
+
+        incidents = alert_incidents + threat_incidents
 
     demisto.setLastRun({'time': current_fetch})
     demisto.incidents(incidents)
 
 
-def threat_to_incident(threat) -> dict:
-    threat_info = threat.get('threatInfo', {}) if IS_VERSION_2_1 else threat
-    incident = {
-        'name': f'Sentinel One Threat: {threat_info.get("classification", "Not classified")}',
-        'occurred': threat_info.get('createdAt'),
-        'rawJSON': json.dumps(threat)}
+def to_incident(type: str, data: dict):
+    incident = {}
+    if type == 'Threat':
+        incident_info = data.get('threatInfo', {}) if IS_VERSION_2_1 else data
+        incident['name'] = f'Sentinel One {type}: {incident_info.get("classification", "Not classified")}'
+        incident['occurred'] = incident_info.get('createdAt')
+
+    elif type == 'Alert':
+        incident['name'] = f'Sentinel One {type}: {data.get("ruleInfo").get("name")}'
+        incident['occurred'] = data.get('alertInfo').get('createdAt')
+
+    incident['rawJSON'] = json.dumps(data)
+
     return incident
 
 
@@ -2952,9 +3041,12 @@ def main():
 
     IS_VERSION_2_1 = api_version == '2.1'
 
+    fetch_type = params.get('fetch_type')
     first_fetch_time = params.get('fetch_time', '3 days')
+    fetch_severity = params.get('fetch_severity', 'High')
+    fetch_incidentStatus = params.get('fetch_incidentStatus', 'UNRESOLVED')
     fetch_threat_rank = int(params.get('fetch_threat_rank', 0))
-    fetch_limit = int(params.get('fetch_limit', 10))
+    fetch_limit = int(params.get('fetch_limit', 100))
     fetch_site_ids = params.get('fetch_site_ids', None)
     block_site_ids = params.get('block_site_ids', 'None') or 'None'
     global_block = block_site_ids == 'None'
@@ -3044,7 +3136,20 @@ def main():
         if command == 'test-module':
             return_results(test_module(client, params.get('isFetch'), first_fetch_time))
         if command == 'fetch-incidents':
-            fetch_incidents(client, fetch_limit, first_fetch_time, fetch_threat_rank, fetch_site_ids)
+            if fetch_type:
+                fetch_dict = {
+                    'fetch_type': fetch_type,
+                    'fetch_limit': fetch_limit,
+                    'first_fetch_time': first_fetch_time,
+                    'fetch_threat_rank': fetch_threat_rank,
+                    'fetch_site_ids': fetch_site_ids,
+                    'fetch_incidentStatus': fetch_incidentStatus,
+                    'fetch_severity': fetch_severity
+                }
+
+                return_results(fetch_handler(client, fetch_dict))
+            else:
+                raise DemistoException('Please definde what type to fetch. Alerts or Threats.')
 
         else:
             if command in commands['common']:
