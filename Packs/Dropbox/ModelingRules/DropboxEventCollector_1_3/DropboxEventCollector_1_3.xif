@@ -36,7 +36,7 @@ filter
     xdm.source.location.city = json_extract_scalar(origin, "$.geo_location.city"),
     xdm.source.location.region = json_extract_scalar(origin, "$.geo_location.region"),
     xdm.source.location.country = json_extract_scalar(origin, "$.geo_location.country"),
-    xdm.source.user.user_type = json_extract_scalar(actor, "$['.tag']"),
+    xdm.source.user.groups = arraycreate( coalesce(json_extract_scalar(actor, "$['.tag']"),"")),
     xdm.source.user.first_name = arrayindex(split(coalesce(json_extract_scalar(actor, "$.admin.display_name"), json_extract_scalar(actor, "$.user.display_name"), json_extract_scalar(actor, "$.reseller.reseller_name")), " "), 0),
     xdm.source.user.last_name = arrayindex(split(coalesce(json_extract_scalar(actor, "$.admin.display_name"), json_extract_scalar(actor, "$.user.display_name")), " "), 1),
     xdm.source.user.identifier = coalesce(json_extract_scalar(actor, "$.admin.account_id"), json_extract_scalar(actor, "$.user.account_id")),
