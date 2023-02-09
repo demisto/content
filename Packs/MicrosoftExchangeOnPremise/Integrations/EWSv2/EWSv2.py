@@ -2229,7 +2229,7 @@ def send_email(to, subject, body="", bcc=None, cc=None, reply_to=None, html_body
     send_email_to_mailbox(
         account=account, to=to, subject=subject, body=body, bcc=bcc, cc=cc, reply_to=reply_to,
         html_body=html_body, attachments=attachments, raw_message=raw_message, from_address=from_address
-    )
+    )   # todo: if reply_to is paased as list it does not work
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,

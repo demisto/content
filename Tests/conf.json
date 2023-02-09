@@ -1581,24 +1581,24 @@
         },
         {
             "integrations": [
-                "EWS Mail Sender",
+                "EWS v2",
                 "Rasterize"
             ],
             "instance_names": [
                 "ews_mail_sender_labdemisto"
             ],
-            "playbookID": "EWS Mail Sender Test 2"
+            "playbookID": "EWS V2 Send Mail Test 2"
         },
         {
             "integrations": [
-                "EWS Mail Sender",
+                "EWS v2",
                 "SMIME Messaging"
             ],
             "instance_names": [
                 "ews_mail_sender_labdemisto",
                 "SMIME Messaging"
             ],
-            "playbookID": "EWS Mail Sender Test 3"
+            "playbookID": "EWS V2 Send Mail Test 3"
         },
         {
             "playbookID": "decodemimeheader_-_test"
@@ -1680,6 +1680,16 @@
             "playbookID": "EWS Public Folders Test",
             "instance_names": "ewv2_regular",
             "is_mockable": false
+        },
+        {
+            "integrations": "EWS v2",
+            "playbookID": "EWS V2 Send Mail Test",
+            "instance_names": "ews_mail_sender_labdemisto"
+        },
+        {
+            "integrations": "EWS v2",
+            "playbookID": "EWS V2 Send Mail Test 2",
+            "instance_names": "ews_mail_sender_labdemisto"
         },
         {
             "integrations": "Symantec Endpoint Protection V2",
@@ -2370,7 +2380,8 @@
             "integrations": [
                 "EWS Mail Sender",
                 "Demisto REST API",
-                "Rasterize"
+                "Rasterize",
+                "EWS v2"
             ],
             "instance_names": [
                 "ews_mail_sender_labdemisto"
@@ -2385,7 +2396,8 @@
             "integrations": [
                 "EWS Mail Sender",
                 "Demisto REST API",
-                "Rasterize"
+                "Rasterize",
+                "EWS v2"
             ],
             "instance_names": [
                 "ews_mail_sender_labdemisto"
@@ -2922,7 +2934,7 @@
         },
         {
             "playbookID": "Send Investigation Summary Reports - Test",
-            "integrations": "EWS Mail Sender",
+            "integrations": "EWS v2",
             "instance_names": [
                 "ews_mail_sender_labdemisto"
             ],
@@ -4468,7 +4480,8 @@
             "integrations": [
                 "EWS Mail Sender",
                 "Demisto REST API",
-                "Rasterize"
+                "Rasterize",
+                "EWS v2"
             ],
             "memory_threshold": 200
         },
@@ -4484,7 +4497,8 @@
                 "EWS Mail Sender",
                 "Demisto REST API",
                 "Rasterize",
-                "Demisto Lock"
+                "Demisto Lock",
+                "EWS v2"
             ],
             "instance_names": [
                 "no_sync_long_timeout",
@@ -4705,7 +4719,8 @@
             "playbookID": "Send Email To Recipients",
             "fromversion": "5.0.0",
             "integrations": [
-                "EWS Mail Sender"
+                "EWS Mail Sender",
+                "EWS v2"
             ],
             "instance_names": [
                 "ews_mail_sender_labdemisto"
