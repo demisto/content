@@ -108,6 +108,7 @@ def conflict_only_in_rn_metadata_files(pr: PullRequest, repo: Repo,
         for file_name in conflicting_files:
             if file_name not in allowed_conflicting_files:
                 return False, conflicting_files
+        # todo: change
         return True, conflicting_files
     return False, []
 
