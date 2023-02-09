@@ -346,7 +346,7 @@ def install_packs(client: demisto_client,
     def call_install_packs_request(packs, attempts_count=1):
         try:
             logging.info(f'Installing packs {", ".join([p.get("id") for p in packs_to_install])} on server {host}. '
-                         f'Attempts left: {attempts_count}')
+                         f'Attempts left on failure: {attempts_count}')
             response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                                 path='/contentpacks/marketplace/install',
                                                                                 method='POST',
