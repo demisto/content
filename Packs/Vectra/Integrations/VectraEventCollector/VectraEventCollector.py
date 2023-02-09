@@ -9,21 +9,47 @@ See https://support.vectra.ai/s/article/KB-VS-1174 for more the API reference.
 """
 
 import demistomock as demisto
+
+# TODO remove requests, used for BaseClient
+# import requests
 from CommonServerPython import *
 from typing import Dict, Any
+import json
 
 
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-VECTRA_API_VERSION = "2.2"
+
 
 """ CLIENT CLASS """
 
 
 class VectraClient(BaseClient):
 
+    api_version = "2.2"
 
+    def __init__(self, config_url: str, verify: bool, proxy: bool, api_key: str):
+
+        headers: Dict[str, Any] = {
+            "Content-Type": "application/json",
+            "Authorization": f"Token {api_key}",
+        }
+        base_url = urljoin(config_url, f"/api/v{self.api_version}/")
+        super().__init__(base_url, verify=verify, proxy=proxy, headers=headers)
+
+    def check_auth(self) -> None:
+
+        """
+        Sends a request to the API root to check the authentication.
+        If the authentication succeeds, the API responds with an empty `Dict`.
+        If the authentication fails, we get back `{"detail": "Invalid token."}`
+
+        Returns:
+            - Empty `Dict` if the authentication is successful, the error `Dict` otherwise
+        """
+
+        self._http_request(method="GET")
 
 
 """ HELPER FUNCTIONS """
@@ -46,40 +72,14 @@ def test_module(client: VectraClient) -> str:
     :rtype: ``str``
     """
 
-    message: str = ""
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = "ok"
-    except DemistoException as e:
-        if "Forbidden" in str(e) or "Authorization" in str(
-            e
-        ):  # TODO: make sure you capture authentication errors
-            message = "Authorization Error: make sure API Key is correctly set"
-        else:
-            raise e
-    return message
 
+        client.check_auth()
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: VectraClient, args: Dict[str, Any]) -> CommandResults:
+    except Exception as e:
+        return f"Error authenticating: {str(e)}"
 
-    dummy = args.get("dummy", None)
-    if not dummy:
-        raise ValueError("dummy not specified")
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix="BaseIntegration",
-        outputs_key_field="",
-        outputs=result,
-    )
-
-
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
+    return "ok"
 
 
 """ MAIN FUNCTION """
@@ -93,33 +93,31 @@ def main() -> None:
     """
 
     # Handle configuration
+
+    # Handle Authentication
+    # If credentials are not chosen,
+    demisto.debug(demisto.params().get("credentials"))
+
     api_key = demisto.params().get("credentials", {}).get("password")
-    base_url = urljoin(demisto.params()["url"], f"/api/{VECTRA_API_VERSION}/")
+    config_url = demisto.params().get("url")
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
-    first_fetch = demisto.params().get("first_fetch", "3 days")
+    # first_fetch = demisto.params().get("first_fetch", "3 days")
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
 
-        headers: Dict[str, Any] = {
-            "Content-Type": "application/json",
-            "Authorization": f"Token {api_key}"
-        }
-
         client = VectraClient(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy
+            config_url=config_url, api_key=api_key, verify=verify_certificate, proxy=proxy
         )
 
         if demisto.command() == "test-module":
             result = test_module(client)
             return_results(result)
 
-        elif demisto.command() == "baseintegration-dummy":
-            return_results(baseintegration_dummy_command(client, demisto.args()))
+        # elif demisto.command() == "baseintegration-dummy":
+        #     pass
+        # return_results(baseintegration_dummy_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
