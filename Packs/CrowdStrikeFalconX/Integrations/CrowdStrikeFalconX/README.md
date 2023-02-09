@@ -1985,7 +1985,7 @@ Submits a URL or FTP for sandbox analysis.
 | csfalconx.resource.sandbox.signatures.description | String | The sndbox signatures description. | 
 | csfalconx.resource.sandbox.signatures.origin | String | The sndbox signatures origin. | 
 | csfalconx.resource.intel.malware_families | Unknown | The malware families of the resource. | 
-| csfalconx.resource.url | String | Submitted URL. | 
+| csfalconx.resource.url_name | String | Submitted URL. | 
 
 
 #### Command Example
@@ -2000,7 +2000,7 @@ Submits a URL or FTP for sandbox analysis.
             "environment_id": 160,
             "state": "created",
             "submitted_id": "1c9fe398b2294301aa3080ede8d77356_472d590fdd4e49639e41f81928df2542",
-            "url": "https://www.google.com"
+            "url_name": "https://www.google.com"
         }
     }
 }
@@ -2009,7 +2009,7 @@ Submits a URL or FTP for sandbox analysis.
 #### Human Readable Output
 
 >### CrowdStrike Falcon Intelligence Sandbox response:
->|created_timestamp|environment_id|state|submitted_id|url|
+>|created_timestamp|environment_id|state|submitted_id|url_name|
 >|---|---|---|---|---|
 >| 2020-07-03T06:36:19Z | 160 | created | 1c9fe398b2294301aa3080ede8d77356_472d590fdd4e49639e41f81928df2542 | https://www.google.com |
 
