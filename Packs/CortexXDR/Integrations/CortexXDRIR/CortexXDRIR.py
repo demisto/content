@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 NONCE_LENGTH = 64
 API_KEY_LENGTH = 128
-
+A=5
 INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
 XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident'
 INTEGRATION_NAME = 'Cortex XDR - IR'
