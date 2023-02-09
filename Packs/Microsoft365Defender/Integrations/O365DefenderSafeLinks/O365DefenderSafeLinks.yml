@@ -1014,7 +1014,7 @@ script:
       description: "The report id, unique for every run"
       type: Number
   - name: o365-defender-safelinks-atp-policy-get
-    description: Get APT policy. In order to manage BlockURLs please use the command o365-defender-safelinks-global-url-blocklist.
+    description: Get APT policy. In order to manage BlockURLs, use the o365-defender-safelinks-global-url-blocklist command.
     deprecated: false
     outputs:
     - contextPath: O365Defender.SafeLinks.AtpPolicy.Name
@@ -1024,32 +1024,32 @@ script:
       description: ATP policy admin display name.
       type: String
     - contextPath: O365Defender.SafeLinks.AtpPolicy.EnableATPForSPOTeamsODB
-      description: ATP policy enable for SPOT teams.
+      description: ATP policy enabled for SPOT teams.      
       type: String
     - contextPath: O365Defender.SafeLinks.AtpPolicy.AllowSafeDocsOpen
-      description: ATP policy allow safe docs open.
+      description: Whether the ATP policy allows safe docs to open.
       type: String
     - contextPath: O365Defender.SafeLinks.AtpPolicy.EnableSafeDocs
-      description: ATP policy enable safe docs.
+      description: Whether the ATP policy enables safe docs.
       type: String
     - contextPath: O365Defender.SafeLinks.AtpPolicy.Identity
-      description: ATP policy id.
+      description: ATP policy ID.
       type: String
     - contextPath: O365Defender.SafeLinks.AtpPolicy.IsValid
-      description: Is ATP policy valid.
+      description: Is the ATP policy valid.
       type: String
     - contextPath: O365Defender.SafeLinks.AtpPolicy.WhenCreatedUTC
-      description: When ATP policy created.
+      description: When the ATP policy was created in UTC format.
       type: String
     - contextPath: O365Defender.SafeLinks.AtpPolicy.WhenChangedUTC
-      description: When ATP policy changed.
+      description: When the ATP policy was changed in UTC format.      
       type: String
   - name: o365-defender-safelinks-atp-policy-set
-    description: Set ATP policy.
+    description: Set the ATP policy.    
     deprecated: false
     arguments:
     - name: allow_safe_docs_open
-      description: Toggle mode for allow open safe documents.
+      description: Whether users can click through and bypass the Protected View container even when Safe Documents identifies a file as malicious.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -1057,7 +1057,7 @@ script:
       - "true"
       - "false"
     - name: enable_atp_spo_teams_odb
-      description: Toggle mode for enable_atp_spo_teams_odb.
+      description: Enable or disable O365 Defender for SharePoint, OneDrive, and Microsoft Teams 
       required: false
       isArray: false
       auto: PREDEFINED
@@ -1065,7 +1065,7 @@ script:
       - "true"
       - "false"
     - name: enable_safe_docs
-      description: Toggle mode for enable_safe_docs.
+      description: Enable or disable safe Documents in organizations with Microsoft 365 A5 or Microsoft 365 E5 Security licenses.
       required: false
       isArray: false
       auto: PREDEFINED
