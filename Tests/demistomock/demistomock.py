@@ -1002,7 +1002,7 @@ def demistoVersion():
 
     """
     return {
-        'version': '5.5.0',
+        'version': '6.5.0',
         'buildNumber': '12345'
     }
 
