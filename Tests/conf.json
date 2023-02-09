@@ -1304,6 +1304,11 @@
         },
         {
             "integrations": "Threat Grid",
+            "playbookID": "ThreatGrid_Test",
+            "timeout": 600
+        },
+        {
+            "integrations": "ThreatGridv2",
             "playbookID": "ThreatGrid_v2_Test",
             "timeout": 600
         },
@@ -5617,7 +5622,7 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "AttackIQFireDrill": "License issues #29774",
         "LogRhythm": "The integration is deprecated",
-        "ThreatGrid": "No instance & Depreceated, replaced by ThreatGridv2",
+        "Threat Grid": "No instance & Depreceated, replaced by ThreatGridv2",
         "ThreatGridv2": "No instance - developed by Qmasters"
     },
     "nightly_integrations": [],
