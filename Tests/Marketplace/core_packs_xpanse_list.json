@@ -7,6 +7,7 @@
   "Asset",
   "Azure-Enrichment-Remediation",
   "AzureCompute",
+  "AzureNetworkSecurityGroups",
   "Base",
   "CommonPlaybooks",
   "CommonScripts",
@@ -21,10 +22,11 @@
   "GoogleKeyManagementService",
   "Identity",
   "Malware",
+  "MicrosoftGraphIdentityandAccess"
   "MicrosoftGraphUser",
   "Nmap",
   "Rapid7_Nexpose",
   "ServiceNow",
-  "SplunkPy"
+  "SplunkPy",
   "Tenable_io",
 ]
