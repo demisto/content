@@ -486,10 +486,14 @@ class ExchangeOnlinePowershellV2Client {
     }
     [PSObject]
     GetAtpPolicy() {
-        $this.CreateSession()
-        $results = Get-AtpPolicyForO365
-        return $results
-        $this.DisconnectSession()
+        try{
+            $this.CreateSession()
+            $results = Get-AtpPolicyForO365
+            return $results
+        }
+        finally {
+            $this.DisconnectSession()
+        }
         <#
         .DESCRIPTION
         Use this cmdlet to get the ATP policy.
@@ -691,9 +695,11 @@ function SetAtpPolicyCommand {
     )
 
     $raw_response = $client.SetAtpPolicy($kwargs)
-    # $human_readable = TableToMarkdown $raw_response "Results of $command"
+    if (!$raw_response){
+        return "#### SetAtpPolicyCommand finished with no output.", @{}, @{}
+    }
+    $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.AtpPolicy" = CreateContextForReport $raw_response }
-    $human_readable = "OK"
     return $human_readable, $entry_context, $raw_response
 }
 
