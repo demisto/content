@@ -3512,9 +3512,6 @@ def panorama_list_rules_command(args: dict):
     rules = panorama_list_rules(xpath, name, filters, query)
     pretty_rules = prettify_rules(rules, target)
 
-    demisto.debug('This is the pretty rules')
-    demisto.debug(pretty_rules)
-
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
