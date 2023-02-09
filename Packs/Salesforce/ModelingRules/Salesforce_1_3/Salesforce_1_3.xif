@@ -10,7 +10,7 @@ filter
     xdm.event.duration = to_integer(run_time),
     xdm.network.session_id = session_key,
     xdm.network.http.url = uri,
-    xdm.source.user.user_type = user_type;
+    xdm.source.user.groups = arraycreate(coalesce(user_type, ""));
 
 filter
     event_type in("Login","Logout")
