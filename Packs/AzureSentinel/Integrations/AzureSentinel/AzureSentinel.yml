@@ -126,7 +126,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-description: "Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR)."
+description: Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR).
 display: Microsoft Sentinel
 name: Azure Sentinel
 script:
