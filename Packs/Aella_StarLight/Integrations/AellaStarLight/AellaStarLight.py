@@ -4,6 +4,7 @@ import requests
 import json
 import time
 import os
+from typing import Any, Dict
 
 import urllib3
 
@@ -136,7 +137,7 @@ def fetch_incidents_command():
 
     end_point = URL + '/{0}/{1}/_search'.format(index_str, 'amsg')
 
-    action_result = {}
+    action_result: Dict[Any, Any] = {}
     make_rest_call(end_point,
                    USERNAME, PASSWORD, action_result, data=query_json
                    )
@@ -211,7 +212,8 @@ def aella_get_event_command():
     query_json = {'query': {'match': {'_id': event_id}}}
     end_point = URL + '/{0}/{1}/_search'.format('aella-ser*', 'amsg')
 
-    action_result = {}
+    action_result: Dict[Any, Any] = {}
+
     make_rest_call(end_point,
                    USERNAME, PASSWORD, action_result, data=query_json
                    )
@@ -346,7 +348,8 @@ demisto.info('Command is {}'.format(demisto.command()))
 
 if demisto.command() == 'test-module':
     # This is the call made when pressing the integration test button.
-    action_result = {}
+    action_result: Dict[Any, Any] = {}
+
     make_rest_call(URL + '/_cluster/health',
                    USERNAME, PASSWORD, action_result
                    )
