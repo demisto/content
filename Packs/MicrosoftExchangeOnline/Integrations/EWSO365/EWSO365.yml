@@ -790,7 +790,7 @@ script:
       description: The message ID of the item.
       type: String
   - arguments:
-    - description: The item ID of item to upload as and EML file.
+    - description: The item ID of the item to upload as an EML file.
       name: item-id
       required: true
     - description: The mailbox in which this email was found. If empty, the default mailbox is used. Otherwise the user might require impersonation rights to this mailbox.
