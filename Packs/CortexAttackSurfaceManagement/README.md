@@ -112,11 +112,11 @@ Playbook that given the IP address checks if SNMP is enabled or not and returns 
 ![Cortex ASM - SNMP Check](https://raw.githubusercontent.com/demisto/content/348579775c6c9b239d156f5398fd5c5a98e9458c/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_SNMP_Check.png)
 
 #### Cortex ASM - Decision
-Playbook that returns "RemediationAction" options based on meeting "Automated Remediation Requirements" as well as whether ServiceNowV2 integration is setup.
+Playbook that returns "RemediationAction" options based on meeting "Automated Remediation Requirements" as well as whether ServiceNowV2 integration is set up.
 ![Cortex ASM - Decision](https://raw.githubusercontent.com/demisto/content/7b2f8db22f0be0cc55f8f0663894f459c3b3801e/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Decision.png)
 
 #### Cortex ASM - Remediation Path Rules
-Playbook that returns "RemediationAction" options based return from Remediation Path Rules API, or defaults to data collection task options from "Cortex ADM - Decision" subplaybook.
+Playbook that returns "RemediationAction" options based on the return from the Remediation Path Rules API, or defaults to data collection task options from the "Cortex ADM - Decision" sub-playbook.
 ![Cortex ASM - Remediation Path Rules](https://raw.githubusercontent.com/demisto/content/7b2f8db22f0be0cc55f8f0663894f459c3b3801e/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Path_Rules.png)
 
 ### Automation Scripts

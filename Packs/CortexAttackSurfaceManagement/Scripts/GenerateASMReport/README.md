@@ -11,7 +11,7 @@ Generate an ASM Alert Summary report.
 ## Used In
 ---
 This script is used in the following playbooks and scripts.
-* Cortex ASM - ASM Alert
+Cortex ASM - ASM Alert
 
 ## Inputs
 ---

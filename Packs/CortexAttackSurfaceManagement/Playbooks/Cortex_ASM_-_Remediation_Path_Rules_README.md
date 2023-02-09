@@ -4,10 +4,10 @@ This playbook returns "RemediationAction" options based return from Remediation 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex ASM - Decision
+Cortex ASM - Decision
 
 ### Integrations
-* CortexAttackSurfaceManagement
+CortexAttackSurfaceManagement
 
 ### Scripts
 * Set
@@ -15,14 +15,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * RemediationPathRuleEvaluation
 
 ### Commands
-* asm-list-remediation-rule
+asm-list-remediation-rule
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ExternallyDetectedProviders | Providers of external service. |  | Optional |
+| ExternallyDetectedProviders | Providers of the external service. |  | Optional |
 
 ## Playbook Outputs
 ---

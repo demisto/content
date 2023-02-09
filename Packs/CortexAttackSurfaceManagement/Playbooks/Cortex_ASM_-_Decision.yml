@@ -2,11 +2,11 @@ id: Cortex ASM - Decision
 version: -1
 name: Cortex ASM - Decision
 description: |-
-  This playbook returns "RemediationAction" options based on meeting "Automated Remediation Requirements" (https://github.com/demisto/content/tree/master/Packs/CortexAttackSurfaceManagement#automated-remediation-requirements) as well as whether ServiceNowV2 integration is setup.  Possible return values are:
-  - Prompt base - data collection task with only email/manual options
-  - Prompt all options - data collection task with all options (meets Automated Remediation requirements and ServiceNow enabled)
-  - Prompt no snow - all options except ServiceNow (Automated Remediation requirements met)
-  - Prompt no ar - all options except Automated Remediation (ServiceNow enabled)
+  This playbook returns "RemediationAction" options based on meeting "Automated Remediation Requirements" (https://github.com/demisto/content/tree/master/Packs/CortexAttackSurfaceManagement#automated-remediation-requirements) as well as whether ServiceNowV2 integration is set up.  Possible return values are:
+  - Prompt base - data collection task with only email/manual options.
+  - Prompt all options - data collection task with all options (meets Automated Remediation requirements and ServiceNow is enabled).
+  - Prompt no snow - all options except ServiceNow (Automated Remediation requirements are met).
+  - Prompt no ar - all options except Automated Remediation (ServiceNow is enabled).
 starttaskid: "0"
 tasks:
   "0":
@@ -47,7 +47,7 @@ tasks:
       id: a6491b8e-4047-4d8d-86f0-766269ffc3bc
       version: -1
       name: Which option to return?
-      description: Checks playbooks inputs to determine if "Automated Remediation Requirements" (https://github.com/demisto/content/tree/master/Packs/CortexAttackSurfaceManagement#automated-remediation-requirements) were met and if ServiceNowV2 integration is setup.
+      description: Checks playbook inputs to determine if "Automated Remediation Requirements" (https://github.com/demisto/content/tree/master/Packs/CortexAttackSurfaceManagement#automated-remediation-requirements) were met and if ServiceNowV2 integration is set up.
       type: condition
       iscommand: false
       brand: ""
@@ -334,11 +334,11 @@ inputs:
 - key: AutoRemediationRequirements
   value: {}
   required: true
-  description: Meetings automated remediation requirements (https://github.com/demisto/content/tree/master/Packs/CortexAttackSurfaceManagement#automated-remediation-requirements).
+  description: Meets automated remediation requirements (https://github.com/demisto/content/tree/master/Packs/CortexAttackSurfaceManagement#automated-remediation-requirements).
   playbookInputQuery:
 outputs:
 - contextPath: RemediationAction
-  description: Follow up action to perform (variety of data collection tasks)
+  description: Follow up action to perform (variety of data collection tasks).
   type: string
 tests:
 - No tests (auto formatted)
