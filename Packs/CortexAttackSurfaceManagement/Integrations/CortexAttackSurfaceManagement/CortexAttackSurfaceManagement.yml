@@ -328,7 +328,7 @@ script:
       description: Asset vulnerability score.
       type: Unknown
   - arguments:
-    - description: A string representing the ASM Rule ID you want to get the associated remediation path rules for.
+    - description: A string representing the ASM rule ID you want to get the associated remediation path rules for.
       name: asm_rule_id
       required: true
     - auto: PREDEFINED
@@ -350,13 +350,13 @@ script:
       description: Remediation path rule description.
       type: String
     - contextPath: ASM.RemediationRule.attack_surface_rule_id
-      description: Association ASM rule ID for Remediation path rules.
+      description: Association ASM rule ID for the remediation path rules.
       type: String
     - contextPath: ASM.RemediationRule.criteria
       description: Array of remediation path rule criteria.
       type: Unknown
     - contextPath: ASM.RemediationRule.criteria_conjunction
-      description: Whether criteria is processes with AND or OR.
+      description: Whether criteria is processed with AND or OR.
       type: String
     - contextPath: ASM.RemediationRule.action
       description: Action to take on rule match.
