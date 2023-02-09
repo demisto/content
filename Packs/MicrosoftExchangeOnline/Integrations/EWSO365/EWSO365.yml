@@ -599,7 +599,7 @@ script:
       description: The read status of the email.
       type: String
   - arguments:
-    - description: A comma-separated list if item IDs.
+    - description: A comma-separated list of item IDs.
       isArray: true
       name: item-ids
       required: true
