@@ -613,8 +613,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "67eb733ccd56886e02612134158b7239f9a92ef1"
-resolved_reference = "67eb733ccd56886e02612134158b7239f9a92ef1"
+reference = "d54c71c9e888a2a6612d4c024e1aae0359d9d6d1"
+resolved_reference = "d54c71c9e888a2a6612d4c024e1aae0359d9d6d1"
 
 [[package]]
 name = "deprecated"
@@ -3165,7 +3165,7 @@ types-urllib3 = "<1.27"
 
 [[package]]
 name = "types-setuptools"
-version = "67.2.0.0"
+version = "67.2.0.1"
 description = "Typing stubs for setuptools"
 category = "dev"
 optional = false
@@ -3450,7 +3450,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "dbd9dd4df09a22db4aa1e819a35ae10bf2949bb381dd56138c532d5b81430ba9"
+content-hash = "8de013509a3d8c7d7fa66919afd247a04e6eb2e6a6d43308214bd65b5928326d"
 
 [metadata.files]
 aiodns = [
@@ -5925,8 +5925,8 @@ types-requests = [
     {file = "types_requests-2.28.11-py3-none-any.whl", hash = "sha256:af5f55e803cabcfb836dad752bd6d8a0fc8ef1cd84243061c0e27dee04ccf4fd"},
 ]
 types-setuptools = [
-    {file = "types-setuptools-67.2.0.0.tar.gz", hash = "sha256:d64d467979baaa8261874bbcf8ea9d656c4ccbab315013af8ddb8a1dc18d353f"},
-    {file = "types_setuptools-67.2.0.0-py3-none-any.whl", hash = "sha256:91b1fd18fc3b583a917c073e7483cec43b4f3aa5d5a5a13a0e457f66562cb32a"},
+    {file = "types-setuptools-67.2.0.1.tar.gz", hash = "sha256:07648088bc2cbf0f2745107d394e619ba2a747f68a5904e6e4089c0cb8322065"},
+    {file = "types_setuptools-67.2.0.1-py3-none-any.whl", hash = "sha256:f15b2924122dca5f99a9f6a96a872145721373fe1bb6d656cf269c2a8b73a74b"},
 ]
 types-six = [
     {file = "types-six-1.16.21.4.tar.gz", hash = "sha256:daaf1b506137d37257fad7a747857c57d5331611919d0d94b8195a06bdbc02af"},
