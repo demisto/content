@@ -19,11 +19,10 @@ filter
 filter
     eventtype = "administrator"
 | alter
-    xdm.event.operation = action,
+    xdm.event.operation = coalesce(action,context),
     xdm.event.description = description,
     xdm.target.resource.name = object,
     xdm.source.user.username = username,
-    xdm.source.user.user_type = context,
     xdm.target.user.identifier = phone,
     xdm.event.type = eventtype,
     xdm.event.operation_sub_type = type,
