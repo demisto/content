@@ -586,6 +586,25 @@ def build_severity_label_obj(label: str) -> List:
     return severity_label_obj
 
 
+def last_update_to_time(last_update: str) -> int:
+    """
+        Converting the lastUpdate string to int
+        Args:
+            last_update: str
+        Returns:
+            The int representing the date.
+        """
+    if last_update is None:
+        raise ValueError('Missing lastUpdate')
+    else:
+        date_time = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
+        if date_time is None:
+            raise ValueError('Invalid date.')
+        else:
+            demisto.debug('In last_update_to_time returning the result')
+            return int(date_time.timestamp())
+
+
 def disable_security_hub_command(client, args):
     kwargs = safe_load_json(args.get('raw_json', "{ }")) if args.get('raw_json') else {}
     response = client.disable_security_hub(**kwargs)
@@ -837,10 +856,10 @@ def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRe
     """
     remote_args = GetRemoteDataArgs(args)
     remote_incident_id = remote_args.remote_incident_id
-    last_update = f'{remote_args.last_update[:19]}Z'  # removes the milliseconds in 2023-02-06T15:36:42.260588288Z
-    last_update_time = date_to_timestamp(last_update, '%Y-%m-%dT%H:%M:%SZ')
-    demisto.debug(f'Performing get-remote-data command with incident id: {remote_incident_id} '
-                  f'and {last_update=} and {last_update_time=}')
+    # The incident can be updated in a 3rd party provider, which can cause a delayed update in AWS Security Hub,
+    # that can lead to XSOAR missing the update. This is way the -60 seconds
+    last_update_time = last_update_to_time(remote_args.last_update) - 60
+    demisto.debug(f'Performing get-remote-data command with incident id: {remote_incident_id} and {last_update_time=}')
 
     filters = {
         'Id': [
@@ -853,8 +872,8 @@ def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRe
     response = client.get_findings(Filters=filters)
     demisto.debug(f'The response is: {response} \nEnd of response.')
     finding = response.get('Findings')[0]  # a list with one dict in it
-    incident_last_update = f"{finding.get('UpdatedAt', '')[:19]}Z"  # removes the milliseconds in 2023-02-06T15:36:42.260588288Z
-    incident_last_update_time = date_to_timestamp(incident_last_update, '%Y-%m-%dT%H:%M:%SZ')
+    incident_last_update = finding.get('UpdatedAt', '')
+    incident_last_update_time = last_update_to_time(incident_last_update)
     demisto.debug(f'The incident last update time is: {incident_last_update}\nAnd {incident_last_update_time=}')
 
     if last_update_time < incident_last_update_time:

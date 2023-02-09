@@ -438,3 +438,19 @@ def test_update_remote_system_command(mocker, args, remote_id, expected_kwargs):
     result = update_remote_system_command(client, args)
     assert result == remote_id
     batch_update_mock.assert_called_with(**expected_kwargs)
+
+
+def test_last_update_to_time():
+    """
+    Given:
+        - A string representing a date and time.
+    When:
+        - get-remote-data is executed/
+    Then:
+        - Returns the timestamp.
+    """
+    from AWS_SecurityHub import last_update_to_time
+    last_update = '2023-02-05T22:49:47.637Z'
+    expected_timestamp = 1675637387
+    result = last_update_to_time(last_update)
+    assert result == expected_timestamp
