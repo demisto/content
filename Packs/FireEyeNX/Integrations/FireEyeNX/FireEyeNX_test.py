@@ -1035,6 +1035,8 @@ def test_is_supported_context_type_failure(client):
     'context_type',
     [
         CONTENT_TYPE_ZIP,
+        "text/csv",
+        "application/pdf",
         'application/octet-stream'
     ]
 )
