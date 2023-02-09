@@ -985,8 +985,8 @@ tasks:
     task:
       id: b15bc826-c117-477d-87e4-63f9095f38f9
       version: -1
-      name: Isolate Endpoint - Generic
-      playbookName: Isolate Endpoint - Generic
+      name: Isolate Endpoint - Generic V2
+      playbookName: Isolate Endpoint - Generic V2
       type: playbook
       iscommand: false
       brand: ""
@@ -995,12 +995,18 @@ tasks:
       '#none#':
       - "37"
     scriptarguments:
-      EndpointId: {}
-      Hostname: {}
-      xdr_endpoint_id:
+      Endpoint_hostname:
         complex:
-          root: PaloAltoNetworksXDR
-          accessor: Endpoint.endpoint_id
+          root: Endpoint
+          accessor: Hostname
+      Endpoint_id:
+        complex:
+          root: PaloAltoNetworksXDR.Endpoint
+          accessor: endpoint_id
+      Endpoint_ip:
+        complex:
+          root: IP
+          accessor: Address
     separatecontext: true
     loop:
       iscommand: false
