@@ -240,7 +240,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: When the alert was last modified in the following string format - YYYY-MM-DD
+      description: The date the alert was last modified in the following string format - YYYY-MM-DD.
       isArray: false
       name: last_modified
       required: false
