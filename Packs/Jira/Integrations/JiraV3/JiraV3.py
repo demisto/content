@@ -128,13 +128,36 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
 
     # Query Requests
     def run_query(self, query_params: Dict[str, Any]) -> Dict[str, Any]:
-        res = self.http_request_with_access_token(method='GET', url_suffix='rest/api/3/search',
-                                                  params=query_params)
-        return res
+        return self.http_request_with_access_token(
+            method='GET', url_suffix='rest/api/3/search', params=query_params
+        )
 
     # Board Requests
     @abstractmethod
+    def get_issues_from_backlog(self, board_id: str, jql_query: str = None,
+                                start_at: int = None, max_results: int = None) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def get_issues_from_board(self, board_id: str, jql_query: str = None,
+                              start_at: int = None, max_results: int = None) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def get_sprints_from_board(self, board_id: str, start_at: int = None, max_results: int = None) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
     def issues_from_sprint_to_backlog(self, json_data: Dict[str, Any]) -> requests.Response:
+        pass
+
+    @abstractmethod
+    def get_boards(self, board_type: str = None, project_key_id: str = None, board_name: str = None,
+                   start_at: int = None, max_results: int = None) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def get_board(self, board_id: str) -> Dict[str, Any]:
         pass
 
     # Issue Fields Requests
@@ -219,6 +242,9 @@ class JiraCloudClient(JiraBaseClient):
             'read:jira-work', 'read:jira-user', 'write:jira-work',
             # Jira Software
             'write:board-scope:jira-software',
+            'read:board-scope:jira-software',
+            'read:issue-details:jira',
+            'read:sprint:jira-software',
             # For refresh token
             'offline_access']
         super().__init__(proxy=proxy, verify=verify, callback_url=callback_url,
@@ -323,6 +349,64 @@ class JiraCloudClient(JiraBaseClient):
         set_integration_context(integration_context)
 
     # Board Requests
+    def get_issues_from_backlog(self, board_id: str, jql_query: str = None,
+                                start_at: int = None, max_results: int = None) -> Dict[str, Any]:
+        query_params = assign_params(
+            jql=jql_query,
+            startAt=start_at,
+            maxResults=max_results
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/agile/1.0/board/{board_id}/backlog',
+            params=query_params
+        )
+
+    def get_issues_from_board(self, board_id: str, jql_query: str = None,
+                              start_at: int = None, max_results: int = None) -> Dict[str, Any]:
+        query_params = assign_params(
+            jql=jql_query,
+            startAt=start_at,
+            maxResults=max_results
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/agile/1.0/board/{board_id}/issue',
+            params=query_params
+        )
+
+    def get_sprints_from_board(self, board_id: str, start_at: int = None, max_results: int = None) -> Dict[str, Any]:
+        query_params = assign_params(
+            startAt=start_at,
+            maxResults=max_results
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/agile/1.0/board/{board_id}/sprint',
+            params=query_params
+        )
+
+    def get_board(self, board_id: str) -> Dict[str, Any]:
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/agile/1.0/board/{board_id}',
+        )
+
+    def get_boards(self, board_type: str = None, project_key_id: str = None, board_name: str = None,
+                   start_at: int = None, max_results: int = None) -> Dict[str, Any]:
+        query_params = assign_params(
+            type=board_type,
+            projectKeyOrId=project_key_id,
+            name=board_name,
+            startAt=start_at,
+            maxResults=max_results
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix='rest/agile/1.0/board',
+            params=query_params
+        )
+
     def issues_from_sprint_to_backlog(self, json_data: Dict[str, Any]) -> requests.Response:
         return self.http_request_with_access_token(
             method='POST',
@@ -355,24 +439,27 @@ class JiraCloudClient(JiraBaseClient):
 
     #  Issue Requests
     def transition_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
-        res = self.http_request_with_access_token(method='POST',
-                                                  url_suffix=f'rest/api/latest/issue/{issue_id_or_key}/transitions',
-                                                  json_data=json_data,
-                                                  resp_type='response'
-                                                  )
-        return res
+        return self.http_request_with_access_token(
+            method='POST',
+            url_suffix=f'rest/api/latest/issue/{issue_id_or_key}/transitions',
+            json_data=json_data,
+            resp_type='response',
+        )
 
     def add_link(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
-        res = self.http_request_with_access_token(method='POST',
-                                                  url_suffix=f'rest/api/latest/issue/{issue_id_or_key}/remotelink',
-                                                  json_data=json_data)
-        return res
+        return self.http_request_with_access_token(
+            method='POST',
+            url_suffix=f'rest/api/latest/issue/{issue_id_or_key}/remotelink',
+            json_data=json_data,
+        )
 
     def get_comments(self, issue_id_or_key: str, max_results: int = 50) -> Dict[str, Any]:
         query_params = {'expand': 'renderedBody', 'maxResults': max_results}
-        res = self.http_request_with_access_token(method='GET', url_suffix=f'rest/api/3/issue/{issue_id_or_key}/comment',
-                                                  params=query_params)
-        return res
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/api/3/issue/{issue_id_or_key}/comment',
+            params=query_params,
+        )
 
     def delete_comment(self, issue_id_or_key: str, comment_id: str) -> Dict[str, Any]:
         res = self.http_request_with_access_token(method='DELETE',
@@ -463,6 +550,23 @@ class JiraOnPremClient(JiraBaseClient):
 
 
 # Utility functions
+def prepare_pagination_args(page: int = None, page_size: int = None, limit: int = None):
+    if page or page_size:
+        page = page or 0
+        page_size = page_size or 50
+        return {
+            'start_at': page * page_size if (page and page_size) else 0,
+            'max_results': page_size,
+        }
+    else:
+        limit = limit or 50
+        return {'start_at': 0, 'max_results': limit}
+
+
+def str_to_number(arg: str, default_value: int) -> int:
+    return to_number if (to_number := arg_to_number(arg)) else default_value
+
+
 def create_query_params(jql: str, specific_fields: List[str] | None = None, start_at: int | None = None,
                         max_results: int | None = None) -> Dict[str, Any]:
     start_at = start_at or 0
@@ -1374,7 +1478,112 @@ def issues_to_board_command(client: JiraBaseClient, args: Dict[str, Any]) -> Com
 
 
 def board_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
-    pass
+    board_id = args.get('board_id', '')
+    board_type = args.get('type', '')
+    project_key_id = args.get('project_key_id', '')
+    board_name = args.get('board_name')
+    pagination_args = prepare_pagination_args(page=arg_to_number(arg=args.get('page', None)),
+                                              page_size=arg_to_number(arg=args.get('page_size', None)),
+                                              limit=arg_to_number(arg=args.get('limit', None)))
+    boards: List[Dict[str, Any]] = []
+    if board_id:
+        res = client.get_board(board_id=board_id)
+        boards = [res]
+    else:
+        res = client.get_boards(
+            board_type=board_type,
+            project_key_id=project_key_id,
+            board_name=board_name,
+            **pagination_args
+        )
+        boards = res.get('values', [])
+    md_dict = [
+        {
+            'ID': board.get('id', ''),
+            'Name': board.get('name', ''),
+            'Type': board.get('type', ''),
+            'Project ID': board.get('location', {}).get('projectId', ''),
+            'Project Name': board.get('location', {}).get('projectName', ''),
+        }
+        for board in boards
+    ]
+    return CommandResults(
+        outputs_prefix='Jira.Board',
+        outputs_key_field='id',
+        outputs=boards,
+        readable_output=tableToMarkdown(name='Boards', t=md_dict),
+        raw_response=res
+    )
+
+
+def board_backlog_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    board_id = args.get('board_id', '')
+    jql_query = args.get('jql_query', '')
+    pagination_args = prepare_pagination_args(page=arg_to_number(arg=args.get('page', None)),
+                                              page_size=arg_to_number(arg=args.get('page_size', None)),
+                                              limit=arg_to_number(arg=args.get('limit', None)))
+    res = client.get_issues_from_backlog(board_id=board_id, jql_query=jql_query, **pagination_args)
+    markdown_list = []
+    issues_list = []
+    for issue in res.get('issues', []):
+        markdown_dict, outputs = create_issue_md_and_outputs(client=client, res=issue)
+        markdown_list.append(markdown_dict)
+        issues_list.append(outputs)
+    return CommandResults(
+        outputs_prefix='Jira.BoardBacklog',
+        outputs_key_field='id',
+        outputs={'id': board_id, 'Issues': issues_list},
+        readable_output=tableToMarkdown(name='Backlog Issues', t=markdown_list),
+        raw_response=res
+    )
+
+
+def board_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    board_id = args.get('board_id', '')
+    jql_query = args.get('jql_query', '')
+    pagination_args = prepare_pagination_args(page=arg_to_number(arg=args.get('page', None)),
+                                              page_size=arg_to_number(arg=args.get('page_size', None)),
+                                              limit=arg_to_number(arg=args.get('limit', None)))
+    res = client.get_issues_from_board(board_id=board_id, jql_query=jql_query, **pagination_args)
+    markdown_list = []
+    issues_list = []
+    for issue in res.get('issues', []):
+        markdown_dict, outputs = create_issue_md_and_outputs(client=client, res=issue)
+        markdown_list.append(markdown_dict)
+        issues_list.append(outputs)
+    return CommandResults(
+        outputs_prefix='Jira.BoardIssue',
+        outputs_key_field='id',
+        outputs={'id': board_id, 'Issues': issues_list},
+        readable_output=tableToMarkdown(name='Board Issues', t=markdown_list),
+        raw_response=res
+    )
+
+
+def board_sprint_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    board_id = args.get('board_id', '')
+    pagination_args = prepare_pagination_args(page=arg_to_number(arg=args.get('page', None)),
+                                              page_size=arg_to_number(arg=args.get('page_size', None)),
+                                              limit=arg_to_number(arg=args.get('limit', None)))
+    res = client.get_sprints_from_board(board_id=board_id, **pagination_args)
+    sprints = res.get('values', [])
+    md_dict = [
+        {
+            'ID': sprint.get('id', ''),
+            'Name': sprint.get('name', ''),
+            'State': sprint.get('state', ''),
+            'Start Date': sprint.get('startDate', ''),
+            'End Date': sprint.get('endDate', ''),
+        }
+        for sprint in sprints
+    ]
+    return CommandResults(
+        outputs_prefix='Jira.BoardSprint',
+        outputs_key_field='id',
+        outputs={'id': board_id, 'Sprints': sprints},
+        readable_output=tableToMarkdown(name='Sprints', t=md_dict),
+        raw_response=res
+    )
 # Fetch
 
 # Polling
@@ -1452,6 +1661,9 @@ def main() -> None:
         'jira-issue-to-backlog': issues_to_backlog_command,
         'jira-issue-to-board': issues_to_board_command,
         'jira-board-list': board_list_command,
+        'jira-board-backlog-list': board_backlog_list_command,
+        'jira-board-issue-list': board_issues_list_command,
+        'jira-board-sprint-list': board_sprint_list_command
     }
     try:
         client: JiraBaseClient

@@ -1059,13 +1059,13 @@ script:
       description: The name of the board.
       isArray: false
       name: board_name
-      required: true
+      required: false
       secret: false
     - default: false
       description: The board ID.
       isArray: false
       name: board_id
-      required: true
+      required: false
       secret: false
     - default: false
       description: The project key or ID.
@@ -1075,7 +1075,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of the board
+      description: "The type of the board. Allowed values are: scrum, kanban, simple"
       isArray: false
       name: type
       required: false
@@ -1085,18 +1085,19 @@ script:
       - 'kanban'
       - 'simple'
     - default: false
-      description: Add description
+      description: Add description. This argument will be ignored if page or page_size arguments were given.
       isArray: false
       name: limit
       required: false
       secret: false
       defaultValue: '50'
     - default: false
-      description: Add description
+      description: Add description.
       isArray: false
       name: page
       required: false
       secret: false
+      defaultValue: '0'
     - default: false
       description: Add description
       isArray: false
@@ -1154,6 +1155,33 @@ script:
     - contextPath: Jira.Board.location
       description: The container that the board is located in.
       type: object
+    - contextPath: Jira.Board.location.projectId
+      description: The project ID.
+      type: number
+    - contextPath: Jira.Board.location.userId
+      description: The user ID.
+      type: number
+    - contextPath: Jira.Board.location.userAccountId
+      description: The user account ID.
+      type: string
+    - contextPath: Jira.Board.location.displayName
+      description: The display name of the project.
+      type: string
+    - contextPath: Jira.Board.location.projectName
+      description: The project name.
+      type: string
+    - contextPath: Jira.Board.location.projectKey
+      description: The project key.
+      type: string
+    - contextPath: Jira.Board.location.projectTypeKey
+      description: Add description.
+      type: string
+    - contextPath: Jira.Board.location.avatarURI
+      description: Add description.
+      type: string
+    - contextPath: Jira.Board.location.name
+      description: Add description.
+      type: string
     - contextPath: Jira.Board.canEdit
       description: Whether the board can be edited.
       type: string
@@ -1163,6 +1191,132 @@ script:
     - contextPath: Jira.Board.favourite
       description: Whether the board is selected as a favorite.
       type: string
+  - arguments:
+    - default: false
+      description: The board ID.
+      isArray: false
+      name: board_id
+      required: true
+      secret: false
+    - default: false
+      description: A JQL query to filter the issues.
+      isArray: false
+      name: jql_query
+      required: false
+      secret: false
+    - default: false
+      description: Add description. This argument will be ignored if page or page_size arguments were given.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+      defaultValue: '50'
+    - default: false
+      description: Add description.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+      defaultValue: '0'
+    - default: false
+      description: Add description
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+      defaultValue: '50'
+    deprecated: false
+    description: Get issues from backlog of specific board
+    execution: false
+    name: jira-board-backlog-list
+    outputs:
+    - contextPath: Jira.BoardBacklog.id
+      description: The ID of the board.
+      type: number
+  - arguments:
+    - default: false
+      description: The board ID.
+      isArray: false
+      name: board_id
+      required: true
+      secret: false
+    - default: false
+      description: A JQL query to filter the issues.
+      isArray: false
+      name: jql_query
+      required: false
+      secret: false
+    - default: false
+      description: Add description. This argument will be ignored if page or page_size arguments were given.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+      defaultValue: '50'
+    - default: false
+      description: Add description.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+      defaultValue: '0'
+    - default: false
+      description: Add description
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+      defaultValue: '50'
+    deprecated: false
+    description: Get issues from backlog of specific board
+    execution: false
+    name: jira-board-issue-list
+    outputs:
+    - contextPath: Jira.BoardIssue.id
+      description: The ID of the board.
+      type: number
+  - arguments:
+    - default: false
+      description: The board ID.
+      isArray: false
+      name: board_id
+      required: true
+      secret: false
+    - default: false
+      description: A JQL query to filter the issues.
+      isArray: false
+      name: jql_query
+      required: false
+      secret: false
+    - default: false
+      description: Add description. This argument will be ignored if page or page_size arguments were given.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+      defaultValue: '50'
+    - default: false
+      description: Add description.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+      defaultValue: '0'
+    - default: false
+      description: Add description
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+      defaultValue: '50'
+    deprecated: false
+    description: Get issues from backlog of specific board
+    execution: false
+    name: jira-board-sprint-list
+    outputs:
+    - contextPath: Jira.BoardSprint.id
+      description: The ID of the board.
+      type: number
   dockerimage: demisto/btfl-soup:1.0.1.45563
   script: ''
   type: python
