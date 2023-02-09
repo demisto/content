@@ -47,7 +47,8 @@ At end of the process, you will see a message that you logged in successfully.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | app_id | App ID | True |
+    | app_id | App ID | False |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
     | subscription_id | Subscription ID | True |
     | resource_group_name | Default Resource Group Name | True |
     | azure_ad_endpoint | Azure AD endpoint associated with a national cloud | False |
