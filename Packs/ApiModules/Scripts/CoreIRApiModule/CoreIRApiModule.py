@@ -221,26 +221,27 @@ class CoreClient(BaseClient):
                             alias_name=None,
                             isolate=None,
                             hostname=None,
-                            page_number=0,
-                            limit=30,
+                            # page_number=0,
+                            # limit=30,
                             first_seen_gte=None,
                             first_seen_lte=None,
                             last_seen_gte=None,
                             last_seen_lte=None,
-                            sort_by_first_seen=None,
-                            sort_by_last_seen=None,
+                            # sort_by_first_seen=None,
+                            # sort_by_last_seen=None,
                             status=None,
                             username=None,
                             new_alias_name=None
                             ):
 
-        search_from = page_number * limit
-        search_to = search_from + limit
+        # search_from = page_number * limit
+        # search_to = search_from + limit
+        request_data = {}
 
-        request_data = {
-            'search_from': search_from,
-            'search_to': search_to,
-        }
+        # request_data = {
+        #     'search_from': search_from,
+        #     'search_to': search_to,
+        # }
 
         filters = create_request_filters(
             status=status, username=username, endpoint_id_list=endpoint_id_list, dist_name=dist_name,
@@ -249,36 +250,34 @@ class CoreClient(BaseClient):
             last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte
         )
 
-        if search_from:
-            request_data['search_from'] = search_from
+        # if search_from:
+        #     request_data['search_from'] = search_from
 
-        if search_to:
-            request_data['search_to'] = search_to
+        # if search_to:
+        #     request_data['search_to'] = search_to
 
-        if sort_by_first_seen:
-            request_data['sort'] = {
-                'field': 'first_seen',
-                'keyword': sort_by_first_seen
-            }
-        elif sort_by_last_seen:
-            request_data['sort'] = {
-                'field': 'last_seen',
-                'keyword': sort_by_last_seen
-            }
+        # if sort_by_first_seen:
+        #     request_data['sort'] = {
+        #         'field': 'first_seen',
+        #         'keyword': sort_by_first_seen
+        #     }
+        # elif sort_by_last_seen:
+        #     request_data['sort'] = {
+        #         'field': 'last_seen',
+        #         'keyword': sort_by_last_seen
+        #    }
+
         # TODO make sure if you want the ip_list to be the identifier
         # request_data['value'] = ip_list
         request_data['filters'] = filters
         request_data['alias'] = new_alias_name
 
-        reply = self._http_request(
+        return self._http_request(
             method='POST',
-            url_suffix='endpoints/update_agent_name/',
+            url_suffix='/endpoints/update_agent_name/',
             json_data={'request_data': request_data},
-            timeout=self.timeout
+            timeout=self.timeout,
         )
-
-        endpoints = reply.get('reply')   # .get('endpoints', [])
-        return endpoints
 
     def isolate_endpoint(self, endpoint_id, incident_id=None):
         request_data = {
