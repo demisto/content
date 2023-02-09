@@ -3450,7 +3450,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "4ad0e614aa6eb66de5e06c6d7904dbb8979e85bbb4578a124dd5b6cd32c05da8"
+content-hash = "2c6bfd0ad5b2cc5ff293ad43d5c5b03a07f4f168a9a6654e745d98a21f10eff7"
 
 [metadata.files]
 aiodns = [
@@ -3866,7 +3866,10 @@ demisto-py = [
     {file = "demisto-py-3.2.7.tar.gz", hash = "sha256:5b41a9d7b03fc4d36f25bfd1929c31d2974805101426885f7650c321f992472c"},
     {file = "demisto_py-3.2.7-py3-none-any.whl", hash = "sha256:32e48931970d6b5aa69f525edf10fb6e9ee4c190c88e7c6db57f84790d2b6b86"},
 ]
-demisto-sdk = []
+demisto-sdk = [
+    {file = "demisto_sdk-1.10.0-py3-none-any.whl", hash = "sha256:d2a5af4647b13aa9935b4c6fe5dfde8a8c1b45b7e0fd75d13ffca671ee88dd1c"},
+    {file = "demisto_sdk-1.10.0.tar.gz", hash = "sha256:a1e27854b42ebb9247e49a48777c97dbcd715f946e000a9376eda31c803a8347"},
+]
 deprecated = [
     {file = "Deprecated-1.2.13-py2.py3-none-any.whl", hash = "sha256:64756e3e14c8c5eea9795d93c524551432a0be75629f8f29e67ab8caf076c76d"},
     {file = "Deprecated-1.2.13.tar.gz", hash = "sha256:43ac5335da90c31c24ba028af536a91d41d53f9e6901ddb021bcc572ce44e38d"},
