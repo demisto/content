@@ -1614,6 +1614,17 @@ def get_indicator_conditions(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
+def validation_baseurl(baseurl: str) -> None:
+    error_message = ''
+    for suffix in (('/v3', '/v3/'), ('/api', '/api/'), ('/hx', '/hx/')):
+        if baseurl.endswith(suffix):
+            baseurl = baseurl[:-len(suffix[0])]
+            error_message = suffix[0] + error_message
+
+    if error_message:
+        raise ValueError(f'The base URL is invalid\nPlease set the base URL without including {error_message}')
+
+
 """helper fetch-incidents"""
 
 
@@ -3172,7 +3183,9 @@ def main() -> None:
         raise ValueError("User Name and Password are required")
 
     # get the service API url
-    base_url = urljoin(params.get('server'), '/hx/api/v3/')
+    base_url = params.get('server')
+    validation_baseurl(base_url)
+    base_url = urljoin(base_url, '/hx/api/v3/')
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
