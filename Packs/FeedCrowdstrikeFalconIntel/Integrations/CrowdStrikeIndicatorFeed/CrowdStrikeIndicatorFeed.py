@@ -122,6 +122,8 @@ class Client(CrowdStrikeClient):
         Returns:
             (list): parsed indicators
         """
+        if start_fetch := self.get_last_run() or self.first_fetch:
+            pass
         sort = 'last_updated|asc'
         filter = f'({self.filter})' if self.filter else ''
         if self.type:
@@ -133,20 +135,21 @@ class Client(CrowdStrikeClient):
                                                  for item in self.malicious_confidence])
             filter = f"{filter}+({malicious_confidence_fql})" if filter else f'({malicious_confidence_fql})'
 
-        # if fetch_command:
-        #     offset = demisto.getIntegrationContext().get('offset', 0)
-        #     demisto.info(f' current offset: {offset}')
-
         if manual_last_run:
             filter = f'{filter}+(last_updated:>={manual_last_run})' if filter else f'(last_updated:>={manual_last_run})'
 
         if fetch_command:
             sort = '_marker|asc'
             if last_run := self.get_last_run():
+                demisto.debug(f'last_run --> {last_run}')
                 filter = f'{filter}+({last_run})' if filter else f'({last_run})'
             elif self.first_fetch:
                 last_run = f'last_updated:>={int(self.first_fetch)}'
                 filter = f'{filter}+({last_run})' if filter else f'({last_run})'
+                int_first_fetch = int(self.first_fetch)
+                demisto.debug(f'self.first_fetch --> {int_first_fetch}')
+                date_first_fetch = timestamp_to_datestring(int(self.first_fetch))
+                demisto.debug(f'date_first_fetch --> {date_first_fetch}')
 
         demisto.info(f' filter {filter}')
         params = assign_params(include_deleted=self.include_deleted,
@@ -156,29 +159,21 @@ class Client(CrowdStrikeClient):
                                sort=sort)
 
         response = self.get_indicators(params=params)
-        # timestamp = self.set_last_run()
-
-        # resources = response.get('resources', [])
-        # if fetch_command and resources and resources[-1].get('last_updated') == last_modified_time:
-        #     offset = demisto.getIntegrationContext().get('offset', 0) + limit
-        # else:
-        #     offset = 0
-        # demisto.info(f' set new offset: {offset}')
 
         # need to fetch all indicators after the limit
         if pagination := response.get('meta', {}).get('pagination'):
-            # pagination_offset = pagination.get('offset', 0)
             pagination_limit = pagination.get('limit')
             total = pagination.get('total', 0)
             if pagination_limit < total:
                 new_last_marker_time = response.get('resources', [])[-1].get('_marker')
             else:
                 new_last_marker_time = demisto.getIntegrationContext().get('last_marker_time')
+        else:
+            demisto.debug('OYLO --- there is no indicators')
 
         if response.get('meta', {}).get('pagination', {}).get('total', 0) and fetch_command:
             ctx = demisto.getIntegrationContext()
             ctx.update({'last_marker_time': new_last_marker_time})
-            # ctx.update({'offset': offset})
             demisto.setIntegrationContext(ctx)
             demisto.info(f'set last_run: {new_last_marker_time}')
 
@@ -206,6 +201,7 @@ class Client(CrowdStrikeClient):
             demisto.info(f'get last_run: {last_run}')
             params = f"_marker:>'{last_run}'"
         else:
+            demisto.debug('There is no last_run')
             params = ''
         return params
 
@@ -424,7 +420,7 @@ def main() -> None:
     first_fetch_param = params.get('first_fetch')
     first_fetch_datetime = arg_to_datetime(first_fetch_param) if first_fetch_param else None
     first_fetch = first_fetch_datetime.timestamp() if first_fetch_datetime else None
-
+    demisto.debug(f'first_fetch --> {first_fetch}')
     base_url = params.get('base_url')
     tlp_color = params.get('tlp_color')
     include_deleted = params.get('include_deleted', False)
@@ -484,7 +480,11 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    print(date_to_timestamp('2023-02-08T15:08:49'))
-    print(arg_to_datetime('1 day').timestamp())
-    print(timestamp_to_datestring('1675780276.098688'))
+    date_format = '%Y-%m-%dT%H:%M:%S'
+    date_ = parse_date_range('1 day')[0]
+    date_2 = arg_to_datetime('1 day')
+    print(timestamp_to_datestring('1675949246000', date_format))
+    print(date_.timestamp())
+    print(date_2)
+    print(date_2.timestamp())
     # main()
