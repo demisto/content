@@ -9,7 +9,7 @@ configuration:
 - defaultvalue: 6b071e63-f701-454b-9e54-ede4c96483e6
   display: Application ID
   name: app_id
-  required: true
+  required: false
   type: 0
   additionalinfo:
   section: Connect
@@ -51,6 +51,7 @@ configuration:
   options:
   - Device Code
   - Client Credentials
+  - Azure Managed Identities
   section: Connect
   advanced: true
 - name: tenant_id
@@ -69,6 +70,13 @@ configuration:
   defaultvalue:
   type: 9
   additionalinfo: ""
+  section: Connect
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
   section: Connect
 description: Use the Azure Active Directory Applications integration to manage authorized applications.
 display: Azure Active Directory Applications
@@ -273,7 +281,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.45575
+  dockerimage: demisto/crypto:1.0.0.47103
 fromversion: 5.0.0
 tests:
 - MSGraph Applications Test
