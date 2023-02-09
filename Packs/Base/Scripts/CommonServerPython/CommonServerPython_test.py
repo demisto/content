@@ -8339,7 +8339,7 @@ class TestSendEventsToXSIAMTest:
     ])
     def test_send_events_to_xsiam_positive(self, mocker, events_use_case):
         """
-        Test for the fetch fetch events function
+        Test for the fetch events function
         Given:
             Case a: a list containing dicts representing events.
             Case b: a list containing strings representing events.
@@ -8379,9 +8379,15 @@ class TestSendEventsToXSIAMTest:
             return
 
         from CommonServerPython import BaseClient
+        from requests import Response
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
         mocker.patch.object(demisto, 'updateModuleHealth')
-        _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value={'error': 'false'})
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
 
         events = self.test_data[events_use_case]['events']
         number_of_events = self.test_data[events_use_case]['number_of_events']
@@ -8473,7 +8479,7 @@ class TestSendEventsToXSIAMTest:
                     (429, None), (429, None), (429, None)
                 ],
                 3,
-                3,
+                1,
                 False
             ),
             (
@@ -8489,7 +8495,7 @@ class TestSendEventsToXSIAMTest:
                     (429, None), (429, None), (200, json.dumps({'error': 'false'}).encode('utf-8'))
                 ],
                 3,
-                2,
+                0,
                 True
             ),
             (
@@ -8497,7 +8503,7 @@ class TestSendEventsToXSIAMTest:
                     (429, None), (200, json.dumps({'error': 'false'}).encode('utf-8'))
                 ],
                 2,
-                1,
+                0,
                 True
             ),
             (
@@ -8527,17 +8533,17 @@ class TestSendEventsToXSIAMTest:
         Then:
             case a:
                 - DemistoException is raised
-                - Error log is called 3 times
+                - Error log is called 1 time
                 - Make sure 3 api requests were sent by the retry mechanism
             case b:
                 - DemistoException is raised
                 - Error log is called 1 time
                 - Make sure only 1 api request were sent by the retry mechanism
             case c:
-                - Error log is called 2 times
+                - Error log is not called at all
                 - Make sure only 3 api requests were sent by the retry mechanism
             case d:
-                - Error log is called 1 time
+                - EError log is not called at all
                 - Make sure only 2 api requests were sent by the retry mechanism
             case e:
                 - Error log is not called at all
