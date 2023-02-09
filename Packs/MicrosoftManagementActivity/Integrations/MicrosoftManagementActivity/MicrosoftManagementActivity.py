@@ -562,11 +562,9 @@ def main():
             elif not enc_key and not (certificate_thumbprint and private_key):
                 raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
-        # The Client gets both the refresh token from the integration context (that was saved there in
-        # previous executions) and the 'refresh_token_param' which is the refresh token from the integration parameters
-        # (i.e current instance configuration). The 'refresh_token_param' will be used if for some reason the
-        # authentication with the oproxy server will fail (in that case we will perform a second attempt using the
-        # refresh_token_param).
+        # Client gets refresh_token_param as well as refresh_token which is the current refresh token from the
+        # integration context (if exists) so It will be possible to manually update the refresh token param for an
+        # existing integration instance.
         refresh_token_param = refresh_token
         refresh_token = get_integration_context().get('current_refresh_token') or refresh_token_param
 

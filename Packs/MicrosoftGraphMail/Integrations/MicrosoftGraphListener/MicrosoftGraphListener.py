@@ -1688,11 +1688,9 @@ def main():     # pragma: no cover
     # In case the script is running for the first time, refresh token is retrieved from integration parameters,
     # in other case it's retrieved from integration context.
 
-    # The Client gets both the refresh token from the integration context (that was saved there in
-    # previous executions) and the 'refresh_token_param' which is the refresh token from the integration parameters
-    # (i.e current instance configuration). The 'refresh_token_param' will be used if for some reason the
-    # authentication with the oproxy server will fail (in that case we will perform a second attempt using the
-    # refresh_token_param).
+    # Client gets refresh_token_param as well as refresh_token which is the current refresh token from the integration
+    # context (if exists) so It will be possible to manually update the refresh token param for an existing integration
+    # instance.
     refresh_token_param = refresh_token  # Refresh token from the integration parameters (i.e current instance config)
     refresh_token = get_integration_context().get('current_refresh_token') or refresh_token_param
 
