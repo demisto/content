@@ -856,7 +856,7 @@ class ZendeskClient(BaseClient):
     # ---- demisto releated functions ---- #
 
     def test_module(self):  # pragma: no cover
-        exception: Exception = None
+        exception: Exception
         # If one of the endpoints work we will pass the test_module check.
         for data_type in ['tickets', 'users', 'organizations']:
             try:
