@@ -12,8 +12,8 @@ function convertValue(args, type, value) {
     return value === undefined ? null : value;
 }
 
-function getValue(args, condition, options, lhs) {
-    for (var name of ["equals", "value", "lhs", "rhs"]) { // descending order by length
+function getValue(args, condition, options, lhs, getValueArray) {
+    for (var name of getValueArray) { // descending order by length
         if (lhs ? condition.startsWith(name) : condition.endsWith(name)) {
             return [name, convertValue(args, options[`input_data_type:${name}`], args[name])];
         }
@@ -125,19 +125,49 @@ function evaluate(operator, lhs, rhs, options) {
     }
 }
 
-if (args.condition && args.condition.indexOf("equals") >= 0) {
+if ((args.condition && args.condition.indexOf("equals") >= 0 || (args.conditionB && args.conditionB.indexOf("equals") >= 0))) {
     throw "Legacy parameter (equals) is not supported for `condition`, please use lhs and rhs or leave it blank";
 }
 const condition = args.condition ? args.condition.trim() : 'value==equals';
+const conditionB = args.conditionB ? args.conditionB.trim() : 'value==equals';
+const conditionInBetween = args.conditionInBetween ? args.conditionInBetween.trim() : 'and';
 const options = makeOptions(args.options);
-const [lhs_name, lhs] = getValue(args, condition, options, true);
-const [rhs_name, rhs] = getValue(args, condition, options, false);
+const optionsB = makeOptions(args.optionsB);
+const getValueArrayA = ["equals", "value", "lhs", "rhs"];
+const [lhs_name, lhs] = getValue(args, condition, options, true, getValueArrayA);
+const [rhs_name, rhs] = getValue(args, condition, options, false, getValueArrayA);
 const operator = getOperator(lhs_name, rhs_name, condition);
+const getValueArrayB = ["equals", "value","lhsB", "rhsB"];
+const [lhsB_name, lhsB] = getValue(args, conditionB, optionsB, true, getValueArrayB);
+const [rhsB_name, rhsB] = getValue(args, conditionB, optionsB, false, getValueArrayB);
+const operator2 = getOperator(lhsB_name, rhsB_name, conditionB);
+
+var resultA = evaluate(operator, lhs, rhs, options);
 
 var ret;
-if (evaluate(operator, lhs, rhs, options)) {
-    ret = convertValue(args, options["input_data_type:then"], args.then);
-} else {
-    ret = convertValue(args, options["input_data_type:else"], args.else);
+if (lhsB &&
+    (args.lhsB !== undefined ||
+     args.rhsB !== undefined ||
+     args.conditionB !== undefined ||
+     args.conditionInBetween !== undefined ||
+     args.optionsB !== undefined)) {
+    var resultB = evaluate(operator2, lhsB, rhsB, optionsB);
+    if (conditionInBetween == 'and' && (resultA && resultB))  {
+        ret = convertValue(args, options["input_data_type:then"], args.then);
+    }
+    else if (conditionInBetween == 'or' && (resultA || resultB))  {
+        ret = convertValue(args, options["input_data_type:then"], args.then);
+    }
+    else {
+        ret = convertValue(args, options["input_data_type:else"], args.else);
+    }
+}
+else {
+    if (resultA) {
+        ret = convertValue(args, options["input_data_type:then"], args.then);
+    }
+    else {
+        ret = convertValue(args, options["input_data_type:else"], args.else);
+    }
 }
 return ret === null ? "" : ret;
