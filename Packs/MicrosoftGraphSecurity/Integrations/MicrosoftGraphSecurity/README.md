@@ -152,7 +152,7 @@ List alerts (security issues) within a customer's tenant that Microsoft or part
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | last_modified | When the alert was last modified in the following string format - YYYY-MM-DD. Possible values are: Last24Hours, Last48Hours, LastWeek. | Optional | 
-| severity | Alert severity - set by vendor/provider. Possible values are: unknown, informational, low, medium, high. | Optional | 
+| severity | Alert severity set by the vendor/provider. Possible values are: unknown, informational, low, medium, high. | Optional | 
 | time_from | The start time (creation time of alert) for the search in the string format YYYY-MM-DD. | Optional | 
 | time_to | The end time (creation time of alert) for the search in the string format YYYY-MM-DD. | Optional | 
 | filter | Use this field to filter on any of the alert properties in the format "{property} eq '{property-value}'", for example "category eq 'ransomware'". | Optional | 
