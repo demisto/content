@@ -21,5 +21,6 @@ A valid API Token for Recorded Future Identity Intelligence needed to fetch info
 * Identity actions
     * Search for identities.
     * Lookup for specific identity.
+    * Password lookup.
 
 Copyright 2021 Recorded Future, Inc.
