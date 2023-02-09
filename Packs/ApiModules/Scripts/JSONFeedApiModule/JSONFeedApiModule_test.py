@@ -316,3 +316,37 @@ def test_get_no_update_value_without_headers(mocker):
 
 def test_version_6_2_0(mocker):
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+
+
+def test_fetch_indicators_command_google_ip_ranges(mocker):
+    """
+    Given
+    - indicators response from google ip feed
+
+    When
+    - Running fetch indicators command
+
+    Then
+    - Ensure that all indicators values exist and are not 'None'
+    """
+    from JSONFeedApiModule import fetch_indicators_command
+    client = Client(
+        url='',
+        headers={},
+        feed_name_to_config={
+            'CIDR': {
+                'url': 'https://www.test.com/ipranges/goog.json',
+                'extractor': 'prefixes[]', 'indicator': 'ipv4Prefix', 'indicator_type': 'CIDR'
+            }
+        }
+    )
+
+    mocker.patch.object(
+        client, 'build_iterator', return_value=(
+            [{'ipv4Prefix': '1.1.1.1'}, {'ipv4Prefix': '1.2.3.4'}, {'ipv6Prefix': '1111:1111::/28'}], True
+        ),
+    )
+
+    indicators, _ = fetch_indicators_command(client, indicator_type=None, feedTags=[], auto_detect=None, limit=100)
+    for indicator in indicators:
+        assert indicator.get('value')

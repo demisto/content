@@ -17,6 +17,13 @@ class Scopes:
     management_azure = 'https://management.azure.com/.default'
 
 
+class Resources:
+    graph = 'https://graph.microsoft.com/'
+    security_center = 'https://api.securitycenter.microsoft.com/'
+    management_azure = 'https://management.azure.com/'
+    manage_office = 'https://manage.office.com/'
+
+
 # authorization types
 OPROXY_AUTH_TYPE = 'oproxy'
 SELF_DEPLOYED_AUTH_TYPE = 'self_deployed'
@@ -50,6 +57,10 @@ GRAPH_BASE_ENDPOINTS = {
     'https://microsoftgraph.chinacloudapi.cn': 'cn'
 }
 
+# Azure Managed Identities
+MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01'
+MANAGED_IDENTITIES_SYSTEM_ASSIGNED = 'SYSTEM_ASSIGNED'
+
 
 class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
@@ -73,6 +84,8 @@ class MicrosoftClient(BaseClient):
                  certificate_thumbprint: Optional[str] = None,
                  retry_on_rate_limit: bool = False,
                  private_key: Optional[str] = None,
+                 managed_identities_client_id: Optional[str] = None,
+                 managed_identities_resource_uri: Optional[str] = None,
                  *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
@@ -90,6 +103,8 @@ class MicrosoftClient(BaseClient):
             self_deployed: Indicates whether the integration mode is self deployed or oproxy
             certificate_thumbprint: Certificate's thumbprint that's associated to the app
             private_key: Private key of the certificate
+            managed_identities_client_id: The Azure Managed Identities client id
+            managed_identities_resource_uri: The resource uri to get token for by Azure Managed Identities
             retry_on_rate_limit: If the http request returns with a 429 - Rate limit reached response,
                                  retry the request using a scheduled command.
         """
@@ -145,6 +160,10 @@ class MicrosoftClient(BaseClient):
         if self.multi_resource:
             self.resources = resources if resources else []
             self.resource_to_access_token: Dict[str, str] = {}
+
+        # for Azure Managed Identities purpose
+        self.managed_identities_client_id = managed_identities_client_id
+        self.managed_identities_resource_uri = managed_identities_resource_uri
 
     def is_command_executed_from_integration(self):
         ctx = demisto.callingContext.get('context', {})
@@ -371,6 +390,17 @@ class MicrosoftClient(BaseClient):
                                  scope: Optional[str] = None,
                                  integration_context: Optional[dict] = None
                                  ) -> Tuple[str, int, str]:
+        if self.managed_identities_client_id:
+
+            if not self.multi_resource:
+                return self._get_managed_identities_token()
+
+            expires_in = -1  # init variable as an int
+            for resource in self.resources:
+                access_token, expires_in, refresh_token = self._get_managed_identities_token(resource=resource)
+                self.resource_to_access_token[resource] = access_token
+            return '', expires_in, refresh_token
+
         if self.grant_type == AUTHORIZATION_CODE:
             if not self.multi_resource:
                 return self._get_self_deployed_token_auth_code(refresh_token, scope=scope)
@@ -487,6 +517,35 @@ class MicrosoftClient(BaseClient):
         refresh_token = response_json.get('refresh_token', '')
 
         return access_token, expires_in, refresh_token
+
+    def _get_managed_identities_token(self, resource=None):
+        """
+        Gets a token based on the Azure Managed Identities mechanism
+        in case user was configured the Azure VM and the other Azure resource correctly
+        """
+        try:
+            # system assigned are restricted to one per resource and is tied to the lifecycle of the Azure resource
+            # see https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview
+            use_system_assigned = (self.managed_identities_client_id == MANAGED_IDENTITIES_SYSTEM_ASSIGNED)
+            resource = resource or self.managed_identities_resource_uri
+
+            demisto.debug('try to get Managed Identities token')
+
+            params = {'resource': resource}
+            if not use_system_assigned:
+                params['client_id'] = self.managed_identities_client_id
+
+            response_json = requests.get(MANAGED_IDENTITIES_TOKEN_URL, params=params, headers={'Metadata': 'True'}).json()
+            access_token = response_json.get('access_token')
+            expires_in = int(response_json.get('expires_in', 3595))
+            if access_token:
+                return access_token, expires_in, ''
+
+            err = response_json.get('error_description')
+        except Exception as e:
+            err = f'{str(e)}'
+
+        return_error(f'Error in Microsoft authorization with Azure Managed Identities: {err}')
 
     def _get_token_device_code(
             self, refresh_token: str = '', scope: Optional[str] = None, integration_context: Optional[dict] = None
@@ -702,3 +761,22 @@ class NotFoundError(Exception):
 
     def __init__(self, message):
         self.message = message
+
+
+def get_azure_managed_identities_client_id(params: dict) -> Optional[str]:
+    """"extract the Azure Managed Identities from the demisto params
+
+    Args:
+        params (dict): the demisto params
+
+    Returns:
+        Optional[str]: if the use_managed_identities are True
+        the managed_identities_client_id or MANAGED_IDENTITIES_SYSTEM_ASSIGNED
+        will return, otherwise - None
+
+    """
+    auth_type = params.get('auth_type') or params.get('authentication_type')
+    if params and (argToBoolean(params.get('use_managed_identities') or auth_type == 'Azure Managed Identities')):
+        client_id = params.get('managed_identities_client_id', {}).get('password')
+        return client_id or MANAGED_IDENTITIES_SYSTEM_ASSIGNED
+    return None

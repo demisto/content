@@ -54,7 +54,6 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.IMAGE,
     FileType.DESCRIPTION,
     FileType.METADATA,
-    FileType.RELEASE_NOTES_CONFIG,
     FileType.INCIDENT_TYPE,
     FileType.INCIDENT_FIELD,
     FileType.INDICATOR_FIELD,
@@ -77,7 +76,6 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.PRE_PROCESS_RULES,
     FileType.JOB,
     FileType.CONNECTION,
-    FileType.RELEASE_NOTES_CONFIG,
     FileType.XSOAR_CONFIG,
     FileType.AUTHOR_IMAGE,
     FileType.CHANGELOG,
@@ -90,6 +88,8 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.MODELING_RULE_SCHEMA,
     FileType.LAYOUTS_CONTAINER,
     FileType.XDRC_TEMPLATE,
+    FileType.PARSING_RULE_XIF,
+    FileType.LAYOUT_RULE,
 }
 
 IGNORED_FILE_TYPES: set[FileType] = {
@@ -107,6 +107,13 @@ IGNORED_FILE_TYPES: set[FileType] = {
     FileType.XDRC_TEMPLATE_YML,
     FileType.XSIAM_DASHBOARD_IMAGE,
     FileType.XSIAM_REPORT_IMAGE,
+    FileType.PIPFILE,
+    FileType.PIPFILE_LOCK,
+    FileType.TXT,
+    FileType.PYLINTRC,
+    FileType.INI,
+    FileType.PEM,
+    FileType.LICENSE,
 }
 
 NON_CONTENT_FOLDERS: set[str] = set(TESTS_AND_DOC_DIRECTORIES) | {SAMPLES_DIR}
