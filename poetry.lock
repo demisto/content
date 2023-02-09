@@ -198,14 +198,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.26.66"
+version = "1.26.67"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.29.66,<1.30.0"
+botocore = ">=1.29.67,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -214,7 +214,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.66"
+version = "1.29.67"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
@@ -515,7 +515,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.9.0"
+version = "1.10.0"
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
@@ -596,7 +596,7 @@ types-pytz = ">=2021.3.6,<2023.0.0"
 types-pyvmomi = ">=7.0.6,<9.0.0"
 types-PyYAML = "^6.0.5"
 types-requests = "2.28.11"
-types-setuptools = "^65.6.0.1"
+types-setuptools = ">=65.6.0.1,<68.0.0.0"
 types-six = "^1.16.12"
 types-tabulate = ">=0.8.6,<0.10.0"
 types-ujson = "^5.6.0.0"
@@ -613,8 +613,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "8117369f8bb705a65618734f093ebdc3b500b680"
-resolved_reference = "8117369f8bb705a65618734f093ebdc3b500b680"
+reference = "ad39e66387c0e561c63cc46874d3a60a1be1b807"
+resolved_reference = "ad39e66387c0e561c63cc46874d3a60a1be1b807"
 
 [[package]]
 name = "deprecated"
@@ -1295,7 +1295,7 @@ requirements-deprecated-finder = ["pip-api", "pipreqs"]
 
 [[package]]
 name = "jbxapi"
-version = "3.20.0"
+version = "3.21.0"
 description = "API for Joe Sandbox"
 category = "dev"
 optional = false
@@ -3165,7 +3165,7 @@ types-urllib3 = "<1.27"
 
 [[package]]
 name = "types-setuptools"
-version = "65.7.0.4"
+version = "67.2.0.1"
 description = "Typing stubs for setuptools"
 category = "dev"
 optional = false
@@ -3450,7 +3450,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "adb62e020b96d1198effcaf9d8c60ef686246e9c047d62eeeceaab2780023977"
+content-hash = "d93d62fb6ad46641a9b548140156727cd60e8546203730850c2aed3179717c56"
 
 [metadata.files]
 aiodns = [
@@ -3637,12 +3637,12 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
-    {file = "boto3-1.26.66-py3-none-any.whl", hash = "sha256:3a1ffeecfe6e61d414617294b822b008e604ccfd83434c483f429a2922db314d"},
-    {file = "boto3-1.26.66.tar.gz", hash = "sha256:ebea98f3054b467caf6c8aead9f0ef78395a78bce78b04db12fde452c02b3734"},
+    {file = "boto3-1.26.67-py3-none-any.whl", hash = "sha256:159ab54ab301a213aea0dbebfe97c12909fd9180110a2b78aaa712c2d7d1a929"},
+    {file = "boto3-1.26.67.tar.gz", hash = "sha256:c2e21ac64370fee1f3dccd97b4767e89d046c45c00faec27c36405618e34c7e5"},
 ]
 botocore = [
-    {file = "botocore-1.29.66-py3-none-any.whl", hash = "sha256:772da07d2a49a9d2dc8d23e060e88eb72881e58074be7c813aa946ecdbd0e5b5"},
-    {file = "botocore-1.29.66.tar.gz", hash = "sha256:4d1ac019e677cc39e615f9d473fa658ea22a8d906c1c562f9406b5d0cd854cbd"},
+    {file = "botocore-1.29.67-py3-none-any.whl", hash = "sha256:424c5fa21913d85ea990928acf35622a4f2b7f0750133b96adaa8c642bb6a878"},
+    {file = "botocore-1.29.67.tar.gz", hash = "sha256:0ccec4a906b6b8c7bb6bc5226509059ee9ed94d3cf1014487ef5b8e56801e6a3"},
 ]
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
@@ -4320,8 +4320,8 @@ isort = [
     {file = "isort-5.12.0.tar.gz", hash = "sha256:8bef7dde241278824a6d83f44a544709b065191b95b6e50894bdc722fcba0504"},
 ]
 jbxapi = [
-    {file = "jbxapi-3.20.0-py2.py3-none-any.whl", hash = "sha256:1734be71afb66be724fe3223ac0484464466dd7bb0b889a7859548866a1bfb42"},
-    {file = "jbxapi-3.20.0.tar.gz", hash = "sha256:aa48a10a3fe7e26f7e238cd85babad7fe030ef7621c3a27cdb306579e661cabd"},
+    {file = "jbxapi-3.21.0-py2.py3-none-any.whl", hash = "sha256:1660bbd98eed7befca4cc9d324aedb40fa426dad81be6e6a141b11af8ae82351"},
+    {file = "jbxapi-3.21.0.tar.gz", hash = "sha256:66fa7f0c0ac0ed5f7027c73f6036c75637c6d6fe320487f29c8174c2c4fa5871"},
 ]
 jinja2 = [
     {file = "Jinja2-3.1.2-py3-none-any.whl", hash = "sha256:6088930bfe239f0e6710546ab9c19c9ef35e29792895fed6e6e31a023a182a61"},
@@ -5925,8 +5925,8 @@ types-requests = [
     {file = "types_requests-2.28.11-py3-none-any.whl", hash = "sha256:af5f55e803cabcfb836dad752bd6d8a0fc8ef1cd84243061c0e27dee04ccf4fd"},
 ]
 types-setuptools = [
-    {file = "types-setuptools-65.7.0.4.tar.gz", hash = "sha256:147809433301fe7e0f4ef5c0782f9a0453788960575e1efb6da5fe8cb2493c9f"},
-    {file = "types_setuptools-65.7.0.4-py3-none-any.whl", hash = "sha256:522067dfd8e1771f8d7e047e451de2740dc4e0c9f48a22302a6cc96e6c964a13"},
+    {file = "types-setuptools-67.2.0.1.tar.gz", hash = "sha256:07648088bc2cbf0f2745107d394e619ba2a747f68a5904e6e4089c0cb8322065"},
+    {file = "types_setuptools-67.2.0.1-py3-none-any.whl", hash = "sha256:f15b2924122dca5f99a9f6a96a872145721373fe1bb6d656cf269c2a8b73a74b"},
 ]
 types-six = [
     {file = "types-six-1.16.21.4.tar.gz", hash = "sha256:daaf1b506137d37257fad7a747857c57d5331611919d0d94b8195a06bdbc02af"},
