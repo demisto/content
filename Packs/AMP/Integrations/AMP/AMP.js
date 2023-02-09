@@ -3,6 +3,10 @@ var password = params.credentials.password;
 var server = params.server;
 var insecure = params.insecure;
 
+log("$$$$$$$2")
+log(JSON.stringify(params.credentials)),
+log("$$$$$$$2")
+
 var fixArgs = function(command, args) {
     var newArgs = {};
     if (args) {

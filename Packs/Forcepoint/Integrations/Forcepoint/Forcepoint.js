@@ -4,10 +4,6 @@ if (SERVER_URL.slice(-1) === '/') {
 }
 SERVER_URL += ':15873/api/web/v1/';
 
-log("$$$$$$$2")
-log(JSON.stringify(params.credentials)),
-log("$$$$$$$2")
-
 var USER_NAME = params.credentials.identifier;
 
 var PASSWORD = params.credentials.password;
