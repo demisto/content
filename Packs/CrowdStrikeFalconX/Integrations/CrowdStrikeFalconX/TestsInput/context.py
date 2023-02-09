@@ -14,7 +14,7 @@ SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT = {
     'state': 'created',
     'created_timestamp': '2020-05-12T16:40:52Z',
     'environment_id': 160,
-    'url': 'https://www.google.com'
+    'url_name': 'https://www.google.com'
 }
 
 GET_REPORT_SUMMARY_CONTEXT = {
