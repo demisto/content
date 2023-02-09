@@ -47,7 +47,7 @@ s_ip = if(_raw_log ~= "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s
     xdm.network.http.content_type = rs_content_type,
     xdm.network.http.referrer = cs_referer,
     xdm.source.user_agent = cs_user_agent,
-    xdm.event.outcome = cs_filter_result,
+    xdm.event.outcome = if(cs_filter_result = "DENIED", XDM_CONST.OUTCOME_FAILED, cs_filter_result = "OBSERVED", XDM_CONST.OUTCOME_SUCCESS, cs_filter_result = "PROXIED", XDM_CONST.OUTCOME_PARTIAL, cs_filter_result = null, null, to_string(cs_filter_result)),
     xdm.network.http.url_category = cs_categories,
     xdm.alert.original_alert_id = x_virus_id,
     xdm.source.host.ipv4_addresses = arraycreate(s_ip_v4),
