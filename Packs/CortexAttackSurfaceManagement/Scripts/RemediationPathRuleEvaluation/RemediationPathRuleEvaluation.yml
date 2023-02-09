@@ -1,14 +1,14 @@
 args:
-- description: Alert's Severity
+- description: Alert's severity.
   name: severity
-- description: Alert's Remote IP
+- description: Alert's remote IP.
   name: ip
 - description: Is this in a development environment?
   name: development_environment
-- description: Is this Cloud Managed?
+- description: Is this cloud managed?
   isArray: true
   name: cloud_managed
-- description: Has a Service Owner been Identified?
+- description: Has a service owner been identified?
   isArray: true
   name: service_owner_identified
 - description: Includes Cloud and Xpanse tags
@@ -17,10 +17,10 @@ args:
 - description: Externally Detected Providers
   isArray: true
   name: providers
-- description: List of Remediation Path Rules for the Alert's Attack Surface Rule
+- description: List of remediation path rules for the alert's attack surface rule.
   isArray: true
   name: remediation_path_rules
-comment: For a given alert and remediation path rules that are defined for that alert's attack surface rule, this takes each remediation path rule and looks at the rule criteria too see if the rule matches for the given alert. If multiple rules match, it will return the most recently created rule. This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule.
+comment: For a given alert and remediation path rules that are defined for that alert's attack surface rule, this script takes each remediation path rule and looks at the rule criteria to see if the rule matches for the given alert. If multiple rules match, it will return the most recently created rule. This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule.
 commonfields:
   id: RemediationPathRuleEvaluation
   version: -1
