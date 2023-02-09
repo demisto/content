@@ -1,4 +1,4 @@
-Investigates a Cortex XDR incident containing a Cloud Cryptomining related alert. 
+Investigates a Cortex XDR incident containing a Cloud Cryptojacking related alert. 
 The playbook supports AWS, Azure, and GCP and executes the following:
 
 - Cloud enrichment:
@@ -17,7 +17,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Cortex XDR - Cloud Enrichment
-* Cortex XDR - Cryptomining - Set Verdict
+* Cortex XDR - Cryptojacking - Set Verdict
 * Cloud Response - Generic
 
 ### Integrations
@@ -66,4 +66,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex XDR - Cloud Cryptomining](../doc_files/Cortex_XDR_-_Cloud_Cryptomining.png)
+![Cortex XDR - Cloud Cryptojacking](../doc_files/Cortex_XDR_-_Cloud_Cryptomining.png)

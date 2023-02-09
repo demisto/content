@@ -470,8 +470,8 @@ tasks:
     task:
       id: 819510f8-39d8-4237-82e5-fb57fd806749
       version: -1
-      name: Cortex XDR - Cloud Cryptomining
-      playbookName: Cortex XDR - Cloud Cryptomining
+      name: Cortex XDR - Cloud Cryptojacking
+      playbookName: Cortex XDR - Cloud Cryptojacking
       type: playbook
       iscommand: false
       brand: ""
@@ -586,8 +586,8 @@ tasks:
     task:
       id: 18ea3ba1-78ee-4ce3-844b-44853df600da
       version: -1
-      name: Was XCLOUD Cryptomining alert found?
-      description: Checks if XCLOUD Cryptomining alert is present in the incident.
+      name: Was XCLOUD Cryptojacking alert found?
+      description: Checks if XCLOUD Cryptojacking alert is present in the incident.
       type: condition
       iscommand: false
       brand: ""
