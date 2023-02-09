@@ -193,7 +193,7 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'ransomware'
 }
 
-RULE_FILTERS = ('disabled', 'nat-type', 'action')
+RULE_FILTERS = ('nat-type', 'action')
 
 
 class PAN_OS_Not_Found(Exception):
@@ -708,6 +708,13 @@ def build_xpath_filter(rule_name: str = None, filters: dict = None) -> str:
                         xpath_prefix += 'and'
                     xpath_prefix += f"(tag/member='{tag}')"
     return xpath_prefix
+
+
+def filter_rules_by_status(disabled: str, rules: list) -> list:
+    if disabled.lower() == 'yes':
+        return list(filter(lambda x: x.get('disabled', '').lower() == 'yes', rules))
+    else:
+        return list(filter(lambda x: x.get('disabled', '').lower() != 'yes', rules))
 
 
 ''' FUNCTIONS'''
@@ -3502,7 +3509,6 @@ def panorama_list_rules_command(args: dict):
 
     filters = assign_params(
         tags=argToList(args.get('tag')),
-        disabled=args.get('disabled'),
         action=args.get('action')
     )
     name = args.get('rulename')
@@ -3510,6 +3516,9 @@ def panorama_list_rules_command(args: dict):
     target = args.get('target')
 
     rules = panorama_list_rules(xpath, name, filters, query)
+    if disabled := args.get('disabled'):
+        rules = filter_rules_by_status(disabled, rules)
+
     pretty_rules = prettify_rules(rules, target)
 
     return_results({
@@ -11794,7 +11803,6 @@ def pan_os_list_nat_rules_command(args):
     show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
     filters = assign_params(
         tags=argToList(args.get('tags')),
-        disabled=args.get('disabled'),
         nat_type=args.get('nat_type')
     )
     if nat_type := filters.pop('nat_type', None):  # Replace the key name from 'nat_type' to 'nat-type'.
@@ -11808,6 +11816,9 @@ def pan_os_list_nat_rules_command(args):
     entries = dict_safe_get(result, ['nat', 'rules', 'entry'], default_return_value=[]) or result.get('entry')
     if not isinstance(entries, list):  # when only one nat rule is returned it could be returned as a dict.
         entries = [entries]
+
+    if disabled := args.get('disabled'):
+        entries = filter_rules_by_status(disabled, entries)
 
     if not name:
         # filter the nat-rules by limit - name means we get only a single entry anyway.
@@ -12554,7 +12565,6 @@ def pan_os_list_pbf_rules_command(args):
     show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
     filters = assign_params(
         tags=argToList(args.get('tags')),
-        disabled=args.get('disabled')
     )
     query = args.get('query')
 
@@ -12575,11 +12585,10 @@ def pan_os_list_pbf_rules_command(args):
 
     if action := args.get('action'):  # Due to API limitations, we need to filter the action manually.
         entries = list(filter(lambda x: action in x.get('action', {}), entries))
+    if disabled := args.get('disabled'):
+        entries = filter_rules_by_status(disabled, entries)
 
     table, pbf_rules = parse_pan_os_list_pbf_rules(entries, show_uncommitted=show_uncommitted)
-
-    demisto.debug('This is the table')
-    demisto.debug(table)
 
     return CommandResults(
         raw_response=raw_response,
