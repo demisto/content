@@ -19,13 +19,14 @@ or O365 Outlook Mail Single User (Using Graph API) (see https://xsoar.pan.dev/do
 
 ## Use Cases
 - The EWS integration can be used for the following use cases.
-- Monitor a specific email account and create incidents from incoming emails to the defined folder.<br> Follow the instructions in the Fetched Incidents Data section.
+- Monitor a specific email account and create incidents from incoming emails to the defined folder.
+Follow the instructions in the Fetched Incidents Data section.
 - Search for an email message across mailboxes and folders.
   This can be achieved in the following ways:
   - Use the ```ews-search-mailboxes``` command to search for all emails in a specific scope of mailboxes. Use the filter argument to narrow the search for emails sent from a specific account and more.
   - Use the ```ews-search-mailbox``` command to search for all emails in a specific folder within the target mailbox.Use the query argument to narrow the search for emails sent from a specific account and more.
-  - Both of these commands retrieve the <em>ItemID</em> field for each email item listed in the results. The```ItemID``` can be used in the ```ews-get-items``` command in order to get more information about the email item itself
-  - For instance, use the <code>ews-search-mailboxes</code> command to hunt for emails that were marked as malicious in prior investigations, across organization mailboxes. Focus your hunt on emails sent from a specific mail account, emails with a specific subject and more.</li>
+  - Both of these commands retrieve the *ItemID* field for each email item listed in the results. The```ItemID``` can be used in the ```ews-get-items``` command in order to get more information about the email item itself
+  - For instance, use the ```ews-search-mailboxes``` command to hunt for emails that were marked as malicious in prior investigations, across organization mailboxes. Focus your hunt on emails sent from a specific mail account, emails with a specific subject and more.
 
 - Get email attachment information. Use the ```ews-get-attachment``` command to retrieve information on one attachment or all attachments of a message at once. It supports both file attachments and item attachments (e.g., email messages).
 - Delete email items from a mailbox. First, make sure you obtain the email item ID. The item ID can be obtained with one of the integration’s search commands. Use the ```ews-delete-items``` command to delete one or more items from the target mailbox in a single action. A less common use case is to remove emails that were marked as malicious from a user’s mailbox. You can delete the items permanently (hard delete), or delete the items (soft delete), so they can be recovered by running the ```ews-recover-messages``` command.
@@ -77,7 +78,8 @@ Pay special attention to the following fields in the instance settings:
 
 ```Name of the folder from which to fetch incidents``` – use this field to configure the destination folder from where emails should be fetched. The default is Inbox folder. Please note, if Exchange is configured with an international flavor `Inbox` will be named according to the configured language.
 
-```Has impersonation rights``` – mark this option if you set the target mailbox to an account different than your personal account. Otherwise Delegation access will be used instead of Impersonation.<br> Find more information on impersonation or delegation rights at ‘Additional Info’ section below.
+```Has impersonation rights``` – mark this option if you set the target mailbox to an account different than your personal account. Otherwise Delegation access will be used instead of Impersonation.
+Find more information on impersonation or delegation rights at ‘Additional Info’ section below.
 
 
 ## Commands
@@ -249,7 +251,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 >|displayName|isExternal|mailbox|mailboxId|
 >|---|---|---|--- |
->| test | false |test@demistodev.onmicrosoft.com | /o=Exchange***/ou=Exchange Administrative Group ()/cn=<strong>/cn=</strong>-**|
+>| test | false |test@demistodev.onmicrosoft.com | /o=Exchange***/ou=Exchange Administrative Group ()/cn=**/cn=**-**|
 
 #### Context Example
 ```json
@@ -658,7 +660,7 @@ Recovers messages that were soft-deleted.
 #### Human Readable Output
 >|action|itemId|messageId|
 >|---|---|---|
->| recovered | AAVCSVS1hN2NkLThmZjdmNTZjNTMxNwBGAAAAAAA4kxh+ed33wX3aBwCyyVyFtlsUQZfBJebinpkUAAAa2bUBAACyyVyFtlscfxxd/AAA= |<DFVDFmvsCSCS.com>|
+>| recovered | AAVCSVS1hN2NkLThmZjdmNTZjNTMxNwBGAAAAAAA4kxh+ed33wX3aBwCyyVyFtlsUQZfBJebinpkUAAAa2bUBAACyyVyFtlscfxxd/AAA= |DFVDFmvsCSCS.com|
 
 #### Context Example
 ```json

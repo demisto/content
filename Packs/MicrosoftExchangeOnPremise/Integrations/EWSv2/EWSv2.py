@@ -7,7 +7,7 @@ from multiprocessing import Process
 import dateparser  # type: ignore
 import exchangelib
 from CommonServerPython import *
-# from cStringIO import StringIO
+from cStringIO import StringIO
 from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
                          Body, Build, Configuration, Credentials, EWSDateTime,
                          EWSTimeZone, FileAttachment, Folder, HTMLBody,
@@ -693,19 +693,21 @@ class MarkAsJunk(EWSAccountService):
         return junk
 
 
-def send_email_to_mailbox(
-    account: Account,
-    to: List[str],
-    subject: str,
-    body: str,
-    bcc: List[str],
-    cc: List[str],
-    reply_to: List[str],
-    html_body: Optional[str] = None,
-    attachments: Optional[List[str]] = None,
-    raw_message: Optional[str] = None,
-    from_address: Optional[str] = None
-):      # pragma: no cover
+# def send_email_to_mailbox(
+#     account: Account,
+#     to: List[str],
+#     subject: str,
+#     body: str,
+#     bcc: List[str],
+#     cc: List[str],
+#     reply_to: List[str],
+#     html_body: Optional[str] = None,
+#     attachments: Optional[List[str]] = None,
+#     raw_message: Optional[str] = None,
+#     from_address: Optional[str] = None
+# ):      # pragma: no cover
+def send_email_to_mailbox(account, to, subject, body, bcc, cc, reply_to, html_body=None, attachments=None,
+                          raw_message=None, from_address=None):
     """
     Send an email to a mailbox.
 
@@ -944,7 +946,7 @@ def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, ema
     else:
         entry = get_searchable_mailboxes(protocol)
         mailboxes = [x for x in entry[ENTRY_CONTEXT]['EWS.Mailboxes'] if MAILBOX_ID in x.keys()]
-        mailbox_ids = map(lambda x: x[MAILBOX_ID], mailboxes)
+        mailbox_ids = map(lambda x: x[MAILBOX_ID], mailboxes)  # type: ignore
 
     try:
         search_results = SearchMailboxes(protocol=protocol).call(filter, mailbox_ids)
@@ -2209,11 +2211,16 @@ def get_none_empty_addresses(addresses_ls):
 def send_email(to, subject, body="", bcc=None, cc=None, reply_to=None, html_body=None,
                attach_ids="", attach_cids="", attach_names="", manual_attach_obj=[], from_mailbox=None,
                raw_message=None, from_address=None):
+    # account = get_account(from_mailbox or ACCOUNT_EMAIL)
+    # bcc: List[str] = get_none_empty_addresses(argToList(bcc))
+    # cc: List[str] = get_none_empty_addresses(argToList(cc))
+    # to: List[str] = get_none_empty_addresses(argToList(to))
+    # reply_to: List[str] = argToList(reply_to)
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
-    bcc: List[str] = get_none_empty_addresses(argToList(bcc))
-    cc: List[str] = get_none_empty_addresses(argToList(cc))
-    to: List[str] = get_none_empty_addresses(argToList(to))
-    reply_to: List[str] = argToList(reply_to)
+    bcc = get_none_empty_addresses(argToList(bcc))
+    cc = get_none_empty_addresses(argToList(cc))
+    to = get_none_empty_addresses(argToList(to))
+    reply_to = argToList(reply_to)
     # manual_attach_obj = manual_attach_obj if manual_attach_obj is not None else []
     subject = subject[:252] + '...' if len(subject) > 255 else subject
 
