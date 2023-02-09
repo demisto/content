@@ -57,10 +57,10 @@ configuration:
   name: subscriptionID
   type: 0
   section: Connect
-- display: Resource Group Name
-  name: resourceGroupName
+- name: resourceGroupName
   type: 0
   section: Connect
+  display: Resource Group Name
 - display: Workspace Name
   name: workspaceName
   required: true
@@ -71,23 +71,23 @@ configuration:
   required: false
   type: 8
   section: Collect
-- defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   required: false
   type: 0
   section: Collect
-- defaultvalue: Informational
-  display: The minimum severity of incidents to fetch
+  defaultvalue: 3 days
+- display: The minimum severity of incidents to fetch
   name: min_severity
+  required: false
+  type: 15
+  section: Collect
+  defaultvalue: Informational
   options:
   - Informational
   - Low
   - Medium
   - High
-  required: false
-  type: 15
-  section: Collect
   advanced: true
 - display: Incident type
   name: incidentType
@@ -106,29 +106,29 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- additionalinfo: |
-    Choose what additional info to fetch for each incident.
-    Note that this will increase the number of API calls.
-  display: Additional info to fetch
+- display: Additional info to fetch
   name: fetch_additional_info
   required: false
   type: 16
+  additionalinfo: |
+    Choose what additional info to fetch for each incident.
+    Note that this will increase the number of API calls.
   options:
   - Alerts
   - Entities
   - Comments
   - Relations
-- defaultvalue: None
-  display: Mirroring Direction
-  hidden: false
+- display: Mirroring Direction
   name: mirror_direction
+  required: false
+  type: 15
+  defaultvalue: None
+  hidden: false
   options:
   - None
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  required: false
-  type: 15
 - additionalinfo: When selected, closing the Microsoft Sentinel ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
@@ -2155,7 +2155,11 @@ script:
       name: lastUpdate
     description: Gets remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
     name: get-remote-data
-  dockerimage: demisto/crypto:1.0.0.47103
+  - description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+    name: get-mapping-fields
+  - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
+    name: update-remote-system
+  dockerimage: demisto/crypto:1.0.0.47585
   feed: false
   isfetch: true
   longRunning: false
@@ -2172,4 +2176,4 @@ tests:
 - No test - Manual test playbook-TestAzureSentinelPlaybook is available in NonCircleTests folder
 fromversion: 5.0.0
 defaultmapperin: Microsoft Sentinel - Incoming Mapper
-defaultmapperout:
+defaultmapperout: Microsoft Sentinel - Outgoing Mapper

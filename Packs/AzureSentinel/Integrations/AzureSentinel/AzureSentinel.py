@@ -64,12 +64,17 @@ MIRROR_STATUS_DICT = {
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
 INTEGRATION_INSTANCE = demisto.integrationInstance()
 
-INCOMING_MIRRORED_FIELDS: list = ['ID', 'Etag', 'Title', 'Description', 'Severity', 'Status', 'owner', 'Label',
-                                  'FirstActivityTimeUTC', 'LastActivityTimeUTC', 'LastModifiedTimeUTC', 'CreatedTimeUTC',
-                                  'IncidentNumber', 'AlertsCount', 'AlertProductNames', 'Tactics', 'relatedAnalyticRuleIds',
-                                  'IncidentUrl', 'classification', 'classificationComment', 'classificationReason', 'alerts',
-                                  'entities', 'comments', 'relations']
-OUTGOING_MIRRORED_FIELDS: list = []
+INCOMING_MIRRORED_FIELDS = ['ID', 'Etag', 'Title', 'Description', 'Severity', 'Status', 'Label', 'FirstActivityTimeUTC',
+                                  'LastActivityTimeUTC', 'LastModifiedTimeUTC', 'CreatedTimeUTC', 'IncidentNumber', 'AlertsCount',
+                                  'AlertProductNames', 'Tactics', 'relatedAnalyticRuleIds', 'IncidentUrl', 'classification',
+                                  'classificationComment', 'alerts', 'entities', 'comments', 'relations']
+OUTGOING_MIRRORED_FIELDS = {'etag', 'title', 'description', 'severity', 'status', 'labels', 'firstActivityTimeUtc',
+                            'lastActivityTimeUtc', 'classification', 'classificationComment', 'classificationReason'}
+OUTGOING_MIRRORED_FIELDS = {filed: pascalToSpace(filed) for filed in OUTGOING_MIRRORED_FIELDS}
+
+STATUS_NUM_TO_STR = {1: 'Active', 2: 'Closed'}
+SEVERITY = {0: 'Informational', 0.5: 'Informational', 1: 'Low', 2: 'Medium', 3: 'High', 4: 'High'}
+CLASSIFICATION_REASON = {'FalsePositive': 'InaccurateData', 'TruePositive': 'SuspiciousActivity'}
 
 
 class AzureSentinelClient:
@@ -535,8 +540,7 @@ def get_remote_incident_data(client: AzureSentinelClient, incident_id: str):
     updated_object: Dict[str, Any] = {}
 
     for field in INCOMING_MIRRORED_FIELDS:
-        value = incident_mirrored_data.get(field)
-        if value:
+        if value := incident_mirrored_data.get(field):
             updated_object[field] = value
 
     return mirrored_data, updated_object
@@ -562,7 +566,7 @@ def set_xsoar_incident_entries(updated_object: Dict[str, Any], entries: List, re
 
 
 def close_in_xsoar(entries: List, remote_incident_id: str, close_reason: str, close_notes: str) -> None:
-    demisto.debug(f'incident is closed: {remote_incident_id}')
+    demisto.debug(f'Incident is closed: {remote_incident_id}')
     entries.append({
         'Type': EntryType.NOTE,
         'Contents': {
@@ -575,7 +579,7 @@ def close_in_xsoar(entries: List, remote_incident_id: str, close_reason: str, cl
 
 
 def reopen_in_xsoar(entries: List, remote_incident_id: str):
-    demisto.debug(f'incident is reopened: {remote_incident_id}')
+    demisto.debug(f'Incident is opened (or reopened): {remote_incident_id}')
     entries.append({
         'Type': EntryType.NOTE,
         'Contents': {
@@ -619,6 +623,97 @@ def get_remote_data_command(client: AzureSentinelClient, args: Dict[str, Any]):
         mirrored_data['in_mirror_error'] = str(e)
 
         return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
+
+
+def get_mapping_fields_command() -> GetMappingFieldsResponse:
+    mapping_response = GetMappingFieldsResponse()
+    incident_type_scheme = SchemeTypeMapping(type_name='Microsoft Sentinel Incident')
+
+    for argument, description in OUTGOING_MIRRORED_FIELDS.items():
+        incident_type_scheme.add_field(name=argument, description=description)
+    mapping_response.add_scheme_type(incident_type_scheme)
+
+    return mapping_response
+
+
+def close_in_ms(delta: Dict[str, Any]) -> bool:
+    """
+    Closing in the remote system should happen only when both:
+        1. The user asked for it
+        2. One of the closing fields appears in the delta
+
+    The second is mandatory so we will not send a closing request at all of the mirroring requests that happen after closing an
+    incident (in case where the incident is updated so there is a delta, but it is not the status that was changed).
+    """
+    closing_fields = {'classification', 'classificationComment'}
+    return demisto.params().get('close_ticket') and any(field in delta for field in closing_fields)
+
+
+def update_incident_request(client: AzureSentinelClient, incident_id: str, data: Dict[str, Any], delta: Dict[str, Any],
+                            close: bool = False) -> Dict[str, Any]:
+    severity = SEVERITY[data.get('severity', '')]
+    status = STATUS_NUM_TO_STR[data.get('status', '')]
+    properties = {
+        'title': delta.get('title') or data.get('title'),
+        'description': delta.get('description'),
+        'severity': severity,
+        'status': status,
+        'labels': [{'labelName': label.get('value'), 'type': label.get('type')} for label in delta.get('labels', [])],
+        'firstActivityTimeUtc': delta.get('firstActivityTimeUtc'),
+        'lastActivityTimeUtc': delta.get('lastActivityTimeUtc'),
+    }
+    if close:
+        properties['classification'] = delta.get('classification')
+        properties['classificationComment'] = delta.get('classificationComment')
+        properties['classificationReason'] = CLASSIFICATION_REASON.get(delta.get('classification', ''))
+    remove_nulls_from_dictionary(properties)
+    data = {
+        'etag': delta.get('etag') or data.get('etag'),
+        'properties': properties
+    }
+    demisto.debug(f'Updating incident with remote ID {incident_id} with data: {data}')
+    return client.http_request('PUT', f'incidents/{incident_id}', data=data)
+
+
+def update_remote_incident(client: AzureSentinelClient, data: Dict[str, Any], delta: Dict[str, Any],
+                           incident_status: IncidentStatus, incident_id: str) -> str:
+    if incident_status == IncidentStatus.DONE and close_in_ms(delta):
+        demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
+        return str(update_incident_request(client, incident_id, data, delta, close=True))
+    elif incident_status == IncidentStatus.ACTIVE:
+        demisto.debug(f'Updating incident with remote ID {incident_id} in remote system.')
+        return str(update_incident_request(client, incident_id, data, delta))
+    return ''
+
+
+def update_remote_system_command(client: AzureSentinelClient, args: Dict[str, Any]):
+    """ Mirrors out local changes to the remote system.
+    Args:
+        client: The client object.
+        args: The command arguments.
+    Returns:
+        The remote incident id that was modified. This is important when the incident is newly created remotely.
+    """
+    parsed_args = UpdateRemoteSystemArgs(args)
+    delta = parsed_args.delta
+    data = parsed_args.data
+    remote_incident_id = parsed_args.remote_incident_id
+    demisto.debug(f'Got the following data {data}, and delta {delta}.')
+    if delta:
+        demisto.debug(f'Got the following delta keys {list(delta.keys())}.')
+        try:
+            if result := update_remote_incident(
+                client, data, delta, parsed_args.inc_status, remote_incident_id
+            ):
+                demisto.debug(f'Incident updated successfully. Result: {result}')
+
+        except Exception as e:
+            demisto.error(f'Error in Microsoft Sentinel outgoing mirror for incident {remote_incident_id}. '
+                          f'Error message: {str(e)}')
+    else:
+        demisto.debug(f"Skipping updating remote incident {remote_incident_id} as it didn't change.")
+
+    return remote_incident_id
 
 
 ''' INTEGRATION COMMANDS '''
@@ -1655,9 +1750,12 @@ def main():
 
         elif demisto.command() == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, args))
-
         elif demisto.command() == 'get-remote-data':
             return_results(get_remote_data_command(client, args))
+        elif demisto.command() == 'get-mapping-fields':
+            return_results(get_mapping_fields_command())
+        elif demisto.command() == 'update-remote-system':
+            return_results(update_remote_system_command(client, args))
 
         elif demisto.command() in commands:
             return_results(commands[demisto.command()](client, args))  # type: ignore

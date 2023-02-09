@@ -14,14 +14,14 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     query_threat_indicators_command, create_threat_indicator_command, delete_threat_indicator_command, \
     append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command, \
     list_threat_indicator_command, NEXTLINK_DESCRIPTION, process_incidents, fetch_incidents, fetch_incidents_additional_info, \
-    get_modified_remote_data_command, get_remote_data_command, get_remote_incident_data, set_xsoar_incident_entries, \
-    build_threat_indicator_data, DEFAULT_SOURCE
+    get_modified_remote_data_command, get_remote_data_command, get_remote_incident_data, get_mapping_fields_command, \
+    update_remote_system_command, update_remote_incident, set_xsoar_incident_entries, build_threat_indicator_data, DEFAULT_SOURCE
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
 NEXT_LINK_CONTEXT_KEY = 'AzureSentinel.NextLink(val.Description == "NextLink for listing commands")'
 
-API_VERSION = '2021-04-01'
+API_VERSION = '2022-11-01'
 
 
 def test_valid_error_is_raised_when_empty_api_response_is_returned(mocker):
@@ -1524,3 +1524,41 @@ def test_set_xsoar_incident_entries(mocker, incident, expected_contents):
     entries: list = []
     set_xsoar_incident_entries(incident, entries, 'id-incident-1')
     assert entries[0].get('Contents') == expected_contents
+
+
+def test_get_mapping_fields_command():
+    """
+    Given
+        - nothing
+    When
+        - running get_mapping_fields_command
+    Then
+        - the result fits the expected mapping scheme
+    """
+    result = get_mapping_fields_command()
+    assert result.scheme_types_mappings[0].type_name == 'Microsoft Sentinel Incident'
+    assert result.scheme_types_mappings[0].fields.keys() == {'description', 'status', 'lastActivityTimeUtc',
+                                                             'classificationReason', 'labels', 'classificationComment',
+                                                             'severity', 'firstActivityTimeUtc', 'classification', 'title',
+                                                             'etag'}
+
+
+def test_update_remote_system_command(mocker):
+    """
+    Given
+        - client
+        - args with remoteId, status, data and delta
+    When
+        - running update_remote_system_command
+    Then
+        - Ensure the function returns the expected incident id
+    """
+    mocker.patch('AzureSentinel.update_remote_incident', return_value={})
+
+    args = {'remoteId': 'incident-1',
+            'status': 1,
+            'data': {'title': 'Title', 'severity': 2, 'status': 1},
+            'delta': {'title': 'New Title', 'severity': 3}}
+
+    result = update_remote_system_command(mock_client(), args)
+    assert result == 'incident-1'
