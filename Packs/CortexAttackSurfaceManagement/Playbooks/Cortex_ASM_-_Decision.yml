@@ -329,7 +329,7 @@ inputs:
 - key: ServiceNowv2Enabled
   value: {}
   required: true
-  description: ServiceNow v2 Integration enabled.
+  description: ServiceNow v2 integration enabled.
   playbookInputQuery:
 - key: AutoRemediationRequirements
   value: {}

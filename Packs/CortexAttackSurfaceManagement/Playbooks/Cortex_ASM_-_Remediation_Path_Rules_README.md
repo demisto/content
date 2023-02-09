@@ -1,4 +1,4 @@
-This playbook returns "RemediationAction" options based return from Remediation Path Rules API, or defaults to data collection task options from "Cortex ADM - Decision" subplaybook.
+This playbook returns "RemediationAction" options based on the return from the Remediation Path Rules API, or defaults to data collection task options from the "Cortex ADM - Decision" sub-playbook.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
