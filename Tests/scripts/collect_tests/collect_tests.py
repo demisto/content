@@ -134,7 +134,6 @@ class CollectionResult:
         except NonXsoarSupportedPackException:
             if test:
                 logger.info(f'{pack} support level != XSOAR, not collecting {test}, pack will be installed')
-                test = None
 
         except InvalidTestException as e:
             suffix = ' (pack will be installed)' if pack else ''
@@ -523,7 +522,7 @@ class TestCollector(ABC):
             # 2. allow_incompatible_marketplace=False, if True, then should be also to install
             if self.marketplace == MarketplaceVersions.MarketplaceV2 and is_xsoar_and_xsiam_pack and \
                     not allow_incompatible_marketplace:
-                collect_only_to_upload = True
+                collect_only_to_upload = False
 
             # sometimes, we want to install or upload packs that are not compatible (e.g. pack belongs to both marketplaces)
             # because they have content that IS compatible.
