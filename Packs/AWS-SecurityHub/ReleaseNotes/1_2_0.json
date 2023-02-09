@@ -1,4 +1,0 @@
-{
-  "breakingChanges":true,
-  "breakingChangesNotes":"Updated the severity calculation logic according to the [link](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_Severity.html)"
-}
