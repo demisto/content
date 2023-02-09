@@ -11,7 +11,8 @@ STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint:disable=no-member
+# pylint:disable=no-member
+requests.packages.urllib3.disable_warnings()  # type: ignore
 
 __version__ = "1.0"
 
@@ -25,62 +26,54 @@ class Client(BaseClient):
             timeout=60,
         )
 
-    def _call(self, url_suffix):
-
+    def _call(self, url_suffix: str):
         json_data = {
-            'demisto_args': demisto.args(),
-            'demisto_params': demisto.params(),
-
+            "demisto_args": demisto.args(),
+            "demisto_params": demisto.params(),
         }
 
         request_kwargs = {
-            'method': 'post',
-            'url_suffix': url_suffix,
-            'json_data': json_data,
-            'timeout': 90,
-            'retries': 3,
-            'status_list_to_retry': STATUS_TO_RETRY
+            "method": "post",
+            "url_suffix": url_suffix,
+            "json_data": json_data,
+            "timeout": 90,
+            "retries": 3,
+            "status_list_to_retry": STATUS_TO_RETRY,
         }
 
         try:
             response = self._http_request(**request_kwargs)
-
-            if isinstance(response, dict) and response.get('return_error'):
-                # This will raise the Exception or call "demisto.results()" for the error and sys.exit(0).
-                return_error(**response['return_error'])
-
         except DemistoException as err:
-            if '404' in str(err):
+            if "404" in str(err):
                 return CommandResults(
-                    outputs_prefix='',
+                    outputs_prefix="",
                     outputs=dict(),
                     raw_response=dict(),
-                    readable_output='No results found.',
-                    outputs_key_field='',
+                    readable_output="No results found.",
+                    outputs_key_field="",
                 )
+            elif err.res is not None:
+                try:
+                    error_response_json = err.res.json()
+                    # This will raise the Exception or call "demisto.results()" for the error and sys.exit(0).
+                    return_error(message=error_response_json["message"])
+                except (json.JSONDecodeError, KeyError):
+                    raise err
             else:
                 raise err
-
         return response
 
     def identity_search(self) -> Dict[str, Any]:
         """Identity search."""
-        return self._call(
-            url_suffix="/v2/identity/credentials/search",
-        )
+        return self._call(url_suffix="/v2/identity/credentials/search")
 
     def identity_lookup(self) -> Dict[str, Any]:
         """Identity Lookup."""
-        return self._call(
-            url_suffix="/v2/identity/credentials/lookup",
-        )
+        return self._call(url_suffix="/v2/identity/credentials/lookup")
 
     def password_lookup(self) -> Dict[str, Any]:
         """Password Lookup."""
-        return self._call(
-            url_suffix="/v2/identity/password/lookup",
-        )
-
+        return self._call(url_suffix="/v2/identity/password/lookup")
 
 
 #####################
@@ -92,22 +85,22 @@ class Actions:
     def __init__(self, rf_client: Client):
         self.client = rf_client
 
-    def _process_result_actions(self, response: Union[dict, CommandResults]) -> List[CommandResults]:
-
+    def _process_result_actions(
+        self, response: Union[dict, CommandResults]
+    ) -> Optional[CommandResults]:
         if isinstance(response, CommandResults):
             # Case when we got 404 on response, and it was processed in self.client._call() method.
-            return [response]
+            return response
         elif not isinstance(response, dict):
             # In case API returned a str - we don't want to call "response.get()" on a str object.
-            return None  # type: ignore
+            return None
 
-        action_result: Optional[dict] = response.get('action_result')
+        action_result: Optional[dict] = response.get("action_result")
 
         if not action_result:
             return None
 
         command_result: CommandResults = CommandResults(**action_result)
-
         return command_result
 
     def identity_search_command(self):
@@ -118,8 +111,6 @@ class Actions:
         """Lookup command for identities"""
         response = self.client.identity_lookup()
         return self._process_result_actions(response=response)
-
-
 
     def password_lookup_command(self):
         """Lookup command for passwords"""
@@ -177,8 +168,7 @@ def main() -> None:
 
     except Exception as e:
         return_error(
-            f"Failed to execute {demisto.command()} command. "
-            f"Error: {str(e)}"
+            f"Failed to execute {demisto.command()} command. " f"Error: {str(e)}"
         )
 
 
