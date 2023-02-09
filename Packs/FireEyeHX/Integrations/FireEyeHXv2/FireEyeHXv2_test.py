@@ -1960,34 +1960,34 @@ def test_headers_file_acquisition_package_request(requests_mock, mocker):
     [
         (
             '<dummy_url>/hx',
-            'The base URL is invalid\nPlease set the base URL without including /hx'
+            'The base URL is invalid please set the base URL without including /hx'
         ),
         (
             '<dummy_url>/hx/',
-            'The base URL is invalid\nPlease set the base URL without including /hx'
+            'The base URL is invalid please set the base URL without including /hx'
         ),
         (
             '<dummy_url>/hx/api',
-            'The base URL is invalid\nPlease set the base URL without including /hx/api'
+            'The base URL is invalid please set the base URL without including /hx/api'
         ),
         (
             '<dummy_url>/hx/api/',
-            'The base URL is invalid\nPlease set the base URL without including /hx/api'
+            'The base URL is invalid please set the base URL without including /hx/api'
         ),
         (
             '<dummy_url>/hx/api/v3',
-            'The base URL is invalid\nPlease set the base URL without including /hx/api/v3'
+            'The base URL is invalid please set the base URL without including /hx/api/v3'
         ),
         (
             '<dummy_url>/hx/api/v3/',
-            'The base URL is invalid\nPlease set the base URL without including /hx/api/v3'
+            'The base URL is invalid please set the base URL without including /hx/api/v3'
         )
     ]
 )
-def test_validation_baseurl(baseurl, expected_error):
+def test_validation_baseurl(baseurl: str, expected_error: str):
 
-    from FireEyeHXv2 import validation_baseurl
+    from FireEyeHXv2 import validation_base_url
 
-    with pytest.raises(Exception) as e:
-        validation_baseurl(baseurl)
+    with pytest.raises(ValueError) as e:
+        validation_base_url(baseurl)
     assert str(e.value) == expected_error

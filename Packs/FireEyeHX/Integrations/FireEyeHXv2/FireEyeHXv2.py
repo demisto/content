@@ -1614,15 +1614,18 @@ def get_indicator_conditions(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def validation_baseurl(baseurl: str) -> None:
+def validation_base_url(base_url: str) -> None:
+    # Any of the folloiwng combinations is not allowed as suffix: /v3, /api/v3, /hx/api/v3 etc.
+    # The error message is built to include the complete suffix that should be removed (rather than running 2 or 3 times,
+    # seeing an error each time)
     error_message = ''
     for suffix in (('/v3', '/v3/'), ('/api', '/api/'), ('/hx', '/hx/')):
-        if baseurl.endswith(suffix):
-            baseurl = baseurl[:-len(suffix[0])]
+        if base_url.endswith(suffix):
+            base_url = base_url[:-len(suffix[0])]
             error_message = suffix[0] + error_message
 
     if error_message:
-        raise ValueError(f'The base URL is invalid\nPlease set the base URL without including {error_message}')
+        raise ValueError(f'The base URL is invalid please set the base URL without including {error_message}')
 
 
 """helper fetch-incidents"""
@@ -3184,7 +3187,7 @@ def main() -> None:
 
     # get the service API url
     base_url = params.get('server')
-    validation_baseurl(base_url)
+    validation_base_url(base_url)
     base_url = urljoin(base_url, '/hx/api/v3/')
 
     # if your Client class inherits from BaseClient, SSL verification is
