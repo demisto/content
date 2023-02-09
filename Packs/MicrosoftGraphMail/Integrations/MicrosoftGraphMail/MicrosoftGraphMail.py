@@ -2118,7 +2118,6 @@ def main():
 
     command = demisto.command()
     LOG(f'Command being called is {command}')
-    demisto.info('Test!')
 
     try:
         if command == 'test-module':
