@@ -2,6 +2,7 @@ commonfields:
   id: Volatility
   version: -1
 name: Volatility
+deprecated: true
 script: ''
 type: javascript
 tags:
