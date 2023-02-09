@@ -74,6 +74,8 @@ TICKET_STATES = {
     }
 }
 
+A = 5
+
 
 TICKET_TYPE_TO_CLOSED_STATE = {INCIDENT: '7',
                                'problem': '4',
