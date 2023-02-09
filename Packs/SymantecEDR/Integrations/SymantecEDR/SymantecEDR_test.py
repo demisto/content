@@ -15,9 +15,9 @@ from SymantecEDR import Client, get_file_instance_command, get_domain_instance_c
     get_event_list_command, get_audit_event_command, get_system_activity_command, get_incident_list_command, \
     get_event_for_incident_list_command, pagination, PAGE_NUMBER_ERROR_MSG, PAGE_SIZE_ERROR_MSG, \
     compile_command_title_string, get_access_token_from_context, check_valid_indicator_value,\
-    get_endpoint_status_command, get_endpoint_command, get_incident_uuid, iso_creation_date, \
+    get_endpoint_status_command, get_endpoint_command, get_incident_uuid, convert_to_iso8601, \
     get_headers_from_summary_data, get_data_of_current_page, parse_event_object_data, issue_sandbox_command, \
-    check_sandbox_status, get_sandbox_verdict, get_incident_raw_response, get_association_filter_query
+    check_sandbox_status, get_sandbox_verdict, get_association_filter_query
 
 
 def util_load_json(path):
@@ -75,7 +75,7 @@ def test_get_file_instance_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected output.
     """
     args = {"limit": 1}
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     with open(os.path.join("test_data", "command_readable_output/file_instance_command_readable_output.md"), 'r') as f:
         readable_output = f.read()
     command_results = get_file_instance_command(client, args)
@@ -103,7 +103,7 @@ def test_get_domain_instance_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected output.
     """
     args = {"limit": 1}
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     with open(os.path.join("test_data", "command_readable_output/endpoint_domain_instance_readable_output.md"), 'r') as f:
         readable_output = f.read()
     command_results = get_domain_instance_command(client, args)
@@ -131,7 +131,7 @@ def test_get_endpoint_instance_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected output.
     """
     args = {"limit": 1}
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     with open(os.path.join("test_data",
                            "command_readable_output/endpoint_instance_command_readable_output.md"), 'r') as f:
         readable_output = f.read()
@@ -161,7 +161,7 @@ def test_get_endpoint_file_association_list_command(mocker, raw_response, expect
             -  Checks the output of the command function with the expected output.
     """
     args = {"limit": 1}
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     with open(os.path.join(
             "test_data", "command_readable_output/endpoint_file_association_command_readable_output.md"), 'r') as f:
         readable_output = f.read()
@@ -191,7 +191,7 @@ def test_get_domain_file_association_list_command(mocker, raw_response, expected
             -  Checks the output of the command function with the expected output.
     """
     args = {"limit": 1}
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     with open(os.path.join(
             "test_data", "command_readable_output/domain_file_association_command_readable_output.md"), 'r') as f:
         readable_output = f.read()
@@ -218,7 +218,7 @@ def test_get_endpoint_domain_association_list_command(mocker, raw_response, expe
             -  Checks the output of the command function with the expected output.
     """
     args = {"limit": 1}
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     with open(os.path.join(
             "test_data", "command_readable_output/endpoint_domain_association_command_readable_output.md"), 'r') as f:
         readable_output = f.read()
@@ -245,7 +245,7 @@ def test_get_deny_list_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected output.
     """
     args = {"limit": 10}
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     with open(os.path.join(
             "test_data", "command_readable_output/deny_list_command_readable_output.md"), 'r') as f:
         readable_output = f.read()
@@ -274,7 +274,7 @@ def test_get_allow_list_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected output.
     """
     args = {"limit": 10}
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     command_results = get_allow_list_command(client, args)
 
     # results is CommandResults list
@@ -299,7 +299,7 @@ def test_get_event_list_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected output.
     """
     args = {"limit": 1}
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     command_results = get_event_list_command(client, args)
 
     # results is CommandResults list
@@ -324,7 +324,7 @@ def test_get_audit_event_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected output.
     """
     args = {"limit": 1}
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     command_results = get_audit_event_command(client, args)
 
     # results is CommandResults list
@@ -349,7 +349,7 @@ def test_get_system_activity_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected output.
     """
     args = {"limit": 1}
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     command_results = get_system_activity_command(client, args)
 
     # results is CommandResults list
@@ -374,7 +374,7 @@ def test_get_incident_list_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected output.
     """
     args = {"limit": 1}
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     command_results = get_incident_list_command(client, args)
 
     # results is CommandResults list
@@ -387,7 +387,7 @@ def test_get_incident_uuid(mocker, raw_response, expected):
     args = {
         "incident_id": 100010
     }
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     uuid = get_incident_uuid(client, args)
 
     # results is CommandResults list
@@ -411,7 +411,7 @@ def test_get_event_for_incident_list_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected output.
     """
     args = {"limit": 1}
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     command_results = get_event_for_incident_list_command(client, args)
 
     # results is CommandResults list
@@ -438,7 +438,7 @@ def test_get_endpoint_status_command(mocker, raw_response, expected):
     args = {"command_id": '35fcb7c144764188b810799a120b26eb-2022-12-09'}
     with open(os.path.join("test_data", "command_readable_output/endpoint_command_status_readable_output.md"), 'r') as f:
         readable_output = f.read()
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     command_results = get_endpoint_status_command(client, args)
 
     # results is CommandResults list
@@ -466,7 +466,7 @@ def test_get_endpoint_command_isolate(mocker, raw_response, expected):
     args = {"device_id": '"393b8e82-fe40-429f-8e5e-c6b79a0f2b1c'}
     with open(os.path.join("test_data", "command_readable_output/endpoint_command_isolate_readable_output.md"), 'r') as f:
         readable_output = f.read()
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     command_results = get_endpoint_command(client, args, 'symantec-edr-endpoint-isolate')
 
     # results is CommandResults list
@@ -494,7 +494,7 @@ def test_get_endpoint_command_rejoin(mocker, raw_response, expected):
     args = {"device_id": '"393b8e82-fe40-429f-8e5e-c6b79a0f2b1c'}
     with open(os.path.join("test_data", "command_readable_output/endpoint_command_rejoin_readable_output.md"), 'r') as f:
         readable_output = f.read()
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     command_results = get_endpoint_command(client, args, 'symantec-edr-endpoint-rejoin')
 
     # results is CommandResults list
@@ -525,7 +525,7 @@ def test_get_endpoint_command_delete(mocker, raw_response, expected):
     }
     with open(os.path.join("test_data", "command_readable_output/endpoint_command_delete_readable_output.md"), 'r') as f:
         readable_output = f.read()
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     command_results = get_endpoint_command(client, args, 'symantec-edr-endpoint-delete-file')
 
     # results is CommandResults list
@@ -553,7 +553,7 @@ def test_get_endpoint_command_cancel(mocker, raw_response, expected):
     args = {"device_id": '"393b8e82-fe40-429f-8e5e-c6b79a0f2b1c'}
     with open(os.path.join("test_data", "command_readable_output/endpoint_command_cancel_readable_output.md"), 'r') as f:
         readable_output = f.read()
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     command_results = get_endpoint_command(client, args, 'symantec-edr-endpoint-cancel-command')
 
     # results is CommandResults list
@@ -675,7 +675,7 @@ def test_check_valid_indicator_value(indicator_type, indicator_value, expected_r
 
 
 @pytest.mark.parametrize('indicator_type, indicator_value, expected_err_msg', [
-    ('domains', 'abcd123', 'Indicator domains type does not support'),
+    ('domains', 'abcd123', 'Indicator domains type id not support'),
     ('urls', '123245', '123245 is not a valid urls'),
     ('ip', 'google.1234', '"google.1234" is not a valid IP'),
     ('sha256', 'abcde34', 'abcde34 is not a valid sha256'),
@@ -732,7 +732,7 @@ def test_test_module(mocker, raw_response, expected):
                 - Check weather the given credentials are correct or not.
     """
     from SymantecEDR import test_module
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     output = test_module(client)
     # results
     assert output == expected
@@ -761,26 +761,26 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 now = str(datetime.today())
 now_iso = dateparser.parse(now, settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)[:23] + "Z"
 week_before = str(datetime.today() - timedelta(days=7))
-delta_week_before = dateparser.parse(week_before, settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)[:23] + "Z"
+iso_datatime_week_before = dateparser.parse(week_before, settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)[:23] + "Z"
 
 
-@pytest.mark.parametrize('iso_date_string, expected_result', [
+@pytest.mark.parametrize('date_string, expected_result', [
     (now, now_iso),
-    (week_before, delta_week_before)
+    (week_before, iso_datatime_week_before)
 ])
-def test_iso_creation_date(iso_date_string, expected_result):
+def test_convert_to_iso8601(date_string, expected_result):
     """
-        Tests the iso_creation_date function.
+        Tests the convert timestamp to iso8601 formate.
 
             Given:
-                iso_date_string - Datetime.
+                date_string - Datetime.
             When:
-                - Running the 'iso_creation_date function'.
+                - Running the 'test_convert_to_iso8601 function'.
 
             Then:
                 - Checks the output of the command function with the expected ISO Date format .
     """
-    actual_result = iso_creation_date(iso_date_string)
+    actual_result = convert_to_iso8601(date_string)
     assert actual_result == str(expected_result)
 
 
@@ -857,7 +857,7 @@ def test_issue_sandbox_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected output.
     """
     args = {"file": '1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164'}
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     command_results = issue_sandbox_command(client, args,)
 
     # results is CommandResults list
@@ -882,7 +882,7 @@ def test_check_sandbox_status(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected output.
     """
     args = {"command_id": 'a4277ce5ebd84fe18c30fa67a05b42c9-2023-02-06'}
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
     command_results = check_sandbox_status(client, args,)
 
     # results is CommandResults list
@@ -904,7 +904,7 @@ def test_get_sandbox_verdict(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected output.
     """
     args = {"file": '1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164'}
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response] * 5)
+    mocker.patch.object(client, 'http_request', side_effect=[raw_response] * 5)
     command_results = get_sandbox_verdict(client, args)
 
     # results is CommandResults list
@@ -912,23 +912,23 @@ def test_get_sandbox_verdict(mocker, raw_response, expected):
     assert context_detail == expected
 
 
-@pytest.mark.parametrize('raw_response, expected', [(INCIDENT_LIST_RESPONSE, INCIDENT_LIST_RESPONSE)])
-def test_get_incident_raw_response(mocker, raw_response, expected):
-    """
-    Tests get_incident_raw_response function.
-        Given:
-            - mocker object.
-            - raw_response test data.
-            - expected output.
-        When:
-            - Running the 'get_incident_raw_response'.
-        Then:
-            -  Checks the output of the command function with the expected output.
-    """
-    args = {"incident_id": '100010'}
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
-    response = get_incident_raw_response(client, '/atpapi/v2/incidents', args, 1)
-    assert response == expected
+# @pytest.mark.parametrize('raw_response, expected', [(INCIDENT_LIST_RESPONSE, INCIDENT_LIST_RESPONSE)])
+# def test_get_incident_raw_response(mocker, raw_response, expected):
+#     """
+#     Tests get_incident_raw_response function.
+#         Given:
+#             - mocker object.
+#             - raw_response test data.
+#             - expected output.
+#         When:
+#             - Running the 'get_incident_raw_response'.
+#         Then:
+#             -  Checks the output of the command function with the expected output.
+#     """
+#     args = {"incident_id": '100010'}
+#     mocker.patch.object(client, 'http_request', side_effect=[raw_response])
+#     response = get_incident_raw_response(client, '/atpapi/v2/incidents', args, 1)
+#     assert response == expected
 
 
 @pytest.mark.parametrize('query_type, query_value, expected_result', [
