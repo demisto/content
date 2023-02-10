@@ -1,7 +1,7 @@
 
- log("$$$$$$$2")
+ log("$$$$$$$$2")
  log(JSON.stringify(params.credentials)),
- log("$$$$$$$2")
+ log("$$$$$$$$2")
 
  var reliability = params.integrationReliability;
 
