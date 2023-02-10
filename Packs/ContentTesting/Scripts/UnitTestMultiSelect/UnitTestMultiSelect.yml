@@ -4,10 +4,9 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.9.44472
+dockerimage: demisto/python3:3.10.10.47713
 enabled: true
 name: UnitTestMultiSelect
-comment: ""
 runas: Administrator
 runonce: false
 script: ''

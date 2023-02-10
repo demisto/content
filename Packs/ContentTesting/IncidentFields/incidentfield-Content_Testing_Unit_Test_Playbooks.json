@@ -21,7 +21,7 @@
         "all"
     ],
     "required": false,
-    "script": "UnitTestMultiSelect",
+    "script": "3e8588f6-a369-429e-8f41-168122fbf625",
     "selectValues": [
         "MockPlaybook"
     ],

@@ -1,3 +1,4 @@
+# Final Test: 6.10
 import io
 
 import demistomock as demisto  # noqa: F401
@@ -5,7 +6,6 @@ from CommonServerPython import *  # noqa: F401
 
 
 def main():
-    testName = ''
     try:
         args = demisto.args()
         testName = args.get("testName", "")
