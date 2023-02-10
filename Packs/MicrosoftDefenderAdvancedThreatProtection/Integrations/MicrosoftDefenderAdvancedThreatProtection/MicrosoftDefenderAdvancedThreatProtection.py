@@ -5211,6 +5211,63 @@ def get_machine_action_command(client, args):
     )
 
 
+def fetch_indicators_command(client, args):
+
+    i = 1
+    new_machines: list = client.get_machines("", page_num=i, page_size=10000).get("value")
+    machines = new_machines.copy()
+    # we use the paging mechanism with the max return size supported by the MDE get machines API endpoint
+    # https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-machines?view=o365-worldwide
+    while len(new_machines) == 10000:
+        i += 1
+        new_machines: list = client.get_machines("", page_num=i, page_size=10000).get("value")
+        machines.extend(new_machines)
+
+    indicators = list()
+    if isinstance(machines, list):
+        for machine in machines:
+            mde_id = machine.get("id")
+
+            indicators.append({
+                "type": "MagicMdeMachines",
+                "value": mde_id,
+                "rawJSON": {
+                    "indicator": mde_id,
+                    "type": "MagicMdeMachines",
+                    "value": mde_id,
+                },
+                "fields": {
+                    "displayname": machine.get("computerDnsName"),
+                    "mdefirstseen": machine.get("firstSeen"),
+                    "mdelastseen": machine.get("lastSeen"),
+                    "operatingsystem": machine.get("osPlatform"),
+                    "operatingsystemversion": machine.get("version"),
+                    "mdeosprocessor": machine.get("osProcessor"),
+                    "ipaddress": machine.get("lastIpAddress"),
+                    "mdelastexternalipaddress": machine.get("lastExternalIpAddress"),
+                    "mdeosbuild": machine.get("osBuild"),
+                    "mdehealthstatus": machine.get("healthStatus"),
+                    "mderbacgroupid": machine.get("rbacGroupId"),
+                    "mderbacgroupname": machine.get("rbacGroupName"),
+                    "mderiskscore": machine.get("riskScore"),
+                    "mdeexposurelevel": machine.get("exposureLevel"),
+                    "mdeisaadjoined": machine.get("isAadJoined"),
+                    "mdeaaddeviceid": machine.get("aadDeviceId"),
+                    "mdemachinetags": machine.get("machineTags"),
+                    "mdeonboardingstatus": machine.get("onboardingStatus"),
+
+                }
+            })
+            if not isinstance(machine, dict):
+                continue
+
+            if mde_id is None:
+                continue
+    if indicators:
+        for b in batch(indicators, batch_size=2000):
+            demisto.createIndicators(b)
+
+
 def cancel_action_command(client, args):
     action_id = args['machine_action_id']
     comment = args['comment']
@@ -5655,6 +5712,8 @@ def main():  # pragma: no cover
             return_results(get_machine_alerts_command(client, args))
         elif command == 'microsoft-atp-request-and-download-investigation-package':
             return_results(request_download_investigation_package_command(client, args))
+        elif command == 'fetch-indicators':
+            fetch_indicators_command(client, args)
 
     except Exception as err:
         return_error(str(err))
