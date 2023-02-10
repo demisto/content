@@ -1,0 +1,29 @@
+{
+    "id": "Microsoft Graph Identity and Access",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Microsoft Graph Identity and Access",
+    "prevName": "Microsoft Graph Identity and Access",
+    "color": "#4B897A",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Microsoft Graph Identity and Access Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "5.5.0"
+}

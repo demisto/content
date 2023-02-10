@@ -240,7 +240,7 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        demisto.log(str(e))
+        demisto.debug(str(e))
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 

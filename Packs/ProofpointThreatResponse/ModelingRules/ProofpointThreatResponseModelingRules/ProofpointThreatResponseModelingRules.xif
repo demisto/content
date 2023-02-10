@@ -1,0 +1,15 @@
+[MODEL:model="Email", dataset="proofpoint_threat_response_raw"]
+alter XDM.Email.event_timestamp = updated_at
+| alter XDM.Email.original_event_id = to_string(id)
+| alter XDM.Email.threat.category = json_extract_scalar(event, "$.category")
+| alter XDM.Email.threat.severity = json_extract_scalar(event, "$.severity")
+| alter XDM.Email.Client.user.username = users
+| alter emails = arrayindex(json_extract_array(event, "$.emails"), 0)
+| alter XDM.Email.sender = json_extract_scalar(emails, "$.sender.email")
+| alter XDM.Email.message_id = json_extract_scalar(emails, "$.messageId")
+| alter XDM.Email.subject = json_extract_scalar(emails, "$.subject")
+| alter XDM.Email.recipients = arraycreate(coalesce(json_extract_scalar(emails, "$.recipient.email"), ""))
+| alter millis_timestamp = json_extract_scalar(emails, "$.messageDeliveryTime.millis")
+| alter XDM.Email.delivery_timestamp = parse_timestamp("%s",arrayindex( regextract(to_string(millis_timestamp),"(\d+)\d{3}"),0))
+| alter incident_field_values = incident_field_values -> []
+| alter XDM.Email.threat.name = json_extract_scalar(arrayindex(incident_field_values, 1), "$.value");

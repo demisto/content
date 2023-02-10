@@ -1,0 +1,7 @@
+fromversion: 6.8.0
+id: microsoft_365_defender_event_collector
+name: Microsoft 365 Defender Event Collector
+rules: ''
+schema: ''
+tags: Microsoft 365 Defender
+toversion: 6.9.9

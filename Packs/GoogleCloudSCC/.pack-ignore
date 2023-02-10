@@ -9,3 +9,6 @@ ignore=BA101
 
 [file:incidentfield-GoogleCloudSCC_Finding_SourceProperties_Alert.json]
 ignore=IF100
+
+[file:incidentfield-GoogleCloudSCC_Finding_OrganizationID.json]
+ignore=IF115

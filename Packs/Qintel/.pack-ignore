@@ -1,0 +1,11 @@
+[file:QintelPMI_image.png]
+ignore=IM111
+
+[file:QintelQSentry_image.png]
+ignore=IM111
+
+[file:QintelQWatch_image.png]
+ignore=IM111
+
+[file:README.md]
+ignore=RM113

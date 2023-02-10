@@ -1,3 +1,4 @@
+<strong>***Deprecated. Use the Slack v3 integration instead.***</strong>
 <p>
   Send messages and notifications to your Slack Team.
   This integration was integrated and tested with version 4.0.1 of Slack, and is available from Cortex XSOAR version 5.0.
@@ -890,6 +891,24 @@ Channel renamed successfully.
 </table>
 
 </p>
+
+### slack-get-integration-context
+***
+Returns the integration context as a file. Use this command for debug purposes only.
+
+
+#### Base Command
+
+`slack-get-integration-context`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+
+#### Context Output
+
+There is no context output for this command.
 <h2>Additional Information</h2>
 <h3>Change the name of the Cortex XSOAR App</h3>
 <p>You can change the name and icon of the Cortex XSOAR app in direct messages using the integration configuration settings (parameters). In order to change the name of the application itself, do the following:</p>

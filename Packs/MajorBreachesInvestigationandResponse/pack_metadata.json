@@ -2,16 +2,16 @@
     "name": "Rapid Breach Response",
     "description": "This content Pack helps you collect, investigate, and remediate incidents related to major breaches.",
     "support": "xsoar",
-    "currentVersion": "1.6.22",
+    "currentVersion": "1.6.26",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-12-16T14:11:20Z",
-    "categories": [],
+    "categories": [
+        "Forensics & Malware Analysis"
+    ],
     "tags": [
-        "Breach",
-        "TIM",
-        "Incident Response"
+        "Use Case"
     ],
     "itemPrefix": [
         "Completed",
@@ -25,9 +25,7 @@
         "Eradication"
     ],
     "useCases": [
-        "Hunting",
-        "Incident Response",
-        "Rapid Breach Response"
+        "Malware"
     ],
     "keywords": [
         "SolarStorm",
@@ -71,6 +69,22 @@
         "CVE_2021_40444": {
             "mandatory": false,
             "display_name": "CVE-2021-40444 - MSHTML RCE"
+        },
+        "CVE_2021_30190": {
+            "mandatory": false,
+            "display_name": "CVE-2022-30190 - MSDT RCE"
+        },
+        "CVE-2022-3786 & CVE-2022-3602 - OpenSSL X.509 Buffer Overflows": {
+            "mandatory": false,
+            "display_name": "CVE-2022-3786 & CVE-2022-3602 - OpenSSL X.509 Buffer Overflows"
+        },
+        "CVE-2022-41040 & CVE-2022-41082 - ProxyNotShell": {
+            "mandatory": false,
+            "display_name": "CVE-2022-41040 & CVE-2022-41082 - ProxyNotShell"
+        },
+        "ServiceNow": {
+            "mandatory": false,
+            "display_name": "ServiceNow"
         }
     },
     "marketplaces": [

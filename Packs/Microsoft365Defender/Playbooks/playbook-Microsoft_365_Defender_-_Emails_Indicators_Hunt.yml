@@ -1,0 +1,804 @@
+id: Microsoft 365 Defender - Emails Indicators Hunt
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Microsoft 365 Defender - Emails Indicators Hunt
+description: |-
+  This playbook retrieves email data based on the "URLDomain", "SHA256" and "IPAddress" inputs.
+  SHA256 - Emails with attachments matching the "SHA256" input are retrieved.
+  URLDomain - If the "URLDomain" value is found as a substring of URL(s) in the body of the email, the email is retrieved.
+  IPAddress - Emails with "SenderIPv4"/SenderIPv6" or URLs (in the body) matching the "IPAddress" input are retrieved.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4e50d59c-2f80-42a2-877d-c95d20e20047
+    type: start
+    task:
+      id: 4e50d59c-2f80-42a2-877d-c95d20e20047
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4c477a33-925d-4946-83e3-e237dfa465a2
+    type: condition
+    task:
+      id: 4c477a33-925d-4946-83e3-e237dfa465a2
+      version: -1
+      name: Check if Microsoft 365 Defender is enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "2"
+      - "3"
+      - "13"
+    scriptarguments:
+      brandname:
+        simple: Microsoft 365 Defender
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d7b8bb79-3028-4f41-85b4-52cd5b913070
+    type: condition
+    task:
+      id: d7b8bb79-3028-4f41-85b4-52cd5b913070
+      version: -1
+      name: URLDomain input exists?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      URLDomain Exists:
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: URLDomain Exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.URLDomain
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 18e4ddb8-4e5f-4abe-8272-7c05f414081d
+    type: condition
+    task:
+      id: 18e4ddb8-4e5f-4abe-8272-7c05f414081d
+      version: -1
+      name: SHA256 input exists?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      SHA256 Exists:
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: SHA256 Exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SHA256
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: de06f46a-17b8-427d-83fe-d58c41119de7
+    type: title
+    task:
+      id: de06f46a-17b8-427d-83fe-d58c41119de7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 7ef19685-5d03-44e8-8718-bdcaa1891658
+    type: regular
+    task:
+      id: 7ef19685-5d03-44e8-8718-bdcaa1891658
+      version: -1
+      name: Retrieve emails data (URLDomain)
+      description: 'Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
+      script: Microsoft 365 Defender|||microsoft-365-defender-advanced-hunting
+      type: regular
+      iscommand: true
+      brand: Microsoft 365 Defender
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      limit:
+        complex:
+          root: inputs.ResultsLimit
+      query:
+        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailEvents | where Timestamp >= _start | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | join EmailUrlInfo on NetworkMessageId | where Url has_any ("${URLDomainParsed}") or UrlDomain has_any ("${URLDomainParsed}") | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, Timestamp1, OrgLevelAction, SenderObjectId, NetworkMessageId1
+      timeout:
+        simple: ${inputs.Timeout}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 1386f67d-0a38-438e-8a03-7435ffe62954
+    type: regular
+    task:
+      id: 1386f67d-0a38-438e-8a03-7435ffe62954
+      version: -1
+      name: Retrieve emails data (SHA256)
+      description: 'Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
+      script: Microsoft 365 Defender|||microsoft-365-defender-advanced-hunting
+      type: regular
+      iscommand: true
+      brand: Microsoft 365 Defender
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      limit:
+        complex:
+          root: inputs.ResultsLimit
+      query:
+        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailEvents | where Timestamp >= _start | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | join EmailAttachmentInfo on NetworkMessageId | where SHA256 has_any ("${SHA256Parsed}") | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, Timestamp1, RecipientEmailAddress1, SenderDisplayName1, NetworkMessageId1, DetectionMethods1, SenderFromAddress1, RecipientObjectId1, ThreatNames1, ThreatTypes1, SenderObjectId1, OrgLevelAction, SenderObjectId
+      timeout:
+        simple: ${inputs.Timeout}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 8bd4c50d-26ba-48ac-8d71-a918feb08ecb
+    type: regular
+    task:
+      id: 8bd4c50d-26ba-48ac-8d71-a918feb08ecb
+      version: -1
+      name: Save matching email results (with URLs or attachments)
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      key:
+        simple: Microsoft365Defender.RetrievedEmails
+      value:
+        complex:
+          root: Microsoft365Defender.Hunt.results
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Microsoft365Defender.Hunt.results.SHA256
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: Microsoft365Defender.Hunt.results.Url
+                iscontext: true
+          transformers:
+            - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: a4a3ec81-21db-43a8-885b-bdd11db950ea
+    type: regular
+    task:
+      id: a4a3ec81-21db-43a8-885b-bdd11db950ea
+      version: -1
+      name: Set URLDomain search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: URLDomainParsed
+      value:
+        complex:
+          root: inputs.URLDomain
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '", "'
+              toReplace:
+                value:
+                  simple: ', '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 28263a51-7d7a-4213-8d41-0d01ffdf09b2
+    type: regular
+    task:
+      id: 28263a51-7d7a-4213-8d41-0d01ffdf09b2
+      version: -1
+      name: Set SHA256 search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: SHA256Parsed
+      value:
+        complex:
+          root: inputs.SHA256
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '","'
+              toReplace:
+                value:
+                  simple: ','
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: bf851c18-5e4c-4594-8ec7-6a3b2d8bae6c
+    type: condition
+    task:
+      id: bf851c18-5e4c-4594-8ec7-6a3b2d8bae6c
+      version: -1
+      name: IPAddress input exists?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      IPAddress Exists:
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: IPAddress Exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.IPAddress
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 22329bf3-20bb-4f0a-8247-0d247a7672ad
+    type: regular
+    task:
+      id: 22329bf3-20bb-4f0a-8247-0d247a7672ad
+      version: -1
+      name: Set IPAddress search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+      - "18"
+    scriptarguments:
+      key:
+        simple: IPAddressParsed
+      value:
+        complex:
+          root: inputs.IPAddress
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '", "'
+              toReplace:
+                value:
+                  simple: ', '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: a9b33515-9725-4e37-8188-2120f8fb69e3
+    type: regular
+    task:
+      id: a9b33515-9725-4e37-8188-2120f8fb69e3
+      version: -1
+      name: Retrieve emails data (IPAddress) - EmailEvents table
+      script: Microsoft 365 Defender|||microsoft-365-defender-advanced-hunting
+      description: 'This task will retrieve emails data based on the EmailEvents table. It will look for the given IP in the "SenderIPv4" and in the "SenderIPv46" properties.'
+      type: regular
+      iscommand: true
+      brand: Microsoft 365 Defender
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      limit:
+        complex:
+          root: inputs.ResultsLimit
+      query:
+        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailEvents | where Timestamp >= _start | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | where SenderIPv4 has_any ("${IPAddressParsed}") or SenderIPv6 in ("${IPAddressParsed}") | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, OrgLevelAction, SenderObjectId
+      timeout:
+        simple: ${inputs.Timeout}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: ea249095-3e24-4994-8a27-030a0e0d9da1
+    type: regular
+    task:
+      id: ea249095-3e24-4994-8a27-030a0e0d9da1
+      version: -1
+      name: Save matching email results (based on sender IP)
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Microsoft365Defender.RetrievedEmails
+      value:
+        complex:
+          root: Microsoft365Defender.Hunt.results
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: Microsoft365Defender.Hunt.results.NetworkMessageId
+                iscontext: true
+              right:
+                value:
+                  simple: Microsoft365Defender.RetrievedEmails.NetworkMessageId
+                iscontext: true
+          transformers:
+            - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 42a24672-f182-4b50-83b7-b08a6b79c4c6
+    type: regular
+    task:
+      id: 42a24672-f182-4b50-83b7-b08a6b79c4c6
+      version: -1
+      name: Retrieve emails data (IPAddress) - EmailUrlInfo table
+      description: 'This task will retrieve email data based on the EmailUrlInfo table. It will look for the given IP in the "UrlDomain" property since the IP can be part of a URL.'
+      script: Microsoft 365 Defender|||microsoft-365-defender-advanced-hunting
+      type: regular
+      iscommand: true
+      brand: Microsoft 365 Defender
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      limit:
+        complex:
+          root: inputs.ResultsLimit
+      query:
+        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailEvents | where Timestamp >= _start | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | join EmailUrlInfo on NetworkMessageId | where UrlDomain has_any ("${IPAddressParsed}") | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, Timestamp1, OrgLevelAction, SenderObjectId, NetworkMessageId1
+      timeout:
+        simple: ${inputs.Timeout}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1670,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_4_#default#": 0.16,
+      "1_13_yes": 0.88,
+      "1_2_yes": 0.89,
+      "1_4_no": 0.12,
+      "2_4_#default#": 0.12,
+      "3_4_#default#": 0.15
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1475,
+        "width": 2010,
+        "x": 40,
+        "y": -120
+      }
+    }
+  }
+inputs:
+- key: URLDomain
+  value: {}
+  required: false
+  description: Domain or URL to search within emails. Can be a single domain or URL or an array of domains or URLs to search. The search looks for the exact Domain or URL.
+  playbookInputQuery:
+- key: SHA256
+  value: {}
+  required: false
+  description: The SHA256 hash file or an array of hashes to search within emails.
+  playbookInputQuery:
+- key: IPAddress
+  value: {}
+  required: false
+  description: The source or destination IP address to search. Can be a single address or an array of IP addresses.
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: "180"
+  required: false
+  description: The time limit in seconds for the HTTP request to run. Default is 180.
+  playbookInputQuery:
+- key: SearchTimeframe
+  value:
+    simple: "7"
+  required: false
+  description: Number of days past to search. Default is 7.
+  playbookInputQuery:
+- key: ResultsLimit
+  value:
+    simple: "50"
+  required: false
+  description: Number of retrieved entries. Enter -1 for unlimited query. 50 is the default.
+  playbookInputQuery:
+- key: ListenerMailbox
+  value: {}
+  required: false
+  description: The mailbox of the listening integration. In case it is provided, the emails found in it will be ignored.
+  playbookInputQuery:
+outputs:
+- contextPath: Microsoft365Defender.RetrievedEmails
+  description: Email objects containing relevant fields.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.InternetMessageId
+  description: Internet Message ID of the email.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderFromDomain
+  description: Sender domain.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.EmailDirection
+  description: Email direction (inbound/outbound).
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.DeliveryLocation
+  description: Delivery location.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.AuthenticationDetails
+  description: Authentication details (SPF, DKIM, DMARC, CompAuth).
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.DeliveryAction
+  description: Delivery action.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.Subject
+  description: Email subject.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.AttachmentCount
+  description: Number of attachments.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.ThreatNames
+  description: Threat names.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.RecipientEmailAddress
+  description: Recipient email address.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.EmailAction
+  description: Email action.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.EmailLanguage
+  description: Email language.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderFromAddress
+  description: Sender address.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.Timestamp
+  description: Timestamp.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderDisplayName
+  description: Sender display name.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderIPv4
+  description: Sender IPv4
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.ConfidenceLevel
+  description: Confidence level.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.ThreatTypes
+  description: Threat types.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SHA256
+  description: SHA256 of the attachments (if exists in the email).
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.Url
+  description: URLs found in the email's body.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.UrlCount
+  description: Number of URLs found in the email's body.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderIPv6
+  description: Sender IPv6.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

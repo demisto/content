@@ -12,7 +12,7 @@
       {
         "topic": "dmst-test-topic",
         "messageId": "123",
-        "data": "42",
+        "data": "42\\42",
         "attributes": null
       }
     ]
@@ -20,7 +20,7 @@
   "gcp-pubsub-topic-messages-pull": {
     "GoogleCloudPubSubPulledMessages(val && val.messageId === obj.messageId)": [
       {
-        "data": "42",
+        "data": "42\\42",
         "messageId": "123",
         "publishTime": "2020-04-18T08:36:30.541Z"
       }

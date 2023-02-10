@@ -82,7 +82,8 @@ class EnrichmentOutput(object):
                 'Indicator': indicator_value,
                 'Score': 3 if malicious else 1,
                 'Type': indicator_type,
-                'Vendor': INTEGRATION_NAME
+                'Vendor': INTEGRATION_NAME,
+                'Reliability': demisto.params().get('integrationReliability')
             })
 
     def build_all_context(self) -> dict:

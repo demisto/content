@@ -1,3 +1,4 @@
+import urllib3
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -5,11 +6,10 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import json
-import requests
 import dateparser
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -538,6 +538,7 @@ def fetch_incidents(client, last_run: dict, board_id: str, list_id_filter: str):
 
     for card in new_cards:
         incident_created_time = dateparser.parse(card.get("create_action").get("date"))
+        assert incident_created_time is not None, f'could not parse {card.get("create_action").get("date")}'
         incident = {
             'name': card.get("name"),
             'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),

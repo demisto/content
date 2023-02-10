@@ -1,10 +1,12 @@
 import pytest
 from MicrosoftGraphGroups import parse_outputs, camel_case_to_readable, MsGraphClient, list_groups_command, \
-    get_group_command, create_group_command, list_members_command, demisto, main
+    get_group_command, create_group_command, list_members_command, add_member_command, delete_group_command, \
+    remove_member_command, demisto, main
 from test_data.response_constants import RESPONSE_LIST_GROUPS, RESPONSE_GET_GROUP, RESPONSE_CREATE_GROUP, \
     RESPONSE_LIST_MEMBERS_UNDER_100, RESPONSE_LIST_MEMBERS_ABOVE_100
 from test_data.result_constants import EXPECTED_LIST_GROUPS, EXPECTED_GET_GROUP, EXPECTED_CREATE_GROUP, \
     EXPECTED_LIST_MEMBERS
+from MicrosoftApiModule import NotFoundError
 
 
 def test_camel_case_to_readable():
@@ -42,7 +44,7 @@ def test_parse_outputs():
 def test_commands(command, args, response, expected_result, mocker):
     client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
                            auth_id='auth_and_token_url', enc_key='enc_key', app_name='ms-graph-groups',
-                           verify='use_ssl', proxy='proxies', self_deployed='self_deployed')
+                           verify='use_ssl', proxy='proxies', self_deployed='self_deployed', handle_error=False)
     mocker.patch.object(client.ms_client, 'http_request', return_value=response)
     result = command(client, args)
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
@@ -65,7 +67,7 @@ def test_list_members_command(args, response, expected_result, mocker):
     """
     client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
                            auth_id='auth_and_token_url', enc_key='enc_key', app_name='ms-graph-groups',
-                           verify='use_ssl', proxy='proxies', self_deployed='self_deployed')
+                           verify='use_ssl', proxy='proxies', self_deployed='self_deployed', handle_error=False)
     mocker.patch.object(client.ms_client, 'http_request', return_value=response)
     mocker.patch.object(demisto, 'dt', return_value=RESPONSE_GET_GROUP)
     result = list_members_command(client, args)
@@ -99,3 +101,27 @@ def test_params(mocker, params, expected_result):
         main()
 
     assert expected_result in str(e.value)
+
+
+TEST_SUPPRESS_ERRORS = [
+    (delete_group_command, 'delete_group', NotFoundError('404'), {'group_id': '123456789'},
+     '#### Group id -> 123456789 does not exist'),
+    (list_members_command, 'list_members', NotFoundError('404'), {'group_id': '123456789'},
+     '#### Group id -> 123456789 does not exist'),
+    (add_member_command, 'add_member', NotFoundError('404'), {'group_id': '123456789'},
+     '#### Group id -> 123456789 does not exist'),
+    (remove_member_command, 'remove_member', NotFoundError('404'), {'group_id': '123456789'},
+     '#### Group id -> 123456789 does not exist')
+]
+
+
+@pytest.mark.parametrize('fun, mock_fun, mock_value, args, expected_result',
+                         TEST_SUPPRESS_ERRORS)
+def test_suppress_errors(mocker, fun, mock_fun, mock_value, args, expected_result):
+
+    client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
+                           auth_id='auth_and_token_url', enc_key='enc_key', app_name='ms-graph-groups',
+                           verify='use_ssl', proxy='proxies', self_deployed='self_deployed', handle_error=True)
+    mocker.patch.object(client, mock_fun, side_effect=mock_value)
+    results, _, _ = fun(client, args)
+    assert results == expected_result

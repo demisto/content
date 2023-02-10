@@ -36,3 +36,16 @@ ignore=BA101
 
 [file:classifier-mapper-incoming-prismaCloud_app.json]
 ignore=BA101
+
+[file:PrismaCloudIAM_image.png]
+ignore=IM111
+
+[known_words]
+SSH
+Misconfiguration
+
+[file:classifier-Prisma_Cloud.json]
+ignore=BA101
+
+[file:classifier-prismaCloud_app.json]
+ignore=BA101

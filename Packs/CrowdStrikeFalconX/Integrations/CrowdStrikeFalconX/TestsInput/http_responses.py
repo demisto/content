@@ -1,4 +1,4 @@
-SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE = {
+SEND_UPLOADED_FILE_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE = {
     "errors": [],
     "meta": {
         "powered_by": "falconx-api",
@@ -556,10 +556,48 @@ GET_REPORT_SUMMARY_HTTP_RESPONSE = {
                     "submission_type": "page_url",
                     "submit_url": "hxxps://www.google.com",
                     "threat_score": 13,
-                    "verdict": "no specific threat"
+                    "verdict": "suspicious",
+                    "version_info": [
+                        {
+                            "id": "LegalCopyright",
+                            "value": "Microsoft Corporation. All rights reserved."
+                        },
+                        {
+                            "id": "InternalName",
+                            "value": "certprop.dll"
+                        },
+                        {
+                            "id": "FileVersion",
+                            "value": "10.0.19041.844 (WinBuild.160101.0800)"
+                        },
+                        {
+                            "id": "CompanyName",
+                            "value": "Microsoft Corporation"
+                        },
+                        {
+                            "id": "ProductName",
+                            "value": "Microsoft Windows Operating System"
+                        },
+                        {
+                            "id": "ProductVersion",
+                            "value": "10.0.19041.844"
+                        },
+                        {
+                            "id": "FileDescription",
+                            "value": "Microsoft Smartcard Certificate Propagation Service"
+                        },
+                        {
+                            "id": "OriginalFilename",
+                            "value": "certprop.dll"
+                        },
+                        {
+                            "id": "Translation",
+                            "value": "0x0409 0x04b0"
+                        }
+                    ]
                 }
             ],
-            "verdict": "no specific threat"
+            "verdict": "suspicious"
         }
     ]
 }
@@ -602,6 +640,26 @@ FIND_SANDBOX_REPORTS_HTTP_RESPONSE = {
         "resources3",
         "resources4"
     ]
+}
+
+FIND_SANDBOX_REPORTS_NOT_FOUND_HTTP_RESPONSE = {
+    "errors": [],
+    "meta": {
+        "pagination": {
+            "limit": 10,
+            "offset": 0,
+            "total": 69
+        },
+        "powered_by": "falconx-api",
+        "query_time": 0.008271345,
+        "quota": {
+            "in_progress": 2,
+            "total": 100,
+            "used": 47
+        },
+        "trace_id": "trace_id"
+    },
+    "resources": []
 }
 
 FIND_SUBMISSION_ID_HTTP_RESPONSE = {

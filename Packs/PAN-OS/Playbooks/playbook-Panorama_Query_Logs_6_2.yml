@@ -1,0 +1,439 @@
+id: Panorama Query Logs
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Panorama Query Logs
+description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering and
+  wildfire.'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a0d6fdde-6ca0-4bfb-8fe1-b107ef3e0781
+    type: start
+    task:
+      id: a0d6fdde-6ca0-4bfb-8fe1-b107ef3e0781
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 8cc99b6c-6607-4ad3-8581-5526974c4bef
+    type: condition
+    task:
+      id: 8cc99b6c-6607-4ad3-8581-5526974c4bef
+      version: -1
+      name: Is Palo Alto Networks PAN-OS enabled?
+      description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS
+        integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: e5880426-a2ca-4286-807c-23641388b07e
+    type: regular
+    task:
+      id: e5880426-a2ca-4286-807c-23641388b07e
+      version: -1
+      name: Panorama Query Logs
+      description: Query logs
+      script: '|||pan-os-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      action:
+        complex:
+          root: inputs.action
+      addr-dst:
+        complex:
+          root: inputs.addr-dst
+      addr-src:
+        complex:
+          root: inputs.addr-src
+      filedigest:
+        complex:
+          root: inputs.filedigest
+      ip:
+        complex:
+          root: inputs.ip
+      log-type:
+        complex:
+          root: inputs.log_type
+      polling:
+        simple: "true"
+      port-dst:
+        complex:
+          root: inputs.port-dst
+      query:
+        complex:
+          root: inputs.query
+      rule:
+        complex:
+          root: inputs.rule
+      time-generated:
+        complex:
+          root: inputs.time-generated
+      url:
+        complex:
+          root: inputs.url
+      zone-dst:
+        complex:
+          root: inputs.zone-dst
+      zone-src:
+        complex:
+          root: inputs.zone-src
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 58850584-2a54-4ac5-80ec-268f5ed17c1a
+    type: title
+    task:
+      id: 58850584-2a54-4ac5-80ec-268f5ed17c1a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: log_type
+  value: {}
+  required: true
+  description: 'Log type to query. Can be: traffic, threat, wildfire, url or data-filtering.'
+  playbookInputQuery: null
+- key: query
+  value: {}
+  required: false
+  description: The query string by which to match criteria for the logs. This is similar
+    to the query provided in the web interface under the Monitor tab when viewing
+    the logs.
+  playbookInputQuery: null
+- key: time-generated
+  value: {}
+  required: false
+  description: 'The time the log was generated from the timestamp and prior to it.
+    For example: "2019/08/11 01:10:44".'
+  playbookInputQuery: null
+- key: addr-src
+  value: {}
+  required: false
+  description: Source address.
+  playbookInputQuery: null
+- key: addr-dst
+  value: {}
+  required: false
+  description: Destination address.
+  playbookInputQuery: null
+- key: ip
+  value: {}
+  required: false
+  description: Source or destination IP address.
+  playbookInputQuery: null
+- key: zone-src
+  value: {}
+  required: false
+  description: Source zone.
+  playbookInputQuery: null
+- key: zone-dst
+  value: {}
+  required: false
+  description: Destination zone.
+  playbookInputQuery: null
+- key: action
+  value: {}
+  required: false
+  description: Rule action.
+  playbookInputQuery: null
+- key: port-dst
+  value: {}
+  required: false
+  description: Destination port.
+  playbookInputQuery: null
+- key: rule
+  value: {}
+  required: false
+  description: 'Rule name, for example: "Allow all outbound".'
+  playbookInputQuery: null
+- key: url
+  value: {}
+  required: false
+  description: 'URL, for example: "safebrowsing.googleapis.com".'
+  playbookInputQuery: null
+- key: filedigest
+  value: {}
+  required: false
+  description: File hash (for WildFIre logs only).
+  playbookInputQuery: null
+outputs:
+- contextPath: Panorama.Monitor
+  description: Monitor logs object.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Action
+  description: Action taken for the session. Can be "alert", "allow", "deny", "drop",
+    "drop-all-packets", "reset-client", "reset-server", "reset-both", or "block-url".
+  type: string
+- contextPath: Panorama.Monitor.Logs.Application
+  description: Application associated with the session.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Category
+  description: For URL subtype, it is the URL category; For WildFire subtype, it is
+    the verdict on the file and is either ‘malicious’, ‘phishing’, ‘grayware’, or
+    ‘benign’; For other subtypes, the value is ‘any’.
+  type: string
+- contextPath: Panorama.Monitor.Logs.DeviceName
+  description: The hostname of the firewall on which the session was logged.
+  type: string
+- contextPath: Panorama.Monitor.Logs.DestinationAddress
+  description: Original session destination IP address.
+  type: string
+- contextPath: Panorama.Monitor.Logs.DestinationUser
+  description: Username of the user to which the session was sent.
+  type: string
+- contextPath: Panorama.Monitor.Logs.DestinationCountry
+  description: Destination country or internal region for private addresses. Maximum
+    length is 32 bytes.
+  type: string
+- contextPath: Panorama.Monitor.Logs.DestinationPort
+  description: Destination port utilized by the session.
+  type: string
+- contextPath: Panorama.Monitor.Logs.FileDigest
+  description: |-
+    Only for WildFire subtype; all other types do not use this field.
+    The filedigest string shows the binary hash of the file sent to be analyzed by the WildFire service.
+  type: string
+- contextPath: Panorama.Monitor.Logs.FileName
+  description: |-
+    File name or file type when the subtype is file.
+    File name when the subtype is virus.
+    File name when the subtype is wildfire-virus.
+    File name when the subtype is wildfire.
+  type: string
+- contextPath: Panorama.Monitor.Logs.FileType
+  description: |-
+    Specifies the type of file that the firewall forwarded for WildFire analysis.
+    Relevant only for the WildFire subtype; all other types do not use this field.
+  type: string
+- contextPath: Panorama.Monitor.Logs.FromZone
+  description: Zone from which the session originated.
+  type: string
+- contextPath: Panorama.Monitor.Logs.URLOrFilename
+  description: |-
+    The actual URI when the subtype is url.
+    File name or file type when the subtype is file.
+    File name when the subtype is virus.
+    File name when the subtype is wildfire-virus.
+    File name when the subtype is wildfire.
+    URL or file name when the subtype is vulnerability if applicable.
+  type: string
+- contextPath: Panorama.Monitor.Logs.NATDestinationIP
+  description: If destination NAT performed, the post-NAT destination IP address.
+  type: string
+- contextPath: Panorama.Monitor.Logs.NATDestinationPort
+  description: Post-NAT destination port.
+  type: string
+- contextPath: Panorama.Monitor.Logs.NATSourceIP
+  description: If source NAT performed, the post-NAT source IP address.
+  type: string
+- contextPath: Panorama.Monitor.Logs.NATSourcePort
+  description: Post-NAT source port.
+  type: string
+- contextPath: Panorama.Monitor.Logs.PCAPid
+  description: The packet capture (pcap) ID is a 64 bit unsigned integral denoting
+    an ID to correlate threat pcap files with extended pcaps taken as a part of that
+    flow. All threat logs contain either a pcap_id of 0 (no associated pcap), or an
+    ID referencing the extended pcap file.
+  type: string
+- contextPath: Panorama.Monitor.Logs.IPProtocol
+  description: IP protocol associated with the session.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Recipient
+  description: |-
+    Specifies the name of the receiver of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+    Valid only for the WildFire subtype; all other types do not use this field.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Rule
+  description: Name of the rule that the session matched.
+  type: string
+- contextPath: Panorama.Monitor.Logs.RuleID
+  description: ID of the rule that the session matched.
+  type: string
+- contextPath: Panorama.Monitor.Logs.ReceiveTime
+  description: Time the log was received at the management plane.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Sender
+  description: |-
+    Specifies the name of the sender of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+    Valid only for the WildFire subtype; all other types do not use this field.
+  type: string
+- contextPath: Panorama.Monitor.Logs.SessionID
+  description: An internal numerical identifier applied to each session.
+  type: string
+- contextPath: Panorama.Monitor.Logs.DeviceSN
+  description: The serial number of the firewall on which the session was logged.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Severity
+  description: Severity associated with the threat. Can be "informational", "low",
+    "medium", "high", or "critical".
+  type: string
+- contextPath: Panorama.Monitor.Logs.SourceAddress
+  description: Original session source IP address.
+  type: string
+- contextPath: Panorama.Monitor.Logs.SourceCountry
+  description: Source country or internal region for private addresses. Maximum length
+    is 32 bytes.
+  type: string
+- contextPath: Panorama.Monitor.Logs.SourceUser
+  description: Username of the user who initiated the session.
+  type: string
+- contextPath: Panorama.Monitor.Logs.SourcePort
+  description: Source port utilized by the session.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Name
+  description: Palo Alto Networks identifier for the threat. It is a description string
+    followed by a 64-bit numerical identifier.
+  type: string
+- contextPath: Panorama.Monitor.Logs.ID
+  description: Palo Alto Networks ID for the threat.
+  type: string
+- contextPath: Panorama.Monitor.Logs.ToZone
+  description: The zone to which the session was sent.
+  type: string
+- contextPath: Panorama.Monitor.Logs.TimeGenerated
+  description: Time that the log was generated on the dataplane.
+  type: string
+- contextPath: Panorama.Monitor.Logs.URLCategoryList
+  description: A list of the URL filtering categories that the firewall used to enforce
+    policy.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Vsys
+  description: Vsys on the firewall that generated the log.
+  type: string
+- contextPath: Panorama.Monitor.JobID
+  description: Job ID of the log query.
+- contextPath: Panorama.Monitor.Status
+  description: Status of the log query.
+  type: string
+- contextPath: Panorama.Monitor.Message
+  description: Message  of the log query.
+  type: string
+tests:
+- Panorama Query Logs - Test
+fromversion: 6.2.0

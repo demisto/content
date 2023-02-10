@@ -1,0 +1,23 @@
+{
+    "name": "DB2",
+    "description": "This pack's purpose is to provide helpful commands to build a connectivity and run queries on IBM DB2 database.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Shubham Kaushik",
+    "url": "",
+    "email": "its.shubham.kaushik@gmail.com",
+    "created": "2022-03-15T14:38:33Z",
+    "categories": [
+        "Database"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "shubham-sudo"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

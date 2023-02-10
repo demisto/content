@@ -1,0 +1,45 @@
+{
+    "total_count": 32030,
+    "results": [
+        {
+            "alert_id": 1,
+            "timestamp": "2022-02-03T07:49:50.092+01:00",
+            "event_type_ids": [
+                "ps_tcp_ack"
+            ],
+            "normalized": false,
+            "event_type_names": [
+                "TCP ACK portscan"
+            ],
+            "description": "TCP portscan: the attacker sends multiple out-of-state ACK packets to scan the victim's hosts and determine the open ports. This might be intelligence gathering or (the first phase of) an attack (e.g., DoS, exploit)\n\nFailed connections:\n - (scanner) 213.8.143.143  \n    - 192.168.92.12  \n        * 54009 (    1 failed connection(s) [ ACK: 1 ] )\n        * 54010 (    1 failed connection(s) [ ACK: 1 ] )\n        * 54011 (    1 failed connection(s) [ ACK: 1 ] )\n        * 54013 (    1 failed connection(s) [ ACK: 1 ] )\n        * 54017 (    1 failed connection(s) [ ACK: 1 ] )\n",
+            "notes": "",
+            "sensor_id": 9,
+            "sensor_name": "Test1",
+            "engine": "PORTSCAN",
+            "profile_module_name": "Portscan",
+            "profile_id": 0,
+            "case_id": 0,
+            "case_name": "",
+            "l2_proto": "ETHERNET",
+            "l3_proto": "IP",
+            "l4_proto": "TCP",
+            "l7_proto": "UNDEFINED",
+            "vlan": "",
+            "src_mac": "",
+            "dst_mac": "",
+            "src_ip": "213.8.143.143",
+            "dst_ip": "192.168.92.12",
+            "src_port": 0,
+            "dst_port": 0,
+            "hotstart": false,
+            "direction_certain": false,
+            "severity": 2,
+            "status": "Not analyzed",
+            "labels": "",
+            "fea_state": "None",
+            "fea_alert_count": 0,
+            "fea_start": "1970-01-01T01:00:00.000+01:00",
+            "fea_duration_sec": 0
+        }
+    ]
+}

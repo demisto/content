@@ -4,7 +4,7 @@ commonfields:
 name: BuildEWSQuery
 script: ''
 type: python
-subtype: python2
+subtype: python3
 tags:
 - ews
 comment: Returns an EWS query according to the automation's arguments.
@@ -31,8 +31,7 @@ args:
   predefined:
   - "true"
   - "false"
-  description: Removes the prefix from the subject of reply and forward messages (e.g.,
-    FW:).
+  description: Removes the prefix from the subject of reply and forward messages (e.g., FW:).
   defaultValue: "true"
 - name: escapeColons
   auto: PREDEFINED
@@ -50,4 +49,4 @@ runonce: false
 tests:
 - buildewsquery_test
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24398
+dockerimage: demisto/python3:3.10.6.33415

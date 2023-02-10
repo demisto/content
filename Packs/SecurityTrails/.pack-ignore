@@ -1,2 +1,5 @@
 [file:SecurityTrails.yml]
 ignore=IN145
+
+[file:SecurityTrails_image.png]
+ignore=IM111

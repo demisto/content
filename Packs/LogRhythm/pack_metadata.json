@@ -1,7 +1,8 @@
 {
-    "name": "LogRhythm",
-    "description": "LogRhythm security intelligence",
+    "name": "LogRhythm (Deprecated)",
+    "description": "Deprecated. Use LogRhythmRest pack instead.",
     "support": "xsoar",
+    "hidden": true,
     "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
@@ -14,7 +15,6 @@
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar",
-        "marketplacev2"
+        "xsoar"
     ]
 }

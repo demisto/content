@@ -94,7 +94,7 @@ tasks:
       version: -1
       name: List Address Groups
       description: Lists all address groups in PAN-OS.
-      script: '|||panorama-list-address-groups'
+      script: '|||pan-os-list-address-groups'
       type: regular
       iscommand: true
       brand: ""
@@ -164,7 +164,7 @@ tasks:
       version: -1
       name: Register IP address to a tag
       description: Registers IP addresses to a tag.
-      script: '|||panorama-register-ip-tag'
+      script: '|||pan-os-register-ip-tag'
       type: regular
       iscommand: true
       brand: ""
@@ -220,7 +220,7 @@ tasks:
       version: -1
       name: Create Address Group
       description: Creates an address group. Can be "static" or "dynamic".
-      script: '|||panorama-create-address-group'
+      script: '|||pan-os-create-address-group'
       type: regular
       iscommand: true
       brand: ""

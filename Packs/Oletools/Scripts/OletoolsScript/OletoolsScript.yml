@@ -1,0 +1,153 @@
+commonfields:
+  id: Oletools
+  version: -1
+name: Oletools
+script: ''
+type: python
+args:
+- default: false
+  description: The ole command to activate. 
+              oleid - to analyze OLE files to detect specific characteristics usually found in malicious files.
+              oleobj - to extract embedded objects from OLE files.
+              olevba - to extract and analyze VBA Macro source code from MS Office documents (OLE and OpenXML).
+  isArray: false
+  name: ole_command
+  required: true
+  secret: false
+  auto: PREDEFINED
+  predefined:
+    - 'oleid'
+    - 'oleobj'
+    - 'olevba'
+- default: false
+  description: The file to activate the oletools analysis on.
+  isArray: false
+  name: entryID
+  required: true
+  secret: false
+- default: false
+  description: Display all the obfuscated strings with their decoded content (Hex, Base64, StrReverse, Dridex, VBA). Note that this works only with the olevba command.
+  isArray: false
+  name: decode
+  type: String
+  auto: PREDEFINED
+  predefined:
+    - 'true'
+    - 'false'
+  required: false
+  secret: false
+- default: false
+  description: If encrypted office files are encountered, try decryption with this password. (if specified dont specify the non_secret_password parameter)
+  isArray: false
+  name: password
+  required: false
+  secret: true
+- default: false
+  description: If encrypted office files are encountered, try decryption with this password. This argument is non secret for playbook flows. (if specified dont specify the password parameter)
+  isArray: false
+  name: non_secret_password
+  required: false
+comment: This is an automation to run oletools malware analysis for office files. Oletools is a tool for analyzing Microsoft OLE2 files, 
+  such as Microsoft Office documents or Outlook messages, mainly for malware analysis, forensics, and debugging. 
+  This automation allows performing some basic oletools commands from Cortex XSOAR.
+  Note that oletools is open source code and is subject to change.
+outputs:
+- contextPath: Oletools.Oleid.ole_command_result
+  description: Indicator list from the oleid command.
+- contextPath: Oletools.Oleid.file_name
+  description: File name.
+- contextPath: Oletools.Oleid.sha256
+  description: SHA256 hash.
+- contextPath: Oletools.Oleid.ole_command_result.File_format
+  description: Indicator file format.
+- contextPath: Oletools.Oleid.ole_command_result.File_format.Value
+  description: Indicator file format value.
+- contextPath: Oletools.Oleid.ole_command_result.File_format.Ole_Risk
+  description: Indicator file format OLE risk.
+- contextPath: Oletools.Oleid.ole_command_result.File_format.Description
+  description: Indicator file format description.
+- contextPath: Oletools.Oleid.ole_command_result.Container_format
+  description: Indicator container format.
+- contextPath: Oletools.Oleid.ole_command_result.Container_format.Value
+  description: Indicator container format value.
+- contextPath: Oletools.Oleid.ole_command_result.Container_format.Ole_Risk
+  description: Indicator container format OLE risk.
+- contextPath: Oletools.Oleid.ole_command_result.Container_format.Description
+  description: Indicator container format description.
+- contextPath: Oletools.Oleid.ole_command_result.Encrypted
+  description: Indicator encrypted.
+- contextPath: Oletools.Oleid.ole_command_result.Encrypted.Value
+  description: Indicator encrypted value.
+- contextPath: Oletools.Oleid.ole_command_result.Encrypted.Ole_Risk
+  description: Indicator encrypted OLE risk.
+- contextPath: Oletools.Oleid.ole_command_result.Encrypted.Description
+  description: Indicator encrypted description.
+- contextPath: Oletools.Oleid.ole_command_result.VBA_Macros
+  description: Indicator VBA macros.
+- contextPath: Oletools.Oleid.ole_command_result.VBA_Macros.Value
+  description: Indicator VBA macros value.
+- contextPath: Oletools.Oleid.ole_command_result.VBA_Macros.Ole_Risk
+  description: Indicator VBA macros OLE risk.
+- contextPath: Oletools.Oleid.ole_command_result.VBA_Macros.Description
+  description: Indicator VBA macros description.
+- contextPath: Oletools.Oleid.ole_command_result.XLM_Macros
+  description: Indicator XLM macros.
+- contextPath: Oletools.Oleid.ole_command_result.XLM_Macros.Value
+  description: Indicator XLM macros value.
+- contextPath: Oletools.Oleid.ole_command_result.XLM_Macros.Ole_Risk
+  description: Indicator XLM macros OLE risk.
+- contextPath: Oletools.Oleid.ole_command_result.XLM_Macros.Description
+  description: Indicator XLM macros description.
+- contextPath: Oletools.Oleid.ole_command_result.External_Relationships
+  description: Indicator external relationships.
+- contextPath: Oletools.Oleid.ole_command_result.External_Relationships.Value
+  description: Indicator XLM macros value.
+- contextPath: Oletools.Oleid.ole_command_result.External_Relationships.Ole_Risk
+  description: Indicator XLM macros OLE risk.
+- contextPath: Oletools.Oleid.ole_command_result.External_Relationships.Description
+  description: Indicator XLM macros description.
+- contextPath: Oletools.Oleid.ole_command_result.ObjectPool
+  description: Indicator object pool.
+- contextPath: Oletools.Oleid.ole_command_result.ObjectPool.Value
+  description: Indicator object pool value.
+- contextPath: Oletools.Oleid.ole_command_result.ObjectPool.Ole_Risk
+  description: Indicator object pool OLE risk.
+- contextPath: Oletools.Oleid.ole_command_result.ObjectPool.Description
+  description: Indicator object pool description.
+- contextPath: Oletools.Oleid.ole_command_result.Flash_objects
+  description: Indicator flash objects.
+- contextPath: Oletools.Oleid.ole_command_result.Flash_objects.Value
+  description: Indicator Flash objects value.
+- contextPath: Oletools.Oleid.ole_command_result.Flash_objects.Ole_Risk
+  description: Indicator Flash objects OLE risk.
+- contextPath: Oletools.Oleid.ole_command_result.Flash_objects.Description
+  description: Indicator Flash objects description.
+- contextPath: Oletools.Oleobj.ole_command_result.hyperlinks
+  description: List of hyperlinks.
+- contextPath: Oletools.Oleobj.file_name
+  description: File name.
+- contextPath: Oletools.Oleobj.sha256
+  description: SHA256 hash.
+- contextPath: Oletools.Olevba.file_name
+  description: File name.
+- contextPath: Oletools.Olevba.sha256
+  description: SHA256 hash.
+- contextPath: Oletools.Olevba.ole_command_result.macro_analyze
+  description: Macro analyze.
+- contextPath: Oletools.Olevba.ole_command_result.macro_src_code
+  description: Macro source code.
+- contextPath: Oletools.Olevba.ole_command_result.macro_list
+  description: Macro list.
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+- contextPath: DBotScore.Type
+  description: The indicator type.
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+- contextPath: DBotScore.Score
+  description: The actual score.
+subtype: python3
+dockerimage: demisto/parse-emails:1.0.0.32153
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

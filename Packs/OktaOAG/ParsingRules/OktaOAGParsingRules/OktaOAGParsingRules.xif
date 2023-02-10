@@ -1,0 +1,12 @@
+[INGEST:vendor="okta", product="oag", target_dataset="okta_oag_raw", no_hit=keep]
+alter 
+    tmp_date_part = arraystring(regextract(_raw_log, "^(\d{4}\-\d{2}\-\d{2})T"), ""),
+    tmp_time_part = arraystring(regextract(_raw_log, "T(\d{2}\:\d{2}\:\d{2})\."), ""),
+    tmp_mili_part = arraystring(regextract(_raw_log, "\.(\d{3})[\-|\+]"), "")
+| alter 
+    tmp_time_format = to_string(to_epoch(parse_timestamp("%Y-%m-%d %H:%M:%S", arraystring(arraycreate(tmp_date_part, tmp_time_part), " ")), "seconds"))
+| alter 
+    tmp_timeseconds_string = to_integer(arraystring(arraycreate(tmp_time_format, tmp_mili_part), ""))
+| alter 
+    _time = to_timestamp(tmp_timeseconds_string, "millis")
+| fields -tmp_date_part, tmp_time_part, tmp_mili_part, tmp_time_format, tmp_timeseconds_string;

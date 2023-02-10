@@ -1,8 +1,8 @@
 {
-    "name": "MITRE ATT&CK v2",
+    "name": "MITRE ATT&CK",
     "description": "Fetches indicators from MITRE ATT&CK.",
     "support": "xsoar",
-    "currentVersion": "1.0.9",
+    "currentVersion": "1.1.9",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,8 +10,7 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Relationship",
-        "TIM"
+        "Threat Intelligence Management"
     ],
     "useCases": [],
     "keywords": [

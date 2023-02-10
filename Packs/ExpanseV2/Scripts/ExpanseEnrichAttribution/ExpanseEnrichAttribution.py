@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 from typing import Dict, Any, List, Optional
-import traceback
 
 
 ''' COMMAND FUNCTION '''
@@ -93,7 +92,6 @@ def main():
         enrich_result = enrich_command(demisto.args())
         return_results(enrich_result)
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute ExpanseEnrichAttribution. Error: {str(ex)}')
 
 

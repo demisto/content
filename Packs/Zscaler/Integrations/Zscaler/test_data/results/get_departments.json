@@ -1,0 +1,20 @@
+{
+  "Type": 1,
+  "Contents": [
+    {
+      "id": 11,
+      "name": "Test Department"
+    }
+  ],
+  "ContentsFormat": "json",
+  "ReadableContentsFormat": "markdown",
+  "HumanReadable": "### Departments (1)\n|id|name|\n|---|---|\n| 11 | Test Department |\n",
+  "EntryContext": {
+    "Zscaler.Departments": [
+      {
+        "id": 11,
+        "name": "Test Department"
+      }
+    ]
+  }
+}

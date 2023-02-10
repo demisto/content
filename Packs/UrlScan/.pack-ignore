@@ -1,2 +1,5 @@
 [file:UrlScan.yml]
-ignore=IN145
+ignore=IN145,IN124
+
+[file:UrlScan_image.png]
+ignore=IM111

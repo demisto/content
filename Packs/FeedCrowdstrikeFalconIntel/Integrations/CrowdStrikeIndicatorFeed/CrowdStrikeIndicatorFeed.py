@@ -7,10 +7,10 @@ from CrowdStrikeApiModule import *  # noqa: E402
 
 # IMPORTS
 from datetime import datetime
-import requests
+import urllib3
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
+
 
 XSOAR_TYPES_TO_CROWDSTRIKE = {
     'account': "username",
@@ -82,12 +82,13 @@ class Client(CrowdStrikeClient):
 
     def __init__(self, credentials, base_url, include_deleted, type, limit, tlp_color=None, feed_tags=None,
                  malicious_confidence=None, filter=None, generic_phrase=None, insecure=True, proxy=False,
-                 first_fetch=None, create_relationships=True):
+                 first_fetch=None, create_relationships=True, timeout='10'):
         params = assign_params(credentials=credentials,
                                server_url=base_url,
                                insecure=insecure,
                                ok_codes=tuple(),
-                               proxy=proxy)
+                               proxy=proxy,
+                               timeout=timeout)
         super().__init__(params)
         self.type = type
         self.malicious_confidence = malicious_confidence
@@ -109,13 +110,14 @@ class Client(CrowdStrikeClient):
         )
         return response
 
-    def fetch_indicators(self, limit: Optional[int], offset: Optional[int] = 0, fetch_command=False) -> list:
+    def fetch_indicators(self, limit: Optional[int], offset: Optional[int] = 0, fetch_command=False, manual_last_run=0) -> list:
         """ Get indicators from CrowdStrike API
 
         Args:
             limit(int): number of indicators to return
             offset: indicators offset
             fetch_command: In order not to update last_run time if it is not fetch command
+            manual_last_run: The minimum timestamp to fetch indicators by
 
         Returns:
             (list): parsed indicators
@@ -129,6 +131,13 @@ class Client(CrowdStrikeClient):
             malicious_confidence_fql = ','.join([f"malicious_confidence:'{item}'"
                                                  for item in self.malicious_confidence])
             filter = f"{filter}+({malicious_confidence_fql})" if filter else f'({malicious_confidence_fql})'
+
+        if fetch_command:
+            offset = demisto.getIntegrationContext().get('offset', 0)
+            demisto.info(f' current offset: {offset}')
+
+        if manual_last_run:
+            filter = f'{filter}+(last_updated:>={manual_last_run})' if filter else f'(last_updated:>={manual_last_run})'
 
         if fetch_command:
             if last_run := self.get_last_run():
@@ -147,6 +156,14 @@ class Client(CrowdStrikeClient):
         response = self.get_indicators(params=params)
         timestamp = self.set_last_run()
 
+        last_modified_time = demisto.getIntegrationContext().get('last_modified_time')
+        resources = response.get('resources', [])
+        if fetch_command and resources and resources[-1].get('last_updated') == last_modified_time:
+            offset = demisto.getIntegrationContext().get('offset', 0) + limit
+        else:
+            offset = 0
+        demisto.info(f' set new offset: {offset}')
+
         # need to fetch all indicators after the limit
         if pagination := response.get('meta', {}).get('pagination'):
             pagination_offset = pagination.get('offset', 0)
@@ -156,7 +173,10 @@ class Client(CrowdStrikeClient):
                 timestamp = response.get('resources', [])[-1].get('last_updated')
 
         if response.get('meta', {}).get('pagination', {}).get('total', 0) and fetch_command:
-            demisto.setIntegrationContext({'last_modified_time': timestamp})
+            ctx = demisto.getIntegrationContext()
+            ctx.update({'last_modified_time': timestamp})
+            ctx.update({'offset': offset})
+            demisto.setIntegrationContext(ctx)
             demisto.info(f'set last_run: {timestamp}')
 
         indicators = self.create_indicators_from_response(response, self.tlp_color, self.feed_tags, self.create_relationships)
@@ -290,8 +310,10 @@ def create_relationships(field: str, indicator: dict, resource: dict) -> list:
         List of relationships objects.
     """
     relationships = []
-
     for relation in resource[field]:
+        if field == 'relations' and not CROWDSTRIKE_TO_XSOAR_TYPES.get(relation.get('type')):
+            demisto.debug(f"The related indicator type {relation.get('type')} is not supported in XSOAR.")
+            continue
         related_indicator_type = CROWDSTRIKE_TO_XSOAR_TYPES[field] if field != 'relations' else \
             CROWDSTRIKE_TO_XSOAR_TYPES[relation['type']]
         relation_name = INDICATOR_TO_CROWDSTRIKE_RELATION_DICT[related_indicator_type].get(indicator['type'], indicator['type']) \
@@ -303,7 +325,7 @@ def create_relationships(field: str, indicator: dict, resource: dict) -> list:
             entity_a_type=indicator['type'],
             entity_b=relation['indicator'] if field == 'relations' else relation,
             entity_b_type=related_indicator_type,
-            reverse_name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES[relation_name]
+            reverse_name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES.get(relation_name, '')
         ).to_indicator()
 
         relationships.append(indicator_relation)
@@ -343,10 +365,12 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
 
     offset = arg_to_number(args.get('offset', 0))
     limit = arg_to_number(args.get('limit', 50))
+    last_run = arg_to_number(args.get('last_run', 0))
     parsed_indicators = client.fetch_indicators(
         limit=limit,
         offset=offset,
-        fetch_command=False
+        fetch_command=False,
+        manual_last_run=last_run
     )
     if outputs := copy.deepcopy(parsed_indicators):
         for indicator in outputs:
@@ -406,9 +430,10 @@ def main() -> None:
     filter = params.get('filter')
     generic_phrase = params.get('generic_phrase')
     max_fetch = arg_to_number(params.get('max_indicator_to_fetch')) if params.get('max_indicator_to_fetch') else 10000
-    max_fetch = min(max_fetch, 10000)
+    max_fetch = min(max_fetch, 10000)  # type: ignore
     feed_tags = argToList(params.get('feedTags'))
     create_relationships = params.get('create_relationships', True)
+    timeout = params.get('timeout')
 
     args = demisto.args()
 
@@ -430,7 +455,8 @@ def main() -> None:
             generic_phrase=generic_phrase,
             limit=max_fetch,
             first_fetch=first_fetch,
-            create_relationships=create_relationships
+            create_relationships=create_relationships,
+            timeout=timeout
         )
 
         if command == 'test-module':
@@ -449,7 +475,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

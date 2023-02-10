@@ -32,6 +32,35 @@ configuration:
   - ' Move to SPAM'
   required: true
   type: 15
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  required: false
+  type: 1
 description: PhishUp prevents phishing attacks, protects your staff and your brand
   with AI
 display: PhishUp
@@ -59,6 +88,21 @@ script:
     - contextPath: PhishUp.Score
       description: Phishup Engine Url Score
       type: Number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: URL.Data
+      description: The URL
+      type: String
   - deprecated: false
     description: Get chosen action from PhishUp instance
     execution: false
@@ -82,7 +126,7 @@ script:
     - contextPath: PhishUp.Evaluation
       description: returns "Phish" if any response has "Phish" result
       type: String
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: false
   longRunning: false

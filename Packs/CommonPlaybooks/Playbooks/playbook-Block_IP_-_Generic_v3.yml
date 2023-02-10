@@ -280,7 +280,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -3558,3 +3558,6 @@ tests:
 - Block IP - Generic V3_Test
 fromversion: 6.0.0
 system: true
+marketplaces:
+  - xsoar
+  - marketplacev2

@@ -1,0 +1,523 @@
+id: Digital Shadows - URL_IoC Assessment & Enrichment
+version: -1
+name: Digital Shadows - URL_IoC Assessment & Enrichment
+description: Enrichment of URL IOC types - sub-playbook for IOC Assessment & Enrichment playbook
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 7fd1819c-3159-40fa-8ea7-ea470bafc0c2
+    type: start
+    task:
+      id: 7fd1819c-3159-40fa-8ea7-ea470bafc0c2
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '54'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: 163ba693-6484-4a5a-8c52-94bf3b2d4ff7
+    type: title
+    task:
+      id: 163ba693-6484-4a5a-8c52-94bf3b2d4ff7
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '44':
+    id: '44'
+    taskid: ce21f415-658f-4034-80df-297f52c762f3
+    type: regular
+    task:
+      id: ce21f415-658f-4034-80df-297f52c762f3
+      version: -1
+      name: ds-search - THREAT FEEDS
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - '45'
+    scriptarguments:
+      extend-context:
+        simple: URL Associated Indicators=content.entity.indicators.title
+      filter_types:
+        simple: INDICATOR_FEED
+      query:
+        simple: ${inputs.IoC_URL}
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '45':
+    id: '45'
+    taskid: ae8bffb9-db81-4338-892d-e6342dcd3e5e
+    type: condition
+    task:
+      id: ae8bffb9-db81-4338-892d-e6342dcd3e5e
+      version: -1
+      name: is Associated Indicators blank?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      no:
+      - '56'
+      yes:
+      - '13'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: ${URL Associated Indicators}
+            iscontext: true
+    - label: no
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${URL Associated Indicators}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '48':
+    id: '48'
+    taskid: 0166ffce-87dc-4f24-87fa-dd903f5413d7
+    type: regular
+    task:
+      id: 0166ffce-87dc-4f24-87fa-dd903f5413d7
+      version: -1
+      name: ds-search - INTEL UPDATES
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - '49'
+      - '44'
+    scriptarguments:
+      extend-context:
+        simple: URL Intel Summary=content.entity.summary
+      filter_types:
+        simple: INTEL_INCIDENT
+      query:
+        simple: ${inputs.IoC_URL}
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '49':
+    id: '49'
+    taskid: dea5655a-f9c9-4ee7-8e37-d539c3493347
+    type: regular
+    task:
+      id: dea5655a-f9c9-4ee7-8e37-d539c3493347
+      version: -1
+      name: AddEvidence - INTEL UPDATES
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      desc:
+        simple: Summary
+      description:
+        simple: ${URL Intel Summary}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '50':
+    id: '50'
+    taskid: e129c3e2-1a55-43cd-8a1d-0e2c2bc04d4c
+    type: regular
+    task:
+      id: e129c3e2-1a55-43cd-8a1d-0e2c2bc04d4c
+      version: -1
+      name: ds-search - PROFILE INTELLIGENCE
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - '51'
+      - '48'
+    scriptarguments:
+      extend-context:
+        simple: URL Profile Name=content.entity.primaryTag.name
+      filter_types:
+        simple: INTELLIGENCE
+      query:
+        simple: ${inputs.IoC_URL}
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '51':
+    id: '51'
+    taskid: 7a57d17d-5bb6-4a68-8835-3ca5fcfcc85c
+    type: regular
+    task:
+      id: 7a57d17d-5bb6-4a68-8835-3ca5fcfcc85c
+      version: -1
+      name: AddEvidence - INTEL PROFILES
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      desc:
+        simple: Profiles
+      description:
+        simple: ${URL Profile Name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '52':
+    id: '52'
+    taskid: 83f66454-0ab7-4664-8312-cfc8480624d6
+    type: regular
+    task:
+      id: 83f66454-0ab7-4664-8312-cfc8480624d6
+      version: -1
+      name: ds-search - MITRE TECHNIQUES
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - '53'
+      - '50'
+    scriptarguments:
+      extend-context:
+        simple: URL TTP Profiles=content.entity.primaryTag.name
+      filter_types:
+        simple: TECHNIQUE
+      query:
+        simple: ${inputs.IoC_URL}
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '53':
+    id: '53'
+    taskid: 67c74312-b15f-417b-8d2b-43ac9cae7fc8
+    type: regular
+    task:
+      id: 67c74312-b15f-417b-8d2b-43ac9cae7fc8
+      version: -1
+      name: AddEvidence - MITRE TECHNIQUES
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      desc:
+        simple: Associated TTPs
+      description:
+        simple: ${URL TTP Profiles}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '54':
+    id: '54'
+    taskid: 10aaac56-a8e4-4d3a-80dc-91115a52fa60
+    type: regular
+    task:
+      id: 10aaac56-a8e4-4d3a-80dc-91115a52fa60
+      version: -1
+      name: ds-search - CONFIRMED ACTIVITY
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - '55'
+      - '52'
+    scriptarguments:
+      extend-context:
+        simple: URL Confirmed Activity=total
+      filter_types:
+        simple: INDICATOR_FEED
+      query:
+        simple: ${inputs.IoC_URL}
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '55':
+    id: '55'
+    taskid: 2b55d178-f59b-46bb-8c12-4f4056b8456d
+    type: regular
+    task:
+      id: 2b55d178-f59b-46bb-8c12-4f4056b8456d
+      version: -1
+      name: AddEvidence - CONFIRMED ACTIVITY
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      desc:
+        simple: Confirmed Malicious Activity Count
+      description:
+        simple: ${URL Confirmed Activity}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '56':
+    id: '56'
+    taskid: d95005fe-c105-458d-8444-ccba7209a25e
+    type: regular
+    task:
+      id: d95005fe-c105-458d-8444-ccba7209a25e
+      version: -1
+      name: |
+        Print Associated Indicators
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      value:
+        simple: ${URL Associated Indicators}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1290,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IoC_URL
+  value:
+    complex:
+      root: URL
+      filters:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: URL
+            iscontext: true
+          right:
+            value:
+              simple: portal-digitalshadows.com
+      accessor: Data
+      transformers:
+      - operator: uniq
+  required: false
+  description: A Digital Shadows ShadowSearch query containing URLs
+  playbookInputQuery:
+outputs:
+- contextPath: DBotScore.Indicator
+  description: Indicator Value
+  type: string
+- contextPath: DBotScore.Type
+  description: Indicator Type
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

@@ -3,10 +3,11 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Dict
 from urllib.parse import quote
+import urllib3
 
 # disable insecure warnings
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'
@@ -49,6 +50,26 @@ def parse_outputs(users_data):
         return user_readable, user_outputs
 
 
+def create_account_outputs(users_outputs: (list[dict[str, Any]] | dict[str, Any])) -> list:
+    if not isinstance(users_outputs, list):
+        users_outputs = [users_outputs]
+
+    accounts = []
+    for user_outputs in users_outputs:
+        accounts.append({
+            'Type': 'Azure AD',
+            'DisplayName': user_outputs.get('DisplayName'),
+            'Username': user_outputs.get('UserPrincipalName'),
+            'JobTitle': user_outputs.get('JobTitle'),
+            'Email': {'Address': user_outputs.get('Mail')},
+            'TelephoneNumber': user_outputs.get('MobilePhone'),
+            'ID': user_outputs.get('ID'),
+            'Office': user_outputs.get('OfficeLocation')
+        })
+
+    return accounts
+
+
 def get_unsupported_chars_in_user(user: Optional[str]) -> set:
     """
     Extracts the invalid user characters found in the provided string.
@@ -64,13 +85,17 @@ class MsGraphClient:
     """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
-                 redirect_uri, auth_code):
-        grant_type = AUTHORIZATION_CODE if self_deployed else CLIENT_CREDENTIALS
+                 redirect_uri, auth_code, handle_error, certificate_thumbprint: Optional[str] = None,
+                 private_key: Optional[str] = None,
+                 ):
+        grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
         resource = None if self_deployed else ''
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                                          base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
                                          redirect_uri=redirect_uri, auth_code=auth_code, grant_type=grant_type,
-                                         resource=resource)
+                                         resource=resource, certificate_thumbprint=certificate_thumbprint,
+                                         private_key=private_key)
+        self.handle_error = handle_error
 
     #  If successful, this method returns 204 No Content response code.
     #  Using resp_type=text to avoid parsing error.
@@ -158,11 +183,14 @@ class MsGraphClient:
         except Exception as e:
             raise e
 
-    def list_users(self, properties, page_url):
+    def list_users(self, properties, page_url, filters):
         if page_url:
             response = self.ms_client.http_request(method='GET', url_suffix='users', full_url=page_url)
         else:
-            response = self.ms_client.http_request(method='GET', url_suffix='users', params={'$select': properties})
+            response = self.ms_client.http_request(method='GET', url_suffix='users',
+                                                   headers={"ConsistencyLevel": "eventual"},
+                                                   params={'$filter': filters, '$select': properties, "$count": "true"})
+
         next_page_url = response.get('@odata.nextLink')
         users = response.get('value')
         return users, next_page_url
@@ -205,6 +233,22 @@ class MsGraphClient:
         )
 
 
+def suppress_errors_with_404_code(func):
+    def wrapper(client: MsGraphClient, args: Dict):
+        try:
+            return func(client, args)
+        except NotFoundError as e:
+            if client.handle_error:
+                if (user := args.get("user", '___')) in str(e):
+                    human_readable = f'#### User -> {user} does not exist'
+                    return human_readable, None, None
+                elif (manager := args.get('manager', '___')) in str(e):
+                    human_readable = f'#### Manager -> {manager} does not exist'
+                    return human_readable, None, None
+            raise
+    return wrapper
+
+
 def test_function(client, _):
     """
        Performs basic GET request to check if the API is reachable and authentication is successful.
@@ -218,13 +262,12 @@ def test_function(client, _):
             # for self deployed app
             raise Exception("When using a self-deployed configuration, "
                             "Please enable the integration and run the !msgraph-user-test command in order to test it")
-        if not demisto.params().get('auth_code') or not demisto.params().get('redirect_uri'):
-            raise Exception("You must enter an authorization code in a self-deployed configuration.")
 
     client.ms_client.http_request(method='GET', url_suffix='users/')
     return response, None, None
 
 
+@suppress_errors_with_404_code
 def disable_user_account_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.disable_user_account_session(user)
@@ -232,6 +275,7 @@ def disable_user_account_command(client: MsGraphClient, args: Dict):
     return human_readable, None, None
 
 
+@suppress_errors_with_404_code
 def unblock_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.unblock_user(user)
@@ -240,6 +284,7 @@ def unblock_user_command(client: MsGraphClient, args: Dict):
     return human_readable, None, None
 
 
+@suppress_errors_with_404_code
 def delete_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.delete_user(user)
@@ -275,10 +320,16 @@ def create_user_command(client: MsGraphClient, args: Dict):
 
     user_readable, user_outputs = parse_outputs(user_data)
     human_readable = tableToMarkdown(name=f"{user} was created successfully:", t=user_readable, removeNull=True)
-    outputs = {'MSGraphUser(val.ID == obj.ID)': user_outputs}
+    accounts = create_account_outputs(user_outputs)
+    outputs = {
+        'MSGraphUser(val.ID == obj.ID)': user_outputs,
+        'Account(obj.ID == val.ID)': accounts
+    }
+
     return human_readable, outputs, user_data
 
 
+@suppress_errors_with_404_code
 def update_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     updated_fields = args.get('updated_fields')
@@ -287,6 +338,7 @@ def update_user_command(client: MsGraphClient, args: Dict):
     return get_user_command(client, args)
 
 
+@suppress_errors_with_404_code
 def change_password_user_command(client: MsGraphClient, args: Dict):
     user = str(args.get('user'))
     password = str(args.get('password'))
@@ -329,18 +381,27 @@ def get_user_command(client: MsGraphClient, args: Dict):
         return human_readable, {}, error_message
 
     user_readable, user_outputs = parse_outputs(user_data)
+    accounts = create_account_outputs(user_outputs)
     human_readable = tableToMarkdown(name=f"{user} data", t=user_readable, removeNull=True)
-    outputs = {'MSGraphUser(val.ID == obj.ID)': user_outputs}
+    outputs = {
+        'MSGraphUser(val.ID == obj.ID)': user_outputs,
+        'Account(obj.ID == val.ID)': accounts
+    }
     return human_readable, outputs, user_data
 
 
 def list_users_command(client: MsGraphClient, args: Dict):
     properties = args.get('properties', 'id,displayName,jobTitle,mobilePhone,mail')
     next_page = args.get('next_page', None)
-    users_data, result_next_page = client.list_users(properties, next_page)
+    filters = args.get('filter', None)
+    users_data, result_next_page = client.list_users(properties, next_page, filters)
     users_readable, users_outputs = parse_outputs(users_data)
+    accounts = create_account_outputs(users_outputs)
     metadata = None
-    outputs = {'MSGraphUser(val.ID == obj.ID)': users_outputs}
+    outputs = {
+        'MSGraphUser(val.ID == obj.ID)': users_outputs,
+        'Account(obj.ID == val.ID)': accounts
+    }
 
     if result_next_page:
         metadata = "To get further results, enter this to the next_page parameter:\n" + str(result_next_page)
@@ -353,6 +414,7 @@ def list_users_command(client: MsGraphClient, args: Dict):
     return human_readable, outputs, users_data
 
 
+@suppress_errors_with_404_code
 def get_direct_reports_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
 
@@ -370,6 +432,7 @@ def get_direct_reports_command(client: MsGraphClient, args: Dict):
     return human_readable, outputs, raw_reports
 
 
+@suppress_errors_with_404_code
 def get_manager_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     manager_data = client.get_manager(user)
@@ -384,6 +447,7 @@ def get_manager_command(client: MsGraphClient, args: Dict):
     return human_readable, outputs, manager_data
 
 
+@suppress_errors_with_404_code
 def assign_manager_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     manager = args.get('manager')
@@ -393,6 +457,7 @@ def assign_manager_command(client: MsGraphClient, args: Dict):
     return human_readable, None, None
 
 
+@suppress_errors_with_404_code
 def revoke_user_session_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.revoke_user_session(user)
@@ -403,14 +468,26 @@ def revoke_user_session_command(client: MsGraphClient, args: Dict):
 def main():
     params: dict = demisto.params()
     url = params.get('host', '').rstrip('/') + '/v1.0/'
-    tenant = params.get('tenant_id')
-    auth_and_token_url = params.get('auth_id', '')
-    enc_key = params.get('enc_key')
+    tenant = params.get('creds_tenant_id', {}).get('password', '') or params.get('tenant_id', '')
+    auth_and_token_url = params.get('creds_auth_id', {}).get('password', '') or params.get('auth_id', '')
+    enc_key = params.get('creds_enc_key', {}).get('password', '') or params.get('enc_key', '')
     verify = not params.get('insecure', False)
     self_deployed: bool = params.get('self_deployed', False)
     redirect_uri = params.get('redirect_uri', '')
-    auth_code = params.get('auth_code', '')
+    auth_code = params.get('creds_auth_id', {}).get('password', '') or params.get('auth_code', '')
     proxy = params.get('proxy', False)
+    handle_error = argToBoolean(params.get('handle_error', 'true'))
+    certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or params.get('certificate_thumbprint', '')
+    private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
+                   or params.get('private_key', ''))
+    if not self_deployed and not enc_key:
+        raise DemistoException('Key must be provided. For further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+    if self_deployed and ((auth_code and not redirect_uri) or (not auth_code and redirect_uri)):
+        raise DemistoException('Please provide both Application redirect URI and Authorization code '
+                               'for Authorization Code flow, or None for the Client Credentials flow')
+    elif not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
     commands = {
         'msgraph-user-test': test_function,
@@ -437,7 +514,9 @@ def main():
         client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
                                               app_name=APP_NAME, base_url=url, verify=verify, proxy=proxy,
                                               self_deployed=self_deployed, redirect_uri=redirect_uri,
-                                              auth_code=auth_code)
+                                              auth_code=auth_code, handle_error=handle_error,
+                                              certificate_thumbprint=certificate_thumbprint,
+                                              private_key=private_key)
         human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
         return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 

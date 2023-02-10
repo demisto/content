@@ -1,0 +1,140 @@
+[MODEL: dataset="Cisco_SMA_raw"]
+filter (_raw_log contains "system_logs" or _raw_log contains "ftpd_logs" or _raw_log contains "euqgui_logs: Info:" or _raw_log contains "euqgui_logs: Info: login:" or _raw_log contains "audit_logs") and (_raw_log not contains "euqgui_logs: Info: logout:"  or _raw_log not contains "Event: User logged out" or _raw_log not contains "Event: User input was" or _raw_log not contains "Event: Successful login" or _raw_log not contains "Event: Permission denied" or _raw_log not contains "Event: User visited the web page")
+| alter date = arrayindex(regextract(_raw_log,"(\w+\s\d+)"),0),
+		time = arrayindex(regextract(_raw_log,"\s(\d+\:\d+\:\d+)"),0)
+| alter Timestamp = concat (date, " ",time)
+| alter Message = arrayindex(regextract(_raw_log,"\w+\s\d+\s\d+\:\d+\:\d+\s\w+\:\s[A-Z]\w+\:([^\>?\)]+)"),0),
+		log_category = arrayindex(regextract(_raw_log,"\w+\s\d+\s\d+\:\d+\:\d+\s(\w+)"),0),
+		Username1 = arrayindex(regextract(_raw_log,"U?u?ser\s?\:?\s([^\s?\,]+)"),0),
+		username2 = arrayindex(regextract(_raw_log,"login\S+\suser\:([^\s]+)"),0),
+        username3=arrayindex(regextract(_raw_log,"user:(\w+)\s"),0)
+| alter username = coalesce(Username1,username2,username3)
+| alter session = arrayindex(regextract(_raw_log,"ID:(\d+)"),0),
+		Filename = arrayindex(regextract(_raw_log,"(\S+)\s\d+\sbytes"),0),
+		source_ip1 = arrayindex(regextract(_raw_log,"from\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+		source_ip2 = arrayindex(regextract(_raw_log,"Source\sIP\:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+        source_ip3=arrayindex(regextract(_raw_log,"req:([\d.]+)\s"),0)
+| alter sourceip = coalesce(source_ip2, source_ip1,source_ip3)
+| alter appliance = arrayindex(regextract(_raw_log,"Appliance:\s([^\,]+)"),0),
+		location = arrayindex(regextract(_raw_log,"Location\:\s([^\,]+)"),0),
+		event = arrayindex(regextract(_raw_log,"Event\:\s([^\.]+)"),0),
+        httpMethod=arrayindex(regextract(_raw_log,"\s(\w+)\s\/"),0),
+        url=arrayindex(regextract(_raw_log,"\/([\w\/.-=?]+)\sHTTP"),0),
+        id=arrayindex(regextract(_raw_log,"id:(\w+)\s"),0)
+| alter
+    xdm.event.description = Message,
+    xdm.observer.type = log_category,
+    xdm.source.user.username = Username,
+    xdm.target.user.identifier = Session,
+    xdm.target.file.filename = Filename,
+    xdm.source.ipv4 = sourceip,
+    xdm.target.resource.value = location,
+    xdm.target.resource.name = appliance,
+    xdm.event.type = event,
+    xdm.network.http.method=httpMethod,
+    xdm.network.http.url=url,
+    xdm.source.user.identifier=id;
+​
+filter _raw_log contains "cli_logs" or _raw_log contains "Event: User logged out" or _raw_log contains "Event: User input was" or _raw_log contains "Event: Successful login" or _raw_log contains "Event: Permission denied" or _raw_log contains "Event: User visited the web page"
+    or _raw_log contains "euqgui_logs: Info: login:" or _raw_log contains "euqgui_logs: Info: logout:"
+| alter date = arrayindex(regextract(_raw_log,"(\w+\s\d+)"),0),
+		time = arrayindex(regextract(_raw_log,"\s(\d+\:\d+\:\d+)"),0)
+| alter Timestamp = concat (date, " ",time)
+| alter Message1 = arrayindex(regextract(_raw_log,"PID\s\d+\:\s([^\@]+)"),0),
+		Message2 = arrayindex(regextract(_raw_log,"\w+\s\d+\s\d+\:\d+\:\d+\s\w+\:\s[A-Z]\w+\:([^\!]+)"),0)
+| alter Message = coalesce(Message1,Message2)
+| alter log_category = arrayindex(regextract(_raw_log,"\w+\s\d+\s\d+\:\d+\:\d+\s(\w+)"),0),
+		Username1 = arrayindex(regextract(_raw_log,"U?u?ser\s?\:?\s([^\s?\,]+)"),0),
+		username2 = arrayindex(regextract(_raw_log,"login\S+\suser\:([^\s]+)"),0)
+| alter username = coalesce(Username1,username2)
+| alter Process_id = arrayindex(regextract(_raw_log,"PID\s(\d+)"),0),
+		Command = arrayindex(regextract(_raw_log,"command:\s\'?([^\'?\"]+)"),0),
+		destination_ip = arrayindex(regextract(_raw_log,"on\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+		source_ip1 = arrayindex(regextract(_raw_log,"from\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+		source_ip2 = arrayindex(regextract(_raw_log,"Source\sIP\:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0)
+| alter sourceip = coalesce(source_ip2, source_ip1)
+| alter appliance = arrayindex(regextract(_raw_log,"Appliance:\s([^\,]+)"),0),
+		location = arrayindex(regextract(_raw_log,"Location\:\s([^\,]+)"),0),
+		event = arrayindex(regextract(_raw_log,"Event\:\s([^\.]+)"),0)
+| alter
+    xdm.event.description = Message,
+    xdm.observer.type = log_category,
+    xdm.source.user.username = Username,
+    xdm.source.process.pid = to_number(Process_id),
+    xdm.intermediate.process.command_line = command,
+    xdm.source.host.ipv4_addresses = arraycreate(coalesce(destination_ip, "")),
+    xdm.source.ipv4 = Sourceip,
+    xdm.observer.product = appliance,
+    xdm.intermediate.process.executable.path = location,
+    xdm.event.type = event;
+​
+filter
+    _raw_log contains "mail_logs"
+| alter date = arrayindex(regextract(_raw_log,"(\w+\s\d+)"),0),
+		time = arrayindex(regextract(_raw_log,"\s(\d+\:\d+\:\d+)"),0)
+| alter Timestamp = concat (date, " ",time)
+| alter Message = arrayindex(regextract(_raw_log,"mail\_logs\:\s[A-Z][^\s]+([^\!]+)"),0),
+		log_category = arrayindex(regextract(_raw_log,"\w+\s\d+\s\d+\:\d+\:\d+\s(\w+)"),0),
+		Source_ip = arrayindex(regextract(_raw_log,"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+		Message_ID = arrayindex(regextract(_raw_log,"Message\-ID\s\'?\<([^\>]+)"),0),
+		Subject = arrayindex(regextract(_raw_log,"Subject\s([^\s]+)"),0),
+		hostname1 = arrayindex(regextract(_raw_log,"Hostname\=([^\]]+)"),0),
+		hostname2 = arrayindex(regextract(_raw_log,"\shost\s([^\s]+)"),0)
+| alter Hostname = coalesce(hostname1,hostname2)
+| alter InternalId = arrayindex(regextract(_raw_log,"InternalId\=(\d+)"),0),
+		sender1 = arrayindex(regextract(_raw_log,"mailfrom\s\S+\s([^\s]+)"),0),
+		sender2 = arrayindex(regextract(_raw_log,"bytes\sfrom\s\<?([^\"\>?]+)"),0),
+		sender3 = arrayindex(regextract(_raw_log,"Response\s\S+\s([^\s]+)"),0),
+		sender4 = arrayindex(regextract(_raw_log,"Message\-ID\s([^\']+)"),0),
+		sender5 = arrayindex(regextract(_raw_log,"\'from\'\,\s([^\s]+)"),0),
+		sender6 = arrayindex(regextract(_raw_log,"\'from\'\,\s\'([^\>]+)"),0)
+| alter sender = coalesce(sender1,sender2,sender3,sender4,sender5,sender6)
+| alter verified = arrayindex(regextract(_raw_log,"verified\s(\w+)"),0),
+		Mailer_Identifier = arrayindex(regextract(_raw_log,"MID\s(\d+)"),0),
+		reciver1 = arrayindex(regextract(_raw_log,"to\'?\,\s([^\%]+)"),0),
+		reciver2 = arrayindex(regextract(_raw_log,"To\:\s\<?([^\s\>?]+)"),0),
+		reciver3 = arrayindex(regextract(_raw_log,"\'to\'\,\s\'([^\>?\']+)"),0)
+| alter reciver = coalesce(reciver1,reciver2,reciver3)
+| alter protocol = arrayindex(regextract(_raw_log,"New\s(\w+)"),0),
+		attachment = arrayindex(regextract(_raw_log,"attachment\s\'?([^\']+)"),0),
+		signature_status = arrayindex(regextract(_raw_log,"(\w+)\s\(v\="),0)
+| alter
+    xdm.event.description = Message,
+    xdm.observer.type = log_category,
+    xdm.email.subject = Subject,
+    xdm.source.host.ipv4_addresses = arraycreate(coalesce(Source_ip, "")),
+    xdm.email.message_id = Message_ID,
+    xdm.target.host.hostname = Hostname,
+    xdm.observer.unique_identifier = InternalId,
+    xdm.network.application_protocol = protocol,
+    xdm.email.sender = sender,
+    xdm.email.recipients = arraycreate(coalesce(reciver, "")),
+    xdm.email.attachment.is_signed = to_boolean(verified),
+    xdm.email.attachment.signature_status = signature_status,
+    xdm.email.attachment.filename = attachment,
+    xdm.session_context_id = Mailer_Identifier;
+​
+filter
+    _raw_log contains "gui_logs: Info: req:" or _raw_log contains "euqgui_logs: Info: req:"
+| alter date = arrayindex(regextract(_raw_log,"(\w+\s\d+)"),0),
+		time = arrayindex(regextract(_raw_log,"\s(\d+\:\d+\:\d+)"),0)
+| alter Timestamp = concat (date, " ",time)
+| alter Message = arrayindex(regextract(_raw_log,"I?i?nfo\:\s([^\!]+)"),0),
+		log_category = arrayindex(regextract(_raw_log,"\w+\s\d+\s\d+\:\d+\:\d+\s(\w+)"),0),
+		Username = arrayindex(regextract(_raw_log,"U?u?ser\s?\:?([^\s]+)"),0),
+		source_ip = arrayindex(regextract(_raw_log,"req\:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+		id = arrayindex(regextract(_raw_log,"id\:(\S+)"),0),
+		http_status_code = arrayindex(regextract(_raw_log,"id\:\S+\s(\d+)"),0),
+		http_method = arrayindex(regextract(_raw_log,"id\:\S+\s\d+\s(\w+)"),0),
+		URI = arrayindex(regextract(_raw_log,"id\:\S+\s\d+\s\w+\s(\S+)"),0),
+		user_agent = arrayindex(regextract(_raw_log,"id\:\S+\s\d+\s\w+\s\S+\s[^\s]+\s([^\!]+)"),0)
+| alter
+    xdm.event.description = Message,
+    xdm.observer.type = log_category,
+    xdm.source.user.username = Username,
+    xdm.source.ipv4 = source_ip,
+    xdm.network.session_id = id,
+    xdm.network.http.response_code = http_status_code,
+    xdm.network.http.method = http_method,
+    xdm.network.http.url = URI,
+    xdm.source.user_agent = user_agent;

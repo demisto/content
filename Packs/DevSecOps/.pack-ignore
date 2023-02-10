@@ -22,3 +22,21 @@ ignore=IN145
 
 [file:DockerEngine.yml]
 ignore=IN145
+
+[file:DockerEngine_image.png]
+ignore=IM111
+
+[file:GitLab_image.png]
+ignore=IM111
+
+[file:LGTM_image.png]
+ignore=IM111
+
+[file:MinIO_image.png]
+ignore=IM111
+
+[file:classifier-Github_v1.json]
+ignore=BA101
+
+[file:Packs/DevSecOps/Integrations/LGTM/README.md]
+ignore=RM112

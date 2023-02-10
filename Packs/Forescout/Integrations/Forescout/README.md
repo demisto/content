@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <div class="cl-preview-section">
-<p>Forescout is Unified device visibility and control platform for IT and OT security.</p>
+<p>Forescout CounterACT is Unified device visibility and control platform for IT and OT security.</p>
 </div>
 <div class="cl-preview-section">
 <h2 id="detailed-information">Detailed Information</h2>
@@ -9,10 +9,10 @@
 <p>Read this section and perform all necessary steps before you configure an integration instance.</p>
 </div>
 <div class="cl-preview-section">
-<h3>Forescout Module Requirements</h3>
-<p>Before you can use this integration in Cortex XSOAR, you need to enable certain modules in your Forescout environment.</p>
+<h3>Forescout CounterACT Module Requirements</h3>
+<p>Before you can use this integration in Cortex XSOAR, you need to enable certain modules in your Forescout CounterACT environment.</p>
 <ol>
-<li>In the Forescout console, from the navigation bar select<span> </span><em>Tools &gt; Options</em>.</li>
+<li>In the Forescout CounterACT console, from the navigation bar select<span> </span><em>Tools &gt; Options</em>.</li>
 <li>In the dialog that appears, from the categories section on the left, click<span> </span><em>Modules</em>.</li>
 <li>In the main area of the dialog, from the drop-down menu, select<span> </span><em>Open Integration Module</em>. Make sure that the integration module and the following submodules are installed and enabled:<span> </span><em>Data Exchange (DEX)</em><span> </span>and<span> </span><em>Web API</em><span> </span>are all installed and enabled. If they aren't, install and enable them.</li>
 </ol>
@@ -21,7 +21,7 @@
 <p><strong>url</strong><br> This is the network address of the Forescout Enterprise Manager or standalone Appliance. (The host on which the the Forescout Appliance is hosted.) For example, if the Forescout Appliance is hosted at the IP address<span> </span><em>192.168.10.23</em>, then you enter<span> </span><em><a href="https://192.168.10.23/" rel="nofollow">https://192.168.10.23</a></em>.</p>
 <p><strong>Web API Username</strong><span> </span>and<span> </span><strong>Password</strong><br> The credentials entered here should be those created in the Forescout console for the<span> </span><em>Web API</em>.</p>
 <ol>
-<li>In the Forescout console, from the top navigation bar, click<span> </span><em>Tools &gt; Options</em>.</li>
+<li>In the Forescout CounterACT console, from the top navigation bar, click<span> </span><em>Tools &gt; Options</em>.</li>
 <li>From the dialog that appears, in the categories section on the left, click<span> </span><em>Web API</em>, and select<span> </span><em>User Settings</em>.</li>
 <li>Create a username and password by clicking the<span> </span><em>Add</em><span> </span>button, and completing the fields. These are the credentials that you will enter when configuring the Cortex XSOAR-Forescout integration:<span> </span><em>Web API Username</em><span> </span>and<span> </span><em>Password</em>.</li>
 <li>Select<span> </span><em>Client IPs</em><span> </span>towards the top of the main area of the dialog, next to<span> </span><em>User Settings</em>.</li>
@@ -30,7 +30,7 @@
 </ol>
 <p><strong>Data Exchange (DEX) Username</strong><span> </span>and<span> </span><strong>Password</strong><br> The credentials entered here should be those created in the Forescout console for<span> </span><em>Data Exchange (DEX)</em>.</p>
 <ol>
-<li>In the Forescout console, from the top navigation bar, click<span> </span><em>Tools &gt; Options</em>.</li>
+<li>In the Forescout CounterACT console, from the top navigation bar, click<span> </span><em>Tools &gt; Options</em>.</li>
 <li>From the dialog that appears, in the categories section on the left, click<span> </span><em>Data Exchange (DEX)</em>.</li>
 <li>Select<span> </span><em>CounterACT Web Service &gt; Accounts</em>.</li>
 <li>Create a username and password by clicking the<span> </span><em>Add</em><span> </span>button, and completing the fields.<span> </span><strong>Note</strong>: The value you entered for the<span> </span><em>Name</em><span> </span>field in the account-creation pop-up window is the value that you should enter for the<span> </span><em>Data Exchange (DEX) Account</em><span> </span>configuration parameter.</li>

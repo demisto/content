@@ -1,0 +1,75 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "System Diagnostics and Health Check"
+    ],
+    "caseInsensitive": true,
+    "cliName": "healthcheckpanics",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Number Of Occurrences",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "numberofoccurrences",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150,
+            "orgType": "shortText"
+        },
+        {
+            "displayName": "Latest Panic Time",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "latestpanictime",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150,
+            "orgType": "shortText"
+        },
+        {
+            "displayName": "Panic Value",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "panicvalue",
+            "orgType": "longText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "longText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_healthcheckpanics",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Health Check Panics",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

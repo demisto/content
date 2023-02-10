@@ -50,6 +50,12 @@ script:
       - 'False'
       required: false
       secret: false
+    - default: false
+      description: The administrative partition name.
+      isArray: false
+      name: partition
+      required: false
+      secret: false
     deprecated: false
     description: Get a list of all pools
     execution: false
@@ -76,6 +82,12 @@ script:
       isArray: false
       name: pool_name
       required: true
+      secret: false
+    - default: false
+      description: The administrative partition name.
+      isArray: false
+      name: partition
+      required: false
       secret: false
     deprecated: false
     description: Get pool details
@@ -170,6 +182,12 @@ script:
       name: pool_name
       required: true
       secret: false
+    - default: false
+      description: The administrative partition name.
+      isArray: false
+      name: partition
+      required: false
+      secret: false
     deprecated: false
     description: Get Pool Members
     execution: false
@@ -232,7 +250,14 @@ script:
     - contextPath: F5.LTM.Pools.members.state
       description: Pool member state
       type: String
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: The administrative partition name.
+      isArray: false
+      name: partition
+      required: false
+      secret: false
+    deprecated: false
     description: Get a list of all nodes
     execution: false
     name: f5-ltm-get-nodes
@@ -258,6 +283,12 @@ script:
       isArray: false
       name: node_name
       required: true
+      secret: false
+    - default: false
+      description: The administrative partition name.
+      isArray: false
+      name: partition
+      required: false
       secret: false
     deprecated: false
     description: Get node details
@@ -331,6 +362,12 @@ script:
       name: node_name
       required: true
       secret: false
+    - default: false
+      description: The administrative partition name.
+      isArray: false
+      name: partition
+      required: false
+      secret: false
     deprecated: false
     description: Disable a node
     execution: false
@@ -402,6 +439,12 @@ script:
       isArray: false
       name: node_name
       required: true
+      secret: false
+    - default: false
+      description: The administrative partition name.
+      isArray: false
+      name: partition
+      required: false
       secret: false
     deprecated: false
     description: Enable a node
@@ -481,6 +524,12 @@ script:
       name: member_name
       required: true
       secret: false
+    - default: false
+      description: The administrative partition name.
+      isArray: false
+      name: partition
+      required: false
+      secret: false
     deprecated: false
     description: Get Pool Member Stats
     execution: false
@@ -501,6 +550,12 @@ script:
       isArray: false
       name: node_name
       required: true
+      secret: false
+    - default: false
+      description: The administrative partition name.
+      isArray: false
+      name: partition
+      required: false
       secret: false
     deprecated: false
     description: Get Node Stats
@@ -523,6 +578,12 @@ script:
       name: ip_address
       required: true
       secret: false
+    - default: false
+      description: The administrative partition name.
+      isArray: false
+      name: partition
+      required: false
+      secret: false
     deprecated: false
     description: Get node information by address
     execution: false
@@ -541,6 +602,12 @@ script:
       name: node_name
       required: true
       secret: false
+    - default: false
+      description: The administrative partition name.
+      isArray: false
+      name: partition
+      required: false
+      secret: false
     deprecated: false
     description: Get pool information by node
     execution: false
@@ -552,7 +619,7 @@ script:
     - contextPath: F5.LTM.Nodes.name
       description: The node name
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.26972
   feed: false
   isfetch: false
   longRunning: false

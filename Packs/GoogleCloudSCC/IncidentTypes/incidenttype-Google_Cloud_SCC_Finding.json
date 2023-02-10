@@ -19,5 +19,5 @@
  "disabled": false,
  "reputationCalc": 0,
  "layout": "Google Cloud SCC Finding",
- "fromVersion": "5.0.0"
+ "fromVersion": "6.0.0"
 }

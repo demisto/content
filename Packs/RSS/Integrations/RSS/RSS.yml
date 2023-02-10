@@ -15,8 +15,9 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Simple RSS reader that can ingest new items as Incidents
-display: RSS
+description: Deprecated. Use RSS Feed instead.
+deprecated: true
+display: RSS (Deprecated)
 name: RSS
 script:
   dockerimage: demisto/feed-parser:1.0.0.14495

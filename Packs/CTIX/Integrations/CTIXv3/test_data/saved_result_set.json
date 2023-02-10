@@ -1,0 +1,17 @@
+{"next": "threat-data/list/?page=2&page_size=1", "page_size": 1, "previous": 
+	null, "results": [{"analyst_score": null, "analyst_tlp": null, 
+	"confidence_score": null, "confidence_type": "ctix", "country": null, 
+	"created": 1652111918, "ctix_created": 1652111957, "ctix_modified": 
+	1652111957, "first_seen": null, "id": 
+	"670afacb-2f72-42fe-84cc-b2022ba6a7ed", "indicator_type": null, "ioc_type": 
+	null, "is_actioned": false, "is_deprecated": false, "is_false_positive": 
+	false, "is_reviewed": false, "is_revoked": false, "is_watchlist": false, 
+	"is_whitelisted": false, "last_seen": null, "modified": 1652111949, "name": 
+	"Test12344", "null": [], "primary_attribute": null, "published_collections": 
+	[], "risk_severity": null, "source_collections": [{"id": 
+	"32b98724-8625-4af2-ad83-43b4b5c50885", "name": "Test12344"}], 
+	"source_confidence": "NONE", "sources": [{"id": 
+	"5968d895-424f-4271-a1d3-2b01041a17bb", "name": "Test12344", "source_type": 
+	"WEB_SCRAPPER"}], "sub_type": null, "subscriber_collections": [], 
+	"subscribers": [], "tags": [], "tlp": "AMBER", "type": "report", 
+	"valid_from": null, "valid_until": null}], "total": 353243}

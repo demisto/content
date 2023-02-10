@@ -15,7 +15,7 @@ def parse_tag_field(tags_str):
     for f in tags_str.split(';'):
         match = regex.match(f)
         if match is None:
-            demisto.log('could not parse field: %s' % (f,))
+            demisto.debug('could not parse field: %s' % (f,))
             continue
 
         tags.append({
@@ -272,8 +272,8 @@ def main():
     aws_role_session_name = params.get('roleSessionName')
     aws_role_session_duration = params.get('sessionDuration')
     aws_role_policy = None
-    aws_access_key_id = params.get('access_key')
-    aws_secret_access_key = params.get('secret_key')
+    aws_access_key_id = params.get('credentials', {}).get('identifier') or params.get('access_key')
+    aws_secret_access_key = params.get('credentials', {}).get('password') or params.get('secret_key')
     verify_certificate = not params.get('insecure', True)
     timeout = params.get('timeout')
     retries = params.get('retries') or 5

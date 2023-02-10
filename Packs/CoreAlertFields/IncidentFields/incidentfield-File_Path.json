@@ -33,7 +33,7 @@
         {
             "cliName": "filepaths",
             "type": "multiSelect",
-            "name": ""
+            "name": "File Paths"
         }
     ]
 }

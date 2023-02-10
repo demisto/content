@@ -1,4 +1,5 @@
 from dateparser import parse
+from datetime import datetime
 from pytz import utc
 import urllib3
 
@@ -93,14 +94,56 @@ CLOSE_FALSE_POSITIVE_REASON_OPTIONS = {
 INTEGRATION_NAME = 'MicrosoftCloudAppSecurity'
 
 
-class Client(BaseClient):
-    """
-    Client will implement the service API, and should not contain any Demisto logic.
-    Should only do requests and return data.
-    """
+class LegacyClient(BaseClient):
+    def http_request(self, **args):
+        return self._http_request(**args)
+
+
+class Client:
+    @logger
+    def __init__(self, app_id: str, verify: bool, proxy: bool, base_url: str, auth_mode: str, tenant_id: str = None,
+                 enc_key: str = None, headers: Optional[dict] = {}):
+
+        if auth_mode == 'legacy':
+            self.ms_client = LegacyClient(
+                base_url=base_url,
+                verify=verify,
+                headers=headers,
+                proxy=proxy)
+
+        else:
+            self.client_credentials = True if auth_mode == 'client credentials' else False
+            if '@' in app_id:
+                app_id, refresh_token = app_id.split('@')
+                integration_context = get_integration_context()
+                integration_context.update(current_refresh_token=refresh_token)
+                set_integration_context(integration_context)
+
+            client_args = assign_params(
+                base_url=base_url,
+                verify=verify,
+                proxy=proxy,
+                ok_codes=(200, 201, 202, 204),
+                scope='05a65629-4c1b-48c1-a78b-804c4abdd4af/.default',
+                self_deployed=True,  # We always set the self_deployed key as True because when not using a self
+                # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
+                # flow and most of the same arguments should be set, as we're !not! using OProxy.
+
+                auth_id=app_id,
+                grant_type=CLIENT_CREDENTIALS if auth_mode == 'client credentials' else DEVICE_CODE,
+
+                # used for device code flow
+                resource='https://api.security.microsoft.com' if auth_mode == 'device code flow' else None,
+                token_retrieval_url='https://login.windows.net/organizations/oauth2/v2.0/token'
+                if auth_mode == 'device code flow' else None,
+                # used for client credentials flow
+                tenant_id=tenant_id,
+                enc_key=enc_key
+            )
+            self.ms_client = MicrosoftClient(**client_args)  # type: ignore
 
     def list_alerts(self, url_suffix: str, request_data: dict):
-        data = self._http_request(
+        data = self.ms_client.http_request(
             method='GET',
             url_suffix=url_suffix,
             json_data=request_data,
@@ -108,7 +151,7 @@ class Client(BaseClient):
         return data
 
     def dismiss_bulk_alerts(self, request_data: dict):
-        data = self._http_request(
+        data = self.ms_client.http_request(
             method='POST',
             url_suffix='/alerts/close_false_positive/',
             json_data=request_data,
@@ -116,7 +159,7 @@ class Client(BaseClient):
         return data
 
     def resolve_bulk_alerts(self, request_data: dict):
-        data = self._http_request(
+        data = self.ms_client.http_request(
             method='POST',
             url_suffix='/alerts/close_true_positive/',
             json_data=request_data,
@@ -124,28 +167,28 @@ class Client(BaseClient):
         return data
 
     def close_benign(self, request_data: dict):
-        return self._http_request(
+        return self.ms_client.http_request(
             method='POST',
             url_suffix='/alerts/close_benign/',
             json_data=request_data,
         )
 
     def close_false_positive(self, request_data: dict):
-        return self._http_request(
+        return self.ms_client.http_request(
             method='POST',
             url_suffix='/alerts/close_false_positive/',
             json_data=request_data,
         )
 
     def close_true_positive(self, request_data: dict):
-        return self._http_request(
+        return self.ms_client.http_request(
             method='POST',
             url_suffix='/alerts/close_true_positive/',
             json_data=request_data,
         )
 
     def list_activities(self, url_suffix: str, request_data: dict, timeout: int):
-        data = self._http_request(
+        data = self.ms_client.http_request(
             method='GET',
             url_suffix=url_suffix,
             json_data=request_data,
@@ -154,7 +197,7 @@ class Client(BaseClient):
         return data
 
     def list_users_accounts(self, url_suffix: str, request_data: dict):
-        data = self._http_request(
+        data = self.ms_client.http_request(
             method='GET',
             url_suffix=url_suffix,
             json_data=request_data,
@@ -162,7 +205,7 @@ class Client(BaseClient):
         return data
 
     def list_files(self, url_suffix: str, request_data: dict):
-        data = self._http_request(
+        data = self.ms_client.http_request(
             method='GET',
             url_suffix=url_suffix,
             json_data=request_data,
@@ -170,7 +213,7 @@ class Client(BaseClient):
         return data
 
     def list_incidents(self, filters: dict, limit: Union[int, str]):
-        return self._http_request(
+        return self.ms_client.http_request(
             method='POST',
             url_suffix='/alerts/',
             json_data={
@@ -179,6 +222,32 @@ class Client(BaseClient):
                 'sortDirection': 'asc',
             },
         )
+
+
+@logger
+def start_auth(client: Client) -> CommandResults:
+    result = client.ms_client.start_auth('!microsoft-cas-auth-complete')  # type: ignore[attr-defined]
+    return CommandResults(readable_output=result)
+
+
+@logger
+def complete_auth(client: Client) -> CommandResults:
+    client.ms_client.get_access_token()  # type: ignore[attr-defined]
+    return CommandResults(readable_output='✅ Authorization completed successfully.')
+
+
+@logger
+def reset_auth() -> CommandResults:
+    set_integration_context({})
+    return CommandResults(readable_output='Authorization was reset successfully. You can now run '
+                                          '**!microsoft-cas-auth-start** and **!microsoft-cas-auth-complete**.')
+
+
+@logger
+def test_connection(client: Client) -> CommandResults:
+    client.ms_client.get_access_token()  # type: ignore[attr-defined]
+    # If fails, MicrosoftApiModule returns an error
+    return CommandResults(readable_output='✅ Success!')
 
 
 def args_to_filter(arguments: dict):
@@ -231,7 +300,7 @@ def args_to_filter(arguments: dict):
 
 
 def build_filter_and_url_to_search_with(url_suffix: str, custom_filter: Optional[Any], arguments: dict,
-                                        specific_id_to_search: Any = ''):
+                                        specific_id_to_search: Any = '', is_scan: bool = False):
     """
         This function build the filters dict or url to filter with.
 
@@ -253,6 +322,8 @@ def build_filter_and_url_to_search_with(url_suffix: str, custom_filter: Optional
         request_data = args_to_filter(arguments)
 
     request_data = {'filters': request_data} if 'filters' not in request_data.keys() else request_data
+    if is_scan:
+        request_data['isScan'] = True
     return request_data, url_suffix
 
 
@@ -310,17 +381,22 @@ def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids: Any, custom_filter:
     return request_data
 
 
-def test_module(client: Client, is_fetch: bool, custom_filter: Optional[str]):
+def test_module(client: Client, auth_mode: str, is_fetch: Optional[Any], custom_filter: Optional[str]):
     try:
-        client.list_alerts(url_suffix='/alerts/', request_data={})
-        if is_fetch:
-            client.list_incidents(filters={}, limit=1)
-            if custom_filter:
-                try:
-                    json.loads(custom_filter)
-                except ValueError:
-                    raise DemistoException('Custom Filter Error: Your custom filter format is incorrect, '
-                                           'please try again.')
+        if auth_mode == "device code flow":
+            raise DemistoException(
+                "To test the device code flow Please run !microsoft-cas-auth-start and "
+                "!microsoft-cas-auth-complete and check the connection using !microsoft-cas-auth-test")
+        else:
+            client.list_alerts(url_suffix='/alerts/', request_data={})
+            if is_fetch:
+                client.list_incidents(filters={}, limit=1)
+                if custom_filter:
+                    try:
+                        json.loads(custom_filter)
+                    except ValueError:
+                        raise DemistoException('Custom Filter Error: Your custom filter format is incorrect, '
+                                               'please try again.')
     except Exception as e:
         if 'No connection' in str(e):
             return 'Connection Error: The URL you entered is probably incorrect, please try again.'
@@ -367,7 +443,7 @@ def create_ip_command_results(activities: List[dict]):
             readable_output=human_readable,
             outputs_prefix='MicrosoftCloudAppSecurity.Activities',
             outputs_key_field='_id',
-            outputs=activities,
+            outputs=activity,
             indicator=indicator
         ))
     return command_results
@@ -483,12 +559,22 @@ def list_activities_command(client: Client, args: dict):
     url_suffix = '/activities/'
     activity_id = args.get('activity_id')
     custom_filter = args.get('custom_filter')
+    is_scan = argToBoolean(args.get('is_scan', 'false'))
     arguments = assign_params(**args)
     timeout = arg_to_number(arguments.get('timeout', 60)) or 60
-    request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, activity_id)
-    activities_response_data = client.list_activities(url_suffix, request_data, timeout)
-    list_activities = activities_response_data.get('data') if activities_response_data.get('data') \
-        else [activities_response_data]
+    request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, activity_id, is_scan)
+    has_next = True
+    list_activities = []
+    while has_next:
+        activities_response_data = client.list_activities(url_suffix, request_data, timeout)
+        list_activities.extend(
+            activities_response_data.get('data') if activities_response_data.get('data') else [activities_response_data]
+        )
+        has_next = activities_response_data.get('hasNext', False)
+        request_data['filters'] = activities_response_data.get('nextQueryFilters')
+        if is_scan is False:
+            # This is to prevent run-away iterations
+            break
     activities = arrange_entities_data(list_activities)
     return create_ip_command_results(activities)
 
@@ -577,16 +663,10 @@ def list_users_accounts_command(client: Client, args: dict):
     )
 
 
-def calculate_fetch_start_time(last_fetch: Optional[str], first_fetch: Optional[str]):
-    if last_fetch is None:
-        if not first_fetch:
-            first_fetch = '3 days'
-        first_fetch_dt = parse(first_fetch).replace(tzinfo=utc)  # type:ignore
-        # Changing 10-digits timestamp to 13-digits by padding with zeroes, since API supports 13-digits
-        first_fetch_time = int(first_fetch_dt.timestamp()) * 1000
-        return first_fetch_time
-    else:
-        return int(last_fetch)
+def format_fetch_start_time_to_timestamp(fetch_start_time: Optional[str]):
+    first_fetch_dt = parse(fetch_start_time).replace(tzinfo=utc)  # type:ignore
+    # Changing 10-digits timestamp to 13-digits by padding with zeroes, since API supports 13-digits
+    return int(first_fetch_dt.timestamp()) * 1000
 
 
 def arrange_alerts_by_incident_type(alerts: List[dict]):
@@ -617,42 +697,68 @@ def alerts_to_incidents_and_fetch_start_from(alerts: List[dict], fetch_start_tim
         incident_created_time = (alert['timestamp'])
         incident_created_datetime = datetime.fromtimestamp(incident_created_time / 1000.0).isoformat()
         incident_occurred = incident_created_datetime.split('.')
+        occurred = incident_occurred[0]
+        demisto.debug("------ Alert occurred time is: " + occurred)
         incident = {
             'name': alert['title'],
-            'occurred': incident_occurred[0] + 'Z',
+            'occurred': occurred + 'Z',
             'rawJSON': json.dumps(alert)
         }
         incidents.append(incident)
+        alert['timestamp'] = occurred
         if incident_created_time > fetch_start_time:
-            fetch_start_time = incident_created_time
             current_last_incident_fetched = str(alert.get('_id', ''))
 
     if not current_last_incident_fetched:
         current_last_incident_fetched = str(last_run.get('last_fetch_id', ''))
 
-    return incidents, fetch_start_time, current_last_incident_fetched
+    return incidents, current_last_incident_fetched, alerts
 
 
 def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, first_fetch: Optional[str],
-                    filters: dict):
+                    filters: dict, look_back: int):
+    date_format = '%Y-%m-%dT%H:%M:%S'
+    if not first_fetch:
+        first_fetch = '3 days'
     max_results = int(max_results) if max_results else DEFAULT_INCIDENT_TO_FETCH
-    last_fetch = last_run.get('last_fetch')
-    fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch)
-    filters["date"] = {"gte": fetch_start_time}
+
+    if not last_run.get("time") and last_run.get("last_fetch"):
+        demisto.debug(f"last fetch from old version is: {str(last_run.get('last_fetch'))}")
+        last_fetch_time = datetime.fromtimestamp(last_run.get("last_fetch", 0) / 1000.0).isoformat()
+        last_run.update({"time": last_fetch_time})
+
+    fetch_start_time, fetch_end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch,
+                                                                look_back=look_back)
+
+    formatted_fetch_start_time = format_fetch_start_time_to_timestamp(fetch_start_time)
+    filters["date"] = {"gte": formatted_fetch_start_time}
 
     demisto.debug(f'fetching alerts using filter {filters} with max results {max_results}')
     alerts_response_data = client.list_incidents(filters, limit=max_results)
     alerts = alerts_response_data.get('data')
     alerts = arrange_alerts_by_incident_type(alerts)
-    incidents, fetch_start_time, last_fetch_id = alerts_to_incidents_and_fetch_start_from(
-        alerts, str(fetch_start_time), last_run)
+    alerts_to_incident = filter_incidents_by_duplicates_and_limit(
+        incidents_res=alerts, last_run=last_run, fetch_limit=max_results, id_field='_id'
+    )
 
-    if incidents:
-        # since we use gte filter, we increase the latest event timestamp by 1 to avoid duplicates in the next fetch
-        fetch_start_time += 1
-    next_run = {'last_fetch': fetch_start_time, 'last_fetch_id': last_fetch_id}
+    incidents, last_fetch_id, alerts_to_incident = alerts_to_incidents_and_fetch_start_from(
+        alerts_to_incident, str(formatted_fetch_start_time), last_run)
+
+    last_run = update_last_run_object(
+        last_run=last_run,
+        incidents=alerts_to_incident,
+        fetch_limit=max_results,
+        start_fetch_time=fetch_start_time,
+        end_fetch_time=fetch_end_time,
+        look_back=look_back,
+        created_time_field='timestamp',
+        id_field='_id',
+        date_format=date_format,
+        increase_last_run_time=True
+    )
+    last_run.update({'last_fetch_id': last_fetch_id})
     demisto.debug(f'setting last run to: {last_run}')
-    return next_run, incidents
+    return last_run, incidents
 
 
 def params_to_filter(severity: List[str], resolution_status: str):
@@ -793,70 +899,99 @@ def main():  # pragma: no cover
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    command = demisto.command()
-    params = demisto.params()
-    token = params.get('token')
+    params: dict = demisto.params()
+    app_id = params.get('app_id')
+    tenant_id = params.get('tenant_id')
+    auth_mode = params.get('auth_mode', 'legacy')
+    enc_key = params.get('client_id', {}).get('password')
+
+    verify = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+
+    token = params.get('creds_token', {}).get('password', '') or params.get('token', '')
     base_url = f'{params.get("url")}/api/v1'
-    verify_certificate = not params.get('insecure', False)
     first_fetch = params.get('first_fetch')
     max_results = params.get('max_fetch')
-    proxy = params.get('proxy', False)
     severity = params.get('severity')
     resolution_status = params.get('resolution_status')
-    LOG(f'Command being called is {command}')
+    look_back = arg_to_number(params.get('look_back')) or 0
+
+    command = demisto.command()
+    args = demisto.args()
+
     try:
         client = Client(
+            app_id=app_id,
+            verify=verify,
             base_url=base_url,
-            verify=verify_certificate,
-            headers={'Authorization': f'Token {token}'},
-            proxy=proxy)
+            proxy=proxy,
+            tenant_id=tenant_id,
+            enc_key=enc_key,
+            auth_mode=auth_mode,
+            headers={'Authorization': f'Token {token}'}
+        )
+
+        LOG(f'Command being called is {command}')
 
         if command == 'test-module':
-            result = test_module(client, params.get('isFetch'), params.get('custom_filter'))
+            result = test_module(client, auth_mode, params.get('isFetch'), params.get('custom_filter'))
             return_results(result)
 
         elif command == 'fetch-incidents':
             if params.get('custom_filter'):
-                filters = json.loads(params.get('custom_filter'))
+                filters = json.loads(str(params.get('custom_filter')))
             else:
-                filters = params_to_filter(severity, resolution_status)
+                filters = params_to_filter(severity, resolution_status)  # type: ignore
             next_run, incidents = fetch_incidents(
                 client=client,
                 max_results=max_results,
                 last_run=demisto.getLastRun(),
                 first_fetch=first_fetch,
-                filters=filters)
+                filters=filters,
+                look_back=look_back)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
+        elif command == 'microsoft-cas-auth-start':
+            return_results(start_auth(client))
+
+        elif command == 'microsoft-cas-auth-complete':
+            return_results(complete_auth(client))
+
+        elif command == 'microsoft-cas-auth-reset':
+            return_results(reset_auth())
+
+        elif command == 'microsoft-cas-auth-test':
+            return_results(test_connection(client))
+
         elif command == 'microsoft-cas-alerts-list':
-            return_results(list_alerts_command(client, demisto.args()))
+            return_results(list_alerts_command(client, args))
 
         elif command == 'microsoft-cas-alert-dismiss-bulk':
             # Deprecated.
-            return_results(bulk_dismiss_alert_command(client, demisto.args()))
+            return_results(bulk_dismiss_alert_command(client, args))
 
         elif command == 'microsoft-cas-alert-resolve-bulk':
             # Deprecated.
-            return_results(bulk_resolve_alert_command(client, demisto.args()))
+            return_results(bulk_resolve_alert_command(client, args))
 
         elif command == 'microsoft-cas-activities-list':
-            return_results(list_activities_command(client, demisto.args()))
+            return_results(list_activities_command(client, args))
 
         elif command == 'microsoft-cas-files-list':
-            return_results(list_files_command(client, demisto.args()))
+            return_results(list_files_command(client, args))
 
         elif command == 'microsoft-cas-users-accounts-list':
-            return_results(list_users_accounts_command(client, demisto.args()))
+            return_results(list_users_accounts_command(client, args))
 
         elif command == 'microsoft-cas-alert-close-benign':
-            return_results(close_benign_command(client, demisto.args()))
+            return_results(close_benign_command(client, args))
 
         elif command == 'microsoft-cas-alert-close-true-positive':
-            return_results(close_true_positive_command(client, demisto.args()))
+            return_results(close_true_positive_command(client, args))
 
         elif command == 'microsoft-cas-alert-close-false-positive':
-            return_results(close_false_positive_command(client, demisto.args()))
+            return_results(close_false_positive_command(client, args))
 
         else:
             raise NotImplementedError(f'command {command} is not implemented.')
@@ -864,6 +999,9 @@ def main():  # pragma: no cover
     # Log exceptions
     except Exception as exc:
         return_error(f'Failed to execute {command} command. Error: {str(exc)}', error=exc)
+
+
+from MicrosoftApiModule import *  # noqa: E402
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover

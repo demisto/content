@@ -24,6 +24,9 @@ An API key of type **Advanced** with an **Administrator** role.
 | severity | the severity in Cortex XDR | True |  
 | query | Sync Query | True |  
 | insecure | Trust any certificate \(not secure\) | False |  
+| xsoar_severity_field | The Cortex XSOAR indicator field used as severity. | True |  
+| xsoar_comments_field | The Cortex XSOAR field where comments are stored. Default is `comments`. Expecting an XSOAR IOC format of a comment (nested dictionary). See `Comments As Tags` for more.| True |  
+| comments_as_tags | Whether to consider the value at `xsoar_comments_field` as CSV. Requires specifying a xsoar_comments_field value different than the default `comments`. | True |  
 | proxy | Use system proxy settings | False |  
 | feedReputation | Indicator Reputation | False |  
 | feedReliability | Source Reliability | True |  
@@ -134,3 +137,36 @@ There is no context output for this command.
 #### Human Readable Output  
   
 >indicators 22.22.22.22 disabled.  
+### xdr-iocs-set-sync-time
+***
+Set sync time manually (Do not use this command unless you unredstandard the consequences).
+
+
+#### Base Command
+
+`xdr-iocs-set-sync-time`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| time | The time of the file creation (use UTC time zone). | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### xdr-iocs-create-sync-file
+***
+Creates the sync file for the manual process. Run this command when instructed by the XDR support team.
+
+
+#### Base Command
+
+`xdr-iocs-create-sync-file`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

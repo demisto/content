@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 import re
 from requests import Session
-import requests
+import urllib3
 import functools
 import json
 from datetime import datetime
@@ -10,7 +10,7 @@ from requests import cookies
 
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 if not demisto.params().get('proxy', False):
     del os.environ['HTTP_PROXY']
@@ -78,11 +78,13 @@ def send_request(path, method='get', body=None, params=None, headers=None, try_n
         try:
             error = res.json()
         except Exception:
-            return_error('Error: Got status code {} with url {} with body {} with headers {}'.format(
-                str(res.status_code), url, res.content, str(res.headers)))
+            # type: ignore
+            return_error(
+                f'Error: Got status code {str(res.status_code)} with {url=} \
+                 with body {res.content} with headers {str(res.headers)}')   # type: ignore
 
-        return_error('Error: Got an error from TenableSC, code: {}, details: {}'.format(error['error_code'],
-                                                                                        error['error_msg']))
+        return_error(f"Error: Got an error from TenableSC, code: {error['error_code']}, \
+                     details: {error['error_msg']}")  # type: ignore
     return res.json()
 
 
@@ -103,8 +105,8 @@ def send_login_request(login_body):
     res = SESSION.request('post', url, headers=headers, data=json.dumps(login_body), verify=VERIFY_SSL)
 
     if res.status_code < 200 or res.status_code >= 300:
-        return_error('Error: Got status code {} with url {} with body {} with headers {}'.format(
-            str(res.status_code), url, res.content, str(res.headers)))
+        return_error(f'Error: Got status code {str(res.status_code)} with {url=} \
+                     with body {res.content} with headers {str(res.headers)}')  # type: ignore
 
     global COOKIE
     COOKIE = res.cookies.get('TNS_SESSIONID', COOKIE)
@@ -986,6 +988,8 @@ def get_vulnearbilites(scan_results_id):
 
     analysis = get_analysis(query['response']['id'], scan_results_id)
 
+    delete_query(query.get('response', {}).get('id'))
+
     if not analysis or 'response' not in analysis:
         return 'Could not get vulnerabilites analysis'
 
@@ -1035,6 +1039,13 @@ def create_query(scan_id, tool, query_filters=None):
         body['filters'] = query_filters
 
     return send_request(path, method='post', body=body)
+
+
+def delete_query(query_id):
+    if not query_id:
+        return_error('query id returned None')
+    path = 'query/' + str(query_id)
+    send_request(path, method='delete')
 
 
 def get_analysis(query, scan_results_id):
@@ -1168,7 +1179,8 @@ def get_vulnerability_command():
 
     context = {}
 
-    context['TenableSC.ScanResults(val.ID===obj.ID)'] = createContext(scan_result, removeNull=True)
+    context['TenableSC.ScanResults.Vulnerability(val.ID===obj.ID)'] = createContext(scan_result['Vulnerability'], removeNull=True)
+
     if len(cves_output) > 0:
         context['CVE(val.ID===obj.ID)'] = createContext(cves_output)
 

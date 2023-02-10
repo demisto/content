@@ -1,0 +1,30 @@
+commonfields:
+  id: IncapWhitelistCompliance
+  version: -1
+name: IncapWhitelistCompliance
+script: ''
+type: python
+subtype: python3
+tags:
+- Incapsula
+comment: "Get all sites from Incapsula.\nFor each site, the script, through a ssh server (one that should NOT be in the allow list), make sure the site is compliant ( allow list is being enforced ).\n If not, a warning mail will be sent to the domain owner. "
+system: true
+args:
+- name: SSHValidationServer
+  required: true
+  default: true
+  description: Name of the non-allow list SSH server instance
+scripttarget: 0
+dependson:
+  must:
+  - incap-get-domain-approver-email
+  - SendEmail
+  - incap-list-sites
+  - RemoteExec
+timeout: 0s
+tests:
+- No test - old script
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.6.33415
+marketplaces:
+- xsoar

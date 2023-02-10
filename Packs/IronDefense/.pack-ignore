@@ -23,3 +23,10 @@ ignore=IF100
 
 [file:incidentfield-IronDefense_Last_event_Created.json]
 ignore=IF100
+
+
+[file:IronDefense_image.png]
+ignore=IM111
+
+[file:classifier-IronDefense.json]
+ignore=BA101

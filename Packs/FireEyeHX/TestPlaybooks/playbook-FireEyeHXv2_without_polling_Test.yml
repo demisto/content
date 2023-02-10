@@ -1,0 +1,2805 @@
+id: FireEyeHXv2_without_polling
+version: -1
+name: FireEyeHXv2_without_polling
+description: FireEye HX V2 Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2c5198a4-1247-4876-8087-255f09aaf0e0
+    type: start
+    task:
+      id: 2c5198a4-1247-4876-8087-255f09aaf0e0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 65
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a650a10e-8a51-4098-8979-9466b7f8dac9
+    type: regular
+    task:
+      id: a650a10e-8a51-4098-8979-9466b7f8dac9
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 110e7209-1d7a-4701-885d-bda7a2344d6a
+    type: regular
+    task:
+      id: 110e7209-1d7a-4701-885d-bda7a2344d6a
+      version: -1
+      name: fireeye-hx-get-host-information
+      description: Get information on a host associated with an agent.
+      script: FireEyeHX v2|||fireeye-hx-get-host-information
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      agentId:
+        simple: Hqb2ns3oui1fpzg0BxI1Ch
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 4aeb65c8-4d4c-4adc-866b-a09a83210de6
+    type: condition
+    task:
+      id: 4aeb65c8-4d4c-4adc-866b-a09a83210de6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts._id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts.agent_version
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts.excluded_from_containment
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts.containment_missing_software
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts.containment_queued
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts.containment_state
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts.stats.alerting_conditions
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts.stats.alerts
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts.stats.exploit_blocks
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts.stats.malware_alerts
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts.hostname
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts.domain
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts.timezone
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts.primary_ip_address
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts.last_poll_timestamp
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts.initial_agent_checkin
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts.last_alert_timestamp
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts.os.product_name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts.os.bitness
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts.os.platform
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Hosts.primary_mac
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: de30978e-d840-4b48-84fb-99f49622ea41
+    type: regular
+    task:
+      id: de30978e-d840-4b48-84fb-99f49622ea41
+      version: -1
+      name: fireeye-hx-get-all-hosts-information
+      description: Get information on all hosts.
+      script: FireEyeHX v2|||fireeye-hx-get-all-hosts-information
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 3cc57d46-ee9f-4c40-8f3b-dc47850a5a1d
+    type: condition
+    task:
+      id: 3cc57d46-ee9f-4c40-8f3b-dc47850a5a1d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Hosts._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Hosts.agent_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Hosts.containment_state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Hosts.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Hosts.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Hosts.primary_ip_address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Hosts.last_poll_timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Hosts.os.platform
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 9f209b0b-ec48-40b7-8c29-91859ac9e3d7
+    type: regular
+    task:
+      id: 9f209b0b-ec48-40b7-8c29-91859ac9e3d7
+      version: -1
+      name: fireeye-hx-host-containment
+      description: Apply containment for a specific host, so that it no longer has
+        access to other systems, If the user does not have the necessary permissions,
+        the command will not approve the request, The permissions necessary to approve
+        the request are api_admin role.
+      script: FireEyeHX v2|||fireeye-hx-host-containment
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      agentId:
+        simple: Hqb2ns3oui1fpzg0BxI1Ch
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 0aa035b6-4bec-4142-83c5-36dcd0f5769b
+    type: condition
+    task:
+      id: 0aa035b6-4bec-4142-83c5-36dcd0f5769b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Hosts._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Hosts.agent_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Hosts.containment_state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Hosts.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Hosts.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Hosts.primary_ip_address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Hosts.last_poll_timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Hosts.os.platform
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Hosts.primary_mac
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 933c4cec-3d55-46ff-8ef5-6d1963931aae
+    type: regular
+    task:
+      id: 933c4cec-3d55-46ff-8ef5-6d1963931aae
+      version: -1
+      name: fireeye-hx-cancel-containment
+      description: Release a specific host from containment.
+      script: FireEyeHX v2|||fireeye-hx-cancel-containment
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      agentId:
+        simple: Hqb2ns3oui1fpzg0BxI1Ch
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 9a03c165-8bad-4ba8-8b2b-ef3332452be2
+    type: regular
+    task:
+      id: 9a03c165-8bad-4ba8-8b2b-ef3332452be2
+      version: -1
+      name: fireeye-hx-initiate-data-acquisition
+      description: Initiate a data acquisition process to gather artifacts from the
+        system disk and memory.
+      script: FireEyeHX v2|||fireeye-hx-initiate-data-acquisition
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      defaultSystemScript:
+        simple: win
+      hostName:
+        simple: WIN10X64
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: ee7f29f9-5259-47af-8b7c-f5f2831612b6
+    type: condition
+    task:
+      id: ee7f29f9-5259-47af-8b7c-f5f2831612b6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Data._id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Data.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Data.host._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Data.host.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Data.instance
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 0e175f95-5ad4-45cc-897c-bc24789abcf8
+    type: regular
+    task:
+      id: 0e175f95-5ad4-45cc-897c-bc24789abcf8
+      version: -1
+      name: fireeye-hx-get-host-set-information
+      description: Get a list of all host sets known to your HX Series appliance.
+      script: FireEyeHX v2|||fireeye-hx-get-host-set-information
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: deae26d5-251c-43f6-83bc-e9bdcf2dfdd9
+    type: condition
+    task:
+      id: deae26d5-251c-43f6-83bc-e9bdcf2dfdd9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.HostSets._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.HostSets._revision
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.HostSets.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.HostSets.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.HostSets.url
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 71e59dd5-57e9-4976-8e23-154485e11789
+    type: regular
+    task:
+      id: 71e59dd5-57e9-4976-8e23-154485e11789
+      version: -1
+      name: fireeye-hx-list-policy
+      description: Get a list of all policy.
+      script: FireEyeHX v2|||fireeye-hx-list-policy
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 8baa00ea-8b67-4f6a-8a51-e12b73dc57b9
+    type: condition
+    task:
+      id: 8baa00ea-8b67-4f6a-8a51-e12b73dc57b9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Policy.data.entries._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Policy.data.entries.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Policy.data.entries.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Policy.data.entries.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Policy.data.entries.enabled
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 35163f59-969a-4786-8d99-8a305c23950c
+    type: regular
+    task:
+      id: 35163f59-969a-4786-8d99-8a305c23950c
+      version: -1
+      name: fireeye-hx-list-host-set-policy
+      description: Get a list of all policies for all host sets.
+      script: FireEyeHX v2|||fireeye-hx-list-host-set-policy
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 4f1f4763-199e-44f0-86b9-8899c888e89f
+    type: condition
+    task:
+      id: 4f1f4763-199e-44f0-86b9-8899c888e89f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.HostSets.Policy.policy_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.HostSets.Policy.persist_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 88748b8e-6bb7-45f2-8296-5759eab04848
+    type: regular
+    task:
+      id: 88748b8e-6bb7-45f2-8296-5759eab04848
+      version: -1
+      name: fireeye-hx-list-containment
+      description: Fetches all containment states across known hosts.
+      script: FireEyeHX v2|||fireeye-hx-list-containment
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: c976907a-868e-4768-8065-f409cf7b5fb1
+    type: condition
+    task:
+      id: c976907a-868e-4768-8065-f409cf7b5fb1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Hosts._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Hosts.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Hosts.url
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 25e7f933-b96f-4cb9-8f59-884c3bac47e0
+    type: regular
+    task:
+      id: 25e7f933-b96f-4cb9-8f59-884c3bac47e0
+      version: -1
+      name: fireeye-hx-search-list
+      description: Fetches all enterprise searches.
+      script: FireEyeHX v2|||fireeye-hx-search-list
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 723866e1-5a06-4615-83ae-eff576cf8f59
+    type: regular
+    task:
+      id: 723866e1-5a06-4615-83ae-eff576cf8f59
+      version: -1
+      name: fireeye-hx-search-stop
+      description: Stops a specific running search.
+      script: FireEyeHX v2|||fireeye-hx-search-stop
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      searchId:
+        simple: ${FireEyeHX.Search._id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 8100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 06a8ddba-8a90-43db-871b-04697296cc46
+    type: condition
+    task:
+      id: 06a8ddba-8a90-43db-871b-04697296cc46
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "63"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search._id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.update_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.create_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.scripts.platform
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.update_actor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.create_actor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.url
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 8275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 6ac92e86-e616-4849-850d-14a2111cbef0
+    type: regular
+    task:
+      id: 6ac92e86-e616-4849-850d-14a2111cbef0
+      version: -1
+      name: fireeye-hx-search-result-get
+      description: Fetches the result for a specific enterprise search.
+      script: FireEyeHX v2|||fireeye-hx-search-result-get
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      searchId:
+        simple: ${FireEyeHX.Search._id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 6175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 85d332b4-3c7d-4744-80ce-de9271c638dc
+    type: condition
+    task:
+      id: 85d332b4-3c7d-4744-80ce-de9271c638dc
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "59"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.host._id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.host.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.host.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.results.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.results.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.results.data
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 6350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: a9a085a3-3073-4c57-8be8-3c4896dfcb36
+    type: regular
+    task:
+      id: a9a085a3-3073-4c57-8be8-3c4896dfcb36
+      version: -1
+      name: fireeye-hx-get-alert
+      description: Get details of a specific alert.
+      script: FireEyeHX v2|||fireeye-hx-get-alert
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      alertId:
+        simple: ${FireEyeHX.Alerts._id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: cc9cd527-aa72-4daf-8ce7-868e51c6453c
+    type: condition
+    task:
+      id: cc9cd527-aa72-4daf-8ce7-868e51c6453c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Alerts._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Alerts.agent._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Alerts.agent.containment_state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Alerts.condition._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Alerts.event_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Alerts.matched_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Alerts.reported_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Alerts.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Alerts.event_type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: f9f1c534-460b-47fe-8f0b-5239482754eb
+    type: regular
+    task:
+      id: f9f1c534-460b-47fe-8f0b-5239482754eb
+      version: -1
+      name: fireeye-hx-suppress-alert
+      description: Suppress alert by ID.
+      script: FireEyeHX v2|||fireeye-hx-suppress-alert
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 96461426-11d2-412a-8ed3-bbdf8ffc806b
+    type: regular
+    task:
+      id: 96461426-11d2-412a-8ed3-bbdf8ffc806b
+      version: -1
+      name: fireeye-hx-get-indicators
+      description: Get a list of indicators.
+      script: FireEyeHX v2|||fireeye-hx-get-indicators
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 1bae6048-0bbc-4a63-83b9-195f71f4a8e7
+    type: condition
+    task:
+      id: 1bae6048-0bbc-4a63-83b9-195f71f4a8e7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.category.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.created_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.active_since
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.stats.source_alerts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.stats.alerted_agents
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.platforms
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.uri_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.category.uri_name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: b445449b-7260-45d0-8534-31ca65356053
+    type: regular
+    task:
+      id: b445449b-7260-45d0-8534-31ca65356053
+      version: -1
+      name: fireeye-hx-get-indicator
+      description: Get a specific indicator details.
+      script: FireEyeHX v2|||fireeye-hx-get-indicator
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      category:
+        simple: ${FireEyeHX.Indicators.category.uri_name}
+      name:
+        simple: ${FireEyeHX.Indicators.uri_name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: a054eb19-466c-4a8d-8144-cd38f667f8d7
+    type: condition
+    task:
+      id: a054eb19-466c-4a8d-8144-cd38f667f8d7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "55"
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.category.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.created_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.active_since
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.stats.source_alerts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.stats.alerted_agents
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.platforms
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Conditions._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Conditions.event_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Conditions.enabled
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 1937a637-1de3-4614-8882-90403507c3c4
+    type: regular
+    task:
+      id: 1937a637-1de3-4614-8882-90403507c3c4
+      version: -1
+      name: fireeye-hx-append-conditions
+      description: Add conditions to an indicator. Conditions can be MD5, hash values,
+        domain names and IP addresses.
+      script: FireEyeHX v2|||fireeye-hx-append-conditions
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      category:
+        simple: ${FireEyeHX.Indicators.category.uri_name}
+      condition:
+        simple: exsmple.com
+      name:
+        simple: ${FireEyeHX.Indicators.uri_name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: f2c1b86b-b7f1-43d5-8a0e-523d4503c5ee
+    type: regular
+    task:
+      id: f2c1b86b-b7f1-43d5-8a0e-523d4503c5ee
+      version: -1
+      name: fireeye-hx-delete-file-acquisition
+      description: Delete the file acquisition, by ID.
+      script: FireEyeHX v2|||fireeye-hx-delete-file-acquisition
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      acquisitionId:
+        simple: ${FireEyeHX.Acquisitions.Data._id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: a3a5e2ab-b8e1-4590-8619-496712a0ce7d
+    type: regular
+    task:
+      id: a3a5e2ab-b8e1-4590-8619-496712a0ce7d
+      version: -1
+      name: fireeye-hx-approve-containment
+      description: Approve pending containment requests made by other components or
+        users, The permissions necessary are api_admin role.
+      script: FireEyeHX v2|||fireeye-hx-approve-containment
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      agentId:
+        simple: Hqb2ns3oui1fpzg0BxI1Ch
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: b8048253-03f6-4b3e-8d27-6b22e12c16b1
+    type: regular
+    task:
+      id: b8048253-03f6-4b3e-8d27-6b22e12c16b1
+      version: -1
+      name: fireeye-hx-assign-host-set-policy
+      description: Insert a new host set policy on your Endpoint Security server.
+      script: FireEyeHX v2|||fireeye-hx-assign-host-set-policy
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      hostSetId:
+        complex:
+          root: FireEyeHX.HostSets.Policy
+          accessor: persist_id
+          transformers:
+          - operator: FirstArrayElement
+      policyId:
+        complex:
+          root: FireEyeHX.HostSets.Policy
+          accessor: policy_id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2675
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 358ddf49-acb6-40d3-83c5-a788305e75fa
+    type: regular
+    task:
+      id: 358ddf49-acb6-40d3-83c5-a788305e75fa
+      version: -1
+      name: fireeye-hx-get-data-acquisition
+      description: Gather artifacts from the system disk and memory for the given
+        acquisition id. (The data is fetched as mans file)
+      script: FireEyeHX v2|||fireeye-hx-get-data-acquisition
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      acquisitionId:
+        simple: ${FireEyeHX.Acquisitions.Data._id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: fbaffeed-057d-4a99-8eab-716e791567f1
+    type: condition
+    task:
+      id: fbaffeed-057d-4a99-8eab-716e791567f1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Data._id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Data.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Data.host._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Data.host.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Data.instance
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: bef5ae06-203d-4c7b-84ce-f77c34f91d66
+    type: regular
+    task:
+      id: bef5ae06-203d-4c7b-84ce-f77c34f91d66
+      version: -1
+      name: fireeye-hx-data-acquisition
+      description: Start a data acquisition process to gather artifacts from the system
+        disk and memory. (The data is fetched as mans file)
+      script: FireEyeHX v2|||fireeye-hx-data-acquisition
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 619ba4eb-6efe-4d2e-88b9-db59a62d1038
+    type: condition
+    task:
+      id: 619ba4eb-6efe-4d2e-88b9-db59a62d1038
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Data._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Data.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Data.md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Data.finish_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Data.host._id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: fc335d6f-7a10-4ab4-8131-1460e554e8e8
+    type: regular
+    task:
+      id: fc335d6f-7a10-4ab4-8131-1460e554e8e8
+      version: -1
+      name: fireeye-hx-get-alerts
+      description: Get a list of alerts, use the different arguments to filter the
+        results returned.
+      script: FireEyeHX v2|||fireeye-hx-get-alerts
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      limit:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 250ee070-edf0-48e5-8484-009caeecca05
+    type: condition
+    task:
+      id: 250ee070-edf0-48e5-8484-009caeecca05
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Alerts._id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Alerts.agent._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Alerts.agent.containment_state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Alerts.condition._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Alerts.event_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Alerts.matched_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Alerts.reported_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Alerts.event_type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 485a0cdd-8aa3-40d3-8e3d-c8b1e91ddef2
+    type: regular
+    task:
+      id: 485a0cdd-8aa3-40d3-8e3d-c8b1e91ddef2
+      version: -1
+      name: fireeye-hx-file-acquisition
+      description: Aquire a specific file as a password protected zip file. The password
+        for unlocking the zip file is 'unzip-me'.
+      script: FireEyeHX v2|||fireeye-hx-file-acquisition
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1452.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: aae439dc-e131-4e83-87bb-33fa4630f83c
+    type: condition
+    task:
+      id: aae439dc-e131-4e83-87bb-33fa4630f83c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Files._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Files.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Files.md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Files.req_filename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Files.req_path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Acquisitions.Files.host._id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1452.5,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 2a7d6c86-ee9a-4e29-8b19-e654d695dadf
+    type: regular
+    task:
+      id: 2a7d6c86-ee9a-4e29-8b19-e654d695dadf
+      version: -1
+      name: fireeye-hx-create-indicator
+      description: Create new indicator
+      script: FireEyeHX v2|||fireeye-hx-create-indicator
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      category:
+        simple: Custom
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: ac5e5c21-4dd2-4338-890c-05e556acb08f
+    type: condition
+    task:
+      id: ac5e5c21-4dd2-4338-890c-05e556acb08f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.active_since
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.created_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.platforms
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.create_actor._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.create_actor.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.category._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.category.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.category.uri_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.uri_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.stats.active_conditions
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.update_actor._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.update_actor.username
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: da4bd49b-7b40-42dc-8867-ad16b30e444e
+    type: title
+    task:
+      id: da4bd49b-7b40-42dc-8867-ad16b30e444e
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 60e39b66-0856-4648-8122-776f4a9be4ea
+    type: condition
+    task:
+      id: 60e39b66-0856-4648-8122-776f4a9be4ea
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators._id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.category.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.created_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.active_since
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.stats.source_alerts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.stats.alerted_agents
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Indicators.platforms
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 3f3da7a7-bddf-4384-846e-cb986683574f
+    type: regular
+    task:
+      id: 3f3da7a7-bddf-4384-846e-cb986683574f
+      version: -1
+      name: fireeye-hx-cancel-containment
+      description: Release a specific host from containment.
+      script: FireEyeHX v2|||fireeye-hx-cancel-containment
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      agentId:
+        simple: Hqb2ns3oui1fpzg0BxI1Ch
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 6867fb1f-390d-4684-8db6-403718db6d18
+    type: condition
+    task:
+      id: 6867fb1f-390d-4684-8db6-403718db6d18
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search._id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.scripts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.update_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.create_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.scripts.platform
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.update_actor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.create_actor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search._revision
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.input_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.stats
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.stats.search_state
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: e0b5edc8-1b46-4a0d-8917-7ce487b5c135
+    type: condition
+    task:
+      id: e0b5edc8-1b46-4a0d-8917-7ce487b5c135
+      version: -1
+      name: Is There Search
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search._id
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 8f6444b1-9657-4038-8a66-476ac4b64064
+    type: condition
+    task:
+      id: 8f6444b1-9657-4038-8a66-476ac4b64064
+      version: -1
+      name: No Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.host._id
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: b5bdb96b-5aab-4e6d-8d23-da0beba43df7
+    type: condition
+    task:
+      id: b5bdb96b-5aab-4e6d-8d23-da0beba43df7
+      version: -1
+      name: If there is a search in run mode
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "63"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search._id
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 843a608c-6349-428f-8a7b-2be91f4fbc62
+    type: regular
+    task:
+      id: 843a608c-6349-428f-8a7b-2be91f4fbc62
+      version: -1
+      name: fireeye-hx-search-list
+      description: Fetches all enterprise searches.
+      script: FireEyeHX v2|||fireeye-hx-search-list
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      limit:
+        simple: "1"
+      state:
+        simple: RUNNING
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: ec7b389d-7f82-4c60-8418-8c4d05ab57da
+    type: regular
+    task:
+      id: ec7b389d-7f82-4c60-8418-8c4d05ab57da
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 43d95a0a-3ac5-46e2-8c53-34ae24d69ada
+    type: regular
+    task:
+      id: 43d95a0a-3ac5-46e2-8c53-34ae24d69ada
+      version: -1
+      name: fireeye-hx-search
+      description: Search endpoints to check all hosts or a subset of hosts for a
+        specific file or indicator.
+      script: FireEyeHX v2|||fireeye-hx-search
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      hostsNames:
+        simple: WIN10X64
+      ipAddress:
+        simple: 8.8.8.8
+      ipAddressOperator:
+        simple: equals
+      stopSearch:
+        simple: stopAndDelete
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 1fbcb34e-47e5-4cd1-85a4-fb3a9fad4018
+    type: regular
+    task:
+      id: 1fbcb34e-47e5-4cd1-85a4-fb3a9fad4018
+      version: -1
+      name: fireeye-hx-search-list
+      description: Fetches all enterprise searches.
+      script: FireEyeHX v2|||fireeye-hx-search-list
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      limit:
+        simple: "1"
+      state:
+        simple: RUNNING
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: ec945c50-866a-43f4-802f-8350457928ab
+    type: regular
+    task:
+      id: ec945c50-866a-43f4-802f-8350457928ab
+      version: -1
+      name: fireeye-hx-search-delete
+      description: Delete the search, by ID.
+      script: FireEyeHX v2|||fireeye-hx-search-delete
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      searchId:
+        simple: ${FireEyeHX.Search._id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 85bb1323-d628-4ca8-8473-185d2e741e0a
+    type: regular
+    task:
+      id: 85bb1323-d628-4ca8-8473-185d2e741e0a
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "19_43_yes": 0.52,
+      "25_10_yes": 0.9,
+      "29_31_yes": 0.77,
+      "34_47_yes": 0.9,
+      "40_36_yes": 0.71,
+      "44_28_yes": 0.57,
+      "48_35_yes": 0.87,
+      "55_47_yes": 0.87,
+      "59_10_yes": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 9165,
+        "width": 1782.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: FireEyeHX_v2
+fromversion: 6.0.0

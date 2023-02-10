@@ -4,24 +4,24 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import json
-import requests
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-
-TOKEN = demisto.params().get('token')
+params = demisto.params()
+TOKEN = params.get('token') or (params.get('api_token', {})).get('password')
 # Remove trailing slash to prevent wrong URL path to service
-SERVER = demisto.params()['url'][:-1] if (demisto.params().get('url') and demisto.params()['url'].endswith('/')) \
-    else demisto.params().get('url')
+SERVER = params['url'][:-1] if (params.get('url') and params['url'].endswith('/')) \
+    else params.get('url')
 BASE_URL = f'{SERVER}/api/bit9platform/v1'
 # Should we use SSL
-USE_SSL = not demisto.params().get('insecure', False)
-FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+USE_SSL = not params.get('insecure', False)
+FETCH_TIME = params.get('fetch_time', '3 days')
 CB_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 CB_NO_MS_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-INCIDENTS_PER_FETCH = int(demisto.params().get('incidents_per_fetch', 15))
+INCIDENTS_PER_FETCH = int(params.get('incidents_per_fetch', 15))
 # Headers to be sent in requests
 HEADERS = {
     'X-Auth-Token': TOKEN,
@@ -543,26 +543,25 @@ def update_computer(id, name, computer_tag, description, policy_id, automatic_po
     :param template: True if computer is a template
     :return: Result json of the request
     """
-    body_params = {
-        'id': id,
-        'name': name,
-        'computerTag': computer_tag,
-        'description': description,
-        'policyId': policy_id,
-        'automaticPolicy': automatic_policy,
-        'localApproval': local_approval,
-        'refreshFlags': refresh_flags,
-        'prioritized': prioritized,
-        'debugLevel': debug_level,
-        'kernelDebugLevel': kernel_debug_level,
-        'debugFlags': debug_flags,
-        'debugDuration': debug_duration,
-        'cCLevel': cclevel,
-        'cCFlags': ccflags,
-        'forceUpgrade': force_upgrade,
-        'template': template,
-    }
-    body_params = remove_keys_with_empty_value(body_params)
+
+    body_params = get_computer(id)
+    body_params['id'] = id if id else body_params.get('id')
+    body_params['name'] = name if name else body_params.get('name')
+    body_params['computerTag'] = computer_tag if computer_tag else body_params.get('computerTag')
+    body_params['description'] = description if description else body_params.get('description')
+    body_params['policyId'] = policy_id if policy_id else body_params.get('policyId')
+    body_params['automaticPolicy'] = automatic_policy if automatic_policy else body_params.get('automaticPolicy')
+    body_params['localApproval'] = local_approval if local_approval else body_params.get('localApproval')
+    body_params['refreshFlags'] = refresh_flags if refresh_flags else body_params.get('refreshFlags')
+    body_params['prioritized'] = prioritized if prioritized else body_params.get('prioritized')
+    body_params['debugLevel'] = debug_level if debug_level else body_params.get('debugLevel')
+    body_params['kernelDebugLevel'] = kernel_debug_level if kernel_debug_level else body_params.get('kernelDebugLevel')
+    body_params['debugFlags'] = debug_flags if debug_flags else body_params.get('debugFlags')
+    body_params['debugDuration'] = debug_duration if debug_duration else body_params.get('debugDuration')
+    body_params['ccLevel'] = cclevel if cclevel else body_params.get('ccLevel')
+    body_params['ccFlags'] = ccflags if ccflags else body_params.get('ccFlags')
+    body_params['forceUpgrade'] = force_upgrade if force_upgrade else body_params.get('forceUpgrade')
+    body_params['template'] = template if template else body_params.get('template')
 
     return http_request('POST', '/computer', data=body_params)
 
@@ -2119,6 +2118,8 @@ def fetch_incidents():
 
 # main added for unit tests
 def main():
+    if not TOKEN:
+        raise Exception('API Token must be provided.')
     handle_proxy()
     command = demisto.command()
     LOG(f'Command being called is {command}')

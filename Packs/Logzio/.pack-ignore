@@ -18,3 +18,10 @@ ignore=IF100
 
 [file:incidentfield-Logz.io_Alert_Summary.json]
 ignore=IF100
+
+
+[file:Logzio_image.png]
+ignore=IM111
+
+[file:classifier-Logzio.json]
+ignore=BA101

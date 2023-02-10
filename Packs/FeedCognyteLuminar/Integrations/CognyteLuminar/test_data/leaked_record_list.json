@@ -1,0 +1,15 @@
+[
+  {
+    "Credentials": "91331-16831950097502",
+    "Indicator Type": "Account",
+    "Indicator Value": "dillionjas@7-eleven.com",
+    "rawJSON": {
+      "account_login": "dillionjas@7-eleven.com",
+      "credential": "91331-16831950097502",
+      "display_name": "dillionjas@7-eleven.com",
+      "id": "user-account--bd17839f-6b12-4735-96f5-426e60b725c6",
+      "spec_version": "2.1",
+      "type": "user-account"
+    }
+  }
+]

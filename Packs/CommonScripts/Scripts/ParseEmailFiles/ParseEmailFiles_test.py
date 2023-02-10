@@ -1210,6 +1210,31 @@ def test_only_parts_of_object_email_saved(mocker):
     assert results[0]['EntryContext']['Email']['AttachmentNames'] == ['logo5.png', 'logo2.png']
 
 
+def test_long_subject_and_special_characters(mocker):
+    """
+
+    Fixes: https://github.com/demisto/etc/issues/47691
+    Given:
+        an eml file with a long subject and special characters.
+    Then:
+        assert all the subject is parsed correctly.
+
+    """
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('file_with_a_long_subject_and_'
+                                                                                     'special_characters.eml'))
+    mocker.patch.object(demisto, 'results')
+
+    main()
+
+    results = demisto.results.call_args[0]
+
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['Subject'] == u'Those characters : üàéüö will mess with the ' \
+                                                             u'parsing automation'
+
+
 def test_pkcs7_mime(mocker):
     """
     Given: An email file smime2.p7m of type application/pkcs7-mime and info -

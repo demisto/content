@@ -1,0 +1,54 @@
+[
+  {
+    "ruleID": 179,
+    "ruleName": "DNS",
+    "ruleIDForDisplay": 179,
+    "ruleType": "Standard",
+    "ruleArea": "Privilege Escalation",
+    "ruleSource": "User-defined",
+    "severity": "1 - Alert",
+    "dataField": 179,
+    "displayField": "DNS",
+    "severityClass": 0,
+    "category": 1
+  },
+  {
+    "ruleID": 180,
+    "ruleName": "DNS - Copy(2)",
+    "ruleIDForDisplay": 180,
+    "ruleType": "Standard",
+    "ruleArea": "Privilege Escalation",
+    "ruleSource": "User-defined",
+    "severity": "1 - Alert",
+    "dataField": 180,
+    "displayField": "DNS - Copy(2)",
+    "severityClass": 0,
+    "category": 1
+  },
+  {
+    "ruleID": 181,
+    "ruleName": "dns3",
+    "ruleIDForDisplay": 181,
+    "ruleType": "Standard",
+    "ruleArea": "Privilege Escalation",
+    "ruleSource": "User-defined",
+    "severity": "1 - Alert",
+    "dataField": 181,
+    "displayField": "dns3",
+    "severityClass": 0,
+    "category": 1
+  },
+  {
+    "ruleID": 182,
+    "ruleName": "Suspicious",
+    "ruleIDForDisplay": 182,
+    "ruleType": "Standard",
+    "ruleArea": "Privilege Escalation",
+    "ruleSource": "User-defined",
+    "severity": "1 - Alert",
+    "dataField": 182,
+    "displayField": "Suspicious",
+    "severityClass": 0,
+    "category": 1
+  }
+]

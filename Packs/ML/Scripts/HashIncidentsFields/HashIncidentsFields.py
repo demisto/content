@@ -17,7 +17,7 @@ def hash_value(simple_value):
         return None
     if RANDOM_UUID:
         simple_value += RANDOM_UUID
-    return hashlib.md5(simple_value.encode('utf8')).hexdigest()
+    return hashlib.md5(simple_value.encode('utf8')).hexdigest()  # nosec
 
 
 def pattern_match(pattern, s):

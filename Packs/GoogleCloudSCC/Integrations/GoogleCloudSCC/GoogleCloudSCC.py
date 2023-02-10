@@ -104,6 +104,7 @@ COMMON_STRING: Dict[str, str] = {
 
 AWS_SUBJECT_TOKEN_TYPE = "urn:ietf:params:aws:token-type:aws4_request"
 AZURE_SUBJECT_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:jwt"
+NEXT_PAGE_TOKEN_MESSAGE = 'To fetch the next batch of results, execute the command with the page token as {}'
 """ HELPER CLASSES """
 
 
@@ -209,7 +210,7 @@ class BaseGoogleClient:
     """
 
     def __init__(self, service_name: str, service_version: str, service_account_json: str, scopes: list, proxy: bool,
-                 **kwargs):
+                 insecure: bool, **kwargs):
         """
         :param service_name: The name of the service. You can find this and the service  here
          https://github.com/googleapis/google-api-python-client/blob/master/docs/dyn/index.md
@@ -228,7 +229,7 @@ class BaseGoogleClient:
             else:
                 credentials = service_account.Credentials.from_service_account_info(info=service_account_json,
                                                                                     scopes=scopes)
-            http_client = AuthorizedHttp(credentials=credentials, http=self.get_http_client_with_proxy(proxy))
+            http_client = AuthorizedHttp(credentials=credentials, http=self.get_http_client_with_proxy(proxy, insecure))
             self.service = discovery.build(service_name, service_version, http=http_client, cache_discovery=False)
         except httplib2.ServerNotFoundError as e:
             raise ValueError(ERROR_MESSAGES["TIMEOUT_ERROR"].format(str(e)))
@@ -244,10 +245,11 @@ class BaseGoogleClient:
             raise ValueError(error_message)
 
     @staticmethod
-    def get_http_client_with_proxy(proxy: bool) -> httplib2.Http:
+    def get_http_client_with_proxy(proxy: bool, insecure: bool) -> httplib2.Http:
         """
         Create an http client with proxy with whom to use when using a proxy.
         :param proxy: Whether to use a proxy.
+        :param insecure: Whether to perform a ssl validation.
 
         :return: ProxyInfo object.
         """
@@ -269,7 +271,8 @@ class BaseGoogleClient:
                     proxy_user=parsed_proxy.username,
                     proxy_pass=parsed_proxy.password,
                 )
-        return httplib2.Http(proxy_info=proxy_info, timeout=TIMEOUT_TIME)
+        return httplib2.Http(proxy_info=proxy_info, timeout=TIMEOUT_TIME, disable_ssl_certificate_validation=insecure,
+                             ca_certs=os.getenv('REQUESTS_CA_BUNDLE') or os.getenv('SSL_CERT_FILE'))
 
     @staticmethod
     def execute_request(request) -> Dict[str, Any]:
@@ -514,7 +517,7 @@ def init_google_pubsub_client(**kwargs) -> GooglePubSubClient:
 
 def init_google_cloud_assets_client(**kwargs) -> GoogleCloudAssetClient:
     """
-    Initializes google google cloud assets client
+    Initializes google cloud assets client
     :param kwargs: keyword arguments
     :return: Google cloud assets client object
     """
@@ -728,6 +731,7 @@ def prepare_human_readable_dict_for_list_asset(asset: Dict[str, Any]) -> Dict[st
     asset_url = GoogleNameParser.get_asset_url(asset.get("name", ""))
 
     return {
+        "Organization ID": GoogleNameParser.get_organization_id(),
         COMMON_STRING["RESOURCE_NAME"]: asset.get("securityCenterProperties", {}).get("resourceName", ""),
         "Resource Type": asset.get("securityCenterProperties", {}).get("resourceType", ""),
         "Resource Owners": asset.get("securityCenterProperties", {}).get("resourceOwners", {}),
@@ -761,7 +765,7 @@ def prepare_outputs_for_list_assets(result) -> Tuple[Dict[str, Any], str]:
         hr_asset_list.append(hr_asset_dict)
 
     # Preparing headers
-    headers = ["Name", "Project", COMMON_STRING["RESOURCE_NAME"], "Resource Type", "Resource Owners",
+    headers = ["Organization ID", "Name", "Project", COMMON_STRING["RESOURCE_NAME"], "Resource Type", "Resource Owners",
                COMMON_STRING["SECURITY_MARKS"]]
     readable_output = tableToMarkdown(GET_OUTPUT_MESSAGE["HEADER_MESSAGE"].format("asset(s)", total_size),
                                       t=hr_asset_list, headers=headers, removeNull=True)
@@ -775,6 +779,7 @@ def prepare_outputs_for_list_assets(result) -> Tuple[Dict[str, Any], str]:
     if next_page_token:
         token_ec = {"name": "google-cloud-scc-asset-list", "nextPageToken": next_page_token}
         ec_asset_dict.update({OUTPUT_PREFIX["TOKEN"]: token_ec})
+        readable_output += NEXT_PAGE_TOKEN_MESSAGE.format(next_page_token)
 
     return remove_empty_elements(ec_asset_dict), readable_output
 
@@ -836,6 +841,7 @@ def prepare_hr_and_ec_for_list_findings(result: Dict[str, Any]) -> Tuple[str, Di
         ec_finding_list.append(finding)
         finding_url = GoogleNameParser.get_finding_url(finding.get("name", ""))
         hr_finding_list.append({
+            "Organization ID": GoogleNameParser.get_organization_id(),
             "Name": get_markdown_link(finding.get("name", ""), finding_url),
             "Category": finding.get("category", ""),
             COMMON_STRING["RESOURCE_NAME"]: finding.get("resourceName", ""),
@@ -845,7 +851,8 @@ def prepare_hr_and_ec_for_list_findings(result: Dict[str, Any]) -> Tuple[str, Di
             COMMON_STRING["SECURITY_MARKS"]: finding.get("securityMarks", {}).get("marks", {})
         })
 
-    headers = ["Name", "Category", COMMON_STRING["RESOURCE_NAME"], "Finding Class", COMMON_STRING["EVENT_TIME"],
+    headers = ["Organization ID", "Name", "Category", COMMON_STRING["RESOURCE_NAME"], "Finding Class",
+               COMMON_STRING["EVENT_TIME"],
                COMMON_STRING["CREATE_TIME"], COMMON_STRING["SECURITY_MARKS"]]
     readable_output = tableToMarkdown(GET_OUTPUT_MESSAGE["HEADER_MESSAGE"].format("finding(s)", total_size),
                                       t=hr_finding_list, headers=headers, removeNull=True)
@@ -858,6 +865,7 @@ def prepare_hr_and_ec_for_list_findings(result: Dict[str, Any]) -> Tuple[str, Di
     if next_page_token:
         token_ec = {"name": "google-cloud-scc-finding-list", "nextPageToken": next_page_token}
         ec_dict[OUTPUT_PREFIX["TOKEN"]] = token_ec
+        readable_output += NEXT_PAGE_TOKEN_MESSAGE.format(next_page_token)
 
     return readable_output, remove_empty_elements(ec_dict)
 
@@ -919,6 +927,7 @@ def prepare_hr_and_ec_for_update_finding(result: Dict[str, Any]) -> Tuple[str, D
     finding_url = GoogleNameParser.get_finding_url(result.get("name", ""))
 
     hr_data = {
+        "Organization ID": GoogleNameParser.get_organization_id(),
         "Name": get_markdown_link(result.get("name", ""), finding_url),
         "State": result.get("state", ""),
         "Severity": result.get("severity", ""),
@@ -929,7 +938,8 @@ def prepare_hr_and_ec_for_update_finding(result: Dict[str, Any]) -> Tuple[str, D
         COMMON_STRING["RESOURCE_NAME"]: result.get("resourceName", "")
     }
 
-    headers = ["Name", "State", "Severity", "Category", COMMON_STRING["EVENT_TIME"], COMMON_STRING["CREATE_TIME"],
+    headers = ["Organization ID", "Name", "State", "Severity", "Category", COMMON_STRING["EVENT_TIME"],
+               COMMON_STRING["CREATE_TIME"],
                "External Uri", COMMON_STRING["RESOURCE_NAME"]]
     readable_output = tableToMarkdown("The finding has been updated successfully.", t=hr_data, headers=headers,
                                       removeNull=True)
@@ -972,16 +982,18 @@ def prepare_hr_and_ec_for_cloud_asset_list(result: Dict[str, Any]) -> Tuple[str,
         ec_asset_list.append(asset)
         resource = asset.get("resource", {})
         hr_asset_dict = {
+            "Organization ID": GoogleNameParser.get_organization_id(),
             "Asset Name": asset.get("name", ""),
             "Asset Type": asset.get("assetType", ""),
             "Parent": resource.get("parent", ""),
             "Discovery Name": resource.get("discoveryName", ""),
             "Ancestors": asset.get("ancestors", ""),
-            "Update Time (In UTC)": convert_string_to_date_format(asset.get("updateTime", "")),
+            "Update Time (In UTC)": convert_string_to_date_format(asset.get("updateTime", ""))
         }
         hr_asset_list.append(hr_asset_dict)
 
-    headers = ["Asset Name", "Asset Type", "Parent", "Discovery Name", "Ancestors", "Update Time (In UTC)"]
+    headers = ["Organization ID", "Asset Name", "Asset Type", "Parent", "Discovery Name", "Ancestors",
+               "Update Time (In UTC)"]
     readable_output = tableToMarkdown("", t=hr_asset_list, headers=headers, removeNull=True)
 
     # preparing context
@@ -990,6 +1002,7 @@ def prepare_hr_and_ec_for_cloud_asset_list(result: Dict[str, Any]) -> Tuple[str,
     if next_page_token:
         token_ec = {"name": "google-cloud-scc-asset-resource-list", "nextPageToken": next_page_token}
         ec_dict[OUTPUT_PREFIX["TOKEN"]] = token_ec
+        readable_output += NEXT_PAGE_TOKEN_MESSAGE.format(next_page_token)
 
     return readable_output, remove_empty_elements(ec_dict)
 
@@ -1013,14 +1026,15 @@ def prepare_hr_and_ec_for_cloud_asset_owners_get(assets: list, read_time: str) -
         asset['readTime'] = read_time
 
         hr_asset_dict = {
+            "Organization ID": GoogleNameParser.get_organization_id(),
             "Project Name": asset.get("name", ""),
             "Project Owner": asset['owners'],
             "Ancestors": asset.get("ancestors", ""),
-            "Update Time (In UTC)": convert_string_to_date_format(asset.get("updateTime", "")),
+            "Update Time (In UTC)": convert_string_to_date_format(asset.get("updateTime", ""))
         }
         hr_asset_list.append(hr_asset_dict)
 
-    headers = ["Project Name", "Project Owner", "Ancestors", "Update Time (In UTC)"]
+    headers = ["Organization ID", "Project Name", "Project Owner", "Ancestors", "Update Time (In UTC)"]
     readable_output = tableToMarkdown("", t=hr_asset_list, headers=headers, removeNull=True)
 
     return readable_output, remove_empty_elements(assets)

@@ -6,8 +6,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-import requests
-import traceback
+import urllib3
 import copy
 import json
 import base64
@@ -25,7 +24,7 @@ from collections import defaultdict
 import ipaddress
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 """ CONSTANTS """
 
@@ -395,7 +394,8 @@ class Client(BaseClient):
         return self._http_request(
             method='POST',
             url_suffix=f'/v2/{endpoint_base}/tag-assignments/bulk',
-            json_data=data
+            json_data=data,
+            retries=3
         )
 
     def manage_asset_pocs(self, asset_type: str, operation_type: str, asset_id: str, poc_ids: List[str]) -> Dict[str, Any]:
@@ -585,7 +585,8 @@ class Client(BaseClient):
                             and (re := rri[0].get('registryEntities'))
                             and isinstance(re, list)
                     ):
-                        ml_feature_list.extend(set(r['formattedName'] for r in re if 'formattedName' in r))
+                        ml_feature_list.extend(set(r['formattedName']
+                                                   for r in re if 'formattedName' in r))  # pylint: disable=E1133
 
                 elif a.get('assetType') == "Certificate":
                     # for Certificate collect issuerOrg, issuerName,
@@ -735,6 +736,7 @@ def convert_priority_to_xsoar_severity(priority: str) -> int:
 
 def datestring_to_timestamp_us(ds: str) -> int:
     dt = parse(ds)
+    assert dt is not None
     ts = int(dt.timestamp()) * 1000000 + dt.microsecond
     return ts
 
@@ -766,7 +768,8 @@ def format_cidr_data(cidrs: List[Dict[str, Any]]) -> List[CommandResults]:
                 indicator=cidr_data['cidr'],
                 indicator_type=DBotScoreType.CIDR,
                 integration_name="ExpanseV2",
-                score=Common.DBotScore.NONE
+                score=Common.DBotScore.NONE,
+                reliability=demisto.params().get('integrationReliability')
             )
         )
         command_results.append(CommandResults(
@@ -831,7 +834,7 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> List[CommandResults]:
                 updated_date=whois.get('updatedDate'),
                 expiration_date=whois.get('registryExpiryDate'),
                 name_servers=whois.get('nameServers'),
-                domain_status=domain_statuses[0],
+                domain_status=domain_statuses[0] if domain_statuses else [],
                 organization=admin.get('organization'),
                 admin_name=admin.get('name'),
                 admin_email=admin.get('emailAddress'),
@@ -856,7 +859,8 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> List[CommandResults]:
                 indicator=domain,
                 indicator_type=indicator_type,
                 integration_name="ExpanseV2",
-                score=Common.DBotScore.NONE
+                score=Common.DBotScore.NONE,
+                reliability=demisto.params().get('integrationReliability')
             ),
             **whois_args
         )
@@ -940,7 +944,8 @@ def format_certificate_data(certificates: List[Dict[str, Any]]) -> List[CommandR
                 indicator=indicator_value,
                 indicator_type=DBotScoreType.CERTIFICATE,
                 integration_name="ExpanseV2",
-                score=Common.DBotScore.NONE
+                score=Common.DBotScore.NONE,
+                reliability=demisto.params().get('integrationReliability')
             )
         )
         command_results.append(CommandResults(
@@ -979,7 +984,8 @@ def format_cloud_resource_data(cloud_resources: List[Dict[str, Any]]) -> List[Co
                 indicator=cloud_resource_data['ips'][0],
                 indicator_type=DBotScoreType.IP,
                 integration_name="ExpanseV2",
-                score=Common.DBotScore.NONE
+                score=Common.DBotScore.NONE,
+                reliability=demisto.params().get('integrationReliability')
             )
         )
         command_results.append(CommandResults(
@@ -1081,16 +1087,16 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     sort = ','.join(arg_list)
 
     d = args.get('created_before', None)
-    created_before = parse(d).strftime(DATE_FORMAT) if d else None
+    created_before = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     d = args.get('created_after', None)
-    created_after = parse(d).strftime(DATE_FORMAT) if d else None
+    created_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     d = args.get('modified_before', None)
-    modified_before = parse(d).strftime(DATE_FORMAT) if d else None
+    modified_before = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     d = args.get('modified_after', None)
-    modified_after = parse(d).strftime(DATE_FORMAT) if d else None
+    modified_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     issues = list(
         islice(
@@ -1263,7 +1269,7 @@ def get_issue_updates_command(client: Client, args: Dict[str, Any]) -> CommandRe
         raise ValueError(f'Invalid update_type: {update_types}. Must include: {",".join(ISSUE_UPDATE_TYPES.keys())}')
 
     d = args.get('created_after')
-    created_after = parse(d).strftime(DATE_FORMAT) if d else None
+    created_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     issue_updates = [
         {**u, "issueId": issue_id}  # this adds the issue id to the resulting dict
@@ -1293,7 +1299,7 @@ def get_issue_comments_command(client: Client, args: Dict[str, Any]) -> CommandR
         raise ValueError('issue_id not specified')
 
     d = args.get('created_after')
-    created_after = parse(d).strftime(DATE_FORMAT) if d else None
+    created_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     issue_comments = [
         {**u, "issueId": issue_id}  # this adds the issue id to the resulting dict
@@ -1509,6 +1515,7 @@ def get_modified_remote_data_command(client: Client, args: Dict[str, Any]) -> Ge
     demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
 
     last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
+    assert last_update_utc is not None, f'could not parse {last_update}'
     modified_after = last_update_utc.strftime(DATE_FORMAT)
 
     modified_incidents = client.get_issues(
@@ -1539,7 +1546,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
             ),
             MAX_UPDATES
         ),
-        key=lambda k: k.get('created')
+        key=lambda k: k.get('created')  # type: ignore
     )
 
     new_entries: List = []
@@ -2417,7 +2424,8 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
                 indicator=ip,
                 indicator_type=DBotScoreType.IP,
                 integration_name="ExpanseV2",
-                score=Common.DBotScore.NONE
+                score=Common.DBotScore.NONE,
+                reliability=demisto.params().get('integrationReliability')
             ),
             hostname=ip_data.get('domain', None)
         )
@@ -2544,7 +2552,7 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    api_key = params.get("apikey")
+    api_key = params.get('credentials', {}).get('password', '') or params.get("apikey", '')
     base_url = urljoin(params.get("url", "").rstrip("/"), "/api")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
@@ -2783,7 +2791,6 @@ def main() -> None:
         #  To be compatible with 6.1
         if 'not implemented' in str(e):
             raise e
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(
             f"Failed to execute {command} command.\nError:\n{str(e)}"
         )

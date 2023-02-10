@@ -9,12 +9,22 @@ configuration:
   type: 0
 - display: Client Secret
   name: client_secret
-  required: true
+  required: false
   type: 9
 - display: Tenant ID
   name: tenant_id
   required: true
   type: 0
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  required: false
+  type: 4
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
+  name: private_key
+  required: false
+  type: 14
 - display: Subscription ID
   name: subscription_id
   required: true
@@ -1157,7 +1167,7 @@ script:
     - contextPath: AzureKeyVault.CertificatePolicy.attributes.updated
       description: Last updated time in UTC.
       type: Date
-  dockerimage: demisto/crypto:1.0.0.24380
+  dockerimage: demisto/crypto:1.0.0.45575
   feed: false
   isfetch: false
   longRunning: false

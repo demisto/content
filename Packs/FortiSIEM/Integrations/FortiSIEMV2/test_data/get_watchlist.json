@@ -1,0 +1,20 @@
+{
+  "response": [
+    {
+      "isCaseSensitive": false,
+      "naturalId": "PH_DYNLIST_ACCT_LOCKOUT",
+      "displayName": "Accounts Locked",
+      "description": "Accounts that lock out frequently",
+      "valuePattern": null,
+      "ageOut": "1w",
+      "topGroup": false,
+      "entries": null,
+      "dataCreationType": null,
+      "valueType": "STRING",
+      "custId": 0,
+      "name": "PH_DYNLIST_ACCT_LOCKOUT",
+      "id": 111
+    }
+  ],
+      "status": "Success"
+}

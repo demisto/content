@@ -1,4 +1,7 @@
-from XSOARmirroring import get_mapping_fields_command
+from XSOARmirroring import get_mapping_fields_command, Client, fetch_incidents, update_remote_system_command, XSOAR_DATE_FORMAT
+from datetime import datetime, timedelta
+import dateparser
+import pytest
 
 
 def generate_dummy_client():
@@ -12,6 +15,12 @@ def generate_dummy_client():
         def get_incident_types(self):
             pass
 
+        def get_incident(self):
+            pass
+
+        def update_incident(self):
+            pass
+
     return Client
 
 
@@ -22,7 +31,9 @@ INCIDENT_FIELDS = [
         'name': "field1",
         'type': 'type1',
         'description': 'description1',
-        'cliName': 'cliName1'
+        'cliName': 'cliName1',
+        'content': False,
+        'system': True
     },
     {
         'group': 0,
@@ -32,7 +43,9 @@ INCIDENT_FIELDS = [
         'name': "field2",
         'type': 'type2',
         'description': 'description2',
-        'cliName': 'cliName2'
+        'cliName': 'cliName2',
+        'content': True,
+        'system': True
     }
 ]
 INCIDENT_TYPES = [
@@ -66,9 +79,107 @@ def test_mirroring(mocker):
         'cliName1': 'field1 - type1'
     }
     assert response['test'] == {
-        'cliName1': 'field1 - type1',
-        'cliName2': 'field2 - type2'
+        'CustomFields': {'cliName2': 'field2 - type2'},
+        'cliName1': 'field1 - type1'
     }
     assert response['Something'] == {
         'cliName1': 'field1 - type1'
     }
+
+
+INCIDENTS = [
+    {
+        "id": 1,
+        "created": (datetime.now() - timedelta(minutes=10)).strftime(XSOAR_DATE_FORMAT)
+    },
+    {
+        "id": 2,
+        "created": (datetime.now() - timedelta(minutes=8)).strftime(XSOAR_DATE_FORMAT)
+    },
+    {
+        "id": 3,
+        "created": (datetime.now() - timedelta(minutes=5)).strftime(XSOAR_DATE_FORMAT)
+    }
+]
+
+INCIDENTS_MIRRORING_PLAYBOOK_ID = [
+    {"id": 1,
+     "created": (datetime.now() - timedelta(minutes=10)).strftime(XSOAR_DATE_FORMAT),
+     "playbookId": "test"}
+]
+
+REMOTE_INCIDENT = {
+    "id": 1,
+    "created": (datetime.now() - timedelta(minutes=10)).strftime(XSOAR_DATE_FORMAT),
+    "CustomFields": {"custom_field": "some_custom_field"}
+}
+
+
+def test_fetch_incidents(mocker):
+    """
+    Given:
+        - List of incidents.
+
+    When:
+        - Running the fetch_incidents and getting these incidents.
+
+    Then:
+        - Ensure the incidents result and the last_fetch in the LastRun object as expected.
+    """
+    mocker.patch.object(Client, 'search_incidents', return_value=INCIDENTS)
+
+    first_fetch = dateparser.parse('3 days').strftime(XSOAR_DATE_FORMAT)
+    client = Client("")
+
+    next_run, incidents_result = fetch_incidents(client=client, max_results=3, last_run={}, first_fetch_time=first_fetch,
+                                                 query='', mirror_direction='None', mirror_tag=[])
+
+    assert len(incidents_result) == 3
+    assert dateparser.parse(next_run['last_fetch']) == dateparser.parse(INCIDENTS[-1]['created']) + timedelta(milliseconds=1)
+
+
+@pytest.mark.parametrize('mirror_playbook_id', (True, False))
+def test_fetch_incidents_mirror_playbook_id(mocker, mirror_playbook_id: bool):
+    """
+    Given:
+        - a list of incidents.
+
+    When:
+        - Running the fetch_incidents and getting this incident, with the *implicit* default `mirror_playbook_id = True`.
+
+    Then:
+        - Ensure the incident result does not contain playbookId field if and only if `mirror_playbook_id` is False.
+    """
+    mocker.patch.object(Client, 'search_incidents', return_value=INCIDENTS_MIRRORING_PLAYBOOK_ID)
+
+    first_fetch = dateparser.parse('3 days').strftime(XSOAR_DATE_FORMAT)
+    client = Client("dummy token")
+
+    next_run, incidents_result = fetch_incidents(client=client, max_results=3, last_run={}, first_fetch_time=first_fetch,
+                                                 query='', mirror_direction='None', mirror_tag=[],
+                                                 mirror_playbook_id=mirror_playbook_id)
+
+    assert len(incidents_result) == 1
+    assert ("playbookId" in incidents_result[0]) is mirror_playbook_id
+
+
+def test_update_remote_system(mocker):
+    """
+    Given:
+        - Old incident and fields that were changed.
+
+    When:
+        - Running the update_remote_system_command.
+
+    Then:
+        - Ensure the incident was updated.
+    """
+    args = {'incidentChanged': True,
+            'remoteId': 1,
+            'delta': {'custom_field': 'updated_field'}
+            }
+    client = generate_dummy_client()
+    mocker.patch.object(client, 'get_incident', return_value=REMOTE_INCIDENT)
+    result = mocker.patch.object(client, 'update_incident')
+    update_remote_system_command(client, args, {})
+    assert result.call_args.kwargs['incident']['CustomFields']['custom_field'] == args['delta']['custom_field']

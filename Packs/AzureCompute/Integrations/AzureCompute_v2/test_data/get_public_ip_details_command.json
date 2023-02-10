@@ -1,0 +1,27 @@
+{
+    "name": "webserver-ip",
+    "id": "/subscriptions/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/resourceGroups/fake-resource-group/providers/Microsoft.Network/publicIPAddresses/webserver-ip",
+    "etag": "tag",
+    "location": "eastus",
+    "properties": {
+        "provisioningState": "Succeeded",
+        "resourceGuid": "ip_id",
+        "ipAddress": "1.1.1.1",
+        "publicIPAddressVersion": "IPv4",
+        "publicIPAllocationMethod": "Static",
+        "idleTimeoutInMinutes": 4,
+        "dnsSettings": {
+            "domainNameLabel": "tesdomain",
+            "fqdn": "webserver.eastus.cloudapp.azure.com"
+        },
+        "ipTags": [],
+        "ipConfiguration": {
+            "id": "/subscriptions/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/resourceGroups/fake-resource-group/providers/Microsoft.Network/networkInterfaces/fake-network-interface-name-z1/ipConfigurations/ipconfig1"
+        }
+    },
+    "type": "Microsoft.Network/publicIPAddresses",
+    "sku": {
+        "name": "Basic",
+        "tier": "Regional"
+    }
+}

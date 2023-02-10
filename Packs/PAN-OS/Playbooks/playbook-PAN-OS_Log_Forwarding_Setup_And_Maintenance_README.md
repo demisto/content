@@ -23,8 +23,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * AreValuesEqual
 
 ### Commands
-* panorama-edit-rule
-* panorama-list-rules
+* pan-os-edit-rule
+* pan-os-list-rules
 
 ## Playbook Inputs
 ---

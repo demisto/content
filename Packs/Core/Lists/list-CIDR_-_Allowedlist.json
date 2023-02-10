@@ -1,0 +1,16 @@
+{
+    "allRead": true,
+    "allReadWrite": true,
+    "id": "CIDR - Allowedlist",
+    "itemVersion": "",
+    "locked": false,
+    "name": "CIDR - Allowedlist",
+    "nameLocked": false,
+    "packID": "",
+    "previousAllRead": true,
+    "system": false,
+    "truncated": false,
+    "type": "plain_text",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

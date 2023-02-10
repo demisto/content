@@ -1,7 +1,8 @@
 id: file_enrichment_-_virus_total_private_api
 version: -1
 name: File Enrichment - Virus Total Private API
-description: Get file information using the Virus Total Private API integration.
+description: Deprecated. Use the "File Enrichment - Virus Total v3" playbook instead.
+deprecated: true
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:

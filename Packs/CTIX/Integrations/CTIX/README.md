@@ -1,5 +1,6 @@
 This is Cyware Threat Intelligence eXhange(CTIX) integration which enriches IP/Domain/URL/File Data.
 This integration was integrated and tested with version 2.4 and 2.7 of CTIX.
+This integration is NOT COMPATIBLE with CTIX version 3.0 and above. Use the CTIX V3 Integration for CTIX version 3 and above. 
 Supported Cortex XSOAR versions: 5.0.0 and later.
 
 ## Configure CTIX on Cortex XSOAR
@@ -638,6 +639,10 @@ Return File Details.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | File.Name | String | The full file name. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA512 | String | The SHA256 hash of the file.| 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
@@ -803,7 +808,8 @@ Return File Details.
     },
     "File": [
         {
-            "Name": "4ebb2b00a11f9361cf3757e96f14ad4b"
+            "Name": "4ebb2b00a11f9361cf3757e96f14ad4b",
+            "MD5": "4ebb2b00a11f9361cf3757e96f14ad4b"
         }
     ]
 }
@@ -816,3 +822,51 @@ Return File Details.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| false | 0 | 3 | 0.0 | true | 1588854933 | 1586262933 | MD5 | false | false | {'id': '23ccc391-6968-4734-b93e-d4985e23dcfd', 'name': 'anomalous-activity', 'colour_code': None, 'created_by': 'system@default.tld', 'created': 1605030281, 'modified_by': 'system@default.tld', 'modified': 1605030281}| 1605791028 | 4ebb2b00a11f9361cf3757e96f14ad4b | indicator | package-d54892d8-b495-4331-b361-17ffbeacdaed,<br/>package-09be25b9-5d6b-4320-b512-4dc0e088f434,<br/>bundle--87151b50-31a4-4f0a-9f5f-282b0f1d1285 | adsa,<br/>newtestcollection1 - edited | 1557df73-68b4-485b-9821-e3036e5fb7a4,<br/>a1eb2b29-fed4-4635-8e5c-a74f4339b8ab | attack_pattern: <br/>campaign: <br/>intrusion_set: <br/>malware: <br/>threat_actor: <br/>tool: <br/>indicator: <br/>ttp: <br/>kill_chain_phases: <br/>course_of_action:  | false | 0 | 5 | 50.0 | Import | {'name': 'Import', 'id': 'd1d3b628-346f-43c3-a369-235661ac6277'} | indicator--2e35588f-cde1-4492-a720-ab0aee7fafaa | 0a834138-cc59-4107-aa69-46e6080f06af | Indicator | false | 0 | 4ebb2b00a11f9361cf3757e96f14ad4b |
 
+### ctix-create-intel
+***
+Creates Intel in CTIX platform.
+
+
+#### Base Command
+
+`ctix-create-intel`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- | --- |
+| title | Title of ioc | Optional |
+| description | Description of ioc| Optional |
+| tlp | Tlp of ioc | Optional |
+| confidence | Confidence of ioc | Optional |
+| ips | comma-separated list of IPs | Optional | 
+| urls | comma-separated list of URLs | Optional |
+| domains | comma-separated list of domains | Optional |
+| files | comma-separated list of files | Optional |
+| emails | comma-separated list of emails | Optional |
+| malwares | comma-separated list of malwares | Optional |
+| threat_actors | comma-separated list of threat actors | Optional |
+| attack_patterns | comma-separated list of attack patterns | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CTIX.Intel.response | String | The response of the api | 
+| CTIX.Intel.status | Number | Status code returned from the api | 
+
+
+#### Command Example
+```ctix-create-intel ips=1.2.3.4,3.45.56.78 urls=https://ioc_test.com,https://test_ioc.com files=8e7fad44308af9d1d60aac4fafcecdf2f66aa0315eb5f092fafa5bb03a5c2e3e emails=ioc@gmail.com,malicious@gmail.com malwares=dridex,spambot threat_actors=everest,grief attack_patterns=phishing,ddos title=title_xsoar_intel_creation description=xsoar_description tlp=green confidence=70```
+
+#### Context Example
+```json
+{
+    "CTIX": {
+        "Intel": {
+            "response": "Package is pushed in CTIX for publishing",
+            "status": 201
+        }
+    }
+}
+```

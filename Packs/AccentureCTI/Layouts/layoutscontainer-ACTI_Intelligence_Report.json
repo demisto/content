@@ -1,0 +1,322 @@
+{
+	"group": "indicator",
+	"id": "ACTI Intelligence Report",
+	"indicatorsDetails": {
+		"tabs": [
+			{
+				"id": "default-main",
+				"name": "Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "indicatortype",
+								"height": 53,
+								"id": "indicator-type",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "creationdate",
+								"height": 53,
+								"id": "c7884210-a4e3-11ec-9491-bbcbfe7ec09d",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "indextimestamp",
+								"height": 53,
+								"id": "dce996a0-9a06-11ec-b986-5bb6336dd14d",
+								"index": 2,
+								"listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "actiindextimestamp",
+								"height": 53,
+								"id": "cc298f90-a4e3-11ec-9491-bbcbfe7ec09d",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "actiuuid",
+								"height": 53,
+								"id": "d715bbe0-a4e3-11ec-9491-bbcbfe7ec09d",
+								"index": 3,
+								"listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "lastmodified",
+								"height": 53,
+								"id": "d08410c0-9a06-11ec-b986-5bb6336dd14d",
+								"index": 0,
+								"listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "lastpublished",
+								"height": 53,
+								"id": "d25e27f0-9a06-11ec-b986-5bb6336dd14d",
+								"index": 0,
+								"listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "uuid",
+								"height": 53,
+								"id": "e1424260-9a06-11ec-b986-5bb6336dd14d",
+								"index": 0,
+								"listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "actithreattypes",
+								"height": 53,
+								"id": "0db0c400-aadf-11ec-8bec-6fd85ef38f47",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "actilastmodified",
+								"height": 53,
+								"id": "d2cfadc0-a4e3-11ec-9491-bbcbfe7ec09d",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "actilastpublished",
+								"height": 53,
+								"id": "d43cd250-a4e3-11ec-9491-bbcbfe7ec09d",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 2
+							}
+						],
+						"maxW": 3,
+						"moved": false,
+						"name": "Basic Information",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 1
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "default-main-indicatorTimeline",
+						"maxW": 3,
+						"moved": false,
+						"name": "Timeline",
+						"static": false,
+						"type": "indicatorTimeline",
+						"w": 1,
+						"x": 2,
+						"y": 5
+					},
+					{
+						"h": 2,
+						"i": "default-main-comments",
+						"maxW": 3,
+						"moved": false,
+						"name": "Comments",
+						"static": false,
+						"type": "comments",
+						"w": 2,
+						"x": 0,
+						"y": 5
+					},
+					{
+						"displayType": "CARD",
+						"h": 1,
+						"hideItemTitleOnlyOne": true,
+						"hideName": true,
+						"i": "default-main-0f7a0800-9e0a-11ec-985e-ebd83276754d",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "actireporttitle",
+								"height": 106,
+								"id": "bc1580a0-a4e3-11ec-9491-bbcbfe7ec09d",
+								"index": 0,
+								"listId": "default-main-0f7a0800-9e0a-11ec-985e-ebd83276754d",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "DISPLAY TEXT",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "default-main-7bb083f0-9e0a-11ec-985e-ebd83276754d",
+						"items": [
+							{
+								"endCol": 4,
+								"fieldId": "actiabstract",
+								"height": 44,
+								"id": "e82edec0-a4e3-11ec-9491-bbcbfe7ec09d",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "SUMMARY",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 3
+					},
+					{
+						"h": 2,
+						"i": "default-main-fd331c90-ab88-11ec-8b52-553f8f08df47",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Related Indicators",
+						"static": false,
+						"type": "relationshipsTable",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"h": 3,
+						"i": "default-main-0b36c210-ab89-11ec-8b52-553f8f08df47",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Related Incidents",
+						"static": false,
+						"type": "relatedIncidents",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "uqrgdszydp",
+				"name": "Analysis",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 9,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "uqrgdszydp-407966d0-ab89-11ec-8b52-553f8f08df47",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "actianalysis",
+								"height": 44,
+								"id": "42943080-ab89-11ec-8b52-553f8f08df47",
+								"index": 0,
+								"listId": "uqrgdszydp-407966d0-ab89-11ec-8b52-553f8f08df47",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Analysis",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "fgcszqxgdw",
+				"name": "Conclusion",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 33,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "fgcszqxgdw-8cbe8c50-ab89-11ec-8b52-553f8f08df47",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "acticonclusion",
+								"height": 44,
+								"id": "958edd80-ab89-11ec-8b52-553f8f08df47",
+								"index": 0,
+								"listId": "fgcszqxgdw-8cbe8c50-ab89-11ec-8b52-553f8f08df47",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Conclusion",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			}
+		]
+	},
+	"name": "ACTI Intelligence Report",
+	"system": false,
+	"version": -1,
+    "fromVersion": "6.0.0",
+    "description": "Layout for ACTI Intelligence Report indicator type."
+}

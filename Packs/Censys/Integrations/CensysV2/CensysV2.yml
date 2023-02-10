@@ -16,10 +16,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Censys is a search engine that allows computer scientists to ask questions
-  about the devices and networks that compose the internet. Driven by internet-wide
-  scanning, Censys lets researchers find specific hosts and create aggregate reports
-  on how devices, and certificates are configured and deployed.
+description: Censys is a search engine that allows computer scientists to ask questions about the devices and networks that compose the internet. Driven by internet-wide scanning, Censys lets researchers find specific hosts and create aggregate reports on how devices, and certificates are configured and deployed.
 display: Censys v2
 name: CensysV2
 script:
@@ -42,8 +39,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns detailed information for an IP address or SHA256 within the
-      specified index.
+    description: Returns detailed information for an IP address or SHA256 within the specified index.
     execution: false
     name: cen-view
     outputs:
@@ -54,8 +50,7 @@ script:
       description: The autonomous system's CIDR.
       type: String
     - contextPath: Censys.View.autonomous_system.country_code
-      description: The autonomous system's two-letter, ISO 3166-1 alpha-2 country
-        code (e.g., US, CN, GB, RU).
+      description: The autonomous system's two-letter, ISO 3166-1 alpha-2 country code (e.g., US, CN, GB, RU).
       type: String
     - contextPath: Censys.View.autonomous_system.description
       description: A brief description of the autonomous system.
@@ -82,8 +77,7 @@ script:
       description: When the host was last updated.
       type: Date
     - contextPath: Censys.View.location.continent
-      description: The continent of the host's detected location (e.g., North America,
-        Europe, Asia, South America, Africa, Oceania).
+      description: The continent of the host's detected location (e.g., North America, Europe, Asia, South America, Africa, Oceania).
       type: String
     - contextPath: Censys.View.location.coordinates
       description: The estimated coordinates of the host's detected location.
@@ -92,8 +86,7 @@ script:
       description: The name of the country of the host's detected location.
       type: String
     - contextPath: Censys.View.location.country_code
-      description: The two-letter ISO 3166-1 alpha-2 country code of the host's detected
-        location (e.g., US, CN, GB, RU).
+      description: The two-letter ISO 3166-1 alpha-2 country code of the host's detected location (e.g., US, CN, GB, RU).
       type: String
     - contextPath: Censys.View.location.postal_code
       description: The postal code (if applicable) of the host's detected location.
@@ -102,8 +95,7 @@ script:
       description: The English name of the host's registered country.
       type: String
     - contextPath: Censys.View.location.registered_country_code
-      description: The registered country's two-letter, ISO 3166-1 alpha-2 country
-        code (e.g., US, CN, GB, RU).
+      description: The registered country's two-letter, ISO 3166-1 alpha-2 country code (e.g., US, CN, GB, RU).
       type: String
     - contextPath: Censys.View.location.timezone
       description: The IANA time zone database name of the host's detected location.
@@ -118,32 +110,25 @@ script:
       description: The UTC timestamp of when Censys scanned the service.
       type: Date
     - contextPath: Censys.View.services.perspective_id
-      description: The upstream internet service provider Censys peered with to scan the service -
-        NTT Communications, TATA, Telia Carrier, or Hurricane Electric.
+      description: The upstream internet service provider Censys peered with to scan the service - NTT Communications, TATA, Telia Carrier, or Hurricane Electric.
       type: String
     - contextPath: Censys.View.services.port
       description: The port the service was reached at.
       type: Number
     - contextPath: Censys.View.services.service_name
-      description: The name of the service on the port. This is typically the L7 protocol
-        (e.g., “HTTP”); however, in the case that a more specific HTTP-based protocol
-        is found (e.g., Kubernetes or Prometheus), the field will show that. This
-        field indicates where protocol-specific data will be located.
+      description: The name of the service on the port. This is typically the L7 protocol (e.g., “HTTP”); however, in the case that a more specific HTTP-based protocol is found (e.g., Kubernetes or Prometheus), the field will show that. This field indicates where protocol-specific data will be located.
       type: String
     - contextPath: Censys.View.services.source_ip
       description: The IP address from which Censys scanned the service.
       type: String
     - contextPath: Censys.View.services.transport_protocol
-      description: The transport protocol (known in OSI model as L4) used to contact
-        this service (i.e., UDP or TCP).
+      description: The transport protocol (known in OSI model as L4) used to contact this service (i.e., UDP or TCP).
       type: String
     - contextPath: Censys.View.services.banner
-      description: The banner as a part of the protocol scan. That field will be nested
-        in the protocol-specific data under the service_name field.
+      description: The banner as a part of the protocol scan. That field will be nested in the protocol-specific data under the service_name field.
       type: String
     - contextPath: Censys.View.services.tls.certificates
-      description: A subset of the parsed details of the certificate, including the issuer, subject, fingerprint,
-        names, public keys, and signature.
+      description: A subset of the parsed details of the certificate, including the issuer, subject, fingerprint, names, public keys, and signature.
       type: Unknown
     - contextPath: Censys.View.services.tls.session_ticket
       description: Details about the session ticket provided by the server at the end of the TLS handshake.
@@ -155,8 +140,7 @@ script:
       description: The SHA2-256 digest over the DER encoding of the certificate.
       type: String
     - contextPath: Censys.View.metadata
-      description: Whether the certificate was (ever) seen during a Censys scan of
-        the internet.
+      description: Whether the certificate was (ever) seen during a Censys scan of the internet.
       type: Unknown
     - contextPath: Censys.View.parent_spki_subject_fingerprint
       description: Parent simple public key infrastructure (SPKI) subject fingerprint.
@@ -216,8 +200,7 @@ script:
       description: The object identifier of the signature algorithm, in dotted-decimal notation.
       type: String
     - contextPath: Censys.View.parsed.spki_subject_fingerprint
-      description: The SHA2-256 digest over the DER encoding of the certificate's SubjectPublicKeyInfo,
-        as a hexadecimal string.
+      description: The SHA2-256 digest over the DER encoding of the certificate's SubjectPublicKeyInfo, as a hexadecimal string.
       type: String
     - contextPath: Censys.View.parsed.subject.common_name
       description: Common name.
@@ -247,16 +230,13 @@ script:
       description: Name of public key type, e.g., RSA or ECDSA.
       type: String
     - contextPath: Censys.View.parsed.tbs_fingerprint
-      description: The SHA2-256 digest over the DER encoding of the certificate's
-        TBSCertificate.
+      description: The SHA2-256 digest over the DER encoding of the certificate's TBSCertificate.
       type: String
     - contextPath: Censys.View.parsed.tbs_noct_fingerprint
-      description: The SHA2-256 digest over the DER encoding of the certificate's
-        TBSCertificate with any CT extensions omitted.
+      description: The SHA2-256 digest over the DER encoding of the certificate's TBSCertificate with any CT extensions omitted.
       type: String
     - contextPath: Censys.View.parsed.validation_level
-      description: How the certificate is validated - Domain validated (DV), Organization
-        Validated (OV), Extended Validation (EV), or unknown.
+      description: How the certificate is validated - Domain validated (DV), Organization Validated (OV), Extended Validation (EV), or unknown.
       type: String
     - contextPath: Censys.View.parsed.validity.end
       description: Timestamp of when the certificate expires. Timezone is UTC.
@@ -285,25 +265,53 @@ script:
     - contextPath: Censys.View.zlint
       description: Whether the certificate has any zlint errors.
       type: Unknown
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: IP.ASN
+      description: 'The autonomous system name for the IP address, for example: "AS8948".'
+      type: String
+    - contextPath: IP.Geo.Location
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located.
+      type: String
+    - contextPath: IP.Geo.Description
+      description: Additional information about the location.
+      type: String
+    - contextPath: IP.ASOwner
+      description: The autonomous system owner of the IP.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
   - arguments:
     - default: false
-      description: Query used to search for hosts with matching attributes. Uses the
-        Censys Search Language.
+      description: Query used to search for hosts with matching attributes. Uses the Censys Search Language.
       isArray: false
       name: query
       required: true
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of hits to return in each response (minimum
-        of 0, maximum of 100). (Applies for the host search.) 
+      description: The maximum number of hits to return in each response (minimum of 0, maximum of 100). (Applies for the host search.)
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of results to return. 
+      description: The number of results to return.
       isArray: false
       name: limit
       required: false
@@ -332,8 +340,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Return previews of hosts matching a specified search query or a
-      list of certificates that match the given query.
+    description: Return previews of hosts matching a specified search query or a list of certificates that match the given query.
     execution: false
     name: cen-search
     outputs:
@@ -344,8 +351,7 @@ script:
       description: The autonomous system's CIDR.
       type: String
     - contextPath: Censys.Search.autonomous_system.country_code
-      description: The autonomous system's two-letter, ISO 3166-1 alpha-2 country code
-        (e.g., US, CN, GB, RU).
+      description: The autonomous system's two-letter, ISO 3166-1 alpha-2 country code (e.g., US, CN, GB, RU).
       type: String
     - contextPath: Censys.Search.autonomous_system.description
       description: A brief description of the autonomous system.
@@ -357,8 +363,7 @@ script:
       description: The host’s IP address.
       type: String
     - contextPath: Censys.Search.location.continent
-      description: The continent of the host's detected location (e.g., North America,
-        Europe, Asia, South America, Africa, Oceania).
+      description: The continent of the host's detected location (e.g., North America, Europe, Asia, South America, Africa, Oceania).
       type: String
     - contextPath: Censys.Search.location.coordinates
       description: The estimated coordinates of the host's detected location.
@@ -367,15 +372,13 @@ script:
       description: The country of the host's detected location.
       type: String
     - contextPath: Censys.Search.location.country_code
-      description: The two-letter ISO 3166-1 alpha-2 country code of the host's detected
-        location (e.g., US, CN, GB, RU).
+      description: The two-letter ISO 3166-1 alpha-2 country code of the host's detected location (e.g., US, CN, GB, RU).
       type: String
     - contextPath: Censys.Search.location.registered_country
       description: The host's registered country.
       type: String
     - contextPath: Censys.Search.location.registered_country_code
-      description: The registered country's two-letter, ISO 3166-1 alpha-2 country
-        code (e.g., US, CN, GB, RU).
+      description: The registered country's two-letter, ISO 3166-1 alpha-2 country code (e.g., US, CN, GB, RU).
       type: String
     - contextPath: Censys.Search.location.timezone
       description: The IANA time zone database name of the host's detected location.
@@ -384,14 +387,10 @@ script:
       description: The port the service was reached at.
       type: Number
     - contextPath: Censys.Search.services.service_name
-      description: The name of the service on the port. This is typically the L7 protocol
-        (e.g., “HTTP”); however, in case a more specific HTTP-based protocol
-        is found (e.g., Kubernetes or Prometheus), the field will show that. This
-        field indicates where protocol-specific data will be located.
+      description: The name of the service on the port. This is typically the L7 protocol (e.g., “HTTP”); however, in case a more specific HTTP-based protocol is found (e.g., Kubernetes or Prometheus), the field will show that. This field indicates where protocol-specific data will be located.
       type: String
     - contextPath: Censys.Search.services.transport_protocol
-      description: The transport protocol (known in OSI model as L4) used to contact
-        this service (i.e., UDP or TCP).
+      description: The transport protocol (known in OSI model as L4) used to contact this service (i.e., UDP or TCP).
       type: String
     - contextPath: Censys.Search.parsed.fingerprint_sha256
       description: SHA 256 fingerprint.
@@ -412,10 +411,9 @@ script:
       description: Timestamp of when the certificate is first valid. Timezone is UTC.
       type: Date
     - contextPath: Censys.Search.parsed.issuer_dn
-      description: Distinguished name of the entity that has signed and issued the
-        certificate.
+      description: Distinguished name of the entity that has signed and issued the certificate.
       type: String
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.9.40422
   feed: false
   isfetch: false
   longRunning: false

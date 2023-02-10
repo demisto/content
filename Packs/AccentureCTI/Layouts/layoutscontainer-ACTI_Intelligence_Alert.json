@@ -1,0 +1,406 @@
+{
+	"group": "indicator",
+	"id": "ACTI Intelligence Alert",
+	"indicatorsDetails": {
+		"tabs": [
+			{
+				"id": "default-main",
+				"name": "Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "indicatortype",
+								"height": 22,
+								"id": "indicator-type",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "creationdate",
+								"height": 22,
+								"id": "78f38740-a4e3-11ec-9491-bbcbfe7ec09d",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "indextimestamp",
+								"height": 22,
+								"id": "63489a70-9962-11ec-a490-896915ce69e3",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "severity",
+								"height": 22,
+								"id": "4819dfb0-9963-11ec-b040-410a1c97c332",
+								"index": 2,
+								"listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "actiindextimestamp",
+								"height": 22,
+								"id": "81e62d80-a4e3-11ec-9491-bbcbfe7ec09d",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "actiseverity",
+								"height": 22,
+								"id": "877695f0-a4e3-11ec-9491-bbcbfe7ec09d",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "lastmodified",
+								"height": 22,
+								"id": "fb2fe420-9961-11ec-a490-896915ce69e3",
+								"index": 0,
+								"listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "lastpublished",
+								"height": 22,
+								"id": "0020ff50-9962-11ec-a490-896915ce69e3",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "uuid",
+								"height": 22,
+								"id": "72bdaa40-9962-11ec-a490-896915ce69e3",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "actilastmodified",
+								"height": 22,
+								"id": "8fcd7160-a4e3-11ec-9491-bbcbfe7ec09d",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "actilastpublished",
+								"height": 22,
+								"id": "920279d0-a4e3-11ec-9491-bbcbfe7ec09d",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "actiuuid",
+								"height": 22,
+								"id": "942ad810-a4e3-11ec-9491-bbcbfe7ec09d",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "actithreattypes",
+								"height": 22,
+								"id": "5e2dd780-ab87-11ec-9035-43563a64afe7",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 2
+							}
+						],
+						"maxW": 3,
+						"moved": false,
+						"name": "Basic Information",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 1
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "default-main-indicatorTimeline",
+						"maxW": 3,
+						"moved": false,
+						"name": "Timeline",
+						"static": false,
+						"type": "indicatorTimeline",
+						"w": 1,
+						"x": 2,
+						"y": 5
+					},
+					{
+						"h": 2,
+						"i": "default-main-comments",
+						"maxW": 3,
+						"moved": false,
+						"name": "Comments",
+						"static": false,
+						"type": "comments",
+						"w": 2,
+						"x": 0,
+						"y": 5
+					},
+					{
+						"displayType": "ROW",
+						"h": 1,
+						"hideItemTitleOnlyOne": true,
+						"hideName": true,
+						"i": "default-main-cf558210-9e07-11ec-985e-ebd83276754d",
+						"items": [
+							{
+								"endCol": 4,
+								"fieldId": "actireporttitle",
+								"height": 106,
+								"id": "587448b0-a4e3-11ec-9491-bbcbfe7ec09d",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Display Text",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"description": "",
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "default-main-06d91620-9e08-11ec-985e-ebd83276754d",
+						"items": [
+							{
+								"endCol": 4,
+								"fieldId": "actiabstract",
+								"height": 44,
+								"id": "1d545400-a4e3-11ec-9491-bbcbfe7ec09d",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "SUMMARY",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 3
+					},
+					{
+						"h": 2,
+						"i": "default-main-097642d0-ab88-11ec-9035-43563a64afe7",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Related Indicators",
+						"static": false,
+						"type": "relationshipsTable",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"h": 3,
+						"i": "default-main-28c58ce0-ab88-11ec-9035-43563a64afe7",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Related Incidents",
+						"static": false,
+						"type": "relatedIncidents",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "sum8mgu0hf",
+				"name": "Analysis",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 22,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "sum8mgu0hf-f0f55810-ab8a-11ec-8b52-553f8f08df47",
+						"items": [
+							{
+								"endCol": 6,
+								"fieldId": "actianalysis",
+								"height": 106,
+								"id": "087482e0-ab8b-11ec-8b52-553f8f08df47",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Analysis",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "1dufw1uglf",
+				"name": "Mitigation",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 30,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "1dufw1uglf-1caf0a00-ab8b-11ec-8b52-553f8f08df47",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "actimitigation",
+								"height": 44,
+								"id": "23d9e890-ab8b-11ec-8b52-553f8f08df47",
+								"index": 0,
+								"listId": "1dufw1uglf-1caf0a00-ab8b-11ec-8b52-553f8f08df47",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Mitigation",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			}
+		]
+	},
+	"indicatorsQuickView": {
+		"tabs": [
+			{
+				"id": "indicator-quick-view-info",
+				"name": "Info",
+				"sections": [
+					{
+						"h": 1,
+						"hideName": true,
+						"i": "indicator-quick-view-info-expirationStatus",
+						"maxW": 3,
+						"name": "Expiration Status",
+						"type": "expirationStatus",
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "indicator-quick-view-info-reputationSources",
+						"maxW": 3,
+						"name": "Verdict",
+						"type": "reputationSources",
+						"w": 1,
+						"x": 0,
+						"y": 1
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"i": "indicator-quick-view-info-tags-section",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "tags",
+								"height": 22,
+								"id": "indicator-quick-view-info-tags-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"name": "Tags",
+						"w": 1,
+						"x": 0,
+						"y": 3
+					},
+					{
+						"h": 2,
+						"i": "indicator-quick-view-info-relatedIncidents",
+						"maxW": 3,
+						"name": "Related Incidents",
+						"type": "relatedIncidents",
+						"w": 1,
+						"x": 0,
+						"y": 5
+					},
+					{
+						"h": 2,
+						"i": "indicator-quick-view-info-comments",
+						"maxW": 3,
+						"name": "Comments",
+						"type": "comments",
+						"w": 1,
+						"x": 0,
+						"y": 7
+					}
+				],
+				"type": "custom"
+			}
+		]
+	},
+	"name": "ACTI Intelligence Alert",
+	"system": false,
+	"version": -1,
+    "fromVersion": "6.0.0",
+    "description": "Layout for ACTI Intelligence Alert indicator type."
+}

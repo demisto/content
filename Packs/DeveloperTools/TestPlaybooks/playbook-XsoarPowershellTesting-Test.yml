@@ -597,3 +597,5 @@ inputs:
   playbookInputQuery: null
 outputs: []
 fromversion: 5.5.0
+marketplaces:
+  - xsoar

@@ -1,0 +1,34 @@
+{
+    "host_extract": {
+        "AssignedDate": null,
+        "Assignee": null,
+        "CertaintyScore": 45,
+        "ID": 472,
+        "State": "active",
+        "Tags": [],
+        "ThreatScore": 30,
+
+        "HasActiveTraffic": false,
+        "Hostname": "Vectra-Test",
+        "IPAddress": "192.168.51.6",
+        "IsKeyAsset": false,
+        "IsTargetingKeyAsset": false,
+        "LastDetectionTimestamp": "2022-07-09T14:13:58.000Z",
+        "PrivilegeLevel": null,
+        "PrivilegeCategory": null,
+        "ProbableOwner": null,
+        "SensorLUID": "2x2ir6i9",
+        "SensorName": "Sensor_A",
+        "Severity": "Low",
+        "URL":  "https://vectra.test/hosts/472"
+    },
+    "common_extract": {
+        "AssignedDate": null,
+        "Assignee": null,
+        "CertaintyScore": 45,
+        "ID": 472,
+        "State": "active",
+        "Tags": [],
+        "ThreatScore": 30
+    }
+}

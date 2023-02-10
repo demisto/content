@@ -1,4 +1,4 @@
-Checks if the provided Demisto REST API instance is available for the XSOAR Simple Dev to Prod workflow.
+Checks if the provided Cortex XSOAR REST API instance is available for the XSOAR Simple Dev to Prod workflow.
 
 ## Script Data
 ---

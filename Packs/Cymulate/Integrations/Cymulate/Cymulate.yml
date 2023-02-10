@@ -15,7 +15,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: true
+- defaultvalue: 'true'
   display: Show only 'penatrated' incidents
   hidden: false
   name: onlyPenatrated

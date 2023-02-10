@@ -1,0 +1,6 @@
+fromversion: 6.8.0
+id: OracleDBEventCollector
+name: OracleDBEventCollector
+rules: ''
+schema: ''
+toversion: 6.9.9

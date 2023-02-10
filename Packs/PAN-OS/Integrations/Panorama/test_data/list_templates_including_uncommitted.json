@@ -1,0 +1,115 @@
+{
+   "response":{
+      "@status":"success",
+      "@code":"19",
+      "result":{
+         "@total-count":"1",
+         "@count":"1",
+         "template":{
+            "@admin":"admin",
+            "@dirtyId":"1",
+            "@time":"2022/09/22 07:14:06",
+            "entry":[
+               {
+                  "@name":"test-1",
+                  "variable":{
+                     "entry":[
+                        {
+                           "@admin":"admin",
+                           "@dirtyId":"1",
+                           "@time":"2022/09/22 07:14:06",
+                           "entry":{
+                              "@name":"$variable-1",
+                              "@admin":"admin",
+                              "@dirtyId":"1",
+                              "@time":"2022/09/22 07:14:06",
+                              "type":{
+                                 "@admin":"admin",
+                                 "@dirtyId":"1",
+                                 "@time":"2022/09/22 07:14:06",
+                                 "ip-netmask":{
+                                    "@admin":"admin",
+                                    "@dirtyId":"1",
+                                    "@time":"2022/09/22 07:14:06",
+                                    "#text":"1.1.1.1"
+                                 }
+                              },
+                              "description":{
+                                 "@admin":"admin",
+                                 "@dirtyId":"1",
+                                 "@time":"2022/09/22 07:14:06",
+                                 "#text":"description for $variable-1"
+                              }
+                           }
+                        },
+                        {
+                           "@admin":"admin",
+                           "@dirtyId":"1",
+                           "@time":"2022/09/22 07:14:06",
+                           "entry":{
+                              "@name":"$variable-2",
+                              "@admin":"admin",
+                              "@dirtyId":"1",
+                              "@time":"2022/09/22 07:14:06",
+                              "type":{
+                                 "@admin":"admin",
+                                 "@dirtyId":"1",
+                                 "@time":"2022/09/22 07:14:06",
+                                 "ip-netmask":{
+                                    "@admin":"admin",
+                                    "@dirtyId":"1",
+                                    "@time":"2022/09/22 07:14:06",
+                                    "#text":"2.2.2.2"
+                                 }
+                              },
+                              "description":{
+                                 "@admin":"admin",
+                                 "@dirtyId":"1",
+                                 "@time":"2022/09/22 07:14:06",
+                                 "#text":"description for $variable-2"
+                              }
+                           }
+                        }
+                     ]
+                  }
+               },
+               {
+                  "@name":"test-2",
+                  "@admin":"admin",
+                  "@dirtyId":"1",
+                  "@time":"2022/09/22 07:14:06",
+                  "description":"just a test description",
+                  "variable":{
+                     "@admin":"admin",
+                     "@dirtyId":"1",
+                     "@time":"2022/09/22 07:14:06",
+                     "entry":{
+                        "@name":"$variable-1",
+                        "@admin":"admin",
+                        "@dirtyId":"1",
+                        "@time":"2022/09/22 07:14:06",
+                        "type":{
+                           "@admin":"admin",
+                           "@dirtyId":"1",
+                           "@time":"2022/09/22 07:14:06",
+                           "ip-netmask":{
+                              "@admin":"admin",
+                              "@dirtyId":"1",
+                              "@time":"2022/09/22 07:14:06",
+                              "#text":"1.1.1.1"
+                           }
+                        },
+                        "description":{
+                           "@admin":"admin",
+                           "@dirtyId":"1",
+                           "@time":"2022/09/22 07:14:06",
+                           "#text":"description for $variable-1"
+                        }
+                     }
+                  }
+               }
+            ]
+         }
+      }
+   }
+}

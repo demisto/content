@@ -24,7 +24,7 @@ def get_phishing_map_labels(comma_values):
     for v in values:
         v = v.strip()
         if ":" in v:
-            splited = v.split(":")
+            splited = v.rsplit(":", maxsplit=1)
             labels_dict[splited[0].strip()] = splited[1].strip()
         else:
             labels_dict[v] = v
@@ -40,7 +40,7 @@ def build_query_in_reepect_to_phishing_labels(args):
     tag_field = args['tagField']
     tags_union = ' '.join(['"{}"'.format(label) for label in mapping_dict])
     mapping_query = '{}:({})'.format(tag_field, tags_union)
-    if 'query' not in args:
+    if 'query' not in args or args['query'].strip() == '':
         args['query'] = mapping_query
     else:
         args['query'] = '({}) and ({})'.format(query, mapping_query)

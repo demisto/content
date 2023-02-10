@@ -19,6 +19,12 @@ configuration:
   name: credentials
   required: true
   type: 9
+- display: The amount of time (in seconds) that a request will wait for a client to
+    establish a connection to a remote machine before a timeout occurs.
+  name: timeout
+  defaultvalue: "10"
+  type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -1691,7 +1697,7 @@ script:
     - description: ''
       isArray: true
       name: domain_batchexecutecommandrequest_optional_hosts
-      required: true
+      required: false
     - description: ''
       isArray: false
       name: domain_batchexecutecommandrequest_persist_all
@@ -1726,7 +1732,7 @@ script:
     - description: ''
       isArray: true
       name: domain_batchexecutecommandrequest_optional_hosts
-      required: true
+      required: false
     - description: ''
       isArray: false
       name: domain_batchexecutecommandrequest_persist_all
@@ -1761,7 +1767,7 @@ script:
     - description: ''
       isArray: true
       name: domain_batchexecutecommandrequest_optional_hosts
-      required: true
+      required: false
     - description: ''
       isArray: false
       name: domain_batchexecutecommandrequest_persist_all
@@ -1792,7 +1798,7 @@ script:
     - description: ''
       isArray: true
       name: domain_batchgetcommandrequest_optional_hosts
-      required: true
+      required: false
     description: Batch executes `get` command across hosts to retrieve files. After
       this call is made `GET /real-time-response/combined/batch-get-command/v1` is
       used to query for the results.
@@ -1868,7 +1874,7 @@ script:
     - description: ''
       isArray: false
       name: domain_batchinitsessionrequest_existing_batch_id
-      required: true
+      required: false
     - description: ''
       isArray: true
       name: domain_batchinitsessionrequest_host_ids
@@ -3246,7 +3252,7 @@ script:
       name: offset
       required: false
     description: Find hosts that have observed a given custom IOC. For details about
-      those hosts, use GET /devices/entities/devices/v1
+      those hosts, use GET /devices/entities/devices/v2
     name: cs-devices-ran-on
     outputs:
     - contextPath: CrowdStrike.apiMsaReplyDevicesRanOn.errors.code
@@ -27909,9 +27915,103 @@ script:
     - contextPath: CrowdStrike.modelsVerifyAccessResponseV1.resources.successful
       description: ''
       type: Boolean
-  dockerimage: demisto/python3:3.9.7.24076
+  - arguments:
+    - default: false
+      description: IDs of devices to get the login history for.
+      isArray: false
+      name: ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve details about recent login sessions for a set of devices.
+    execution: false
+    name: cs-get-device-login-history
+    outputs:
+    - contextPath: CrowdStrike.deviceHistoryLogin.errors.code
+      description: ''
+      type: Number
+    - contextPath: CrowdStrike.deviceHistoryLogin.errors.id
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceHistoryLogin.errors.message
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceHistoryLogin.resources.device_id
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceHistoryLogin.resources.recent_logins.login_time
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceHistoryLogin.resources.recent_logins.user_name
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceHistoryLogin.meta.powered_by
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceHistoryLogin.meta.trace_id
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceHistoryLogin.meta.query_time
+      description: ''
+      type: Number
+    - contextPath: CrowdStrike.deviceHistoryLogin.meta.writes
+      description: ''
+      type: Unknown
+  - arguments:
+    - default: false
+      description: IDs of devices to get the network adres history for.
+      isArray: false
+      name: ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve history of IP and MAC addresses of devices.
+    execution: false
+    name: cs-get-device-network-history
+    outputs:
+    - contextPath: CrowdStrike.deviceNetworkHistory.error.code
+      description: ''
+      type: Number
+    - contextPath: CrowdStrike.deviceNetworkHistory.errors.id
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceNetworkHistory.errors.message
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceNetworkHistory.meta.powered_by
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceNetworkHistory.meta.trace_id
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceNetworkHistory.meta.query_time
+      description: ''
+      type: Number
+    - contextPath: CrowdStrike.deviceNetworkHistory.meta.writes
+      description: ''
+      type: Unknown
+    - contextPath: CrowdStrike.deviceNetworkHistory.resources.device_id
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceNetworkHistory.resources.cid
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceNetworkHistory.resources.history.ip_address
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceNetworkHistory.resources.history.mac_address
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.deviceNetworkHistory.resources.history.timestamp
+      description: ''
+      type: String
+  dockerimage: demisto/python3:3.10.9.40422
+  feed: false
   isfetch: false
-  script: ''
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
   subtype: python3
   type: python
 beta: true

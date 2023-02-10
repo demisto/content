@@ -3,9 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Dict, Any, List, Optional, Tuple
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
-
 ''' CONSTANTS '''
 
 VENDOR = 'Threat Crowd'
@@ -321,7 +318,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 

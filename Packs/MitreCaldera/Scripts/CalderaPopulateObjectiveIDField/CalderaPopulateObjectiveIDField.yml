@@ -1,0 +1,21 @@
+commonfields:
+  id: CalderaPopulateObjectiveIDField
+  version: -1
+name: CalderaPopulateObjectiveIDField
+comment: Populates the Objective ID Field with Objectives from the MITRE Caldera
+dependson:
+  must:
+  - '|||caldera-get-objectives'
+script: ''
+type: python
+tags:
+- field-display
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.5.31928
+runas: DBotWeakRole
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

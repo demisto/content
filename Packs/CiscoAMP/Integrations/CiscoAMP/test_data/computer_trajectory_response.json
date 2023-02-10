@@ -1,0 +1,2135 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self"
+        }
+    },
+    "data": {
+        "computer": {
+            "connector_guid": "data_computer_connector_guid",
+            "hostname": "data_computer_hostname",
+            "windows_processor_id": "data_computer_windows_processor_id",
+            "active": "data_computer_active",
+            "links": {
+                "computer": "data_computer_links_computer",
+                "trajectory": "data_computer_links_trajectory",
+                "group": "data_computer_links_group"
+            },
+            "connector_version": "data_computer_connector_version",
+            "operating_system": "data_computer_operating_system",
+            "os_version": "data_computer_os_version",
+            "internal_ips": [
+                "data_computer_internal_ips_0"
+            ],
+            "external_ip": "data_computer_external_ip",
+            "group_guid": "data_computer_group_guid",
+            "install_date": "data_computer_install_date",
+            "is_compromised": "data_computer_is_compromised",
+            "demo": "data_computer_demo",
+            "network_addresses": [
+                {
+                    "mac": "data_computer_network_addresses[0]_mac",
+                    "ip": "data_computer_network_addresses[0]_ip"
+                }
+            ],
+            "policy": {
+                "guid": "data_computer_policy_guid",
+                "name": "data_computer_policy_name"
+            },
+            "groups": [
+                {
+                    "guid": "data_computer_groups[0]_guid",
+                    "name": "data_computer_groups[0]_name"
+                }
+            ],
+            "faults": [],
+            "isolation": {
+                "available": "data_computer_isolation_available",
+                "status": "data_computer_isolation_status"
+            },
+            "orbital": {
+                "status": "data_computer_orbital_status"
+            }
+        },
+        "events": [
+            {
+                "id": "data_events[0]_id",
+                "timestamp": "data_events[0]_timestamp",
+                "timestamp_nanoseconds": "data_events[0]_timestamp_nanoseconds",
+                "date": "data_events[0]_date",
+                "event_type": "data_events[0]_event_type",
+                "event_type_id": "data_events[0]_event_type_id",
+                "group_guids": [
+                    "data_events[0]_group_guids_0"
+                ],
+                "severity": "data_events[0]_severity",
+                "start_timestamp": "data_events[0]_start_timestamp",
+                "start_date": "data_events[0]_start_date",
+                "file": {
+                    "disposition": "data_events[0]_file_disposition",
+                    "file_name": "data_events[0]_file_file_name",
+                    "identity": {
+                        "sha256": "data_events[0]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[0]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[0]_file_parent_identity_sha256"
+                        }
+                    }
+                },
+                "vulnerabilities": [
+                    {
+                        "name": "data_events[0]_vulnerabilities[0]_name",
+                        "version": "data_events[0]_vulnerabilities[0]_version",
+                        "cve": "data_events[0]_vulnerabilities[0]_cve",
+                        "score": "data_events[0]_vulnerabilities[0]_score",
+                        "url": "data_events[0]_vulnerabilities[0]_url"
+                    }
+                ]
+            },
+            {
+                "id": "data_events[1]_id",
+                "timestamp": "data_events[1]_timestamp",
+                "timestamp_nanoseconds": "data_events[1]_timestamp_nanoseconds",
+                "date": "data_events[1]_date",
+                "event_type": "data_events[1]_event_type",
+                "event_type_id": "data_events[1]_event_type_id",
+                "group_guids": [
+                    "data_events[1]_group_guids_0"
+                ]
+            },
+            {
+                "timestamp": "data_events[2]_timestamp",
+                "timestamp_nanoseconds": "data_events[2]_timestamp_nanoseconds",
+                "date": "data_events[2]_date",
+                "event_type": "data_events[2]_event_type",
+                "group_guids": [
+                    "data_events[2]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[2]_file_disposition",
+                    "file_name": "data_events[2]_file_file_name",
+                    "file_path": "data_events[2]_file_file_path",
+                    "file_type": "data_events[2]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[2]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[2]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[2]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[3]_timestamp",
+                "timestamp_nanoseconds": "data_events[3]_timestamp_nanoseconds",
+                "date": "data_events[3]_date",
+                "event_type": "data_events[3]_event_type",
+                "group_guids": [
+                    "data_events[3]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[3]_file_disposition",
+                    "file_name": "data_events[3]_file_file_name",
+                    "file_path": "data_events[3]_file_file_path",
+                    "file_type": "data_events[3]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[3]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[3]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[3]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[4]_timestamp",
+                "timestamp_nanoseconds": "data_events[4]_timestamp_nanoseconds",
+                "date": "data_events[4]_date",
+                "event_type": "data_events[4]_event_type",
+                "group_guids": [
+                    "data_events[4]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[4]_file_disposition",
+                    "file_name": "data_events[4]_file_file_name",
+                    "file_path": "data_events[4]_file_file_path",
+                    "file_type": "data_events[4]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[4]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[4]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[4]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[5]_timestamp",
+                "timestamp_nanoseconds": "data_events[5]_timestamp_nanoseconds",
+                "date": "data_events[5]_date",
+                "event_type": "data_events[5]_event_type",
+                "group_guids": [
+                    "data_events[5]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[5]_file_disposition",
+                    "file_name": "data_events[5]_file_file_name",
+                    "file_path": "data_events[5]_file_file_path",
+                    "file_type": "data_events[5]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[5]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[5]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[5]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[6]_timestamp",
+                "timestamp_nanoseconds": "data_events[6]_timestamp_nanoseconds",
+                "date": "data_events[6]_date",
+                "event_type": "data_events[6]_event_type",
+                "group_guids": [
+                    "data_events[6]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[6]_file_disposition",
+                    "file_name": "data_events[6]_file_file_name",
+                    "file_path": "data_events[6]_file_file_path",
+                    "file_type": "data_events[6]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[6]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[6]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[6]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[7]_timestamp",
+                "timestamp_nanoseconds": "data_events[7]_timestamp_nanoseconds",
+                "date": "data_events[7]_date",
+                "event_type": "data_events[7]_event_type",
+                "group_guids": [
+                    "data_events[7]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[7]_file_disposition",
+                    "file_name": "data_events[7]_file_file_name",
+                    "file_path": "data_events[7]_file_file_path",
+                    "file_type": "data_events[7]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[7]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[7]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[7]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[8]_timestamp",
+                "timestamp_nanoseconds": "data_events[8]_timestamp_nanoseconds",
+                "date": "data_events[8]_date",
+                "event_type": "data_events[8]_event_type",
+                "group_guids": [
+                    "data_events[8]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[8]_file_disposition",
+                    "file_name": "data_events[8]_file_file_name",
+                    "file_path": "data_events[8]_file_file_path",
+                    "file_type": "data_events[8]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[8]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[8]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[8]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[9]_timestamp",
+                "timestamp_nanoseconds": "data_events[9]_timestamp_nanoseconds",
+                "date": "data_events[9]_date",
+                "event_type": "data_events[9]_event_type",
+                "group_guids": [
+                    "data_events[9]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[9]_file_disposition",
+                    "file_name": "data_events[9]_file_file_name",
+                    "file_path": "data_events[9]_file_file_path",
+                    "file_type": "data_events[9]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[9]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[9]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[9]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[10]_timestamp",
+                "timestamp_nanoseconds": "data_events[10]_timestamp_nanoseconds",
+                "date": "data_events[10]_date",
+                "event_type": "data_events[10]_event_type",
+                "group_guids": [
+                    "data_events[10]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[10]_file_disposition",
+                    "file_name": "data_events[10]_file_file_name",
+                    "file_path": "data_events[10]_file_file_path",
+                    "file_type": "data_events[10]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[10]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[10]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[10]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[11]_timestamp",
+                "timestamp_nanoseconds": "data_events[11]_timestamp_nanoseconds",
+                "date": "data_events[11]_date",
+                "event_type": "data_events[11]_event_type",
+                "group_guids": [
+                    "data_events[11]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[11]_file_disposition",
+                    "file_name": "data_events[11]_file_file_name",
+                    "file_path": "data_events[11]_file_file_path",
+                    "file_type": "data_events[11]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[11]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[11]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[11]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[12]_timestamp",
+                "timestamp_nanoseconds": "data_events[12]_timestamp_nanoseconds",
+                "date": "data_events[12]_date",
+                "event_type": "data_events[12]_event_type",
+                "group_guids": [
+                    "data_events[12]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[12]_file_disposition",
+                    "file_name": "data_events[12]_file_file_name",
+                    "file_path": "data_events[12]_file_file_path",
+                    "file_type": "data_events[12]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[12]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[12]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[12]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[13]_timestamp",
+                "timestamp_nanoseconds": "data_events[13]_timestamp_nanoseconds",
+                "date": "data_events[13]_date",
+                "event_type": "data_events[13]_event_type",
+                "group_guids": [
+                    "data_events[13]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[13]_file_disposition",
+                    "file_name": "data_events[13]_file_file_name",
+                    "file_path": "data_events[13]_file_file_path",
+                    "file_type": "data_events[13]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[13]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[13]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[13]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[14]_timestamp",
+                "timestamp_nanoseconds": "data_events[14]_timestamp_nanoseconds",
+                "date": "data_events[14]_date",
+                "event_type": "data_events[14]_event_type",
+                "group_guids": [
+                    "data_events[14]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[14]_file_disposition",
+                    "file_name": "data_events[14]_file_file_name",
+                    "file_path": "data_events[14]_file_file_path",
+                    "file_type": "data_events[14]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[14]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[14]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[14]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[15]_timestamp",
+                "timestamp_nanoseconds": "data_events[15]_timestamp_nanoseconds",
+                "date": "data_events[15]_date",
+                "event_type": "data_events[15]_event_type",
+                "group_guids": [
+                    "data_events[15]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[15]_file_disposition",
+                    "file_name": "data_events[15]_file_file_name",
+                    "file_path": "data_events[15]_file_file_path",
+                    "file_type": "data_events[15]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[15]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[15]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[15]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[16]_timestamp",
+                "timestamp_nanoseconds": "data_events[16]_timestamp_nanoseconds",
+                "date": "data_events[16]_date",
+                "event_type": "data_events[16]_event_type",
+                "group_guids": [
+                    "data_events[16]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[16]_file_disposition",
+                    "file_name": "data_events[16]_file_file_name",
+                    "file_path": "data_events[16]_file_file_path",
+                    "file_type": "data_events[16]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[16]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[16]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[16]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[17]_timestamp",
+                "timestamp_nanoseconds": "data_events[17]_timestamp_nanoseconds",
+                "date": "data_events[17]_date",
+                "event_type": "data_events[17]_event_type",
+                "group_guids": [
+                    "data_events[17]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[17]_file_disposition",
+                    "file_name": "data_events[17]_file_file_name",
+                    "file_path": "data_events[17]_file_file_path",
+                    "file_type": "data_events[17]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[17]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[17]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[17]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[18]_timestamp",
+                "timestamp_nanoseconds": "data_events[18]_timestamp_nanoseconds",
+                "date": "data_events[18]_date",
+                "event_type": "data_events[18]_event_type",
+                "group_guids": [
+                    "data_events[18]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[18]_file_disposition",
+                    "file_name": "data_events[18]_file_file_name",
+                    "file_path": "data_events[18]_file_file_path",
+                    "file_type": "data_events[18]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[18]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[18]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[18]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[19]_timestamp",
+                "timestamp_nanoseconds": "data_events[19]_timestamp_nanoseconds",
+                "date": "data_events[19]_date",
+                "event_type": "data_events[19]_event_type",
+                "group_guids": [
+                    "data_events[19]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[19]_file_disposition",
+                    "file_name": "data_events[19]_file_file_name",
+                    "file_path": "data_events[19]_file_file_path",
+                    "file_type": "data_events[19]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[19]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[19]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[19]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[20]_timestamp",
+                "timestamp_nanoseconds": "data_events[20]_timestamp_nanoseconds",
+                "date": "data_events[20]_date",
+                "event_type": "data_events[20]_event_type",
+                "group_guids": [
+                    "data_events[20]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[20]_file_disposition",
+                    "file_name": "data_events[20]_file_file_name",
+                    "file_path": "data_events[20]_file_file_path",
+                    "file_type": "data_events[20]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[20]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[20]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[20]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[21]_timestamp",
+                "timestamp_nanoseconds": "data_events[21]_timestamp_nanoseconds",
+                "date": "data_events[21]_date",
+                "event_type": "data_events[21]_event_type",
+                "group_guids": [
+                    "data_events[21]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[21]_file_disposition",
+                    "file_name": "data_events[21]_file_file_name",
+                    "file_path": "data_events[21]_file_file_path",
+                    "file_type": "data_events[21]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[21]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[21]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[21]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[22]_timestamp",
+                "timestamp_nanoseconds": "data_events[22]_timestamp_nanoseconds",
+                "date": "data_events[22]_date",
+                "event_type": "data_events[22]_event_type",
+                "group_guids": [
+                    "data_events[22]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[22]_file_disposition",
+                    "file_name": "data_events[22]_file_file_name",
+                    "file_path": "data_events[22]_file_file_path",
+                    "file_type": "data_events[22]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[22]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[22]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[22]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[23]_timestamp",
+                "timestamp_nanoseconds": "data_events[23]_timestamp_nanoseconds",
+                "date": "data_events[23]_date",
+                "event_type": "data_events[23]_event_type",
+                "group_guids": [
+                    "data_events[23]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[23]_file_disposition",
+                    "file_type": "data_events[23]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[23]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[23]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[23]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[24]_timestamp",
+                "timestamp_nanoseconds": "data_events[24]_timestamp_nanoseconds",
+                "date": "data_events[24]_date",
+                "event_type": "data_events[24]_event_type",
+                "group_guids": [
+                    "data_events[24]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[24]_network_info_dirty_url",
+                    "remote_ip": "data_events[24]_network_info_remote_ip",
+                    "remote_port": "data_events[24]_network_info_remote_port",
+                    "local_ip": "data_events[24]_network_info_local_ip",
+                    "local_port": "data_events[24]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[24]_network_info_nfm_direction",
+                        "protocol": "data_events[24]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[24]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[24]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[25]_timestamp",
+                "timestamp_nanoseconds": "data_events[25]_timestamp_nanoseconds",
+                "date": "data_events[25]_date",
+                "event_type": "data_events[25]_event_type",
+                "group_guids": [
+                    "data_events[25]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[25]_network_info_dirty_url",
+                    "remote_ip": "data_events[25]_network_info_remote_ip",
+                    "remote_port": "data_events[25]_network_info_remote_port",
+                    "local_ip": "data_events[25]_network_info_local_ip",
+                    "local_port": "data_events[25]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[25]_network_info_nfm_direction",
+                        "protocol": "data_events[25]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[25]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[25]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "data_events[26]_id",
+                "timestamp": "data_events[26]_timestamp",
+                "timestamp_nanoseconds": "data_events[26]_timestamp_nanoseconds",
+                "date": "data_events[26]_date",
+                "event_type": "data_events[26]_event_type",
+                "event_type_id": "data_events[26]_event_type_id",
+                "detection_id": "data_events[26]_detection_id",
+                "group_guids": [
+                    "data_events[26]_group_guids_0"
+                ],
+                "severity": "data_events[26]_severity",
+                "file": {
+                    "disposition": "data_events[26]_file_disposition",
+                    "file_name": "data_events[26]_file_file_name",
+                    "file_path": "data_events[26]_file_file_path",
+                    "identity": {
+                        "sha256": "data_events[26]_file_identity_sha256",
+                        "sha1": "data_events[26]_file_identity_sha1",
+                        "md5": "data_events[26]_file_identity_md5"
+                    },
+                    "attack_details": {
+                        "application": "data_events[26]_file_attack_details_application",
+                        "attacked_module": "data_events[26]_file_attack_details_attacked_module",
+                        "base_address": "data_events[26]_file_attack_details_base_address",
+                        "suspicious_files": [
+                            "data_events[26]_file_attack_details_suspicious_files_0"
+                        ],
+                        "indicators": [
+                            {
+                                "tactics": [
+                                    "data_events[26]_file_attack_details_indicators[0]_tactics_0"
+                                ],
+                                "severity": "data_events[26]_file_attack_details_indicators[0]_severity",
+                                "description": "data_events[26]_file_attack_details_indicators[0]_description",
+                                "short_description": "data_events[26]_file_attack_details_indicators[0]_short_description",
+                                "id": "data_events[26]_file_attack_details_indicators[0]_id",
+                                "techniques": [
+                                    "data_events[26]_file_attack_details_indicators[0]_techniques_0"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "tactics": [
+                    "data_events[26]_tactics_0"
+                ],
+                "techniques": [
+                    "data_events[26]_techniques_0"
+                ]
+            },
+            {
+                "timestamp": "data_events[27]_timestamp",
+                "timestamp_nanoseconds": "data_events[27]_timestamp_nanoseconds",
+                "date": "data_events[27]_date",
+                "event_type": "data_events[27]_event_type",
+                "group_guids": [
+                    "data_events[27]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[27]_network_info_dirty_url",
+                    "remote_ip": "data_events[27]_network_info_remote_ip",
+                    "remote_port": "data_events[27]_network_info_remote_port",
+                    "local_ip": "data_events[27]_network_info_local_ip",
+                    "local_port": "data_events[27]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[27]_network_info_nfm_direction",
+                        "protocol": "data_events[27]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[27]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[27]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[28]_timestamp",
+                "timestamp_nanoseconds": "data_events[28]_timestamp_nanoseconds",
+                "date": "data_events[28]_date",
+                "event_type": "data_events[28]_event_type",
+                "group_guids": [
+                    "data_events[28]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[28]_network_info_remote_ip",
+                    "remote_port": "data_events[28]_network_info_remote_port",
+                    "local_ip": "data_events[28]_network_info_local_ip",
+                    "local_port": "data_events[28]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[28]_network_info_nfm_direction",
+                        "protocol": "data_events[28]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[28]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[28]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[29]_timestamp",
+                "timestamp_nanoseconds": "data_events[29]_timestamp_nanoseconds",
+                "date": "data_events[29]_date",
+                "event_type": "data_events[29]_event_type",
+                "group_guids": [
+                    "data_events[29]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[29]_network_info_remote_ip",
+                    "remote_port": "data_events[29]_network_info_remote_port",
+                    "local_ip": "data_events[29]_network_info_local_ip",
+                    "local_port": "data_events[29]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[29]_network_info_nfm_direction",
+                        "protocol": "data_events[29]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[29]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[29]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[30]_timestamp",
+                "timestamp_nanoseconds": "data_events[30]_timestamp_nanoseconds",
+                "date": "data_events[30]_date",
+                "event_type": "data_events[30]_event_type",
+                "group_guids": [
+                    "data_events[30]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[30]_network_info_dirty_url",
+                    "remote_ip": "data_events[30]_network_info_remote_ip",
+                    "remote_port": "data_events[30]_network_info_remote_port",
+                    "local_ip": "data_events[30]_network_info_local_ip",
+                    "local_port": "data_events[30]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[30]_network_info_nfm_direction",
+                        "protocol": "data_events[30]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[30]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[30]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[31]_timestamp",
+                "timestamp_nanoseconds": "data_events[31]_timestamp_nanoseconds",
+                "date": "data_events[31]_date",
+                "event_type": "data_events[31]_event_type",
+                "group_guids": [
+                    "data_events[31]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[31]_network_info_dirty_url",
+                    "remote_ip": "data_events[31]_network_info_remote_ip",
+                    "remote_port": "data_events[31]_network_info_remote_port",
+                    "local_ip": "data_events[31]_network_info_local_ip",
+                    "local_port": "data_events[31]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[31]_network_info_nfm_direction",
+                        "protocol": "data_events[31]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[31]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[31]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[32]_timestamp",
+                "timestamp_nanoseconds": "data_events[32]_timestamp_nanoseconds",
+                "date": "data_events[32]_date",
+                "event_type": "data_events[32]_event_type",
+                "group_guids": [
+                    "data_events[32]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[32]_network_info_remote_ip",
+                    "remote_port": "data_events[32]_network_info_remote_port",
+                    "local_ip": "data_events[32]_network_info_local_ip",
+                    "local_port": "data_events[32]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[32]_network_info_nfm_direction",
+                        "protocol": "data_events[32]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[32]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[32]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[33]_timestamp",
+                "timestamp_nanoseconds": "data_events[33]_timestamp_nanoseconds",
+                "date": "data_events[33]_date",
+                "event_type": "data_events[33]_event_type",
+                "group_guids": [
+                    "data_events[33]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[33]_network_info_dirty_url",
+                    "remote_ip": "data_events[33]_network_info_remote_ip",
+                    "remote_port": "data_events[33]_network_info_remote_port",
+                    "local_ip": "data_events[33]_network_info_local_ip",
+                    "local_port": "data_events[33]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[33]_network_info_nfm_direction",
+                        "protocol": "data_events[33]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[33]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[33]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[34]_timestamp",
+                "timestamp_nanoseconds": "data_events[34]_timestamp_nanoseconds",
+                "date": "data_events[34]_date",
+                "event_type": "data_events[34]_event_type",
+                "group_guids": [
+                    "data_events[34]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[34]_network_info_remote_ip",
+                    "remote_port": "data_events[34]_network_info_remote_port",
+                    "local_ip": "data_events[34]_network_info_local_ip",
+                    "local_port": "data_events[34]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[34]_network_info_nfm_direction",
+                        "protocol": "data_events[34]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[34]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[34]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[35]_timestamp",
+                "timestamp_nanoseconds": "data_events[35]_timestamp_nanoseconds",
+                "date": "data_events[35]_date",
+                "event_type": "data_events[35]_event_type",
+                "group_guids": [
+                    "data_events[35]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[35]_network_info_remote_ip",
+                    "remote_port": "data_events[35]_network_info_remote_port",
+                    "local_ip": "data_events[35]_network_info_local_ip",
+                    "local_port": "data_events[35]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[35]_network_info_nfm_direction",
+                        "protocol": "data_events[35]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[35]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[35]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[36]_timestamp",
+                "timestamp_nanoseconds": "data_events[36]_timestamp_nanoseconds",
+                "date": "data_events[36]_date",
+                "event_type": "data_events[36]_event_type",
+                "group_guids": [
+                    "data_events[36]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[36]_network_info_remote_ip",
+                    "remote_port": "data_events[36]_network_info_remote_port",
+                    "local_ip": "data_events[36]_network_info_local_ip",
+                    "local_port": "data_events[36]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[36]_network_info_nfm_direction",
+                        "protocol": "data_events[36]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[36]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[36]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[37]_timestamp",
+                "timestamp_nanoseconds": "data_events[37]_timestamp_nanoseconds",
+                "date": "data_events[37]_date",
+                "event_type": "data_events[37]_event_type",
+                "group_guids": [
+                    "data_events[37]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[37]_file_disposition",
+                    "file_name": "data_events[37]_file_file_name",
+                    "file_path": "data_events[37]_file_file_path",
+                    "file_type": "data_events[37]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[37]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[37]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[37]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[38]_timestamp",
+                "timestamp_nanoseconds": "data_events[38]_timestamp_nanoseconds",
+                "date": "data_events[38]_date",
+                "event_type": "data_events[38]_event_type",
+                "group_guids": [
+                    "data_events[38]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[38]_network_info_remote_ip",
+                    "remote_port": "data_events[38]_network_info_remote_port",
+                    "local_ip": "data_events[38]_network_info_local_ip",
+                    "local_port": "data_events[38]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[38]_network_info_nfm_direction",
+                        "protocol": "data_events[38]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[38]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[38]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[39]_timestamp",
+                "timestamp_nanoseconds": "data_events[39]_timestamp_nanoseconds",
+                "date": "data_events[39]_date",
+                "event_type": "data_events[39]_event_type",
+                "group_guids": [
+                    "data_events[39]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[39]_network_info_dirty_url",
+                    "remote_ip": "data_events[39]_network_info_remote_ip",
+                    "remote_port": "data_events[39]_network_info_remote_port",
+                    "local_ip": "data_events[39]_network_info_local_ip",
+                    "local_port": "data_events[39]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[39]_network_info_nfm_direction",
+                        "protocol": "data_events[39]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[39]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[39]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[40]_timestamp",
+                "timestamp_nanoseconds": "data_events[40]_timestamp_nanoseconds",
+                "date": "data_events[40]_date",
+                "event_type": "data_events[40]_event_type",
+                "group_guids": [
+                    "data_events[40]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[40]_network_info_remote_ip",
+                    "remote_port": "data_events[40]_network_info_remote_port",
+                    "local_ip": "data_events[40]_network_info_local_ip",
+                    "local_port": "data_events[40]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[40]_network_info_nfm_direction",
+                        "protocol": "data_events[40]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[40]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[40]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[41]_timestamp",
+                "timestamp_nanoseconds": "data_events[41]_timestamp_nanoseconds",
+                "date": "data_events[41]_date",
+                "event_type": "data_events[41]_event_type",
+                "group_guids": [
+                    "data_events[41]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[41]_network_info_remote_ip",
+                    "remote_port": "data_events[41]_network_info_remote_port",
+                    "local_ip": "data_events[41]_network_info_local_ip",
+                    "local_port": "data_events[41]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[41]_network_info_nfm_direction",
+                        "protocol": "data_events[41]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[41]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[41]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[42]_timestamp",
+                "timestamp_nanoseconds": "data_events[42]_timestamp_nanoseconds",
+                "date": "data_events[42]_date",
+                "event_type": "data_events[42]_event_type",
+                "group_guids": [
+                    "data_events[42]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[42]_network_info_dirty_url",
+                    "remote_ip": "data_events[42]_network_info_remote_ip",
+                    "remote_port": "data_events[42]_network_info_remote_port",
+                    "local_ip": "data_events[42]_network_info_local_ip",
+                    "local_port": "data_events[42]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[42]_network_info_nfm_direction",
+                        "protocol": "data_events[42]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[42]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[42]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[43]_timestamp",
+                "timestamp_nanoseconds": "data_events[43]_timestamp_nanoseconds",
+                "date": "data_events[43]_date",
+                "event_type": "data_events[43]_event_type",
+                "group_guids": [
+                    "data_events[43]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[43]_network_info_dirty_url",
+                    "remote_ip": "data_events[43]_network_info_remote_ip",
+                    "remote_port": "data_events[43]_network_info_remote_port",
+                    "local_ip": "data_events[43]_network_info_local_ip",
+                    "local_port": "data_events[43]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[43]_network_info_nfm_direction",
+                        "protocol": "data_events[43]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[43]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[43]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[44]_timestamp",
+                "timestamp_nanoseconds": "data_events[44]_timestamp_nanoseconds",
+                "date": "data_events[44]_date",
+                "event_type": "data_events[44]_event_type",
+                "group_guids": [
+                    "data_events[44]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[44]_network_info_remote_ip",
+                    "remote_port": "data_events[44]_network_info_remote_port",
+                    "local_ip": "data_events[44]_network_info_local_ip",
+                    "local_port": "data_events[44]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[44]_network_info_nfm_direction",
+                        "protocol": "data_events[44]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[44]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[44]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[45]_timestamp",
+                "timestamp_nanoseconds": "data_events[45]_timestamp_nanoseconds",
+                "date": "data_events[45]_date",
+                "event_type": "data_events[45]_event_type",
+                "group_guids": [
+                    "data_events[45]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[45]_network_info_remote_ip",
+                    "remote_port": "data_events[45]_network_info_remote_port",
+                    "local_ip": "data_events[45]_network_info_local_ip",
+                    "local_port": "data_events[45]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[45]_network_info_nfm_direction",
+                        "protocol": "data_events[45]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[45]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[45]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[46]_timestamp",
+                "timestamp_nanoseconds": "data_events[46]_timestamp_nanoseconds",
+                "date": "data_events[46]_date",
+                "event_type": "data_events[46]_event_type",
+                "group_guids": [
+                    "data_events[46]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[46]_network_info_remote_ip",
+                    "remote_port": "data_events[46]_network_info_remote_port",
+                    "local_ip": "data_events[46]_network_info_local_ip",
+                    "local_port": "data_events[46]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[46]_network_info_nfm_direction",
+                        "protocol": "data_events[46]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[46]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[46]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[47]_timestamp",
+                "timestamp_nanoseconds": "data_events[47]_timestamp_nanoseconds",
+                "date": "data_events[47]_date",
+                "event_type": "data_events[47]_event_type",
+                "group_guids": [
+                    "data_events[47]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[47]_network_info_remote_ip",
+                    "remote_port": "data_events[47]_network_info_remote_port",
+                    "local_ip": "data_events[47]_network_info_local_ip",
+                    "local_port": "data_events[47]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[47]_network_info_nfm_direction",
+                        "protocol": "data_events[47]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[47]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[47]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[48]_timestamp",
+                "timestamp_nanoseconds": "data_events[48]_timestamp_nanoseconds",
+                "date": "data_events[48]_date",
+                "event_type": "data_events[48]_event_type",
+                "group_guids": [
+                    "data_events[48]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[48]_network_info_remote_ip",
+                    "remote_port": "data_events[48]_network_info_remote_port",
+                    "local_ip": "data_events[48]_network_info_local_ip",
+                    "local_port": "data_events[48]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[48]_network_info_nfm_direction",
+                        "protocol": "data_events[48]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[48]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[48]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[49]_timestamp",
+                "timestamp_nanoseconds": "data_events[49]_timestamp_nanoseconds",
+                "date": "data_events[49]_date",
+                "event_type": "data_events[49]_event_type",
+                "group_guids": [
+                    "data_events[49]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[49]_network_info_remote_ip",
+                    "remote_port": "data_events[49]_network_info_remote_port",
+                    "local_ip": "data_events[49]_network_info_local_ip",
+                    "local_port": "data_events[49]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[49]_network_info_nfm_direction",
+                        "protocol": "data_events[49]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[49]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[49]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[50]_timestamp",
+                "timestamp_nanoseconds": "data_events[50]_timestamp_nanoseconds",
+                "date": "data_events[50]_date",
+                "event_type": "data_events[50]_event_type",
+                "group_guids": [
+                    "data_events[50]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[50]_network_info_remote_ip",
+                    "remote_port": "data_events[50]_network_info_remote_port",
+                    "local_ip": "data_events[50]_network_info_local_ip",
+                    "local_port": "data_events[50]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[50]_network_info_nfm_direction",
+                        "protocol": "data_events[50]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[50]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[50]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[51]_timestamp",
+                "timestamp_nanoseconds": "data_events[51]_timestamp_nanoseconds",
+                "date": "data_events[51]_date",
+                "event_type": "data_events[51]_event_type",
+                "group_guids": [
+                    "data_events[51]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[51]_network_info_remote_ip",
+                    "remote_port": "data_events[51]_network_info_remote_port",
+                    "local_ip": "data_events[51]_network_info_local_ip",
+                    "local_port": "data_events[51]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[51]_network_info_nfm_direction",
+                        "protocol": "data_events[51]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[51]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[51]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[52]_timestamp",
+                "timestamp_nanoseconds": "data_events[52]_timestamp_nanoseconds",
+                "date": "data_events[52]_date",
+                "event_type": "data_events[52]_event_type",
+                "group_guids": [
+                    "data_events[52]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[52]_network_info_dirty_url",
+                    "remote_ip": "data_events[52]_network_info_remote_ip",
+                    "remote_port": "data_events[52]_network_info_remote_port",
+                    "local_ip": "data_events[52]_network_info_local_ip",
+                    "local_port": "data_events[52]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[52]_network_info_nfm_direction",
+                        "protocol": "data_events[52]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[52]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[52]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[53]_timestamp",
+                "timestamp_nanoseconds": "data_events[53]_timestamp_nanoseconds",
+                "date": "data_events[53]_date",
+                "event_type": "data_events[53]_event_type",
+                "group_guids": [
+                    "data_events[53]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[53]_network_info_remote_ip",
+                    "remote_port": "data_events[53]_network_info_remote_port",
+                    "local_ip": "data_events[53]_network_info_local_ip",
+                    "local_port": "data_events[53]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[53]_network_info_nfm_direction",
+                        "protocol": "data_events[53]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[53]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[53]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[54]_timestamp",
+                "timestamp_nanoseconds": "data_events[54]_timestamp_nanoseconds",
+                "date": "data_events[54]_date",
+                "event_type": "data_events[54]_event_type",
+                "group_guids": [
+                    "data_events[54]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[54]_network_info_remote_ip",
+                    "remote_port": "data_events[54]_network_info_remote_port",
+                    "local_ip": "data_events[54]_network_info_local_ip",
+                    "local_port": "data_events[54]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[54]_network_info_nfm_direction",
+                        "protocol": "data_events[54]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[54]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[54]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[55]_timestamp",
+                "timestamp_nanoseconds": "data_events[55]_timestamp_nanoseconds",
+                "date": "data_events[55]_date",
+                "event_type": "data_events[55]_event_type",
+                "group_guids": [
+                    "data_events[55]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[55]_network_info_dirty_url",
+                    "remote_ip": "data_events[55]_network_info_remote_ip",
+                    "remote_port": "data_events[55]_network_info_remote_port",
+                    "local_ip": "data_events[55]_network_info_local_ip",
+                    "local_port": "data_events[55]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[55]_network_info_nfm_direction",
+                        "protocol": "data_events[55]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[55]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[55]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[56]_timestamp",
+                "timestamp_nanoseconds": "data_events[56]_timestamp_nanoseconds",
+                "date": "data_events[56]_date",
+                "event_type": "data_events[56]_event_type",
+                "group_guids": [
+                    "data_events[56]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[56]_network_info_remote_ip",
+                    "remote_port": "data_events[56]_network_info_remote_port",
+                    "local_ip": "data_events[56]_network_info_local_ip",
+                    "local_port": "data_events[56]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[56]_network_info_nfm_direction",
+                        "protocol": "data_events[56]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[56]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[56]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[57]_timestamp",
+                "timestamp_nanoseconds": "data_events[57]_timestamp_nanoseconds",
+                "date": "data_events[57]_date",
+                "event_type": "data_events[57]_event_type",
+                "group_guids": [
+                    "data_events[57]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[57]_network_info_dirty_url",
+                    "remote_ip": "data_events[57]_network_info_remote_ip",
+                    "remote_port": "data_events[57]_network_info_remote_port",
+                    "local_ip": "data_events[57]_network_info_local_ip",
+                    "local_port": "data_events[57]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[57]_network_info_nfm_direction",
+                        "protocol": "data_events[57]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[57]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[57]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[58]_timestamp",
+                "timestamp_nanoseconds": "data_events[58]_timestamp_nanoseconds",
+                "date": "data_events[58]_date",
+                "event_type": "data_events[58]_event_type",
+                "group_guids": [
+                    "data_events[58]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[58]_network_info_remote_ip",
+                    "remote_port": "data_events[58]_network_info_remote_port",
+                    "local_ip": "data_events[58]_network_info_local_ip",
+                    "local_port": "data_events[58]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[58]_network_info_nfm_direction",
+                        "protocol": "data_events[58]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[58]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[58]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[59]_timestamp",
+                "timestamp_nanoseconds": "data_events[59]_timestamp_nanoseconds",
+                "date": "data_events[59]_date",
+                "event_type": "data_events[59]_event_type",
+                "group_guids": [
+                    "data_events[59]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[59]_network_info_remote_ip",
+                    "remote_port": "data_events[59]_network_info_remote_port",
+                    "local_ip": "data_events[59]_network_info_local_ip",
+                    "local_port": "data_events[59]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[59]_network_info_nfm_direction",
+                        "protocol": "data_events[59]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[59]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[59]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[60]_timestamp",
+                "timestamp_nanoseconds": "data_events[60]_timestamp_nanoseconds",
+                "date": "data_events[60]_date",
+                "event_type": "data_events[60]_event_type",
+                "group_guids": [
+                    "data_events[60]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[60]_network_info_remote_ip",
+                    "remote_port": "data_events[60]_network_info_remote_port",
+                    "local_ip": "data_events[60]_network_info_local_ip",
+                    "local_port": "data_events[60]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[60]_network_info_nfm_direction",
+                        "protocol": "data_events[60]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[60]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[60]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[61]_timestamp",
+                "timestamp_nanoseconds": "data_events[61]_timestamp_nanoseconds",
+                "date": "data_events[61]_date",
+                "event_type": "data_events[61]_event_type",
+                "group_guids": [
+                    "data_events[61]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[61]_network_info_dirty_url",
+                    "remote_ip": "data_events[61]_network_info_remote_ip",
+                    "remote_port": "data_events[61]_network_info_remote_port",
+                    "local_ip": "data_events[61]_network_info_local_ip",
+                    "local_port": "data_events[61]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[61]_network_info_nfm_direction",
+                        "protocol": "data_events[61]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[61]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[61]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[62]_timestamp",
+                "timestamp_nanoseconds": "data_events[62]_timestamp_nanoseconds",
+                "date": "data_events[62]_date",
+                "event_type": "data_events[62]_event_type",
+                "group_guids": [
+                    "data_events[62]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[62]_network_info_remote_ip",
+                    "remote_port": "data_events[62]_network_info_remote_port",
+                    "local_ip": "data_events[62]_network_info_local_ip",
+                    "local_port": "data_events[62]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[62]_network_info_nfm_direction",
+                        "protocol": "data_events[62]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[62]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[62]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[63]_timestamp",
+                "timestamp_nanoseconds": "data_events[63]_timestamp_nanoseconds",
+                "date": "data_events[63]_date",
+                "event_type": "data_events[63]_event_type",
+                "group_guids": [
+                    "data_events[63]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[63]_network_info_dirty_url",
+                    "remote_ip": "data_events[63]_network_info_remote_ip",
+                    "remote_port": "data_events[63]_network_info_remote_port",
+                    "local_ip": "data_events[63]_network_info_local_ip",
+                    "local_port": "data_events[63]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[63]_network_info_nfm_direction",
+                        "protocol": "data_events[63]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[63]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[63]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[64]_timestamp",
+                "timestamp_nanoseconds": "data_events[64]_timestamp_nanoseconds",
+                "date": "data_events[64]_date",
+                "event_type": "data_events[64]_event_type",
+                "group_guids": [
+                    "data_events[64]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[64]_network_info_dirty_url",
+                    "remote_ip": "data_events[64]_network_info_remote_ip",
+                    "remote_port": "data_events[64]_network_info_remote_port",
+                    "local_ip": "data_events[64]_network_info_local_ip",
+                    "local_port": "data_events[64]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[64]_network_info_nfm_direction",
+                        "protocol": "data_events[64]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[64]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[64]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[65]_timestamp",
+                "timestamp_nanoseconds": "data_events[65]_timestamp_nanoseconds",
+                "date": "data_events[65]_date",
+                "event_type": "data_events[65]_event_type",
+                "group_guids": [
+                    "data_events[65]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[65]_network_info_dirty_url",
+                    "remote_ip": "data_events[65]_network_info_remote_ip",
+                    "remote_port": "data_events[65]_network_info_remote_port",
+                    "local_ip": "data_events[65]_network_info_local_ip",
+                    "local_port": "data_events[65]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[65]_network_info_nfm_direction",
+                        "protocol": "data_events[65]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[65]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[65]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[66]_timestamp",
+                "timestamp_nanoseconds": "data_events[66]_timestamp_nanoseconds",
+                "date": "data_events[66]_date",
+                "event_type": "data_events[66]_event_type",
+                "group_guids": [
+                    "data_events[66]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[66]_network_info_dirty_url",
+                    "remote_ip": "data_events[66]_network_info_remote_ip",
+                    "remote_port": "data_events[66]_network_info_remote_port",
+                    "local_ip": "data_events[66]_network_info_local_ip",
+                    "local_port": "data_events[66]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[66]_network_info_nfm_direction",
+                        "protocol": "data_events[66]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[66]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[66]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[67]_timestamp",
+                "timestamp_nanoseconds": "data_events[67]_timestamp_nanoseconds",
+                "date": "data_events[67]_date",
+                "event_type": "data_events[67]_event_type",
+                "group_guids": [
+                    "data_events[67]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[67]_network_info_dirty_url",
+                    "remote_ip": "data_events[67]_network_info_remote_ip",
+                    "remote_port": "data_events[67]_network_info_remote_port",
+                    "local_ip": "data_events[67]_network_info_local_ip",
+                    "local_port": "data_events[67]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[67]_network_info_nfm_direction",
+                        "protocol": "data_events[67]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[67]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[67]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[68]_timestamp",
+                "timestamp_nanoseconds": "data_events[68]_timestamp_nanoseconds",
+                "date": "data_events[68]_date",
+                "event_type": "data_events[68]_event_type",
+                "group_guids": [
+                    "data_events[68]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[68]_network_info_dirty_url",
+                    "remote_ip": "data_events[68]_network_info_remote_ip",
+                    "remote_port": "data_events[68]_network_info_remote_port",
+                    "local_ip": "data_events[68]_network_info_local_ip",
+                    "local_port": "data_events[68]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[68]_network_info_nfm_direction",
+                        "protocol": "data_events[68]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[68]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[68]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[69]_timestamp",
+                "timestamp_nanoseconds": "data_events[69]_timestamp_nanoseconds",
+                "date": "data_events[69]_date",
+                "event_type": "data_events[69]_event_type",
+                "group_guids": [
+                    "data_events[69]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[69]_network_info_dirty_url",
+                    "remote_ip": "data_events[69]_network_info_remote_ip",
+                    "remote_port": "data_events[69]_network_info_remote_port",
+                    "local_ip": "data_events[69]_network_info_local_ip",
+                    "local_port": "data_events[69]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[69]_network_info_nfm_direction",
+                        "protocol": "data_events[69]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[69]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[69]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[70]_timestamp",
+                "timestamp_nanoseconds": "data_events[70]_timestamp_nanoseconds",
+                "date": "data_events[70]_date",
+                "event_type": "data_events[70]_event_type",
+                "group_guids": [
+                    "data_events[70]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[70]_network_info_remote_ip",
+                    "remote_port": "data_events[70]_network_info_remote_port",
+                    "local_ip": "data_events[70]_network_info_local_ip",
+                    "local_port": "data_events[70]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[70]_network_info_nfm_direction",
+                        "protocol": "data_events[70]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[70]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[70]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[71]_timestamp",
+                "timestamp_nanoseconds": "data_events[71]_timestamp_nanoseconds",
+                "date": "data_events[71]_date",
+                "event_type": "data_events[71]_event_type",
+                "group_guids": [
+                    "data_events[71]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[71]_network_info_remote_ip",
+                    "remote_port": "data_events[71]_network_info_remote_port",
+                    "local_ip": "data_events[71]_network_info_local_ip",
+                    "local_port": "data_events[71]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[71]_network_info_nfm_direction",
+                        "protocol": "data_events[71]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[71]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[71]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[72]_timestamp",
+                "timestamp_nanoseconds": "data_events[72]_timestamp_nanoseconds",
+                "date": "data_events[72]_date",
+                "event_type": "data_events[72]_event_type",
+                "group_guids": [
+                    "data_events[72]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[72]_network_info_remote_ip",
+                    "remote_port": "data_events[72]_network_info_remote_port",
+                    "local_ip": "data_events[72]_network_info_local_ip",
+                    "local_port": "data_events[72]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[72]_network_info_nfm_direction",
+                        "protocol": "data_events[72]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[72]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[72]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[73]_timestamp",
+                "timestamp_nanoseconds": "data_events[73]_timestamp_nanoseconds",
+                "date": "data_events[73]_date",
+                "event_type": "data_events[73]_event_type",
+                "group_guids": [
+                    "data_events[73]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[73]_network_info_dirty_url",
+                    "remote_ip": "data_events[73]_network_info_remote_ip",
+                    "remote_port": "data_events[73]_network_info_remote_port",
+                    "local_ip": "data_events[73]_network_info_local_ip",
+                    "local_port": "data_events[73]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[73]_network_info_nfm_direction",
+                        "protocol": "data_events[73]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[73]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[73]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[74]_timestamp",
+                "timestamp_nanoseconds": "data_events[74]_timestamp_nanoseconds",
+                "date": "data_events[74]_date",
+                "event_type": "data_events[74]_event_type",
+                "group_guids": [
+                    "data_events[74]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[74]_network_info_remote_ip",
+                    "remote_port": "data_events[74]_network_info_remote_port",
+                    "local_ip": "data_events[74]_network_info_local_ip",
+                    "local_port": "data_events[74]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[74]_network_info_nfm_direction",
+                        "protocol": "data_events[74]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[74]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[74]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[75]_timestamp",
+                "timestamp_nanoseconds": "data_events[75]_timestamp_nanoseconds",
+                "date": "data_events[75]_date",
+                "event_type": "data_events[75]_event_type",
+                "group_guids": [
+                    "data_events[75]_group_guids_0"
+                ],
+                "network_info": {
+                    "dirty_url": "data_events[75]_network_info_dirty_url",
+                    "remote_ip": "data_events[75]_network_info_remote_ip",
+                    "remote_port": "data_events[75]_network_info_remote_port",
+                    "local_ip": "data_events[75]_network_info_local_ip",
+                    "local_port": "data_events[75]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[75]_network_info_nfm_direction",
+                        "protocol": "data_events[75]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[75]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[75]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[76]_timestamp",
+                "timestamp_nanoseconds": "data_events[76]_timestamp_nanoseconds",
+                "date": "data_events[76]_date",
+                "event_type": "data_events[76]_event_type",
+                "group_guids": [
+                    "data_events[76]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[76]_network_info_remote_ip",
+                    "remote_port": "data_events[76]_network_info_remote_port",
+                    "local_ip": "data_events[76]_network_info_local_ip",
+                    "local_port": "data_events[76]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[76]_network_info_nfm_direction",
+                        "protocol": "data_events[76]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[76]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[76]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[77]_timestamp",
+                "timestamp_nanoseconds": "data_events[77]_timestamp_nanoseconds",
+                "date": "data_events[77]_date",
+                "event_type": "data_events[77]_event_type",
+                "group_guids": [
+                    "data_events[77]_group_guids_0"
+                ],
+                "file": {
+                    "disposition": "data_events[77]_file_disposition",
+                    "file_name": "data_events[77]_file_file_name",
+                    "file_path": "data_events[77]_file_file_path",
+                    "file_type": "data_events[77]_file_file_type",
+                    "identity": {
+                        "sha256": "data_events[77]_file_identity_sha256"
+                    },
+                    "parent": {
+                        "disposition": "data_events[77]_file_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[77]_file_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[78]_timestamp",
+                "timestamp_nanoseconds": "data_events[78]_timestamp_nanoseconds",
+                "date": "data_events[78]_date",
+                "event_type": "data_events[78]_event_type",
+                "group_guids": [
+                    "data_events[78]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[78]_network_info_remote_ip",
+                    "remote_port": "data_events[78]_network_info_remote_port",
+                    "local_ip": "data_events[78]_network_info_local_ip",
+                    "local_port": "data_events[78]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[78]_network_info_nfm_direction",
+                        "protocol": "data_events[78]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[78]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[78]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "timestamp": "data_events[79]_timestamp",
+                "timestamp_nanoseconds": "data_events[79]_timestamp_nanoseconds",
+                "date": "data_events[79]_date",
+                "event_type": "data_events[79]_event_type",
+                "group_guids": [
+                    "data_events[79]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[79]_network_info_remote_ip",
+                    "remote_port": "data_events[79]_network_info_remote_port",
+                    "local_ip": "data_events[79]_network_info_local_ip",
+                    "local_port": "data_events[79]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[79]_network_info_nfm_direction",
+                        "protocol": "data_events[79]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[79]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[79]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "data_events[80]_id",
+                "timestamp": "data_events[80]_timestamp",
+                "timestamp_nanoseconds": "data_events[80]_timestamp_nanoseconds",
+                "date": "data_events[80]_date",
+                "event_type": "data_events[80]_event_type",
+                "event_type_id": "data_events[80]_event_type_id",
+                "group_guids": [
+                    "data_events[80]_group_guids_0"
+                ],
+                "scan": {
+                    "description": "data_events[80]_scan_description",
+                    "clean": "data_events[80]_scan_clean",
+                    "scanned_files": "data_events[80]_scan_scanned_files",
+                    "scanned_processes": "data_events[80]_scan_scanned_processes",
+                    "scanned_paths": "data_events[80]_scan_scanned_paths",
+                    "malicious_detections": "data_events[80]_scan_malicious_detections"
+                }
+            },
+            {
+                "timestamp": "data_events[81]_timestamp",
+                "timestamp_nanoseconds": "data_events[81]_timestamp_nanoseconds",
+                "date": "data_events[81]_date",
+                "event_type": "data_events[81]_event_type",
+                "group_guids": [
+                    "data_events[81]_group_guids_0"
+                ],
+                "network_info": {
+                    "remote_ip": "data_events[81]_network_info_remote_ip",
+                    "remote_port": "data_events[81]_network_info_remote_port",
+                    "local_ip": "data_events[81]_network_info_local_ip",
+                    "local_port": "data_events[81]_network_info_local_port",
+                    "nfm": {
+                        "direction": "data_events[81]_network_info_nfm_direction",
+                        "protocol": "data_events[81]_network_info_nfm_protocol"
+                    },
+                    "parent": {
+                        "disposition": "data_events[81]_network_info_parent_disposition",
+                        "identity": {
+                            "sha256": "data_events[81]_network_info_parent_identity_sha256"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "data_events[82]_id",
+                "timestamp": "data_events[82]_timestamp",
+                "timestamp_nanoseconds": "data_events[82]_timestamp_nanoseconds",
+                "date": "data_events[82]_date",
+                "event_type": "data_events[82]_event_type",
+                "event_type_id": "data_events[82]_event_type_id",
+                "group_guids": [
+                    "data_events[82]_group_guids_0"
+                ],
+                "scan": {
+                    "description": "data_events[82]_scan_description"
+                }
+            }
+        ]
+    }
+}

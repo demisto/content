@@ -4,27 +4,42 @@
 2. Search for AzureRiskyUsers.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    |Client ID|True|
-    |Use system proxy|False|
-    |Trust any certificate|False|
+## Authorization
 
----
+#### Cortex XSOAR App
 
-To connect to the Azure Risky Users platform using either the Cortex XSOAR Azure application or the Self-Deployed Azure application:
+In order to use the Cortex XSOAR Azure application, 
+use the Client ID - (application_id) (***ec854987-95fa-4c8f-8056-768dd0f409ac***).
+
+#### Self-Deployed App
+
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal, with mobile and desktop flows enabled.
+
+#### Required Permissions
+*Make sure to provide the following permissions for the app to work with Azure Risky Users:*
+ - ***IdentityRiskyUser.Read.All*** - https://docs.microsoft.com/en-us/graph/api/riskyuser-list?view=graph-rest-1.0
+ - ***IdentityRiskEvent.Read.All*** - https://docs.microsoft.com/en-us/graph/api/riskdetection-get?view=graph-rest-1.0
+ - ***IdentityRiskEvent.ReadWrite.All***
+ - ***IdentityRiskyUser.ReadWrite.All***
+ - ***User.Read***
+
+### Authentication Using the Client Credentials Flow (recommended)
+
+Follow these steps for a **self-deployed configuration**:
+
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
+2. Select the **client-credentials** Authentication Type.
+3. Enter your Client/Application ID in the *Application ID* parameter. 
+4. Enter your Client Secret in the *Client Secret* parameter.
+5. Enter your Tenant ID in the *Tenant ID* parameter.
+6. Save the instance.
+7. Run the ***!azure-risky-users-auth-test*** command - a 'Success' message should be printed to the war-room.
+
+### Authentication Using the Device Flow
+[Device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code).
+
+In order to connect to Microsoft Risky User using either **Cortex XSOAR App** or the **Self-Deployed App**:
 1. Fill in the required parameters.
-   Make sure to provide the following permissions for the app to work with Azure Risky Users:
-   - IdentityRiskyUser.Read.All - https://docs.microsoft.com/en-us/graph/api/riskyuser-list?view=graph-rest-1.0
-   - IdentityRiskEvent.Read.All - https://docs.microsoft.com/en-us/graph/api/riskdetection-get?view=graph-rest-1.0
-2. Run the !azure-risky-users-auth-start command. Follow the instructions that appear.
-3. Run the !azure-risky-users-auth-complete command.
-
-At the end of the process, a confirmation message appears.
-
-
-## Retrieve Client ID (Application ID)
-
-1. In **Azure Portal** navigate to **App Registrations** and find the relevant application.
-2. In the **Overview** tab, copy the value **Application (client) ID**.
-3. Insert the value to **Client ID** in the Azure Risky Users instance configuraton.
+2. Run the ***!msgraph-identity-auth-start*** command.
+3. Follow the instructions that appear.
+4. Run the ***!msgraph-identity-auth-complete*** command.

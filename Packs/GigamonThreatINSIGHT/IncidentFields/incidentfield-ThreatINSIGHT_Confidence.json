@@ -1,0 +1,29 @@
+{
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Gigamon ThreatINSIGHT Detection"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gigamonthreatinsightconfidence",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gigamonthreatinsightconfidence",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Gigamon ThreatINSIGHT Confidence",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false
+}

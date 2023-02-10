@@ -1,0 +1,23 @@
+commonfields:
+  id: DateToTimeStamp
+  version: -1
+name: DateToTimeStamp
+script: ''
+type: python
+tags:
+- transformer
+- date
+comment: Converts a date to timestamp.
+enabled: true
+args:
+- name: value
+  required: true
+  description: Date to convert
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.4.31492
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

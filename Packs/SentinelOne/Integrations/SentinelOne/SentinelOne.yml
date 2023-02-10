@@ -2,10 +2,11 @@ commonfields:
   id: SentinelOne
   version: -1
 name: SentinelOne
-display: SentinelOne
+display: SentinelOne (Deprecated)
+deprecated: true
 fromversion: 5.0.0
 category: Endpoint
-description: End point protection
+description: Deprecated. Use the SentinelOne v2 integration instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: url
@@ -22,14 +23,14 @@ configuration:
   defaultvalue: "2.0"
   type: 0
   required: false
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  required: false
 - display: Token
   name: token
   defaultvalue: ""
   type: 4
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
   required: false
 script:
   script: ''

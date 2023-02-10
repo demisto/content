@@ -1,0 +1,39 @@
+{
+  "raw_response": {
+    "data": {
+      "vSphereVMAsyncRequestStatus": {
+        "id": "dummy_id",
+        "nodeId": "cluster:::RVMHM219S004941",
+        "status": "FAILED",
+        "progress": null,
+        "links": [
+          {
+            "href": "dummy_link",
+            "rel": "self"
+          }
+        ],
+        "error": {
+          "message": "{\"message\":\"Failed to mount vSphere VM ''\",\"id\":\"Mount.MountFailed\",\"params\":{\"${snappableType}\":\"vSphere VM\",\"${objectName}\":\"\"},\"cause\":{\"message\":\"Internal error. Incident 13de13ba-3b9a-4edf-9c2b-986c69e92c66\",\"id\":\"Rubrik.InternalError\",\"errorCode\":\"\",\"reason\":\"vSphere task MOID task-1877383 failed with message: '' is invalid or exceeds the maximum number of characters permitted.\",\"params\":{}}}"
+        }
+      }
+    }
+  },
+  "empty_response": {
+    "data": {}
+  },
+  "outputs": {
+    "id": "dummy_id",
+    "nodeId": "cluster:::RVMHM219S004941",
+    "status": "FAILED",
+    "progress": null,
+    "links": [
+      {
+        "href": "dummy_link",
+        "rel": "self"
+      }
+    ],
+    "error": {
+      "message": "{\"message\":\"Failed to mount vSphere VM ''\",\"id\":\"Mount.MountFailed\",\"params\":{\"${snappableType}\":\"vSphere VM\",\"${objectName}\":\"\"},\"cause\":{\"message\":\"Internal error. Incident 13de13ba-3b9a-4edf-9c2b-986c69e92c66\",\"id\":\"Rubrik.InternalError\",\"errorCode\":\"\",\"reason\":\"vSphere task MOID task-1877383 failed with message: '' is invalid or exceeds the maximum number of characters permitted.\",\"params\":{}}}"
+    }
+  }
+}

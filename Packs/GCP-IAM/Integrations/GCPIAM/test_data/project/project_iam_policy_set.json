@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "etag": "BwXStc3Mn7s=",
+  "bindings": [
+    {
+      "role": "roles/owner",
+      "members": [
+        "group:poctest@xsoar.com",
+        "serviceAccount:service-account-2@project-id-1.iam.gserviceaccount.com",
+        "user:user-1@xsoar.com"
+      ]
+    },
+    {
+      "role": "roles/browser",
+      "members": [
+        "serviceAccount:service-account-2@project-id-1.iam.gserviceaccount.com",
+        "user:user-1@xsoar.com"
+      ]
+    }
+  ]
+}

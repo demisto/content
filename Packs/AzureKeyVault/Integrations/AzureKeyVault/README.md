@@ -10,8 +10,10 @@ This integration was integrated and tested with version 2019-09-01 of AzureKeyVa
     | **Parameter** | **Required** |
     | --- | --- |
     | Client ID | True |
-    | Client Secret | True |
+    | Client Secret | False |
     | Tenant ID | True |
+    | Certificate Thumbprint | False |
+    | Private Key | False |
     | Subscription ID | True |
     | Resource Group Name | True |
     | Fetches credentials | False |

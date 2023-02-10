@@ -1,0 +1,85 @@
+{
+	"id": "ACTI Intelligence Report",
+	"version": -1,
+	"fromVersion": "6.0.0",
+	"modified": "2022-03-07T11:46:11.902020111Z",
+	"commitMessage": "",
+	"shouldCommit": false,
+	"regex": "https://intelgraph.idefense.com/#/node/intelligence_report/view/\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}",
+	"details": "ACTI Intelligence Report",
+	"prevDetails": "ACTI Intelligence Report",
+	"legacyNames": null,
+	"reputationScriptName": "",
+	"reputationCommand": "acti-getThreatIntelReport",
+	"enhancementScriptNames": [],
+	"system": false,
+	"locked": false,
+	"disabled": false,
+	"file": false,
+	"updateAfter": 0,
+	"mergeContext": false,
+	"formatScript": "FormatACTIURL",
+	"contextPath": "IAIR(val.value \u0026\u0026 val.value===obj.value)",
+	"contextValue": "value",
+	"excludedBrands": [],
+	"defaultMapping": null,
+	"manualMapping": {
+		"abstract": {
+			"simple": "IAIR.summary"
+		},
+		"actiabstract": {
+			"simple": "IAIR.summary"
+		},
+		"actianalysis": {
+			"simple": "IAIR.analysis"
+		},
+		"acticonclusion": {
+			"simple": "IAIR.conclusion"
+		},
+		"actiindextimestamp": {
+			"simple": "IAIR.index_timestamp"
+		},
+		"actilastmodified": {
+			"simple": "IAIR.last_modified"
+		},
+		"actilastpublished": {
+			"simple": "IAIR.last_published"
+		},
+		"actireporttitle": {
+			"simple": "## ${IAIR.display_text}"
+		},
+		"actithreattypes": {
+			"simple": "IAIR.threat_types"
+		},
+		"actiuuid": {
+			"simple": "IAIR.uuid"
+		},
+		"analysis": {
+			"simple": "IAIR.analysis"
+		},
+		"conclusion": {
+			"simple": "IAIR.conclusion"
+		},
+		"creationdate": {
+			"simple": "IAIR.created_on"
+		},
+		"indextimestamp": {
+			"simple": "IAIR.index_timestamp"
+		},
+		"lastmodified": {
+			"simple": "IAIR.last_modified"
+		},
+		"lastpublished": {
+			"simple": "IAIR.last_published"
+		},
+		"reporttitle": {
+			"simple": "## ${IAIR.display_text}"
+		},
+		"uuid": {
+			"simple": "IAIR.uuid"
+		}
+	},
+	"fileHashesPriority": null,
+	"expiration": 0,
+	"layout": "ACTI Intelligence Report"
+}

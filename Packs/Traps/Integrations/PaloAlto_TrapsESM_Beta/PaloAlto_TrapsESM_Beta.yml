@@ -15,9 +15,11 @@ configuration:
   name: password
   required: false
   type: 4
-description: Palo Alto Traps ESM beta integration.
-display: Palo Alto Traps ESM (Beta)
+description: |-
+  Deprecated. Use CortexXDR instead.
+display: Palo Alto Traps ESM (Deprecated)
 name: Palo Alto Traps ESM (Beta)
+deprecated: true
 beta: true
 script:
   commands:

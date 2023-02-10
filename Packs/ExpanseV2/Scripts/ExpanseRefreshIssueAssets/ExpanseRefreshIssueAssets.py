@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
-import traceback
 from typing import Dict, Any
 
 
@@ -70,7 +69,6 @@ def main():
     try:
         return_results(refresh_issue_assets_command(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute ExpanseRefreshIssueAsset. Error: {str(ex)}')
 
 

@@ -2,9 +2,10 @@ from datetime import timezone
 from typing import Dict, Tuple, Union
 
 import dateparser
+import demistomock as demisto  # noqa: F401
 import urllib3
+from CommonServerPython import *  # noqa: F401
 
-from CommonServerPython import *
 
 ''' IMPORTS '''
 
@@ -45,18 +46,34 @@ def parser(date_str, date_formats=None, languages=None, locales=None, region=Non
     return date_obj.replace(tzinfo=timezone.utc)
 
 
-def get_token_soap_request(user, password, instance):
-    return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance" ' \
-           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-           '    <soap:Body>' + \
-           '        <CreateUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' + \
-           f'            <userName>{user}</userName>' + \
-           f'            <instanceName>{instance}</instanceName>' + \
-           f'            <password>{password}</password>' + \
-           '        </CreateUserSessionFromInstance>' + \
-           '    </soap:Body>' + \
-           '</soap:Envelope>'
+def get_token_soap_request(user, password, instance, domain=None):
+
+    if domain:
+        return_xml = '<?xml version="1.0" encoding="utf-8"?>' + \
+            '<soap:Envelope xmlns:xsi="http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance" ' \
+            '  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+            '    <soap:Body>' + \
+            '        <CreateDomainUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' + \
+            f'            <userName>{user}</userName>' + \
+            f'            <instanceName>{instance}</instanceName>' + \
+            f'            <password>{password}</password>' + \
+            f'            <usersDomain>{domain}</usersDomain>' + \
+            '        </CreateDomainUserSessionFromInstance>' + \
+            '    </soap:Body>' + \
+            '</soap:Envelope>'
+    else:
+        return_xml = '<?xml version="1.0" encoding="utf-8"?>' + \
+            '<soap:Envelope xmlns:xsi="http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance" ' \
+            '  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+            '    <soap:Body>' + \
+            '        <CreateUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' + \
+            f'            <userName>{user}</userName>' + \
+            f'            <instanceName>{instance}</instanceName>' + \
+            f'            <password>{password}</password>' + \
+            '        </CreateUserSessionFromInstance>' + \
+            '    </soap:Body>' + \
+            '</soap:Envelope>'
+    return return_xml
 
 
 def terminate_session_soap_request(token):
@@ -310,15 +327,23 @@ class Client(BaseClient):
         REQUEST_HEADERS['Authorization'] = f'Archer session-id={session}'
 
     def get_token(self):
-        body = get_token_soap_request(self.username, self.password, self.instance_name)
-        headers = {'SOAPAction': 'http://archer-tech.com/webservices/CreateUserSessionFromInstance',
-                   'Content-Type': 'text/xml; charset=utf-8'}
-        res = self._http_request('POST'
-                                 '', 'ws/general.asmx', headers=headers, data=body, resp_type='content')
+        if self.domain:
+            endpoint = 'CreateDomainUserSessionFromInstance'
+        else:
+            endpoint = 'CreateUserSessionFromInstance'
 
-        return extract_from_xml(res,
-                                'Envelope.Body.CreateUserSessionFromInstanceResponse.'
-                                'CreateUserSessionFromInstanceResult')
+        body = get_token_soap_request(self.username, self.password, self.instance_name, self.domain)
+        headers = {
+            'SOAPAction': f'http://archer-tech.com/webservices/{endpoint}',
+            'Content-Type': 'text/xml; charset=utf-8',
+        }
+        res = self._http_request('POST', 'ws/general.asmx',
+                                 headers=headers, data=body, resp_type='content')
+        return extract_from_xml(
+            res,
+            f'Envelope.Body.{endpoint}Response.'
+            f'{endpoint}Result'
+        )
 
     def destroy_token(self, token):
         body = terminate_session_soap_request(token)
@@ -375,7 +400,7 @@ class Client(BaseClient):
 
         return level_data
 
-    def get_record(self, app_id, record_id):
+    def get_record(self, app_id, record_id, depth):
         res = self.do_request('GET', f'{API_ENDPOINT}/core/content/{record_id}')
 
         if not isinstance(res, dict):
@@ -401,7 +426,7 @@ class Client(BaseClient):
                     field_value = field.get('IpAddressBytes')
                 # when field type is Values List
                 elif field_type == 4 and field.get('Value') and field['Value'].get('ValuesListIds'):
-                    list_data = self.get_field_value_list(_id)
+                    list_data = self.get_field_value_list(_id, depth)
                     list_ids = field['Value']['ValuesListIds']
                     list_ids = list(filter(lambda x: x['Id'] in list_ids, list_data['ValuesList']))
                     field_value = list(map(lambda x: x['Name'], list_ids))
@@ -538,7 +563,18 @@ class Client(BaseClient):
                 records.append({'record': record, 'raw': item})
         return records
 
-    def get_field_value_list(self, field_id):
+    def get_field_value_list_helper(self, child, values_list, depth, parent='root'):
+        values_list.append({'Id': child['Data']['Id'],
+                            'Name': child['Data']['Name'],
+                            'IsSelectable': child['Data']['IsSelectable'],
+                            'Parent': parent,
+                            'Depth': child.get('Depth')})
+        depth -= 1
+        if depth > -1:
+            for grandchild in child.get('Children', []):
+                self.get_field_value_list_helper(grandchild, values_list, depth, child['Data']['Name'])
+
+    def get_field_value_list(self, field_id, depth=0):
         cache = get_integration_context()
 
         if cache['fieldValueList'].get(field_id):
@@ -558,11 +594,9 @@ class Client(BaseClient):
             list_id = res['RequestedObject']['RelatedValuesListId']
             values_list_res = self.do_request('GET', f'{API_ENDPOINT}/core/system/valueslistvalue/valueslist/{list_id}')
             if values_list_res.get('RequestedObject') and values_list_res.get('IsSuccessful'):
-                values_list = []
-                for value in values_list_res['RequestedObject'].get('Children'):
-                    values_list.append({'Id': value['Data']['Id'],
-                                        'Name': value['Data']['Name'],
-                                        'IsSelectable': value['Data']['IsSelectable']})
+                values_list: List[Dict[str, Any]] = []
+                for value in values_list_res['RequestedObject'].get('Children', ()):
+                    self.get_field_value_list_helper(value, values_list, depth)
                 field_data = {'FieldId': field_id, 'ValuesList': values_list}
 
                 cache['fieldValueList'][field_id] = field_data
@@ -633,12 +667,15 @@ def extract_from_xml(xml, path):
     return xml
 
 
-def generate_field_contents(client, fields_values, level_fields):
+def generate_field_contents(client, fields_values, level_fields, depth):
     if fields_values and not isinstance(fields_values, dict):
+        demisto.debug(f"fields values are: {fields_values}")
+        fields_values = re.sub(r'\\(?!")', r'\\\\', fields_values)
+        demisto.debug(f"fields values after escaping: {fields_values}")
         try:
             fields_values = json.loads(fields_values)
         except Exception:
-            raise Exception('Failed to parese fields-values argument')
+            raise Exception('Failed to parse fields-values argument')
 
     field_content = {}
     for field_name in fields_values.keys():
@@ -650,7 +687,8 @@ def generate_field_contents(client, fields_values, level_fields):
                 break
 
         if field_data:
-            field_key, field_value = generate_field_value(client, field_name, field_data, fields_values[field_name])
+            field_key, field_value = generate_field_value(client, field_name, field_data, fields_values[field_name],
+                                                          depth)
 
             field_content[_id] = {'Type': field_data['Type'],
                                   field_key: field_value,
@@ -658,13 +696,13 @@ def generate_field_contents(client, fields_values, level_fields):
     return field_content
 
 
-def generate_field_value(client, field_name, field_data, field_val):
+def generate_field_value(client, field_name, field_data, field_val, depth):
     field_type = field_data['Type']
 
     # when field type is Values List, call get_field_value_list method to get the value ID
     # for example: {"Type":["Switch"], fieldname:[value1, value2]}
     if field_type == 4:
-        field_data = client.get_field_value_list(field_data['FieldId'])
+        field_data = client.get_field_value_list(field_data['FieldId'], depth)
         list_ids = []
         if not isinstance(field_val, list):
             field_val = [field_val]
@@ -857,7 +895,8 @@ def get_record_command(client: Client, args: Dict[str, str]):
     record_id = args.get('contentId')
     app_id = args.get('applicationId')
 
-    record, res, errors = client.get_record(app_id, record_id)
+    depth = arg_to_number(args.get('depth', '0'))
+    record, res, errors = client.get_record(app_id, record_id, depth)
     if errors:
         return_error(errors)
 
@@ -874,8 +913,8 @@ def create_record_command(client: Client, args: Dict[str, str]):
     fields_values = args.get('fieldsToValues')
     level_id = args.get('levelId')
     level_data = client.get_level_by_app_id(app_id, level_id)
-
-    field_contents = generate_field_contents(client, fields_values, level_data['mapping'])
+    depth = arg_to_number(args.get('depth', '0'))
+    field_contents = generate_field_contents(client, fields_values, level_data['mapping'], depth)
 
     body = {'Content': {'LevelId': level_data['level'], 'FieldContents': field_contents}}
 
@@ -906,8 +945,8 @@ def update_record_command(client: Client, args: Dict[str, str]):
     fields_values = args.get('fieldsToValues')
     level_id = args.get('levelId')
     level_data = client.get_level_by_app_id(app_id, level_id)
-
-    field_contents = generate_field_contents(client, fields_values, level_data['mapping'])
+    depth = arg_to_number(args.get('depth', '0'))
+    field_contents = generate_field_contents(client, fields_values, level_data['mapping'], depth)
 
     body = {'Content': {'Id': record_id, 'LevelId': level_data['level'], 'FieldContents': field_contents}}
     res = client.do_request('Put', f'{API_ENDPOINT}/core/content', data=body)
@@ -940,7 +979,7 @@ def get_reports_command(client: Client, args: Dict[str, str]):
     context: dict = {
         'Archer.Report(val.ReportGUID && val.ReportGUID == obj.ReportGUID)': ec
     }
-    return_outputs(ec, context, {})
+    return_outputs(ec, context, json.loads(xml2json(raw_res)))
 
 
 def search_options_command(client: Client, args: Dict[str, str]):
@@ -958,7 +997,8 @@ def reset_cache_command(client: Client, args: Dict[str, str]):
 
 def get_value_list_command(client: Client, args: Dict[str, str]):
     field_id = args.get('fieldID')
-    field_data = client.get_field_value_list(field_id)
+    depth = arg_to_number(args.get('depth', '0'))
+    field_data = client.get_field_value_list(field_id, depth)
 
     markdown = tableToMarkdown(f'Value list for field {field_id}', field_data['ValuesList'])
 
@@ -966,7 +1006,7 @@ def get_value_list_command(client: Client, args: Dict[str, str]):
         'Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)':
             field_data
     }
-    return_outputs(markdown, context, {})
+    return_outputs(markdown, context, field_data)
 
 
 def upload_file_command(client: Client, args: Dict[str, str]) -> str:
@@ -1103,8 +1143,9 @@ def search_records_command(client: Client, args: Dict[str, str]):
 
     if full_data:
         records_full = []
+        depth = arg_to_number(args.get('depth', '0'))
         for rec in records:
-            record_item, _, errors = client.get_record(app_id, rec['Id'])
+            record_item, _, errors = client.get_record(app_id, rec['Id'], depth)
             if not errors:
                 records_full.append(record_item)
         records = records_full
@@ -1119,7 +1160,7 @@ def search_records_command(client: Client, args: Dict[str, str]):
 
     markdown = tableToMarkdown('Search records results', hr)
     context: dict = {'Archer.Record(val.Id && val.Id == obj.Id)': records}
-    return_outputs(markdown, context, {})
+    return_outputs(markdown, context, json.loads(xml2json(raw_res)))
 
 
 def search_records_by_report_command(client: Client, args: Dict[str, str]):
@@ -1286,7 +1327,7 @@ def main():
         params.get('userDomain'),
         verify=not params.get('insecure', False),
         proxy=params.get('proxy', False),
-        timeout=int(params.get('timeout', 400))
+        timeout=int(params.get('timeout', 600))
     )
     commands = {
         'archer-search-applications': search_applications_command,
@@ -1329,8 +1370,8 @@ def main():
             return commands[command](client, demisto.args())
         else:
             return_error('Command not found.')
-    except Exception as e:
-        return_error(f'Unexpected error: {str(e)}, traceback: {traceback.format_exc()}')
+    except Exception as exc:
+        return_error(f'Unexpected error: {str(exc)}', error=exc)
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

@@ -1,0 +1,20 @@
+{
+    "name": "Jq-json-processer (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Szymon Siarkiewicz",
+    "url": "",
+    "email": "",
+    "created": "2022-04-06T11:25:43Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "68zuhKQfKPk"
+    ],
+    "hidden": true
+}

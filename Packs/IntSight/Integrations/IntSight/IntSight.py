@@ -1,5 +1,5 @@
 from CommonServerPython import *
-
+import demistomock as demisto
 import os
 
 URL = demisto.getParam('server')
@@ -13,12 +13,17 @@ if not demisto.getParam('proxy'):
     del os.environ['https_proxy']
 
 VALIDATE_CERT = not demisto.params().get('insecure', True)
-
-ID_AND_API_KEY = demisto.getParam('credentials')['identifier'] + ':' + demisto.getParam('credentials')['password']
-ENCODED_AUTH_KEY = base64.b64encode(ID_AND_API_KEY.encode("utf-8"))
+USER_ID = demisto.getParam('credentials')['identifier']
+PASSWORD = demisto.getParam('credentials')['password']
 MSSP_ACCOUNT_ID = demisto.getParam('mssp_sub_account_id')
 
-HEADERS = {'Authorization': 'Basic {}'.format(ENCODED_AUTH_KEY.decode()), 'Content-Type': 'application/json',
+if USER_ID == '_api_token_key':
+    authorization_header = PASSWORD
+else:
+    id_and_api_key = USER_ID + ':' + PASSWORD
+    authorization_header = base64.b64encode(id_and_api_key.encode("utf-8")).decode()
+
+HEADERS = {'Authorization': 'Basic {}'.format(authorization_header), 'Content-Type': 'application/json',
            'Account-Id': demisto.getParam('credentials')['identifier']}
 
 # Change the Account-Id to the sub account id, so all actions will be on the sub account.
@@ -148,6 +153,7 @@ def handle_filters(found_date_from=None):
         'first-seen-from': 'firstSeenFrom',
         'first-seen-to': 'firstSeenTo',
         'last-seen-from': 'lastSeenFrom',
+        'last-updated-from': 'lastUpdatedFrom',
         'last-seen-to': 'lastSeenTo',
         'value': 'iocValue',
     }
@@ -209,20 +215,10 @@ def hash_identifier(hash_val):
 
 def extract_tags(tags):
     pretty_tags = []
-    string_format = u"ID: {0} - Name: {1}"
+    string_format = "ID: {0} - Name: {1}"
     for tag in tags:
         pretty_tags.append(string_format.format(tag.get('_id'), tag.get('Name')))
     return pretty_tags
-
-
-def unicode_to_str_recur(obj):
-    if isinstance(obj, dict):
-        obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k, v in obj.iteritems()}
-    elif isinstance(obj, list):
-        obj = map(unicode_to_str_recur, obj)
-    elif isinstance(obj, unicode):
-        obj = obj.encode('utf-8')
-    return obj
 
 
 def get_alerts():
@@ -237,7 +233,7 @@ def get_alerts():
         'Type': entryTypes['note'],
         'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': alerts_context},
         'Contents': alerts_context,
-        'HumanReadable': tableToMarkdown('IntSights Alerts', unicode_to_str_recur(alerts_human_readable),
+        'HumanReadable': tableToMarkdown('IntSights Alerts', alerts_human_readable,
                                          headers=headers, removeNull=False),
         'ContentsFormat': formats['json']
     })
@@ -604,42 +600,41 @@ def ioc_to_readable(ioc_data):
     """
     Convert IOC to readable format
     """
+    reported_feeds = demisto.get(ioc_data, 'reportedFeeds', demisto.get(ioc_data, 'sources', [{}]))
+    single_reported_feed = reported_feeds[0] if isinstance(reported_feeds, list) else reported_feeds
     ioc_context = {
         'ID': demisto.get(ioc_data, '_id'),
-        'SourceID': demisto.get(ioc_data, 'SourceID'),
-        'AccountID': demisto.get(ioc_data, 'AccountID'),
-        'Type': demisto.get(ioc_data, 'Type'),
-        'Value': demisto.get(ioc_data, 'Value'),
-        'FirstSeen': demisto.get(ioc_data, 'FirstSeen'),
-        'LastSeen': demisto.get(ioc_data, 'LastSeen'),
-        'Domain': demisto.get(ioc_data, 'Domain'),
-        'Status': demisto.get(ioc_data, 'Status'),
-        'Severity': demisto.get(ioc_data, 'Severity'),
-        'SourceName': demisto.get(ioc_data, 'Source.Name'),
-        'SourceConfidence': demisto.get(ioc_data, 'Source.Confidence'),
-        'Flags': {'IsInAlexa': demisto.get(ioc_data, 'Flags.IsInAlexa')},
-        'Enrichment': {
-            'Status': demisto.get(ioc_data, 'Enrichment.Status'),
-            'Data': demisto.get(ioc_data, 'Enrichment.Data'),
-            'Date': demisto.get(ioc_data, 'Enrichment.Data')  # Backwards compatibility issue
-        }
+        'Type': demisto.get(ioc_data, 'type'),
+        'Value': demisto.get(ioc_data, 'value'),
+        'FirstSeen': demisto.get(ioc_data, 'firstSeen'),
+        'LastSeen': demisto.get(ioc_data, 'lastSeen'),
+        'LastUpdateDate': demisto.get(ioc_data, 'lastUpdateDate'),
+        'Status': demisto.get(ioc_data, 'status'),
+        'Severity': demisto.get(ioc_data, 'severity'),
+        'RelatedMalware': demisto.get(ioc_data, 'relatedMalware'),
+        'RelatedCampaigns': demisto.get(ioc_data, 'relatedCampaigns'),
+        'Geolocation': demisto.get(ioc_data, 'geolocation', demisto.get(ioc_data, 'Geolocation')),
+        'RelatedThreatActors': demisto.get(ioc_data, 'relatedThreatActors'),
+        'Sources': reported_feeds,
+        'SourceName': single_reported_feed.get('name'),  # bw compatibility
+        'SourceConfidence': single_reported_feed.get('confidenceLevel'),
+        'SourceID': single_reported_feed.get('id'),
+        'Tags': demisto.get(ioc_data, 'tags'),
+        'Whitelisted': demisto.get(ioc_data, 'Whitelisted', demisto.get(ioc_data, 'whitelisted')),
     }
     ioc_readable = {
         'ID': demisto.get(ioc_data, '_id'),
-        'SourceID': demisto.get(ioc_data, 'SourceID'),
-        'AccountID': demisto.get(ioc_data, 'AccountID'),
-        'Type': demisto.get(ioc_data, 'Type'),
-        'Value': demisto.get(ioc_data, 'Value'),
-        'FirstSeen': demisto.get(ioc_data, 'FirstSeen'),
-        'LastSeen': demisto.get(ioc_data, 'LastSeen'),
-        'Domain': demisto.get(ioc_data, 'Domain'),
-        'Status': demisto.get(ioc_data, 'Status'),
-        'Severity': demisto.get(ioc_data, 'Severity').get('Value'),
-        'SourceName': demisto.get(ioc_data, 'Source.Name'),
-        'SourceConfidence': demisto.get(ioc_data, 'Source.Confidence'),
-        'IsInAlexa': demisto.get(ioc_data, 'Flags.IsInAlexa'),
-        'Enrichment Status': demisto.get(ioc_data, 'Enrichment.Status'),
-        'Enrichment Data': demisto.get(ioc_data, 'Enrichment.Data')
+        'AccountID': demisto.get(ioc_context, 'AccountID'),
+        'Type': demisto.get(ioc_context, 'Type'),
+        'Value': demisto.get(ioc_context, 'Value'),
+        'FirstSeen': demisto.get(ioc_context, 'FirstSeen'),
+        'LastSeen': demisto.get(ioc_context, 'LastSeen'),
+        'Status': demisto.get(ioc_context, 'Status'),
+        'Severity': demisto.get(ioc_context, 'Severity'),
+        'Geolocation': demisto.get(ioc_context, 'Geolocation'),
+        'SourceName': demisto.get(ioc_context, 'SourceName'),
+        'SourceID': demisto.get(ioc_context, 'SourceID'),
+        'SourceConfidence': demisto.get(ioc_context, 'SourceConfidence')
     }
     dbot_score = {
         'Indicator': ioc_context['Value'],
@@ -652,8 +647,9 @@ def ioc_to_readable(ioc_data):
         'Description': 'IntSights severity level is High'
     }
     domain = {}
-    if ioc_context['Domain']:
-        domain['Name'] = ioc_context['Domain']
+    if ioc_context['Type'] == 'Domains':
+        domain['Name'] = ioc_context['Value']
+        ioc_context['Domain'] = ioc_context['Value']
         if translate_severity(ioc_readable['Severity']) == 3:
             domain['Malicious'] = malicious_dict
 
@@ -683,7 +679,7 @@ def search_for_ioc():
     """
     Search for IOC by value
     """
-    response = http_request('GET', 'public/v1/iocs/ioc-by-value', params=handle_filters(), json_response=True)
+    response = http_request('GET', 'public/v3/iocs/ioc-by-value', params=handle_filters(), json_response=True)
 
     if response:
         ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_to_readable(response)
@@ -692,7 +688,7 @@ def search_for_ioc():
             {
                 'Type': entryTypes['note'],
                 'EntryContext': {
-                    'IntSights.Iocs(val.ID === obj.ID)': ioc_context,
+                    'IntSights.Iocs(val.Value === obj.Value)': ioc_context,
                     'DBotScore': dbot_score,
                     'Domain': domain,
                     'IP': ip_info,
@@ -701,10 +697,9 @@ def search_for_ioc():
                 },
                 'Contents': response,
                 'HumanReadable': tableToMarkdown('IOC Information', [ioc_readable],
-                                                 ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen',
-                                                  'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName',
-                                                  'SourceConfidence', 'IsInAlexa', 'Enrichment Status',
-                                                  'Enrichment Data']),
+                                                 ['Type', 'Value', 'FirstSeen',
+                                                  'LastSeen', 'Status', 'Severity', 'SourceID', 'SourceName',
+                                                  'SourceConfidence', 'GeoLocation']),
                 'ContentsFormat': formats['json']
             }
         )
@@ -939,7 +934,8 @@ def get_iocs():
     """
     Gets all IOCs with the given filters
     """
-    response = http_request('GET', 'public/v1/iocs/complete-iocs-list', params=handle_filters(), json_response=True)
+    response = http_request('GET', 'public/v3/iocs', params=handle_filters(), json_response=True)
+    content = response.get('content')
     domains = []
     ip_infos = []
     url_infos = []
@@ -948,7 +944,7 @@ def get_iocs():
     iocs_context = []
     iocs_readable = []
 
-    for indicator in response:
+    for indicator in content:
         ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_to_readable(indicator)
         iocs_context.append(ioc_context)
         iocs_readable.append(ioc_readable)
@@ -958,14 +954,13 @@ def get_iocs():
         url_infos.append(url_info)
         hash_infos.append(hash_info)
 
-    headers = ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen',
-               'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence',
-               'IsInAlexa', 'Enrichment Status', 'Enrichment Data']
+    headers = ['Type', 'Value', 'FirstSeen', 'LastSeen', 'Status', 'Severity', 'SourceID', 'SourceName',
+               'SourceConfidence', 'Geolocation']
     demisto.results(
         {
             'Type': entryTypes['note'],
             'EntryContext': {
-                'IntSights.Iocs': iocs_context,
+                'IntSights.Iocs(val.Value && val.Value === obj.Value)': iocs_context,
                 'DBotScore': dbot_scores,
                 'Domain': domains,
                 'IP': ip_infos,
@@ -1073,7 +1068,7 @@ def get_mssp_sub_accounts():
 
     account_ids = [i["ID"] for i in accounts]
     if MSSP_ACCOUNT_ID not in account_ids:
-        demisto.log("[DEBUG] - MSSP sub accounts:" + str(accounts))
+        demisto.debug("[DEBUG] - MSSP sub accounts:" + str(accounts))
         return_error('Entered sub account id ({}) is not part of this mssp account'.format(MSSP_ACCOUNT_ID))
 
     for i, account in enumerate(account_ids):
@@ -1110,56 +1105,61 @@ def test_module():
     demisto.results('ok')
 
 
-try:
-    if demisto.command() == 'test-module':
-        test_module()
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
-    elif demisto.command() == 'intsights-mssp-get-sub-accounts':
-        get_mssp_sub_accounts()
-    elif demisto.command() == 'intsights-get-alerts':
-        get_alerts()
-    elif demisto.command() == 'intsights-get-alert-image':
-        get_alert_image()
-    elif demisto.command() == 'intsights-get-alert-activities':
-        get_alert_activity()
-    elif demisto.command() == 'intsights-assign-alert':
-        assign_alert()
-    elif demisto.command() == 'intsights-unassign-alert':
-        unassign_alert()
-    elif demisto.command() == 'intsights-send-mail':
-        send_mail()
-    elif demisto.command() == 'intsights-ask-the-analyst':
-        ask_analyst()
-    elif demisto.command() == 'intsights-add-tag-to-alert':
-        add_tag()
-    elif demisto.command() == 'intsights-remove-tag-from-alert':
-        remove_tag()
-    elif demisto.command() == 'intsights-add-comment-to-alert':
-        add_comment()
-    elif demisto.command() == 'intsights-update-alert-severity':
-        change_severity()
-    elif demisto.command() == 'intsights-get-alert-by-id':
-        get_alert_by_id()
-    elif demisto.command() == 'intsights-get-ioc-by-value':
-        search_for_ioc()
-    elif demisto.command() == 'intsights-request-ioc-enrichment':
-        request_for_ioc_enrichment()
-    elif demisto.command() == 'intsights-get-iocs':
-        get_iocs()
-    elif demisto.command() == 'intsights-alert-takedown-request':
-        takedown_request()
-    elif demisto.command() == 'intsights-get-alert-takedown-status':
-        get_alert_takedown_status()
-    elif demisto.command() == 'intsights-get-ioc-blocklist-status':
-        get_ioc_blocklist_status()
-    elif demisto.command() == 'intsights-update-ioc-blocklist-status':
-        update_ioc_blocklist_status()
-    elif demisto.command() == 'intsights-close-alert':
-        close_alert()
-    elif demisto.command() == 'intsights-test-action':
-        pass
-    else:
-        raise Exception('Unrecognized command: ' + demisto.command())
-except Exception as err:
-    return_error(str(err))
+def main():  # pragma: no cover
+    try:
+        if demisto.command() == 'test-module':
+            test_module()
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+        elif demisto.command() == 'intsights-mssp-get-sub-accounts':
+            get_mssp_sub_accounts()
+        elif demisto.command() == 'intsights-get-alerts':
+            get_alerts()
+        elif demisto.command() == 'intsights-get-alert-image':
+            get_alert_image()
+        elif demisto.command() == 'intsights-get-alert-activities':
+            get_alert_activity()
+        elif demisto.command() == 'intsights-assign-alert':
+            assign_alert()
+        elif demisto.command() == 'intsights-unassign-alert':
+            unassign_alert()
+        elif demisto.command() == 'intsights-send-mail':
+            send_mail()
+        elif demisto.command() == 'intsights-ask-the-analyst':
+            ask_analyst()
+        elif demisto.command() == 'intsights-add-tag-to-alert':
+            add_tag()
+        elif demisto.command() == 'intsights-remove-tag-from-alert':
+            remove_tag()
+        elif demisto.command() == 'intsights-add-comment-to-alert':
+            add_comment()
+        elif demisto.command() == 'intsights-update-alert-severity':
+            change_severity()
+        elif demisto.command() == 'intsights-get-alert-by-id':
+            get_alert_by_id()
+        elif demisto.command() == 'intsights-get-ioc-by-value':
+            search_for_ioc()
+        elif demisto.command() == 'intsights-request-ioc-enrichment':
+            request_for_ioc_enrichment()
+        elif demisto.command() == 'intsights-get-iocs':
+            get_iocs()
+        elif demisto.command() == 'intsights-alert-takedown-request':
+            takedown_request()
+        elif demisto.command() == 'intsights-get-alert-takedown-status':
+            get_alert_takedown_status()
+        elif demisto.command() == 'intsights-get-ioc-blocklist-status':
+            get_ioc_blocklist_status()
+        elif demisto.command() == 'intsights-update-ioc-blocklist-status':
+            update_ioc_blocklist_status()
+        elif demisto.command() == 'intsights-close-alert':
+            close_alert()
+        elif demisto.command() == 'intsights-test-action':
+            pass
+        else:
+            raise Exception('Unrecognized command: ' + demisto.command())
+    except Exception as err:
+        return_error(str(err))
+
+
+if __name__ in ('__main__', 'builtin', 'builtins'):
+    main()

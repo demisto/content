@@ -88,11 +88,13 @@ def fetch_indicators_command(
             )
             fetched_iocs = client.build_iterator(limit, added_after=added_after)
             indicators.extend(fetched_iocs)
+            last_run_ctx[collection.id] = client.last_fetched_indicator__modified \
+                if client.last_fetched_indicator__modified \
+                else added_after
             if limit >= 0:
                 limit -= len(fetched_iocs)
                 if limit <= 0:
                     break
-            last_run_ctx[collection.id] = client.last_fetched_indicator__modified
     else:
         # fetch from a single collection
         added_after = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)
@@ -102,6 +104,7 @@ def fetch_indicators_command(
             if client.last_fetched_indicator__modified
             else added_after
         )
+    demisto.debug(f'{indicators=}')
     return indicators, last_run_ctx
 
 
@@ -224,9 +227,13 @@ def main():
     is_incremental_feed = params.get('feedIncremental') or False
     limit = try_parse_integer(params.get("limit") or -1)
     limit_per_request = try_parse_integer(params.get("limit_per_request"))
-    certificate = params.get('certificate', None)
-    key = params.get('key', None)
+    certificate = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('identifier'))
+                   or params.get('certificate', None))
+    key = params.get('creds_certificate', {}).get('password') or params.get('key', None)
     objects_to_fetch = argToList(params.get('objects_to_fetch') or objects_types)
+    default_api_root = params.get('default_api_root')
+
+    demisto.info(f'{objects_to_fetch=}')
 
     command = demisto.command()
     demisto.info(f"Command being called in {CONTEXT_PREFIX} is {command}")
@@ -246,6 +253,7 @@ def main():
             tlp_color=tlp_color,
             certificate=certificate,
             key=key,
+            default_api_root=default_api_root,
         )
         client.initialise()
         commands = {

@@ -1,4 +1,5 @@
-from rasterize import rasterize, find_zombie_processes, merge_options, DEFAULT_CHROME_OPTIONS, rasterize_image_command
+from rasterize import (rasterize, find_zombie_processes, merge_options, DEFAULT_CHROME_OPTIONS, rasterize_image_command,
+                       RasterizeMode, RasterizeType, init_driver, rasterize_html_command)
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
@@ -9,6 +10,9 @@ import http.server
 import time
 import threading
 import pytest
+from selenium import webdriver
+from pyvirtualdisplay import Display
+from unittest.mock import mock_open
 
 # disable warning from urllib3. these are emitted when python driver can't connect to chrome yet
 logging.getLogger("urllib3").setLevel(logging.ERROR)
@@ -16,23 +20,26 @@ logging.getLogger("urllib3").setLevel(logging.ERROR)
 RETURN_ERROR_TARGET = 'rasterize.return_error'
 
 
-def test_rasterize_email_image(caplog):
+@pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CLI_ONLY])
+def test_rasterize_email_image(r_mode, caplog):
     with NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
-        rasterize(path=f'file://{path}', width=250, height=250, r_type='png')
+        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PNG, r_mode=r_mode)
         caplog.clear()
 
 
-def test_rasterize_email_pdf(caplog):
+@pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CLI_ONLY])
+def test_rasterize_email_pdf(r_mode, caplog):
     with NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
-        rasterize(path=f'file://{path}', width=250, height=250, r_type='pdf', offline_mode=False)
+        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PDF, offline_mode=False,
+                  r_mode=r_mode)
         caplog.clear()
 
 
@@ -42,7 +49,7 @@ def test_rasterize_email_pdf_offline(caplog):
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
-        rasterize(path=f'file://{path}', width=250, height=250, r_type='pdf', offline_mode=True)
+        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PDF, offline_mode=True)
         caplog.clear()
 
 
@@ -52,7 +59,7 @@ def test_rasterize_no_defunct_processes(caplog):
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
-        rasterize(path=f'file://{path}', width=250, height=250, r_type='pdf', offline_mode=False)
+        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PDF, offline_mode=False)
         process = subprocess.Popen(['ps', '-aux'], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                    universal_newlines=True)
         processes_str, _ = process.communicate()
@@ -103,10 +110,22 @@ def test_merge_options():
     assert len([x for x in res if x.startswith('--user-agent')]) == 0
 
 
-def test_rasterize_large_html():
+@pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CLI_ONLY])
+def test_rasterize_large_html(r_mode):
     path = os.path.realpath('test_data/large.html')
-    res = rasterize(path=f'file://{path}', width=250, height=250, r_type='png')
+    res = rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PNG, r_mode=r_mode)
     assert res
+
+
+def test_rasterize_html(mocker):
+    path = os.path.realpath('test_data/file.html')
+    mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
+    mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
+    mocker.patch.object(os, 'rename')
+    mocker.patch.object(os.path, 'realpath', return_value=f'{os.getcwd()}/test_data/file.html')
+    mocker_output = mocker.patch('rasterize.return_results')
+    rasterize_html_command()
+    assert mocker_output.call_args.args[0]['File'] == 'email.png'
 
 
 @pytest.fixture
@@ -149,17 +168,21 @@ def http_wait_server():
 # curl -v -H 'user-agent: HeadlessChrome' --max-time 10  "http://www.grainger.com/"  # disable-secrets-detection
 # This tests access a server which waits for 10 seconds and makes sure we timeout
 @pytest.mark.filterwarnings('ignore::ResourceWarning')
-def test_rasterize_url_long_load(mocker, http_wait_server):
+@pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CLI_ONLY,
+                                    RasterizeMode.WEBDRIVER_PREFERED, RasterizeMode.HEADLESS_CLI_PREFERED])
+def test_rasterize_url_long_load(r_mode, mocker, http_wait_server):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     time.sleep(1)  # give time to the servrer to start
-    rasterize('http://localhost:10888', width=250, height=250, r_type='png', max_page_load_time=5)
+    rasterize('http://localhost:10888', width=250, height=250, r_type=RasterizeType.PNG, max_page_load_time=5,
+              r_mode=r_mode)
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
     assert 'Timeout exception' in err_msg
     return_error_mock.reset_mock()
     # test that with a higher value we get a response
-    assert rasterize('http://localhost:10888', width=250, height=250, r_type='png', max_page_load_time=0)
+    assert rasterize('http://localhost:10888', width=250, height=250, r_type=RasterizeType.PNG,
+                     max_page_load_time=0, r_mode=r_mode)
     assert not return_error_mock.called
 
 
@@ -182,19 +205,138 @@ TEST_DATA = [
         'test_data/many_pages.pdf',
         21,
         2,
+        None
     ),
     (
         'test_data/many_pages.pdf',
         20,
         1,
+        None
     ),
+    (
+        'test_data/many_pages.pdf',
+        '*',
+        3,
+        None
+    ),
+    (
+        'test_data/test_pw_mathias.pdf',
+        '*',
+        1,
+        'mathias',
+    )
 ]
 
 
-@pytest.mark.parametrize('file_path, max_pages, expected_length', TEST_DATA)
-def test_convert_pdf_to_jpeg(file_path, max_pages, expected_length):
+@pytest.mark.parametrize('file_path, max_pages, expected_length, pw', TEST_DATA)
+def test_convert_pdf_to_jpeg(file_path, max_pages, expected_length, pw):
     from rasterize import convert_pdf_to_jpeg
-    res = convert_pdf_to_jpeg(file_path, max_pages, "pass")
+    res = convert_pdf_to_jpeg(file_path, max_pages, pw)
 
     assert type(res) == list
     assert len(res) == expected_length
+
+
+@pytest.mark.parametrize('width, height, expected_width, expected_height', [
+    (8001, 700, 8000, 700),
+    (700, 80001, 700, 8000),
+    (700, 600, 700, 600)
+])
+def test_check_width_and_height(width, height, expected_width, expected_height):
+    """
+        Given:
+            1. A width that is larger than the safeguard limit, and a valid height
+            2. A height that is larger than the safeguard limit, and a valid width
+            3. Valid width and height
+        When:
+            - Running the 'heck_width_and_height' function.
+        Then:
+            Verify that:
+            1. The resulted width is the safeguard limit (8000px) and the height remains as it was.
+            2. The resulted height is the safeguard limit (8000px) and the width remains as it was.
+            3. Both width and height remain as they were.
+    """
+    from rasterize import check_width_and_height
+    w, h = check_width_and_height(width, height)
+    assert w == expected_width
+    assert h == expected_height
+
+
+class TestRasterizeIncludeUrl:
+    class MockChromeOptions:
+
+        def __init__(self) -> None:
+            self.options = []
+
+        def add_argument(self, arg):
+            self.options.append(arg)
+
+    class MockChrome:
+
+        def __init__(self, options, service_args) -> None:
+            self.options = options.options
+            self.page_source = ''
+            self.session_id = 'session_id'
+
+        def set_page_load_timeout(self, max_page_load_time):
+            pass
+
+        def get(self, path):
+            pass
+
+        def maximize_window(self):
+            pass
+
+        def implicitly_wait(self, arg):
+            pass
+
+        def set_window_size(self, width, height):
+            pass
+
+        def get_screenshot_as_png(self):
+            return 'image'
+
+        def quit(self):
+            pass
+
+    @pytest.mark.parametrize('include_url', [False, True])
+    def test_headless_chrome_option(self, mocker, include_url):
+        """
+            Given:
+                - A parameter that mention whether to include the URL bar in the screenshot.
+            When:
+                - Running the 'rasterize' function.
+            Then:
+                - Verify that it runs as expected.
+        """
+        mocker.patch.object(Display, 'start', retuen_value=None)
+        mocker.patch.object(webdriver, 'Chrome', side_effect=self.MockChrome)
+        mocker.patch.object(webdriver, 'ChromeOptions', side_effect=self.MockChromeOptions)
+
+        driver = init_driver(include_url=include_url)
+
+        assert not ('--headless' in driver.options) == include_url
+
+    @pytest.mark.parametrize('include_url', [False, True])
+    def test_sanity_rasterize_with_include_url(self, mocker, include_url):
+        """
+            Given:
+                - A parameter that mention whether to include the URL bar in the screenshot.
+            When:
+                - Running the 'rasterize' function.
+            Then:
+                - Verify that it runs as expected.
+        """
+        mocker.patch.object(Display, 'start', retuen_value=None)
+        mocker.patch.object(Display, 'stop', retuen_value=None)
+        mocker.patch.object(webdriver, 'Chrome', side_effect=self.MockChrome)
+        mocker.patch.object(webdriver, 'ChromeOptions', side_effect=self.MockChromeOptions)
+
+        mocker.patch('subprocess.run')
+        mocker.patch('builtins.open', mock_open(read_data='image_sha'))
+        mocker.patch('os.remove')
+
+        image = rasterize(path='path', width=250, height=250, r_type=RasterizeType.PNG,
+                          r_mode=RasterizeMode.WEBDRIVER_ONLY,
+                          include_url=include_url)
+        assert image

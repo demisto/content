@@ -1,3 +1,4 @@
+import urllib3
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -5,7 +6,7 @@ from CommonServerUserPython import *
 from typing import Dict, List, Any
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 APP_NAME = 'ms-graph-security'
 
@@ -31,10 +32,12 @@ class MsGraphClient:
     Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
     """
 
-    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed):
+    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
+                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
-            proxy=proxy, self_deployed=self_deployed)
+            proxy=proxy, self_deployed=self_deployed, certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key)
 
     def search_alerts(self, last_modified, severity, category, vendor, time_from, time_to, filter_query):
         filters = []
@@ -53,6 +56,7 @@ class MsGraphClient:
         filters = " and ".join(filters)
         cmd_url = 'security/alerts'
         params = {'$filter': filters}
+        demisto.debug(f'Fetching MS Graph Security incidents with params: {params}')
         response = self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
         return response
 
@@ -510,12 +514,19 @@ def test_function(client: MsGraphClient, args):
 def main():
     params: dict = demisto.params()
     url = params.get('host', '').rstrip('/') + '/v1.0/'
-    tenant = params.get('tenant_id')
-    auth_and_token_url = params.get('auth_id', '')
-    enc_key = params.get('enc_key')
+    tenant = params.get('creds_tenant_id', {}).get('password') or params.get('tenant_id')
+    auth_and_token_url = params.get('creds_auth_id', {}).get('password') or params.get('auth_id', '')
+    enc_key = params.get('creds_enc_key', {}).get('password') or params.get('enc_key')
     use_ssl = not params.get('insecure', False)
     self_deployed: bool = params.get('self_deployed', False)
     proxy = params.get('proxy', False)
+    certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or params.get('certificate_thumbprint')
+    private_key = replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')) or params.get('private_key')
+    if not self_deployed and not enc_key:
+        raise DemistoException('Key must be provided. For further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+    elif not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
     commands = {
         'test-module': test_function,
@@ -531,10 +542,13 @@ def main():
     try:
         client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
                                               app_name=APP_NAME, base_url=url, verify=use_ssl, proxy=proxy,
-                                              self_deployed=self_deployed)
+                                              self_deployed=self_deployed,
+                                              certificate_thumbprint=certificate_thumbprint,
+                                              private_key=private_key,
+                                              )
         if command == "fetch-incidents":
             fetch_time = params.get('fetch_time', '1 day')
-            fetch_limit = params.get('fetch_limit', 10)
+            fetch_limit = params.get('fetch_limit', 10) or 10
             fetch_providers = params.get('fetch_providers', '')
             fetch_filter = params.get('fetch_filter', '')
             incidents = fetch_incidents(client, fetch_time=fetch_time, fetch_limit=int(fetch_limit),

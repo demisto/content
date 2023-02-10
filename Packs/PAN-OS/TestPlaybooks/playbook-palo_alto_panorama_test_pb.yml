@@ -1,23 +1,31 @@
-id: palo_alto_panorama_test_pb
-name: palo_alto_panorama_test_pb
 description: Test playbook for palo alto panorama
-starttaskid: "0"
+id: palo_alto_panorama_test_pb
+inputs: []
+name: palo_alto_panorama_test_pb
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 077f9863-028a-4d07-8974-79b9328fa5b8
-    type: start
-    task:
-      id: 077f9863-028a-4d07-8974-79b9328fa5b8
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-      description: ''
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: a551c080-21c9-4cf1-8757-ee5fc16a7fed
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: a551c080-21c9-4cf1-8757-ee5fc16a7fed
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
@@ -25,32 +33,34 @@ tasks:
           "y": 50
         }
       }
-    note: false
-    timertriggers: []
+  '12':
+    id: '12'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "12":
-    id: "12"
-    taskid: 45cf80ec-57ef-4a42-80d3-28c36d584eea
-    type: regular
-    task:
-      id: 45cf80ec-57ef-4a42-80d3-28c36d584eea
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "85"
-      - "13"
+      - '85'
+      - '13'
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: a2907132-eb52-4dec-851b-2e53ff1cbefe
+      iscommand: false
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: a2907132-eb52-4dec-851b-2e53ff1cbefe
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -58,27 +68,28 @@ tasks:
           "y": 195
         }
       }
-    note: false
-    timertriggers: []
+  '13':
+    id: '13'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "13":
-    id: "13"
-    taskid: e8d0bbfb-4aa6-44eb-8675-616ad927a99d
-    type: title
-    task:
-      id: e8d0bbfb-4aa6-44eb-8675-616ad927a99d
-      version: -1
-      name: Addresses
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: fb81d58d-27f6-49f7-835e-35e99a2266e0
+      iscommand: false
+      name: Addresses
+      type: title
+      version: -1
+    taskid: fb81d58d-27f6-49f7-835e-35e99a2266e0
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -86,29 +97,30 @@ tasks:
           "y": 370
         }
       }
-    note: false
-    timertriggers: []
+  '14':
+    id: '14'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "14":
-    id: "14"
-    taskid: f178f989-014f-4ac3-845d-e9923d147927
-    type: title
-    task:
-      id: f178f989-014f-4ac3-845d-e9923d147927
-      version: -1
-      name: Address Groups, URL Filtering, Services
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "21"
-      - "76"
-      - "52"
+      - '21'
+      - '76'
+      - '52'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 2ad0efe9-14de-4ffe-87dc-ec2b327ca6f1
+      iscommand: false
+      name: Address Groups, URL Filtering, Services
+      type: title
+      version: -1
+    taskid: 2ad0efe9-14de-4ffe-87dc-ec2b327ca6f1
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -116,27 +128,28 @@ tasks:
           "y": 1740
         }
       }
-    note: false
-    timertriggers: []
+  '15':
+    id: '15'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "15":
-    id: "15"
-    taskid: 99c4ff72-21ab-4e3e-8831-4ef9cd30a558
-    type: title
-    task:
-      id: 99c4ff72-21ab-4e3e-8831-4ef9cd30a558
-      version: -1
-      name: Custom URL Category
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "36"
+      - '36'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: e333a2ab-9395-4cdc-8990-4a1497ff80ea
+      iscommand: false
+      name: Custom URL Category
+      type: title
+      version: -1
+    taskid: e333a2ab-9395-4cdc-8990-4a1497ff80ea
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -144,26 +157,16 @@ tasks:
           "y": 3080
         }
       }
-    note: false
-    timertriggers: []
+  '16':
+    id: '16'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "16":
-    id: "16"
-    taskid: e7c9f50e-d6fe-4245-82b7-1333f7e64b1d
-    type: regular
-    task:
-      id: e7c9f50e-d6fe-4245-82b7-1333f7e64b1d
-      version: -1
-      name: panorama-address-add
-      script: '|||panorama-create-address'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
+    note: false
+    quietmode: 0
     scriptarguments:
       description:
         simple: just a desc
@@ -174,6 +177,19 @@ tasks:
       tag:
         simple: Bark_test_tag2
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Creates an address object.
+      id: 959c9cf9-5222-4823-8c1f-ddcfa45c8b3e
+      iscommand: true
+      name: pan-os-create-address
+      script: Panorama|||pan-os-create-address
+      type: regular
+      version: -1
+    taskid: 959c9cf9-5222-4823-8c1f-ddcfa45c8b3e
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -181,49 +197,51 @@ tasks:
           "y": 690
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "17":
-    id: "17"
-    taskid: 0e430a58-5a01-41f4-8a25-981bca0060cf
-    type: condition
-    task:
-      id: 0e430a58-5a01-41f4-8a25-981bca0060cf
-      version: -1
-      name: Test panorama-create-address
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "64"
-    separatecontext: false
+  '17':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: startWith
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: Panorama
                 accessor: Addresses.Description
-            iscontext: true
+                root: Panorama
+          operator: startWith
           right:
             value:
               simple: just
-      - - operator: containsGeneral
-          left:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: Panorama
                 accessor: Addresses.Tags
-            iscontext: true
+                root: Panorama
+          operator: containsGeneral
           right:
             value:
               simple: Bark_test_tag
+      label: yes
+    id: '17'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '64'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 175c62bb-f49a-4d42-86d6-a70f6c123e86
+      iscommand: false
+      name: Test panorama-create-address
+      type: condition
+      version: -1
+    taskid: 175c62bb-f49a-4d42-86d6-a70f6c123e86
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -231,30 +249,33 @@ tasks:
           "y": 865
         }
       }
-    note: false
-    timertriggers: []
+  '18':
+    id: '18'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "18":
-    id: "18"
-    taskid: 10668c5c-4eff-492d-8c57-6580958cf693
-    type: regular
-    task:
-      id: 10668c5c-4eff-492d-8c57-6580958cf693
-      version: -1
-      name: panorama-list-addresses
-      script: '|||panorama-list-addresses'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
+    note: false
+    quietmode: 0
     scriptarguments:
       tag:
         simple: Bark_test_tag
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Returns a list of addresses.
+      id: 690df56e-477c-4c20-8552-c5f345753ee2
+      iscommand: true
+      name: pan-os-list-addresses
+      script: Panorama|||pan-os-list-addresses
+      type: regular
+      version: -1
+    taskid: 690df56e-477c-4c20-8552-c5f345753ee2
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -262,30 +283,33 @@ tasks:
           "y": 515
         }
       }
-    note: false
-    timertriggers: []
+  '20':
+    id: '20'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "20":
-    id: "20"
-    taskid: 89e7dafd-68f9-42a7-8d8b-9460af2e062f
-    type: regular
-    task:
-      id: 89e7dafd-68f9-42a7-8d8b-9460af2e062f
-      version: -1
-      name: panorama-delete-address
-      script: '|||panorama-delete-address'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "91"
+      - '91'
+    note: false
+    quietmode: 0
     scriptarguments:
       name:
         simple: pano_inst_address_test_pb
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Delete an address object
+      id: c1f79ed2-3559-4474-8c16-b885a7cb1ec4
+      iscommand: true
+      name: pan-os-delete-address
+      script: Panorama|||pan-os-delete-address
+      type: regular
+      version: -1
+    taskid: c1f79ed2-3559-4474-8c16-b885a7cb1ec4
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -293,28 +317,31 @@ tasks:
           "y": 1390
         }
       }
-    note: false
-    timertriggers: []
+  '21':
+    id: '21'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "21":
-    id: "21"
-    taskid: 8aa36816-18e1-4ce8-8c99-6173b47e8a26
-    type: regular
-    task:
-      id: 8aa36816-18e1-4ce8-8c99-6173b47e8a26
-      version: -1
-      name: panorama-list-address-groups
-      script: '|||panorama-list-address-groups'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "61"
-      - "62"
+      - '61'
+      - '62'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Returns a list of address groups.
+      id: 9f2c7e38-0113-4788-8d1f-8537f1235e46
+      iscommand: true
+      name: pan-os-list-address-groups
+      script: Panorama|||pan-os-list-address-groups
+      type: regular
+      version: -1
+    taskid: 9f2c7e38-0113-4788-8d1f-8537f1235e46
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -322,26 +349,16 @@ tasks:
           "y": 1885
         }
       }
-    note: false
-    timertriggers: []
+  '22':
+    id: '22'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "22":
-    id: "22"
-    taskid: 23b45fb1-b243-48bb-81f7-684f641eab64
-    type: regular
-    task:
-      id: 23b45fb1-b243-48bb-81f7-684f641eab64
-      version: -1
-      name: panorama-create-address-group(dynamic)
-      script: '|||panorama-create-address-group'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "92"
+      - '92'
+    note: false
+    quietmode: 0
     scriptarguments:
       description:
         simple: ip dynamic address group list
@@ -352,6 +369,19 @@ tasks:
       type:
         simple: dynamic
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Creates a static or dynamic address group.
+      id: 2a2a1347-b078-4d5f-8402-da3d4cdb3ccc
+      iscommand: true
+      name: pan-os-create-address-group(dynamic)
+      script: Panorama|||pan-os-create-address-group
+      type: regular
+      version: -1
+    taskid: 2a2a1347-b078-4d5f-8402-da3d4cdb3ccc
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -359,26 +389,16 @@ tasks:
           "y": 2235
         }
       }
-    note: false
-    timertriggers: []
+  '24':
+    id: '24'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "24":
-    id: "24"
-    taskid: 3222a168-4bf2-450f-836b-bbaaad694dfd
-    type: regular
-    task:
-      id: 3222a168-4bf2-450f-836b-bbaaad694dfd
-      version: -1
-      name: panorama-create-address-group(static)
-      script: '|||panorama-create-address-group'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "92"
+      - '92'
+    note: false
+    quietmode: 0
     scriptarguments:
       addresses:
         simple: pano_address_test_pb_dont_delete3
@@ -389,6 +409,19 @@ tasks:
       type:
         simple: static
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Creates a static or dynamic address group.
+      id: 0aac55ea-faa1-4775-8fa0-3cc08ef0719f
+      iscommand: true
+      name: pan-os-create-address-group(static)
+      script: Panorama|||pan-os-create-address-group
+      type: regular
+      version: -1
+    taskid: 0aac55ea-faa1-4775-8fa0-3cc08ef0719f
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -396,30 +429,33 @@ tasks:
           "y": 2235
         }
       }
-    note: false
-    timertriggers: []
+  '25':
+    id: '25'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "25":
-    id: "25"
-    taskid: db4cdbaf-f6b6-4814-8965-9c59dbfac17a
-    type: regular
-    task:
-      id: db4cdbaf-f6b6-4814-8965-9c59dbfac17a
-      version: -1
-      name: panorama-get-address-group
-      script: '|||panorama-get-address-group'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "26"
+      - '26'
+    note: false
+    quietmode: 0
     scriptarguments:
       name:
         simple: pano_inst_dynamic_address_group
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Get details for the specified address group
+      id: a5bf6802-e84f-46ca-8db0-8d45f32ca8dd
+      iscommand: true
+      name: pan-os-get-address-group
+      script: Panorama|||pan-os-get-address-group
+      type: regular
+      version: -1
+    taskid: a5bf6802-e84f-46ca-8db0-8d45f32ca8dd
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -427,30 +463,33 @@ tasks:
           "y": 2585
         }
       }
-    note: false
-    timertriggers: []
+  '26':
+    id: '26'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "26":
-    id: "26"
-    taskid: bc026a11-4215-43ad-8761-fec82a07aa20
-    type: regular
-    task:
-      id: bc026a11-4215-43ad-8761-fec82a07aa20
-      version: -1
-      name: panorama-address-group-delete
-      script: '|||panorama-delete-address-group'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "93"
+      - '93'
+    note: false
+    quietmode: 0
     scriptarguments:
       name:
         simple: pano_inst_dynamic_address_group
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Deletes an address group.
+      id: af4c2671-6799-41f5-87bb-4e57a183a7b5
+      iscommand: true
+      name: pan-os-delete-address-group
+      script: Panorama|||pan-os-delete-address-group
+      type: regular
+      version: -1
+    taskid: af4c2671-6799-41f5-87bb-4e57a183a7b5
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -458,39 +497,41 @@ tasks:
           "y": 2760
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "27":
-    id: "27"
-    taskid: 59c03888-5268-486e-888a-a9c0a7629d86
-    type: condition
-    task:
-      id: 59c03888-5268-486e-888a-a9c0a7629d86
-      version: -1
-      name: Test panorama-address-group-create(static)
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "30"
-    separatecontext: false
+  '27':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: Panorama
                 accessor: AddressGroups.Addresses
-            iscontext: true
+                root: Panorama
+          operator: containsGeneral
           right:
             value:
               simple: pano_address_test_pb_dont_delete3
+      label: yes
+    id: '27'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '30'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 601975cd-0cf7-4929-8940-93ab2da93dda
+      iscommand: false
+      name: Test panorama-address-group-create(static)
+      type: condition
+      version: -1
+    taskid: 601975cd-0cf7-4929-8940-93ab2da93dda
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -498,30 +539,33 @@ tasks:
           "y": 2585
         }
       }
-    note: false
-    timertriggers: []
+  '30':
+    id: '30'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "30":
-    id: "30"
-    taskid: c6e8bafe-1ef5-4911-8f86-d17e61dd763b
-    type: regular
-    task:
-      id: c6e8bafe-1ef5-4911-8f86-d17e61dd763b
-      version: -1
-      name: panorama-delete-address-group
-      script: '|||panorama-delete-address-group'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "93"
+      - '93'
+    note: false
+    quietmode: 0
     scriptarguments:
       name:
         simple: pano_inst_static_address_group
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Deletes an address group.
+      id: 1b851fa2-97e9-4a03-8627-97dffc6a31bb
+      iscommand: true
+      name: pan-os-delete-address-group
+      script: Panorama|||pan-os-delete-address-group
+      type: regular
+      version: -1
+    taskid: 1b851fa2-97e9-4a03-8627-97dffc6a31bb
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -529,30 +573,33 @@ tasks:
           "y": 2760
         }
       }
-    note: false
-    timertriggers: []
+  '36':
+    id: '36'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "36":
-    id: "36"
-    taskid: eb6087b7-81a5-4044-816a-1a3c35d1c014
-    type: regular
-    task:
-      id: eb6087b7-81a5-4044-816a-1a3c35d1c014
-      version: -1
-      name: panorama-get-custom-url-category
-      script: '|||panorama-get-custom-url-category'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "98"
+      - '98'
+    note: false
+    quietmode: 0
     scriptarguments:
       name:
         simple: pano_inst_custom_dont_delete
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Returns information for a custom URL category.
+      id: b0336e82-ddd7-4456-810a-4fbdaf6b6f3b
+      iscommand: true
+      name: pan-os-get-custom-url-category
+      script: Panorama|||pan-os-get-custom-url-category
+      type: regular
+      version: -1
+    taskid: b0336e82-ddd7-4456-810a-4fbdaf6b6f3b
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -560,30 +607,32 @@ tasks:
           "y": 3225
         }
       }
-    note: false
-    timertriggers: []
+  '38':
+    id: '38'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "38":
-    id: "38"
-    taskid: bb36e96f-699a-4633-8175-a75f663a6f93
-    type: regular
-    task:
-      id: bb36e96f-699a-4633-8175-a75f663a6f93
-      version: -1
-      name: Delete Context - Finished Objects UC
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "51"
+      - '51'
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: befcb7ba-232c-463e-83c4-2337ec2395f4
+      iscommand: false
+      name: Delete Context - Finished Objects UC
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: befcb7ba-232c-463e-83c4-2337ec2395f4
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -591,31 +640,33 @@ tasks:
           "y": 3575
         }
       }
-    note: false
-    timertriggers: []
+  '40':
+    id: '40'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "40":
-    id: "40"
-    taskid: ee588066-ba3e-4c04-8c85-421ac6b92f22
-    type: regular
-    task:
-      id: ee588066-ba3e-4c04-8c85-421ac6b92f22
-      version: -1
-      name: Sleep 14 seconds
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
+    note: false
+    quietmode: 0
     scriptarguments:
       seconds:
-        simple: "16"
+        simple: '16'
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Sleep for X seconds
+      id: fe88a701-3e8c-48ea-8cd6-e85d2f5a472d
+      iscommand: false
+      name: Sleep 14 seconds
+      script: Sleep
+      type: regular
+      version: -1
+    taskid: fe88a701-3e8c-48ea-8cd6-e85d2f5a472d
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -623,56 +674,58 @@ tasks:
           "y": 1215
         }
       }
-    note: false
-    timertriggers: []
+  '50':
+    id: '50'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "50":
-    id: "50"
-    taskid: 1e97d13c-916e-4245-8b7f-03ba01aaf5d1
-    type: title
-    task:
-      id: 1e97d13c-916e-4245-8b7f-03ba01aaf5d1
-      version: -1
-      name: User-ID Interface and Agents
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "106"
-      - "107"
+      - '106'
+      - '107'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: a86e74d4-9716-4de1-8c5c-0a884d41ac79
+      iscommand: false
+      name: User-ID Interface and Agents
+      type: title
+      version: -1
+    taskid: a86e74d4-9716-4de1-8c5c-0a884d41ac79
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 4390
+          "x": 645,
+          "y": 4750
         }
       }
-    note: false
-    timertriggers: []
+  '51':
+    id: '51'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "51":
-    id: "51"
-    taskid: 36fee10c-264b-452f-80f3-ee4c64b0fba1
-    type: title
-    task:
-      id: 36fee10c-264b-452f-80f3-ee4c64b0fba1
-      version: -1
-      name: Security Rules Managing
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "112"
+      - '112'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 0526c2c9-2432-444c-86ea-62df1f54d752
+      iscommand: false
+      name: Security Rules Managing
+      type: title
+      version: -1
+    taskid: 0526c2c9-2432-444c-86ea-62df1f54d752
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -680,27 +733,28 @@ tasks:
           "y": 3750
         }
       }
-    note: false
-    timertriggers: []
+  '52':
+    id: '52'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "52":
-    id: "52"
-    taskid: e8ee37df-c541-4012-87ca-c791051374cc
-    type: title
-    task:
-      id: e8ee37df-c541-4012-87ca-c791051374cc
-      version: -1
-      name: URL Filtering
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "74"
+      - '74'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 1454ae04-814b-4efc-8dd4-5c44b2f8f770
+      iscommand: false
+      name: URL Filtering
+      type: title
+      version: -1
+    taskid: 1454ae04-814b-4efc-8dd4-5c44b2f8f770
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -708,27 +762,28 @@ tasks:
           "y": 1900
         }
       }
-    note: false
-    timertriggers: []
+  '61':
+    id: '61'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "61":
-    id: "61"
-    taskid: dc43df59-3b5f-4d70-8feb-a86abbc636dd
-    type: title
-    task:
-      id: dc43df59-3b5f-4d70-8feb-a86abbc636dd
-      version: -1
-      name: Dynamic Address Groups
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 10dfeb69-cde1-4a4f-8d64-8fd27d712625
+      iscommand: false
+      name: Dynamic Address Groups
+      type: title
+      version: -1
+    taskid: 10dfeb69-cde1-4a4f-8d64-8fd27d712625
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -736,27 +791,28 @@ tasks:
           "y": 2075
         }
       }
-    note: false
-    timertriggers: []
+  '62':
+    id: '62'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "62":
-    id: "62"
-    taskid: 29f0ee61-23b7-4fb2-85ea-1fc98df9a06b
-    type: title
-    task:
-      id: 29f0ee61-23b7-4fb2-85ea-1fc98df9a06b
-      version: -1
-      name: Static Address Groups
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 72602c55-59b7-4b94-8b5d-5be86e251e37
+      iscommand: false
+      name: Static Address Groups
+      type: title
+      version: -1
+    taskid: 72602c55-59b7-4b94-8b5d-5be86e251e37
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -764,28 +820,30 @@ tasks:
           "y": 2075
         }
       }
-    note: false
-    timertriggers: []
+  '64':
+    id: '64'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "64":
-    id: "64"
-    taskid: 697cb219-913f-4198-878f-1fff209dd26a
-    type: regular
-    task:
-      id: 697cb219-913f-4198-878f-1fff209dd26a
-      version: -1
-      name: panorama-commit
-      description: Commit Palo Alto Firewall or Panorama
-      script: '|||panorama-commit'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "40"
+      - '40'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Commits a configuration to the Palo Alto firewall or Panorama, but does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
+      id: 5f649c6c-21cc-4432-860a-1641910023fd
+      iscommand: true
+      name: pan-os-commit
+      script: Panorama|||pan-os-commit
+      type: regular
+      version: -1
+    taskid: 5f649c6c-21cc-4432-860a-1641910023fd
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -793,31 +851,33 @@ tasks:
           "y": 1040
         }
       }
-    note: false
-    timertriggers: []
+  '74':
+    id: '74'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "74":
-    id: "74"
-    taskid: 86231d25-ec4f-4175-8aa9-b64301db8a83
-    type: regular
-    task:
-      id: 86231d25-ec4f-4175-8aa9-b64301db8a83
-      version: -1
-      name: panorama-get-url-filter
-      description: Get a URL Filtering rule  from Palo Alto Firewall or Panorama
-      script: '|||panorama-get-url-filter'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "110"
+      - '110'
+    note: false
+    quietmode: 0
     scriptarguments:
       name:
         simple: url_filter_test_pb_pano
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Returns information for a URL filtering rule.
+      id: ac366c21-e289-41d6-8fe3-1123c5e9f6a2
+      iscommand: true
+      name: pan-os-get-url-filter
+      script: Panorama|||pan-os-get-url-filter
+      type: regular
+      version: -1
+    taskid: ac366c21-e289-41d6-8fe3-1123c5e9f6a2
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -825,41 +885,43 @@ tasks:
           "y": 2060
         }
       }
-    note: false
-    timertriggers: []
+  '75':
+    id: '75'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "75":
-    id: "75"
-    taskid: 24eaeec6-8627-4baa-8c39-7eee81747b59
-    type: regular
-    task:
-      id: 24eaeec6-8627-4baa-8c39-7eee81747b59
-      version: -1
-      name: panorama-create-service
-      description: Creates a service object
-      script: '|||panorama-create-service'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "92"
+      - '92'
+    note: false
+    quietmode: 0
     scriptarguments:
       description:
         simple: foo
       destination_port:
-        simple: "33"
+        simple: '33'
       name:
         simple: demi_temp_service_test_pb7
       protocol:
         simple: tcp
       source_port:
-        simple: "12"
+        simple: '12'
       tags:
         simple: Bark_test_tag
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Creates a service.
+      id: 5457521a-68c7-41c1-84d1-e0984cf76803
+      iscommand: true
+      name: pan-os-create-service
+      script: Panorama|||pan-os-create-service
+      type: regular
+      version: -1
+    taskid: 5457521a-68c7-41c1-84d1-e0984cf76803
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -867,27 +929,28 @@ tasks:
           "y": 2235
         }
       }
-    note: false
-    timertriggers: []
+  '76':
+    id: '76'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "76":
-    id: "76"
-    taskid: a591f9c6-b911-403c-8102-ab2496f489f0
-    type: title
-    task:
-      id: a591f9c6-b911-403c-8102-ab2496f489f0
-      version: -1
-      name: Services
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "75"
+      - '75'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 90954a0e-bdd4-427f-8b3c-063ee5d2dcac
+      iscommand: false
+      name: Services
+      type: title
+      version: -1
+    taskid: 90954a0e-bdd4-427f-8b3c-063ee5d2dcac
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -895,30 +958,33 @@ tasks:
           "y": 2075
         }
       }
-    note: false
-    timertriggers: []
+  '78':
+    id: '78'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "78":
-    id: "78"
-    taskid: 83a23dcb-7705-43cd-8b50-ba74d759b360
-    type: regular
-    task:
-      id: 83a23dcb-7705-43cd-8b50-ba74d759b360
-      version: -1
-      name: panorama-get-service
-      script: '|||panorama-get-service'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "79"
+      - '79'
+    note: false
+    quietmode: 0
     scriptarguments:
       name:
         simple: demi_temp_service_test_pb7
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Returns service details for the supplied service name.
+      id: 4be69cbd-1933-4d6c-809b-923a548ec4e3
+      iscommand: true
+      name: pan-os-get-service
+      script: Panorama|||pan-os-get-service
+      type: regular
+      version: -1
+    taskid: 4be69cbd-1933-4d6c-809b-923a548ec4e3
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -926,30 +992,33 @@ tasks:
           "y": 2585
         }
       }
-    note: false
-    timertriggers: []
+  '79':
+    id: '79'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "79":
-    id: "79"
-    taskid: 710938af-03df-4398-8b6f-d8e7c885d4fa
-    type: regular
-    task:
-      id: 710938af-03df-4398-8b6f-d8e7c885d4fa
-      version: -1
-      name: panorama-delete-service
-      script: '|||panorama-delete-service'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "93"
+      - '93'
+    note: false
+    quietmode: 0
     scriptarguments:
       name:
         simple: demi_temp_service_test_pb7
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Deletes a service.
+      id: e3b958e7-89fe-4b48-8039-87ad63d3aa2a
+      iscommand: true
+      name: pan-os-delete-service
+      script: Panorama|||pan-os-delete-service
+      type: regular
+      version: -1
+    taskid: e3b958e7-89fe-4b48-8039-87ad63d3aa2a
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -957,27 +1026,28 @@ tasks:
           "y": 2760
         }
       }
-    note: false
-    timertriggers: []
+  '80':
+    id: '80'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "80":
-    id: "80"
-    taskid: e47e48a4-8065-4479-8792-cd4d12db86a0
-    type: title
-    task:
-      id: e47e48a4-8065-4479-8792-cd4d12db86a0
-      version: -1
-      name: Service groups
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "81"
+      - '81'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: b2a48523-2308-4dd3-81d9-de43fda3ebcf
+      iscommand: false
+      name: Service groups
+      type: title
+      version: -1
+    taskid: b2a48523-2308-4dd3-81d9-de43fda3ebcf
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -985,30 +1055,33 @@ tasks:
           "y": 3240
         }
       }
-    note: false
-    timertriggers: []
+  '81':
+    id: '81'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "81":
-    id: "81"
-    taskid: 1267e97d-f3ee-49a9-82c3-c379b61d4cf1
-    type: regular
-    task:
-      id: 1267e97d-f3ee-49a9-82c3-c379b61d4cf1
-      version: -1
-      name: panorama-get-service-group
-      script: '|||panorama-get-service-group'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "38"
+      - '38'
+    note: false
+    quietmode: 0
     scriptarguments:
       name:
         simple: demisto_pan_default_service_group
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Returns details for the specified service group.
+      id: 6a0fa75f-c517-4e1b-8a2c-b9c7510f7ea1
+      iscommand: true
+      name: pan-os-get-service-group
+      script: Panorama|||pan-os-get-service-group
+      type: regular
+      version: -1
+    taskid: 6a0fa75f-c517-4e1b-8a2c-b9c7510f7ea1
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1016,27 +1089,28 @@ tasks:
           "y": 3400
         }
       }
-    note: false
-    timertriggers: []
+  '85':
+    id: '85'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "85":
-    id: "85"
-    taskid: 9da8d264-0946-49fb-8a4b-8f6aca344c5e
-    type: title
-    task:
-      id: 9da8d264-0946-49fb-8a4b-8f6aca344c5e
-      version: -1
-      name: Shared
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "86"
+      - '86'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: e839935e-11b2-4899-8f04-1dab7a49a94e
+      iscommand: false
+      name: Shared
+      type: title
+      version: -1
+    taskid: e839935e-11b2-4899-8f04-1dab7a49a94e
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -1044,31 +1118,33 @@ tasks:
           "y": 530
         }
       }
-    note: false
-    timertriggers: []
+  '86':
+    id: '86'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "86":
-    id: "86"
-    taskid: e05fc6ba-50dd-4641-8c5e-8d7df65f1af0
-    type: regular
-    task:
-      id: e05fc6ba-50dd-4641-8c5e-8d7df65f1af0
-      version: -1
-      name: panorama-list-addresses - shared
-      description: Returns a list of addresses
-      script: '|||panorama-list-addresses'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "87"
+      - '87'
+    note: false
+    quietmode: 0
     scriptarguments:
       device-group:
         simple: shared
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Returns a list of addresses.
+      id: 140546d5-73fc-4864-822f-648637cf1aa0
+      iscommand: true
+      name: pan-os-list-addresses - shared
+      script: Panorama|||pan-os-list-addresses
+      type: regular
+      version: -1
+    taskid: 140546d5-73fc-4864-822f-648637cf1aa0
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1076,33 +1152,35 @@ tasks:
           "y": 690
         }
       }
-    note: false
-    timertriggers: []
+  '87':
+    id: '87'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "87":
-    id: "87"
-    taskid: 278cc52d-0e93-4bad-8b64-c12b71a280a5
-    type: regular
-    task:
-      id: 278cc52d-0e93-4bad-8b64-c12b71a280a5
-      version: -1
-      name: panorama-get-address - shared
-      description: Returns address details for the supplied address name
-      script: '|||panorama-get-address'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "88"
+      - '88'
+    note: false
+    quietmode: 0
     scriptarguments:
       device-group:
         simple: shared
       name:
         simple: my_shared_address_object_test
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Returns address details for the supplied address name.
+      id: efbb339b-8143-43a4-824e-f9f7dea9b778
+      iscommand: true
+      name: pan-os-get-address - shared
+      script: Panorama|||pan-os-get-address
+      type: regular
+      version: -1
+    taskid: efbb339b-8143-43a4-824e-f9f7dea9b778
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1110,39 +1188,41 @@ tasks:
           "y": 865
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "88":
-    id: "88"
-    taskid: 590e4a18-c330-4615-8bc5-5a67cc77af95
-    type: condition
-    task:
-      id: 590e4a18-c330-4615-8bc5-5a67cc77af95
-      version: -1
-      name: test panorama-get-address shared
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "89"
-    separatecontext: false
+  '88':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: Panorama
                 accessor: Addresses.DeviceGroup
-            iscontext: true
+                root: Panorama
+          operator: isEqualString
           right:
             value:
               simple: shared
+      label: yes
+    id: '88'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '89'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 5ff261f7-9623-4a0e-8c69-89bfa9c08329
+      iscommand: false
+      name: test panorama-get-address shared
+      type: condition
+      version: -1
+    taskid: 5ff261f7-9623-4a0e-8c69-89bfa9c08329
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -1150,33 +1230,35 @@ tasks:
           "y": 1040
         }
       }
-    note: false
-    timertriggers: []
+  '89':
+    id: '89'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "89":
-    id: "89"
-    taskid: 5cff9ef7-50d5-4000-8e75-37356890489c
-    type: regular
-    task:
-      id: 5cff9ef7-50d5-4000-8e75-37356890489c
-      version: -1
-      name: panorama-list-rules - shared
-      description: Returns a list of predefined Security Rules.
-      script: '|||panorama-list-rules'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "90"
+      - '90'
+    note: false
+    quietmode: 0
     scriptarguments:
       device-group:
         simple: shared
       pre_post:
         simple: pre-rulebase
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Returns a list of predefined Security Rules.
+      id: 77d10702-ad6a-4192-80ee-780480450899
+      iscommand: true
+      name: pan-os-list-rules - shared
+      script: Panorama|||pan-os-list-rules
+      type: regular
+      version: -1
+    taskid: 77d10702-ad6a-4192-80ee-780480450899
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1184,36 +1266,38 @@ tasks:
           "y": 1215
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "90":
-    id: "90"
-    taskid: 161665c2-5ed2-4fa5-8539-c54d46d98ce5
-    type: condition
-    task:
-      id: 161665c2-5ed2-4fa5-8539-c54d46d98ce5
-      version: -1
-      name: Test panorama-list-rules - shared
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "91"
-    separatecontext: false
+  '90':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: Panorama
                 accessor: SecurityRule
-            iscontext: true
+                root: Panorama
+          operator: isExists
+      label: yes
+    id: '90'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '91'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 9a3965c7-7938-4380-8d9f-8f5726d13aec
+      iscommand: false
+      name: Test panorama-list-rules - shared
+      type: condition
+      version: -1
+    taskid: 9a3965c7-7938-4380-8d9f-8f5726d13aec
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -1221,31 +1305,33 @@ tasks:
           "y": 1390
         }
       }
-    note: false
-    timertriggers: []
+  '91':
+    id: '91'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "91":
-    id: "91"
-    taskid: 63e3feec-5add-41ed-8412-2f0f3517585a
-    type: regular
-    task:
-      id: 63e3feec-5add-41ed-8412-2f0f3517585a
-      version: -1
-      name: DeleteContext - shared and address commands
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "14"
+      - '14'
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 0bbbf1e6-1224-41ea-8705-84a77be30c41
+      iscommand: false
+      name: DeleteContext - shared and address commands
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 0bbbf1e6-1224-41ea-8705-84a77be30c41
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1253,33 +1339,33 @@ tasks:
           "y": 1565
         }
       }
-    note: false
-    timertriggers: []
+  '92':
+    id: '92'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "92":
-    id: "92"
-    taskid: cb010e2c-7879-426d-8a13-23cf453d84aa
-    type: playbook
-    task:
-      id: cb010e2c-7879-426d-8a13-23cf453d84aa
-      version: -1
-      name: PAN-OS Commit Configuration
-      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
-        as Panorama, it also pushes the Policies to the specified Device Group in
-        the instance.
-      playbookName: PAN-OS Commit Configuration
-      type: playbook
-      iscommand: false
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "25"
-      - "27"
-      - "78"
-      - "111"
+      - '25'
+      - '27'
+      - '78'
+      - '111'
+    note: false
+    quietmode: 0
     separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as Panorama, it also pushes the Policies to the specified Device Group in the instance.
+      id: f37147e4-855f-4709-8d27-f368dbb3e6bf
+      iscommand: false
+      name: PAN-OS Commit Configuration
+      playbookId: PAN-OS Commit Configuration
+      type: playbook
+      version: -1
+    taskid: f37147e4-855f-4709-8d27-f368dbb3e6bf
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
@@ -1287,29 +1373,30 @@ tasks:
           "y": 2410
         }
       }
-    note: false
-    timertriggers: []
+  '93':
+    id: '93'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "93":
-    id: "93"
-    taskid: 3a6f9e69-e1da-41f6-8720-c5ead5e1341f
-    type: title
-    task:
-      id: 3a6f9e69-e1da-41f6-8720-c5ead5e1341f
-      version: -1
-      name: Finished Address groups, URL Filtering, Services UC
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "80"
-      - "15"
-      - "101"
+      - '80'
+      - '15'
+      - '101'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 4d59a746-e242-4378-86f8-0d4ed2b6c3ea
+      iscommand: false
+      name: Finished Address groups, URL Filtering, Services UC
+      type: title
+      version: -1
+    taskid: 4d59a746-e242-4378-86f8-0d4ed2b6c3ea
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -1317,27 +1404,16 @@ tasks:
           "y": 2935
         }
       }
-    note: false
-    timertriggers: []
+  '98':
+    id: '98'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "98":
-    id: "98"
-    taskid: 03224fc2-c4f0-4d18-828a-f122935bcbb2
-    type: regular
-    task:
-      id: 03224fc2-c4f0-4d18-828a-f122935bcbb2
-      version: -1
-      name: panorama-edit-custom-url-category
-      description: Add or remove sites to and from a custom URL category.
-      script: '|||panorama-edit-custom-url-category'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "38"
+      - '38'
+    note: false
+    quietmode: 0
     scriptarguments:
       action:
         simple: add
@@ -1346,6 +1422,19 @@ tasks:
       sites:
         simple: c.com
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Adds or removes sites to and from a custom URL category.
+      id: 8eda2528-1800-49bf-8d10-dcda47cad959
+      iscommand: true
+      name: pan-os-edit-custom-url-category
+      script: Panorama|||pan-os-edit-custom-url-category
+      type: regular
+      version: -1
+    taskid: 8eda2528-1800-49bf-8d10-dcda47cad959
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1353,27 +1442,28 @@ tasks:
           "y": 3400
         }
       }
-    note: false
-    timertriggers: []
+  '99':
+    id: '99'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "99":
-    id: "99"
-    taskid: 4cfbc8a2-ece6-4a55-8030-101e91e32763
-    type: title
-    task:
-      id: 4cfbc8a2-ece6-4a55-8030-101e91e32763
-      version: -1
-      name: Static Routes
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "100"
+      - '100'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 8183849e-7eef-4fcf-81fc-dfc4eb012041
+      iscommand: false
+      name: Static Routes
+      type: title
+      version: -1
+    taskid: 8183849e-7eef-4fcf-81fc-dfc4eb012041
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -1381,59 +1471,62 @@ tasks:
           "y": 4070
         }
       }
-    note: false
-    timertriggers: []
+  '100':
+    id: '100'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "100":
-    id: "100"
-    taskid: 7e0ac79a-215e-4c5d-8489-42858bd467cc
-    type: regular
-    task:
-      id: 7e0ac79a-215e-4c5d-8489-42858bd467cc
-      version: -1
-      name: panorama-list-static-routes
-      description: List the static routes of a virtual router.
-      script: '|||panorama-list-static-routes'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "50"
+      - '50'
+    note: false
+    quietmode: 0
     scriptarguments:
       virtual_router:
         simple: virtual_router_DONT_DELETE
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Lists the static routes of a virtual router.
+      id: ecbb2fe7-0789-4c5f-851e-2f4221c42f14
+      iscommand: true
+      name: pan-os-list-static-routes
+      script: Panorama|||pan-os-list-static-routes
+      type: regular
+      version: -1
+    taskid: ecbb2fe7-0789-4c5f-851e-2f4221c42f14
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 4215
+          "x": 420,
+          "y": 4390
         }
       }
-    note: false
-    timertriggers: []
+  '101':
+    id: '101'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "101":
-    id: "101"
-    taskid: 4e0862cf-2d1d-49b5-8ea3-7d21844e0513
-    type: title
-    task:
-      id: 4e0862cf-2d1d-49b5-8ea3-7d21844e0513
-      version: -1
-      name: Applications
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "102"
+      - '102'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 0e6e87f7-5621-43f2-8105-4c9f650643ce
+      iscommand: false
+      name: Applications
+      type: title
+      version: -1
+    taskid: 0e6e87f7-5621-43f2-8105-4c9f650643ce
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -1441,28 +1534,30 @@ tasks:
           "y": 3240
         }
       }
-    note: false
-    timertriggers: []
+  '102':
+    id: '102'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "102":
-    id: "102"
-    taskid: 55e69601-c7f9-40b3-865e-85978b1be092
-    type: regular
-    task:
-      id: 55e69601-c7f9-40b3-865e-85978b1be092
-      version: -1
-      name: panorama-list-applications
-      description: Returns a list of predefined applications.
-      script: '|||panorama-list-applications'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "38"
+      - '38'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Returns a list of applications.
+      id: 184158de-819c-454c-8eea-2c7957d7b913
+      iscommand: true
+      name: pan-os-list-applications
+      script: Panorama|||pan-os-list-applications
+      type: regular
+      version: -1
+    taskid: 184158de-819c-454c-8eea-2c7957d7b913
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1470,67 +1565,67 @@ tasks:
           "y": 3400
         }
       }
-    note: false
-    timertriggers: []
+  '103':
+    continueonerror: true
+    id: '103'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "103":
-    id: "103"
-    taskid: 7a7ae161-6bb0-4ae2-8a49-b053e26fbd8d
-    type: regular
-    task:
-      id: 7a7ae161-6bb0-4ae2-8a49-b053e26fbd8d
-      version: -1
-      name: panorama-get-pcap from the 8.1 FW(Will fail on the 9.0 Panorama instance)
-      description: Returns information for a Panorama PCAP file. The recommended maximum
-        file size is 5 MB. If the limit is exceeded, you might need to SSH the firewall
-        and run the scp export command to export the PCAP file. For more information,
-        see the Palo Alto Networks documentation.
-      script: '|||panorama-get-pcap'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "50"
+      - '50'
+    note: false
+    quietmode: 0
     scriptarguments:
       from:
         simple: test_pcap
       pcapType:
         simple: filter-pcap
       serialNumber:
-        simple: "007051000050926"
-    continueonerror: true
+        simple: '007051000050926'
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Returns information for a Panorama PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you might need to SSH the firewall and run the scp export command to export the PCAP file. For more information, see the Palo Alto Networks documentation.
+      id: 048bc2d6-4687-41bf-874e-148b1996ee82
+      iscommand: true
+      name: pan-os-get-pcap from the 8.1
+      script: Panorama|||pan-os-get-pcap
+      type: regular
+      version: -1
+    taskid: 048bc2d6-4687-41bf-874e-148b1996ee82
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4215
+          "x": 1360,
+          "y": 4560
         }
       }
-    note: false
-    timertriggers: []
+  '104':
+    id: '104'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "104":
-    id: "104"
-    taskid: a3482efe-f588-47d9-8813-0da713a17852
-    type: title
-    task:
-      id: a3482efe-f588-47d9-8813-0da713a17852
-      version: -1
-      name: Download PCAP from the FW
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "103"
+      - '113'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 90cb7371-3fc1-45b4-8d83-5e3624cc44e0
+      iscommand: false
+      name: Download PCAP from the FW
+      type: title
+      version: -1
+    taskid: 90cb7371-3fc1-45b4-8d83-5e3624cc44e0
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -1538,110 +1633,107 @@ tasks:
           "y": 4070
         }
       }
-    note: false
-    timertriggers: []
+  '106':
+    id: '106'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "106":
-    id: "106"
-    taskid: cf8df277-353d-4e00-8e5d-e04255b76e1a
-    type: regular
-    task:
-      id: cf8df277-353d-4e00-8e5d-e04255b76e1a
-      version: -1
-      name: panorama-show-user-id-interfaces-config
-      description: Shows the user ID interface configuration
-      script: '|||panorama-show-user-id-interfaces-config'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "108"
+      - '108'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Shows the user ID interface configuration.
+      id: 55b3b1fd-9ddb-4fb7-8771-379e1af6d24e
+      iscommand: true
+      name: pan-os-show-user-id-interfaces-config
+      script: Panorama|||pan-os-show-user-id-interfaces-config
+      type: regular
+      version: -1
+    taskid: 55b3b1fd-9ddb-4fb7-8771-379e1af6d24e
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 4535
+          "x": 350,
+          "y": 4920
         }
       }
-    note: false
-    timertriggers: []
+  '107':
+    id: '107'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "107":
-    id: "107"
-    taskid: ecceb015-2559-476a-808f-49a96019bbd6
-    type: regular
-    task:
-      id: ecceb015-2559-476a-808f-49a96019bbd6
-      version: -1
-      name: panorama-list-configured-user-id-agents
-      description: Retrieves list of user-ID agents configured in the system.
-      script: '|||panorama-list-configured-user-id-agents'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "108"
+      - '108'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Retrieves list of user-ID agents configured in the system.
+      id: ce3b452a-4250-4392-8490-2edefd1aab4d
+      iscommand: true
+      name: pan-os-list-configured-user-id-agents
+      script: Panorama|||pan-os-list-configured-user-id-agents
+      type: regular
+      version: -1
+    taskid: ce3b452a-4250-4392-8490-2edefd1aab4d
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 4535
+          "y": 4910
         }
       }
-    note: false
-    timertriggers: []
+  '108':
+    id: '108'
     ignoreworker: false
-    skipunavailable: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '116'
+    note: false
     quietmode: 0
-  "108":
-    id: "108"
-    taskid: 3bb668c4-6986-4692-86cb-9fdc66e42a41
-    type: title
-    task:
-      id: 3bb668c4-6986-4692-86cb-9fdc66e42a41
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: e4a723ec-e282-4d3b-866f-47f4e6c4381e
+      iscommand: false
+      name: Device Configs
+      type: title
+      version: -1
+    taskid: e4a723ec-e282-4d3b-866f-47f4e6c4381e
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 4710
+          "x": 680,
+          "y": 5170
         }
       }
-    note: false
-    timertriggers: []
+  '110':
+    id: '110'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "110":
-    id: "110"
-    taskid: 91073c11-7c6f-4c2b-8419-d7c3e776e505
-    type: regular
-    task:
-      id: 91073c11-7c6f-4c2b-8419-d7c3e776e505
-      version: -1
-      name: panoarma-create-url-filter
-      description: Creates a URL filtering rule.
-      script: '|||panorama-create-url-filter'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "92"
+      - '92'
+    note: false
+    quietmode: 0
     scriptarguments:
       action:
         simple: alert
@@ -1652,6 +1744,19 @@ tasks:
       url_category:
         simple: adult
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Creates a URL filtering rule.
+      id: e52e1599-26cb-406b-83f5-6462d2246354
+      iscommand: true
+      name: pan-os-create-url-filter
+      script: Panorama|||pan-os-create-url-filter
+      type: regular
+      version: -1
+    taskid: e52e1599-26cb-406b-83f5-6462d2246354
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1659,61 +1764,64 @@ tasks:
           "y": 2235
         }
       }
-    note: false
-    timertriggers: []
+  '111':
+    id: '111'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "111":
-    id: "111"
-    taskid: 47fc329c-06ca-4b06-8187-7779fbd7f387
-    type: regular
-    task:
-      id: 47fc329c-06ca-4b06-8187-7779fbd7f387
-      version: -1
-      name: panorama-delete-url-filter
-      description: Deletes a URL filtering rule.
-      script: '|||panorama-delete-url-filter'
-      type: regular
-      iscommand: true
-      brand: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "93"
+      - '93'
+    note: false
+    quietmode: 0
     scriptarguments:
       name:
         simple: URL Filter TPB temp
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Deletes a URL filtering rule.
+      id: 1b3b1bc5-0b4e-4d3e-868f-ab9169ba8ba1
+      iscommand: true
+      name: pan-os-delete-url-filter
+      script: Panorama|||pan-os-delete-url-filter
+      type: regular
+      version: -1
+    taskid: 1b3b1bc5-0b4e-4d3e-868f-ab9169ba8ba1
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 2760
+          "x": 1400,
+          "y": 2690
         }
       }
-    note: false
-    timertriggers: []
+  '112':
+    id: '112'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "112":
-    id: "112"
-    taskid: f48c772f-f3ac-4dbc-8835-5de13a48c362
-    type: playbook
-    task:
-      id: f48c772f-f3ac-4dbc-8835-5de13a48c362
-      version: -1
-      name: PAN-OS Create Or Edit Rule Test
-      playbookName: PAN-OS Create Or Edit Rule Test
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "99"
-      - "104"
+      - '99'
+      - '104'
+    note: false
+    quietmode: 0
     separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 300acd34-dec4-479c-83f6-3ab4b5e84bfd
+      iscommand: false
+      name: PAN-OS Create Or Edit Rule Test
+      playbookId: PAN-OS Create Or Edit Rule Test
+      type: playbook
+      version: -1
+    taskid: 300acd34-dec4-479c-83f6-3ab4b5e84bfd
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
@@ -1721,11 +1829,255 @@ tasks:
           "y": 3895
         }
       }
-    note: false
-    timertriggers: []
+  '113':
+    id: '113'
     ignoreworker: false
-    skipunavailable: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '114'
+    note: false
     quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Show firewall device software version.
+      id: a25c9784-2f3b-4648-84af-d55bc4e0a4f0
+      iscommand: true
+      name: pan-os-show-device-version
+      script: '|||pan-os-show-device-version'
+      type: regular
+      version: -1
+    taskid: a25c9784-2f3b-4648-84af-d55bc4e0a4f0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4210
+        }
+      }
+  '114':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Panorama.Device.Info.Version
+          operator: startWith
+          right:
+            value:
+              simple: '8.1'
+      label: yes
+    id: '114'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '115'
+      yes:
+      - '103'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 67f4c976-98cc-482d-8f50-65a49c126475
+      iscommand: false
+      name: |
+        Is 8.1 pan-os Firewall?
+      type: condition
+      version: -1
+    taskid: 67f4c976-98cc-482d-8f50-65a49c126475
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4390
+        }
+      }
+  '115':
+    id: '115'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '50'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      from:
+        simple: test_playbook_pcap_do_not_delete
+      pcapType:
+        simple: filter-pcap
+      serialNumber:
+        simple: '007051000185480'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Returns information for a Panorama PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you might need to SSH the firewall and run the scp export command to export the PCAP file. For more information, see the Palo Alto Networks documentation.
+      id: c1e86ebc-4c70-4587-8aac-9fa6a932fe4d
+      iscommand: true
+      name: pan-os-get-pcap from the 9.1
+      script: '|||pan-os-get-pcap'
+      type: regular
+      version: -1
+    taskid: c1e86ebc-4c70-4587-8aac-9fa6a932fe4d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 4560
+        }
+      }
+  '116':
+    id: '116'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '117'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cmd:
+        simple: <show><devices><connected></connected></devices></show>
+      device-group:
+        simple: ${inputs.DeviceGroup}
+      extend-context:
+        simple: PanoramaDevices=.
+      ignore-outputs:
+        simple: 'true'
+      type:
+        simple: op
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Run any command supported in the API.
+      id: 406bce8d-40ab-4a0a-889c-d93047d2d23d
+      iscommand: true
+      name: Get Connected Devices
+      script: '|||pan-os'
+      type: regular
+      version: -1
+    taskid: 406bce8d-40ab-4a0a-889c-d93047d2d23d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 5325
+        }
+      }
+  '117':
+    id: '117'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '118'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      target:
+        simple: ${PanoramaDevices.response.result.devices.entry.[0].serial}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Pull the running config file
+      id: a74f3a16-8856-4a0b-8ff1-65151cbd1bcb
+      iscommand: true
+      name: Get Running Config
+      script: '|||pan-os-get-running-config'
+      type: regular
+      version: -1
+    taskid: a74f3a16-8856-4a0b-8ff1-65151cbd1bcb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 5485
+        }
+      }
+  '118':
+    id: '118'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '119'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      target:
+        simple: ${PanoramaDevices.response.result.devices.entry.[0].serial}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Pull the merged config file
+      id: 11dcfc1e-2ea4-4f6c-8cc9-a70fbfe0cb17
+      iscommand: true
+      name: Get Merged Config
+      script: '|||pan-os-get-merged-config'
+      type: regular
+      version: -1
+    taskid: 11dcfc1e-2ea4-4f6c-8cc9-a70fbfe0cb17
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 5660
+        }
+      }
+  '119':
+    id: '119'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 4003c81c-6e3c-4eeb-8282-96b2c3b93a1a
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 4003c81c-6e3c-4eeb-8282-96b2c3b93a1a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 5830
+        }
+      }
+version: -1
 view: |-
   {
     "linkLabelsPosition": {
@@ -1733,14 +2085,11 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4725,
-        "width": 1670,
+        "height": 5845,
+        "width": 1730,
         "x": 50,
         "y": 50
       }
     }
   }
-inputs: []
-outputs: []
 fromversion: 6.1.0
-version: -1

@@ -1,0 +1,777 @@
+id: Impossible Traveler - Enrichment
+version: -1
+name: Impossible Traveler - Enrichment
+description: |-
+  This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler playbook alert, and enriches them based on the following:
+  * Geo location
+  * Active Directory
+  * IP enrichment e.g. VirusTotal, AbuseIPDB, etc.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7ccb9fd5-4d10-49ab-89c8-a920b9547981
+    type: start
+    task:
+      id: 7ccb9fd5-4d10-49ab-89c8-a920b9547981
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "1":
+    id: "1"
+    taskid: 26e7340f-7890-4435-8c78-04ad7fcbafca
+    type: condition
+    task:
+      id: 26e7340f-7890-4435-8c78-04ad7fcbafca
+      version: -1
+      name: Is there account to be enriched?
+      description: Checks whether there is a username for the offending user in context, and whether Active Directory v2 is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: incident.username
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "9":
+    id: "9"
+    taskid: f38df01f-6b55-466a-8bce-2e98b9b287d0
+    type: title
+    task:
+      id: f38df01f-6b55-466a-8bce-2e98b9b287d0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "13":
+    id: "13"
+    taskid: 8f0bc025-3ee1-42b3-8f04-524a31b916df
+    type: regular
+    task:
+      id: 8f0bc025-3ee1-42b3-8f04-524a31b916df
+      version: -1
+      name: Get coordinates for the IP Addresses
+      description: Sends an HTTP request. Returns the response as Json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        simple: http://www.geoplugin.net/json.gp?ip=${inputs.sourceip}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "14":
+    id: "14"
+    taskid: eb064458-d034-4248-89a9-3fac30ef7520
+    type: regular
+    task:
+      id: eb064458-d034-4248-89a9-3fac30ef7520
+      version: -1
+      name: Parse HTTP response JSON
+      description: 'Parse a given JSON string "value" to a representative object. For example: ''{"a": "value"}'' => {"a": "value"}.'
+      scriptName: ParseJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+      - "16"
+      - "19"
+      - "24"
+      - "26"
+    scriptarguments:
+      extend-context:
+        simple: Coordinates=
+      ignore-outputs:
+        simple: "true"
+      value:
+        complex:
+          root: HttpRequest.Response
+          accessor: Body
+          transformers:
+          - operator: Stringify
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "15":
+    id: "15"
+    taskid: f03e3aee-72d7-456e-8c29-48df8ffadc9b
+    type: regular
+    task:
+      id: f03e3aee-72d7-456e-8c29-48df8ffadc9b
+      version: -1
+      name: Set Location
+      description: Sets a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Events.location
+      value:
+        complex:
+          root: Coordinates
+          accessor: geoplugin_latitude
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Coordinates.geoplugin_longitude
+                iscontext: true
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "16":
+    id: "16"
+    taskid: 31b0887a-17b7-4446-8ae3-9286cb07a564
+    type: regular
+    task:
+      id: 31b0887a-17b7-4446-8ae3-9286cb07a564
+      version: -1
+      name: Set Event Time
+      description: Sets a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Events.event_timestamp
+      value:
+        complex:
+          root: alert
+          accessor: created
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": -230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "18":
+    id: "18"
+    taskid: 8ae6b224-d274-49e6-8665-43b78bdd5b6d
+    type: regular
+    task:
+      id: 8ae6b224-d274-49e6-8665-43b78bdd5b6d
+      version: -1
+      name: Delete HTTP Response Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-6/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: HttpRequest.Response
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "19":
+    id: "19"
+    taskid: 817a6f83-aad4-46a2-8035-4e4778523de7
+    type: regular
+    task:
+      id: 817a6f83-aad4-46a2-8035-4e4778523de7
+      version: -1
+      name: Set IP Address
+      description: Sets a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Events.ip
+      value:
+        complex:
+          root: Coordinates
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Coordinates.geoplugin_request
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.sourceip
+                iscontext: true
+              ignorecase: true
+          accessor: geoplugin_request
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "21":
+    id: "21"
+    taskid: 1d06af95-318b-4397-8dbb-72b52f36f0a2
+    type: regular
+    task:
+      id: 1d06af95-318b-4397-8dbb-72b52f36f0a2
+      version: -1
+      name: Delete Coordinates Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-6/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Coordinates
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "22":
+    id: "22"
+    taskid: 4d690d07-5c35-42e4-8da1-3dfc737316f5
+    type: regular
+    task:
+      id: 4d690d07-5c35-42e4-8da1-3dfc737316f5
+      version: -1
+      name: Create Impossible Traveler Events
+      description: Sets a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ImpossibleTraveler.Events
+      value:
+        complex:
+          root: Events
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Events.ip
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.sourceip
+                iscontext: true
+          transformers:
+          - operator: StringToArray
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "23":
+    id: "23"
+    taskid: 7157a915-00e4-419b-8d9e-1e3b46bc706a
+    type: regular
+    task:
+      id: 7157a915-00e4-419b-8d9e-1e3b46bc706a
+      version: -1
+      name: Delete Events Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-6/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Events
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "24":
+    id: "24"
+    taskid: 97760e8c-ee4d-4656-8d19-65928cb54fcd
+    type: regular
+    task:
+      id: 97760e8c-ee4d-4656-8d19-65928cb54fcd
+      version: -1
+      name: Set Country
+      description: Sets a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Events.Country
+      value:
+        complex:
+          root: Coordinates
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Coordinates.geoplugin_request
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.sourceip
+                iscontext: true
+              ignorecase: true
+          accessor: geoplugin_countryCode
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": -230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "26":
+    id: "26"
+    taskid: 0411b244-1c46-466e-87f7-3f5770571e2f
+    type: regular
+    task:
+      id: 0411b244-1c46-466e-87f7-3f5770571e2f
+      version: -1
+      name: Set event identity
+      description: Sets a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Events.identity_display_name
+      value:
+        complex:
+          root: alert
+          accessor: username
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": -230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "27":
+    id: "27"
+    taskid: ea2cf994-dcd6-4756-811f-6ac158487081
+    type: title
+    task:
+      id: ea2cf994-dcd6-4756-811f-6ac158487081
+      version: -1
+      name: Clear Processed Context
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+      - "23"
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "28":
+    id: "28"
+    taskid: ace7b867-75f1-48b0-8a9b-464fdb91d6d2
+    type: regular
+    task:
+      id: ace7b867-75f1-48b0-8a9b-464fdb91d6d2
+      version: -1
+      name: Get IP address verdict
+      description: Checks the specified IP address against the AbuseIP database.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.sourceip
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "29":
+    id: "29"
+    taskid: 2eb086b8-6cf1-44f4-830f-a1ff14796a85
+    type: playbook
+    task:
+      id: 2eb086b8-6cf1-44f4-830f-a1ff14796a85
+      version: -1
+      name: Account Enrichment - Generic v2.1
+      description: |-
+        Enrich accounts using one or more integrations.
+        Supported integrations:
+        - Active Directory
+        - SailPoint IdentityNow
+        - SailPoint IdentityIQ
+        - PingOne
+        - Okta
+        - AWS IAM
+
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+      playbookName: Account Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.domain
+      Username:
+        complex:
+          root: inputs.username
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_27_#default#": 0.49
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1870,
+        "width": 1950,
+        "x": -340,
+        "y": -865
+      }
+    }
+  }
+inputs:
+- key: sourceip
+  value: {}
+  required: false
+  description: The source IP to iterate over.
+  playbookInputQuery:
+- key: username
+  value: {}
+  required: false
+  description: The username to iterate over.
+  playbookInputQuery:
+- key: domain
+  value: {}
+  required: false
+  description: The organization domain.
+  playbookInputQuery:
+outputs:
+- contextPath: ActiveDirectory.Users.manager
+  description: The manager of the user.
+tests:
+- No tests (auto formatted)
+marketplaces: ["marketplacev2"]
+fromversion: 6.6.0

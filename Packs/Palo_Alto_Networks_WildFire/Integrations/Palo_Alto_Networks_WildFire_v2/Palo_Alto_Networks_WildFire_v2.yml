@@ -1,22 +1,43 @@
 category: Forensics & Malware Analysis
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: WildFire-v2
   version: -1
+defaultEnabled: true
 configuration:
 - defaultvalue: https://wildfire.paloaltonetworks.com/publicapi
   display: Server base URL (e.g., https://192.168.0.1/publicapi)
   name: server
   required: true
   type: 0
+  section: Connect
 - displaypassword: API Key
   name: credentials
   required: false
   type: 9
   hiddenusername: true
-- additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: B - Usually reliable
-  display: Source Reliability
+  section: Connect
+- additionalinfo: Source of WildFire API Key - other = NGFW, WildFire API - pcc = Prisma Cloud Compute - prismaaccessapi = Prisma Access - xsoartim = XSOAR TIM API Key
+  defaultvalue: other
+  display: API Key Type
+  name: credentials_source
+  options:
+  - pcc
+  - prismaaccessapi
+  - xsoartim
+  - other
+  required: false
+  type: 15
+  section: Connect
+  advanced: true
+- display: Source Reliability
   name: integrationReliability
+  required: true
+  type: 15
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -25,25 +46,40 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
-  type: 15
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Return warning entry for unsupported file types
   name: suppress_file_type_error
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - display: API Key (Deprecated)
   name: token
   required: false
   type: 4
   hidden: true
+  section: Connect
+  advanced: true
+- display: Create relationships
+  defaultvalue: 'true'
+  additionalinfo: Create relationships between indicators as part of enrichment.
+  name: create_relationships
+  required: false
+  type: 8
+  section: Collect
+  advanced: true
 description: Perform malware dynamic analysis
 display: Palo Alto Networks WildFire v2
 name: WildFire-v2
@@ -93,6 +129,9 @@ script:
       type: string
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.DigitalSignature.Publisher
+      description: The entity that signed the file for authenticity purposes.
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -154,7 +193,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready.
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result, when ready.
       isArray: false
       name: polling
       predefined:
@@ -170,8 +209,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used for the inner polling flow. For uploading a file, use the 'upload'
-        argument instead.
+      description: Used for the inner polling flow. For uploading a file, use the 'upload' argument instead.
       isArray: true
       name: md5
       required: false
@@ -179,8 +217,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: The type of structured report (XML or PDF) to request. Only relevant when
-        polling=true.
+      description: The type of structured report (XML or PDF) to request. Only relevant when polling=true.
       isArray: false
       name: format
       predefined:
@@ -191,10 +228,19 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to receive extended information from WildFire. Only relevant when
-        polling=true.
+      description: Whether to receive extended information from WildFire. Only relevant when polling=true.
       isArray: false
       name: verbose
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: false
+      description: If set to “true”, the report returns extended data, which includes additional outputs.
+      isArray: false
+      name: extended_data
       predefined:
       - 'true'
       - 'false'
@@ -241,6 +287,9 @@ script:
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
       type: string
+    - contextPath: File.DigitalSignature.Publisher
+      description: The entity that signed the file for authenticity purposes.
+      type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: string
@@ -271,29 +320,62 @@ script:
     - contextPath: InfoFile.Type
       description: The report file type.
       type: string
-    - contextPath: WildFire.Report.Network.UDP.IP
-      description: Submission related IPs, in UDP protocol.
+    - contextPath: WildFire.Report.NetworkInfo.URL.Host
+      description: Submission related hosts.
       type: string
-    - contextPath: WildFire.Report.Network.UDP.Port
-      description: Submission related ports, in UDP protocol.
+    - contextPath: WildFire.Report.NetworkInfo.URL.Method
+      description: The submission related method.
       type: string
-    - contextPath: WildFire.Report.Network.TCP.IP
-      description: Submission related IPs, in TCP protocol.
+    - contextPath: WildFire.Report.NetworkInfo.URL.URI
+      description: The submission related URI.
       type: string
-    - contextPath: WildFire.Report.Network.TCP.Port
-      description: Submission related ports, in TCP protocol.
+    - contextPath: WildFire.Report.NetworkInfo.URL.UserAgent
+      description: The submission related user agent.
       type: string
-    - contextPath: WildFire.Report.Network.DNS.Query
-      description: Submission DNS queries.
+    - contextPath: WildFire.Report.NetworkInfo.UDP.IP
+      description: The submission related IPs, in UDP protocol.
       type: string
-    - contextPath: WildFire.Report.Network.DNS.Response
-      description: Submission DNS responses.
+    - contextPath: WildFire.Report.NetworkInfo.UDP.Port
+      description: The submission related ports, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.UDP.JA3
+      description: The submission related JA3s, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.UDP.JA3S
+      description: The submission related JA3Ss, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.UDP.Country
+      description: The submission related countries, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.TCP.IP
+      description: The submission related IPs, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.TCP.JA3
+      description: The submission related JA3s, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.TCP.JA3S
+      description: The submission related JA3Ss, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.TCP.Country
+      description: The submission related countries, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.TCP.Port
+      description: The submission related ports, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.DNS.Query
+      description: The submission DNS queries.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.DNS.Response
+      description: The submission DNS responses.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.DNS.Type
+      description: The submission DNS Types.
       type: string
     - contextPath: WildFire.Report.Evidence.md5
-      description: Submission evidence MD5 hash.
+      description: The submission evidence MD5 hash.
       type: string
     - contextPath: WildFire.Report.Evidence.Text
-      description: Submission evidence text.
+      description: The submission evidence text.
       type: string
     - contextPath: WildFire.Report.detection_reasons.description
       description: Reason for the detection verdict.
@@ -316,6 +398,63 @@ script:
     - contextPath: WildFire.Report.verdict
       description: The verdict of the report.
       type: string
+    - contextPath: WildFire.Report.Platform
+      description: The platform of the report.
+      type: string
+    - contextPath: WildFire.Report.Software
+      description: The software of the report.
+      type: string
+    - contextPath: WildFire.Report.ProcessList.Service
+      description: The process service.
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessCommand
+      description: The process command.
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessName
+      description: The process name.
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessPid
+      description: The process pid.
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessFile
+      description: Lists files that started a child processes, including the process name and the action the process performed.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessName
+      description: The process name.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessPid
+      description: The process pid.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessText
+      description: The action the process performed.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildName
+      description: The child process name.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildPid
+      description: The child process pid.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildText
+      description: The action the child process performed.
+      type: string
+    - contextPath: WildFire.Report.ExtractedURL.URL
+      description: The extracted URL.
+      type: string
+    - contextPath: WildFire.Report.ExtractedURL.Verdict
+      description: The extracted verdict.
+      type: string
+    - contextPath: WildFire.Report.Summary.Text
+      description: The summary of the report.
+      type: string
+    - contextPath: WildFire.Report.Summary.Details
+      description: The details summary of the report.
+      type: string
+    - contextPath: WildFire.Report.Summary.Behavior
+      description: The behavior summary of the report.
+      type: string
+    - contextPath: WildFire.Report.ELF.ShellCommands
+      description: The shell commands.
+      type: string
     polling: true
   - arguments:
     - default: false
@@ -325,15 +464,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used for the inner polling flow. For uploading a URL, use the 'upload'
-        argument instead.
+      description: Used for the inner polling flow. For uploading a URL, use the 'upload' argument instead.
       isArray: false
       name: url
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready.
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result, when ready.
       isArray: false
       name: polling
       predefined:
@@ -351,8 +489,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: The type of structured report (XML or PDF) to request. Only relevant when
-        polling=true.
+      description: The type of structured report (XML or PDF) to request. Only relevant when polling=true.
       isArray: false
       name: format
       predefined:
@@ -363,10 +500,19 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to receive extended information from WildFire. Only relevant when
-        polling=true.
+      description: Whether to receive extended information from WildFire. Only relevant when polling=true.
       isArray: false
       name: verbose
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: false
+      description: If set to “true”, the report returns extended data, which includes additional outputs.
+      isArray: false
+      name: extended_data
       predefined:
       - 'true'
       - 'false'
@@ -410,6 +556,9 @@ script:
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
       type: string
+    - contextPath: File.DigitalSignature.Publisher
+      description: The entity that signed the file for authenticity purposes.
+      type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: string
@@ -440,29 +589,62 @@ script:
     - contextPath: InfoFile.Type
       description: The report file type.
       type: string
-    - contextPath: WildFire.Report.Network.UDP.IP
-      description: Submission related IPs, in UDP protocol.
+    - contextPath: WildFire.Report.NetworkInfo.URL.Host
+      description: The submission related hosts.
       type: string
-    - contextPath: WildFire.Report.Network.UDP.Port
-      description: Submission related ports, in UDP protocol.
+    - contextPath: WildFire.Report.NetworkInfo.URL.Method
+      description: The submission related method.
       type: string
-    - contextPath: WildFire.Report.Network.TCP.IP
-      description: Submission related IPs, in TCP protocol.
+    - contextPath: WildFire.Report.NetworkInfo.URL.URI
+      description: The submission related URI.
       type: string
-    - contextPath: WildFire.Report.Network.TCP.Port
-      description: Submission related ports, in TCP protocol.
+    - contextPath: WildFire.Report.NetworkInfo.URL.UserAgent
+      description: The submission related user agent.
       type: string
-    - contextPath: WildFire.Report.Network.DNS.Query
-      description: Submission DNS queries.
+    - contextPath: WildFire.Report.NetworkInfo.UDP.IP
+      description: The submission related IPs, in UDP protocol.
       type: string
-    - contextPath: WildFire.Report.Network.DNS.Response
-      description: Submission DNS responses.
+    - contextPath: WildFire.Report.NetworkInfo.UDP.Port
+      description: The submission related ports, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.UDP.JA3
+      description: The submission related JA3s, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.UDP.JA3S
+      description: The Submission related JA3Ss, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.UDP.Country
+      description: The submission related countries, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.TCP.IP
+      description: The submission related IPs, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.TCP.JA3
+      description: The submission related JA3s, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.TCP.JA3S
+      description: The submission related JA3Ss, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.TCP.Country
+      description: The submission related Countries, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.TCP.Port
+      description: The submission related ports, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.DNS.Query
+      description: The submission DNS queries.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.DNS.Response
+      description: The submission DNS responses.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.DNS.Type
+      description: The submission DNS Types.
       type: string
     - contextPath: WildFire.Report.Evidence.md5
-      description: Submission evidence MD5 hash.
+      description: The submission evidence MD5 hash.
       type: string
     - contextPath: WildFire.Report.Evidence.Text
-      description: Submission evidence text.
+      description: The submission evidence text.
       type: string
     - contextPath: WildFire.Report.detection_reasons.description
       description: Reason for the detection verdict.
@@ -484,6 +666,63 @@ script:
       type: unknown
     - contextPath: WildFire.Report.verdict
       description: The verdict of the report.
+      type: string
+    - contextPath: WildFire.Report.Platform
+      description: The platform of the report.
+      type: string
+    - contextPath: WildFire.Report.Software
+      description: The software of the report.
+      type: string
+    - contextPath: WildFire.Report.ProcessList.Service
+      description: The process service.
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessCommand
+      description: The process command.
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessName
+      description: The process name.
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessPid
+      description: The process pid.
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessFile
+      description: Lists files that started a child processes, including the process name and the action the process performed.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessName
+      description: The process name.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessPid
+      description: The process pid.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessText
+      description: The action the process performed.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildName
+      description: The child process name.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildPid
+      description: The child process pid.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildText
+      description: The action the child process performed.
+      type: string
+    - contextPath: WildFire.Report.ExtractedURL.URL
+      description: The extracted URL.
+      type: string
+    - contextPath: WildFire.Report.ExtractedURL.Verdict
+      description: The extracted verdict.
+      type: string
+    - contextPath: WildFire.Report.Summary.Text
+      description: The summary of the report.
+      type: string
+    - contextPath: WildFire.Report.Summary.Details
+      description: The details summary of the report.
+      type: string
+    - contextPath: WildFire.Report.Summary.Behavior
+      description: The behavior summary of the report.
+      type: string
+    - contextPath: WildFire.Report.ELF.ShellCommands
+      description: The shell commands.
       type: string
     polling: true
   - arguments:
@@ -508,12 +747,13 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: The type of structured report (XML or PDF) to request.
+      description: The type of structured report (XML ,PDF or MAEC) to request.
       isArray: false
       name: format
       predefined:
       - xml
       - pdf
+      - maec
       required: false
       secret: false
     - auto: PREDEFINED
@@ -528,10 +768,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Retrieves results for a URL using WildFire. The report format is
-        in JSON.
+      description: Retrieves results for a URL using WildFire. The report format is in JSON.
       isArray: true
       name: url
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: false
+      description: If set to “true”, the report returns extended data, which includes additional outputs.
+      isArray: false
+      name: extended_data
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -559,6 +808,9 @@ script:
       type: string
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.DigitalSignature.Publisher
+      description: The entity that signed the file for authenticity purposes.
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -596,29 +848,62 @@ script:
     - contextPath: InfoFile.Type
       description: The report file type.
       type: string
-    - contextPath: WildFire.Report.Network.UDP.IP
-      description: Submission related IPs, in UDP protocol.
+    - contextPath: WildFire.Report.NetworkInfo.URL.Host
+      description: The submission related hosts.
       type: string
-    - contextPath: WildFire.Report.Network.UDP.Port
-      description: Submission related ports, in UDP protocol.
+    - contextPath: WildFire.Report.NetworkInfo.URL.Method
+      description: The submission related method.
       type: string
-    - contextPath: WildFire.Report.Network.TCP.IP
-      description: Submission related IPs, in TCP protocol.
+    - contextPath: WildFire.Report.NetworkInfo.URL.URI
+      description: The submission related URI.
       type: string
-    - contextPath: WildFire.Report.Network.TCP.Port
-      description: Submission related ports, in TCP protocol.
+    - contextPath: WildFire.Report.NetworkInfo.URL.UserAgent
+      description: The submission related user agent
       type: string
-    - contextPath: WildFire.Report.Network.DNS.Query
-      description: Submission DNS queries.
+    - contextPath: WildFire.Report.NetworkInfo.UDP.IP
+      description: The submission related IPs, in UDP protocol.
       type: string
-    - contextPath: WildFire.Report.Network.DNS.Response
-      description: Submission DNS responses.
+    - contextPath: WildFire.Report.NetworkInfo.UDP.Port
+      description: The submission related ports, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.UDP.JA3
+      description: The submission related JA3s, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.UDP.JA3S
+      description: The submission related JA3Ss, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.UDP.Country
+      description: The submission related countries, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.TCP.IP
+      description: The submission related IPs, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.TCP.JA3
+      description: The submission related JA3s, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.TCP.JA3S
+      description: The Submission related JA3Ss, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.TCP.Country
+      description: The submission related countries, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.TCP.Port
+      description: The submission related ports, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.DNS.Query
+      description: The submission DNS queries.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.DNS.Response
+      description: The submission DNS responses.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.DNS.Type
+      description: The submission DNS Types.
       type: string
     - contextPath: WildFire.Report.Evidence.md5
-      description: Submission evidence MD5 hash.
+      description: The submission evidence MD5 hash.
       type: string
     - contextPath: WildFire.Report.Evidence.Text
-      description: Submission evidence text.
+      description: The submission evidence text.
       type: string
     - contextPath: WildFire.Report.detection_reasons.description
       description: Reason for the detection verdict.
@@ -640,6 +925,66 @@ script:
       type: unknown
     - contextPath: WildFire.Report.verdict
       description: The verdict of the report.
+      type: string
+    - contextPath: WildFire.Report.Platform
+      description: The platform of the report.
+      type: string
+    - contextPath: WildFire.Report.Software
+      description: The software of the report.
+      type: string
+    - contextPath: WildFire.Report.ProcessList.Service
+      description: The process service.
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessCommand
+      description: The process command.
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessName
+      description: The process name.
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessPid
+      description: The process pid.
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessFile
+      description: Lists files that started a child processes, including the process name and the action the process performed.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessName
+      description: The process name.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessPid
+      description: The process pid.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessText
+      description: The action the process performed.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildName
+      description: The child process name.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildPid
+      description: The child process pid.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildText
+      description: The action the child process performed.
+      type: string
+    - contextPath: WildFire.Report.ExtractedURL.URL
+      description: The extracted URL.
+      type: string
+    - contextPath: WildFire.Report.ExtractedURL.Verdict
+      description: The extracted verdict.
+      type: string
+    - contextPath: WildFire.Report.Summary.Text
+      description: The summary of the report.
+      type: string
+    - contextPath: WildFire.Report.Summary.Details
+      description: The details summary of the report.
+      type: string
+    - contextPath: WildFire.Report.Summary.Behavior
+      description: The behavior summary of the report.
+      type: string
+    - contextPath: WildFire.Report.ELF.ShellCommands
+      description: The shell commands.
+      type: string
+    - contextPath: WildFire.Report.maec_report
+      description: MAEC report output
       type: string
   - arguments:
     - default: false
@@ -694,8 +1039,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: EntryID of the text file that contains multiple hashes. Limit is
-        500 hashes.
+      description: EntryID of the text file that contains multiple hashes. Limit is 500 hashes.
       isArray: true
       name: EntryID
       required: false
@@ -707,8 +1051,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a verdict regarding multiple hashes, stored in a TXT file
-      or given as a list.
+    description: Returns a verdict regarding multiple hashes, stored in a TXT file or given as a list.
     execution: false
     name: wildfire-get-verdicts
     outputs:
@@ -744,15 +1087,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used for the inner polling flow. For uploading a URL, use the 'upload'
-        argument instead.
+      description: Used for the inner polling flow. For uploading a URL, use the 'upload' argument instead.
       isArray: true
       name: url
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready.
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result, when ready.
       isArray: false
       name: polling
       predefined:
@@ -770,8 +1112,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: The type of structured report (XML or PDF) to request. Only relevant when
-        polling=true.
+      description: The type of structured report (XML or PDF) to request. Only relevant when polling=true.
       isArray: false
       name: format
       predefined:
@@ -782,10 +1123,19 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to receive extended information from WildFire. Only relevant when
-        polling=true.
+      description: Whether to receive extended information from WildFire. Only relevant when polling=true.
       isArray: false
       name: verbose
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: false
+      description: If set to “true”, the report returns extended data, which includes additional outputs.
+      isArray: false
+      name: extended_data
       predefined:
       - 'true'
       - 'false'
@@ -829,6 +1179,9 @@ script:
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
       type: string
+    - contextPath: File.DigitalSignature.Publisher
+      description: The entity that signed the file for authenticity purposes.
+      type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: string
@@ -859,29 +1212,62 @@ script:
     - contextPath: InfoFile.Type
       description: The report file type.
       type: string
-    - contextPath: WildFire.Report.Network.UDP.IP
-      description: Submission related IPs, in UDP protocol.
+    - contextPath: WildFire.Report.NetworkInfo.URL.Host
+      description: The submission related hosts.
       type: string
-    - contextPath: WildFire.Report.Network.UDP.Port
-      description: Submission related ports, in UDP protocol.
+    - contextPath: WildFire.Report.NetworkInfo.URL.Method
+      description: The submission related method.
       type: string
-    - contextPath: WildFire.Report.Network.TCP.IP
-      description: Submission related IPs, in TCP protocol.
+    - contextPath: WildFire.Report.NetworkInfo.URL.URI
+      description: The submission related URI.
       type: string
-    - contextPath: WildFire.Report.Network.TCP.Port
-      description: Submission related ports, in TCP protocol.
+    - contextPath: WildFire.Report.NetworkInfo.URL.UserAgent
+      description: The submission related user agent.
       type: string
-    - contextPath: WildFire.Report.Network.DNS.Query
-      description: Submission DNS queries.
+    - contextPath: WildFire.Report.NetworkInfo.UDP.IP
+      description: The submission related IPs, in UDP protocol.
       type: string
-    - contextPath: WildFire.Report.Network.DNS.Response
-      description: Submission DNS responses.
+    - contextPath: WildFire.Report.NetworkInfo.UDP.Port
+      description: The submission related ports, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.UDP.JA3
+      description: The submission related JA3s, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.UDP.JA3S
+      description: The submission related JA3Ss, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.UDP.Country
+      description: The submission related countries, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.TCP.IP
+      description: The submission related IPs, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.TCP.JA3
+      description: The submission related JA3s, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.TCP.JA3S
+      description: The submission related JA3Ss, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.TCP.Country
+      description: The submission related Countries, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.TCP.Port
+      description: The submission related ports, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.DNS.Query
+      description: The submission DNS queries.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.DNS.Response
+      description: The submission DNS responses.
+      type: string
+    - contextPath: WildFire.Report.NetworkInfo.DNS.Type
+      description: The submission DNS Types.
       type: string
     - contextPath: WildFire.Report.Evidence.md5
-      description: Submission evidence MD5 hash.
+      description: The submission evidence MD5 hash.
       type: string
     - contextPath: WildFire.Report.Evidence.Text
-      description: Submission evidence text.
+      description: The submission evidence text.
       type: string
     - contextPath: WildFire.Report.detection_reasons.description
       description: Reason for the detection verdict.
@@ -903,6 +1289,63 @@ script:
       type: unknown
     - contextPath: WildFire.Report.verdict
       description: The verdict of the report.
+      type: string
+    - contextPath: WildFire.Report.Platform
+      description: The platform of the report.
+      type: string
+    - contextPath: WildFire.Report.Software
+      description: The software of the report.
+      type: string
+    - contextPath: WildFire.Report.ProcessList.Service
+      description: The process service.
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessCommand
+      description: The process command.
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessName
+      description: The process name.
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessPid
+      description: The process pid.
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessFile
+      description: Lists files that started a child processes, including the process name and the action the process performed.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessName
+      description: The process name.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessPid
+      description: The process pid.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessText
+      description: The action the process performed.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildName
+      description: The child process name.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildPid
+      description: The child process pid.
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildText
+      description: The action the child process performed.
+      type: string
+    - contextPath: WildFire.Report.ExtractedURL.URL
+      description: The extracted URL.
+      type: string
+    - contextPath: WildFire.Report.ExtractedURL.Verdict
+      description: The extracted verdict.
+      type: string
+    - contextPath: WildFire.Report.Summary.Text
+      description: The summary of the report.
+      type: string
+    - contextPath: WildFire.Report.Summary.Details
+      description: The details summary of the report.
+      type: string
+    - contextPath: WildFire.Report.Summary.Behavior
+      description: The behavior summary of the report.
+      type: string
+    - contextPath: WildFire.Report.ELF.ShellCommands
+      description: The shell commands.
       type: string
     polling: true
   - arguments:
@@ -931,8 +1374,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to download as screenshots or as downloadable files. if
-        not specified, both will be downloaded.
+      description: Whether to download as screenshots or as downloadable files. if not specified, both will be downloaded.
       isArray: false
       name: types
       predefined:
@@ -941,8 +1383,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get web artifacts for a URL webpage. An empty tgz will be returned,
-      no matter what the verdict is, or even if the URL is malformed.
+    description: Get web artifacts for a URL webpage. An empty tgz will be returned, no matter what the verdict is, or even if the URL is malformed.
     execution: false
     name: wildfire-get-url-webartifacts
     outputs:
@@ -964,7 +1405,7 @@ script:
     - contextPath: InfoFile.Type
       description: The web artifacts file type.
       type: string
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.9.45313
   feed: false
   isfetch: false
   longRunning: false

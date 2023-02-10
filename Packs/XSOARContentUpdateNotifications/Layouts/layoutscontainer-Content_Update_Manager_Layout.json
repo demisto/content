@@ -248,6 +248,10 @@
      {
       "fieldId": "incident_contentnotificationslackchannel",
       "isVisible": true
+     },
+     {
+      "fieldId": "incident_contentnotificationslackchannelid",
+      "isVisible": true
      }
     ],
     "isVisible": true,
@@ -265,5 +269,6 @@
  "system": false,
  "version": -1,
  "fromVersion": "6.0.0",
- "description": ""
+ "description": "",
+ "marketplaces": ["xsoar"]
 }

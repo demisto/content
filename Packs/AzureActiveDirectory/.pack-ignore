@@ -1,0 +1,5 @@
+[file:AzureADIdentityProtection_image.png]
+ignore=IM111
+
+[file:classifier-Azure_Active_Directory_Identity_Protection_Classifier.json]
+ignore=BA101

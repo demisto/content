@@ -17,8 +17,10 @@ RELOAD_DATA_URL_SUFFIX = "data/online-valid.csv"
 
 
 def handle_error(res: requests.models.Response):
-    if res.status_code == 404 or res.status_code == 509:
+    if res.status_code in (404, 509, 429):
         err_msg = f'PhishTankV2 - Error in API call {res.status_code} - {res.reason}'
+        if res.status_code == 429:
+            err_msg += f', Please try again in {res.headers.get("Retry-after")} seconds'
         return_error(err_msg)
 
 
@@ -341,7 +343,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 

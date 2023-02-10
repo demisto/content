@@ -16,10 +16,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Set
 
 ### Commands
-* panorama-create-address
-* panorama-create-rule
-* panorama-create-service
-* panorama-list-services
+* pan-os-create-address
+* pan-os-create-rule
+* pan-os-create-service
+* pan-os-list-services
 
 ## Playbook Inputs
 ---

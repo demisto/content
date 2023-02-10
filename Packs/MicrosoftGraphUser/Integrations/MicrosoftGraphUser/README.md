@@ -11,6 +11,12 @@ For more details about the authentication used in this integration, see <a href=
 <li>User.ReadWrite.All - Application</li>
 <li>User.Read - Delegated</li>
 
+<h3>Authorize Cortex XSOAR for Azure Active Directory Users (Self deployed Azure App)</h3>
+<p>There are two different authentication methods for a self-deployed configuration: <li><a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow"> Client Credentials flow</a></li><li><a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow"> Authorization Code flow</a></li> We recommend using the Client Credentials flow.</p>
+<p>In order to use the  <strong>msgraph-user-change-password</strong> command, you must configure with the Authorization Code flow.
+
+Note: When using the Authorization Code flow, make sure the user you authenticate with has the correct roles in Azure AD in order to use the command.</p>
+
 <div class="cl-preview-section">
 <h2 id="configure-microsoft-graph-user-on-demisto">Configure Azure Active Directory Users on Cortex XSOAR</h2>
 </div>
@@ -25,6 +31,8 @@ For more details about the authentication used in this integration, see <a href=
 <li><strong>Host URL (e.g., <a href="https://graph.microsoft.com/">https://graph.microsoft.com</a>)</strong></li>
 <li><strong>ID you received from the admin consent</strong></li>
 <li><strong>Key you received from the admin consent</strong></li>
+<li><strong>Certificate Thumbprint</strong></li>
+<li><strong>Private Key</strong></li>
 <li><strong>Token you received from the admin consent</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
@@ -532,6 +540,46 @@ For more details about the authentication used in this integration, see <a href=
 <td style="width: 332px;">MSGraphUser.UserPrincipalName</td>
 <td style="width: 86px;">String</td>
 <td style="width: 322px;">User’s principal name.</td>
+<tr>
+<td style="width: 334px;">Account.ID</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s ID.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.DisplayName</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s display name.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Username</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s principal name.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.JobTitle</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s job title.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Email.Address</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s mail address.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.TelephoneNumber</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s mobile phone number.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Office</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s office location.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Type</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">The account entity type.</td>
+</tr>
 </tr>
 </tbody>
 </table>
@@ -549,6 +597,18 @@ For more details about the authentication used in this integration, see <a href=
 </div>
 <div class="cl-preview-section">
 <pre>{
+    "Account": {
+        "DisplayName": "Graph Test - DELETE",
+        "Email": {
+            "Address": null
+        },
+        "ID": "57a820e9-90bc-4692-a22e-27bd170699cb",
+        "JobTitle": "Test",
+        "Office": "null",
+        "TelephoneNumber": null,
+        "Type": "Azure AD",
+        "Username": "graph@demistodev.onmicrosoft.com"
+    },
     "MSGraphUser": {
         "Surname": null,
         "DisplayName": "Graph Test - DELETE",
@@ -881,6 +941,46 @@ For more details about the authentication used in this integration, see <a href=
 <td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s principal name.</td>
 </tr>
+<tr>
+<td style="width: 334px;">Account.ID</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s ID.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.DisplayName</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s display name.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Username</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s principal name.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.JobTitle</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s job title.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Email.Address</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s mail address.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.TelephoneNumber</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s mobile phone number.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Office</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s office location.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Type</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">The account entity type.</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -897,6 +997,18 @@ For more details about the authentication used in this integration, see <a href=
 </div>
 <div class="cl-preview-section">
 <pre>{
+    "Account": {
+        "DisplayName": "Graph Test - DELETE",
+        "Email": {
+            "Address": null
+        },
+        "ID": "57a820e9-90bc-4692-a22e-27bd170699cb",
+        "JobTitle": "Test",
+        "Office": "null",
+        "TelephoneNumber": null,
+        "Type": "Azure AD",
+        "Username": "graph@demistodev.onmicrosoft.com"
+    },
     "MSGraphUser": {
         "Surname": null,
         "DisplayName": "Graph Test - DELETE",
@@ -979,6 +1091,11 @@ For more details about the authentication used in this integration, see <a href=
 <td style="width: 530px;">The URL for the next page in the list.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
+<tr>
+<td style="width: 139px;">filter</td>
+<td style="width: 530px;">Filter to be plugged directly into the API. For more information about the Filter syntax, see the Microsoft documentation: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -1058,6 +1175,46 @@ For more details about the authentication used in this integration, see <a href=
 <td style="width: 95px;">string</td>
 <td style="width: 322px;">A token pass to the next list command to retrieve additional results.</td>
 </tr>
+<tr>
+<td style="width: 334px;">Account.ID</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s ID.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.DisplayName</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s display name.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Username</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s principal name.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.JobTitle</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s job title.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Email.Address</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s mail address.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.TelephoneNumber</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s mobile phone number.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Office</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s office location.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Type</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">The account entity type.</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -1074,6 +1231,20 @@ For more details about the authentication used in this integration, see <a href=
 </div>
 <div class="cl-preview-section">
 <pre>{
+    "Account": [
+        {
+            "ID": "2827c1e7-edb6-4529-b50d-25984e968637",
+            "Username": "dev@demisto.works"
+        },
+        {
+            "ID": "c788ab51-6b4f-42cc-8b50-0759a8701c0b",
+            "Username": "donaldt@demistodev.onmicrosoft.com"
+        },
+        {
+            "ID": "57a820e9-90bc-4692-a22e-27bd170699cb",
+            "Username": "graph@demistodev.onmicrosoft.com"
+        }
+    ]
     "MSGraphUser": [
         {
             "ID": "2827c1e7-edb6-4529-b50d-25984e968637",
@@ -1709,3 +1880,18 @@ For more details about the authentication used in this integration, see <a href=
 <div class="cl-preview-section">
 <p>user: <a href="mailto:%22test@demistodev.onmicrosoft.com">"test@demistodev.onmicrosoft.com</a>" session has been revoked successfully</p>
 </div>
+### msgraph-user-test
+***
+Tests connectivity to Microsoft Graph User.
+
+
+#### Base Command
+
+`msgraph-user-test`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

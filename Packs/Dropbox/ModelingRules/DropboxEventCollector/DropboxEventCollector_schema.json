@@ -1,0 +1,36 @@
+{
+  "dropbox_dropbox_raw": {
+    "actor": {
+      "type": "string",
+      "is_array": false
+    },
+    "assets": {
+      "type": "string",
+      "is_array": false
+    },
+    "context": {
+      "type": "string",
+      "is_array": false
+    },
+    "details": {
+      "type": "string",
+      "is_array": false
+    },
+    "event_category": {
+      "type": "string",
+      "is_array": false
+    },
+    "event_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "origin": {
+      "type": "string",
+      "is_array": false
+    },
+    "timestamp": {
+      "type": "datetime",
+      "is_array": false
+    }
+  }
+}

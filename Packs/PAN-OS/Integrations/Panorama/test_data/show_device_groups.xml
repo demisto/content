@@ -1,0 +1,204 @@
+<response status="success">
+    <result>
+        <devicegroups>
+            <entry name="LAB">
+                <shared-policy-md5sum>0a21f59640a86eceede224182da89367</shared-policy-md5sum>
+                <devices>
+                    <entry name="111111111111111">
+                        <serial>111111111111111</serial>
+                        <connected>yes</connected>
+                        <unsupported-version>no</unsupported-version>
+                        <wildfire-rt>no</wildfire-rt>
+                        <deactivated>no</deactivated>
+                        <last-commit-all-state-sp>commit succeeded with warnings</last-commit-all-state-sp>
+                        <last-validate-all-state-sp>none</last-validate-all-state-sp>
+                        <last-commit-all-upd-sp>2022/03/05 23:45:33</last-commit-all-upd-sp>
+                        <last-validate-all-upd-sp>none</last-validate-all-upd-sp>
+                        <shared-policy-status>In Sync</shared-policy-status>
+                        <shared-policy-md5sum>0a21f59640a86eceede224182da89367</shared-policy-md5sum>
+                        <shared-policy-version>52</shared-policy-version>
+                        <hostname>vm-lab-fw1</hostname>
+                        <ip-address>1.1.1.1</ip-address>
+                        <ipv6-address>unknown</ipv6-address>
+                        <mac-addr></mac-addr>
+                        <uptime>0 days, 0:21:17</uptime>
+                        <family>vm</family>
+                        <model>PA-VM</model>
+                        <sw-version>10.0.9</sw-version>
+                        <app-version>8475-7000</app-version>
+                        <av-version>0</av-version>
+                        <device-dictionary-version>44-316</device-dictionary-version>
+                        <wildfire-version>0</wildfire-version>
+                        <threat-version>8475-7000</threat-version>
+                        <url-db>paloaltonetworks</url-db>
+                        <url-filtering-version>0000.00.00.000</url-filtering-version>
+                        <logdb-version>10.0.3</logdb-version>
+                        <vpnclient-package-version></vpnclient-package-version>
+                        <global-protect-client-package-version>0.0.0</global-protect-client-package-version>
+                        <prev-app-version>8284-6141</prev-app-version>
+                        <prev-av-version>0</prev-av-version>
+                        <prev-threat-version>0</prev-threat-version>
+                        <prev-wildfire-version>0</prev-wildfire-version>
+                        <prev-device-dictionary-version>43-313</prev-device-dictionary-version>
+                        <domain></domain>
+                        <slot-count>0</slot-count>
+                        <type></type>
+                        <tag></tag>
+                        <plugin_versions>
+                            <entry name="dlp" version="1.0.3">
+                                <pkginfo>dlp-1.0.3</pkginfo>
+                            </entry>
+                            <entry name="vm_series" version="2.1.4">
+                                <pkginfo>vm_series-2.1.4</pkginfo>
+                            </entry>
+                        </plugin_versions>
+                        <vpn-disable-mode>no</vpn-disable-mode>
+                        <operational-mode>normal</operational-mode>
+                        <certificate-status></certificate-status>
+                        <certificate-subject-name></certificate-subject-name>
+                        <certificate-expiry></certificate-expiry>
+                        <connected-at></connected-at>
+                        <custom-certificate-usage></custom-certificate-usage>
+                        <multi-vsys>no</multi-vsys>
+                        <vsys></vsys>
+                        <last-masterkey-push-status>Unknown</last-masterkey-push-status>
+                        <last-masterkey-push-timestamp></last-masterkey-push-timestamp>
+                        <express-mode>no</express-mode>
+                        <device-cert-present></device-cert-present>
+                        <device-cert-expiry-date>N/A</device-cert-expiry-date>
+                    </entry>
+                    <entry name="222222222222222">
+                        <serial>222222222222222</serial>
+                        <connected>yes</connected>
+                        <unsupported-version>no</unsupported-version>
+                        <wildfire-rt>no</wildfire-rt>
+                        <deactivated>no</deactivated>
+                        <last-commit-all-state-sp>commit succeeded</last-commit-all-state-sp>
+                        <last-validate-all-state-sp>none</last-validate-all-state-sp>
+                        <last-commit-all-upd-sp>2022/03/05 23:45:33</last-commit-all-upd-sp>
+                        <last-validate-all-upd-sp>none</last-validate-all-upd-sp>
+                        <shared-policy-status>Out of Sync</shared-policy-status>
+                        <shared-policy-md5sum>59148d1759ff9699be0362ef7f5b70f4</shared-policy-md5sum>
+                        <shared-policy-version></shared-policy-version>
+                        <hostname>vm-lab-fw02</hostname>
+                        <ip-address>1.1.1.1</ip-address>
+                        <ipv6-address>unknown</ipv6-address>
+                        <mac-addr></mac-addr>
+                        <uptime>0 days, 0:25:58</uptime>
+                        <family>vm</family>
+                        <model>PA-VM</model>
+                        <sw-version>10.0.9</sw-version>
+                        <app-version>8537-7273</app-version>
+                        <av-version>0</av-version>
+                        <device-dictionary-version>44-316</device-dictionary-version>
+                        <wildfire-version>0</wildfire-version>
+                        <threat-version>8537-7273</threat-version>
+                        <url-db>paloaltonetworks</url-db>
+                        <url-filtering-version>0000.00.00.000</url-filtering-version>
+                        <logdb-version>10.0.3</logdb-version>
+                        <vpnclient-package-version></vpnclient-package-version>
+                        <global-protect-client-package-version>0.0.0</global-protect-client-package-version>
+                        <prev-app-version>8284-6141</prev-app-version>
+                        <prev-av-version>0</prev-av-version>
+                        <prev-threat-version>0</prev-threat-version>
+                        <prev-wildfire-version>0</prev-wildfire-version>
+                        <prev-device-dictionary-version>1-211</prev-device-dictionary-version>
+                        <domain></domain>
+                        <slot-count>0</slot-count>
+                        <type></type>
+                        <tag></tag>
+                        <plugin_versions>
+                            <entry name="vm_series" version="2.1.4">
+                                <pkginfo>vm_series-2.1.4</pkginfo>
+                            </entry>
+                            <entry name="dlp" version="1.0.3">
+                                <pkginfo>dlp-1.0.3</pkginfo>
+                            </entry>
+                        </plugin_versions>
+                        <vpn-disable-mode>no</vpn-disable-mode>
+                        <operational-mode>normal</operational-mode>
+                        <certificate-status></certificate-status>
+                        <certificate-subject-name></certificate-subject-name>
+                        <certificate-expiry></certificate-expiry>
+                        <connected-at></connected-at>
+                        <custom-certificate-usage></custom-certificate-usage>
+                        <multi-vsys>no</multi-vsys>
+                        <vsys></vsys>
+                        <last-masterkey-push-status>Unknown</last-masterkey-push-status>
+                        <last-masterkey-push-timestamp></last-masterkey-push-timestamp>
+                        <express-mode>no</express-mode>
+                        <device-cert-present></device-cert-present>
+                        <device-cert-expiry-date>N/A</device-cert-expiry-date>
+                    </entry>
+                    <entry name="333333333333333">
+                        <serial>333333333333333</serial>
+                        <connected>yes</connected>
+                        <unsupported-version>no</unsupported-version>
+                        <wildfire-rt>no</wildfire-rt>
+                        <deactivated>no</deactivated>
+                        <last-commit-all-state-sp>commit succeeded</last-commit-all-state-sp>
+                        <last-validate-all-state-sp>none</last-validate-all-state-sp>
+                        <last-commit-all-upd-sp>2022/03/05 23:45:33</last-commit-all-upd-sp>
+                        <last-validate-all-upd-sp>none</last-validate-all-upd-sp>
+                        <shared-policy-status>Out of Sync</shared-policy-status>
+                        <shared-policy-md5sum>59148d1759ff9699be0362ef7f5b70f4</shared-policy-md5sum>
+                        <shared-policy-version></shared-policy-version>
+                        <hostname></hostname>
+                        <ip-address>1.1.1.1</ip-address>
+                        <ipv6-address>unknown</ipv6-address>
+                        <mac-addr></mac-addr>
+                        <uptime>0 days, 0:25:58</uptime>
+                        <uptime>0 days, 0:25:58</uptime>
+                        <family>vm</family>
+                        <model>PA-VM</model>
+                        <sw-version>10.0.9</sw-version>
+                        <app-version>8537-7273</app-version>
+                        <av-version>0</av-version>
+                        <device-dictionary-version>44-316</device-dictionary-version>
+                        <wildfire-version>0</wildfire-version>
+                        <threat-version>8537-7273</threat-version>
+                        <url-db>paloaltonetworks</url-db>
+                        <url-filtering-version>0000.00.00.000</url-filtering-version>
+                        <logdb-version>10.0.3</logdb-version>
+                        <vpnclient-package-version></vpnclient-package-version>
+                        <global-protect-client-package-version>0.0.0</global-protect-client-package-version>
+                        <prev-app-version>8284-6141</prev-app-version>
+                        <prev-av-version>0</prev-av-version>
+                        <prev-threat-version>0</prev-threat-version>
+                        <prev-wildfire-version>0</prev-wildfire-version>
+                        <prev-device-dictionary-version>1-211</prev-device-dictionary-version>
+                        <domain></domain>
+                        <slot-count>0</slot-count>
+                        <type></type>
+                        <tag></tag>
+                        <plugin_versions>
+                            <entry name="vm_series" version="2.1.4">
+                                <pkginfo>vm_series-2.1.4</pkginfo>
+                            </entry>
+                            <entry name="dlp" version="1.0.3">
+                                <pkginfo>dlp-1.0.3</pkginfo>
+                            </entry>
+                        </plugin_versions>
+                        <vpn-disable-mode>no</vpn-disable-mode>
+                        <operational-mode>normal</operational-mode>
+                        <certificate-status></certificate-status>
+                        <certificate-subject-name></certificate-subject-name>
+                        <certificate-expiry></certificate-expiry>
+                        <connected-at></connected-at>
+                        <custom-certificate-usage></custom-certificate-usage>
+                        <multi-vsys>no</multi-vsys>
+                        <vsys></vsys>
+                        <last-masterkey-push-status>Unknown</last-masterkey-push-status>
+                        <last-masterkey-push-timestamp></last-masterkey-push-timestamp>
+                        <express-mode>no</express-mode>
+                        <device-cert-present></device-cert-present>
+                        <device-cert-expiry-date>N/A</device-cert-expiry-date>
+                    </entry>
+                </devices>
+            </entry>
+            <entry name="LAB-Child-1">
+                <shared-policy-md5sum>0a21f59640a86eceede224182da89367</shared-policy-md5sum>
+            </entry>
+        </devicegroups>
+    </result>
+</response>

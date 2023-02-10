@@ -25,3 +25,24 @@ Use the Spamhaus feed integration to fetch indicators from the feed.
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
+
+
+### spamhaus-get-indicators
+***
+Gets the feed indicators.
+
+
+#### Base Command
+
+`spamhaus-get-indicators`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of results to return. The default value is 50. Default is 50. | Optional | 
+| indicator_type | The indicator type. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.

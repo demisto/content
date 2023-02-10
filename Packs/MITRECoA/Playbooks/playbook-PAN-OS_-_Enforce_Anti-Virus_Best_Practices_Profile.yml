@@ -1,0 +1,1172 @@
+id: PAN-OS - Enforce Anti-Virus Best Practices Profile
+name: PAN-OS - Enforce Anti-Virus Best Practices Profile
+description: |
+  This playbook enforces the Anti-Virus Best Practices Profile as defined by Palo Alto Networks BPA.
+  The playbook performs the following tasks:
+  - Check for Threat Prevention license (If license is not activated, the playbook refers users to their Palo Alto Networks account manager for further instructions).
+  - Get the existing profile information.
+  - Get the best practices profile information.
+  - Check if the best practices profile set by Cortex XSOAR is enforced. (If not, the playbook allows the user to compare the existing profile with the best practices and decide on the action to take).
+  - Create best practices profile.
+  - Apply profile to policy rules on PAN-OS firewall or Panorama.
+inputs:
+- description: The device group to work on. Exists only in panorama!
+  key: device-group
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Tag for which to filter the results.
+  key: tag
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure. Exists only in panorama!
+  key: pre-post-rulebase
+  playbookInputQuery:
+  required: false
+  value: {}
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: df79f6a7-1c7b-4bbd-8686-133b0a837dd0
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: df79f6a7-1c7b-4bbd-8686-133b0a837dd0
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": -65
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      profile_name:
+        simple: AV Best Practices - XSOAR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates an antivirus best practice profile.
+      id: e92f8992-8b00-42be-81f7-c5b742c6f7ff
+      iscommand: true
+      name: PAN-OS - Create best practice profile
+      script: '|||pan-os-create-antivirus-best-practice-profile'
+      type: regular
+      version: -1
+    taskid: e92f8992-8b00-42be-81f7-c5b742c6f7ff
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2650,
+          "y": 2120
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      security_profile:
+        simple: virus
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets information for the specified security profile.
+      id: 83d695d8-3f4e-4a52-851c-437a21845c9a
+      iscommand: true
+      name: PAN-OS - Get security profiles
+      script: '|||pan-os-get-security-profiles'
+      type: regular
+      version: -1
+    taskid: 83d695d8-3f4e-4a52-851c-437a21845c9a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 760
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets information about available PAN-OS licenses and their statuses.
+      id: 33aba792-52e9-4dc1-82b9-59d9634cef5f
+      iscommand: true
+      name: Panorama - Get Licenses
+      script: '|||pan-os-get-licenses'
+      type: regular
+      version: -1
+    taskid: 33aba792-52e9-4dc1-82b9-59d9634cef5f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 745,
+          "y": 250
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: Panorama
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      id: c0db44ca-dd8a-44e0-8142-2c7bbe6bc857
+      iscommand: false
+      name: Is PAN-OS integration enabled?
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: c0db44ca-dd8a-44e0-8142-2c7bbe6bc857
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 80
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9e039af1-34eb-417c-811a-e605fa521b61
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 9e039af1-34eb-417c-811a-e605fa521b61
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 4420
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Feature
+                root: Panorama.License
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: threat prevention
+      - - left:
+            iscontext: true
+            value:
+              simple: Panorama.License.Expired
+          operator: isEqualString
+          right:
+            value:
+              simple: "no"
+      label: "yes"
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Is there a Threat Prevention License?
+      id: ad5730a2-4f5c-40b3-88a8-9a95a9ff77cf
+      iscommand: false
+      name: Is there a Threat Prevention License?
+      type: condition
+      version: -1
+    taskid: ad5730a2-4f5c-40b3-88a8-9a95a9ff77cf
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 745,
+          "y": 430
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7e4626fc-40ce-413f-8785-ca2135be54c0
+      iscommand: false
+      name: Missing License
+      type: title
+      version: -1
+      description: ''
+    taskid: 7e4626fc-40ce-413f-8785-ca2135be54c0
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 610
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: AntiVirus.ExistingProfile
+      value:
+        complex:
+          accessor: Antivirus
+          root: Panorama
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      id: 10d625f1-24fa-4536-8ab0-6e91693e5688
+      iscommand: false
+      name: Set existing Anti-Virus profile
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 10d625f1-24fa-4536-8ab0-6e91693e5688
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 930
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Panorama.Antivirus
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: e9c9f9ee-b59a-44fe-891b-310a436ea104
+      iscommand: false
+      name: Delete Context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: e9c9f9ee-b59a-44fe-891b-310a436ea104
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 1120
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get anti-virus best practices.
+      id: 23dd6c68-9da6-4005-845f-55f032b9398b
+      iscommand: true
+      name: PAN-OS - Get Anti-Virus best practice
+      script: '|||pan-os-get-antivirus-best-practice'
+      type: regular
+      version: -1
+    taskid: 23dd6c68-9da6-4005-845f-55f032b9398b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 1290
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: AntiVirus.ExistingProfile.Name
+          operator: isEqualString
+          right:
+            value:
+              simple: AV Best Practices - XSOAR
+      label: "yes"
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "17"
+      - "18"
+      "yes":
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Is Anti-Virus best practice profile by XSOAR enforced?
+      id: d9e67f3d-db25-479a-8027-47bc28bbc417
+      iscommand: false
+      name: Is Anti-Virus best practice profile by XSOAR enforced?
+      type: condition
+      version: -1
+    taskid: d9e67f3d-db25-479a-8027-47bc28bbc417
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 1460
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "44"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Apply profile to policy rule in PAN-OS?
+      id: 18171ae4-e6c0-4053-884c-7b09cd6be269
+      iscommand: false
+      name: Apply profile to policy rule?
+      type: condition
+      version: -1
+    taskid: 18171ae4-e6c0-4053-884c-7b09cd6be269
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 3160
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "You are missing an Anti-Virus license which is a prerequisite for this \"PAN-OS - Enforce Anti-Virus Best Practices Profile\" playbook, and for the related \"Courses of Action\" playbooks. \nPlease contact your Palo Alto Networks account manager for future guidance and assistance."
+      id: 0f64e595-17dc-4505-884a-c4e9e55055b1
+      iscommand: false
+      name: Missing License - Please contact your Palo Alto Networks account manager
+      type: regular
+      version: -1
+    taskid: 0f64e595-17dc-4505-884a-c4e9e55055b1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 760
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 039a05c0-8c55-405f-8339-d20f77baf808
+      iscommand: false
+      name: PAN-OS Apply profile to a rule
+      type: title
+      version: -1
+      description: ''
+    taskid: 039a05c0-8c55-405f-8339-d20f77baf808
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 3330
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre-post-rulebase
+      profile_name:
+        simple: AV Best Practices - XSOAR
+      profile_type:
+        simple: virus
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 904bf772-6547-4030-82e2-dd6a31e5ef93
+      iscommand: false
+      name: PAN-OS - Apply Security Profile to Policy Rule
+      playbookId: PAN-OS - Apply Security Profile to Policy Rule
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 904bf772-6547-4030-82e2-dd6a31e5ef93
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 3480
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      csvArray:
+        complex:
+          accessor: ExistingProfile
+          root: AntiVirus
+      fileName:
+        simple: Anti-Virus Existing Profiles
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Export given array to csv file
+      id: 1ab0aa4f-c817-46e3-81c0-7e55d735395e
+      iscommand: false
+      name: Export Anti-Virus existing profiles to CSV
+      script: ExportToCSV
+      type: regular
+      version: -1
+    taskid: 1ab0aa4f-c817-46e3-81c0-7e55d735395e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2050,
+          "y": 1630
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      csvArray:
+        complex:
+          accessor: Antivirus
+          root: Panorama
+      fileName:
+        simple: Anti-Virus Best Practices
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Export given array to csv file
+      id: 0b164c92-8e3e-4dce-871f-ab00c9e7ab49
+      iscommand: false
+      name: Export Anti-Virus best practices to CSV
+      script: ExportToCSV
+      type: regular
+      version: -1
+    taskid: 0b164c92-8e3e-4dce-871f-ab00c9e7ab49
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2460,
+          "y": 1630
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "36"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        To understand the difference between the existing policies and the best practices, please compare between the policies by:
+
+        1) Comparing the context data under "AntiVirus.ExistingProfile" key to the data under "Panorama.Antivirus" key.
+        2) Comparing between the exported CSV files - "Anti-Virus Best Practices" and "Anti-Virus Existing Profiles".
+
+        If you have differences between your profiles and the best practices profiles recommended, you are not following the best practices Courses of Action.
+      id: 0e246891-f000-40f0-842f-bbc64bd023f4
+      iscommand: false
+      name: Create Anti-Virus best practice profile?
+      type: condition
+      version: -1
+    taskid: 0e246891-f000-40f0-842f-bbc64bd023f4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2240,
+          "y": 1950
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4d7c06b5-5761-4561-8f77-0243a96b800b
+      iscommand: false
+      name: PAN-OS Commit Configuration
+      playbookId: PAN-OS Commit Configuration
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 4d7c06b5-5761-4561-8f77-0243a96b800b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 2650,
+          "y": 2315
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 57b7f717-e6cd-49c0-8b17-801f2ba56514
+      iscommand: false
+      name: Remediation and Policy Updates
+      type: title
+      version: -1
+      description: ''
+    taskid: 57b7f717-e6cd-49c0-8b17-801f2ba56514
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 2240,
+          "y": 1800
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 725da20f-556d-41f4-8037-e274b876502b
+      iscommand: false
+      name: Gather Profiles Information
+      type: title
+      version: -1
+      description: ''
+    taskid: 725da20f-556d-41f4-8037-e274b876502b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 600
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 557bfde8-064a-43ac-82e2-0c842bb8c38f
+      iscommand: false
+      name: BPA profile exists
+      type: title
+      version: -1
+      description: ''
+    taskid: 557bfde8-064a-43ac-82e2-0c842bb8c38f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 1630
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      antivirusprofilename:
+        simple: AV Best Practices - XSOAR
+      antivirusprofilestatus:
+        simple: The best practices profile by XSOAR already exists.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 8d8e734c-3c53-4209-8b03-a9f7fe2e4e60
+      iscommand: true
+      name: Set best practices profile information to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 8d8e734c-3c53-4209-8b03-a9f7fe2e4e60
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 1785
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      antivirusprofilename:
+        simple: AV Best Practices - XSOAR
+      antivirusprofilestatus:
+        simple: The best practices profile has been created by XSOAR.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 1a161f96-bacb-4d36-8d01-19b38546d44e
+      iscommand: true
+      name: Set best practices profile information to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 1a161f96-bacb-4d36-8d01-19b38546d44e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2650,
+          "y": 2675
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 260c7e64-ce37-4711-8b0f-e1afff639e43
+      iscommand: false
+      name: Set Profile information to layout
+      type: title
+      version: -1
+      description: ''
+    taskid: 260c7e64-ce37-4711-8b0f-e1afff639e43
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 3640
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "41"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      antivirusrules:
+        complex:
+          accessor: Name
+          root: Rule
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: ce331655-4dc9-4426-8509-3250b1f0dd75
+      iscommand: true
+      name: Set best practices profile rules to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: ce331655-4dc9-4426-8509-3250b1f0dd75
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 3775
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e512465b-f521-40e9-8b16-d6561285a370
+      iscommand: false
+      name: Not according to BPA
+      type: title
+      version: -1
+      description: ''
+    taskid: e512465b-f521-40e9-8b16-d6561285a370
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2305
+        }
+      }
+  "37":
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "41"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      antivirusprofilename:
+        simple: AV Best Practices - XSOAR
+      antivirusprofilestatus:
+        simple: The best practices profile was not created by XSOAR.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: f9ff0df9-5623-4e77-8f06-0832bea747be
+      iscommand: true
+      name: Set best practices profile information to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: f9ff0df9-5623-4e77-8f06-0832bea747be
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2470
+        }
+      }
+  "41":
+    id: "41"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 16331dc0-06e5-41a7-86f9-f04c7cb75346
+      iscommand: false
+      name: Trigger BPA Scan
+      type: title
+      version: -1
+      description: ''
+    taskid: 16331dc0-06e5-41a7-86f9-f04c7cb75346
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 3950
+        }
+      }
+  "42":
+    id: "42"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      check_id:
+        simple: 254,31,33,34,35
+      failed_grid_id:
+        simple: bpafailedchecksantivirus
+      passed_grid_id:
+        simple: bpapassedchecksantivirus
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dcced4f4-8b6d-4234-8a3b-80c0ae799d2a
+      iscommand: false
+      name: Palo Alto Networks BPA - Submit Scan
+      playbookId: 629bfb7f-d719-4b74-8f1b-7f5a97b816db
+      type: playbook
+      version: -1
+      description: ''
+    taskid: dcced4f4-8b6d-4234-8a3b-80c0ae799d2a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 4090
+        }
+      }
+  "43":
+    id: "43"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4d56fd53-982b-4b59-8a9b-e85a89ea78b8
+      iscommand: false
+      name: BPA profile created
+      type: title
+      version: -1
+      description: ''
+    taskid: 4d56fd53-982b-4b59-8a9b-e85a89ea78b8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 2650,
+          "y": 2510
+        }
+      }
+  "44":
+    id: "44"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "41"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      antivirusrules:
+        simple: The best practices profile was not applied to rules by XSOAR.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: dd4f5559-e55a-4fea-848f-0ff7a165a721
+      iscommand: true
+      name: Set rules information to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: dd4f5559-e55a-4fea-848f-0ff7a165a721
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 3330
+        }
+      }
+  "45":
+    id: "45"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      bpafailedchecksantivirus:
+        complex:
+          accessor: Failed
+          root: BPA
+          transformers:
+          - operator: uniq
+      bpapassedchecksantivirus:
+        complex:
+          accessor: Passed
+          root: BPA
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 1efa98b2-49e5-4ec6-82cd-0c1f70d77cfa
+      iscommand: true
+      name: Set BPA scan results to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 1efa98b2-49e5-4ec6-82cd-0c1f70d77cfa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 4250
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "19_36_#default#": 0.3
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4550,
+        "width": 3090,
+        "x": -60,
+        "y": -65
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2

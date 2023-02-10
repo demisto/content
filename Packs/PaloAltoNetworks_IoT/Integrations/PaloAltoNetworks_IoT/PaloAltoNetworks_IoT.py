@@ -5,7 +5,7 @@ import time
 from typing import Any, Optional
 
 import demistomock as demisto
-import requests
+import urllib3
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
@@ -13,7 +13,7 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # CONSTANTS
 # api list size limit
@@ -59,6 +59,20 @@ class Client(BaseClient):
             params={
                 'customerid': self.tenant_id,
                 'deviceid': id
+            },
+            timeout=self.api_timeout
+        )
+
+    def get_device_by_ip(self, ip):
+        """
+        Get a device from IoT security portal by ip
+        """
+        return self._http_request(
+            method='GET',
+            url_suffix='/device/ip',
+            params={
+                'customerid': self.tenant_id,
+                'ip': ip
             },
             timeout=self.api_timeout
         )
@@ -251,6 +265,30 @@ def iot_get_device(client, args):
         outputs_prefix='PaloAltoNetworksIoT.Device',
         outputs_key_field='deviceid',
         outputs=result
+    )
+
+
+def iot_get_device_by_ip(client, args):
+    """
+    Returns an IoT device
+
+    Args:
+        client (Client): IoT client.
+        args (dict): all command arguments.
+
+    Returns:
+        device
+
+        CommandResults
+    """
+    device_ip = args.get('ip')
+
+    result = client.get_device_by_ip(device_ip)
+
+    return CommandResults(
+        outputs_prefix='PaloAltoNetworksIoT.Device',
+        outputs_key_field='devices',
+        outputs=result['devices']
     )
 
 
@@ -514,8 +552,8 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     tenant_id = demisto.params()['tenant_id']
-    access_key_id = demisto.params()['access_key_id']
-    secret_access_key = demisto.params()['secret_access_key']
+    access_key_id = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('access_key_id')
+    secret_access_key = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret_access_key')
 
     api_timeout = 60
     try:
@@ -583,6 +621,9 @@ def main():
 
         elif demisto.command() == 'iot-security-get-device':
             return_results(iot_get_device(client, demisto.args()))
+
+        elif demisto.command() == 'iot-security-get-device-by-ip':
+            return_results(iot_get_device_by_ip(client, demisto.args()))
 
         elif demisto.command() == 'iot-security-list-devices':
             return_results(iot_list_devices(client, demisto.args()))

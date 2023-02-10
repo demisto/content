@@ -1,0 +1,20 @@
+[
+    {
+        "adminUser": false,
+        "deleted": false,
+        "department": {
+            "id": 12,
+            "name": "\"test_user\""
+        },
+        "email": "user@test.com",
+        "groups": [
+            {
+                "id": 11,
+                "name": "TEST"
+            }
+        ],
+        "id": 28831971,
+        "isNonEditable": false,
+        "name": "test.user.com"
+    }
+]

@@ -240,7 +240,8 @@ def get_report_context(result: Dict, threshold=None) -> Dict:
         data: Dict = {}
         dbotscore = {
             'Vendor': 'Lastline',
-            'Score': 0
+            'Score': 0,
+            'Reliability': demisto.params().get('integrationReliability')
         }
         dbotscore_list = []
         if 'score' in result['data']:
@@ -300,7 +301,8 @@ def get_report_context(result: Dict, threshold=None) -> Dict:
             context_entry['Lastline'] = lastline
             context_entry[key] = data
 
-        if key == 'File' and dbotscore_list[0]['Score'] != 0:
+        # in case of a file indicator
+        if dbotscore_list and dbotscore_list[0]['Score'] != 0:
             context_entry['DBotScore'] = dbotscore_list
 
         if key == 'URL' and dbotscore['Score'] != 0:
@@ -310,7 +312,7 @@ def get_report_context(result: Dict, threshold=None) -> Dict:
 
 def file_hash(path: str) -> str:
     block_size = 65536
-    file_hasher = hashlib.md5()
+    file_hasher = hashlib.md5()  # nosec
     with open(path, 'rb') as file_obj:
         buf = file_obj.read(block_size)
         while len(buf) > 0:
@@ -326,8 +328,8 @@ def main():
     proxy = params.get('proxy')
     credentials = params.get('credentials')
     api_params = {
-        'key': params.get('api_key'),
-        'api_token': params.get('api_token')
+        'key': params.get('api_key') or params.get('creds_key_and_token').get('identifier', ''),
+        'api_token': params.get('api_token') or params.get('creds_key_and_token').get('password', '')
     }
     api_params.update(demisto.args())
     threshold = int(api_params.get('threshold', params.get('threshold', 70)))
@@ -335,7 +337,10 @@ def main():
     if not credentials or not credentials.get('identifier') or not credentials.get('password'):
         credentials = {}
 
-    if not ((params.get('api_key') and params.get('api_token')) or credentials):
+    if not (api_params.get('key') or api_params.get('api_token')):
+        api_params = {}
+
+    if not (api_params or credentials):
         raise DemistoException('Please fill the credentials in the integration params'
                                ' - api key and token or username and password')
 

@@ -35,10 +35,13 @@ Required Permissions
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | app_id | Application ID | True |
-    | azure_ad_endpoint | Azure AD endpoint associated with a national cloud | False |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
+    | Application ID |  | True |
+    | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Authentication Type | Type of authentication - could be Client Credentials Authorization Flow \(recommended\) or Device Flow | False |
+    | Tenant ID (for Client Credentials mode) |  | False |
+    | Client Secret (for Client Credentials mode) |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -614,7 +617,7 @@ Add a user to be a team member.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | team_id | ID of the team to add the user to. Can be retrieved by running the microsoft-teams-teams-list command. | Required | 
-| user_id | ID of the user to add to the team. Can be retrieved by running the microsoft-teams-members-list command. | Required | 
+| user_id | Email address or ID of the user to add to the team. The ID can be retrieved by running the microsoft-teams-members-list command. | Required | 
 | is_owner | Whether to add the member with the owner role. Possible values are: "false" and "true". Default is "false". Possible values are: false, true. Default is false. | Optional | 
 
 

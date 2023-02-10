@@ -1,0 +1,887 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: "This playbook Remediates the User Execution technique using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the specified technique, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\nTechniques Handled:\n- T1204: User Execution\n\nKill Chain phases:\n- Execution\n\nMITRE ATT&CK Description:\n\nAn adversary may rely upon specific actions by a user in order to gain execution. Users may be subjected to social engineering to get them to execute malicious code by, for example, opening a malicious document file or link. These user actions will typically be observed as follow-on behavior from forms of Phishing.\n\nWhile User Execution frequently occurs shortly after Initial Access it may occur at other phases of an intrusion, such as when an adversary places a file in a shared directory or on a user's desktop hoping that a user will click on it. This activity may also be seen shortly after Internal Spearphishing.\n\nPossible playbook uses:\n- The playbook can be used independently to handle and remediate the specific technique.\n- The playbook can be used as a part of the “Courses of Action - Defense Evasion” playbook to remediate techniques based on the kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, which can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input.  "
+id: MITRE ATT&CK CoA - T1204 - User Execution
+inputs:
+- description: Template name to enforce WildFire best practices profile.
+  key: template
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The template stack to use when running the command.
+  key: template_stack
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: 'The name of the virtual system to be configured. Will use the configured VSYS parameter if exists. If given a value, will override the VSYS parameter. If neither the VSYS parameter and this argument are entered, will default to ''vsys1''. '
+  key: vsys
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The device group to work on. Exists only in panorama!
+  key: device-group
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Tag for which to filter the results.
+  key: tag
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure. Exists only in panorama!
+  key: pre-post-rulebase
+  playbookInputQuery:
+  required: false
+  value: {}
+name: MITRE ATT&CK CoA - T1204 - User Execution
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4e0dc871-787b-4b68-898a-c04f68fea5d6
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 4e0dc871-787b-4b68-898a-c04f68fea5d6
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -1010
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2227bb01-fead-49d2-8a9a-bee02e1696c7
+      iscommand: false
+      name: PAN-OS - Check user ID interfaces configuration
+      type: title
+      version: -1
+      description: ''
+    taskid: 2227bb01-fead-49d2-8a9a-bee02e1696c7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -865
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre-post-rulebase
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        This playbook enforces the Anti-Virus Best Practices Profile as defined by Palo Alto Networks BPA.
+        The playbook performs the following tasks:
+        - Check for Threat Prevention license (If license is not activated, the playbook refers users to their Palo Alto Networks account manager for further instructions).
+        - Get the existing profile information.
+        - Get the best practices profile information.
+        - Check if the best practices profile set by Cortex XSOAR is enforced. (If not, the playbook allows the user to compare the existing profile with the best practices and decide on the action to take).
+        - Create best practices profile.
+        - Apply profile to policy rules on PAN-OS firewall or Panorama.
+      id: ed0e491e-0593-4e98-8f08-4baae8af0c39
+      iscommand: false
+      name: PAN-OS - Enforce Anti-Virus Best Practices Profile
+      playbookId: PAN-OS - Enforce Anti-Virus Best Practices Profile
+      type: playbook
+      version: -1
+    taskid: ed0e491e-0593-4e98-8f08-4baae8af0c39
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 280
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre-post-rulebase
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        This playbook enforces the Anti-Spyware Best Practices Profile as defined by Palo Alto Networks BPA.
+        The playbook performs the following tasks:
+        - Check for DNS Security license (If license is not activated, the playbook refers users to their Palo Alto Networks account manager for further instructions).
+        - Get the existing profile information.
+        - Get the best practices profile information.
+        - Check if the best practices profile set by Cortex XSOAR is enforced. (If not, the playbook allows the user to compare the existing profile with the best practices and decide on the action to take).
+        - Create best practices profile.
+        - Apply profile to policy rules on PAN-OS firewall or Panorama.
+      id: 82c4beca-0443-4d8e-8c47-b2053272a6eb
+      iscommand: false
+      name: PAN-OS - Enforce Anti-Spyware Best Practices Profile
+      playbookId: PAN-OS - Enforce Anti-Spyware Best Practices Profile
+      type: playbook
+      version: -1
+    taskid: 82c4beca-0443-4d8e-8c47-b2053272a6eb
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 615
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a1dc9259-d1f7-41f2-8827-dc89eec41a7a
+      iscommand: false
+      name: PAN-OS - Enforce Anti-Virus Best Practices Profile
+      type: title
+      version: -1
+      description: ''
+    taskid: a1dc9259-d1f7-41f2-8827-dc89eec41a7a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 120
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5f2398a9-2c06-4ffb-89cd-60b039de89db
+      iscommand: false
+      name: PAN-OS - Enforce Anti-Spyware Best Practices Profile
+      type: title
+      version: -1
+      description: ''
+    taskid: 5f2398a9-2c06-4ffb-89cd-60b039de89db
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 460
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fee1d7e3-27c7-4fc9-8382-6cca9da6e6b4
+      iscommand: false
+      name: PAN-OS - Enforce URL Filtering Best Practices Profile
+      type: title
+      version: -1
+      description: ''
+    taskid: fee1d7e3-27c7-4fc9-8382-6cca9da6e6b4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 790
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre-post-rulebase
+      tag:
+        complex:
+          root: inputs.tag
+      template:
+        complex:
+          root: inputs.template
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        This playbook enforces the WildFire Best Practices Profile as defined by Palo Alto Networks BPA.
+        The playbook performs the following tasks:
+        - Check for WildFire license (If license is not activated, the playbook refers users to their Palo Alto Networks account manager for further instructions).
+        - Get the existing profile information.
+        - Get the best practices profile information.
+        - Check if the best practices profile set by Cortex XSOAR is enforced. (If not, the playbook allows the user to compare the existing profile with the best practices and decide on the action to take).
+        - Create best practices profile.
+        - Apply profile to policy rules on PAN-OS firewall or Panorama.
+      id: ac9c2f3d-9148-4db1-8eba-32d88fd86109
+      iscommand: false
+      name: PAN-OS - Enforce WildFire Best Practices Profile
+      playbookId: PAN-OS - Enforce WildFire Best Practices Profile
+      type: playbook
+      version: -1
+    taskid: ac9c2f3d-9148-4db1-8eba-32d88fd86109
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1270
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 00aeef81-97dc-4857-8ad2-cf2b8da832d5
+      iscommand: false
+      name: PAN-OS - Enforce WildFire Best Practices Profile
+      type: title
+      version: -1
+      description: ''
+    taskid: 00aeef81-97dc-4857-8ad2-cf2b8da832d5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1125
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: Cortex XDR - IR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      id: 90266905-e0f9-4d7f-83fe-75ffbaa1801d
+      iscommand: false
+      name: Is Cortex XDR integration Enabled?
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: 90266905-e0f9-4d7f-83fe-75ffbaa1801d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1440
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Manual - Cortex XDR - Enable Anti-Exploit.
+      id: bd3387b3-dabd-4bd1-8a07-a552d6ce206f
+      iscommand: false
+      name: Manual - Cortex XDR - Enable Anti-Exploit
+      type: regular
+      version: -1
+    taskid: bd3387b3-dabd-4bd1-8a07-a552d6ce206f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1930
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d52e38dc-0960-4a21-8c65-8c588ac63fd6
+      iscommand: false
+      name: Manual - Enable Cortex XDR integration
+      description: ""
+      type: regular
+      version: -1
+    taskid: d52e38dc-0960-4a21-8c65-8c588ac63fd6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1610
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dd8bd24f-dabd-4883-82b1-22894b5b16d6
+      iscommand: false
+      name: |
+        Enable Anti-Exploit in Cortex XDR
+      type: title
+      version: -1
+      description: ''
+    taskid: dd8bd24f-dabd-4883-82b1-22894b5b16d6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1780
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d554ff16-a8d2-4531-8ebc-553958e9dd65
+      iscommand: false
+      name: Enable Anti-Malware Protection in Cortex XDR
+      type: title
+      version: -1
+      description: ''
+    taskid: d554ff16-a8d2-4531-8ebc-553958e9dd65
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2110
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Manual - Cortex XDR - Enable Anti-Malware Protection.
+      id: b94aae5f-b5a8-450e-832a-c9a42f33f2d7
+      iscommand: false
+      name: Manual - Cortex XDR - Enable Anti-Malware Protection
+      type: regular
+      version: -1
+    taskid: b94aae5f-b5a8-450e-832a-c9a42f33f2d7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2250
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Handled.Techniques
+      stringify: {}
+      value:
+        simple: T1204
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 00432a80-5d9f-4250-8bea-c5e96035bc94
+      iscommand: false
+      name: Set technique handled
+      script: Set
+      type: regular
+      version: -1
+    taskid: 00432a80-5d9f-4250-8bea-c5e96035bc94
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2430
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: technique
+      context_path:
+        simple: Handled.Techniques
+      grid_id:
+        simple: handledtechniques
+      keys: {}
+      overwrite: {}
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: c78b7db3-4d56-416f-8678-dba00a643240
+      iscommand: false
+      name: Set grid field
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: c78b7db3-4d56-416f-8678-dba00a643240
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2592984a-7d12-4d8f-840d-ff8aacea886a
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 2592984a-7d12-4d8f-840d-ff8aacea886a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2770
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre-post-rulebase
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        This playbook enforces the URL Filtering Best Practices Profile as defined by Palo Alto Networks BPA.
+        The playbook performs the following tasks:
+        - Check for URL Filtering license (If license is not activated, the playbook refers users to their Palo Alto Networks account manager for further instructions).
+        - Get the existing profile information.
+        - Get the best practices profile information.
+        - Check if the best practices profile set by Cortex XSOAR is enforced. (If not, the playbook allows the user to compare the existing profile with the best practices and decide on the action to take).
+        - Create best practices profile.
+        - Apply profile to policy rules on PAN-OS firewall or Panorama.
+      id: 13302a46-8ebe-4609-8e1f-52a944048b06
+      iscommand: false
+      name: PAN-OS - Enforce URL Filtering Best Practices Profile
+      playbookId: PAN-OS - Enforce URL Filtering Best Practices Profile
+      type: playbook
+      version: -1
+    taskid: 13302a46-8ebe-4609-8e1f-52a944048b06
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 940
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d578402d-8f9e-40f2-8a4e-a95d5b26f19e
+      iscommand: false
+      name: PAN-OS - Check user-ID agent policies
+      type: title
+      version: -1
+      description: ''
+    taskid: d578402d-8f9e-40f2-8a4e-a95d5b26f19e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -380
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      template:
+        complex:
+          root: inputs.template
+      template_stack:
+        complex:
+          root: inputs.template_stack
+      vsys:
+        complex:
+          root: inputs.vsys
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Shows the user ID interface configuration.
+      id: bdc63147-0832-47a8-8a07-2c0015685eb8
+      iscommand: true
+      name: PAN-OS - show user id interfaces config
+      script: Panorama|||pan-os-show-user-id-interfaces-config
+      type: regular
+      version: -1
+    taskid: bdc63147-0832-47a8-8a07-2c0015685eb8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -720
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        The following items should be reviewed:
+
+        1) Ensure that User-ID is only enabled for internal trusted interfaces.
+
+        2) Ensure that 'Include/Exclude Networks' is used if User-ID is enabled.
+      id: 30210a61-5763-42d7-86ee-ff189d8ec76d
+      iscommand: false
+      name: Manual - review and update user ID interfaces configuration
+      type: regular
+      version: -1
+    taskid: 30210a61-5763-42d7-86ee-ff189d8ec76d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -550
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      template:
+        complex:
+          root: inputs.template
+      template_stack:
+        complex:
+          root: inputs.template_stack
+      vsys:
+        complex:
+          root: inputs.vsys
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Retrieves list of user-ID agents configured in the system.
+      id: 83f8f830-9c28-4e69-8f82-f96d829b92d4
+      iscommand: true
+      name: PAN-OS - list configured user id agents
+      script: Panorama|||pan-os-list-configured-user-id-agents
+      type: regular
+      version: -1
+    taskid: 83f8f830-9c28-4e69-8f82-f96d829b92d4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -230
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        The following items should be reviewed:
+
+        1) Ensure that security policies restrict User-ID Agent traffic from crossing into untrusted zones.
+      id: cf2f00b5-3816-4b7e-88e8-2f0dd076bef5
+      iscommand: false
+      name: Manual - review and update User-ID Agents
+      type: regular
+      version: -1
+    taskid: cf2f00b5-3816-4b7e-88e8-2f0dd076bef5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -60
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "9_12_yes": 0.54
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3845,
+        "width": 770,
+        "x": 50,
+        "y": -1010
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2

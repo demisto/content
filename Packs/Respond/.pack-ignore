@@ -16,3 +16,9 @@ ignore=BA101
 
 [file:RespondAnalyst.yml]
 ignore=IN145
+
+[file:RespondAnalyst_image.png]
+ignore=IM111
+
+[file:classifier-Mandiant_Automated_Defense.json]
+ignore=BA101

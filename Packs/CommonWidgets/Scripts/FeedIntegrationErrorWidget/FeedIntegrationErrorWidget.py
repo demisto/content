@@ -24,6 +24,7 @@ def get_feed_integration_errors() -> TableOrListWidget:
                     (instance_name := instance.get('instance')) in enabled_instances:
                 if modified := instance.get('modified', ''):
                     modified_dt = parse(modified)
+                    assert modified_dt is not None, f'could not parse {modified}'
                     modified = modified_dt.strftime('%Y-%m-%d %H:%M:%S%z')
                 table.add_row({
                     'Brand': brand,

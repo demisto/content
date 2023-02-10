@@ -1,0 +1,30 @@
+{
+    "id": "incident_xmcybersecurityscoretrend",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "modified": "2022-07-25T10:00:53.389980141Z",
+    "name": "XM Cyber security score trend",
+    "ownerOnly": false,
+    "cliName": "xmcybersecurityscoretrend",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "XM Cyber Security Score"
+    ],
+    "associatedToAll": true,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

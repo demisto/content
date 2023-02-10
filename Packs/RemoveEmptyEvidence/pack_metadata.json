@@ -1,0 +1,20 @@
+{
+    "name": "Remove Empty Evidence (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Gavriel Filippov",
+    "url": "",
+    "email": "",
+    "created": "2022-07-27T19:16:41Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "GavrielFilippov"
+    ],
+    "hidden": true
+}

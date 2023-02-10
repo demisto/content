@@ -7,6 +7,7 @@ Exchange Web Services (EWS) provides the functionality to enable client applicat
 - Search for an email message across mailboxes and folders.
 - Get email attachment information.
 - Delete email items from a mailbox.
+- Manage Tenant Allow/Block Lists.
 
 ## Integrations
 The [EWS O365 integration](https://xsoar.pan.dev/docs/reference/integrations/ewso365) enables you to:
@@ -28,7 +29,8 @@ The [EWS Extension Online Powershell v2 integration](https://xsoar.pan.dev/docs/
 - Display mailbox objects and attributes, populate property pages, or supply mailbox information to other tasks.
 - Retrieve permissions on a mailbox.
 - Display information about SendAs permissions that are configured for users.
-- Display existing recipient objects in your organization such as mailboxes, mail users, mail contacts, and distribution groups. 
+- Display existing recipient objects in your organization such as mailboxes, mail users, mail contacts, and distribution groups.
+- Add, remove, list, and count entries in Tenant Allow/Block Lists.
 
 ## EWS Permissions
 To perform actions on mailboxes of other users, and to execute searches on the Exchange server, you need specific permissions. 

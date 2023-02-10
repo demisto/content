@@ -1,0 +1,357 @@
+{
+  "data": {
+    "resultIdToElementDataMap": {
+      "0.-6256535441071415336": {
+        "simpleValues": {
+          "domain": { "totalValues": 1, "values": ["desktop-vg9ke2u"] },
+          "elementDisplayName": {
+            "totalValues": 1,
+            "values": ["desktop-vg9ke2u\\localsystem"]
+          }
+        },
+        "elementValues": {
+          "ownerMachine": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "Machine",
+                "guid": "-1845090846.1198775089551518743",
+                "name": "desktop-vg9ke2u",
+                "hasSuspicions": "false",
+                "hasMalops": "false"
+              }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          },
+          "ownerOrganization": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "Organization",
+                "guid": "0.7172824620821059429",
+                "name": "INTEGRATION",
+                "hasSuspicions": "false",
+                "hasMalops": "false"
+              }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          }
+        },
+        "suspicions": {},
+        "filterData": {
+          "sortInGroupValue": "0.-6256535441071415336",
+          "groupByValue": "UserRuntime:0.-6256535441071415336 adAssociatedDomain=null , adCanonicalName=null , adCompany=null , adCountry=null , adDepartment=null , adDisplayName=null , adLogonName=null , adMail=null , adMemberOf=null , adOU=null , adPrimaryGroupID=null , adSamAccountName=null , adSid=null , adTextCountry=null , adTitle=null , username=localsystem , "
+        },
+        "isMalicious": "false",
+        "suspicionCount": 0,
+        "guidString": "0.-6256535441071415336",
+        "labelsIds": null,
+        "malopPriority": null,
+        "suspect": "false",
+        "malicious": "false"
+      },
+      "0.4512782640113141385": {
+        "simpleValues": {
+          "domain": { "totalValues": 1, "values": ["desktop-vg9ke2u"] },
+          "elementDisplayName": {
+            "totalValues": 1,
+            "values": ["desktop-vg9ke2u\\local service"]
+          }
+        },
+        "elementValues": {
+          "ownerMachine": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "Machine",
+                "guid": "-1845090846.1198775089551518743",
+                "name": "desktop-vg9ke2u",
+                "hasSuspicions": "false",
+                "hasMalops": "false"
+              }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          },
+          "ownerOrganization": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "Organization",
+                "guid": "0.7172824620821059429",
+                "name": "INTEGRATION",
+                "hasSuspicions": "false",
+                "hasMalops": "false"
+              }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          }
+        },
+        "suspicions": {},
+        "filterData": {
+          "sortInGroupValue": "0.4512782640113141385",
+          "groupByValue": "UserRuntime:0.4512782640113141385 adAssociatedDomain=null , adCanonicalName=null , adCompany=null , adCountry=null , adDepartment=null , adDisplayName=null , adLogonName=null , adMail=null , adMemberOf=null , adOU=null , adPrimaryGroupID=null , adSamAccountName=null , adSid=null , adTextCountry=null , adTitle=null , username=local service , "
+        },
+        "isMalicious": "false",
+        "suspicionCount": 0,
+        "guidString": "0.4512782640113141385",
+        "labelsIds": null,
+        "malopPriority": null,
+        "suspect": "false",
+        "malicious": "false"
+      },
+      "0.1303239954110928327": {
+        "simpleValues": {
+          "domain": { "totalValues": 1, "values": ["desktop-vg9ke2u"] },
+          "elementDisplayName": {
+            "totalValues": 1,
+            "values": ["desktop-vg9ke2u\\network service"]
+          }
+        },
+        "elementValues": {
+          "ownerMachine": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "Machine",
+                "guid": "-1845090846.1198775089551518743",
+                "name": "desktop-vg9ke2u",
+                "hasSuspicions": "false",
+                "hasMalops": "false"
+              }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          },
+          "ownerOrganization": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "Organization",
+                "guid": "0.7172824620821059429",
+                "name": "INTEGRATION",
+                "hasSuspicions": "false",
+                "hasMalops": "false"
+              }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          }
+        },
+        "suspicions": {},
+        "filterData": {
+          "sortInGroupValue": "0.1303239954110928327",
+          "groupByValue": "UserRuntime:0.1303239954110928327 adAssociatedDomain=null , adCanonicalName=null , adCompany=null , adCountry=null , adDepartment=null , adDisplayName=null , adLogonName=null , adMail=null , adMemberOf=null , adOU=null , adPrimaryGroupID=null , adSamAccountName=null , adSid=null , adTextCountry=null , adTitle=null , username=network service , "
+        },
+        "isMalicious": "false",
+        "suspicionCount": 0,
+        "guidString": "0.1303239954110928327",
+        "labelsIds": null,
+        "malopPriority": null,
+        "suspect": "false",
+        "malicious": "false"
+      },
+      "0.-2848658268866665743": {
+        "simpleValues": {
+          "domain": { "totalValues": 1, "values": ["desktop-vg9ke2u"] },
+          "elementDisplayName": {
+            "totalValues": 1,
+            "values": ["desktop-vg9ke2u\\prase"]
+          }
+        },
+        "elementValues": {
+          "ownerMachine": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "Machine",
+                "guid": "-1845090846.1198775089551518743",
+                "name": "desktop-vg9ke2u",
+                "hasSuspicions": "false",
+                "hasMalops": "false"
+              }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          },
+          "ownerOrganization": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "Organization",
+                "guid": "0.7172824620821059429",
+                "name": "INTEGRATION",
+                "hasSuspicions": "false",
+                "hasMalops": "false"
+              }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          }
+        },
+        "suspicions": {},
+        "filterData": {
+          "sortInGroupValue": "0.-2848658268866665743",
+          "groupByValue": "UserRuntime:0.-2848658268866665743 adAssociatedDomain=null , adCanonicalName=null , adCompany=null , adCountry=null , adDepartment=null , adDisplayName=null , adLogonName=null , adMail=null , adMemberOf=null , adOU=null , adPrimaryGroupID=null , adSamAccountName=null , adSid=null , adTextCountry=null , adTitle=null , username=prase , "
+        },
+        "isMalicious": "false",
+        "suspicionCount": 0,
+        "guidString": "0.-2848658268866665743",
+        "labelsIds": null,
+        "malopPriority": null,
+        "suspect": "false",
+        "malicious": "false"
+      },
+      "0.5752764052839219786": {
+        "simpleValues": {
+          "domain": { "totalValues": 1, "values": ["desktop-vg9ke2u"] },
+          "elementDisplayName": {
+            "totalValues": 1,
+            "values": ["desktop-vg9ke2u\\administrators"]
+          }
+        },
+        "elementValues": {
+          "ownerMachine": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "Machine",
+                "guid": "-1845090846.1198775089551518743",
+                "name": "desktop-vg9ke2u",
+                "hasSuspicions": "false",
+                "hasMalops": "false"
+              }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          },
+          "ownerOrganization": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "Organization",
+                "guid": "0.7172824620821059429",
+                "name": "INTEGRATION",
+                "hasSuspicions": "false",
+                "hasMalops": "false"
+              }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          }
+        },
+        "suspicions": {},
+        "filterData": {
+          "sortInGroupValue": "0.5752764052839219786",
+          "groupByValue": "UserRuntime:0.5752764052839219786 adAssociatedDomain=null , adCanonicalName=null , adCompany=null , adCountry=null , adDepartment=null , adDisplayName=null , adLogonName=null , adMail=null , adMemberOf=null , adOU=null , adPrimaryGroupID=null , adSamAccountName=null , adSid=null , adTextCountry=null , adTitle=null , username=administrators , "
+        },
+        "isMalicious": "false",
+        "suspicionCount": 0,
+        "guidString": "0.5752764052839219786",
+        "labelsIds": null,
+        "malopPriority": null,
+        "suspect": "false",
+        "malicious": "false"
+      },
+      "0.-4763384796776152322": {
+        "simpleValues": {
+          "domain": { "totalValues": 1, "values": ["desktop-vg9ke2u"] },
+          "elementDisplayName": {
+            "totalValues": 1,
+            "values": ["desktop-vg9ke2u\\system"]
+          }
+        },
+        "elementValues": {
+          "ownerMachine": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "Machine",
+                "guid": "-1845090846.1198775089551518743",
+                "name": "desktop-vg9ke2u",
+                "hasSuspicions": "false",
+                "hasMalops": "false"
+              }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          },
+          "ownerOrganization": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "Organization",
+                "guid": "0.7172824620821059429",
+                "name": "INTEGRATION",
+                "hasSuspicions": "false",
+                "hasMalops": "false"
+              }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          }
+        },
+        "suspicions": {},
+        "filterData": {
+          "sortInGroupValue": "0.-4763384796776152322",
+          "groupByValue": "UserRuntime:0.-4763384796776152322 adAssociatedDomain=null , adCanonicalName=null , adCompany=null , adCountry=null , adDepartment=null , adDisplayName=null , adLogonName=null , adMail=null , adMemberOf=null , adOU=null , adPrimaryGroupID=null , adSamAccountName=null , adSid=null , adTextCountry=null , adTitle=null , username=system , "
+        },
+        "isMalicious": "false",
+        "suspicionCount": 0,
+        "guidString": "0.-4763384796776152322",
+        "labelsIds": null,
+        "malopPriority": null,
+        "suspect": "false",
+        "malicious": "false"
+      }
+    },
+    "suspicionsMap": {},
+    "evidenceMap": {},
+    "totalPossibleResults": 6,
+    "guessedPossibleResults": 0,
+    "queryLimits": {
+      "totalResultLimit": 10000,
+      "perGroupLimit": 100,
+      "perFeatureLimit": 100,
+      "groupingFeature": { "elementInstanceType": "User", "featureName": "self" },
+      "sortInGroupFeature": null
+    },
+    "queryTerminated": "false",
+    "pathResultCounts": [
+      {
+        "featureDescriptor": {
+          "elementInstanceType": "User",
+          "featureName": null
+        },
+        "count": 6
+      }
+    ],
+    "guids": [],
+    "paginationToken": null,
+    "executionUUID": null,
+    "quapiMeasurementData": {
+      "timeToGetGuids": [],
+      "timeToGetData": [],
+      "timeToGetAdditionalData": [],
+      "totalQuapiQueryTime": [],
+      "startTime": [],
+      "endTime": []
+    }
+  },
+  "status": "SUCCESS"
+}

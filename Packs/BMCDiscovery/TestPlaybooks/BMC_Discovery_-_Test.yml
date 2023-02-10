@@ -1,0 +1,374 @@
+id: BMC Discovery - Test
+version: -1
+name: BMC Discovery - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7faa7265-0c13-4c7c-8fa7-de7b077d6959
+    type: start
+    task:
+      id: 7faa7265-0c13-4c7c-8fa7-de7b077d6959
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: db4ca599-52ce-456a-8c30-7cacdc3ddf06
+    type: regular
+    task:
+      id: db4ca599-52ce-456a-8c30-7cacdc3ddf06
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f6bb024b-5b69-4114-8ff3-09b75ea0f77c
+    type: regular
+    task:
+      id: f6bb024b-5b69-4114-8ff3-09b75ea0f77c
+      version: -1
+      name: bmc-discovery-search for "calbro" host
+      description: Search for a node by hostname or IP address. If not found, repeat the search with a different node kind.
+      script: '|||bmc-discovery-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      hostname:
+        simple: calbro
+      kind:
+        simple: Host
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 03bdb5c7-dda3-4eb2-8703-57244f1ac4e5
+    type: condition
+    task:
+      id: 03bdb5c7-dda3-4eb2-8703-57244f1ac4e5
+      version: -1
+      name: The host is found
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "5"
+      "yes":
+      - "4"
+    scriptarguments:
+      left:
+        simple: ${BmcDiscovery.Search.count}
+      right:
+        simple: "1"
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 85e004a4-cade-49ae-88e6-3e4ebbf5b146
+    type: regular
+    task:
+      id: 85e004a4-cade-49ae-88e6-3e4ebbf5b146
+      version: -1
+      name: Print the only result
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      value:
+        simple: |-
+          **Single search result**
+          **Name**: ${BmcDiscovery.Search.data.[0].name}
+          **Vendor**: ${BmcDiscovery.Search.data.[0].os_vendor}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 1c223bab-7223-457d-8d42-e9e05881aa7a
+    type: condition
+    task:
+      id: 1c223bab-7223-457d-8d42-e9e05881aa7a
+      version: -1
+      name: No hosts found
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "6"
+    scriptarguments:
+      left:
+        simple: ${BmcDiscovery.Search.count}
+      right:
+        simple: "0"
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 6dc310e6-9df2-489b-8f4e-21cccab45055
+    type: regular
+    task:
+      id: 6dc310e6-9df2-489b-8f4e-21cccab45055
+      version: -1
+      name: Print "no results found"
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      value:
+        simple: '**No results found**'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: db06dbe9-f2fc-44aa-8d36-3554d182015b
+    type: regular
+    task:
+      id: db06dbe9-f2fc-44aa-8d36-3554d182015b
+      version: -1
+      name: Print the first result found
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      value:
+        simple: |-
+          **Multiple items found. The first one is:**
+          **Name**: ${BmcDiscovery.Search.data.[0].name}
+          **Vendor**: ${BmcDiscovery.Search.data.[0].os_vendor}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: e897115e-4a9b-49ff-8df2-2a4879cc3255
+    type: regular
+    task:
+      id: e897115e-4a9b-49ff-8df2-2a4879cc3255
+      version: -1
+      name: Close incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: b9456f89-8782-478c-8df8-dc0ea93cb187
+    type: title
+    task:
+      id: b9456f89-8782-478c-8df8-dc0ea93cb187
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1155,
+        "width": 1350,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+description: Sample playbook for BMC Discovery Integration commands

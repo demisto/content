@@ -2,4 +2,8 @@
 ignore=IN126,BA108,BA109,IN145
 
 [file:README.md]
-ignore=RM106
+ignore=RM106,RM108
+
+
+[file:Devo_v2_image.png]
+ignore=IM111

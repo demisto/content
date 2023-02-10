@@ -1,11 +1,13 @@
+import struct
 import dateparser
+import urllib3
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *  # noqa
 from typing import Callable, Dict, List, Any, Union, Tuple
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 INTEGRATION_NAME = 'Carbon Black EDR'
@@ -92,6 +94,22 @@ class regmod_complete(ProcessEventDetail):
     def format(self):
         for entry in self.fields:
             entry['operation_type'] = self.OPERATION_TYPE.get(entry.get('operation_type', ''), '')
+        return self.fields
+
+
+class netconn_complete(ProcessEventDetail):
+    """
+    For netconn_complete, the v2 API and newer return an array of JSON objects instead of piped-versioned fields.
+    https://developer.carbonblack.com/reference/enterprise-response/5.1/rest-api/#netconn_complete
+    """
+    def __init__(self, fields):
+        self.fields = fields
+
+    def format(self):
+        for entry in self.fields:
+            for ipfield in ("remote_ip", "local_ip"):
+                if isinstance(entry[ipfield], int):
+                    entry[ipfield] = socket.inet_ntoa(struct.pack('>i', entry[ipfield]))
         return self.fields
 
 
@@ -229,7 +247,8 @@ class Client(BaseClient):
 
     def get_formatted_ProcessEventDetail(self, process_json: dict):
         complex_fields = {'filemod_complete': filemod_complete, 'modload_complete': modload_complete,
-                          'regmod_complete': regmod_complete, 'crossproc_complete': crossproc_complete}
+                          'regmod_complete': regmod_complete, 'crossproc_complete': crossproc_complete,
+                          'netconn_complete': netconn_complete}
         formatted_json = {}
         for field in process_json:
             if field in complex_fields:
@@ -387,6 +406,15 @@ def watchlist_update_command(client: Client, id: str, search_query: str, descrip
     params = assign_params(enabled=enabled, search_query=search_query, description=description)
     res = client.http_request(url=f'/v1/watchlist/{id}', method='PUT', json_data=params)
 
+    # res contains whether the task successful.
+    return CommandResults(readable_output=res.get('result'))
+
+
+def watchlist_update_action_command(client: Client, id: str, action_type: str,
+                                    enabled: str) -> CommandResults:
+    enabled_bool = argToBoolean(enabled)
+    params = assign_params(enabled=enabled_bool)
+    res = client.http_request(url=f'/v1/watchlist/{id}/action_type/{action_type}', method='PUT', json_data=params)
     # res contains whether the task successful.
     return CommandResults(readable_output=res.get('result'))
 
@@ -705,42 +733,67 @@ def endpoint_command(client: Client, id: str = None, ip: str = None, hostname: s
     if not id and not ip and not hostname:
         raise Exception(f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
 
-    try:
-        ips = argToList(ip)
-        res = []
-        if ips:
-            for current_ip in ips:
-                res += client.get_sensors(id=id, ipaddr=current_ip, hostname=hostname)[1]
-        else:
-            res += client.get_sensors(id=id, hostname=hostname)[1]
-        endpoints = []
-        command_results = []
-        for sensor in res:
-            is_isolated = _get_isolation_status_field(sensor['network_isolation_enabled'],
-                                                      sensor['is_isolating'])
-            endpoint = Common.Endpoint(
-                id=sensor.get('id'),
-                hostname=sensor.get('computer_name'),
-                ip_address=_parse_field(sensor.get('network_adapters', ''), index_after_split=0, chars_to_remove='|'),
-                mac_address=_parse_field(sensor.get('network_adapters', ''), index_after_split=1, chars_to_remove='|'),
-                os_version=sensor.get('os_environment_display_string'),
-                memory=sensor.get('physical_memory_size'),
-                status='Online' if sensor.get('status') else 'Offline',
-                is_isolated=is_isolated,
-                vendor='Carbon Black Response')
-            endpoints.append(endpoint)
+    # If multiple filters were given, we want to retrieve all results that match any filter ('OR', not 'AND')
+    # issue https://github.com/demisto/etc/issues/46353. Therefore, we make an API query for every filter separately.
+    ips = argToList(ip)
+    hostnames = argToList(hostname)
+    ids = argToList(id)
+    exceptions = []
+    res = []
+    if ips:
+        for current_ip in ips:
+            # Carbon Black returns an error in various scenarios (no results matching the query, etc.), wrapping with
+            # `try-except` to handle these exceptions here.
+            try:
+                res += client.get_sensors(ipaddr=current_ip)[1]
+            except Exception as e:
+                exceptions.append({'Query': f'ip: {current_ip}', 'Exception': str(e)})
+    if hostnames:
+        for current_hostname in hostnames:
+            try:
+                res += client.get_sensors(hostname=current_hostname)[1]
+            except Exception as e:
+                exceptions.append({'Query': f'hostname: {current_hostname}', 'Exception': str(e)})
+    if ids:
+        for current_id in ids:
+            try:
+                res += client.get_sensors(id=current_id)[1]
+            except Exception as e:
+                exceptions.append({'Query': f'id: {current_id}', 'Exception': str(e)})
 
-            endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
-            md = tableToMarkdown(f'{INTEGRATION_NAME} -  Endpoint: {sensor.get("id")}', endpoint_context)
+    # Remove duplicates by taking entries with unique `id`:
+    if res:
+        res = list({v['id']: v for v in res}.values())
 
-            command_results.append(CommandResults(
-                readable_output=md,
-                raw_response=res,
-                indicator=endpoint
-            ))
-        return command_results
-    except Exception as e:
-        return CommandResults(readable_output=f'{INTEGRATION_NAME} - Could not get endpoint (error- {e}')
+    endpoints = []
+    command_results = []
+    for sensor in res:
+        is_isolated = _get_isolation_status_field(sensor['network_isolation_enabled'],
+                                                  sensor['is_isolating'])
+        endpoint = Common.Endpoint(
+            id=sensor.get('id'),
+            hostname=sensor.get('computer_name'),
+            ip_address=_parse_field(sensor.get('network_adapters', ''), index_after_split=0, chars_to_remove='|'),
+            mac_address=_parse_field(sensor.get('network_adapters', ''), index_after_split=1, chars_to_remove='|'),
+            os_version=sensor.get('os_environment_display_string'),
+            memory=sensor.get('physical_memory_size'),
+            status='Online' if sensor.get('status') else 'Offline',
+            is_isolated=is_isolated,
+            vendor='Carbon Black Response')
+        endpoints.append(endpoint)
+
+        endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
+        md = tableToMarkdown(f'{INTEGRATION_NAME} -  Endpoint: {sensor.get("id")}', endpoint_context)
+
+        command_results.append(CommandResults(
+            readable_output=md,
+            raw_response=res,
+            indicator=endpoint
+        ))
+    if exceptions:
+        md = tableToMarkdown('The following queries resulted in an error: ', exceptions, headers=['Query', 'Exception'])
+        command_results.append(CommandResults(readable_output=md))
+    return command_results
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetch_time: str, status: str = None,
@@ -778,7 +831,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     if status:
         for current_status in argToList(status):
             demisto.debug(f'{INTEGRATION_NAME} - Fetching incident from Server with status: {current_status}')
-            query_params['status'] = current_status
+            query_params['status'] = f'"{current_status}"'
             # we create a new query containing params since we do not allow both query and params.
             res = client.get_alerts(query=_create_query_string(query_params), limit=max_results)
             alerts += res.get('results', [])
@@ -792,6 +845,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     demisto.debug(f'{INTEGRATION_NAME} - Got total of {len(alerts)} alerts from CB server.')
     for alert in alerts:
         incident_created_time = dateparser.parse(alert.get('created_time'))
+        assert incident_created_time is not None
         incident_created_time_ms = incident_created_time.timestamp()
 
         # to prevent duplicates, adding incidents with creation_time > last fetched incident
@@ -874,6 +928,7 @@ def main() -> None:
                                          'cb-edr-watchlists-list': get_watchlist_list_command,
                                          'cb-edr-watchlist-create': watchlist_create_command,
                                          'cb-edr-watchlist-update': watchlist_update_command,
+                                         'cb-edr-watchlist-update-action': watchlist_update_action_command,
                                          'cb-edr-watchlist-delete': watchlist_delete_command,
                                          'cb-edr-sensors-list': sensors_list_command,
                                          'cb-edr-quarantine-device': quarantine_device_command,
@@ -905,7 +960,6 @@ def main() -> None:
             raise NotImplementedError(f'command {command} was not implemented in this integration.')
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

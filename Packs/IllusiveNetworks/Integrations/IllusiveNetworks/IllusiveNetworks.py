@@ -1,3 +1,4 @@
+import urllib3
 import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -5,14 +6,13 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 from typing import Tuple, Dict, Any
 import json
-import requests
 import dateparser
 import zipfile
 import io
 
 # Disable insecure warnings
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
@@ -166,9 +166,11 @@ def fetch_incidents(client, last_run, first_fetch_time, has_forensics):
         incident_type = 'None'
         if len(item['incidentTypes']) > 0:
             incident_type = str(item['incidentTypes'][0])
+        incident_create_time_date = (dateparser.parse(incident_created_time))
+        assert incident_create_time_date is not None
         incident = {
             'name': "Illusive Attack Management detected an incident of type " + incident_type,
-            'occurred': (dateparser.parse(incident_created_time)).strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'occurred': incident_create_time_date.strftime('%Y-%m-%dT%H:%M:%SZ'),
             'rawJSON': json.dumps(item)
         }
         incidents.append(incident)

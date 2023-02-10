@@ -107,9 +107,9 @@ tasks:
     task:
       id: 402c0b9a-94f9-4a17-82a5-0478df6c5da9
       version: -1
-      name: Detonate URL - CrowsStrike Falcon X
+      name: Detonate URL - CrowsStrike Falcon Intelligence Sandbox
       playbookName: Detonate URL - CrowsStrike Falcon X
-      playbookId: Detonate URL - CrowdStrike Falcon X
+      playbookId: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
       type: playbook
       iscommand: false
       brand: ""

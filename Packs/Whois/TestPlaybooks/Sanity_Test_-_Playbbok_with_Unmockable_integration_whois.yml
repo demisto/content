@@ -1,0 +1,111 @@
+id: Sanity Test - Playbook with Unmockable Whois Integration
+version: -1
+name: Sanity Test - Playbook with Unmockable Whois Integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3d88f7cd-9fdf-407a-8136-925fd352d534
+    type: start
+    task:
+      id: 3d88f7cd-9fdf-407a-8136-925fd352d534
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 54984ca9-9586-4195-8a4a-aa12fff7db0e
+    type: regular
+    task:
+      id: 54984ca9-9586-4195-8a4a-aa12fff7db0e
+      version: -1
+      name: Sanity domain
+      description: Provides data enrichment for domains.
+      script: Whois|||domain
+      type: regular
+      iscommand: true
+      brand: Whois
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      domain:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a2591608-108d-42de-8c97-870976a349ef
+    type: title
+    task:
+      id: a2591608-108d-42de-8c97-870976a349ef
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 435,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0
+description: Sanity Test - playbook with Unmockable integration

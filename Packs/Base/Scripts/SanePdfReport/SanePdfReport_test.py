@@ -1,4 +1,5 @@
 import demistomock as demisto
+import SanePdfReport
 from SanePdfReport import *
 import subprocess
 import os
@@ -53,6 +54,7 @@ def test_markdown_image_server(mocker, capfd):
         fileName = '1234-5678-9012-3456.png'
         path = f'./TestData/{fileName}'
         mocker.patch.object(demisto, 'getFilePath', return_value={'path': path, 'name': fileName})
+        mocker.patch.object(SanePdfReport, 'is_demisto_version_ge', return_value=True)
 
         serverThread = threading.Thread(target=startServer)
         serverThread.daemon = True
@@ -76,4 +78,11 @@ def test_markdown_image_server(mocker, capfd):
         res3 = conn.getresponse()
         assert res3.status == 404
 
+        # correct image with file that is not accessible (simulates permission problems)
+        mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'notfound.png', 'name': 'noutfound.png'})
+        conn.request("GET", "/markdown/image/dummyFile.png")
+        res3 = conn.getresponse()
+        assert res3.status == 404
+
         conn.close()
+        quit_driver_and_reap_children(True)

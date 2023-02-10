@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 
 import urllib3
-import traceback
 from typing import Any, Dict, Optional, Union
 import ntpath
 from dateparser import parse
@@ -655,7 +654,9 @@ def calc_run_at_time(selected_time: str) -> str:
     selected_iso_time = ""
     if not selected_time:
         return selected_iso_time
-    iso_with_timezone = parse(f"in {selected_time} UTC").isoformat()
+    selected_time_date = parse(f"in {selected_time} UTC")
+    assert selected_time_date is not None, f'could not parse {selected_time} UTC'
+    iso_with_timezone = selected_time_date.isoformat()
     return iso_with_timezone
 
 
@@ -1326,7 +1327,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         error_msg = str(e).replace("\\n", "\n")
         return_error(
             f"Failed to execute {demisto.command()} command.\n Error:\n {error_msg}"

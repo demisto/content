@@ -610,11 +610,23 @@ def list_members_command(client, args):
     elif args.get('raw_json') is not None and kwargs:
         return_error("Please remove other arguments before using 'raw-json'.")
     response = client.list_members(**kwargs)
+    response['Members'] = convert_members_date_type(response.get('Members', []))
     outputs = {'AWS-SecurityHub': response}
     del response['ResponseMetadata']
     table_header = 'AWS SecurityHub ListMembers'
     human_readable = tableToMarkdown(table_header, response.get('Members', []))
     return human_readable, outputs, response
+
+
+def convert_members_date_type(members):
+    new_ls = []
+    for member in members:
+        if isinstance(updated_at := member.get('UpdatedAt'), datetime):
+            member['UpdatedAt'] = updated_at.isoformat()
+        if isinstance(invited_at := member.get('InvitedAt'), datetime):
+            member['InvitedAt'] = invited_at.isoformat()
+        new_ls.append(member)
+    return new_ls
 
 
 def update_findings_command(client, args):
@@ -721,7 +733,8 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
     incidents = [{
         'occurred': finding['CreatedAt'],
         'severity': severity_mapping(finding['Severity']['Normalized']),
-        'rawJSON': json.dumps(finding)
+        'rawJSON': json.dumps(finding),
+        'dbotMirrorId': finding['Id']
     }
         for finding in findings]
     if findings:
@@ -768,8 +781,8 @@ def main():  # pragma: no cover
     aws_role_session_name = params.get('roleSessionName')
     aws_role_session_duration = params.get('sessionDuration')
     aws_role_policy = None
-    aws_access_key_id = params.get('access_key')
-    aws_secret_access_key = params.get('secret_key')
+    aws_access_key_id = params.get('credentials', {}).get('identifier') or params.get('access_key')
+    aws_secret_access_key = params.get('credentials', {}).get('password') or params.get('secret_key')
     verify_certificate = not params.get('insecure', True)
     timeout = params.get('timeout')
     retries = params.get('retries') or 5

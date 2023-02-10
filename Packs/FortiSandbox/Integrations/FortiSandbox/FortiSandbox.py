@@ -7,7 +7,6 @@ import base64
 import hashlib
 import json
 import os
-import shutil
 
 import requests
 
@@ -165,12 +164,7 @@ def upload_file_on_demand(session, base_url):
         file_sha256 = demisto.args().get('sha256')
 
     try:
-        shutil.copy(file_path, file_name)
-    except Exception:
-        raise Exception('Failed to prepare file for upload.')
-
-    try:
-        file_handler = open(file_name, 'rb')
+        file_handler = open(file_path, 'rb')
         fname = os.path.basename(file_handler.name)
         encoded_file_name = base64.b64encode(fname.encode())
         file_data = file_handler.read()
@@ -179,8 +173,8 @@ def upload_file_on_demand(session, base_url):
         file_size = file_handler.tell()
         file_handler.close()
 
-    finally:
-        shutil.rmtree(file_name, ignore_errors=True)
+    except Exception:
+        raise Exception('Failed to prepare file for upload.')
 
     if int(file_size) >= 200000000:
         # Max File Size is 20M, hence the check.

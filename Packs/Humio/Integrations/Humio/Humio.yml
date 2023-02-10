@@ -18,17 +18,15 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 - display: Query to use to fetch incidents
   name: queryParameter
-  defaultvalue: ""
+  defaultvalue: "*"
   type: 0
   required: false
   additionalinfo: Write the query to use to fetch incidents (only used for fetch-incidents)
@@ -47,6 +45,12 @@ configuration:
 - display: TimeZoneOffset in Minutes
   name: queryTimeZoneOffsetMinutes
   defaultvalue: "0"
+  type: 0
+  required: false
+  additionalinfo: (only used for fetch-incidents)
+- display: Query chunk size
+  name: queryChunkSize
+  defaultvalue: "50"
   type: 0
   required: false
   additionalinfo: (only used for fetch-incidents)
@@ -350,7 +354,7 @@ script:
       description: The notifier body template
       type: String
     description: Get notifier from Humio by id
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.8.39276
   isfetch: true
   runonce: false
   subtype: python3

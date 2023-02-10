@@ -11,6 +11,7 @@ configuration:
   name: admin_email
   required: false
   type: 0
+  additionalinfo: An admin email is required for the Test validation to run. If not configured, then each command can receive an optional admin_email argument.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -19,12 +20,590 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: G Suite or Google Workspace Admin is an integration to perform an action on IT infrastructure, create users,
-  update settings, and more administrative tasks.
-display: G Suite Admin
+description: G Suite or Google Workspace Admin is an integration to perform an action on IT infrastructure, create users, update settings, and more administrative tasks.
+display: Google Workspace Admin
 name: GSuiteAdmin
 script:
   commands:
+  - arguments:
+    - default: false
+      description: The unique ID of the customer's Google Workspace Admin account.
+      isArray: false
+      name: customer_id
+      required: true
+    - default: false
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    - description: Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, model, type, and status). Default is FULL
+      isArray: false
+      name: projection
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - BASIC
+      - FULL
+    - name: query
+      description: Search string using the format given at https://developers.google.com/admin-sdk/directory/v1/search-operators.
+      required: false
+      isArray: false
+    - auto: PREDEFINED
+      name: order_by
+      description: Device property to use for sorting results. Default is STATUS.
+      required: false
+      isArray: false
+      predefined:
+      - DEVICE_ID
+      - EMAIL
+      - LAST_SYNC
+      - MODEL
+      - NAME
+      - OS
+      - STATUS
+      - TYPE
+    - auto: PREDEFINED
+      name: sort_order
+      description: Whether to return results in ascending or descending order. Must be used with the order_by parameter. Default is ASCENDING.
+      required: false
+      isArray: false
+      predefined:
+      - ASCENDING
+      - DESCENDING
+    - name: limit
+      description: The maximum number of records to return from the collection. Default is 50.
+      required: false
+      isArray: false
+    - name: page_token
+      description: The token of the page.
+      required: false
+      isArray: false
+    - name: page_size
+      description: The number of requested results per page. Default is 50. Maximum allowed value is 100.
+      required: false
+      isArray: false
+    description: Retrieves a paginated list that includes company-owned mobile devices.
+    name: gsuite-mobiledevice-list
+    outputs:
+    - type: String
+      contextPath: GSuite.MobileDevices.PageToken.NextPageToken
+      description: The token of the next page.
+    - type: Object
+      contextPath: GSuite.MobileDevices.MobileListObjects
+      description: A list of mobile device objects.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.kind
+      description: The type of the API resource.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.etag
+      description: ETag of the resource.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.resourceId
+      description: The unique ID the API service uses to identify the mobile device.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.deviceId
+      description: The serial number for a Google Sync mobile device. For Android and iOS devices, this is a software-generated unique identifier.
+    - type: List
+      contextPath: GSuite.MobileDevices.MobileListObjects.name
+      description: A list of the owner's usernames.
+    - type: List
+      contextPath: GSuite.MobileDevices.MobileListObjects.email
+      description: A list of the owner's email addresses.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.model
+      description: The mobile device's model name.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.os
+      description: The mobile device's operating system.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.type
+      description: The type of mobile device.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.status
+      description: The mobile device's status.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.hardwareId
+      description: The IMEI/MEID unique identifier for Android hardware.
+    - type: Date
+      contextPath: GSuite.MobileDevices.MobileListObjects.firstSync
+      description: The date and time the mobile device was initially synchronized with the policy settings in the Admin console.
+    - type: Date
+      contextPath: GSuite.MobileDevices.MobileListObjects.lastSync
+      description: The date and time the mobile device was last synchronized with the policy settings in the Admin console.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.userAgent
+      description: Gives information about the mobile device such as the operating system version.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.serialNumber
+      description: The mobile device's serial number.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.imei
+      description: The mobile device's IMEI number.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.meid
+      description: The mobile device's MEID number.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.wifiMacAddress
+      description: The mobile device's MAC address on Wi-Fi networks.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.networkOperator
+      description: Mobile device mobile or network operator.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.defaultLanguage
+      description: The default locale used on the mobile device.
+    - type: Boolean
+      contextPath: GSuite.MobileDevices.MobileListObjects.managedAccountIsOnOwnerProfile
+      description: Boolean indicating if this account is on the owner/primary profile.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.deviceCompromisedStatus
+      description: The compromised device status.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.buildNumber
+      description: The mobile device's operating system build number.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.kernelVersion
+      description: The mobile device's kernel version.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.basebandVersion
+      description: The mobile device's baseband version.
+    - type: Boolean
+      contextPath: GSuite.MobileDevices.MobileListObjects.unknownSourcesStatus
+      description: Unknown sources enabled or disabled on the mobile device.
+    - type: Boolean
+      contextPath: GSuite.MobileDevices.MobileListObjects.adbStatus
+      description: Whether adb (USB debugging) is enabled on the mobile device.
+    - type: Boolean
+      contextPath: GSuite.MobileDevices.MobileListObjects.developerOptionsStatus
+      description: Whether developer options are enabled on the mobile device.
+    - type: List
+      contextPath: GSuite.MobileDevices.MobileListObjects.otherAccountsInfo
+      description: A list of accounts added on the device.
+    - type: Boolean
+      contextPath: GSuite.MobileDevices.MobileListObjects.supportsWorkProfile
+      description: Work profile supported on the mobile device.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.manufacturer
+      description: Mobile device manufacturer.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.releaseVersion
+      description: Mobile device release version.
+    - type: Date
+      contextPath: GSuite.MobileDevices.MobileListObjects.securityPatchLevel
+      description: Mobile device security patch level.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.brand
+      description: Mobile device brand.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.bootloaderVersion
+      description: Mobile device bootloader version.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.hardware
+      description: Mobile device hardware.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.encryptionStatus
+      description: Mobile device encryption status.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.devicePasswordStatus
+      description: Mobile device password status.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.privilege
+      description: DM agent permission.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.applications.packageName
+      description: The application's package name.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.applications.displayName
+      description: The application's display name.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.applications.versionName
+      description: The application's version name.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.applications.versionCode
+      description: The application's version code.
+    - type: List
+      contextPath: GSuite.MobileDevices.MobileListObjects.applications.permission
+      description: The list of permissions of this application.
+  - arguments:
+    - default: false
+      description: The unique ID of the customer's Google Workspace Admin account.
+      isArray: false
+      name: customer_id
+      required: true
+    - default: false
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    - description: Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, serialNumber, status, and user).
+      isArray: false
+      name: projection
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - BASIC
+      - FULL
+    - name: query
+      description: "Search string in the format given at https://developers.google.com/admin-sdk/directory/v1/list-query-operators."
+      required: false
+      isArray: false
+    - auto: PREDEFINED
+      name: order_by
+      description: Device property to use for sorting results.
+      required: false
+      isArray: false
+      predefined:
+      - ANNOTATED_LOCATION
+      - ANNOTATED_USER
+      - LAST_SYNC
+      - NOTES
+      - SERIAL_NUMBER
+      - STATUS
+    - auto: PREDEFINED
+      name: sort_order
+      description: Whether to return results in ascending or descending order. Must be used with the order_by parameter.
+      required: false
+      isArray: false
+      predefined:
+      - ASCENDING
+      - DESCENDING
+    - name: org_unit_path
+      description: The full path of the organizational unit (without the leading /) or its unique ID.
+      required: false
+      isArray: false
+    - auto: PREDEFINED
+      name: include_child_org_units
+      description: Whether to return devices from all child organizational units. If this is set to true, 'org_unit_path' must be provided.
+      required: false
+      isArray: false
+      predefined:
+      - yes
+      - no
+    - name: limit
+      description: The maximum number of records to return from the collection. Default is 50.
+      required: false
+      isArray: false
+    - name: page
+      description: The page number.
+      required: false
+      isArray: false
+    - name: page_size
+      description: The number of requested results per page. Default is 50. Maximum allowed value is 100.
+      required: false
+      isArray: false
+    description: Retrieves a paginated list of company-owned ChromeOS devices.
+    name: gsuite-chromeosdevice-list
+    outputs:
+    - contextPath: GSuite.ChromeOSDevices.PageToken.NextPageToken
+      description: The token of the next page.
+      type: String
+    - contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects
+      description: A list of ChromeOS device objects.
+      type: List
+    - contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.deviceId
+      description: The unique ID of the ChromeOS device.
+      type: String
+    - contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.serialNumber
+      description: The ChromeOS device serial number entered when the device was enabled.
+      type: String
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.status
+      description: Status of the ChromeOS device.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.lastSync
+      description: The date and time the ChromeOS device was last synchronized with the policy settings in the Admin console.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.supportEndDate
+      description: The final date the ChromeOS device will be supported.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.annotatedUser
+      description: The user of the ChromeOS device as noted by the administrator.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.annotatedLocation
+      description: The address or location of the ChromeOS device as noted by the administrator.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.notes
+      description: Notes about this ChromeOS device added by the administrator.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.model
+      description: The ChromeOS device's model information.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.meid
+      description: The Mobile Equipment Identifier (MEID) or the International Mobile Equipment Identity (IMEI) for the 3G mobile card in a ChromeOS device.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.orderNumber
+      description: The ChromeOS device's order number.
+    - type: Boolean
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.willAutoRenew
+      description: Determines if the ChromeOS device will auto renew its support after the support end date.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osVersion
+      description: The ChromeOS device's operating system version.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.platformVersion
+      description: The ChromeOS device's platform version.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.firmwareVersion
+      description: The ChromeOS device's firmware version.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.macAddress
+      description: The ChromeOS device's wireless MAC address.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.bootMode
+      description: The boot mode for the ChromeOS device.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.lastEnrollmentTime
+      description: The date and time the ChromeOS device was last enrolled.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.kind
+      description: The type of resource.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.recentUsers
+      description: A list of recent ChromeOS device users, in descending order, by last login time.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.recentUsers.type
+      description: The type of the user.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.recentUsers.email
+      description: The user's email address.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.activeTimeRanges
+      description: A list of active time ranges.
+    - type: Integer
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.activeTimeRanges.activeTime
+      description: Duration of usage in milliseconds.
+    - type: Integer
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.activeTimeRanges.date
+      description: Date of usage.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.ethernetMacAddress
+      description: The ChromeOS device's MAC address on the ethernet network interface.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.annotatedAssetId
+      description: The asset identifier as noted by an administrator or specified during enrollment.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.etag
+      description: ETag of the resource.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports
+      description: Reports of disk space and other info about mounted/connected volumes.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports.volumeInfo
+      description: Disk volumes.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports.volumeInfo.volumeId
+      description: Volume ID.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports.volumeInfo.storageTotal
+      description: Total disk space [in bytes].
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports.volumeInfo.storageFree
+      description: Free disk space [in bytes].
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.systemRamTotal
+      description: Total RAM on the ChromeOS device in bytes.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports
+      description: Reports of CPU utilization and temperature.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.reportTime
+      description: Date and time the report was received.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.cpuUtilizationPercentageInfo
+      description: The CPU utilization percentage.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.cpuTemperatureInfo
+      description: A list of CPU temperature samples.
+    - type: Integer
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.cpuTemperatureInfo.temperature
+      description: Temperature in Celsius degrees.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.cpuTemperatureInfo.label
+      description: CPU label.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo
+      description: Information regarding CPU specs in the device.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.model
+      description: The CPU model name.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.architecture
+      description: The CPU architecture.
+    - type: Integer
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.maxClockSpeedKhz
+      description: The maximum CPU clock speed in kHz.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus
+      description: Information for the logical CPUs.
+    - type: Integer
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.maxScalingFrequencyKhz
+      description: Maximum frequency the CPU is allowed to run at, by policy.
+    - type: Integer
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.currentScalingFrequencyKhz
+      description: Current frequency the CPU is running at.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.idleDuration
+      description: Idle time since last boot.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.cStates
+      description: The power consumption state of the CPU. For more information, see the documentation published by the CPU maker.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.cStates.displayName
+      description: Name of the state.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.cStates.sessionDuration
+      description: Time spent in the state since the last reboot.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles
+      description: A list of device files to download.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.name
+      description: File name.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.type
+      description: File type.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.downloadUrl
+      description: File download URL.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.createTime
+      description: Date and time the file was created.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.systemRamFreeReports
+      description: Reports of amounts of available RAM memory.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.systemRamFreeReports.reportTime
+      description: Date and time the report was received.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.systemRamFreeReports.systemRamFreeInfo
+      description: Report of free RAM memory.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.lastKnownNetwork
+      description: Contains last known network.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.lastKnownNetwork.ipAddress
+      description: The IP address.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.lastKnownNetwork.wanIpAddress
+      description: The WAN IP address.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.autoUpdateExpiration
+      description: The timestamp after which the device will stop receiving Chrome updates or support.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.ethernetMacAddress0
+      description: MAC address used by the Chromebook's internal ethernet port, and for onboard network (ethernet) interface. The format is twelve (12) hexadecimal digits without any delimiter (uppercase letters). This is only relevant for some devices.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.dockMacAddress
+      description: Built-in MAC address for the docking station that the device connected to. Factory sets Media Access Control address (MAC address) assigned for use by a dock. It is reserved specifically for MAC pass through device policy. The format is twelve (12) hexadecimal digits without any delimiter (uppercase letters). This is only relevant for some devices.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.manufactureDate
+      description: The date the device was manufactured in yyyy-mm-dd format.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.orgUnitPath
+      description: The full parent path with the organizational unit's name associated with the device. Path names are case insensitive. If the parent organizational unit is the top-level organization, it is represented as a forward slash, /.
+    - type: Object
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo
+      description: Trusted Platform Module (TPM).
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.family
+      description: TPM family, using the TPM 2.0 style encoding.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.specLevel
+      description: TPM specification level.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.manufacturer
+      description: TPM manufacturer code.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.tpmModel
+      description: TPM model number.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.firmwareVersion
+      description: TPM firmware version.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.vendorSpecific
+      description: Vendor-specific information such as vendor ID.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles
+      description: A list of screenshot files to download.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles.name
+      description: File name.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles.type
+      description: File type.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles.downloadUrl
+      description: File download URL.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles.createTime
+      description: Date and time the file was created.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.orgUnitId
+      description: The unique ID of the organizational unit. orgUnitPath is the human readable version of orgUnitId. While orgUnitPath may change by renaming an organizational unit within the path, orgUnitId is unchangeable for one organizational unit.
+    - type: Object
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus
+      description: The status of the operating system updates for the device.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.state
+      description: The update state of an operating system update.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.targetOsVersion
+      description: New platform version of the operating system image being downloaded and applied.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.targetKioskAppVersion
+      description: New required platform version from the pending updated kiosk app.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.updateTime
+      description: Date and time of the last successful operating system update.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.updateCheckTime
+      description: Date and time of the last update check.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.rebootTime
+      description: Date and time of the last reboot.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.firstEnrollmentTime
+      description: Date and time for the first time the device was enrolled.
+  - arguments:
+    - default: false
+      description: The unique ID of the customer's Google Workspace Admin account.
+      isArray: false
+      name: customer_id
+      required: true
+    - default: false
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    - description: The unique ID of the device.
+      isArray: false
+      name: resource_id
+      required: true
+    - description: The action to be performed on the ChromeOS device.
+      isArray: false
+      name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - deprovision
+      - disable
+      - reenable
+      - pre_provisioned_disable
+      - pre_provisioned_reenable
+    - description: Reason for deprovision. This field is required only when the action used is deprovision.
+      isArray: false
+      name: deprovision_reason
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - different_model_replacement
+      - retiring_device
+      - same_model_replacement
+      - upgrade_transfer
+    description: Executes an action that affects a ChromeOS device. This includes de-provisioning, disabling, and re-enabling devices.
+    name: gsuite-chromeosdevice-action
   - arguments:
     - default: false
       description: The unique ID of the customer's G Suite account.
@@ -38,8 +617,7 @@ script:
       name: resource_id
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: |-
         The action to be performed on the device.
 
@@ -57,6 +635,9 @@ script:
         cancel_remote_wipe_then_block - Cancels a remote wipe of the device and then blocks it.
       isArray: false
       name: action
+      required: true
+      secret: false
+      auto: PREDEFINED
       predefined:
       - admin_account_wipe
       - admin_remote_wipe
@@ -64,17 +645,14 @@ script:
       - block
       - cancel_remote_wipe_then_activate
       - cancel_remote_wipe_then_block
-      required: true
-      secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
       secret: false
     deprecated: false
-    description: Takes an action that affects a mobile device. For example, remotely
-      wiping a device.
+    description: Takes an action that affects a mobile device. For example, remotely wiping a device.
     execution: false
     name: gsuite-mobile-update
   - arguments:
@@ -91,22 +669,18 @@ script:
       required: true
       secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
       secret: false
     deprecated: false
-    description: Removes a mobile device. Note that this does not break the device's
-      sync, it simply removes it from the list of devices connected to the domain.
-      If the device still has a valid login/authentication, it will be added back
-      on it's next successful sync.
+    description: Removes a mobile device. Note that this does not break the device's sync, it simply removes it from the list of devices connected to the domain. If the device still has a valid login/authentication, it will be added back on it's next successful sync.
     execution: false
     name: gsuite-mobile-delete
   - arguments:
     - default: false
-      description: Identifies the user in the API request. The value can be the user's
-        primary email address, alias email address, or unique user ID.
+      description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
       isArray: false
       name: user_key
       required: true
@@ -118,7 +692,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
@@ -154,17 +728,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: Stores the password for the user account. A password can contain
-        any combination of ASCII characters. A minimum of 8 characters is required.
-        The maximum length is 100 characters. The password will be sent in MD5 hash
-        format.
+      description: Stores the password for the user account. A password can contain any combination of ASCII characters. A minimum of 8 characters is required. The maximum length is 100 characters. The password will be sent in MD5 hash format.
       isArray: false
       name: password
       required: true
       secret: false
     - default: false
-      description: The user's primary email address. The primary_email must be unique
-        and cannot be an alias of another user.
+      description: The user's primary email address. The primary_email must be unique and cannot be an alias of another user.
       isArray: false
       name: primary_email
       required: true
@@ -215,8 +785,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The street address, such as 1600 Amphitheatre Parkway. Whitespace
-        within the string is ignored; however, newlines are significant.
+      description: The street address, such as 1600 Amphitheatre Parkway. Whitespace within the string is ignored; however, newlines are significant.
       isArray: false
       name: street_address
       required: false
@@ -262,8 +831,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Content type of note, either plain text or HTML. If not provided,
-        considered as plain text.
+      description: Content type of note, either plain text or HTML. If not provided, considered as plain text.
       isArray: false
       name: notes_content_type
       predefined:
@@ -278,8 +846,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A human-readable phone number. It may be in any telephone number
-        format.
+      description: A human-readable phone number. It may be in any telephone number format.
       isArray: false
       name: phone_number
       required: false
@@ -314,8 +881,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Indicates if this is the user's primary phone number. A user may
-        only have one primary phone number.
+      description: Indicates if this is the user's primary phone number. A user may only have one primary phone number.
       isArray: false
       name: is_phone_number_primary
       predefined:
@@ -330,8 +896,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Recovery phone of the user. The phone number must be in the E.164
-        format, starting with the plus sign (+). Example: +16506661212.'
+      description: 'Recovery phone of the user. The phone number must be in the E.164 format, starting with the plus sign (+). Example: +16506661212.'
       isArray: false
       name: recovery_phone
       required: false
@@ -347,7 +912,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
@@ -391,8 +956,7 @@ script:
       description: The time the user's account was created.
       type: Date
     - contextPath: GSuite.User.phones.value
-      description: A human-readable phone number. It may be in any telephone number
-        format.
+      description: A human-readable phone number. It may be in any telephone number format.
       type: String
     - contextPath: GSuite.User.phones.type
       description: The type of phone number.
@@ -440,9 +1004,7 @@ script:
       description: Recovery phone of the user.
       type: String
     - contextPath: GSuite.User.orgUnitPath
-      description: The full path of the parent organization associated with the user.
-        If the parent organization is the top-level, it is represented as a forward
-        slash (/).
+      description: The full path of the parent organization associated with the user. If the parent organization is the top-level, it is represented as a forward slash (/).
       type: String
     - contextPath: GSuite.User.isMailboxSetup
       description: Indicates if the user's Google mailbox is created.
@@ -470,14 +1032,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: An extended description to help users determine the purpose of
-        a group.
+      description: An extended description to help users determine the purpose of a group.
       isArray: false
       name: group_description
       required: false
       secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
@@ -506,19 +1067,16 @@ script:
       description: The number of users that are direct members of the group.
       type: String
     - contextPath: GSuite.Group.description
-      description: An extended description to help users determine the purpose of
-        a group.
+      description: An extended description to help users determine the purpose of a group.
       type: String
     - contextPath: GSuite.Group.adminCreated
-      description: Value is true if this group was created by an administrator rather
-        than a user.
+      description: Value is true if this group was created by an administrator rather than a user.
       type: Boolean
     - contextPath: GSuite.Group.aliases
       description: List of a group's alias email addresses.
       type: String
     - contextPath: GSuite.Group.nonEditableAliases
-      description: List of the group's non-editable alias email addresses that are
-        outside of the account's primary domain or subdomains.
+      description: List of the group's non-editable alias email addresses that are outside of the account's primary domain or subdomains.
       type: String
   - arguments:
     - default: false
@@ -528,16 +1086,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: Immutable ID of a role. If included, it returns only role assignments
-        containing this role ID.
+      description: Immutable ID of a role. If included, it returns only role assignments containing this role ID.
       isArray: false
       name: role_id
       required: false
       secret: false
     - default: false
-      description: The user's primary email address, alias email address, or unique
-        user ID. If included in the request, returns role assignments only for this
-        user.
+      description: The user's primary email address, alias email address, or unique user ID. If included in the request, returns role assignments only for this user.
       isArray: false
       name: user_key
       required: false
@@ -549,14 +1104,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximum number of results to return. Acceptable values are 1 to
-        200, inclusive.
+      description: Maximum number of results to return. Acceptable values are 1 to 200, inclusive.
       isArray: false
       name: max_results
       required: false
       secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
@@ -585,9 +1139,7 @@ script:
       description: The scope in which this role is assigned.
       type: String
     - contextPath: GSuite.RoleAssignment.orgUnitId
-      description: If the role is restricted to an organization unit, this contains
-        the ID of the organization unit to which the exercise of this role is restricted
-        to.
+      description: If the role is restricted to an organization unit, this contains the ID of the organization unit to which the exercise of this role is restricted to.
       type: String
     - contextPath: GSuite.PageToken.RoleAssignment.nextPageToken
       description: Token to specify the next page in the list.
@@ -611,25 +1163,26 @@ script:
       name: assigned_to
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: The scope in which this role is assigned.
       isArray: false
       name: scope_type
+      required: true
+      secret: false
+      auto: PREDEFINED
       predefined:
       - CUSTOMER
       - ORG_UNIT
-      required: true
-      secret: false
     - default: false
-      description: If the role is restricted to an organization unit, this contains
-        the ID for the organization unit the exercise of this role is restricted to.
+      description: |-
+        If the role is restricted to an organization unit, this contains the ID for the organization unit the exercise of this role is restricted to.
       isArray: false
       name: org_unit_id
       required: false
       secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: |-
+        Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
@@ -658,9 +1211,7 @@ script:
       description: The scope in which this role is assigned.
       type: String
     - contextPath: GSuite.RoleAssignment.orgUnitId
-      description: If the role is restricted to an organization unit, this contains
-        the ID of the organization unit to which the exercise of this role is restricted
-        to.
+      description: If the role is restricted to an organization unit, this contains the ID of the organization unit to which the exercise of this role is restricted to.
       type: String
   - arguments:
     - default: false
@@ -676,8 +1227,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The set of privileges that are granted to this role. Comma-separated
-        list of privilege names and service ids of the form "PrivilegeName1:ServiceId1,PrivilegeName2:ServiceId2".
+      description: The set of privileges that are granted to this role. Comma-separated list of privilege names and service ids of the form "PrivilegeName1:ServiceId1,PrivilegeName2:ServiceId2".
       isArray: false
       name: role_privileges
       required: true
@@ -689,7 +1239,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
@@ -734,20 +1284,20 @@ script:
       required: true
       secret: false
     - default: false
-      description: Identifies the user in the API request. The value can be the user's
-        primary email address, alias email address, or unique user ID.
+      description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
       isArray: false
       name: user_key
       required: true
       secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
       secret: false
     deprecated: false
-    description: Delete all access tokens issued by a user for an application.
+    description: |-
+      Delete all access tokens issued by a user for an application.
     execution: false
     name: gsuite-token-revoke
   - arguments:
@@ -776,14 +1326,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
       secret: false
     - default: false
-      description: Maximum number of results to return. Default is 100. Acceptable
-        values are 1 to 500, inclusive.
+      description: Maximum number of results to return. Default is 100. Acceptable values are 1 to 500, inclusive.
       isArray: false
       name: max_results
       required: false
@@ -795,8 +1344,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Lists the transfers for a customer by source user, destination user,
-      or status.
+    description: Lists the transfers for a customer by source user, destination user, or status.
     execution: false
     name: gsuite-datatransfer-list
     outputs:
@@ -834,12 +1382,11 @@ script:
       description: The value of the corresponding transfer parameter.
       type: Unknown
     - contextPath: GSuite.PageToken.DataTransfer.nextPageToken
-      description: Continuation token which will be used to specify next page in list
-        API.
+      description: Continuation token which will be used to specify next page in list API.
       type: String
   - arguments:
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
@@ -919,8 +1466,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: "Creates a custom user schema to add custom fields to user profiles.\nNote:
-    field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided."
+    description: "Creates a custom user schema to add custom fields to user profiles.\nNote: field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided."
     execution: false
     name: gsuite-custom-user-schema-create
     outputs:
@@ -974,7 +1520,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: 'Email ID of the G Suite domain admin who acts on behalf of an end-user.'
       isArray: false
       name: admin_email
       required: false
@@ -1004,7 +1550,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: |+
+      description: |
         Raw JSON containing fields of the schema. Acceptable values for
         fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
         values for readAccessType are ADMINS_AND_SELF- Only administrators and
@@ -1060,8 +1606,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: "Updates a custom user schema.\nNote:
-    field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided."
+    description: "Updates a custom user schema.\nNote: field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided."
     execution: false
     name: gsuite-custom-user-schema-update
     outputs:
@@ -1139,16 +1684,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Key and value pair of application data transfer parameters. Key
-        and value must be delimited by (:) colon. Multiple values must be delimited
-        by (,) comma. Multiple key-value pairs must be delimited by (;) semi-colon.
-        E.g. key1:val;key2:val1,val2
+      description: Key and value pair of application data transfer parameters. Key and value must be delimited by (:) colon. Multiple values must be delimited by (,) comma. Multiple key-value pairs must be delimited by (;) semi-colon. E.g. key1:val;key2:val1,val2
       isArray: false
       name: application_transfer_params
       required: false
       secret: false
     - default: false
-      description: |+
+      description: |
         Raw JSON containing the whole body of the application data transfers.
         E.g.
         {
@@ -1237,8 +1779,7 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: Identifies the user in the API request. The value can be the user's
-        primary email address, alias email address, or unique user ID.
+      description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
       isArray: false
       name: user_key
       required: true
@@ -1267,17 +1808,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Stores the password for the user account. A password can contain
-        any combination of ASCII characters. A minimum of 8 characters is required.
-        The maximum length is 100 characters. The password will be sent in MD5 hash
-        format.
+      description: Stores the password for the user account. A password can contain any combination of ASCII characters. A minimum of 8 characters is required. The maximum length is 100 characters. The password will be sent in MD5 hash format.
       isArray: false
       name: password
       required: false
       secret: false
     - default: false
-      description: The user's primary email address. The primary_email must be unique
-        and cannot be an alias of another user.
+      description: The user's primary email address. The primary_email must be unique and cannot be an alias of another user.
       isArray: false
       name: primary_email
       required: false
@@ -1328,8 +1865,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The street address, such as 1600 Amphitheatre Parkway. Whitespace
-        within the string is ignored; however, newlines are significant.
+      description: The street address, such as 1600 Amphitheatre Parkway. Whitespace within the string is ignored; however, newlines are significant.
       isArray: false
       name: street_address
       required: false
@@ -1375,8 +1911,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Content type of note, either plain text or HTML. If not provided,
-        considered as plain text.
+      description: Content type of note, either plain text or HTML. If not provided, considered as plain text.
       isArray: false
       name: notes_content_type
       predefined:
@@ -1391,8 +1926,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A human-readable phone number. It may be in any telephone number
-        format.
+      description: A human-readable phone number. It may be in any telephone number format.
       isArray: false
       name: phone_number
       required: false
@@ -1427,8 +1961,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Indicates if this is the user's primary phone number. A user may
-        only have one primary phone number.
+      description: Indicates if this is the user's primary phone number. A user may only have one primary phone number.
       isArray: false
       name: is_phone_number_primary
       predefined:
@@ -1443,8 +1976,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Recovery phone of the user. The phone number must be in the E.164
-        format, starting with the plus sign (+). Example: +16506661212.'
+      description: 'Recovery phone of the user. The phone number must be in the E.164 format, starting with the plus sign (+). Example: +16506661212.'
       isArray: false
       name: recovery_phone
       required: false
@@ -1466,8 +1998,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Identifies the user in the API request. The value can be the user's primary email
-        address, alias email address, or unique user ID.
+      description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
       isArray: false
       name: user_key
       required: true
@@ -1480,11 +2011,10 @@ script:
       required: false
       secret: false
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
-      description: To move the user to OU (Organization Unit). The full path of the parent organization
-        associated with the user. If the parent organization is the top-level, it is represented as a forward slash (/).
+      description: To move the user to OU (Organization Unit). The full path of the parent organization associated with the user. If the parent organization is the top-level, it is represented as a forward slash (/).
       isArray: false
       name: org_unit_path
       required: false
@@ -1528,8 +2058,7 @@ script:
       description: The time the user's account was created.
       type: Date
     - contextPath: GSuite.User.phones.value
-      description: A human-readable phone number. It may be in any telephone number
-        format.
+      description: A human-readable phone number. It may be in any telephone number format.
       type: String
     - contextPath: GSuite.User.phones.type
       description: The type of phone number.
@@ -1604,9 +2133,7 @@ script:
       description: Recovery phone of the user.
       type: String
     - contextPath: GSuite.User.orgUnitPath
-      description: The full path of the parent organization associated with the user.
-        If the parent organization is the top-level, it is represented as a forward
-        slash (/).
+      description: The full path of the parent organization associated with the user. If the parent organization is the top-level, it is represented as a forward slash (/).
       type: String
     - contextPath: GSuite.User.isMailboxSetup
       description: Indicates if the user's Google mailbox is created.
@@ -1627,28 +2154,19 @@ script:
       description: The user's full name formed by concatenating the first and last name values.
       type: String
     - contextPath: GSuite.User.lastLoginTime
-      description: The last time the user logged into the user's account.
-        The value is in ISO 8601 date and time format.
-        The time is the complete date plus hours, minutes, and seconds in the form
-        YYYY-MM-DDThh:mm:ssTZD. For example, 2010-04-05T17:30:04+01:00.
+      description: The last time the user logged into the user's account. The value is in ISO 8601 date and time format. The time is the complete date plus hours, minutes, and seconds in the form YYYY-MM-DDThh:mm:ssTZD. For example, 2010-04-05T17:30:04+01:00.
       type: Date
     - contextPath: GSuite.User.deletionTime
-      description: The time the user's account was deleted.
-        The value is in ISO 8601 date and time format.
-        The time is the complete date plus hours, minutes, and seconds in the form
-        YYYY-MM-DDThh:mm:ssTZD. For example 2010-04-05T17:30:04+01:00.
+      description: The time the user's account was deleted. The value is in ISO 8601 date and time format. The time is the complete date plus hours, minutes, and seconds in the form YYYY-MM-DDThh:mm:ssTZD. For example 2010-04-05T17:30:04+01:00.
       type: Date
     - contextPath: GSuite.User.agreedToTerms
-      description: This property is true if the user has completed an initial login and
-        accepted the Terms of Service agreement.
+      description: This property is true if the user has completed an initial login and accepted the Terms of Service agreement.
       type: Boolean
     - contextPath: GSuite.User.suspensionReason
-      description: Has the reason a user account is suspended either by the administrator
-        or by Google at the time of suspension. The property is returned only if the suspended property is true.
+      description: Has the reason a user account is suspended either by the administrator or by Google at the time of suspension. The property is returned only if the suspended property is true.
       type: String
     - contextPath: GSuite.User.changePasswordAtNextLogin
-      description: Indicates if the user is forced to change their password at next login.
-        This setting doesn't apply when the user signs in via a third-party identity provider.
+      description: Indicates if the user is forced to change their password at next login. This setting doesn't apply when the user signs in via a third-party identity provider.
       type: Boolean
     - contextPath: GSuite.User.ims.type
       description: Type of the user's Instant Messenger (IM) account.
@@ -1723,12 +2241,10 @@ script:
       description: The full-time equivalent millipercent within the organization (100000 = 100%).
       type: String
     - contextPath: GSuite.User.languages.languageCode
-      description: Language Code. Should be used for storing Google III LanguageCode string
-        representation for language. Illegal values cause SchemaException.
+      description: Language Code. Should be used for storing Google III LanguageCode string representation for language. Illegal values cause SchemaException.
       type: String
     - contextPath: GSuite.User.languages.customLanguage
-      description: Other language. A user can provide their own language name if there
-        is no corresponding Google III language code. If this is set, LanguageCode can't be set.
+      description: Other language. A user can provide their own language name if there is no corresponding Google III language code. If this is set, LanguageCode can't be set.
       type: String
     - contextPath: GSuite.User.posixAccounts.username
       description: The username of the account.
@@ -1773,8 +2289,7 @@ script:
       description: List of the user's alias email addresses.
       type: Unknown
     - contextPath: GSuite.User.nonEditableAliases
-      description: List of the user's non-editable alias email addresses.
-        These are typically outside the account's primary domain or sub-domain.
+      description: List of the user's non-editable alias email addresses. These are typically outside the account's primary domain or sub-domain.
       type: Unknown
     - contextPath: GSuite.User.websites.value
       description: The URL of the website.
@@ -1783,8 +2298,7 @@ script:
       description: If this is user's primary website or not.
       type: Boolean
     - contextPath: GSuite.User.websites.type
-      description: The type or purpose of the website. For example, a website could be labeled as home or blog.
-        Alternatively, an entry can have a custom type.
+      description: The type or purpose of the website. For example, a website could be labeled as home or blog. Alternatively, an entry can have a custom type.
       type: String
     - contextPath: GSuite.User.websites.customType
       description: The custom type. Only used if the type is custom.
@@ -1796,8 +2310,7 @@ script:
       description: If the location type is custom, this property contains the custom value.
       type: String
     - contextPath: GSuite.User.locations.area
-      description: Textual location. This is most useful for display purposes to
-        concisely describe the location. For example, "Mountain View, CA", "Near Seattle".
+      description: Textual location. This is most useful for display purposes to concisely describe the location. For example, "Mountain View, CA", "Near Seattle".
       type: String
     - contextPath: GSuite.User.locations.buildingId
       description: Building identifier.
@@ -1806,17 +2319,13 @@ script:
       description: Floor name/number.
       type: String
     - contextPath: GSuite.User.locations.floorSection
-      description: Floor section. More specific location within the floor.
-        For example, if a floor is divided into sections "A", "B", and "C", this field would identify one of those values.
+      description: Floor section. More specific location within the floor. For example, if a floor is divided into sections "A", "B", and "C", this field would identify one of those values.
       type: String
     - contextPath: GSuite.User.locations.deskCode
       description: Most specific textual code of individual desk location.
       type: String
     - contextPath: GSuite.User.keywords.type
-      description: Each entry can have a type which indicates standard type of that entry. For example,
-        keyword could be of type occupation or outlook. In addition to the standard type,
-        an entry can have a custom type and can give it any name. Such types
-        should have the CUSTOM value as type and also have a customType value.
+      description: Each entry can have a type which indicates standard type of that entry. For example, keyword could be of type occupation or outlook. In addition to the standard type, an entry can have a custom type and can give it any name. Such types should have the CUSTOM value as type and also have a customType value.
       type: String
     - contextPath: GSuite.User.keywords.customType
       description: Custom Type.
@@ -1831,8 +2340,7 @@ script:
       description: Is 2-step verification enforced.
       type: Boolean
     - contextPath: GSuite.User.includeInGlobalAddressList
-      description: Indicates if the user's profile is visible in the G Suite global address
-        list when the contact sharing feature is enabled for the domain.
+      description: Indicates if the user's profile is visible in the G Suite global address list when the contact sharing feature is enabled for the domain.
       type: Boolean
     - contextPath: GSuite.User.thumbnailPhotoUrl
       description: Photo Url of the user.
@@ -1889,8 +2397,7 @@ script:
       description: The time the user's account was created.
       type: Date
     - contextPath: GSuite.User.phones.value
-      description: A human-readable phone number. It may be in any telephone number
-        format.
+      description: A human-readable phone number. It may be in any telephone number format.
       type: String
     - contextPath: GSuite.User.phones.type
       description: The type of phone number.
@@ -1899,23 +2406,19 @@ script:
       description: Indicates if this is the user's primary phone number.
       type: Boolean
     - contextPath: GSuite.User.phones.customType
-      description: If the value of type is custom, this property contains the custom
-        type.
+      description: If the value of type is custom, this property contains the custom type.
       type: String
     - contextPath: GSuite.User.addresses.type
       description: The address type.
       type: String
     - contextPath: GSuite.User.addresses.customType
-      description: If the address type is custom, this property contains the custom
-        value.
+      description: If the address type is custom, this property contains the custom value.
       type: String
     - contextPath: GSuite.User.addresses.sourceIsStructured
-      description: Indicates if the user-supplied address was formatted. Formatted
-        addresses are not currently supported.
+      description: Indicates if the user-supplied address was formatted. Formatted addresses are not currently supported.
       type: Boolean
     - contextPath: GSuite.User.addresses.formatted
-      description: A full and unstructured postal address. This is not synced with
-        the structured address fields.
+      description: A full and unstructured postal address. This is not synced with the structured address fields.
       type: String
     - contextPath: GSuite.User.addresses.poBox
       description: The post office box, if present.
@@ -1951,12 +2454,10 @@ script:
       description: The secondary email type.
       type: String
     - contextPath: GSuite.User.emails.customType
-      description: If the value of type is custom, this property contains the custom
-        type string.
+      description: If the value of type is custom, this property contains the custom type string.
       type: String
     - contextPath: GSuite.User.emails.primary
-      description: Indicates if this is the user's primary email. Only one entry can
-        be marked as primary.
+      description: Indicates if this is the user's primary email. Only one entry can be marked as primary.
       type: Boolean
     - contextPath: GSuite.User.ipWhitelisted
       description: If true, the user's IP address is added to allow list.
@@ -1971,9 +2472,7 @@ script:
       description: Recovery phone of the user.
       type: String
     - contextPath: GSuite.User.orgUnitPath
-      description: The full path of the parent organization associated with the user.
-        If the parent organization is the top-level, it is represented as a forward
-        slash (/).
+      description: The full path of the parent organization associated with the user. If the parent organization is the top-level, it is represented as a forward slash (/).
       type: String
     - contextPath: GSuite.User.isMailboxSetup
       description: Indicates if the user's Google mailbox is created.
@@ -1991,32 +2490,22 @@ script:
       description: Indicates if the user is archived.
       type: Boolean
     - contextPath: GSuite.User.fullName
-      description: The user's full name formed by concatenating the first and last
-        name values.
+      description: The user's full name formed by concatenating the first and last name values.
       type: String
     - contextPath: GSuite.User.lastLoginTime
-      description: The last time the user logged into the user's account. The value
-        is in ISO 8601 date and time format. The time is the complete date plus hours,
-        minutes, and seconds in the form YYYY-MM-DDThh:mm:ssTZD. For example, 2010-04-05T17:30:04+01:00.
+      description: The last time the user logged into the user's account. The value is in ISO 8601 date and time format. The time is the complete date plus hours, minutes, and seconds in the form YYYY-MM-DDThh:mm:ssTZD. For example, 2010-04-05T17:30:04+01:00.
       type: Date
     - contextPath: GSuite.User.deletionTime
-      description: The time the user's account was deleted. The value is in ISO 8601
-        date and time format. The time is the complete date plus hours, minutes, and
-        seconds in the form YYYY-MM-DDThh:mm:ssTZD. For example 2010-04-05T17:30:04+01:00.
+      description: The time the user's account was deleted. The value is in ISO 8601 date and time format. The time is the complete date plus hours, minutes, and seconds in the form YYYY-MM-DDThh:mm:ssTZD. For example 2010-04-05T17:30:04+01:00.
       type: Date
     - contextPath: GSuite.User.agreedToTerms
-      description: This property is true if the user has completed an initial login
-        and accepted the Terms of Service agreement.
+      description: This property is true if the user has completed an initial login and accepted the Terms of Service agreement.
       type: Boolean
     - contextPath: GSuite.User.suspensionReason
-      description: Has the reason a user account is suspended either by the administrator
-        or by Google at the time of suspension. The property is returned only if the
-        suspended property is true.
+      description: Has the reason a user account is suspended either by the administrator or by Google at the time of suspension. The property is returned only if the suspended property is true.
       type: String
     - contextPath: GSuite.User.changePasswordAtNextLogin
-      description: Indicates if the user is forced to change their password at next
-        login. This setting doesn't apply when the user signs in via a third-party
-        identity provider.
+      description: Indicates if the user is forced to change their password at next login. This setting doesn't apply when the user signs in via a third-party identity provider.
       type: Boolean
     - contextPath: GSuite.User.ims.type
       description: Type of the user's Instant Messenger (IM) account.
@@ -2025,19 +2514,16 @@ script:
       description: If the IM type is custom, this property holds the custom type string.
       type: String
     - contextPath: GSuite.User.ims.protocol
-      description: An IM protocol identifies the IM network. The value can be a custom
-        network or the standard network.
+      description: An IM protocol identifies the IM network. The value can be a custom network or the standard network.
       type: String
     - contextPath: GSuite.User.ims.customProtocol
-      description: If the protocol value is custom_protocol, this property holds the
-        custom protocol's string.
+      description: If the protocol value is custom_protocol, this property holds the custom protocol's string.
       type: String
     - contextPath: GSuite.User.ims.im
       description: The user's IM network ID.
       type: String
     - contextPath: GSuite.User.ims.primary
-      description: If this is the user's primary IM. Only one entry in the IM list
-        can have a value of true.
+      description: If this is the user's primary IM. Only one entry in the IM list can have a value of true.
       type: Boolean
     - contextPath: GSuite.User.externalIds.value
       description: The value of the external ID.
@@ -2046,8 +2532,7 @@ script:
       description: The type of the external ID.
       type: String
     - contextPath: GSuite.User.externalIds.customType
-      description: If the external ID type is custom, this property holds the custom
-        type.
+      description: If the external ID type is custom, this property holds the custom type.
       type: String
     - contextPath: GSuite.User.relations.value
       description: The name of the person the user is related to.
@@ -2056,38 +2541,31 @@ script:
       description: The type of relation.
       type: String
     - contextPath: GSuite.User.relations.customType
-      description: If the value of type is custom, this property contains the custom
-        type.
+      description: If the value of type is custom, this property contains the custom type.
       type: String
     - contextPath: GSuite.User.organizations.name
       description: The name of the organization.
       type: String
     - contextPath: GSuite.User.organizations.title
-      description: The user's title within the organization, for example 'member'
-        or 'engineer'.
+      description: The user's title within the organization, for example 'member' or 'engineer'.
       type: String
     - contextPath: GSuite.User.organizations.primary
-      description: Indicates if this is the user's primary organization. A user may
-        only have one primary organization.
+      description: Indicates if this is the user's primary organization. A user may only have one primary organization.
       type: Boolean
     - contextPath: GSuite.User.organizations.type
       description: The type of organization.
       type: String
     - contextPath: GSuite.User.organizations.customType
-      description: If the value of type is custom, this property contains the custom
-        type.
+      description: If the value of type is custom, this property contains the custom type.
       type: String
     - contextPath: GSuite.User.organizations.department
-      description: Specifies the department within the organization, such as 'sales'
-        or 'engineering'.
+      description: Specifies the department within the organization, such as 'sales' or 'engineering'.
       type: String
     - contextPath: GSuite.User.organizations.symbol
-      description: Text string symbol of the organization. For example, the text symbol
-        for Google is GOOG.
+      description: Text string symbol of the organization. For example, the text symbol for Google is GOOG.
       type: String
     - contextPath: GSuite.User.organizations.location
-      description: The physical location of the organization. This does not need to
-        be a fully qualified address.
+      description: The physical location of the organization. This does not need to be a fully qualified address.
       type: String
     - contextPath: GSuite.User.organizations.description
       description: The description of the organization.
@@ -2099,17 +2577,13 @@ script:
       description: The cost center of the user's organization.
       type: String
     - contextPath: GSuite.User.organizations.fullTimeEquivalent
-      description: The full-time equivalent millipercent within the organization (100000
-        = 100%).
+      description: The full-time equivalent millipercent within the organization (100000 = 100%).
       type: String
     - contextPath: GSuite.User.languages.languageCode
-      description: Language Code. Should be used for storing Google III LanguageCode
-        string representation for language. Illegal values cause SchemaException.
+      description: Language Code. Should be used for storing Google III LanguageCode string representation for language. Illegal values cause SchemaException.
       type: String
     - contextPath: GSuite.User.languages.customLanguage
-      description: Other language. A user can provide their own language name if there
-        is no corresponding Google III language code. If this is set, LanguageCode
-        can't be set.
+      description: Other language. A user can provide their own language name if there is no corresponding Google III language code. If this is set, LanguageCode can't be set.
       type: String
     - contextPath: GSuite.User.posixAccounts.username
       description: The username of the account.
@@ -2154,8 +2628,7 @@ script:
       description: List of the user's alias email addresses.
       type: Unknown
     - contextPath: GSuite.User.nonEditableAliases
-      description: List of the user's non-editable alias email addresses. These are
-        typically outside the account's primary domain or sub-domain.
+      description: List of the user's non-editable alias email addresses. These are typically outside the account's primary domain or sub-domain.
       type: Unknown
     - contextPath: GSuite.User.websites.value
       description: The URL of the website.
@@ -2164,8 +2637,7 @@ script:
       description: If this is user's primary website or not.
       type: Boolean
     - contextPath: GSuite.User.websites.type
-      description: The type or purpose of the website. For example, a website could
-        be labeled as home or blog. Alternatively, an entry can have a custom type.
+      description: The type or purpose of the website. For example, a website could be labeled as home or blog. Alternatively, an entry can have a custom type.
       type: String
     - contextPath: GSuite.User.websites.customType
       description: The custom type. Only used if the type is custom.
@@ -2174,12 +2646,10 @@ script:
       description: The location type.
       type: String
     - contextPath: GSuite.User.locations.customType
-      description: If the location type is custom, this property contains the custom
-        value.
+      description: If the location type is custom, this property contains the custom value.
       type: String
     - contextPath: GSuite.User.locations.area
-      description: Textual location. This is most useful for display purposes to concisely
-        describe the location. For example, "Mountain View, CA", "Near Seattle".
+      description: Textual location. This is most useful for display purposes to concisely describe the location. For example, "Mountain View, CA", "Near Seattle".
       type: String
     - contextPath: GSuite.User.locations.buildingId
       description: Building identifier.
@@ -2188,19 +2658,13 @@ script:
       description: Floor name/number.
       type: String
     - contextPath: GSuite.User.locations.floorSection
-      description: Floor section. More specific location within the floor. For example,
-        if a floor is divided into sections "A", "B", and "C", this field would identify
-        one of those values.
+      description: Floor section. More specific location within the floor. For example, if a floor is divided into sections "A", "B", and "C", this field would identify one of those values.
       type: String
     - contextPath: GSuite.User.locations.deskCode
       description: Most specific textual code of individual desk location.
       type: String
     - contextPath: GSuite.User.keywords.type
-      description: Each entry can have a type which indicates standard type of that
-        entry. For example, keyword could be of type occupation or outlook. In addition
-        to the standard type, an entry can have a custom type and can give it any
-        name. Such types should have the CUSTOM value as type and also have a customType
-        value.
+      description: Each entry can have a type which indicates standard type of that entry. For example, keyword could be of type occupation or outlook. In addition to the standard type, an entry can have a custom type and can give it any name. Such types should have the CUSTOM value as type and also have a customType value.
       type: String
     - contextPath: GSuite.User.keywords.customType
       description: Custom Type.
@@ -2215,8 +2679,7 @@ script:
       description: Is 2-step verification enforced.
       type: Boolean
     - contextPath: GSuite.User.includeInGlobalAddressList
-      description: Indicates if the user's profile is visible in the G Suite global
-        address list when the contact sharing feature is enabled for the domain.
+      description: Indicates if the user's profile is visible in the G Suite global address list when the contact sharing feature is enabled for the domain.
       type: Boolean
     - contextPath: GSuite.User.thumbnailPhotoUrl
       description: Photo Url of the user.
@@ -2258,21 +2721,18 @@ script:
       description: The number of users that are direct members of the group.
       type: String
     - contextPath: GSuite.Group.description
-      description: An extended description to help users determine the purpose of
-        a group.
+      description: An extended description to help users determine the purpose of a group.
       type: String
     - contextPath: GSuite.Group.adminCreated
-      description: Value is true if this group was created by an administrator rather
-        than a user.
+      description: Value is true if this group was created by an administrator rather than a user.
       type: Boolean
     - contextPath: GSuite.Group.aliases
       description: List of a group's alias email addresses.
       type: String
     - contextPath: GSuite.Group.nonEditableAliases
-      description: List of the group's non-editable alias email addresses that are
-        outside of the account's primary domain or subdomains.
+      description: List of the group's non-editable alias email addresses that are outside of the account's primary domain or subdomains.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.26733
+  dockerimage: demisto/googleapi-python3:1.0.0.41311
   feed: false
   isfetch: false
   longRunning: false
@@ -2283,4 +2743,5 @@ script:
   type: python
 tests:
 - GSuiteAdmin-Test
+- GSuiteAdmin-MobileDevices-Test
 fromversion: 5.0.0

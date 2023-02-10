@@ -1,0 +1,271 @@
+id: F5 LTM - Wait for connections to drop
+version: -1
+name: F5 LTM - Wait for connections to drop
+description: A playbook to wait for connections to a node to drop to zero.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 281ba478-71fd-4a18-888e-82adc8920d0e
+    type: start
+    task:
+      id: 281ba478-71fd-4a18-888e-82adc8920d0e
+      version: -1
+      name: ""
+      description : ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 71a938a4-a0c1-4877-8cd1-0912891be1cc
+    type: condition
+    task:
+      id: 71a938a4-a0c1-4877-8cd1-0912891be1cc
+      version: -1
+      name: is F5 LTM enabled?
+      description: "A task to check if F5 LTM integration is configured"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: F5LTM
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: f4d42dbd-fcee-4cd1-8ffb-3503e2c48c85
+    type: title
+    task:
+      id: f4d42dbd-fcee-4cd1-8ffb-3503e2c48c85
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 7a1a0ccb-8ce4-4bfd-86d4-13617e174a0c
+    type: playbook
+    task:
+      id: 7a1a0ccb-8ce4-4bfd-86d4-13617e174a0c
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: partition
+      AdditionalPollingCommandArgValues:
+        complex:
+          root: inputs.Partition_Name
+      Ids:
+        complex:
+          root: F5.LTM.Nodes
+          accessor: name
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: node_name
+      PollingCommandName:
+        simple: f5-ltm-get-node-stats
+      Timeout:
+        simple: "10"
+      dt:
+        simple: F5.LTM.Nodes(val.stats.curSessions.value !== 0).name
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 88b54972-77ec-4890-86f7-388b9a63bea5
+    type: regular
+    task:
+      id: 88b54972-77ec-4890-86f7-388b9a63bea5
+      version: -1
+      name: Get Node Stats
+      description: A task to get Node stats by Node name , the stats include the number of current connections and sessions.
+      script: '|||f5-ltm-get-node-stats'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      node:
+        simple: ${inputs.node}
+      node_name:
+        complex:
+          root: inputs.Node_Name
+      partition:
+        complex:
+          root: inputs.Partition_Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 650,
+        "x": 310,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Node_Name
+  value: {}
+  required: true
+  description: Node name to check.
+  playbookInputQuery: null
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Polling frequency - how often the polling command should run (in minutes).
+  playbookInputQuery: null
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: How much time (in minutes) to wait before a timeout occurs.
+  playbookInputQuery: null
+- key: Partition_Name
+  value:
+    simple: Common
+  required: false
+  description: Configuration partition name.
+  playbookInputQuery: null
+outputs:
+- contextPath: F5.LTM.Nodes.stats.serverside.curConns.value
+  description: The current connections of the Node
+- contextPath: F5.LTM.Nodes.name
+  description: The node name
+- contextPath: F5.LTM.Nodes.stats.sessionStatus.description
+  description: The node status
+sourceplaybookid: Launch Job - Ansible Tower
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

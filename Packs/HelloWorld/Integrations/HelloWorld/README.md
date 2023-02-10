@@ -11,21 +11,22 @@ This integration was built to interact with the sample SOAR Hello World API To c
 2. Search for HelloWorld.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| url | Server URL \(e.g. https://soar.monstersofhack.com\) | True |
-| isFetch | Fetch incidents | False |
-| incidentType | Incident type | False |
-| max_fetch | Maximum number of incidents per fetch | False |
-| apikey | API Key | True |
-| threshold_ip | Score threshold for ip reputation command \(0\-100\) | False |
-| threshold_domain | Score threshold for domain reputation command \(0\-100\) | False |
-| alert_status | Fetch alerts with status \(ACTIVE, CLOSED\) | False |
-| alert_type | Fetch alerts with type | False |
-| min_severity | Minimum severity of alerts to fetch | True |
-| first_fetch | First fetch time | False |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Source Reliability | Reliability of the source providing the intelligence data. |  |
+    | Server URL (e.g. https://soar.monstersofhack.com) |  | True |
+    | Fetch incidents |  | False |
+    | Incident type |  | False |
+    | Maximum number of incidents per fetch |  | False |
+    | API Key |  | True |
+    | Score threshold for IP reputation command | Set this to determine the HelloWorld score that will determine if an IP is malicious \(0-100\) | False |
+    | Score threshold for domain reputation command | Set this to determine the HelloWorld score that will determine if a domain is malicious \(0-100\) | False |
+    | Fetch alerts with status (ACTIVE, CLOSED) |  | False |
+    | Fetch alerts with type | Comma-separated list of types of alerts to fetch. Types might change over time. Some examples are 'Bug' and 'Vulnerability' | False |
+    | Minimum severity of alerts to fetch |  | True |
+    | First fetch time |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -314,6 +315,7 @@ Return IP information and reputation
 {
     "DBotScore": {
         "Indicator": "8.8.8.8",
+        "Reliability": "C - Fairly reliable",
         "Score": 2,
         "Type": "ip",
         "Vendor": "HelloWorld"
@@ -474,6 +476,7 @@ Returns Domain information and reputation.
 {
     "DBotScore": {
         "Indicator": "demisto.com",
+        "Reliability": "C - Fairly reliable",
         "Score": 2,
         "Type": "domain",
         "Vendor": "HelloWorld"

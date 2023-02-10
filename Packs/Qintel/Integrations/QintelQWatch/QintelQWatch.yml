@@ -27,7 +27,7 @@ configuration:
   name: fetch_passwords
   type: 8
   required: false
-  defaultvalue: true
+  defaultvalue: 'true'
 - display: Limit number of records per fetch
   name: max_fetch
   type: 0

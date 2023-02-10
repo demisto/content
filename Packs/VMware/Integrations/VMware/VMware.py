@@ -4,12 +4,41 @@ import ssl
 import urllib3
 import demistomock as demisto  # noqa: F401
 import pyVim.task
-import dateparser
+import dateparser  # type: ignore
 from CommonServerPython import *  # noqa: F401
-from cStringIO import StringIO
+from io import StringIO
 from pyVim.connect import Disconnect, SmartConnect
-from pyVmomi import vim, vmodl
+from pyVmomi import vim, vmodl  # type: ignore
 from vmware.vapi.vsphere.client import create_vsphere_client
+
+
+REDIRECT_STD_OUT = argToBoolean(demisto.params().get('redirect_std_out', 'false'))
+real_demisto_info = demisto.info
+real_demisto_debug = demisto.debug
+
+
+def use_demisto_debug(msg):  # pragma: no cover
+    if REDIRECT_STD_OUT:
+        temp = sys.stdout
+        sys.stdout = sys.__stdout__
+        real_demisto_debug(msg)
+        sys.stdout = temp
+    else:
+        real_demisto_debug(msg)
+
+
+def use_demisto_info(msg):  # pragma: no cover
+    if REDIRECT_STD_OUT:
+        temp = sys.stdout
+        sys.stdout = sys.__stdout__
+        real_demisto_info(msg)
+        sys.stdout = temp
+    else:
+        real_demisto_info(msg)
+
+
+demisto.info = use_demisto_info  # type: ignore
+demisto.debug = use_demisto_debug  # type: ignore
 
 
 def parse_params(params):
@@ -97,6 +126,8 @@ def get_tag(vsphere_client, args):
         if cat_details.name == args.get('category'):
             relevant_category = cat_details.id
             break
+    if not relevant_category:
+        raise Exception("The category {} was not found".format(args.get('category')))
     tags = vsphere_client.tagging.Tag.list_tags_for_category(relevant_category)
     for tag in tags:
         tag_details = vsphere_client.tagging.Tag.get(tag)
@@ -559,10 +590,16 @@ def change_nic_state(si, args):  # pragma: no cover
 
 def list_vms_by_tag(vsphere_client, args):
     relevant_tag = get_tag(vsphere_client, args)
+    # Added this condition to avoid 'vsphere_client.tagging.TagAssociation.list_attached_objects' errors
+    if not relevant_tag:
+        raise Exception("The tag {} was not found".format(args.get('tag')))
     vms = vsphere_client.tagging.TagAssociation.list_attached_objects(relevant_tag)
-    vms = filter(lambda vm: vm.type == 'VirtualMachine', vms)
-    vms_details = vsphere_client.vcenter.VM.list(
-        vsphere_client.vcenter.VM.FilterSpec(vms=set([str(vm.id) for vm in vms])))
+    vms = [vm for vm in vms if vm.type == 'VirtualMachine']
+    vms_details = []
+    # This filter isn't needed if vms are empty, when you send an empty vms list - it returns all vms
+    if vms:
+        vms_details = vsphere_client.vcenter.VM.list(
+            vsphere_client.vcenter.VM.FilterSpec(vms=set([str(vm.id) for vm in vms])))
     data = []
     for vm in vms_details:
         data.append({
@@ -799,8 +836,8 @@ def test_module(si):
 
 
 def main():  # pragma: no cover
-    sout = sys.stdout
-    sys.stdout = StringIO()
+    if REDIRECT_STD_OUT:
+        sys.stdout = StringIO()
     res = []
     si = None
     try:
@@ -857,7 +894,7 @@ def main():  # pragma: no cover
         res.append({  # type: ignore
             "Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Logout failed. " + str(ex)})
 
-    sys.stdout = sout
+    sys.stdout = sys.__stdout__
     demisto.results(res)
 
 

@@ -1,0 +1,62 @@
+category: Database
+commonfields:
+  id: DB2
+  version: -1
+configuration:
+- display: Database host
+  name: host
+  required: true
+  type: 0
+- display: Port
+  name: port
+  required: false
+  type: 0
+- display: Database Name
+  name: dbname
+  required: false
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: 'Connection Arguments (ex: arg1=val1&arg2=val2)'
+  name: connect_parameters
+  required: false
+  type: 0
+- display: Use an SSL connection
+  name: ssl_connect
+  required: false
+  type: 8
+- display: Use Persistent Connection
+  name: use_persistent
+  required: false
+  type: 8
+description: Integration to provide connectivity to IBM DB2 using the python ibm_db2 library.
+display: DB2
+name: DB2
+script:
+  commands:
+  - arguments:
+    - description: The DB2 query to run
+      name: query
+      required: true
+    - defaultValue: "50"
+      description: The maximum number of results
+      name: limit
+    - defaultValue: "0"
+      description: The offset at which to start the result
+      name: offset
+    - description: A comma separated list of names which will be replaced in query having ':<name>'.
+      name: bind_variables_name
+    - description: A comma separated list of values corresponding to `bind_variables_name` or values in order of '?' mark to be replaced in query.
+      name: bind_variables_values
+    description: Running a DB2 query command
+    name: db2-query
+  dockerimage: demisto/ibm-db2:1.0.0.27972
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

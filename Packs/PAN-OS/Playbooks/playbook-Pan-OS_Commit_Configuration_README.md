@@ -13,15 +13,18 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
-* panorama
-* panorama-commit-status
-* panorama-push-status
-* panorama-push-to-device-group
-* panorama-commit
+* pan-os
+* pan-os-commit-status
+* pan-os-push-status
+* pan-os-push-to-device-group
+* pan-os-commit
 
 ## Playbook Inputs
 ---
-There are no inputs for this playbook.
+
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| device-group | Use device-group as input in case needed to override the device-group in panorama instance configuration. | None | Optional |
 
 ## Playbook Outputs
 ---

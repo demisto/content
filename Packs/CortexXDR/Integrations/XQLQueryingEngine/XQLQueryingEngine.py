@@ -3,7 +3,6 @@ import gzip
 import hashlib
 import secrets
 import string
-import traceback
 from typing import Any, Dict, Tuple
 
 import requests
@@ -314,10 +313,13 @@ def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
             if len(tokens) == 2:
                 time_from = dateparser.parse(tokens[0], settings={'TIMEZONE': 'UTC'})
                 time_to = dateparser.parse(tokens[1], settings={'TIMEZONE': 'UTC'})
+                assert time_from is not None and time_to is not None
                 return {'from': int(time_from.timestamp()) * 1000, 'to': int(time_to.timestamp()) * 1000}
         else:
             relative = dateparser.parse(time_to_convert, settings={'TIMEZONE': 'UTC'})
-            return {'relativeTime': int((datetime.utcnow() - relative).total_seconds()) * 1000}
+            now_date = datetime.utcnow()
+            assert now_date is not None and relative is not None
+            return {'relativeTime': int((now_date - relative).total_seconds()) * 1000}
 
         raise ValueError(f'Invalid timeframe: {time_to_convert}')
     except Exception as exc:
@@ -529,19 +531,6 @@ def get_nonce() -> str:
     return "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
 
 
-def add_context_to_integration_context(context: dict):
-    """
-    Add the given context to the integration context.
-
-    Args:
-        context (str): The context to add.
-    """
-    if context:
-        integration_context = get_integration_context()
-        integration_context.update(context)
-        set_integration_context(integration_context)
-
-
 def remove_query_id_from_integration_context(query_id: str):
     """
     Remove the given query_id from the integration context.
@@ -603,7 +592,7 @@ def start_xql_query_polling_command(client: Client, args: dict) -> Union[Command
     args['query_id'] = execution_id
     # the query data is being saved in the integration context for the next scheduled command command.
     try:
-        add_context_to_integration_context({
+        set_to_integration_context_with_retries({
             execution_id: {
                 'query': args.get('query'),
                 'time_frame': args.get('time_frame'),
@@ -630,8 +619,10 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     # get the query data either from the integration context (if its not the first run) or from the given args.
     query_id = args.get('query_id', '')
     parse_result_file_to_context = argToBoolean(args.get('parse_result_file_to_context', 'false'))
-    integration_context = get_integration_context()
-    command_data = integration_context.get(query_id, args)
+    integration_context, _ = get_integration_context_with_version()
+    command_data_raw = integration_context.get(query_id, args)
+    command_data = json.loads(command_data_raw) if isinstance(command_data_raw, str)\
+        else integration_context.get(query_id, args)
     command_name = command_data.get('command_name', demisto.command())
     interval_in_secs = int(args.get('interval_in_seconds', 10))
     max_fields = arg_to_number(args.get('max_fields', 20))
@@ -642,11 +633,12 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     outputs_prefix = get_outputs_prefix(command_name)
     command_results = CommandResults(outputs_prefix=outputs_prefix, outputs_key_field='execution_id', outputs=outputs,
                                      raw_response=copy.deepcopy(outputs))
-    # if there are more then 1000 results
+    # if there are more than 1000 results
     if file_data:
         if not parse_result_file_to_context:
             #  Extracts the results into a file only
             file = fileResult(filename="results.gz", data=file_data)
+            command_results.readable_output = 'More than 1000 results were retrieved, see the compressed gzipped file below.'
             remove_query_id_from_integration_context(query_id)
             return [file, command_results]
         else:
@@ -860,7 +852,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {command} command.\nError: {str(e)}')
 
 

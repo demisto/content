@@ -1,0 +1,43 @@
+args:
+- description: The value to be converted from.
+  name: value
+- description: The context path to the pcap.
+  name: path
+- auto: PREDEFINED
+  defaultValue: auto
+  description: The data type of the pcap data.
+  name: pcap_type
+  predefined:
+  - auto
+  - cdl-pcap
+- auto: PREDEFINED
+  defaultValue: abort
+  description: The action on error to parsing pcap.
+  name: error_action
+  predefined:
+  - abort
+  - ignore
+  - keep
+comment: Convert packet data to the standard pcap. Currently it only supports CDL(NGFW) pcap from which to convert.
+commonfields:
+  id: PcapConvert
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/pcap-miner:1.0.0.32154
+enabled: true
+name: PcapConvert
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- pcap
+- Utility
+- transformer
+type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

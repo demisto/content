@@ -1,0 +1,26 @@
+[MODEL: dataset=salesforce_event_audit_raw, model=Network]
+filter event_type in("RestApi","Api","Sites","VisualForce","Uri")
+| alter XDM.Network.Source.ipv4 = client_ip,
+        XDM.Network.original_event_type = event_type,
+        XDM.Network.Source.user.badge_id = organization_id,
+        XDM.Network.http.response_code = request_status,
+        XDM.Network.duration = to_integer(run_time),
+        XDM.Network.session_id = session_key,
+        XDM.Network.event_timestamp = parse_timestamp("%Y%m%d%H%M%S", arrayindex(split(timestamp, "."),0)),
+        XDM.Network.http.url = uri,
+        XDM.Network.Source.user.user_type = user_type;
+
+[MODEL: dataset=salesforce_event_audit_raw, model=Auth]
+filter event_type in("Login","Logout")
+| alter XDM.Auth.logon.type = authentication_method_reference,
+        XDM.Auth.original_event_type = event_type,
+        XDM.Auth.logon.logon_guid = login_key,
+        XDM.Auth.outcome = login_status,
+        XDM.Auth.Client.user.badge_id = organization_id,
+        XDM.Auth.Client.host.os = platform_type,
+        XDM.Auth.session_id = session_key,
+        XDM.Auth.Client.ipv4 = source_ip,
+        XDM.Auth.event_timestamp = parse_timestamp("%Y%m%d%H%M%S", arrayindex(split(timestamp, "."),0)),
+        XDM.Auth.Target.url = uri,
+        XDM.Auth.Target.user.employee_id = user_id,
+        XDM.Auth.Target.user.username = user_name;

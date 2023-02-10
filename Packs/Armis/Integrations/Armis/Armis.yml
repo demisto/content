@@ -1,4 +1,7 @@
 category: Utilities
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Armis
   version: -1
@@ -7,19 +10,23 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - defaultvalue: UNHANDLED
   display: Fetch alerts with status (UNHANDLED,SUPPRESSED,RESOLVED)
   name: alert_status
@@ -29,8 +36,9 @@ configuration:
   - RESOLVED
   required: false
   type: 16
-- additionalinfo: The type of alerts are Policy Violation, System Policy Violation,
-    Anomaly Detection. If no type is chosen, all types will be fetched.
+  section: Collect
+  advanced: true
+- additionalinfo: The type of alerts are Policy Violation, System Policy Violation, Anomaly Detection. If no type is chosen, all types will be fetched.
   display: Fetch alerts with type
   name: alert_type
   options:
@@ -39,6 +47,8 @@ configuration:
   - Anomaly Detection
   required: false
   type: 16
+  section: Collect
+  advanced: true
 - defaultvalue: Low
   display: Minimum severity of alerts to fetch
   name: min_severity
@@ -48,35 +58,42 @@ configuration:
   - High
   required: true
   type: 15
+  section: Collect
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Secret API Key
   hidden: false
   name: secret
   required: true
   type: 4
-- additionalinfo: Use this parameter to fetch incidents using a free AQL string rather
-    than the simpler alert type, severity, etc.
+  section: Connect
+- additionalinfo: Use this parameter to fetch incidents using a free AQL string rather than the simpler alert type, severity, etc.
   display: Fetch Alerts AQL
   hidden: false
   name: free_fetch_string
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - additionalinfo: Whether to use the system proxy.
   display: Use system proxy settings
   hidden: false
   name: proxy
   required: false
   type: 8
-description: Use the Armis integration to search alerts and devices, tag and untag
-  devices, and set alert statuses.
+  section: Connect
+  advanced: true
+description: Use the Armis integration to search alerts and devices, tag and untag devices, and set alert statuses.
 display: Armis
 name: Armis
 script:
@@ -91,8 +108,7 @@ script:
       secret: false
     - default: false
       defaultValue: 3 days
-      description: "Filter by start time. \nExamples:\n  \"3 days ago\"\n  \"1 month\"\
-        \n  \"2019-10-10T12:22:00\"\n  \"2019-10-10\""
+      description: "Filter by start time. \nExamples:\n  \"3 days ago\"\n  \"1 month\"\n  \"2019-10-10T12:22:00\"\n  \"2019-10-10\""
       isArray: false
       name: time_frame
       required: false
@@ -104,23 +120,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of alert severity levels by which to filter
-        the search results. Possible values: "Low", "Medium", and "High".'
+      description: 'A comma-separated list of alert severity levels by which to filter the search results. Possible values: "Low", "Medium", and "High".'
       isArray: true
       name: severity
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of alert statuses by which to filter the
-        search results. Possible values: "UNHANDLED", "SUPPRESSED", and "RESOLVED".'
+      description: 'A comma-separated list of alert statuses by which to filter the search results. Possible values: "UNHANDLED", "SUPPRESSED", and "RESOLVED".'
       isArray: true
       name: status
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of alert types by which to filter the search
-        results. Possible values: "Policy Violation", "System Policy Violation", and
-        "Anomaly Detection".'
+      description: 'A comma-separated list of alert types by which to filter the search results. Possible values: "Policy Violation", "System Policy Violation", and "Anomaly Detection".'
       isArray: true
       name: alert_type
       required: false
@@ -172,8 +184,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'New status of the alert. Possible values: "UNHANDLED", "RESOLVED",
-        and "SUPPRESSED".'
+      description: 'New status of the alert. Possible values: "UNHANDLED", "RESOLVED", and "SUPPRESSED".'
       isArray: false
       name: status
       predefined:
@@ -298,9 +309,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of device types by which to filter the results.
-        for example "Routers", "Laptops", "IP Cameras" (there are many device types.
-        for a full list access your Armis instance).
+      description: A comma-separated list of device types by which to filter the results. for example "Routers", "Laptops", "IP Cameras" (there are many device types. for a full list access your Armis instance).
       isArray: true
       name: device_type
       required: false
@@ -319,8 +328,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of device risk levels by which to filter
-        the results. Possible values: "Low", "Medium", and "High".'
+      description: 'A comma-separated list of device risk levels by which to filter the results. Possible values: "Low", "Medium", and "High".'
       isArray: true
       name: risk_level
       required: false
@@ -475,7 +483,7 @@ script:
     - contextPath: Armis.Device.visibility
       description: The visibility of the device.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.8.39276
   feed: false
   isfetch: true
   longRunning: false

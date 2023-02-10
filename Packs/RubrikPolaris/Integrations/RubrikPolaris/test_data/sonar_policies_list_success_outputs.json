@@ -1,0 +1,192 @@
+[
+  {
+    "id": "bdb8c043-ee89-43ef-a3e2-73e94b5b3900",
+    "name": "CCPA",
+    "description": "California Consumer Privacy Act",
+    "creator": {
+      "email": "dummy.email@rubrik.com"
+    },
+    "totalObjects": 3,
+    "numAnalyzers": 5,
+    "objectStatuses": [
+      {
+        "id": "1b174c2e-f77b-5006-baea-fe37b2ae429f",
+        "latestSnapshotResult": {
+          "snapshotFid": "372f4ad3-b8f3-584e-b703-faed2c484acf"
+        },
+        "policyStatuses": [
+          {
+            "policyId": "12953409-e9ac-4baa-8a12-d62a770c885a",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "24b7ba8f-57eb-4cc9-aeba-5452cd67c391",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "3ac1d039-b32e-4402-9581-4ca657206f6c",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "53e447ed-9114-4fcd-b5a6-7ac759980fde",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "98c36d6e-3b9a-4d1d-99d8-f74d71e10432",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "a74058fa-cbb4-414a-9fbd-ea9396f1541b",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "bdb8c043-ee89-43ef-a3e2-73e94b5b3900",
+            "status": "UP_TO_DATE"
+          }
+        ]
+      },
+      {
+        "id": "a82e888c-2440-5af9-8c2a-447a97f6746c",
+        "latestSnapshotResult": {
+          "snapshotFid": "8c9ca97d-465e-5784-87f2-be47995e3da1"
+        },
+        "policyStatuses": [
+          {
+            "policyId": "bdb8c043-ee89-43ef-a3e2-73e94b5b3900",
+            "status": "UNKNOWN"
+          }
+        ]
+      },
+      {
+        "id": "ac0a6844-a2fc-52b0-bb71-6a55f43677be",
+        "latestSnapshotResult": {
+          "snapshotFid": "f437ff56-f4a6-5d5f-9f7b-7c026621f94c"
+        },
+        "policyStatuses": [
+          {
+            "policyId": "12953409-e9ac-4baa-8a12-d62a770c885a",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "24b7ba8f-57eb-4cc9-aeba-5452cd67c391",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "3ac1d039-b32e-4402-9581-4ca657206f6c",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "53e447ed-9114-4fcd-b5a6-7ac759980fde",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "98c36d6e-3b9a-4d1d-99d8-f74d71e10432",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "a74058fa-cbb4-414a-9fbd-ea9396f1541b",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "bdb8c043-ee89-43ef-a3e2-73e94b5b3900",
+            "status": "UP_TO_DATE"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "53e447ed-9114-4fcd-b5a6-7ac759980fde",
+    "name": "GLBA",
+    "description": "U.S. Gramm-Leach-Bliley Act",
+    "totalObjects": 3,
+    "numAnalyzers": 4,
+    "objectStatuses": [
+      {
+        "id": "1b174c2e-f77b-5006-baea-fe37b2ae429f",
+        "latestSnapshotResult": {
+          "snapshotFid": "372f4ad3-b8f3-584e-b703-faed2c484acf"
+        },
+        "policyStatuses": [
+          {
+            "policyId": "12953409-e9ac-4baa-8a12-d62a770c885a",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "24b7ba8f-57eb-4cc9-aeba-5452cd67c391",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "3ac1d039-b32e-4402-9581-4ca657206f6c",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "53e447ed-9114-4fcd-b5a6-7ac759980fde",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "98c36d6e-3b9a-4d1d-99d8-f74d71e10432",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "a74058fa-cbb4-414a-9fbd-ea9396f1541b",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "bdb8c043-ee89-43ef-a3e2-73e94b5b3900",
+            "status": "UP_TO_DATE"
+          }
+        ]
+      },
+      {
+        "id": "ac0a6844-a2fc-52b0-bb71-6a55f43677be",
+        "latestSnapshotResult": {
+          "snapshotFid": "f437ff56-f4a6-5d5f-9f7b-7c026621f94c"
+        },
+        "policyStatuses": [
+          {
+            "policyId": "12953409-e9ac-4baa-8a12-d62a770c885a",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "24b7ba8f-57eb-4cc9-aeba-5452cd67c391",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "3ac1d039-b32e-4402-9581-4ca657206f6c",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "53e447ed-9114-4fcd-b5a6-7ac759980fde",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "98c36d6e-3b9a-4d1d-99d8-f74d71e10432",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "a74058fa-cbb4-414a-9fbd-ea9396f1541b",
+            "status": "UP_TO_DATE"
+          },
+          {
+            "policyId": "bdb8c043-ee89-43ef-a3e2-73e94b5b3900",
+            "status": "UP_TO_DATE"
+          }
+        ]
+      },
+      {
+        "id": "d25142ba-ec52-57b9-9efb-1ff0d49729d4",
+        "policyStatuses": [
+          {
+            "policyId": "01e1df79-9b33-4f22-986d-4dcde12728c8",
+            "status": "UNKNOWN"
+          },
+          {
+            "policyId": "53e447ed-9114-4fcd-b5a6-7ac759980fde",
+            "status": "UNKNOWN"
+          }
+        ]
+      }
+    ]
+  }
+]

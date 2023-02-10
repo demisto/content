@@ -1,5 +1,5 @@
 {
-    "associatedToAll": false,
+    "associatedToAll": true,
     "associatedTypes": [ ],
     "caseInsensitive": true,
     "cliName": "deviceou",

@@ -1,0 +1,75 @@
+{
+    "meta": {},
+    "data": [
+        {
+            "count": 454,
+            "bandwidth": null,
+            "domain": "dummy.domain.com",
+            "policycategories": [],
+            "categories": [
+                {
+                    "id": 162,
+                    "type": "content",
+                    "label": "Web-based Email",
+                    "integration": false,
+                    "deprecated": false
+                },
+                {
+                    "id": 205,
+                    "type": "content",
+                    "label": "Online Document Sharing and Collaboration",
+                    "integration": false,
+                    "deprecated": false
+                },
+                {
+                    "id": 167,
+                    "type": "content",
+                    "label": "Computers and Internet",
+                    "integration": false,
+                    "deprecated": false
+                },
+                {
+                    "id": 31,
+                    "type": "content",
+                    "label": "Webmail",
+                    "integration": false,
+                    "deprecated": true
+                },
+                {
+                    "id": 148,
+                    "type": "application",
+                    "label": "Application",
+                    "integration": false,
+                    "deprecated": false
+                },
+                {
+                    "id": 141,
+                    "type": "content",
+                    "label": "Organizational Email",
+                    "integration": false,
+                    "deprecated": false
+                },
+                {
+                    "id": 25,
+                    "type": "content",
+                    "label": "Software/Technology",
+                    "integration": false,
+                    "deprecated": true
+                },
+                {
+                    "id": 32,
+                    "type": "content",
+                    "label": "Business Services",
+                    "integration": false,
+                    "deprecated": true
+                }
+            ],
+            "counts": {
+                "requests": 454,
+                "allowedrequests": 454,
+                "blockedrequests": 0
+            },
+            "rank": 1
+        }
+    ]
+}

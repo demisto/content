@@ -94,7 +94,8 @@ def get_dbot_std_context(indicator, ioc_type, verdict, threat_type):
         'Indicator': indicator,
         'Type': ioc_type.lower(),
         'Vendor': 'SlashNext Phishing Incident Response',
-        'Score': dbot_score
+        'Score': dbot_score,
+        'Reliability': demisto.params().get('integrationReliability')
     }
 
     if ioc_type.lower() == 'ip':

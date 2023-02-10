@@ -61,12 +61,10 @@ configuration:
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -189,7 +187,7 @@ script:
       type: unknown
     description: Writes lookup table entry records to a specified Devo table.
     execution: true
-  dockerimage: demisto/devo:1.0.0.23084
+  dockerimage: demisto/devo:1.0.0.44664
   isfetch: true
   runonce: false
   subtype: python3

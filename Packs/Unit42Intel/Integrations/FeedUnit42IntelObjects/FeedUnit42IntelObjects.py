@@ -80,7 +80,7 @@ class Client(BaseClient):
             'Content-Type': 'application/json'
         }
 
-        LOG.add_replace_strs(api_key)
+        add_sensitive_log_strs(api_key)
 
     def get_tags(self, data: Dict[str, Any]):  # pragma: no cover
         res = self._http_request('POST',
@@ -601,7 +601,6 @@ def main():  # pragma: no cover
             raise NotImplementedError(f'Command {command} is not implemented.')
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # Print the traceback
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 

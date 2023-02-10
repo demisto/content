@@ -1,2 +1,10 @@
-[file:integration-ProtectWise.yml]
+[file:ProtectWise.yml]
 ignore=IN126,IN145
+
+[file:ProtectWise_image.png]
+ignore=IM111
+
+[known_words]
+ProtectWise
+PWEventPcapDownload
+PWObservationPcapDownload

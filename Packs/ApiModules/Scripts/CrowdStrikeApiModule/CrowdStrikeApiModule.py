@@ -1,5 +1,9 @@
 from CommonServerPython import *
 from CommonServerUserPython import *
+from datetime import timedelta
+import dateparser
+
+TOKEN_LIFE_TIME = timedelta(minutes=28)
 
 
 class CrowdStrikeClient(BaseClient):
@@ -16,7 +20,8 @@ class CrowdStrikeClient(BaseClient):
         super().__init__(base_url=params.get('server_url', 'https://api.crowdstrike.com/'),
                          verify=not params.get('insecure', False), ok_codes=tuple(),
                          proxy=params.get('proxy', False))  # type: ignore[misc]
-        self._token = self._generate_token()
+        self.timeout = float(params.get('timeout', '10'))
+        self._token = self._get_token()
         self._headers = {'Authorization': 'bearer ' + self._token}
 
     @staticmethod
@@ -94,10 +99,46 @@ class CrowdStrikeClient(BaseClient):
         :return: Depends on the resp_type parameter
         :rtype: ``dict`` or ``str`` or ``requests.Response``
         """
+
+        req_timeout = timeout
+        if self.timeout:
+            req_timeout = self.timeout
+
         return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
-                                     json_data=json_data, params=params, data=data, files=files, timeout=timeout,
+                                     json_data=json_data, params=params, data=data, files=files, timeout=req_timeout,
                                      ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth,
                                      error_handler=self._error_handler)
+
+    def _get_token(self, force_gen_new_token=False):
+        """
+            Retrieves the token from the server if it's expired and updates the global HEADERS to include it
+
+            :param force_gen_new_token: If set to True will generate a new token regardless of time passed
+
+            :rtype: ``str``
+            :return: Token
+        """
+        now = datetime.now()
+        ctx = get_integration_context()
+        if not ctx or not ctx.get('generation_time', force_gen_new_token):
+            # new token is needed
+            auth_token = self._generate_token()
+        else:
+            generation_time = dateparser.parse(ctx.get('generation_time'))
+            if generation_time and now:
+                time_passed = now - generation_time
+            else:
+                time_passed = TOKEN_LIFE_TIME
+            if time_passed < TOKEN_LIFE_TIME:
+                # token hasn't expired
+                return ctx.get('auth_token')
+            else:
+                # token expired
+                auth_token = self._generate_token()
+
+        ctx.update({'auth_token': auth_token, 'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")})
+        set_integration_context(ctx)
+        return auth_token
 
     def _generate_token(self) -> str:
         """Generate an Access token using the user name and password

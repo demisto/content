@@ -1,0 +1,8 @@
+<response status="success">
+    <result>
+        <enabled>no</enabled>
+        <local-info>
+            <encrypt-imported>no</encrypt-imported>
+        </local-info>
+    </result>
+</response>

@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p>Use the Hybrid Analysis integration to submit and analyze files.</p>
+<p>Deprecated. Use the CrowdStrike Falcon Sandbox v2 integration instead.</p>
 <h4>Supported File Types</h4>
 <p>The maximum file upload size is 100 MB.</p>
 <ul>

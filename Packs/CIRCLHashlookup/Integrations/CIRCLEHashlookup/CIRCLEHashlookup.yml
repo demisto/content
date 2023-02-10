@@ -1,0 +1,135 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: CIRCLEHashlookup
+  version: -1
+configuration:
+- defaultvalue: https://hashlookup.circl.lu
+  display: Server URL (e.g. https://hashlookup.circl.lu)
+  name: url
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- additionalinfo: Create relationships between indicators as part of Enrichment.
+  defaultvalue: 'true'
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
+description: CIRCL hash lookup is a public API to lookup hash values against known database of files. NSRL RDS database is included and many others are also included. The API is accessible via HTTP ReST API and the API is also described as an OpenAPI. The service is free and served as a best-effort basis.
+display: CIRCLEHashlookup
+name: CIRCLEHashlookup
+script:
+  commands:
+  - arguments: []
+    description: Get information about the hash lookup database
+    name: circl-info
+    outputs:
+    - contextPath: Circl.Info
+      description: Info about the hashlookup database
+      type: string
+  - arguments:
+    - description: List of MD5s to query
+      isArray: true
+      name: md5_list
+      required: true
+      type: textArea
+    description: Bulk search of MD5 hashes
+    name: circl-bulk-md5
+    outputs:
+    - contextPath: Circl.MD5
+      description: Results of bulk MD5 query
+      type: string
+  - arguments:
+    - description: List of SHA1 to search
+      isArray: true
+      name: sha1_list
+      required: true
+      type: textArea
+    description: Bulk search of SHA1 hashes
+    name: circl-bulk-sha1
+    outputs:
+    - contextPath: Circl.SHA1
+      description: Results of bulk SHA1 query
+      type: string
+  - arguments:
+    - description: Hash to query
+      isArray: true
+      name: file
+      required: true
+      type: textArea
+      default: true
+    description: Checks the file reputation of the specified hash.
+    name: file
+    outputs:
+    - contextPath: File.Name
+      description: Name of the file
+      type: string
+    - contextPath: File.Size
+      description: Size of the file
+      type: number
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: string
+    - contextPath: File.SHA512
+      description: SHA512 hash of the file
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep of the file
+      type: string
+    - contextPath: DbotScore.Indicator
+      description: The indicator value.
+      type: string
+    - contextPath: DbotScore.Reliability
+      description: The reliability of the source providing the intelligence data
+      type: string
+    - contextPath: DbotScore.Score
+      description: An integer regarding the status of the indicator
+      type: number
+    - contextPath: DbotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DbotScore.Vendor
+      description: The vendor used to calculate the score
+      type: string
+  - arguments: []
+    description: Return the top 100 of most queried values.
+    name: circl-top
+    outputs:
+    - contextPath: Circl.Top
+      description: The top 100 of most queried values
+      type: string
+  dockerimage: demisto/python3:3.10.4.30607
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

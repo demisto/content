@@ -1,0 +1,564 @@
+[
+    {
+        "value": "1.1.1.1",
+        "score": 3,
+        "rawJSON": {
+            "created": "2022-10-18T00:36:30.810380Z",
+            "extensions": {
+                "extension-definition--1ce0350f-5683-4db1-8253-c2583ea81e2a": {
+                    "CustomFields": {
+                        "firstseenbysource": "2022-10-17T20:18:12.158Z",
+                        "indicatoridentification": "indicator--e8b76294-749c-4bca-a640-3ed63278938d",
+                        "reportedby": [
+                            "Unit42"
+                        ],
+                        "tags": [
+                            "malicious-activity"
+                        ]
+                    },
+                    "aggregatedReliability": "A - Completely reliable",
+                    "cacheVersn": 0,
+                    "calculatedTime": "2022-10-18T00:36:30.810380077Z",
+                    "comments": [
+                        {
+                            "cacheVersn": 0,
+                            "category": "Sighting",
+                            "content": "Created",
+                            "created": "2022-10-18T00:36:30.777643538Z",
+                            "entryId": "",
+                            "id": "96fe53dc-974e-4102-8268-91d9e8ade7df",
+                            "modified": "0001-01-01T00:00:00Z",
+                            "source": "Unit42v2 Feed.Unit42v2 Feed_instance_1",
+                            "type": "IndicatorCommentTimeLine",
+                            "user": "DBot",
+                            "version": 0
+                        },
+                        {
+                            "cacheVersn": 0,
+                            "category": "Indicator Update",
+                            "content": "New relationship indicated-by created to IcedID leads to Cobalt Strike",
+                            "created": "2022-10-18T00:36:44.896928884Z",
+                            "entryId": "",
+                            "id": "9abb2ecf-1ecd-4576-8719-03dc358e9365",
+                            "modified": "0001-01-01T00:00:00Z",
+                            "source": "Unit42v2 Feed_instance_1 (Unit42v2 Feed)",
+                            "type": "IndicatorCommentTimeLine",
+                            "user": "DBot",
+                            "version": 0
+                        },
+                        {
+                            "cacheVersn": 0,
+                            "category": "Indicator Update",
+                            "content": "New relationship indicated-by created to Application Layer Protocol: Web Protocols",
+                            "created": "2022-10-18T00:36:44.896946397Z",
+                            "entryId": "",
+                            "id": "89b82534-5857-485f-810d-9eb8902a641b",
+                            "modified": "0001-01-01T00:00:00Z",
+                            "source": "Unit42v2 Feed_instance_1 (Unit42v2 Feed)",
+                            "type": "IndicatorCommentTimeLine",
+                            "user": "DBot",
+                            "version": 0
+                        }
+                    ],
+                    "expiration": "2022-10-29T08:54:19.543785775Z",
+                    "expirationSource": {
+                        "brand": "Unit42v2 Feed",
+                        "expirationInterval": 10080,
+                        "expirationPolicy": "indicatorType",
+                        "instance": "Unit42v2 Feed_instance_1",
+                        "moduleId": "b81d3fb7-4055-4a3e-8ad9-1ccb5e04423d",
+                        "setTime": "2022-10-18T00:36:30.753419446Z",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "expirationStatus": "active",
+                    "firstSeen": "0001-01-01T00:00:00Z",
+                    "firstSeenEntryID": "API",
+                    "id": "211586",
+                    "indicator_type": "IP",
+                    "isDetectable": true,
+                    "isPreventable": false,
+                    "lastSeen": "0001-01-01T00:00:00Z",
+                    "lastSeenEntryID": "API",
+                    "modified": "2022-10-18T00:36:44.898686307Z",
+                    "modifiedTime": "2022-10-18T00:35:53Z",
+                    "moduleToFeedMap": {
+                        "b81d3fb7-4055-4a3e-8ad9-1ccb5e04423d": {
+                            "ExpirationSource": {
+                                "brand": "Unit42v2 Feed",
+                                "expirationInterval": 10080,
+                                "expirationPolicy": "indicatorType",
+                                "instance": "Unit42v2 Feed_instance_1",
+                                "moduleId": "b81d3fb7-4055-4a3e-8ad9-1ccb5e04423d",
+                                "setTime": "2022-10-18T00:36:30.753419446Z",
+                                "source": "indicatorType",
+                                "user": ""
+                            },
+                            "bypassExclusionList": false,
+                            "classifierId": "",
+                            "classifierVersion": 0,
+                            "expirationInterval": 0,
+                            "expirationPolicy": "indicatorType",
+                            "fetchTime": "2022-10-18T00:35:53Z",
+                            "fields": {
+                                "firstseenbysource": "2022-10-17T20:18:12.158Z",
+                                "indicatoridentification": "indicator--e8b76294-749c-4bca-a640-3ed63278938d",
+                                "reportedby": [
+                                    "Unit42"
+                                ],
+                                "tags": [
+                                    "malicious-activity"
+                                ]
+                            },
+                            "isEnrichment": false,
+                            "mapperId": "",
+                            "mapperVersion": 0,
+                            "modifiedTime": "2022-10-18T00:35:53Z",
+                            "moduleId": "b81d3fb7-4055-4a3e-8ad9-1ccb5e04423d",
+                            "rawJSON": null,
+                            "reliability": "A - Completely reliable",
+                            "score": 3,
+                            "sourceBrand": "Unit42v2 Feed",
+                            "sourceInstance": "Unit42v2 Feed_instance_1",
+                            "timestamp": "0001-01-01T00:00:00Z",
+                            "type": "IP",
+                            "value": "1.1.1.1"
+                        }
+                    },
+                    "score": 3,
+                    "sortValues": [
+                        "1",
+                        "2"
+                    ],
+                    "sourceBrands": [
+                        "Unit42v2 Feed"
+                    ],
+                    "sourceInstances": [
+                        "Unit42v2 Feed_instance_1"
+                    ],
+                    "timestamp": "2022-10-18T00:36:30.810380077Z",
+                    "value": "1.1.1.1",
+                    "version": 2
+                }
+            },
+            "id": "ipv4-addr--d1c97fce-6bc2-52aa-a48f-26ed9c4cd496",
+            "modified": "2022-10-18T00:36:44.898686Z",
+            "spec_version": "2.1",
+            "type": "ipv4-addr",
+            "value": "1.1.1.1"
+        },
+        "indicator_type": "IP",
+        "customFields": {
+            "stixid": "ipv4-addr--d1c97fce-6bc2-52aa-a48f-26ed9c4cd496",
+            "firstseenbysource": "2022-10-17T20:18:12.158Z",
+            "indicatoridentification": "indicator--e8b76294-749c-4bca-a640-3ed63278938d",
+            "reportedby": [
+                "Unit42"
+            ],
+            "tags": [
+                "malicious-activity"
+            ],
+            "cacheVersn": 0,
+            "comments": [
+                {
+                    "cacheVersn": 0,
+                    "category": "Sighting",
+                    "content": "Created",
+                    "created": "2022-10-18T00:36:30.777643538Z",
+                    "entryId": "",
+                    "id": "96fe53dc-974e-4102-8268-91d9e8ade7df",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "source": "Unit42v2 Feed.Unit42v2 Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "DBot",
+                    "version": 0
+                },
+                {
+                    "cacheVersn": 0,
+                    "category": "Indicator Update",
+                    "content": "New relationship indicated-by created to IcedID leads to Cobalt Strike",
+                    "created": "2022-10-18T00:36:44.896928884Z",
+                    "entryId": "",
+                    "id": "9abb2ecf-1ecd-4576-8719-03dc358e9365",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "source": "Unit42v2 Feed_instance_1 (Unit42v2 Feed)",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "DBot",
+                    "version": 0
+                },
+                {
+                    "cacheVersn": 0,
+                    "category": "Indicator Update",
+                    "content": "New relationship indicated-by created to Application Layer Protocol: Web Protocols",
+                    "created": "2022-10-18T00:36:44.896946397Z",
+                    "entryId": "",
+                    "id": "89b82534-5857-485f-810d-9eb8902a641b",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "source": "Unit42v2 Feed_instance_1 (Unit42v2 Feed)",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "DBot",
+                    "version": 0
+                }
+            ],
+            "expiration": "2022-10-29T08:54:19.543785775Z",
+            "isDetectable": true,
+            "isPreventable": false,
+            "lastSeenEntryID": "API"
+        },
+        "aggregatedReliability": "A - Completely reliable",
+        "calculatedTime": "2022-10-18T00:36:30.810380077Z",
+        "expirationSource": {
+            "brand": "Unit42v2 Feed",
+            "expirationInterval": 10080,
+            "expirationPolicy": "indicatorType",
+            "instance": "Unit42v2 Feed_instance_1",
+            "moduleId": "b81d3fb7-4055-4a3e-8ad9-1ccb5e04423d",
+            "setTime": "2022-10-18T00:36:30.753419446Z",
+            "source": "indicatorType",
+            "user": ""
+        },
+        "expirationStatus": "active",
+        "firstSeen": "0001-01-01T00:00:00Z",
+        "firstSeenEntryID": "API",
+        "id": "211586",
+        "lastSeen": "0001-01-01T00:00:00Z",
+        "modified": "2022-10-18T00:36:44.898686307Z",
+        "modifiedTime": "2022-10-18T00:35:53Z",
+        "moduleToFeedMap": {
+            "b81d3fb7-4055-4a3e-8ad9-1ccb5e04423d": {
+                "ExpirationSource": {
+                    "brand": "Unit42v2 Feed",
+                    "expirationInterval": 10080,
+                    "expirationPolicy": "indicatorType",
+                    "instance": "Unit42v2 Feed_instance_1",
+                    "moduleId": "b81d3fb7-4055-4a3e-8ad9-1ccb5e04423d",
+                    "setTime": "2022-10-18T00:36:30.753419446Z",
+                    "source": "indicatorType",
+                    "user": ""
+                },
+                "bypassExclusionList": false,
+                "classifierId": "",
+                "classifierVersion": 0,
+                "expirationInterval": 0,
+                "expirationPolicy": "indicatorType",
+                "fetchTime": "2022-10-18T00:35:53Z",
+                "fields": {
+                    "firstseenbysource": "2022-10-17T20:18:12.158Z",
+                    "indicatoridentification": "indicator--e8b76294-749c-4bca-a640-3ed63278938d",
+                    "reportedby": [
+                        "Unit42"
+                    ],
+                    "tags": [
+                        "malicious-activity"
+                    ]
+                },
+                "isEnrichment": false,
+                "mapperId": "",
+                "mapperVersion": 0,
+                "modifiedTime": "2022-10-18T00:35:53Z",
+                "moduleId": "b81d3fb7-4055-4a3e-8ad9-1ccb5e04423d",
+                "rawJSON": null,
+                "reliability": "A - Completely reliable",
+                "score": 3,
+                "sourceBrand": "Unit42v2 Feed",
+                "sourceInstance": "Unit42v2 Feed_instance_1",
+                "timestamp": "0001-01-01T00:00:00Z",
+                "type": "IP",
+                "value": "1.1.1.1"
+            }
+        },
+        "sortValues": [
+            "1",
+            "2"
+        ],
+        "sourceBrands": [
+            "Unit42v2 Feed"
+        ],
+        "sourceInstances": [
+            "Unit42v2 Feed_instance_1"
+        ],
+        "timestamp": "2022-10-18T00:36:30.810380077Z",
+        "version": 2
+    },
+    {
+        "value": "2.2.2.2",
+        "score": 3,
+        "rawJSON": {
+            "created": "2022-10-18T00:36:30.810261Z",
+            "extensions": {
+                "extension-definition--352c06b2-1797-4607-906c-25a0017467a8": {
+                    "CustomFields": {
+                        "firstseenbysource": "2022-10-17T20:27:17.235Z",
+                        "indicatoridentification": "indicator--faf2f648-33f9-4aaf-b6d9-9b9a9d0f576c",
+                        "reportedby": [
+                            "Unit42"
+                        ],
+                        "tags": [
+                            "malicious-activity"
+                        ]
+                    },
+                    "aggregatedReliability": "A - Completely reliable",
+                    "cacheVersn": 0,
+                    "calculatedTime": "2022-10-18T00:36:30.810261595Z",
+                    "comments": [
+                        {
+                            "cacheVersn": 0,
+                            "category": "Sighting",
+                            "content": "Created",
+                            "created": "2022-10-18T00:36:30.777736446Z",
+                            "entryId": "",
+                            "id": "df78fa82-1aa8-471f-873d-127c08645b4e",
+                            "modified": "0001-01-01T00:00:00Z",
+                            "source": "Unit42v2 Feed.Unit42v2 Feed_instance_1",
+                            "type": "IndicatorCommentTimeLine",
+                            "user": "DBot",
+                            "version": 0
+                        },
+                        {
+                            "cacheVersn": 0,
+                            "category": "Indicator Update",
+                            "content": "New relationship indicated-by created to IcedID leads to Cobalt Strike",
+                            "created": "2022-10-18T00:36:44.896995916Z",
+                            "entryId": "",
+                            "id": "a159c84f-6a43-417f-8895-40292a5e1e0d",
+                            "modified": "0001-01-01T00:00:00Z",
+                            "source": "Unit42v2 Feed_instance_1 (Unit42v2 Feed)",
+                            "type": "IndicatorCommentTimeLine",
+                            "user": "DBot",
+                            "version": 0
+                        },
+                        {
+                            "cacheVersn": 0,
+                            "category": "Indicator Update",
+                            "content": "New relationship indicated-by created to Application Layer Protocol: Web Protocols",
+                            "created": "2022-10-18T00:36:44.897010448Z",
+                            "entryId": "",
+                            "id": "20a211d3-4951-47b2-8963-d2e18e92b975",
+                            "modified": "0001-01-01T00:00:00Z",
+                            "source": "Unit42v2 Feed_instance_1 (Unit42v2 Feed)",
+                            "type": "IndicatorCommentTimeLine",
+                            "user": "DBot",
+                            "version": 0
+                        }
+                    ],
+                    "expiration": "2022-10-29T08:54:19.543785775Z",
+                    "expirationSource": {
+                        "brand": "Unit42v2 Feed",
+                        "expirationInterval": 10080,
+                        "expirationPolicy": "indicatorType",
+                        "instance": "Unit42v2 Feed_instance_1",
+                        "moduleId": "b81d3fb7-4055-4a3e-8ad9-1ccb5e04423d",
+                        "setTime": "2022-10-18T00:36:30.753467004Z",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "expirationStatus": "active",
+                    "firstSeen": "0001-01-01T00:00:00Z",
+                    "firstSeenEntryID": "API",
+                    "id": "211585",
+                    "indicator_type": "IP",
+                    "isDetectable": true,
+                    "isPreventable": false,
+                    "lastSeen": "0001-01-01T00:00:00Z",
+                    "lastSeenEntryID": "API",
+                    "modified": "2022-10-18T00:36:44.89921646Z",
+                    "modifiedTime": "2022-10-18T00:35:53Z",
+                    "moduleToFeedMap": {
+                        "b81d3fb7-4055-4a3e-8ad9-1ccb5e04423d": {
+                            "ExpirationSource": {
+                                "brand": "Unit42v2 Feed",
+                                "expirationInterval": 10080,
+                                "expirationPolicy": "indicatorType",
+                                "instance": "Unit42v2 Feed_instance_1",
+                                "moduleId": "b81d3fb7-4055-4a3e-8ad9-1ccb5e04423d",
+                                "setTime": "2022-10-18T00:36:30.753467004Z",
+                                "source": "indicatorType",
+                                "user": ""
+                            },
+                            "bypassExclusionList": false,
+                            "classifierId": "",
+                            "classifierVersion": 0,
+                            "expirationInterval": 0,
+                            "expirationPolicy": "indicatorType",
+                            "fetchTime": "2022-10-18T00:35:53Z",
+                            "fields": {
+                                "firstseenbysource": "2022-10-17T20:27:17.235Z",
+                                "indicatoridentification": "indicator--faf2f648-33f9-4aaf-b6d9-9b9a9d0f576c",
+                                "reportedby": [
+                                    "Unit42"
+                                ],
+                                "tags": [
+                                    "malicious-activity"
+                                ]
+                            },
+                            "isEnrichment": false,
+                            "mapperId": "",
+                            "mapperVersion": 0,
+                            "modifiedTime": "2022-10-18T00:35:53Z",
+                            "moduleId": "b81d3fb7-4055-4a3e-8ad9-1ccb5e04423d",
+                            "rawJSON": null,
+                            "reliability": "A - Completely reliable",
+                            "score": 3,
+                            "sourceBrand": "Unit42v2 Feed",
+                            "sourceInstance": "Unit42v2 Feed_instance_1",
+                            "timestamp": "0001-01-01T00:00:00Z",
+                            "type": "IP",
+                            "value": "2.2.2.2"
+                        }
+                    },
+                    "score": 3,
+                    "sortValues": [
+                        " 1 ",
+                        "211585"
+                    ],
+                    "sourceBrands": [
+                        "Unit42v2 Feed"
+                    ],
+                    "sourceInstances": [
+                        "Unit42v2 Feed_instance_1"
+                    ],
+                    "timestamp": "2022-10-18T00:36:30.810261595Z",
+                    "value": "2.2.2.2",
+                    "version": 2
+                }
+            },
+            "id": "ipv4-addr--1fcbdfb3-c3a7-5ac2-9721-0cd9b973f24c",
+            "modified": "2022-10-18T00:36:44.899216Z",
+            "spec_version": "2.1",
+            "type": "ipv4-addr",
+            "value": "2.2.2.2"
+        },
+        "indicator_type": "IP",
+        "customFields": {
+            "stixid": "ipv4-addr--1fcbdfb3-c3a7-5ac2-9721-0cd9b973f24c",
+            "firstseenbysource": "2022-10-17T20:27:17.235Z",
+            "indicatoridentification": "indicator--faf2f648-33f9-4aaf-b6d9-9b9a9d0f576c",
+            "reportedby": [
+                "Unit42"
+            ],
+            "tags": [
+                "malicious-activity"
+            ],
+            "cacheVersn": 0,
+            "comments": [
+                {
+                    "cacheVersn": 0,
+                    "category": "Sighting",
+                    "content": "Created",
+                    "created": "2022-10-18T00:36:30.777736446Z",
+                    "entryId": "",
+                    "id": "df78fa82-1aa8-471f-873d-127c08645b4e",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "source": "Unit42v2 Feed.Unit42v2 Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "DBot",
+                    "version": 0
+                },
+                {
+                    "cacheVersn": 0,
+                    "category": "Indicator Update",
+                    "content": "New relationship indicated-by created to IcedID leads to Cobalt Strike",
+                    "created": "2022-10-18T00:36:44.896995916Z",
+                    "entryId": "",
+                    "id": "a159c84f-6a43-417f-8895-40292a5e1e0d",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "source": "Unit42v2 Feed_instance_1 (Unit42v2 Feed)",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "DBot",
+                    "version": 0
+                },
+                {
+                    "cacheVersn": 0,
+                    "category": "Indicator Update",
+                    "content": "New relationship indicated-by created to Application Layer Protocol: Web Protocols",
+                    "created": "2022-10-18T00:36:44.897010448Z",
+                    "entryId": "",
+                    "id": "20a211d3-4951-47b2-8963-d2e18e92b975",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "source": "Unit42v2 Feed_instance_1 (Unit42v2 Feed)",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "DBot",
+                    "version": 0
+                }
+            ],
+            "expiration": "2022-10-29T08:54:19.543785775Z",
+            "isDetectable": true,
+            "isPreventable": false,
+            "lastSeenEntryID": "API"
+        },
+        "aggregatedReliability": "A - Completely reliable",
+        "calculatedTime": "2022-10-18T00:36:30.810261595Z",
+        "expirationSource": {
+            "brand": "Unit42v2 Feed",
+            "expirationInterval": 10080,
+            "expirationPolicy": "indicatorType",
+            "instance": "Unit42v2 Feed_instance_1",
+            "moduleId": "b81d3fb7-4055-4a3e-8ad9-1ccb5e04423d",
+            "setTime": "2022-10-18T00:36:30.753467004Z",
+            "source": "indicatorType",
+            "user": ""
+        },
+        "expirationStatus": "active",
+        "firstSeen": "0001-01-01T00:00:00Z",
+        "firstSeenEntryID": "API",
+        "id": "211585",
+        "lastSeen": "0001-01-01T00:00:00Z",
+        "modified": "2022-10-18T00:36:44.89921646Z",
+        "modifiedTime": "2022-10-18T00:35:53Z",
+        "moduleToFeedMap": {
+            "b81d3fb7-4055-4a3e-8ad9-1ccb5e04423d": {
+                "ExpirationSource": {
+                    "brand": "Unit42v2 Feed",
+                    "expirationInterval": 10080,
+                    "expirationPolicy": "indicatorType",
+                    "instance": "Unit42v2 Feed_instance_1",
+                    "moduleId": "b81d3fb7-4055-4a3e-8ad9-1ccb5e04423d",
+                    "setTime": "2022-10-18T00:36:30.753467004Z",
+                    "source": "indicatorType",
+                    "user": ""
+                },
+                "bypassExclusionList": false,
+                "classifierId": "",
+                "classifierVersion": 0,
+                "expirationInterval": 0,
+                "expirationPolicy": "indicatorType",
+                "fetchTime": "2022-10-18T00:35:53Z",
+                "fields": {
+                    "firstseenbysource": "2022-10-17T20:27:17.235Z",
+                    "indicatoridentification": "indicator--faf2f648-33f9-4aaf-b6d9-9b9a9d0f576c",
+                    "reportedby": [
+                        "Unit42"
+                    ],
+                    "tags": [
+                        "malicious-activity"
+                    ]
+                },
+                "isEnrichment": false,
+                "mapperId": "",
+                "mapperVersion": 0,
+                "modifiedTime": "2022-10-18T00:35:53Z",
+                "moduleId": "b81d3fb7-4055-4a3e-8ad9-1ccb5e04423d",
+                "rawJSON": null,
+                "reliability": "A - Completely reliable",
+                "score": 3,
+                "sourceBrand": "Unit42v2 Feed",
+                "sourceInstance": "Unit42v2 Feed_instance_1",
+                "timestamp": "0001-01-01T00:00:00Z",
+                "type": "IP",
+                "value": "2.2.2.2"
+            }
+        },
+        "sortValues": [
+            " 1 ",
+            "211585"
+        ],
+        "sourceBrands": [
+            "Unit42v2 Feed"
+        ],
+        "sourceInstances": [
+            "Unit42v2 Feed_instance_1"
+        ],
+        "timestamp": "2022-10-18T00:36:30.810261595Z",
+        "version": 2
+    }
+]

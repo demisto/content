@@ -1,0 +1,61 @@
+{
+	"id": "ACTI Threat Actor",
+	"version": -1,
+	"fromVersion": "6.0.0",
+	"modified": "2022-04-08T10:06:42.488131527Z",
+	"commitMessage": "",
+	"shouldCommit": false,
+	"regex": "https://intelgraph.idefense.com/#/node/threat_actor/view/\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}",
+	"details": "ACTI Threat Actor",
+	"prevDetails": "ACTI Threat Actor",
+	"legacyNames": null,
+	"reputationScriptName": "",
+	"reputationCommand": "acti-get-fundamentals-by-uuid",
+	"enhancementScriptNames": [],
+	"system": false,
+	"locked": false,
+	"disabled": false,
+	"file": false,
+	"updateAfter": 0,
+	"mergeContext": false,
+	"formatScript": "FormatACTIURL",
+	"contextPath": "",
+	"contextValue": "",
+	"excludedBrands": [],
+	"defaultMapping": null,
+	"manualMapping": {
+		"actiabstract": {
+			"simple": "ACTI_ThreatActor.Description"
+		},
+		"actianalysis": {
+			"simple": "ACTI_ThreatActor.Analysis"
+		},
+		"actiindextimestamp": {
+			"simple": "ACTI_ThreatActor.IndexTimestamp"
+		},
+		"actilastmodified": {
+			"simple": "ACTI_ThreatActor.LastModified"
+		},
+		"actilastpublished": {
+			"simple": "ACTI_ThreatActor.LastPublished"
+		},
+		"actireporttitle": {
+			"simple": "## ${ACTI_ThreatActor.Name}"
+		},
+		"actiseverity": {
+			"simple": "ACTI_ThreatActor.Severity"
+		},
+		"actithreattypes": {
+			"simple": "ACTI_ThreatActor.ThreatTypes"
+		},
+		"actiuuid": {
+			"simple": "ACTI_ThreatActor.value"
+		},
+		"creationdate": {
+			"simple": "ACTI_ThreatActor.CreatedOn"
+		}
+	},
+	"fileHashesPriority": null,
+	"expiration": 0,
+	"layout": "ACTI Threat Actor"
+}

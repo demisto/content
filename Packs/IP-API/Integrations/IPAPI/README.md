@@ -68,7 +68,11 @@ Return IP information
 | IP-API.asname | string | asname | 
 | IP-API.lat | number | lat | 
 | IP-API.regionName | string | regionName | 
-
+| DBotScore.Indicator | The indicator that was tested. | String |
+| DBotScore.Score | The actual score. | Number |
+| DBotScore.Type | The type of indicator. | String |
+| DBotScore.Vendor | The vendor used to calculate the score. | String |
+| DBotScore.Reliability | Reliability of the source providing the intelligence data. | String |
 
 #### Command Example
 ```!ip ip=8.8.8.8```

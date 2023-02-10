@@ -1,0 +1,7 @@
+fromversion: 6.8.0
+id: duo_modeling_rule
+name: Duo Modeling Rule
+rules: ''
+schema: ''
+tags: duo
+toversion: 6.9.9

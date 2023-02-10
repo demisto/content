@@ -21,6 +21,16 @@ configuration:
   required: false
   type: 9
   hiddenusername: true
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  required: false
+  type: 4
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
+  name: private_key
+  required: false
+  type: 14
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -52,6 +62,11 @@ configuration:
   type: 4
   hidden: true
   additionalinfo: Use the "Token" parameter instead.
+- display: Suppress Errors for Non Found Groups
+  name: handle_error
+  required: false
+  defaultvalue: 'true'
+  type: 8
 description: Microsoft Graph Groups enables you to create and manage different types
   of groups and group functionality according to your requirements.
 display: Azure Active Directory Groups
@@ -466,7 +481,7 @@ script:
     description: Removes a member from a group.
     execution: false
     name: msgraph-groups-remove-member
-  dockerimage: demisto/crypto:1.0.0.24380
+  dockerimage: demisto/crypto:1.0.0.45575
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -1,7 +1,8 @@
 import json
 
 import demistomock as demisto
-from PaloAltoNetworks_IoT import Client, iot_get_device, fetch_incidents, iot_list_devices, iot_resolve_alert, iot_resolve_vuln
+from PaloAltoNetworks_IoT import Client, iot_get_device, fetch_incidents, iot_list_devices, \
+    iot_resolve_alert, iot_resolve_vuln, iot_get_device_by_ip
 
 
 def test_iot_get_device(requests_mock):
@@ -257,3 +258,28 @@ def test_iot_resolve_vuln(requests_mock):
         'full_name': 'vuln_full_name'
     }
     assert outputs == 'Vulnerability 123 was resolved successfully'
+
+
+def test_get_device_by_ip(requests_mock):
+    """
+    Scenario: Geting device by ip
+
+    Given
+    - ip
+
+    When
+    - Fetching device details with IP
+
+    Then
+    - Ensure the IP is correct and return the device values.
+    """
+    mock_response = json.loads('''{"devices":{"hostname":"00:0a:e4:1c:62:26","ip_address":"1.1.1.1","profile_type":"Non_IoT"}}''')
+    requests_mock.get('https://test.com/pub/v4.0/device/ip', json=mock_response)
+
+    client = Client(base_url='https://test.com/pub/v4.0', tenant_id="foobar", verify=False)
+    args = {
+        'ip': "1.1.1.1"
+    }
+    outputs = iot_get_device_by_ip(client, args).outputs
+
+    assert outputs == {"hostname": "00:0a:e4:1c:62:26", "ip_address": "1.1.1.1", "profile_type": "Non_IoT"}

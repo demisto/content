@@ -1,0 +1,87 @@
+{
+    "name": "get_ticket_tasks",
+    "execute": "response_raw = CimTrak.get_ticket_tasks_command(client,{})\n\nresponse = response_raw[0].outputs\nif len(response_raw) > 1:\n\tret_results: List[Dict[str, Any]] = response_raw[1].outputs\n\tresponse['results'] = list()\n\tresponse_raw[1].outputs\n\tresponse['results'].append(ret_results)\n",
+    "posts": [
+        {
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.getTicketTasks",
+            "reply": {
+                "results": [
+                    {
+                        "id": 1,
+                        "ticketId": 141,
+                        "agentObjectId": 1,
+                        "autoPromote": 0,
+                        "startDate": "2022-01-06 06:00:00",
+                        "endDate": "2022-01-07 05:59:59",
+                        "disposition": "COMPLETED",
+                        "creationDate": "2022-01-06 17:39:34.072996",
+                        "createdByUserId": 0,
+                        "modificationDate": "2022-01-06 06:00:00",
+                        "modifiedByUserId": 0,
+                        "assignedToUserId": 2,
+                        "assignedToGroupId": -99,
+                        "assigneeDisposition": "ACKNOWLEDGED",
+                        "ticketTitle": "CimTrak Auto-Reconcilation for 2022-01-06",
+                        "description": "The files associated with this ticket have been automatically reconciled and promoted based on data from the Cimcor Trusted File Registry.",
+                        "priority": "5",
+                        "ticketDisposition": "CLOSED",
+                        "ticketCreationDate": "2022-01-06 17:39:34.072996",
+                        "ticketCreatedByUserId": "0",
+                        "ticketModificationDate": "2022-01-06 06:00:00",
+                        "ticketModifiedByUserId": "",
+                        "requiresAcknowledgement": "0",
+                        "requiresConfirmation": "0",
+                        "requiresAssessment": "0",
+                        "ticketNumber": "CT-AR-2022-01-06",
+                        "agentName": "local",
+                        "createdByUsername": "",
+                        "modifiedByUsername": "",
+                        "assigneeName": "admin",
+                        "canApproveTask": true
+                    }
+                ],
+                "status": "success",
+                "errorCode": "",
+                "errorDescription": "",
+                "errorDetails": []
+            }
+        }
+    ],
+    "response": {
+        "results": [
+            {
+                "id": 1,
+                "ticketId": 141,
+                "agentObjectId": 1,
+                "startDate": "2022-01-06 06:00:00",
+                "endDate": "2022-01-07 05:59:59",
+                "disposition": "COMPLETED",
+                "creationDate": "2022-01-06 17:39:34.072996",
+                "createdByUserId": 0,
+                "modificationDate": "2022-01-06 06:00:00",
+                "modifiedByUserId": 0,
+                "assignedToUserId": 2,
+                "assignedToGroupId": -99,
+                "assigneeDisposition": "ACKNOWLEDGED",
+                "ticketTitle": "CimTrak Auto-Reconcilation for 2022-01-06",
+                "description": "The files associated with this ticket have been automatically reconciled and promoted based on data from the Cimcor Trusted File Registry.",
+                "priority": "5",
+                "ticketDisposition": "CLOSED",
+                "ticketCreationDate": "2022-01-06 17:39:34.072996",
+                "ticketCreatedByUserId": "0",
+                "ticketModificationDate": "2022-01-06 06:00:00",
+                "requiresAcknowledgement": "0",
+                "requiresConfirmation": "0",
+                "requiresAssessment": "0",
+                "ticketNumber": "CT-AR-2022-01-06",
+                "agentName": "local",
+                "createdByUsername": "",
+                "modifiedByUsername": "",
+                "assigneeName": "admin"
+            }
+        ],
+        "status": "success",
+        "errorCode": "",
+        "errorDescription": ""
+    }
+}

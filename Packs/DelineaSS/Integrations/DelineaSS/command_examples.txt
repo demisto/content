@@ -1,0 +1,19 @@
+!delinea-secret-create name="xsoarSecret" secretTemplateId="6003" siteId="1" checkOutEnabled=true folderId=3 machine_item="my-machine" username_item="my-username" password_item="XXXXXX@@@@@####"
+!delinea-secret-search-name search_name=xsoarSecret
+!delinea-secret-search filter.folderId=3 filter.includeSubFolders=true filter.searchField=name filter.searchText=xsoar
+!delinea-secret-get secret_id=2
+!delinea-secret-username-get secret_id=2
+!delinea-secret-password-get secret_id=2
+!delinea-secret-password-update secret_id=2 newpassword=12345
+!delinea-secret-checkout secret_id=2
+!delinea-secret-checkin secret_id=2
+!delinea-secret-rpc-changepassword secret_id=4 newPassword="Test000"
+!delinea-secret-delete id=2
+!delinea-folder-create foldername="xsoarFolderTest" foldertypeid="1" parentfolderid="3"
+!delinea-folder-search foldername="xsoarFolderTest"
+!delinea-folder-update id=4 folderName="SafexsoarTest"
+!delinea-folder-delete folder_id="4"
+!delinea-user-create displayName="xsoarUserTest1" password="1234567890" userName="XSOAR" emailAddress="ff@ff.com"
+!delinea-user-search filter.searchFields="userName" filter.searchText="xsoarUser"
+!delinea-user-update id="10" displayName="XsoarNew" password="0987654321"
+!delinea-user-delete id="10"

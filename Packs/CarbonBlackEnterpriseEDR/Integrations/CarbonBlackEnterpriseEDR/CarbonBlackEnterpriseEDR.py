@@ -4,11 +4,12 @@ import dateparser
 
 import demistomock as demisto
 import requests
+import urllib3
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 class Client(BaseClient):
@@ -1196,7 +1197,9 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
             'rawJSON': json.dumps(alert)
         }
         incidents.append(incident)
-        latest_alert_create_date = datetime.strftime(dateparser.parse(alert_create_date) + timedelta(seconds=1),
+        parsed_date = dateparser.parse(alert_create_date)
+        assert parsed_date is not None, f'failed parsing {alert_create_date}'
+        latest_alert_create_date = datetime.strftime(parsed_date + timedelta(seconds=1),
                                                      '%Y-%m-%dT%H:%M:%S.000Z')
         latest_alert_id = alert_id
 

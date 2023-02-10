@@ -7,7 +7,7 @@ The remote action should have the following structure:
 2. Poll to check if the operation completed.
 3. (optional) Get the results of the operation.
 
-For more information on Generic-Polling visit [this article](https://xsoar.pan.dev/docs/playbooks/generic-polling).
+For more information on polling, go to [Playbook Polling](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Playbook-Polling).
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

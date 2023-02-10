@@ -1,6 +1,3 @@
-import email.utils
-from time import mktime
-
 import feedparser
 
 from CommonServerPython import *
@@ -31,7 +28,8 @@ class Client(BaseClient):
         self.read_timeout = read_timeout
 
     def request_feed_url(self):
-        return self._http_request(method='GET', resp_type='response', timeout=self.read_timeout)
+        return self._http_request(method='GET', resp_type='response', timeout=self.read_timeout,
+                                  full_url=self._base_url)
 
     def parse_feed_data(self, feed_response):
         try:
@@ -48,10 +46,10 @@ class Client(BaseClient):
         for indicator in reversed(self.feed_data.entries):
             publications = []
             if indicator:
-                published = email.utils.parsedate(indicator.published)
+                published = dateparser.parse(indicator.published)
                 if not published:
                     continue
-                published_iso = datetime.fromtimestamp(mktime(published)).isoformat()
+                published_iso = published.strftime('%Y-%m-%dT%H:%M:%S')
                 publications.append({
                     'timestamp': indicator.get('published'),
                     'link': indicator.get('link'),
@@ -88,7 +86,7 @@ class Client(BaseClient):
         response_url = self._http_request(method='GET', full_url=link, resp_type='str', timeout=self.read_timeout)
         report_content = 'This is a dumped content of the article. Use the link under Publications field to read ' \
                          'the full article. \n\n'
-        soup = BeautifulSoup(response_url.text, "html.parser")
+        soup = BeautifulSoup(response_url.content, "html.parser")
         for tag in soup.find_all():
             if tag.name in HTML_TAGS:
                 for string in tag.stripped_strings:
@@ -182,7 +180,6 @@ def main():
             raise NotImplementedError(f'Command {command} is not implemented.')
 
     except Exception as err:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Failed to execute {INTEGRATION_NAME} with {command} command.\nError:\n{str(err)}")
 
 

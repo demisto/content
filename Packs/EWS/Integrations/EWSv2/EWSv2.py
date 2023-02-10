@@ -4,7 +4,7 @@ import subprocess
 import warnings
 from multiprocessing import Process
 
-import dateparser
+import dateparser  # type: ignore
 import exchangelib
 from CommonServerPython import *
 from cStringIO import StringIO
@@ -903,6 +903,7 @@ def get_last_run():
 
 def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude_ids=None):
     qs = get_folder_by_path(account, folder_name, is_public=IS_PUBLIC_FOLDER)
+    demisto.debug('since_datetime: {}'.format(since_datetime))
     if since_datetime:
         qs = qs.filter(datetime_received__gte=since_datetime)
     else:
@@ -918,9 +919,12 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
     demisto.debug('Exclude ID list: {}'.format(exclude_ids))
 
     for item in qs:
+        demisto.debug('Looking on subject={}, message_id={}, created={}, received={}'.format(
+            item.subject, item.message_id, item.datetime_created, item.datetime_received))
         try:
             if isinstance(item, Message) and item.message_id not in exclude_ids:
                 result.append(item)
+                demisto.debug('Appending {}, {}.'.format(item.subject, item.message_id))
                 if len(result) >= MAX_FETCH:
                     break
         except ValueError as exc:
@@ -1196,6 +1200,8 @@ def parse_incident_from_item(item, is_fetch):
         # handle item id
         if item.message_id:
             labels.append({'type': 'Email/MessageId', 'value': str(item.message_id)})
+            # fetch history
+            incident['dbotMirrorId'] = str(item.message_id)
 
         if item.item_id:
             labels.append({'type': 'Email/ID', 'value': item.item_id})
@@ -1247,20 +1253,24 @@ def fetch_emails_as_incidents(account_email, folder_name):
         incidents = []
         incident = {}  # type: Dict[Any, Any]
         current_fetch_ids = set()
+        last_incident_run_time = None
 
         for item in last_emails:
             if item.message_id:
                 current_fetch_ids.add(item.message_id)
                 incident = parse_incident_from_item(item, True)
+                demisto.debug('Parsed incident: {}'.format(item.message_id))
                 if incident:
                     incidents.append(incident)
+                    last_incident_run_time = item.datetime_received
+                    demisto.debug('Appended incident: {}'.format(item.message_id))
 
                 if len(incidents) >= MAX_FETCH:
                     break
 
         demisto.debug('EWS V2 - ending fetch - got {} incidents.'.format(len(incidents)))
         last_fetch_time = last_run.get(LAST_RUN_TIME)
-        last_incident_run_time = incident.get("occurred", last_fetch_time)
+        last_incident_run_time = last_fetch_time if not last_incident_run_time else last_incident_run_time
 
         # making sure both last fetch time and the time of last incident are the same type for comparing.
         if isinstance(last_incident_run_time, EWSDateTime):
@@ -1279,7 +1289,6 @@ def fetch_emails_as_incidents(account_email, folder_name):
             ids = current_fetch_ids
         else:
             ids = current_fetch_ids | excluded_ids
-
         new_last_run = {
             LAST_RUN_TIME: last_incident_run_time,
             LAST_RUN_FOLDER: folder_name,
@@ -2105,7 +2114,7 @@ def sub_main():
             test_module()
         elif demisto.command() == 'fetch-incidents':
             incidents = fetch_emails_as_incidents(ACCOUNT_EMAIL, FOLDER_NAME)
-            demisto.incidents(str_to_unicode(incidents))
+            demisto.incidents(str_to_unicode(incidents) or [])
         elif demisto.command() == 'ews-get-attachment':
             encode_and_submit_results(fetch_attachments_for_message(**args))
         elif demisto.command() == 'ews-delete-attachment':

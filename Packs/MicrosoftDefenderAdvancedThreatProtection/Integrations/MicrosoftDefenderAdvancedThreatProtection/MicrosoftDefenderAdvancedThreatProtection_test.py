@@ -1,4 +1,7 @@
+import dateparser
+import requests_mock
 from _pytest.python_api import raises
+from freezegun import freeze_time
 
 import demistomock as demisto
 import json
@@ -6,9 +9,14 @@ import pytest
 
 from CommonServerPython import DemistoException
 from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
-    print_ip_addresses, get_machine_details_command
+    print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
+    get_live_response_file_action, put_live_response_file_action, HuntingQueryBuilder, assign_params, \
+    get_machine_users_command, get_machine_alerts_command, SECURITY_GCC_RESOURCE, SECURITY_CENTER_RESOURCE, \
+    get_advanced_hunting_command, create_filters_conjunction, create_filters_disjunctions, create_filter
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
+with open('test_data/expected_hunting_queries.json') as expected_json:
+    EXPECTED_HUNTING_QUERIES = json.load(expected_json)
 
 
 def mock_demisto(mocker):
@@ -19,13 +27,14 @@ def mock_demisto(mocker):
 client_mocker = MsClient(
     tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', base_url='url', verify='use_ssl',
     proxy='proxy', self_deployed='self_deployed', alert_severities_to_fetch='Informational,Low,Medium,High',
-    alert_time_to_fetch='3 days', alert_status_to_fetch='New')
+    alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', is_gcc=False, auth_code='',
+    auth_type='', redirect_uri='')
 
 
 def atp_mocker(mocker, file_name):
     with open(f'test_data/{file_name}', 'r') as f:
         alerts = json.loads(f.read())
-    mocker.patch.object(client_mocker, 'list_alerts', return_value=alerts)
+    mocker.patch.object(client_mocker, 'list_alerts_by_params', return_value=alerts)
 
 
 def test_first_fetch_incidents(mocker):
@@ -33,21 +42,38 @@ def test_first_fetch_incidents(mocker):
     mock_demisto(mocker)
     atp_mocker(mocker, 'first_response_alerts.json')
 
-    fetch_incidents(client_mocker, {'last_alert_fetched_time': "2018-11-26T16:19:21"})
+    incidents, _ = fetch_incidents(client_mocker, {'last_alert_fetched_time': "2018-11-26T16:19:21"}, False)
     # Check that all 3 incidents are extracted
-    assert 3 == len(demisto.incidents.call_args[0][0])
+    assert 3 == len(incidents)
     assert 'Microsoft Defender ATP Alert da636983472338927033_-2077013687' == \
-           demisto.incidents.call_args[0][0][2].get('name')
+           incidents[2].get('name')
 
 
 def test_second_fetch_incidents(mocker):
+    """
+    Given: running olf fetch with existing id's
+    When: running new fetch-incidents after old one had run
+    Then: incidents of the same second will be duplicated
+    """
     from MicrosoftDefenderAdvancedThreatProtection import fetch_incidents
     mock_demisto(mocker)
     atp_mocker(mocker, 'second_response_alerts.json')
     # Check that incident isn't extracted again
-    fetch_incidents(client_mocker, {'last_alert_fetched_time': "2019-09-01T13:31:08",
-                                    'existing_ids': ['da637029414680409372_735564929']})
-    assert [] == demisto.incidents.call_args[0][0]
+    incidents, _ = fetch_incidents(client_mocker, {'last_alert_fetched_time': "2019-09-01T13:31:07",
+                                                   'existing_ids': ['da637029414680409372_735564929']}, False)
+    assert [{
+        'rawJSON': '{"id": "da637029414680409372_735564929", "incidentId": 14, "investigationId": null, '
+                   '"assignedTo": null, "severity": "Medium", "status": "New", "classification": null, '
+                   '"determination": null, "investigationState": "UnsupportedAlertType", '
+                   '"detectionSource": "CustomerTI", "category": "null", "threatFamilyName": null, '
+                   '"title": "Demisto Alert", "description": "Created for documentation", '
+                   '"alertCreationTime": "2019-09-01T13:31:08.0252869Z", '
+                   '"firstEventTime": "2019-08-05T00:53:51.1469367Z", "lastEventTime": "2019-08-05T00:53:51.1469367Z",'
+                   ' "lastUpdateTime": "2019-09-01T13:31:08.57Z", "resolvedTime": null, '
+                   '"machineId": "43df73d1dac43593d1275e20422f44a949f6dfc3", "alertUser": null, "comments": [], '
+                   '"alertFiles": [], "alertDomains": [], "alertIps": []}',
+        'name': 'Microsoft Defender ATP Alert da637029414680409372_735564929',
+        'occurred': '2019-09-01T13:31:08.0252869Z'}] == incidents
 
 
 def test_third_fetch_incidents(mocker):
@@ -55,10 +81,10 @@ def test_third_fetch_incidents(mocker):
     mock_demisto(mocker)
     atp_mocker(mocker, 'third_response_alerts.json')
     # Check that new incident is extracted
-    fetch_incidents(client_mocker, {'last_alert_fetched_time': "2019-09-01T13:29:37",
-                                    'existing_ids': ['da637029413772554314_295039533']})
+    incidents, _ = fetch_incidents(client_mocker, {'last_alert_fetched_time': "2019-09-01T13:29:37",
+                                                   'existing_ids': ['da637029413772554314_295039533']}, False)
     assert 'Microsoft Defender ATP Alert da637029414680409372_735564929' == \
-           demisto.incidents.call_args[0][0][0].get('name')
+           incidents[0].get('name')
 
 
 def test_get_alert_related_ips_command(mocker):
@@ -108,6 +134,16 @@ def test_get_machine_investigation_package_command(mocker):
     assert res['MicrosoftATP.MachineAction(val.ID === obj.ID)'] == INVESTIGATION_ACTION_DATA
 
 
+def test_offboard_machine_command(mocker):
+    from MicrosoftDefenderAdvancedThreatProtection import offboard_machine_command
+    mocker.patch.object(client_mocker, 'offboard_machine', return_value=MACHINE_OFFBOARD_API_RESPONSE)
+    args = {'machine_id': '9b898e79b0ed2173cc87577a158d1dba5f61d7a7', 'comment': 'Testing Offboarding'}
+    result = offboard_machine_command(client_mocker, args)
+    assert result.outputs[0]['ID'] == '947a677a-a11a-4240-ab6q-91277e2386b9'
+    assert result.outputs[0]['Status'] == 'Pending'
+    assert result.outputs[0]['Type'] == 'Offboard'
+
+
 def test_get_investigation_package_sas_uri_command(mocker):
     from MicrosoftDefenderAdvancedThreatProtection import get_investigation_package_sas_uri_command
     mocker.patch.object(client_mocker, 'get_investigation_package_sas_uri', return_value=INVESTIGATION_SAS_URI_API_RES)
@@ -140,8 +176,8 @@ def test_stop_and_quarantine_file_command(mocker):
     from MicrosoftDefenderAdvancedThreatProtection import stop_and_quarantine_file_command
     mocker.patch.object(client_mocker, 'stop_and_quarantine_file', return_value=STOP_AND_QUARANTINE_FILE_RAW_RESPONSE)
     mocker.patch.object(atp, 'get_machine_action_data', return_value=MACHINE_ACTION_STOP_AND_QUARANTINE_FILE_DATA)
-    _, res, _ = stop_and_quarantine_file_command(client_mocker, {})
-    assert res['MicrosoftATP.MachineAction(val.ID === obj.ID)'] == MACHINE_ACTION_STOP_AND_QUARANTINE_FILE_DATA
+    res = stop_and_quarantine_file_command(client_mocker, {'machine_id': 'test', 'file_hash': 'hash'})
+    assert res[0].outputs == MACHINE_ACTION_STOP_AND_QUARANTINE_FILE_DATA
 
 
 def test_get_investigations_by_id_command(mocker):
@@ -387,7 +423,7 @@ INVESTIGATION_SAS_URI_API_RES = {
     "value": 'https://userrequests-us.securitycenter.windows.com:443/safedownload/'
              'WDATP_Investigation_Package.zip?token=test1'
 }
-STOP_AND_QUARANTINE_FILE_RAW_RESPONSE = {
+STOP_AND_QUARANTINE_FILE_RAW_RESPONSE: dict = {
     "cancellationComment": None,
     "cancellationDateTimeUtc": None,
     "cancellationRequestor": None,
@@ -613,7 +649,7 @@ MACHINE_RESPONSE_API = {
     ]
 }
 
-SINGLE_MACHINE_RESPONSE_API = {
+SINGLE_MACHINE_RESPONSE_API: dict = {
     "@odata.context": "https://api-eu.securitycenter.windows.com/api/$metadata#Machines/$entity",
     "aadDeviceId": None,
     "agentVersion": "10.7740.19041.1151",
@@ -711,6 +747,100 @@ MACHINE_DATA = {
     'RBACGroupName': "The-A-Team",
     'AADDeviceID': '12ab34cd',
     'ExposureLevel': "Medium"
+}
+
+MACHINE_USER_DATA = {
+    "@odata.context": "https://api.securitycenter.microsoft.com/api/$metadata#Users",
+    "value": [
+        {
+            "id": "contoso\\user1",
+            "accountName": "user1",
+            "accountDomain": "contoso",
+            "firstSeen": "2019-12-18T08:02:54Z",
+            "lastSeen": "2020-01-06T08:01:48Z",
+            "logonTypes": "Interactive",
+            "isDomainAdmin": True,
+            "isOnlyNetworkUser": False
+        }
+    ]
+}
+
+MACHINE_USER_OUTPUT = {
+    "AccountName": "user1",
+    "AccountDomain": "contoso",
+    'AccountSID': None,
+    "DomainAdmin": True,
+    "FirstSeen": "2019-12-18T08:02:54Z",
+    "ID": "contoso\\user1",
+    "LastSeen": "2020-01-06T08:01:48Z",
+    'LeastPrevalentMachineID': None,
+    'LogonCount': None,
+    "LogonTypes": "Interactive",
+    'MachineID': '123abc',
+    'MostPrevalentMachineID': None,
+    "NetworkUser": False,
+}
+
+MACHINE_ALERTS_OUTPUT = {
+    'AADTenantID': None,
+    'AlertCreationTime': '2019-11-03T23:49:45.3823185Z',
+    'AssignedTo': 'test@test.com',
+    "Category": "CommandAndControl",
+    "Classification": "TruePositive",
+    'Comments': [
+        {
+            'Comment': None,
+            'CreatedBy': None,
+            'CreatedTime': None
+        }
+    ],
+    'ComputerDNSName': None,
+    "Description": "A network connection was made to a risky host which has exhibited malicious activity.",
+    'DetectionSource': 'WindowsDefenderAtp',
+    'DetectorID': None,
+    'Determination': None,
+    'Evidence': None,
+    'FirstEventTime': '2019-11-03T23:47:16.2288822Z',
+    "ID": "123",
+    "IncidentID": 123456,
+    'InvestigationID': 654321,
+    'InvestigationState': 'Running',
+    'LastEventTime': '2019-11-03T23:47:51.2966758Z',
+    'LastUpdateTime': '2019-11-03T23:55:52.6Z',
+    "MachineID": "123abc",
+    'MitreTechniques': None,
+    'RBACGroupName': None,
+    'RelatedUser': None,
+    'ResolvedTime': None,
+    "Severity": "Low",
+    "Status": "New",
+    "ThreatFamilyName": None,
+    'ThreatName': None,
+    "Title": "Network connection to a risky host",
+}
+
+MACHINE_OFFBOARD_API_RESPONSE: dict = {
+    "@odata.context": "https://api.securitycenter.windows.com/api/$metadata#MachineActions/$entity",
+    "id": "947a677a-a11a-4240-ab6q-91277e2386b9",
+    "type": "Offboard",
+    "title": None,
+    "requestor": "cbceb30b-f2b1-488e-893e-62907e4fe6d5",
+    "requestorComment": "Testing Offboarding",
+    "status": "Pending",
+    "machineId": None,
+    "computerDnsName": None,
+    "creationDateTimeUtc": "2022-07-12T14:39:19.6103056Z",
+    "lastUpdateDateTimeUtc": "2022-07-12T14:39:19.610309Z",
+    "cancellationRequestor": None,
+    "cancellationComment": None,
+    "cancellationDateTimeUtc": None,
+    "errorHResult": 0,
+    "scope": None,
+    "externalId": None,
+    "requestSource": "PublicApi",
+    "relatedFileInfo": None,
+    "commands": [],
+    "troubleshootInfo": None
 }
 
 
@@ -954,3 +1084,1697 @@ def test_get_alert_by_id_command(mocker):
     results = get_alert_by_id_command(client_mocker, {'alert_ids': ['1']})
     assert results.outputs[0]['ID'] == '1'
     assert len(results.outputs[0]) == len(ALERT_JSON.keys())
+
+
+FIRST_RUN = {'arguments': "''", 'comment': 'testing',
+             'machine_id': 'machine_id_example', 'scriptName': 'test_script.ps1'}
+SECOND_RUN = {'arguments': "''", 'comment': 'testing',
+              'machine_action_id': 'action_id_example',
+              'machine_id': 'machine_id_example', 'scriptName': 'test_script.ps1'}
+LAST_RUN = {'arguments': "''", 'comment': 'testing',
+            'machine_action_id': 'action_id_example',
+            'machine_id': 'machine_id_example', 'scriptName': 'test_script.ps1'}
+POLLING_CASES = [
+    (FIRST_RUN, '', 'PollingArgs', {'machine_action_id': 'action_id_example', 'interval_in_seconds': 10,
+                                    'polling': True, 'arguments': "''", 'comment': 'testing',
+                                    'machine_id': 'machine_id_example',
+                                    'scriptName': 'test_script.ps1'}),
+    (SECOND_RUN, 'InProgress', 'PollingArgs',
+     {'interval_in_seconds': 10, 'polling': True, 'arguments': "''", 'comment': 'testing',
+      'machine_action_id': 'action_id_example', 'machine_id': 'machine_id_example',
+      'scriptName': 'test_script.ps1'}),
+    (LAST_RUN, 'Succeeded', 'Contents', {'example_outputs': 'outputs'})
+
+]
+
+
+@pytest.mark.parametrize('args,request_status,args_to_compare,expected_results', POLLING_CASES)
+def test_run_script_polling(mocker, args, request_status, args_to_compare, expected_results):
+    import CommonServerPython
+
+    def mock_action_command(client, args):
+        return CommonServerPython.CommandResults(outputs={'action_id': 'action_id_example'})
+
+    def mock_get_status(client, args):
+        return CommonServerPython.CommandResults(
+            outputs={'status': request_status, 'commands': [{'commandStatus': 'Completed'}]})
+
+    def mock_post_process(client, res):
+        assert res == {'commands': [{'commandStatus': 'Completed'}], 'status': 'Succeeded'}
+        return CommonServerPython.CommandResults(outputs={'example_outputs': 'outputs'})
+
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    res = run_polling_command(client_mocker, args, 'microsoft-atp-live-response-run-script', mock_action_command,
+                              mock_get_status, mock_post_process)
+    assert res.to_context()[args_to_compare] == expected_results
+
+
+RUN_SCRIPT_CASES = [
+    (
+        {'machine_id': 'machine_id', 'scriptName': 'test_script.ps1', 'comment': 'testing'},
+        {'Commands': [{'type': 'RunScript', 'params': [{'key': 'ScriptName', 'value': 'test_script.ps1'}]}],
+         'Comment': 'testing'}
+    ),
+    (
+        {'machine_id': 'machine_id', 'scriptName': 'test_script.ps1', 'comment': 'testing', 'arguments': 'example_arg'},
+        {'Commands': [{'type': 'RunScript', 'params': [{'key': 'ScriptName', 'value': 'test_script.ps1'},
+                                                       {'key': 'Args', 'value': 'example_arg'}]}], 'Comment': 'testing'}
+
+    )
+]
+
+
+@pytest.mark.parametrize('args, expected_results', RUN_SCRIPT_CASES)
+def test_run_live_response_script_action(mocker, args, expected_results):
+    create_action_mock = mocker.patch.object(MsClient, 'create_action')
+    run_live_response_script_action(client_mocker, args)
+    assert create_action_mock.call_args[0][1] == expected_results
+
+
+GET_FILE_CASES = [
+    (
+        {'machine_id': 'machine_id',
+         'comment': "testing",
+         'path': "C:\\Users\\example\\Desktop\\test.txt"},
+        {'Commands': [
+            {'type': 'GetFile', 'params': [{'key': 'Path', 'value': 'C:\\Users\\example\\Desktop\\test.txt'}]}],
+            'Comment': 'testing'}
+    ),
+]
+
+
+@pytest.mark.parametrize('args, expected_results', GET_FILE_CASES)
+def test_get_live_response_file_action(mocker, args, expected_results):
+    create_action_mock = mocker.patch.object(MsClient, 'create_action')
+    get_live_response_file_action(client_mocker, args)
+    assert create_action_mock.call_args[0][1] == expected_results
+
+
+PUT_FILE_CASES = [
+    (
+        {'machine_id': 'machine_id',
+         'comment': "testing",
+         'file_name': "test_script.ps1"},
+        {'Commands': [{'type': 'PutFile', 'params': [{'key': 'FileName', 'value': 'test_script.ps1'}]}],
+         'Comment': 'testing'}
+    ),
+]
+
+
+@pytest.mark.parametrize('args, expected_results', PUT_FILE_CASES)
+def test_put_live_response_file_action(mocker, args, expected_results):
+    create_action_mock = mocker.patch.object(MsClient, 'create_action')
+    put_live_response_file_action(client_mocker, args)
+    assert create_action_mock.call_args[0][1] == expected_results
+
+
+ALERTS = [
+
+    {'id': 'id1',
+     'incidentId': 1,
+     'severity': 'Medium',
+     'status': 'Resolved',
+     'alertCreationTime': '2022-02-17T02:07:23.6716257Z',
+     'evidence': []},
+    {'id': 'id2',
+     'incidentId': 2,
+     'severity': 'Informational',
+     'status': 'Resolved',
+     'alertCreationTime': '2022-02-17T02:07:24.6716257Z',
+     'evidence': []},
+    {'id': 'id3',
+     'incidentId': 3,
+     'severity': 'Informational',
+     'status': 'Resolved',
+     'alertCreationTime': '2022-02-17T02:20:23.6716257Z',
+     'evidence': []},
+    {'id': 'id4',
+     'incidentId': 4,
+     'severity': 'Informational',
+     'status': 'Resolved',
+     'alertCreationTime': '2022-02-17T02:30:23.6716257Z',
+     'evidence': []},
+]
+
+EMPTY_LAST_RUN: dict = {}
+OLD_LAST_RUN_WITH_IDS = {'last_alert_fetched_time': '2022-02-17T02:07:23',
+                         'existing_ids': ['da637806604436477417_-578430041',
+                                          'da637806604436712653_-30042333']}
+EXISTING_LAST_RUN_MIDDLE_FETCH = {'last_alert_fetched_time': '2022-02-17T02:07:24.6716257Z'}
+
+FIRST_FETCH_NO_INCIDENTS = {'last_run': EMPTY_LAST_RUN, 'incidents': []}
+FIRST_FETCH_WITH_INCIDENTS = {'last_run': EMPTY_LAST_RUN, 'incidents': ALERTS}
+SECOND_FETCH_WITH_INCIDENTS = {'last_run': EXISTING_LAST_RUN_MIDDLE_FETCH, 'incidents': ALERTS[2:]}
+SECOND_FETCH_AFTER_UPDATE = {'last_run': OLD_LAST_RUN_WITH_IDS, 'incidents': ALERTS}
+
+fetch_cases = [
+    (FIRST_FETCH_NO_INCIDENTS, {'last_alert_fetched_time': '2022-02-14T14:39:01.391001Z', 'incidents': 0}),
+    (FIRST_FETCH_WITH_INCIDENTS, {'last_alert_fetched_time': '2022-02-17T02:30:23.671625Z', 'incidents': 4}),
+    (SECOND_FETCH_WITH_INCIDENTS, {'last_alert_fetched_time': '2022-02-17T02:30:23.671625Z', 'incidents': 2}),
+    (SECOND_FETCH_AFTER_UPDATE, {'last_alert_fetched_time': '2022-02-17T02:30:23.671625Z', 'incidents': 4}),
+]
+
+
+@pytest.mark.parametrize('case, expected_result', fetch_cases)
+def test_fetch(mocker, case, expected_result):
+    from MicrosoftDefenderAdvancedThreatProtection import fetch_incidents
+
+    frozen_time = dateparser.parse('2022-02-17T14:39:01.391001Z',
+                                   settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
+
+    mocker.patch.object(demisto, 'debug')
+    with freeze_time(frozen_time):
+        mocker.patch.object(client_mocker, 'list_alerts_by_params', return_value={'value': case['incidents']})
+        incidents, last_run = fetch_incidents(client_mocker, case['last_run'], True)
+        assert last_run.get('last_alert_fetched_time') == expected_result['last_alert_fetched_time']
+        assert len(incidents) == expected_result['incidents']
+
+
+def test_fetch_fails(mocker):
+    from MicrosoftDefenderAdvancedThreatProtection import fetch_incidents
+    mocker.patch.object(demisto, 'debug')
+
+    def raise_mock(params=None, overwrite_rate_limit_retry=True):
+        raise DemistoException("""Verify that the server URL parameter is correct and that you have access to the server from your host.
+Error Type: <requests.exceptions.ConnectionError>
+Error Number: [None]
+Message: None
+""")
+
+    mocker.patch.object(client_mocker, 'list_alerts_by_params', side_effect=raise_mock)
+    with pytest.raises(Exception) as e:
+        fetch_incidents(client_mocker, {}, True)
+    assert str(
+        e.value) == f'Failed to fetch {client_mocker.max_alerts_to_fetch} alerts. ' \
+                    f'This may caused due to large amount of alert. Try using a lower limit.'
+
+
+QUERY_BUILDING_CASES = [
+    (
+        'New, Resolved', 'Informational,Low,Medium,High', '5', False, '2022-02-17T14:39:01.391001Z',
+        {
+            '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and "
+                       "((status+eq+'New') or (status+eq+'Resolved')) and "
+                       "((severity+eq+'Informational') or (severity+eq+'Low') or (severity+eq+'Medium') "
+                       "or (severity+eq+'High'))",
+            '$orderby': 'alertCreationTime asc', '$top': '5'
+        }
+    ),
+    (
+        None, 'Informational,Low,Medium,High', '5', False, '2022-02-17T14:39:01.391001Z',
+        {
+            '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and "
+                       "((severity+eq+'Informational') or (severity+eq+'Low') "
+                       "or (severity+eq+'Medium') or (severity+eq+'High'))",
+            '$orderby': 'alertCreationTime asc', '$top': '5'
+        }
+    ),
+    (
+        'New', None, '5', False, '2022-02-17T14:39:01.391001Z',
+        {
+            '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and (status+eq+'New')",
+            '$orderby': 'alertCreationTime asc', '$top': '5'
+        }
+    ),
+    (
+        None, 'Informational', '5', False, '2022-02-17T14:39:01.391001Z',
+        {
+            '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and (severity+eq+'Informational')",
+            '$orderby': 'alertCreationTime asc', '$top': '5'
+        }
+    ),
+    (
+        None, None, '5', False, '2022-02-17T14:39:01.391001Z',
+        {
+            '$filter': 'alertCreationTime+gt+2022-02-17T14:39:01.391001Z', '$orderby': 'alertCreationTime asc',
+            '$top': '5'
+        }
+    ),
+    (
+        'Resolved', 'High', '5', True, '2022-02-17T14:39:01.391001Z',
+        {
+            '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and "
+                       "(status+eq+'Resolved') and (severity+eq+'High')",
+            '$orderby': 'alertCreationTime asc', '$expand': 'evidence', '$top': '5'
+        }
+    ),
+    (
+        None, None, '5', True, '2022-02-17T14:39:01.391001Z',
+        {
+            '$filter': 'alertCreationTime+gt+2022-02-17T14:39:01.391001Z', '$orderby': 'alertCreationTime asc',
+            '$expand': 'evidence', '$top': '5'
+        }
+    )
+
+]
+
+
+@pytest.mark.parametrize('status, severity, limit, evidence, last_fetch_time, expected_result', QUERY_BUILDING_CASES)
+def test_get_incidents_query_params(status, severity, limit, evidence, last_fetch_time, expected_result):
+    from copy import deepcopy
+    from MicrosoftDefenderAdvancedThreatProtection import _get_incidents_query_params
+
+    client = deepcopy(client_mocker)
+    client.max_alerts_to_fetch = limit
+    client.alert_severities_to_fetch = severity
+    client.alert_status_to_fetch = status
+
+    query = _get_incidents_query_params(client, fetch_evidence=evidence, last_fetch_time=last_fetch_time)
+    assert query == expected_result
+
+
+class TestHuntingQueryBuilder:
+    class TestHelperMethods:
+        def test_get_time_range_query__invalid_and_empty(self):
+            """
+            Tests invalid and empty time_range cases
+
+            Given:
+                - empty / Invalid time_range
+            When:
+                - calling get_time_range_query
+            Then:
+                - return empty str
+            """
+            expected = ""
+            # empty case:
+            assert HuntingQueryBuilder.get_time_range_query(None) == expected
+            assert HuntingQueryBuilder.get_time_range_query('') == expected
+
+            # invalid case:
+            assert HuntingQueryBuilder.get_time_range_query('invalid') == expected
+
+        def test_get_time_range_query__valid(self):
+            """
+            Tests valid time_range
+
+            Given:
+                - time_range of 1 day ago
+            When:
+                - calling get_time_range_query
+            Then:
+                - return a time_query of
+            """
+            expected = 'Timestamp > ago(1440m)'
+            assert HuntingQueryBuilder.get_time_range_query('1 day') == expected
+
+        def test_rebuild_query_with_time_range__table_only(self):
+            """
+            Tests case for table name only
+
+            Given:
+                - query with table name only
+            When:
+                - calling rebuild_query_with_time_range
+            Then:
+                - returns a query with time_range
+            """
+            query = 'tableName'
+            time_range = '2 days'
+            expected = 'tableName | where Timestamp > ago(2880m)'
+            assert HuntingQueryBuilder.rebuild_query_with_time_range(query, time_range) == expected
+
+        def test_rebuild_query_with_time_range__full_query(self):
+            """
+            Tests full query
+
+            Given:
+                - query with table name only
+            When:
+                - calling rebuild_query_with_time_range
+            Then:
+                - returns a query with time_range
+            """
+            query = 'tableName | where a | where b'
+            time_range = '2 days'
+            expected = 'tableName | where Timestamp > ago(2880m) | where a | where b'
+            assert HuntingQueryBuilder.rebuild_query_with_time_range(query, time_range) == expected
+
+        def test_list_to_filter_values__empty(self):
+            """
+            Tests list_to_filter empty case
+
+            Given:
+                - empty list
+            When:
+                - calling list_to_filter_values
+            Then:
+                - return an empty str
+            """
+            assert HuntingQueryBuilder.get_filter_values([]) is None
+
+        def test_list_to_filter_values__invalid(self):
+            """
+            Tests list_to_filter invalid case
+
+            Given:
+                - non list item
+            When:
+                - calling list_to_filter_values
+            Then:
+                - return an empty str
+            """
+            assert HuntingQueryBuilder.get_filter_values(42) is None
+
+        def test_list_to_filter_values__list(self):
+            """
+            Tests list_to_filter empty case
+
+            Given:
+                - list of 1 item
+                - list of 3 items
+            When:
+                - calling list_to_filter_values
+            Then:
+                - return a string representation of the lists
+            """
+            list_input = ['a', 'b', 'c']
+            assert HuntingQueryBuilder.get_filter_values(list_input) == '("a","b","c")'
+            assert HuntingQueryBuilder.get_filter_values(list_input[:1]) == '("a")'
+
+        def test_build_generic_query(self):
+            """
+
+            :return:
+            """
+            query_params = assign_params(
+                a='("1")',
+                b='("1","2")',
+                c='',
+                d=None,
+                e=('test_op', '"1","2"')
+            )
+            actual = HuntingQueryBuilder.build_generic_query('some query', ' suffix', query_params, 'or', 'in')
+            assert len(actual) == 75
+            assert actual[:12] == 'some query ('
+            assert '(a in ("1"))' in actual
+            assert '(b in ("1","2"))' in actual
+            assert 'or' in actual and 'in' in actual
+            assert 'e test_op "1","2"' in actual
+            assert ' suffix' in actual
+
+    class TestLateralMovementEvidence:
+        def test_build_network_connections_query(self):
+            """
+            Tests network connection query
+
+            Given:
+                - LateralMovementEvidence inited with sha1
+            When:
+                - calling build_network_connections_query
+            Then:
+                - return a network_connections query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['LateralMovementEvidence']['network_connections']
+            lme = HuntingQueryBuilder.LateralMovementEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                page='1',
+            )
+            actual = lme.build_network_connections_query()
+            assert actual == expected
+
+        def test_build_smb_connections_query(self):
+            """
+            Tests smb connections query
+
+            Given:
+                - LateralMovementEvidence inited with md5
+            When:
+                - calling build_smb_connections_query
+            Then:
+                - return a smb_connections query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['LateralMovementEvidence']['smb_connections']
+            lme = HuntingQueryBuilder.LateralMovementEvidence(
+                limit='1',
+                query_operation='and',
+                md5='1,2',
+                page='1',
+            )
+            actual = lme.build_smb_connections_query()
+            assert actual == expected
+
+        def test_build_smb_connections_query__with_remote_ip_count(self):
+            """
+            Tests smb connections query with remote_ip_count
+
+            Given:
+                - LateralMovementEvidence inited with md5 and remote_ip_count
+            When:
+                - calling build_smb_connections_query
+            Then:
+                - return a smb_connections query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['LateralMovementEvidence']['smb_connections_w_remote_ip_count']
+            lme = HuntingQueryBuilder.LateralMovementEvidence(
+                limit='1',
+                query_operation='and',
+                md5='1,2',
+                remote_ip_count=25,
+                page='1',
+            )
+            actual = lme.build_smb_connections_query()
+            assert actual == expected
+
+        def test_build_credential_dumping_query(self):
+            """
+            Tests credential dumping query
+
+            Given:
+                - LateralMovementEvidence inited with device_name
+            When:
+                - calling build_credential_dumping_query
+            Then:
+                - return a valid credential dumping query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['LateralMovementEvidence']['credential_dumping']
+            lme = HuntingQueryBuilder.LateralMovementEvidence(
+                limit=10,
+                query_operation='or',
+                device_name='1',
+                page='1',
+            )
+            actual = lme.build_credential_dumping_query()
+            assert actual == expected
+
+        def test_build_rdp_attempts_query(self):
+            """
+            Tests build_rdp_attempts_query
+
+            Given:
+                - LateralMovementEvidence inited with device_name
+            When:
+                - calling build_rdp_attempts_query
+            Then:
+                - return a valid rdp attempts query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['LateralMovementEvidence']['rdp_attempts']
+            lme = HuntingQueryBuilder.LateralMovementEvidence(
+                limit=10,
+                query_operation='or',
+                device_name='1',
+                page='1',
+            )
+            actual = lme.build_management_connection_query()
+            assert actual == expected
+
+    class TestPersistenceEvidence:
+        def test_build_scheduled_job_query(self):
+            """
+            Tests scheduled job query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_scheduled_job_query
+            Then:
+                - return a scheduled_job query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['scheduled_job']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='scheduled_job',
+                page='1',
+            )
+            actual = pe.build_scheduled_job_query()
+            assert actual == expected
+
+        def test_registry_entry_query__no_process_cmd(self):
+            """
+            Tests registry entry query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+                - PersistenceEvidence inited with query_purpose registry_entry
+                - PersistenceEvidence inited without process_cmd
+            When:
+                - calling build_registry_entry_query
+            Then:
+                - return a registry_entry query
+            """
+            with pytest.raises(DemistoException):
+                HuntingQueryBuilder.PersistenceEvidence(
+                    limit='1',
+                    query_operation='and',
+                    sha1='1,2',
+                    query_purpose='registry_entry',
+                    page='1',
+                )
+
+        def test_registry_entry_query(self):
+            """
+            Tests registry entry query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+                - PersistenceEvidence inited with query_purpose registry_entry
+                - PersistenceEvidence inited with process_cmd
+            When:
+                - calling build_registry_entry_query
+            Then:
+                - return a registry_entry query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['registry_entry']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='registry_entry',
+                process_cmd='something',
+                page='1',
+            )
+            actual = pe.build_registry_entry_query()
+            assert actual == expected
+
+        def test_build_startup_folder_changes_query(self):
+            """
+            Tests startup_folder_changes query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_startup_folder_changes_query
+            Then:
+                - return a startup_folder_changes query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['startup_folder_changes']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='startup_folder_changes',
+                page='1',
+            )
+            actual = pe.build_startup_folder_changes_query()
+            assert actual == expected
+
+        def test_build_new_service_created_query(self):
+            """
+            Tests new_service_created query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_new_service_created_query
+            Then:
+                - return a new_service_created query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['new_service_created']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='new_service_created',
+                page='1',
+            )
+            actual = pe.build_new_service_created_query()
+            assert actual == expected
+
+        def test_build_service_updated_query(self):
+            """
+            Tests service_updated query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_service_updated_query
+            Then:
+                - return a service_updated query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['service_updated']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='service_updated',
+                page='1',
+            )
+            actual = pe.build_service_updated_query()
+            assert actual == expected
+
+        def test_build_file_replaced_query(self):
+            """
+            Tests file_replaced query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_file_replaced_query
+            Then:
+                - return a file_replaced query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['file_replaced']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='file_replaced',
+                page='1',
+            )
+            actual = pe.build_file_replaced_query()
+            assert actual == expected
+
+        def test_build_new_user_query(self):
+            """
+            Tests new_user query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_new_user_query
+            Then:
+                - return a new_user query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['new_user']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='new_user',
+                page='1',
+            )
+            actual = pe.build_new_user_query()
+            assert actual == expected
+
+        def test_build_new_group_query(self):
+            """
+            Tests new_group query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_new_group_query
+            Then:
+                - return a new_group query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['new_group']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='new_group',
+                page='1',
+            )
+            actual = pe.build_new_group_query()
+            assert actual == expected
+
+        def test_build_group_user_change_query(self):
+            """
+            Tests group_user_change query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_group_user_change_query
+            Then:
+                - return a group_user_change query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['group_user_change']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='group_user_change',
+                page='1',
+            )
+            actual = pe.build_group_user_change_query()
+            assert actual == expected
+
+        def test_build_local_firewall_change_query(self):
+            """
+            Tests local_firewall_change query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_local_firewall_change_query
+            Then:
+                - return a local_firewall_change query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['local_firewall_change']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='local_firewall_change',
+                page='1',
+            )
+            actual = pe.build_local_firewall_change_query()
+            assert actual == expected
+
+        def test_build_host_file_change_query(self):
+            """
+            Tests host_file_change query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_host_file_change_query
+            Then:
+                - return a host_file_change query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['host_file_change']
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='host_file_change',
+                page='1',
+            )
+            actual = pe.build_host_file_change_query()
+            assert actual == expected
+
+    class TestFileOrigin:
+        def test_build_file_origin_query(self):
+            """
+            Tests file origin generic query
+
+            Given:
+                - FileOrigin inited with sha1
+            When:
+                - calling build_file_origin_query
+            Then:
+                - return a file origin query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['FileOrigin']
+            fo = HuntingQueryBuilder.FileOrigin(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                page='1',
+            )
+            actual = fo.build_file_origin_query()
+            assert actual == expected
+
+    class TestProcessDetails:
+        def test_build_parent_process_query(self):
+            """
+            Tests parent process query
+
+            Given:
+                - ProcessDetails inited with sha1
+            When:
+                - calling build_parent_process_query
+            Then:
+                - return a parent process query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['parent_process']
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                page='1',
+            )
+            actual = pd.build_parent_process_query()
+            assert actual == expected
+
+        def test_build_grandparent_process_query(self):
+            """
+            Tests grandparent process query
+
+            Given:
+                - ProcessDetails inited with sha1
+            When:
+                - calling build_grandparent_process_query
+            Then:
+                - return a grandparent process query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['grandparent_process']
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                page='1',
+            )
+            actual = pd.build_grandparent_process_query()
+            assert actual == expected
+
+        def test_build_process_details_query(self):
+            """
+            Tests process query
+
+            Given:
+                - ProcessDetails inited with sha1
+            When:
+                - calling build_process_details_query
+            Then:
+                - return a process query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['process']
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                page='1',
+            )
+            actual = pd.build_process_details_query()
+            assert actual == expected
+
+        def test_build_beaconing_evidence_query(self):
+            """
+            Tests beaconing evidence query
+
+            Given:
+                - ProcessDetails inited with sha1
+            When:
+                - calling build_beaconing_evidence_query
+            Then:
+                - return a beaconing evidence query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['beaconing_evidence']
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                page='1',
+            )
+            actual = pd.build_beaconing_evidence_query()
+            assert actual == expected
+
+        def test_build_process_excecution_powershell_query(self):
+            """
+            Tests process_excecution_powershell
+
+            Given:
+                - ProcessDetails inited with sha1 and device_id
+            When:
+                - calling build_process_excecution_powershell_query
+            Then:
+                - return a process_excecution_powershell query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['process_excecution_powershell']
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                device_id='1',
+                query_purpose='process_excecution_powershell',
+                page='1',
+            )
+            actual = pd.build_process_excecution_powershell_query()
+            assert actual == expected
+
+        def test_build_powershell_execution_unsigned_files_query(self):
+            """
+            Tests powershell_execution_unsigned_files query
+
+            Given:
+                - NetworkConnections inited with no query arg
+            When:
+                - calling build_powershell_execution_unsigned_files_query
+            Then:
+                - return a powershell_execution_unsigned_files query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['powershell_execution_unsigned_files']
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                query_purpose='powershell_execution_unsigned_files',
+                page='1',
+            )
+            actual = pd.build_powershell_execution_unsigned_files_query()
+            assert actual == expected
+
+        def test_build_powershell_execution_unsigned_files_query__with_md5(self):
+            """
+            Tests powershell_execution_unsigned_files query
+
+            Given:
+                - NetworkConnections inited with md5 query arg
+            When:
+                - calling build_powershell_execution_unsigned_files_query
+            Then:
+                - return a powershell_execution_unsigned_files query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['powershell_execution_unsigned_files__md5']
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                query_purpose='powershell_execution_unsigned_files',
+                md5='1',
+                page='1',
+            )
+            actual = pd.build_powershell_execution_unsigned_files_query()
+            assert actual == expected
+
+    class TestNetworkConnections:
+        def test_build_external_addresses_query(self):
+            """
+            Tests external_addresses query
+
+            Given:
+                - NetworkConnections inited with sha1
+            When:
+                - calling build_external_addresses_query
+            Then:
+                - return a external_addresses query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['NetworkConnections']['external_addresses']
+            nc = HuntingQueryBuilder.NetworkConnections(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='external_addresses',
+                page='1',
+            )
+            actual = nc.build_external_addresses_query()
+            assert actual == expected
+
+        def test_build_dns_query(self):
+            """
+            Tests dns_query query
+
+            Given:
+                - NetworkConnections inited with sha1
+            When:
+                - calling build_dns_query
+            Then:
+                - return a dns_query query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['NetworkConnections']['dns_query']
+            nc = HuntingQueryBuilder.NetworkConnections(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='dns_query',
+                page='1',
+            )
+            actual = nc.build_dns_query()
+            assert actual == expected
+
+        def test_build_encoded_commands_query(self):
+            """
+            Tests encoded_commands query
+
+            Given:
+                - NetworkConnections inited with md5 and device_id
+            When:
+                - calling build_encoded_commands_query
+            Then:
+                - return a encoded_commands query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['NetworkConnections']['encoded_commands']
+            nc = HuntingQueryBuilder.NetworkConnections(
+                limit='1',
+                query_operation='and',
+                md5='1',
+                device_id='1',
+                query_purpose='encoded_commands',
+                page='1',
+            )
+            actual = nc.build_encoded_commands_query()
+            assert actual == expected
+
+    class TestPrivilegeEscalation:
+        def test_build_query(self):
+            """
+            Tests query
+
+            Given:
+                - PrivilegeEscalation inited with device_id
+            When:
+                - calling build_query
+            Then:
+                - return a PrivilegeEscalation query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PrivilegeEscalation']
+            pe = HuntingQueryBuilder.PrivilegeEscalation(
+                limit='1',
+                query_operation='and',
+                device_id='1',
+                page='1',
+            )
+            actual = pe.build_query()
+            assert actual == expected
+
+    class TestTampering:
+        def test_build_external_addresses_query(self):
+            """
+            Tests external_addresses query
+
+            Given:
+                - Tampering inited with device_id
+            When:
+                - calling build_query
+            Then:
+                - return a Tampering query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['Tampering']['with_device']
+            t = HuntingQueryBuilder.Tampering(
+                limit='1',
+                query_operation='and',
+                device_id='1',
+                page='1',
+            )
+            actual = t.build_query()
+            assert actual == expected
+
+        def test_build_external_addresses_query__no_device(self):
+            """
+            Tests external_addresses query
+
+            Given:
+                - Tampering inited without device
+            When:
+                - calling build_query
+            Then:
+                - return a Tampering query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['Tampering']['no_device']
+            t = HuntingQueryBuilder.Tampering(
+                limit='1',
+                query_operation='and',
+                page='1',
+            )
+            actual = t.build_query()
+            assert actual == expected
+
+    class TestCoverUp:
+        def test_build_file_deleted_query(self):
+            """
+            Tests file_deleted query
+
+            Given:
+                - CoverUp inited with sha1
+            When:
+                - calling build_file_deleted_query
+            Then:
+                - return a file_deleted query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['CoverUp']['file_deleted']
+            cu = HuntingQueryBuilder.CoverUp(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='file_deleted',
+                page='1',
+            )
+            actual = cu.build_file_deleted_query()
+            assert actual == expected
+
+        def test_build_event_log_cleared_query(self):
+            """
+            Tests event_log query
+
+            Given:
+                - CoverUp inited with device_id
+            When:
+                - calling build_event_log_cleared_query
+            Then:
+                - return a event_log query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['CoverUp']['event_log']
+            cu = HuntingQueryBuilder.CoverUp(
+                limit='1',
+                query_operation='and',
+                device_id='12',
+                query_purpose='event_log_cleared',
+                page='1',
+            )
+            actual = cu.build_event_log_cleared_query()
+            assert actual == expected
+
+        def test_build_compromised_information_query(self):
+            """
+            Tests compromised_information query
+
+            Given:
+                - CoverUp inited with username
+            When:
+                - calling build_compromised_information_query
+            Then:
+                - return a compromised_information query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['CoverUp']['compromised_information']
+            cu = HuntingQueryBuilder.CoverUp(
+                limit='1',
+                query_operation='and',
+                username='dbot',
+                query_purpose='compromised_information',
+                page='1',
+            )
+            actual = cu.build_compromised_information_query()
+            assert actual == expected
+
+        def test_build_connected_devices_query(self):
+            """
+            Tests connected_devices query
+
+            Given:
+                - CoverUp inited with username
+            When:
+                - calling build_connected_devices_query
+            Then:
+                - return a connected_devices query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['CoverUp']['connected_devices']
+            cu = HuntingQueryBuilder.CoverUp(
+                limit='1',
+                query_operation='and',
+                username='dbot',
+                query_purpose='connected_devices',
+                page='1',
+            )
+            actual = cu.build_connected_devices_query()
+            assert actual == expected
+
+        def test_build_action_types_query(self):
+            """
+            Tests action_types query
+
+            Given:
+                - CoverUp inited with username
+            When:
+                - calling build_action_types_query
+            Then:
+                - return a action_types query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['CoverUp']['action_types']
+            cu = HuntingQueryBuilder.CoverUp(
+                limit='1',
+                query_operation='and',
+                username='dbot',
+                query_purpose='action_types',
+                page='1',
+            )
+            actual = cu.build_action_types_query()
+            assert actual == expected
+
+        def test_build_common_files_query(self):
+            """
+            Tests common_files query
+
+            Given:
+                - CoverUp inited with username
+            When:
+                - calling build_common_files_query
+            Then:
+                - return a common_files query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['CoverUp']['common_files']
+            cu = HuntingQueryBuilder.CoverUp(
+                limit='1',
+                query_operation='and',
+                username='dbot',
+                query_purpose='common_files',
+                page='1',
+            )
+            actual = cu.build_common_files_query()
+            assert actual == expected
+
+
+def test_get_machine_users_command(mocker):
+    """
+    Tests conversion of user response
+
+    Given:
+        - user response as json
+    When:
+        - calling for machine users
+    Then:
+        - return user data dict
+    """
+    mocker.patch.object(client_mocker, 'get_machine_users', return_value=MACHINE_USER_DATA)
+    results = get_machine_users_command(client_mocker, {'machine_id': "123abc"})
+    assert results.outputs[0] == MACHINE_USER_OUTPUT
+
+
+def test_get_machine_alerts_command(mocker):
+    """
+    Tests conversion of alert response
+
+    Given:
+        - alert response as json
+    When:
+        - calling for machine alerts
+    Then:
+        - return alert data dict
+    """
+    mocker.patch.object(client_mocker, 'get_machine_alerts', return_value=ALERTS_API_RESPONSE)
+    results = get_machine_alerts_command(client_mocker, {'machine_id': "123abc"})
+    assert results.outputs[0] == MACHINE_ALERTS_OUTPUT
+
+
+@pytest.mark.parametrize('is_gcc', (True, False))
+def test_gcc_resource(mocker, is_gcc: bool):
+    """
+    Given
+         an MsClient object
+    When
+        Making a http request
+    Then
+        Validate that the resource called matches the is_gcc attribute, so that GCC-based instance requests go through.
+    """
+    client = MsClient(
+        tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', base_url='url',
+        verify='use_ssl',
+        proxy='proxy', self_deployed='self_deployed', alert_severities_to_fetch='Informational,Low,Medium,High',
+        alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', is_gcc=is_gcc, auth_code='',
+        auth_type='', redirect_uri='')
+    # use requests_mock to catch a get to example.com
+    req = mocker.patch.object(client.ms_client, 'http_request')
+    with requests_mock.Mocker() as m:
+        m.get('https://example.com')
+    client.indicators_http_request('https://example.com', should_use_security_center=True)
+    assert req.call_args[1]['resource'] == {True: SECURITY_GCC_RESOURCE,
+                                            False: SECURITY_CENTER_RESOURCE}[is_gcc]
+
+
+@pytest.mark.parametrize('page_num, page_size, res',
+                         [('5', '10600', {'$filter': 'filter', '$skip': '40000', '$top': '10000'}),
+                          ('3', '50', {'$filter': 'filter', '$skip': '100', '$top': '50'}),
+                          ('1', '3', {'$filter': 'filter', '$skip': '0', '$top': '3'})
+                          ]
+                         )
+def test_get_machines(mocker, page_num, page_size, res):
+    """
+    Given:
+        - page_num, page_size, limit to the get_machines method
+
+    When:
+        - Before calling the API to get the machines
+
+    Then:
+        - verify that the page_num , page_size, limit are added to the params array correctly.
+    """
+    req = mocker.patch.object(client_mocker.ms_client, 'http_request', return_value='')
+    client_mocker.get_machines('filter', page_num=page_num, page_size=page_size)
+    assert res == req.call_args.kwargs.get('params')
+
+
+@pytest.mark.parametrize('query, query_batch, hr_name, timeout',
+                         [('', '[{"query": "DeviceInfo | where OnboardingStatus == Onboarded | limit 10'
+                           ' | distinct DeviceName", "name": "name1", "timeout": "20"}]', "name1", 20),
+                          ('DeviceInfo | where OnboardingStatus == Onboarded | limit 10 | distinct DeviceName', '', "name", 10)])
+def test_get_advanced_hunting_command(mocker, query, query_batch, hr_name, timeout):
+    """
+    Given:
+        - query, query_batch, human readable name and a timeout
+
+    When:
+        - Running the get_advanced_hunting_command command
+
+    Then:
+        - verify the expected results
+    """
+    args = {'timeout': '10',
+            'time_range': '1 day',
+            'name': 'name',
+            'query': query,
+            'query_batch': query_batch}
+    req = mocker.patch.object(client_mocker, 'get_advanced_hunting',
+                              return_value={'Results': [{'DeviceName': 'win2016-msde-agent.msde.lab.demisto'},
+                                                        {'DeviceName': 'ec2amaz-ua9hieu'}]})
+    human_readable, _, _ = get_advanced_hunting_command(client_mocker, args)
+    assert f'### Hunt results for {hr_name} query' in human_readable
+    assert timeout == req.call_args[0][1]
+
+
+@pytest.mark.parametrize('query, query_batch, exception, return_value',
+                         [('', '', 'Both query and query_batch were not given, please provide one',
+                           {'Results': [{'DeviceName': 'win2016-msde-agent.msde.lab.demisto'}]}),
+                          ('query', 'query_batch', 'Both query and query_batch were given, please provide just one',
+                          {'Results': [{'DeviceName': 'win2016-msde-agent.msde.lab.demisto'}]})])
+def test_get_advanced_hunting_command_exception(mocker, query, query_batch, exception, return_value):
+    """
+    Given:
+        - query, query_batch
+
+    When:
+        - Running the get_advanced_hunting_command command expecting an exception
+
+    Then:
+        - verify the expected exception has the correct value
+    """
+    args = {'timeout': '10',
+            'time_range': '1 day',
+            'name': 'name',
+            'query': query,
+            'query_batch': query_batch}
+    mocker.patch.object(client_mocker, 'get_advanced_hunting', return_value=return_value)
+
+    with pytest.raises(Exception) as e:
+        get_advanced_hunting_command(client_mocker, args)
+
+    assert str(e.value) == exception
+
+
+@pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
+    ({'id': 'some_id'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicAssetDto)',  # noqa: E501
+     'value': [{'id': '1111', 'computerDnsName': 'desktop-11111',
+                'osPlatform': 'Windows10', 'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 1111},
+               {'id': '2222',
+                'computerDnsName': 'some_computer_name_1',
+                'osPlatform': 'WindowsServer2016', 'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 1111},
+               {'id': '3333',
+                'computerDnsName': 'some_computer_name_2',
+                'osPlatform': 'WindowsServer2016', 'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 1111}]},
+     '### Microsoft Defender ATP list machines by software: some_id\n|id|computerDnsName|osPlatform|rbacGroupName|rbacGroupId|\n|---|---|---|---|---|\n| 1111 | desktop-11111 | Windows10 | UnassignedGroup | 1111 |\n| 2222 | some_computer_name_1 | WindowsServer2016 | UnassignedGroup | 1111 |\n| 3333 | some_computer_name_2 | WindowsServer2016 | UnassignedGroup | 1111 |\n',  # noqa: E501
+     [{'id': '1111', 'computerDnsName': 'desktop-11111',
+       'osPlatform': 'Windows10', 'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 1111},
+      {'id': '2222',
+       'computerDnsName': 'some_computer_name_1',
+       'osPlatform': 'WindowsServer2016', 'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 1111},
+      {'id': '3333', 'computerDnsName':
+       'some_computer_name_2', 'osPlatform': 'WindowsServer2016',
+       'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 1111}])
+])
+def test_list_machines_by_software_command(mocker, args, return_value, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_machines_by_software.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_machines_by_software_command
+    mocker.patch.object(client_mocker, 'get_list_machines_by_software', return_value=return_value)
+    result_list_software = list_machines_by_software_command(client_mocker, args)
+    assert result_list_software.readable_output == expected_human_readable
+    assert result_list_software.outputs == expected_outputs
+
+
+@pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
+    ({'id': 'some_id'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicDistributionDto)',  # noqa: E501
+     'value': [{'version': '6.2.4.0', 'installations': 1, 'vulnerabilities': 0},
+               {'version': '7.0.2.0', 'installations': 2, 'vulnerabilities': 7}]},
+     '### Microsoft Defender ATP software version distribution:\n'
+     '|version|installations|vulnerabilities|\n|---|---|---|\n|'
+     ' 6.2.4.0 | 1 | 0 |\n| 7.0.2.0 | 2 | 7 |\n',
+     [{'version': '6.2.4.0', 'installations': 1, 'vulnerabilities': 0},
+      {'version': '7.0.2.0', 'installations': 2, 'vulnerabilities': 7}])
+])
+def test_list_software_version_distribution_command(mocker, args, return_value, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_software_command.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_software_version_distribution_command
+    mocker.patch.object(client_mocker, 'get_list_software_version_distribution', return_value=return_value)
+    result_list_software = list_software_version_distribution_command(client_mocker, args)
+    assert result_list_software.readable_output == expected_human_readable
+    assert result_list_software.outputs == expected_outputs
+
+
+@pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
+    ({'id': 'microsoft-_-.product'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicProductFixDto)',  # noqa: E501
+     'value': [{'id': '4556813', 'name': 'some_name', 'osBuild': 11111,
+                'productsNames': ['.product'], 'url': 'some_url',
+                'machineMissedOn': 1, 'cveAddressed': 2},
+               {'id': '4534271', 'name': 'some_name', 'osBuild': 11111,
+                'productsNames': ['.product'], 'url': 'some_url',
+                'machineMissedOn': 1, 'cveAddressed': 2}]},
+     '### Microsoft Defender ATP missing kb by software: microsoft-_-.product\n'
+     '|id|name|osBuild|productsNames|url|machineMissedOn|cveAddressed|\n'
+     '|---|---|---|---|---|---|---|\n'
+     '| 4556813 | some\_name | 11111 | .product | some\_url | 1 | 2 |\n'
+     '| 4534271 | some\_name | 11111 | .product | some\_url | 1 | 2 |\n',
+     [{'id': '4556813', 'name': 'some_name', 'osBuild': 11111,
+       'productsNames': ['.product'], 'url': 'some_url',
+       'machineMissedOn': 1, 'cveAddressed': 2},
+      {'id': '4534271', 'name': 'some_name', 'osBuild': 11111,
+       'productsNames': ['.product'], 'url': 'some_url',
+       'machineMissedOn': 1, 'cveAddressed': 2}])
+])
+def test_list_missing_kb_by_software_command(mocker, args, return_value, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_software_command.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_missing_kb_by_software_command
+    mocker.patch.object(client_mocker, 'get_list_missing_kb_by_software', return_value=return_value)
+    result_list_software = list_missing_kb_by_software_command(client_mocker, args)
+    assert result_list_software.readable_output == expected_human_readable
+    assert result_list_software.outputs == expected_outputs
+
+
+@pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
+    ({'id': 'some_id'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#PublicVulnerabilityDto',
+     'value': [{'id': 'CVE-1111-1111', 'name': 'CVE-1111-1111', 'description': 'vulnerability_description',
+                'severity': 'Medium', 'cvssV3': 5.3, 'exposedMachines': 2, 'publishedOn': '2023-09-06T00:00:00Z',
+                'updatedOn': '2022-11-09T00:00:00Z', 'publicExploit': False, 'exploitVerified': False,
+                'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []}]},
+     '### Microsoft Defender ATP vulnerability CVE-1111-1111 by software: some_id\n|id|name|description|severity|cvssV3|publishedOn|updatedOn|exposedMachines|exploitVerified|publicExploit|\n|---|---|---|---|---|---|---|---|---|---|\n| CVE-1111-1111 | CVE-1111-1111 | vulnerability\\_description | Medium | 5.3 | 2023-09-06T00:00:00Z | 2022-11-09T00:00:00Z | 2 | false | false |\n',  # noqa: E501
+     {'id': 'CVE-1111-1111', 'name': 'CVE-1111-1111', 'description': 'vulnerability_description',
+      'severity': 'Medium', 'cvssV3': 5.3, 'exposedMachines': 2,
+      'publishedOn': '2023-09-06T00:00:00Z', 'updatedOn': '2022-11-09T00:00:00Z', 'publicExploit': False,
+      'exploitVerified': False,
+      'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []})
+])
+def test_list_vulnerabilities_by_software_command(mocker, args, return_value, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_software_command.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_vulnerabilities_by_software_command
+    mocker.patch.object(client_mocker, 'get_list_vulnerabilities_by_software', return_value=return_value)
+    result_list_software = list_vulnerabilities_by_software_command(client_mocker, args)
+    assert result_list_software[0].readable_output == expected_human_readable
+    assert result_list_software[0].outputs == expected_outputs
+
+
+@pytest.mark.parametrize('filters_arg_list, name, expected_result', [
+    (['id1'], 'id', "id eq 'id1'"),
+    (['id1', 'id2'], 'id', "id eq 'id1' or id eq 'id2'"),
+    (['id1', 'id2', 'id3'], 'id', "id eq 'id1' or id eq 'id2' or id eq 'id3'"),
+    ([], 'id', ""),
+
+])
+def test_create_filters_conjunction(filters_arg_list, name, expected_result):
+    """
+    Given:
+        - filters_arg_list, name.
+
+    When:
+        - executing create_filters_conjunction function.
+
+    Then:
+        - the returned filter string is valid.
+    """
+    create_filters_conjunction_result = create_filters_conjunction(filters_arg_list, name)
+
+    assert create_filters_conjunction_result == expected_result
+
+
+@pytest.mark.parametrize('filters_arg_list, expected_result', [
+    (["id eq 'id1' or id eq 'id2' or id eq 'id3'", "vendor eq 'vendor1' or vendor eq 'vendor2' or vendor eq 'vendor3'"],
+     "(id eq 'id1' or id eq 'id2' or id eq 'id3') and (vendor eq 'vendor1' or vendor eq 'vendor2' or vendor eq 'vendor3')"),
+    (["id eq 'id1' or id eq 'id2' or id eq 'id3'"], "id eq 'id1' or id eq 'id2' or id eq 'id3'"),
+    ([], ""),
+    (["", "id eq 'id1' or id eq 'id2' or id eq 'id3'", ""], "id eq 'id1' or id eq 'id2' or id eq 'id3'")
+
+])
+def test_create_filters_disjunctions(filters_arg_list, expected_result):
+    """
+    Given:
+        - filters_arg_list, name.
+
+    When:
+        - executing create_filters_disjunctions function.
+
+    Then:
+        - the returned filter string is valid.
+    """
+    create_filters_disjunctions_result = create_filters_disjunctions(filters_arg_list)
+
+    assert create_filters_disjunctions_result == expected_result
+
+
+@pytest.mark.parametrize('args_and_name_list, expected_result', [
+    ([(['id1'], 'id'), (['vendor1', 'vendor2'], 'vendor')], "(id eq 'id1') and (vendor eq 'vendor1' or vendor eq 'vendor2')"),
+    ([(['id1', 'id2'], 'id'), (['vendor1', 'vendor2'], 'vendor')],
+     "(id eq 'id1' or id eq 'id2') and (vendor eq 'vendor1' or vendor eq 'vendor2')"),
+    ([(['id1'], 'id')], "id eq 'id1'")
+])
+def test_create_filter(args_and_name_list, expected_result):
+    """
+    Given:
+        - args_and_name_list.
+
+    When:
+        - executing create_filter function.
+
+    Then:
+        - the returned filter string is valid.
+    """
+    create_filters_result = create_filter(args_and_name_list)
+
+    assert create_filters_result == expected_result
+
+
+@pytest.mark.parametrize('id_and_severity, name_equal, name_contains, description, published_on, cvss,'
+                         'updated_on, expected_result',
+                         [("", "", "", "", "2020-12-16T00:00:00Z", "", "", "publishedOn ge 2020-12-16T00:00:00Z"),
+                          ("", "", "", "", "", "", "2020-12-16T00:00:00Z", "updatedOn ge 2020-12-16T00:00:00Z"),
+                          ("", "", "", "", "", "some_cvss", "", "cvssV3 ge some_cvss"),
+                          ("", "", "", "some_description", "", "", "", "contains(description, 'some_description')"),
+                          ("", "some_name_equal", "", "", "", "", "", "name eq 'some_name_equal'"),
+                          ("", "", "some_name_contains", "", "", "", "", "contains(name, 'some_name_contains')"),
+                          ("", "", "some_name", "", "" "2020-12-16T00:00:00Z", "", "2020-12-16T00:00:00Z",
+                           "(contains(name, 'some_name')) and (updatedOn ge 2020-12-16T00:00:00Z) and "
+                           "(publishedOn ge 2020-12-16T00:00:00Z)")
+                          ])
+def test_create_filter_list_vulnerabilities(id_and_severity, name_equal, name_contains, description, published_on, cvss,
+                                            updated_on, expected_result):
+    from MicrosoftDefenderAdvancedThreatProtection import create_filter_list_vulnerabilities
+    result = create_filter_list_vulnerabilities(id_and_severity, name_equal, name_contains, description, published_on,
+                                                cvss, updated_on)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize('args, return_value_get_list_software,expected_human_readable,expected_outputs', [
+    ({'vendor': 'some_vendor'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Software', 'value':
+     [{'id': 'some_id', 'name': 'some_name',
+       'vendor': 'some_vendor', 'weaknesses': 0, 'publicExploit': False,
+       'activeAlert': False, 'exposedMachines': 0, 'installedMachines': 1, 'impactScore': 0,
+       'isNormalized': False, 'category': '', 'distributions': []},
+      {'id': 'some_id', 'name': 'some_name', 'vendor': 'some_vendor', 'weaknesses': 0,
+       'publicExploit': False, 'activeAlert': False, 'exposedMachines': 0, 'installedMachines': 1,
+       'impactScore': 0, 'isNormalized': False, 'category': '', 'distributions': []}]},
+        '### Microsoft Defender ATP list software:\n|id|name|vendor|weaknesses|activeAlert|exposedMachines|installedMachines|publicExploit|\n|---|---|---|---|---|---|---|---|\n| some\_id | some\_name | some\_vendor | 0 | false | 0 | 1 | false |\n| some\_id | some\_name | some\_vendor | 0 | false | 0 | 1 | false |\n',  # noqa: E501
+     [{'id': 'some_id', 'name': 'some_name', 'vendor': 'some_vendor',
+       'weaknesses': 0, 'publicExploit': False, 'activeAlert': False,
+       'exposedMachines': 0, 'installedMachines': 1, 'impactScore': 0,
+       'isNormalized': False, 'category': '', 'distributions': []},
+      {'id': 'some_id', 'name': 'some_name', 'vendor': 'some_vendor',
+       'weaknesses': 0, 'publicExploit': False, 'activeAlert': False,
+       'exposedMachines': 0, 'installedMachines': 1, 'impactScore': 0,
+       'isNormalized': False, 'category': '', 'distributions': []}])
+])
+def test_list_software_command(mocker, args, return_value_get_list_software, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_software_command.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_software_command
+    mocker.patch.object(client_mocker, 'get_list_software', return_value=return_value_get_list_software)
+    result_list_software = list_software_command(client_mocker, args)
+    assert result_list_software.readable_output == expected_human_readable
+    assert result_list_software.outputs == expected_outputs
+
+
+@pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
+    ({'cve_id': 'CVE-3333-33333'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicAssetVulnerabilityDto)',  # noqa: E501
+     'value': [{'id': 'some_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some_machine_id',
+                'fixingKbId': None, 'productName': 'some_product_name', 'productVendor': 'some_vendor',
+                'productVersion': '7.0.2.0', 'severity': 'High'}]},
+     '### Microsoft Defender ATP vulnerability CVE-3333-33333:\n'
+     '|id|cveId|machineId|productName|productVendor|productVersion|severity|\n'
+     '|---|---|---|---|---|---|---|\n|'
+     ' some\_id | CVE-3333-33333 |'
+     ' some\_machine\_id |'
+     ' some\_product\_name | some\_vendor | 7.0.2.0 | High |\n',
+     {'id': 'some_id',
+      'cveId': 'CVE-3333-33333', 'machineId': 'some_machine_id',
+      'fixingKbId': None, 'productName': 'some_product_name', 'productVendor': 'some_vendor',
+      'productVersion': '7.0.2.0', 'severity': 'High'})
+])
+def test_list_vulnerabilities_by_machine_command(mocker, args, return_value, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_software_command.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_vulnerabilities_by_machine_command
+    mocker.patch.object(client_mocker, 'get_list_vulnerabilities_by_machine', return_value=return_value)
+    result_list_software = list_vulnerabilities_by_machine_command(client_mocker, args)
+    assert result_list_software[0].readable_output == expected_human_readable
+    assert result_list_software[0].outputs == expected_outputs
+
+
+@pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
+    ({'published_on': '1 days ago'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Vulnerabilities',
+     'value': [{'id': 'CVE-2023-11111', 'name': 'CVE-2023-11111',
+                'description': 'some_description',
+                'severity': 'Critical', 'cvssV3': 9.8, 'exposedMachines': 0, 'publishedOn': '2023-04-24T15:15:00Z',
+                'updatedOn': '2023-04-24T15:15:00Z', 'publicExploit': False,
+                'exploitVerified': False, 'exploitInKit': False,
+                'exploitTypes': [], 'exploitUris': []}]},
+     '### Microsoft Defender ATP vulnerabilities:\n|id|name|description|severity|publishedOn|updatedOn|'
+     'exposedMachines|exploitVerified|publicExploit|cvssV3|\n'
+     '|---|---|---|---|---|---|---|---|---|---|\n|'
+     ' CVE-2023-11111 | CVE-2023-11111 | some\\_description | Critical '
+     '| 2023-04-24T15:15:00Z | 2023-04-24T15:15:00Z | 0 | false | false | 9.8 |\n',
+     {'id': 'CVE-2023-11111',
+      'name': 'CVE-2023-11111',
+      'description': 'some_description',
+      'severity': 'Critical', 'cvssV3': 9.8, 'exposedMachines': 0,
+      'publishedOn': '2023-04-24T15:15:00Z',
+      'updatedOn': '2023-04-24T15:15:00Z',
+      'publicExploit': False, 'exploitVerified': False,
+      'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []})
+])
+def test_list_vulnerabilities_command(mocker, args, return_value, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_software_command.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_vulnerabilities_command
+    mocker.patch.object(client_mocker, 'get_list_vulnerabilities', return_value=return_value)
+    result_list_software = list_vulnerabilities_command(client_mocker, args)
+    assert result_list_software[0].readable_output == expected_human_readable
+    assert result_list_software[0].outputs == expected_outputs
+
+
+@pytest.mark.parametrize('data_to_escape_with_backslash, expected_result', [(
+    [{'id': 'some_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some_machine_id',
+      'fixingKbId': None, 'productName': 'some_product_name', 'productVendor': 'some_vendor',
+      'productVersion': '7.0.2.0', 'severity': 'High'}],
+    [{'id': 'some\\_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some\\_machine\\_id',
+      'fixingKbId': None, 'productName': 'some\\_product\\_name', 'productVendor': 'some\\_vendor',
+      'productVersion': '7.0.2.0', 'severity': 'High'}])
+])
+def test_add_backslash_infront_of_underscore_list(data_to_escape_with_backslash, expected_result):
+    from MicrosoftDefenderAdvancedThreatProtection import add_backslash_infront_of_underscore_list
+    result = add_backslash_infront_of_underscore_list(data_to_escape_with_backslash)
+    assert result == expected_result

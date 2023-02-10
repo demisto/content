@@ -2,9 +2,10 @@ commonfields:
   id: SNDBOX
   version: -1
 name: SNDBOX
-display: SNDBOX
+display: SNDBOX (Deprecated)
+deprecated: true
 category: Forensics & Malware Analysis
-description: SNDBOX as a service
+description: Deprecated. No available replacement.
 configuration:
 - display: 'Use Public API Key. (By approving SNDBOX public API you are accepting SNDBOX TOS @ https://app.sndbox.com/tos). Public submissions are shared with the community'
   name: public_api_key

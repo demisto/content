@@ -1065,10 +1065,12 @@ tasks:
       '#none#':
       - "34"
     scriptarguments:
-      JobID:
-        simple: ${CrowdStrike.Submit.job_id}
       Polling:
         simple: "true"
+      environmentID:
+        simple: ${CrowdStrike.Submit.environment_id}
+      file:
+        simple: ${CrowdStrike.Submit.sha256}
       file-type:
         simple: misp
     separatecontext: false

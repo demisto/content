@@ -1,0 +1,173 @@
+{
+  "name": "xsoar-firewall",
+  "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/xsoar-firewall",
+  "etag": "W/8c738e12-a63a-4349-80d6-855768dd6393",
+  "type": "Microsoft.Network/azureFirewalls",
+  "location": "eastus",
+  "tags": {},
+  "properties": {
+    "provisioningState": "Succeeded",
+    "sku": {
+      "name": "AZFW_VNet",
+      "tier": "Standard"
+    },
+    "threatIntelMode": "Alert",
+    "additionalProperties": {},
+    "ipConfigurations": [
+      {
+        "name": "my-public-ip",
+        "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/xsoar-firewall/azureFirewallIpConfigurations/my-public-ip",
+        "etag": "W/8c738e12-a63a-4349-80d6-855768dd6393",
+        "type": "Microsoft.Network/azureFirewalls/azureFirewallIpConfigurations",
+        "properties": {
+          "provisioningState": "Succeeded",
+          "privateIPAddress": "189.160.40.11",
+          "privateIPAllocationMethod": "Dynamic",
+          "publicIPAddress": {
+            "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/publicIPAddresses/my-public-ip"
+          },
+          "subnet": {
+            "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/virtualNetworks/new-v-n/subnets/AzureFirewallSubnet"
+          }
+        }
+      }
+    ],
+    "networkRuleCollections": [
+      {
+        "name": "my-first-collection",
+        "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/xsoar-firewall/networkRuleCollections/my-first-collection",
+        "etag": "W/8c738e12-a63a-4349-80d6-855768dd6393",
+        "properties": {
+          "provisioningState": "Succeeded",
+          "priority": 105,
+          "action": {
+            "type": "Allow"
+          },
+          "rules": [
+            {
+              "name": "my-ip-rule",
+              "description": "my-poc-collection",
+              "protocols": [
+                "UDP",
+                "TCP"
+              ],
+              "sourceAddresses": [
+                "189.160.40.11",
+                "189.160.40.11"
+              ],
+              "destinationAddresses": [
+                "189.160.40.11",
+                "189.160.40.11"
+              ],
+              "sourceIpGroups": [],
+              "destinationIpGroups": [],
+              "destinationFqdns": [],
+              "destinationPorts": [
+                "8080"
+              ]
+            },
+            {
+              "name": "my-ip-group-rule",
+              "description": "my-ip-group-source",
+              "protocols": [
+                "Any"
+              ],
+              "sourceAddresses": [],
+              "destinationAddresses": [],
+              "sourceIpGroups": [
+                "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group"
+              ],
+              "destinationIpGroups": [
+                "/subscriptions/xsoar-subscription/resourcegroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/test-ip-group"
+              ],
+              "destinationFqdns": [],
+              "destinationPorts": [
+                "8080"
+              ]
+            },
+            {
+              "name": "my-service-tag-rule",
+              "description": "my-service-tag-source",
+              "protocols": [
+                "Any"
+              ],
+              "sourceAddresses": [
+                "189.160.40.11"
+              ],
+              "destinationAddresses": [
+                "ServiceFabric",
+                "SqlManagement"
+              ],
+              "sourceIpGroups": [],
+              "destinationIpGroups": [],
+              "destinationFqdns": [],
+              "destinationPorts": [
+                "8080"
+              ]
+            },
+            {
+              "name": "my-fqdn-rule",
+              "description": "my-fqdn-rule",
+              "protocols": [
+                "Any"
+              ],
+              "sourceAddresses": [
+                "189.160.40.11"
+              ],
+              "destinationAddresses": [],
+              "sourceIpGroups": [],
+              "destinationIpGroups": [],
+              "destinationFqdns": [
+                "google.com",
+                "microsoft.com"
+              ],
+              "destinationPorts": [
+                "8080"
+              ]
+            }
+          ]
+        },
+        "type": "Microsoft.Network/azureFirewalls/networkRuleCollections"
+      },
+      {
+        "name": "my-collection",
+        "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/xsoar-firewall/networkRuleCollections/my-collection",
+        "etag": "W/8c738e12-a63a-4349-80d6-855768dd6393",
+        "properties": {
+          "provisioningState": "Succeeded",
+          "priority": 106,
+          "action": {
+            "type": "Allow"
+          },
+          "rules": [
+            {
+              "name": "my-ip-rule",
+              "description": "my-poc-collection",
+              "protocols": [
+                "UDP",
+                "TCP"
+              ],
+              "sourceAddresses": [
+                "189.160.40.11",
+                "189.160.40.11"
+              ],
+              "destinationAddresses": [
+                "189.160.40.11",
+                "189.160.40.11"
+              ],
+              "sourceIpGroups": [],
+              "destinationIpGroups": [],
+              "destinationFqdns": [],
+              "destinationPorts": [
+                "8080"
+              ]
+            }
+          ]
+        },
+        "type": "Microsoft.Network/azureFirewalls/networkRuleCollections"
+      }
+    ],
+    "applicationRuleCollections": [],
+    "natRuleCollections": []
+  }
+}

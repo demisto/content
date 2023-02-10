@@ -2,8 +2,9 @@ category: IT Services
 commonfields:
   id: Azure Active Directory Identity Protection
   version: -1
+deprecated: true
 configuration:
-- display: Application ID
+- display: Application ID (Client ID for Client credentials mode)
   hidden: false
   name: app_id
   required: true
@@ -27,6 +28,21 @@ configuration:
   - https://login.chinacloudapi.cn
   required: true
   type: 15
+- additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
+  display: Use Client Credentials Authorization Flow
+  name: client_credentials
+  required: false
+  type: 8
+- display: Tenant ID (required for Client Credentials mode)
+  name: tenant_id
+  required: false
+  type: 0
+- displaypassword: Client Secret (required for Client Credentials mode)
+  name: credentials
+  required: false
+  type: 9
+  additionalinfo: "Client Secret. Required for Client Credentials mode)"
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -69,8 +85,8 @@ configuration:
   name: fetch_user_principal_name
   required: false
   type: 0
-description: Returns information from the Azure Active Directory Identity Protection service.
-display: Azure Active Directory Identity Protection (Beta)
+description: Deprecated. Use Microsoft Graph Identity and Access instead.
+display: Azure Active Directory Identity Protection  (Deprecated)
 name: Azure Active Directory Identity Protection
 script:
   commands:
@@ -461,7 +477,7 @@ script:
       the targeted user's risk level to none.
     execution: false
     name: azure-ad-identity-protection-risky-user-dismiss
-  dockerimage: demisto/crypto:1.0.0.24380
+  dockerimage: demisto/crypto:1.0.0.31577
   feed: false
   isfetch: true
   longRunning: false

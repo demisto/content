@@ -8,11 +8,12 @@ from CommonServerPython import *
 import dateparser
 import requests
 import trustar
+import urllib3
 from trustar.models.indicator import Indicator
 from trustar.models.report import Report
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 handle_proxy()
 
@@ -31,6 +32,7 @@ class Utils(object):
     @staticmethod
     def date_to_unix(timestamp):
         d = dateparser.parse(timestamp)
+        assert d is not None, f'could not parse {timestamp}'
         return int(d.strftime("%s")) * 1000
 
 

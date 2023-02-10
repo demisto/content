@@ -1,6 +1,8 @@
+import pytest
+
 import demistomock as demisto
 from CommonServerPython import *
-from ParseEmailFilesV2 import main, data_to_md
+from ParseEmailFilesV2 import main, data_to_md, parse_nesting_level
 
 
 def exec_command_for_file(
@@ -86,6 +88,8 @@ def test_eml_type(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'context')
+    mocker.patch.object(demisto, 'dt', return_value=['SMTP mail, UTF-8 Unicode text, with CRLF terminators'])
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
@@ -135,6 +139,8 @@ def test_eml_contains_eml(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'context')
+    mocker.patch.object(demisto, 'dt', return_value=['news or mail text, ASCII text'])
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
@@ -197,6 +203,8 @@ def test_eml_contains_msg(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'context')
+    mocker.patch.object(demisto, 'dt', return_value=['news or mail text, ASCII text'])
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
@@ -255,6 +263,8 @@ def test_eml_contains_eml_depth(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test', 'max_depth': '1'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'context')
+    mocker.patch.object(demisto, 'dt', return_value=['news or mail text, ASCII text'])
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
@@ -289,6 +299,8 @@ def test_msg(mocker):
     info = 'CDFV2 Microsoft Outlook Message'
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('smime-p7s.msg', info=info))
+    mocker.patch.object(demisto, 'context')
+    mocker.patch.object(demisto, 'dt', return_value=['CDFV2 Microsoft Outlook Message'])
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
@@ -313,6 +325,8 @@ def test_no_content_type_file(mocker):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand',
                         side_effect=exec_command_for_file('no_content_type.eml', info="ascii text"))
+    mocker.patch.object(demisto, 'context')
+    mocker.patch.object(demisto, 'dt', return_value=['ascii text'])
     mocker.patch.object(demisto, 'results')
     main()
     results = demisto.results.call_args[0]
@@ -333,6 +347,8 @@ def test_no_content_file(mocker):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand',
                         side_effect=exec_command_for_file('no_content.eml', info="ascii text"))
+    mocker.patch.object(demisto, 'context')
+    mocker.patch.object(demisto, 'dt', return_value=['ascii text'])
     mocker.patch.object(demisto, 'results')
     try:
         main()
@@ -417,3 +433,83 @@ def test_md_output_with_body_text():
 
     md = data_to_md(email_data)
     assert expected == md
+
+
+@pytest.mark.parametrize('nesting_level_to_return, output, res', [('All files', ['output1', 'output2', 'output3'],
+                                                                   ['output1', 'output2', 'output3']),
+                                                                  ('Outer file', ['output1', 'output2', 'output3'],
+                                                                   ['output1']),
+                                                                  ('Inner file', ['output1', 'output2', 'output3'],
+                                                                   ['output3'])])
+def test_parse_nesting_level(nesting_level_to_return, output, res):
+    """
+    Given:
+    - parsed email output, nesting_level_to_return param - All files.
+    - parsed email output, nesting_level_to_return param - Outer file.
+    - parsed email output, nesting_level_to_return param - Inner file.
+
+    When:
+    calling the parse_nesting_level function.
+
+    Then:
+    - Validating the that all outputs are returned.
+    - Validating the that only output1 is returned.
+    - Validating the that only output3 is returned.
+    """
+    assert parse_nesting_level(nesting_level_to_return, output) == res
+
+
+@pytest.mark.parametrize('nesting_level_to_return, results_len, depth, results_index', [('All files', 4, 0, 2),
+                                                                                        ('Outer file', 3, 0, 2),
+                                                                                        ('Inner file', 1, 1, 0)])
+def test_eml_contains_eml_nesting_level(mocker, nesting_level_to_return, results_len, depth, results_index):
+
+    """
+    Given:
+    - A eml file contains eml, nesting_level_to_return param - All files.
+    - A eml file contains eml, nesting_level_to_return param - Outer file.
+    - A eml file contains eml, nesting_level_to_return param - Inner file.
+
+    When: parsing the eml file.
+
+    Then:
+    - Validating the that call_args_list length is 4 (2 parsed eml files and 2 attachments).
+    - Validating the that call_args_list length is 3 (the outer parsed eml file and is 2 attachments).
+    - Validating the that call_args_list length is 1 ( the Inner parsed eml file).
+    """
+
+    def executeCommand(name, args=None):
+        if name == 'getFilePath':
+            return [
+                {
+                    'Type': entryTypes['note'],
+                    'Contents': {
+                        'path': 'test_data/Fwd_test-inner_attachment_eml.eml',
+                        'name': 'Fwd_test-inner_attachment_eml.eml'
+                    }
+                }
+            ]
+        elif name == 'getEntry':
+            return [
+                {
+                    'Type': entryTypes['file'],
+                    'FileMetadata': {
+                        'info': 'news or mail text, ASCII text'
+                    }
+                }
+            ]
+        else:
+            raise ValueError('Unimplemented command called: {}'.format(name))
+
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test',
+                                                       'nesting_level_to_return': nesting_level_to_return})
+    mocker.patch.object(demisto, 'context')
+    mocker.patch.object(demisto, 'dt', return_value=['news or mail text, ASCII text'])
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'results')
+    main()
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args_list
+
+    assert len(results) == results_len
+    assert results[results_index].args[0]['EntryContext']['Email']['Depth'] == depth

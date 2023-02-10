@@ -194,3 +194,11 @@ EXPECTED_RESULT_AFTER_RECORD_DELETION = {'Exabeam.ContextTableUpdate(val.changeI
      'record': {'key': '', 'id': 'test_key'}
      }]
 }
+
+EXPECTED_INCIDENT_LIST = {'Exabeam.Incident(val.incidentId && val.incidentId === obj.incidentId)':
+                          [{'incidentId': 'SOC-19', 'name': 'phil: Notable AA Session',
+                            'fields': {'startedDate': '2020-12-15T02:31:10.130000', 'closedDate': None,
+                                       'createdAt': '2020-12-15T08:19:19.194000', 'owner': 'unassigned',
+                                       'status': 'new', 'incidentType': ['generic', 'ueba'],
+                                       'source': 'Exabeam AA', 'priority': 'medium', 'queue': '1',
+                                       'description': None}}]}

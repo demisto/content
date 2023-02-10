@@ -14,8 +14,8 @@ This playbook does not use any integrations.
 This playbook does not use any scripts.
 
 ### Commands
-* panorama-create-address
-* panorama-custom-block-rule
+* pan-os-create-address
+* pan-os-custom-block-rule
 
 ## Playbook Inputs
 ---

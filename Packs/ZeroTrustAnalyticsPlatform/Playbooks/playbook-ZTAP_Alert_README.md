@@ -16,7 +16,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Scripts
 * AssignAnalystToIncident
 * IsIntegrationAvailable
-* ZTAPBuildTimeline
 
 ### Commands
 * extractIndicators

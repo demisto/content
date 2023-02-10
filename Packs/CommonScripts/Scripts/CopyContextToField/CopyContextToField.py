@@ -25,7 +25,7 @@ for i in incidents:
     if isinstance(value, list) and len(value) > 0:
         if len(value) == 1:
             value = value[0]
-        elif isinstance(value[0], basestring):
+        elif isinstance(value[0], STRING_TYPES):
             value = list_separator.join(value)
     if value and not isinstance(value, list) and not isinstance(value, dict):
         res = demisto.executeCommand("setIncident", {target_incident_field: value, 'id': i['id']})
@@ -37,8 +37,8 @@ for i in incidents:
         skipped_count += 1
 
 if success_count > 0:
-    demisto.results("Update incidents: %d success" % success_count)
+    return_results(f'Update incidents: {success_count} success')
 if skipped_count > 0:
-    demisto.results("Skipped %d incidents due to missing value" % skipped_count)
+    return_results(f'Skipped {skipped_count} incidents due to missing value')
 if failed_count > 0:
-    demisto.results("Failed to update %d incidents with setIncident error" % failed_count)
+    return_results(f'Failed to update {failed_count} incidents with setIncident error')

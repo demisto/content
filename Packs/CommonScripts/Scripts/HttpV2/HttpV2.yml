@@ -1,7 +1,6 @@
 args:
 - default: false
-  description: Specify where the request should be sent. Include the URI scheme ('http'
-    or 'https').
+  description: Specify where the request should be sent. Include the URI scheme ('http' or 'https').
   isArray: false
   name: url
   required: true
@@ -21,7 +20,10 @@ args:
   required: true
   secret: false
 - default: false
-  description: Specify a hash of headers to send with the request.
+  description: |-
+    Specify a hash of headers to send with the request.
+    Headers can be of string type but need to be formatted in the following ways:
+    `{"key1": "value1", "key2": "value2"}` or `"key1": "value1", "key2": "value2"`
   isArray: false
   name: headers
   required: false
@@ -74,8 +76,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'Basic authorization. Please set values in the format: username,password.
-    For Bearer token please use the headers.'
+  description: 'Basic authorization. Please set values in the format: username,password. For Bearer token please use the headers.'
   isArray: false
   name: auth_credentials
   required: false
@@ -89,8 +90,7 @@ args:
   type: keyValue
 - default: false
   defaultValue: '10'
-  description: Specify the timeout of the HTTP request in seconds. Defaults to 10
-    seconds.
+  description: Specify the timeout of the HTTP request in seconds. Defaults to 10 seconds.
   isArray: false
   name: timeout
   required: false
@@ -107,8 +107,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: ' Specify the array of status codes that should cause a retry. For
-    example: 301-303,400,402.'
+  description: ' Specify the array of status codes that should cause a retry. For example: 301-303,400,402.'
   isArray: false
   name: retry_on_status
   required: false
@@ -129,13 +128,13 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: 'no'
+  defaultValue: no
   description: Save the response in a file.
   isArray: false
   name: save_as_file
   predefined:
-  - 'yes'
-  - 'no'
+  - yes
+  - no
   required: false
   secret: false
 - default: false
@@ -199,7 +198,7 @@ tags:
 - basescript
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.1.25933
+dockerimage: demisto/python3:3.10.4.30607
 tests:
 - HttpV2-test
 fromversion: 6.5.0

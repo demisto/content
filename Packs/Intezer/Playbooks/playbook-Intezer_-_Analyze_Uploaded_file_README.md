@@ -28,23 +28,23 @@ This playbook does not use any scripts.
 ## Playbook Outputs
 ---
 
-| **Path** | **Description** | **Type** |
-| --- | --- | --- |
-| File.SHA256 | The SHA256 hash of the file. | string |
-| File.Malicious | The description of the malicious file. | unknown |
-| File.Type | The file type. For example, "PE". | string |
-| File.Size | The file size. | number |
-| File.MD5 | The MD5 hash of the file. | string |
-| File.Name | The file name. | string |
-| File.SHA1 | The SHA1 hash of the file. | string |
-| File | The file object. | unknown |
-| File.Malicious.Vendor | The vendor that made the decision that the file is malicious. | string |
-| DBotScore | The DBotScore object. | unknown |
-| DBotScore.Indicator | The indicator that was tested. | string |
-| DBotScore.Type | The indicator type. | string |
-| DBotScore.Vendor | The vendor used to calculate the score. | string |
-| DBotScore.Score | The actual score. | number |
+| **Path**              | **Description**                                               | **Type**   |
+|-----------------------|---------------------------------------------------------------|------------|
+| File.SHA256           | The SHA256 hash of the file.                                  | string     |
+| File.Malicious        | The description of the malicious file.                        | unknown    |
+| File.Type             | The file type. For example, "PE".                             | string     |
+| File.Size             | The file size.                                                | number     |
+| File.MD5              | The MD5 hash of the file.                                     | string     |
+| File.Name             | The file name.                                                | string     |
+| File.SHA1             | The SHA1 hash of the file.                                    | string     |
+| File                  | The file object.                                              | unknown    |
+| File.Malicious.Vendor | The vendor that made the decision that the file is malicious. | string     |
+| DBotScore             | The DBotScore object.                                         | unknown    |
+| DBotScore.Indicator   | The indicator that was tested.                                | string     |
+| DBotScore.Type        | The indicator type.                                           | string     |
+| DBotScore.Vendor      | The vendor used to calculate the score.                       | string     |
+| DBotScore.Score       | The actual score.                                             | number     |
 
 ## Playbook Image
 ---
-![Intezer_Analyze_Uploaded_file](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Intezer_Analyze_Uploaded_file.png)
+![Intezer_Analyze_Uploaded_file](../doc_files/Intezer_Analyze_Uploaded_file.png)

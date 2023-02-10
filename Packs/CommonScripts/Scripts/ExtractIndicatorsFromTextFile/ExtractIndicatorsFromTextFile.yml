@@ -54,11 +54,11 @@ script: '-'
 system: false
 timeout: '0'
 type: python
-subtype: python2
+subtype: python3
 runas: DBotRole
 runonce: false
 tests:
 - Extract Indicators From File - Generic v2 - Test
 fromversion: 5.0.0
 tags: []
-dockerimage: demisto/python:2.7.18.24398
+dockerimage: demisto/python3:3.10.9.45313

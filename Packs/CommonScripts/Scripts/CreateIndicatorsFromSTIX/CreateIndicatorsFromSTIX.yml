@@ -5,7 +5,7 @@ args:
   name: entry_id
   required: true
   secret: false
-comment: Creates indicators from the submitted STIX file. Supports STIX 1.0 and STIX 2.0.
+comment: Creates indicators from the submitted STIX file. Supports STIX 1.0 and STIX 2.x. This automation creates indicators and adds an indicator's relationships if available.
 commonfields:
   id: CreateIndicatorsFromSTIX
   version: -1
@@ -19,7 +19,7 @@ tags:
 - ioc
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.8.37233
 tests:
-- CreateIndicatorFromSTIXTest
+- No tests
 fromversion: 5.0.0

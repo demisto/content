@@ -29,8 +29,7 @@ configuration:
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -73,15 +72,12 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
   type: 8
-description: Enrich and analyze any domain, URL, or IP. Pivot to search on data points
-  and linked indicators to investigate risky properties.
+description: Enrich and analyze any domain, URL, or IP. Pivot to search on data points and linked indicators to investigate risky properties.
 display: Pulsedive
 name: Pulsedive
 script:
@@ -195,8 +191,7 @@ script:
       description: Additional raw data for the IP address.
       type: Unknown
     - contextPath: Pulsedive.IP.score
-      description: Reputation score from HelloWorld for this IP (0 to 100, where higher
-        is worse).
+      description: Reputation score from HelloWorld for this IP (0 to 100, where higher is worse).
       type: Number
     - contextPath: IP.Address
       description: IP address.
@@ -256,8 +251,7 @@ script:
       description: The expiration date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
       type: Date
     - contextPath: Domain.UpdatedDate
-      description: The date when the domain was last updated. Format is ISO8601 (i.e.
-        '2020-04-30T10:35:00.000Z').
+      description: The date when the domain was last updated. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
       type: Date
     - contextPath: Domain.NameServers
       description: Name servers of the domain.
@@ -269,8 +263,7 @@ script:
       description: The creation date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
       type: Date
     - contextPath: Domain.WHOIS.UpdatedDate
-      description: The date when the domain was last updated. Format is ISO8601 (i.e.
-        '2020-04-30T10:35:00.000Z').
+      description: The date when the domain was last updated. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
       type: Date
     - contextPath: Domain.WHOIS.ExpirationDate
       description: The expiration date of the domain.
@@ -324,8 +317,7 @@ script:
       description: Domain registrar.
       type: String
     - contextPath: Pulsedive.Domain.score
-      description: Reputation score from HelloWorld for this domain (0 to 100, where
-        higher is worse).
+      description: Reputation score from HelloWorld for this domain (0 to 100, where higher is worse).
       type: Number
     - contextPath: Pulsedive.Domain.state
       description: Domain admin state.
@@ -376,10 +368,84 @@ script:
       description: The total number of engines that checked the indicator.
       type: string
     - contextPath: URL.PositiveDetections
-      description: The number of engines that positively detected the indicator as
-        malicious.
+      description: The number of engines that positively detected the indicator as malicious.
       type: string
-  dockerimage: demisto/python3:3.9.8.24399
+  - arguments:
+    - description: The value to scan
+      name: value
+      required: true
+    - auto: PREDEFINED
+      default: true
+      defaultValue: active
+      description: You can choose between passive and active scanning. Passive scans fetch data without reaching out directly to the indicator, including performing WHOIS and DNS requests. Active scans are more noisy; we'll do a quick port scan and reach out to the indicator with a web browser.
+      name: scan_type
+      predefined:
+      - active
+      - passiv
+    description: Scan an indicator (IP/URL/Domain)
+    name: pulsedive-scan
+    outputs:
+    - contextPath: Pulsedive.Scan.qid
+      description: QID of the scan.
+      type: Number
+    - contextPath: Pulsedive.Scan.value
+      description: The value which was scanned.
+      type: string
+    - contextPath: Pulsedive.Scan.success
+      description: The success message.
+      type: string
+  - arguments:
+    - description: QID recieved from scan command
+      name: qid
+      required: true
+    description: Retrieve the Result
+    name: pulsedive-scan-result
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+    - contextPath: Pulsedive.ScanResult
+      description: Complete data returned from the scan.
+      type: Unknown
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.DomainStatus
+      description: The status of the domain.
+      type: String
+    - contextPath: Domain.NameServers
+      description: Name servers of the domain.
+      type: String
+    - contextPath: Domain.WHOIS.NameServers
+      description: A CSV string of name servers, for example 'ns1.bla.com, ns2.bla.com'.
+      type: String
+    - contextPath: Pulsedive.Scan.success
+      description: The success message.
+      type: string
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located.
+      type: String
+    - contextPath: IP.Port
+      description: Ports that are associated with the IP.
+      type: String
+    - contextPath: IP.ASN
+      description: "The autonomous system name for the URL, for example: 'AS8948'."
+      type: String
+    - contextPath: URL.DATA
+      description: The URL.
+      type: String
+  dockerimage: demisto/python3:3.10.8.37233
   runonce: false
   script: ''
   subtype: python3

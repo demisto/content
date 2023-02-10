@@ -1,0 +1,70 @@
+{
+  "success": true,
+  "data": {
+    "results": {
+      "username": "some_user_name",
+      "user_acronym": "SUN",
+      "data": [
+        {
+          "alert": {
+            "id": "some_alert_id_1",
+            "tag_name": "some_tag_1",
+            "domain": "",
+            "assignee": {
+              "name": "Unassigned",
+              "acronym": "UN"
+            },
+            "assign_date": "",
+            "priority": "medium",
+            "custom_tags": [],
+            "comments": [],
+            "description": "",
+            "status": "",
+            "event_type": 0,
+            "bucket": {
+              "category_id": 476,
+              "name": "some_keywords_1"
+            },
+            "is_our_org_user": true,
+            "event_log": [
+              "Event was generated at 2022-03-07"
+            ],
+            "service_stats": {
+              "service_type_1": {
+                "is_found": false,
+                "count": 0
+              },
+              "service_type_2": {
+                "is_found": true,
+                "count": 0
+              },
+              "service_type_3": {
+                "is_found": false,
+                "count": 0
+              }
+            },
+            "services": {
+              "service_type_2": {
+                "service_name": "service_type_2",
+                "parent_service": 2,
+                "count": 21
+              }
+            },
+            "added_date": "07 Mar",
+            "created_at": "2022-03-07T00:01:24.242000Z",
+            "events_identified": 21,
+            "icons": [
+              "icon_network"
+            ],
+            "customer_domain": "test.com"
+          }
+        }
+      ],
+      "total_count": 128,
+      "total_pages": 128,
+      "team_names": [
+  "some_team_1"
+      ]
+    }
+  }
+}

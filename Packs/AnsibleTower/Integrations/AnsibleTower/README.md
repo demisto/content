@@ -964,30 +964,29 @@ Retrieves the list of job events.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AnsibleAWX.JobEvents.id | Number | Database ID for this job event. | 
-| AnsibleAWX.JobEvents.type | String | Data type for this job event. | 
-| AnsibleAWX.JobEvents.url | String | URL for this job event. | 
-| AnsibleAWX.JobEvents.created | Date | Timestamp indicating when this job event was created. | 
-| AnsibleAWX.JobEvents.modified | Date | Timestamp indicating when this job event was last modified. | 
-| AnsibleAWX.JobEvents.job | Number | Job ID. | 
+| **Path** | **Type** | **Description**                                                                                           |
+| --- | --- |-----------------------------------------------------------------------------------------------------------|
+| AnsibleAWX.JobEvents.id | Number | Database ID for this job event.                                                                           | 
+| AnsibleAWX.JobEvents.type | String | Data type for this job event.                                                                             | 
+| AnsibleAWX.JobEvents.url | String | URL for this job event.                                                                                   | 
+| AnsibleAWX.JobEvents.created | Date | Timestamp indicating when this job event was created.                                                     | 
+| AnsibleAWX.JobEvents.modified | Date | Timestamp indicating when this job event was last modified.                                               | 
+| AnsibleAWX.JobEvents.job | Number | Job ID.                                                                                                   | 
 | AnsibleAWX.JobEvents.event | String | The specific event. For example, runner_on_failed \(Host Failed\), runner_on_start \(Host Started\), etc. | 
-| AnsibleAWX.JobEvents.counter | Number | Job event counter. | 
-| AnsibleAWX.JobEvents.event_display | String | Event display. For example, Playbook Started. | 
-| AnsibleAWX.JobEvents.event_level | Number | The event level. | 
-| AnsibleAWX.JobEvents.failed | Boolean | Whether the job failed. | 
-| AnsibleAWX.JobEvents.changed | Boolean | Whether the job changed. | 
-| AnsibleAWX.JobEvents.uuid | String | UUID of the job event. | 
-| AnsibleAWX.JobEvents.parent_uuid | String | Parent UUID. | 
-| AnsibleAWX.JobEvents.host | Number | Host ID associated with the event. | 
-| AnsibleAWX.JobEvents.host_name | String | Host name associated with the event. | 
-| AnsibleAWX.JobEvents.playbook | String | Playbook name of this job. | 
-| AnsibleAWX.JobEvents.task | String | Task name. | 
-| AnsibleAWX.JobEvents.stdout | String | Standard output of the job. | 
-| AnsibleAWX.JobEvents.start_line | Number | Starting line number of the execution. | 
-| AnsibleAWX.JobEvents.end_line | Number | Ending line number of the execution. | 
-
+| AnsibleAWX.JobEvents.counter | Number | Job event counter.                                                                                        | 
+| AnsibleAWX.JobEvents.event_display | String | Event display. For example, Playbook Started.                                                             | 
+| AnsibleAWX.JobEvents.event_level | Number | The event level.                                                                                          | 
+| AnsibleAWX.JobEvents.failed | Boolean | Whether the job failed.                                                                                   | 
+| AnsibleAWX.JobEvents.changed | Boolean | Whether the job changed.                                                                                  | 
+| AnsibleAWX.JobEvents.uuid | String | UUID of the job event.                                                                                    | 
+| AnsibleAWX.JobEvents.parent_uuid | String | Parent UUID.                                                                                              | 
+| AnsibleAWX.JobEvents.host | Number | Host ID associated with the event.                                                                        | 
+| AnsibleAWX.JobEvents.host_name | String | Host name associated with the event.                                                                      | 
+| AnsibleAWX.JobEvents.playbook | String | Playbook name of this job.                                                                                | 
+| AnsibleAWX.JobEvents.task | String | Task name.                                                                                                | 
+| AnsibleAWX.JobEvents.stdout | String | Standard output of the job.                                                                               | 
+| AnsibleAWX.JobEvents.start_line | Number | Starting line number of the execution.                                                                    | 
+| AnsibleAWX.JobEvents.end_line | Number | Ending line number of the execution.                                                                      |
 
 #### Command Example
 ```!ansible-tower-job-events-list```
@@ -1455,3 +1454,90 @@ Retrieves a single ad hoc command status.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| ping | 1 | ad_hoc_command | /api/v2/ad_hoc_commands/1/ | 2020-12-29 13:28:21.538400 | 2020-12-29 13:28:21.763189 | manual | failed | true | 2020-12-29T13:28:21.829663Z | 2020-12-29T13:28:24.029843Z | 2.2 | [] |  | awx | run | 1 | 1 | ping | false |
 
+### ansible-tower-job-events-list-by-id
+***
+Retrieves the list of job events of specific job.
+
+
+#### Base Command
+
+`ansible-tower-job-events-list-by-id`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | The ID of the job event. | Required | 
+| page | The page number to retrieve. Default is 1. Default is 1. | Optional | 
+| page_size | Page size. Default is 50. Default is 50. | Optional | 
+| search | The search query string used to perform a case-insensitive search within all designated text fields of a model. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AnsibleAWX.JobEvents.id | Number | Database ID for this job event. | 
+| AnsibleAWX.JobEvents.type | String | Data type for this job event. | 
+| AnsibleAWX.JobEvents.url | String | URL for this job event. | 
+| AnsibleAWX.JobEvents.created | Date | Timestamp indicating when this job event was created. | 
+| AnsibleAWX.JobEvents.modified | Date | Timestamp indicating when this job event was last modified. | 
+| AnsibleAWX.JobEvents.job | Number | Job ID. | 
+| AnsibleAWX.JobEvents.event | String | The specific event. For example, runner_on_failed \(Host Failed\), runner_on_start \(Host Started\), etc. | 
+| AnsibleAWX.JobEvents.counter | Number | Job event counter. | 
+| AnsibleAWX.JobEvents.event_display | String | Event display. For example, Playbook Started. | 
+| AnsibleAWX.JobEvents.event_level | Number | The event level. | 
+| AnsibleAWX.JobEvents.failed | Boolean | Whether the job failed. | 
+| AnsibleAWX.JobEvents.changed | Boolean | Whether the job changed. | 
+| AnsibleAWX.JobEvents.uuid | String | UUID of the job event. | 
+| AnsibleAWX.JobEvents.parent_uuid | String | Parent UUID. | 
+| AnsibleAWX.JobEvents.host | Number | Host ID associated with the event. | 
+| AnsibleAWX.JobEvents.host_name | String | Host name associated with the event. | 
+| AnsibleAWX.JobEvents.playbook | String | Playbook name of this job. | 
+| AnsibleAWX.JobEvents.task | String | Task name. | 
+| AnsibleAWX.JobEvents.stdout | String | Standard output of the job. | 
+| AnsibleAWX.JobEvents.start_line | Number | Starting line number of the execution. | 
+| AnsibleAWX.JobEvents.end_line | Number | Ending line number of the execution. | 
+| AnsibleAWX.JobEvents.event_data | String | Job's raw event data.                                                                                     | 
+
+#### Command Example
+```!ansible-tower-job-events-list-by-id job_id=69```
+
+#### Context Example
+```json
+{
+    "AnsibleAWX": {
+        "JobEvents": [
+            {
+                "changed": false,
+                "counter": 1,
+                "created": "2020-12-20 15:27:19.104059",
+                "end_line": 0,
+                "event": "playbook_on_start",
+                "event_display": "Playbook Started",
+                "event_level": 0,
+                "failed": false,
+                "host": null,
+                "host_name": "",
+                "id": 1,
+                "modified": "2020-12-20 15:27:19.137215",
+                "parent_uuid": "",
+                "playbook": "hello_world.yml",
+                "start_line": 0,
+                "stdout": "",
+                "task": "",
+                "type": "job_event",
+                "url": "/api/v2/job_events/1/",
+                "event_data": {},
+                "uuid": "331e9ca5-56e2-4c2e-b77c-40fef9b95502"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|type|id|url|created|modified|event|counter|event_display|event_level|failed|changed|uuid|parent_uuid|host|host_name|playbook|task|stdout|start_line|end_line|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| job_event | 1 | /api/v2/job_events/1/ | 2020-12-20 15:27:19.104059 | 2020-12-20 15:27:19.137215 | playbook_on_start | 1 | Playbook Started | 0 | false | false | 331e9ca5-56e2-4c2e-b77c-40fef9b95502 |  |  |  | hello_world.yml |  |  | 0 | 0 |

@@ -1,0 +1,91 @@
+{
+  "items": [
+    {
+      "assetIds": [
+        "765432:managed-device#DEVICE:AW8Qp1Bextjwd2cF57Mk"
+      ],
+      "category": "Technology Management",
+      "createdBy": "cpe_outage_service",
+      "createdOn": "2021-11-29T10:56:45.000+00:00",
+      "customerId": 765432,
+      "customerName": "Sample Customer",
+      "description": "",
+      "findings": [],
+      "impact": "HIGH",
+      "notes": [
+        {
+          "actor": "cpe_outage_service",
+          "text": "NOTE A",
+          "timestamp": "2021-11-29T10:56:44.000+00:00"
+        }
+      ],
+      "number": "INA1077007",
+      "performedBy": "",
+      "priority": "HIGH",
+      "soarActions": null,
+      "soarActionsTaken": null,
+      "status": "CLOSED",
+      "subCategory": "Cellular Backup",
+      "subject": "Alert: device is using cellular",
+      "survey": false,
+      "type": "INCIDENT",
+      "updatedBy": "internal_service",
+      "updatedOn": "2021-12-29T00:00:08.000+00:00",
+      "urgency": "MEDIUM"
+    },
+    {
+      "assetIds": [],
+      "category": "Threat Detection & Response",
+      "createdBy": "dummyuser",
+      "createdOn": "2021-12-08T17:16:27.000+00:00",
+      "customerId": 765432,
+      "customerName": "Sample Customer",
+      "description": "Ticket description",
+      "findings": [
+        {
+          "classification": null,
+          "classificationCode": "UnauthorizedAccessOrIntrusionAttempt.",
+          "findingId": "765432:THREAT:@AXv0k6GhG2zTcaogE1vG"
+        }
+      ],
+      "impact": "HIGH",
+      "notes": [
+        {
+          "actor": "dummyuser",
+          "text": "Sample Note.",
+          "timestamp": "2021-12-08T17:16:27.000+00:00"
+        },
+        {
+          "actor": "dummyuser",
+          "text": "Sample note #2.",
+          "timestamp": "2021-12-08T17:17:57.000+00:00"
+        },
+        {
+          "actor": "dummy_user",
+          "text": "Sample note #3",
+          "timestamp": "2021-12-09T16:43:31.000+00:00"
+        }
+      ],
+      "number": "INA1077535",
+      "performedBy": "",
+      "priority": "HIGH",
+      "soarActions": null,
+      "soarActionsTaken": null,
+      "status": "ON_HOLD",
+      "subCategory": "Threat Operations",
+      "subject": "MCAS - Impossible travel activity",
+      "survey": false,
+      "type": "INCIDENT",
+      "updatedBy": "internal_service",
+      "updatedOn": "2021-12-09T16:43:48.000+00:00",
+      "urgency": "MEDIUM"
+    }
+  ],
+  "lastPageNumber": 10,
+  "pageNumber": 1,
+  "pageSize": 2,
+  "sorting": [
+    "createdOn"
+  ],
+  "totalCount": 20
+}

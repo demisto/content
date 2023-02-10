@@ -1,0 +1,190 @@
+{
+    "name": "get_agent_info",
+    "execute": "response_raw = CimTrak.get_agent_info_command(client,{'ObjectId': '2'})\n\nresponse = response_raw[0].outputs\nif len(response_raw) > 1:\n\tret_results: List[Dict[str, Any]] = response_raw[1].outputs\n\tresponse['results'] = list()\n\tresponse_raw[1].outputs\n\tresponse['results'].append(ret_results)\n",
+    "posts": [
+        {
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.getAgentInfo",
+            "reply": {
+                "results": [
+                    {
+                        "objectData": {
+                            "logsByDays": true,
+                            "requireNotes": false,
+                            "inService": "",
+                            "events": 30,
+                            "intrusions": 0,
+                            "intrusionSize": 0,
+                            "objectId": 1,
+                            "agentObjectId": 1,
+                            "objectStatus": 0,
+                            "objectSubType": 1,
+                            "objectType": 1,
+                            "parentId": 0,
+                            "revisions": 0,
+                            "templateId": 0,
+                            "warnMinutes": 0,
+                            "contact": "",
+                            "createDate": "2021-10-23 16:08:51",
+                            "description": "",
+                            "location": "",
+                            "name": "local",
+                            "objectPath": "DSK050->local",
+                            "url": "",
+                            "objectGroupCount": "5",
+                            "compliancePolicyCount": "2",
+                            "networkDevicePolicyCount": "0",
+                            "systemIntegrityCount": "3",
+                            "tags": []
+                        },
+                        "objectsCustom": {
+                            "MaxObjects": "200000",
+                            "OfflineCache": "0",
+                            "WhitelistMode": "0",
+                            "OfflineCacheRolloffKeepQuantity": "0",
+                            "CimcorTrustedFileRegistryTaskAssigneeId": "-99"
+                        },
+                        "agentData": {
+                            "agentPriority": 1,
+                            "encryptionType": 99,
+                            "heartbeat": 60,
+                            "hmacType": 1,
+                            "keyLength": 0,
+                            "keyReset": 0,
+                            "licenseType": 0,
+                            "objectId": 1,
+                            "perfStat": 60,
+                            "alternateSystemId": "test"
+                        },
+                      "state": {
+                        "cimTrakVersion": "Build 18029",
+                        "osVersion": "Windows 10 Version 10.0.19043 x64",
+                        "agentIp": "127.0.0.1",
+                        "build": 18029,
+                        "agentConnected": true,
+                        "cimTrakAgentRunningDate": "2022-03-08 18:55:58",
+                        "osRunningDate": "2022-02-10 00:22:37",
+                        "connectTime": "2022-03-08 18:56:07.59057",
+                        "pathDelimiter": "\\",
+                        "realtimeEnabled": true,
+                        "components": [
+                          {
+                            "name": "ctagent",
+                            "displayName": "CimTrak Agent",
+                            "version": "Build 18029",
+                            "enabled": true
+                          },
+                          {
+                            "name": "ctlogmonitor",
+                            "displayName": "Log Monitor",
+                            "version": "Build 18029",
+                            "enabled": true
+                          },
+                          {
+                            "name": "ctcompliance",
+                            "displayName": "CimTrak Compliance Module",
+                            "version": "Build 18029",
+                            "enabled": true
+                          }
+                        ],
+                        "disconnectTime": "2022-01-25 12:22:51"
+                      }
+                    }
+                ],
+                "status": "success",
+                "errorCode": "",
+                "errorDescription": "",
+                "errorDetails": []
+            }
+        }
+    ],
+    "response": {
+        "results": [
+            {
+                "objectData": {
+                    "logsByDays": true,
+                    "requireNotes": false,
+                    "inService": "",
+                    "events": 30,
+                    "intrusions": 0,
+                    "intrusionSize": 0,
+                    "objectId": 1,
+                    "agentObjectId": 1,
+                    "objectStatus": 0,
+                    "objectSubType": 1,
+                    "objectType": 1,
+                    "parentId": 0,
+                    "revisions": 0,
+                    "templateId": 0,
+                    "warnMinutes": 0,
+                    "contact": "",
+                    "createDate": "2021-10-23 16:08:51",
+                    "description": "",
+                    "location": "",
+                    "name": "local",
+                    "objectPath": "DSK050->local",
+                    "url": "",
+                    "objectGroupCount": "5",
+                    "compliancePolicyCount": "2",
+                    "networkDevicePolicyCount": "0",
+                    "systemIntegrityCount": "3",
+                    "tags": []
+                },
+                "objectsCustom": {
+                    "MaxObjects": "200000",
+                    "OfflineCache": "0",
+                    "WhitelistMode": "0",
+                    "OfflineCacheRolloffKeepQuantity": "0",
+                    "CimcorTrustedFileRegistryTaskAssigneeId": "-99"
+                },
+                "agentData": {
+                    "agentPriority": 1,
+                    "encryptionType": 99,
+                    "heartbeat": 60,
+                    "hmacType": 1,
+                    "keyLength": 0,
+                    "keyReset": 0,
+                    "licenseType": 0,
+                    "objectId": 1,
+                    "perfStat": 60,
+                    "alternateSystemId": "test"
+                },
+              "state": {
+                "cimTrakVersion": "Build 18029",
+                "osVersion": "Windows 10 Version 10.0.19043 x64",
+                "agentIp": "127.0.0.1",
+                "build": 18029,
+                "agentConnected": true,
+                "cimTrakAgentRunningDate": "2022-03-08 18:55:58",
+                "osRunningDate": "2022-02-10 00:22:37",
+                "connectTime": "2022-03-08 18:56:07.59057",
+                "pathDelimiter": "\\",
+                "realtimeEnabled": true,
+                "components": [
+                  {
+                    "name": "ctagent",
+                    "displayName": "CimTrak Agent",
+                    "version": "Build 18029",
+                    "enabled": true
+                  },
+                  {
+                    "name": "ctlogmonitor",
+                    "displayName": "Log Monitor",
+                    "version": "Build 18029",
+                    "enabled": true
+                  },
+                  {
+                    "name": "ctcompliance",
+                    "displayName": "CimTrak Compliance Module",
+                    "version": "Build 18029",
+                    "enabled": true
+                  }
+                ],
+                "disconnectTime": "2022-01-25 12:22:51"
+              }
+            }
+        ],
+        "status": "success",
+        "errorCode": "",
+        "errorDescription": ""
+    }
+}

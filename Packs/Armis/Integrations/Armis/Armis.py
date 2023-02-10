@@ -44,7 +44,10 @@ class Client(BaseClient):
             response = self._http_request('POST', '/access_token/', params={'secret_key': self._secret})
             token = response.get('data', {}).get('access_token')
             expiration = response.get('data', {}).get('expiration_utc')
-            self._token = AccessToken(token, dateparser.parse(expiration))
+            expiration_date = dateparser.parse(expiration)
+            assert expiration_date is not None, f'failed parsing {expiration}'
+
+            self._token = AccessToken(token, expiration_date)
         return self._token
 
     def search_by_aql_string(self,
@@ -126,8 +129,9 @@ class Client(BaseClient):
         if alert_id:
             aql_string.append(f'alertId:({alert_id})')
 
-        aql_string = ' '.join(aql_string)
-        return self.search_by_aql_string(aql_string, order_by=order_by, max_results=max_results, page_from=page_from)
+        aql_string = ' '.join(aql_string)  # type: ignore
+        return self.search_by_aql_string(aql_string, order_by=order_by, max_results=max_results,
+                                         page_from=page_from)  # type: ignore
 
     def free_string_search_alerts(self, aql_string: str,
                                   order_by: str = None,
@@ -230,8 +234,8 @@ class Client(BaseClient):
             risk_level_string = ','.join([risk_level_option for risk_level_option in risk_level])
             aql_string.append(f'riskLevel:{risk_level_string}')
 
-        aql_string = ' '.join(aql_string)
-        return self.search_by_aql_string(aql_string, order_by=order_by, max_results=max_results)
+        aql_string = ' '.join(aql_string)  # type: ignore
+        return self.search_by_aql_string(aql_string, order_by=order_by, max_results=max_results)  # type: ignore
 
     def free_string_search_devices(self, aql_string: str, order_by: str = None, max_results: int = None):
         """
@@ -320,14 +324,22 @@ def fetch_incidents(client: Client,
     last_fetch = last_run.get('last_fetch')
     latest_alert_fetch = last_run.get('latest_alert_fetch')
     if latest_alert_fetch:
-        latest_alert_fetch = _ensure_timezone(dateparser.parse(latest_alert_fetch))
+        latest_alert_fetch_date = dateparser.parse(latest_alert_fetch)
+        assert latest_alert_fetch_date is not None
+        latest_alert_fetch = _ensure_timezone(latest_alert_fetch_date)
     incomplete_fetches = last_run.get('incomplete_fetches', 0)
 
     # Handle first time fetch
     if last_fetch:
-        last_fetch = _ensure_timezone(dateparser.parse(last_fetch))
+        last_fetch_date = dateparser.parse(last_fetch)
+        assert last_fetch_date is not None, f'failed parsing {last_fetch}'
+
+        last_fetch = _ensure_timezone(last_fetch_date)
     else:
-        last_fetch = _ensure_timezone(dateparser.parse(first_fetch_time))
+        last_fetch_time_date = dateparser.parse(first_fetch_time)
+        assert last_fetch_time_date is not None
+        last_fetch = _ensure_timezone(last_fetch_time_date)
+
     # use the last fetch time to build a time frame in which to search for alerts.
     time_frame = _create_time_frame_string(last_fetch)
 
@@ -361,7 +373,10 @@ def fetch_incidents(client: Client,
         )
 
     for alert in data.get('results', []):
-        incident_created_time = _ensure_timezone(dateparser.parse(alert.get('time')))
+        time_date = dateparser.parse(alert.get('time'))
+        assert time_date is not None
+        incident_created_time = _ensure_timezone(time_date)
+
         # Alert was already fetched. Skipping
         if latest_alert_fetch and latest_alert_fetch >= incident_created_time:
             continue
@@ -520,12 +535,18 @@ def search_devices_command(client: Client, args: dict):
     if results:
         headers = [
             'riskLevel',
+            'id',
             'name',
             'type',
             'ipAddress',
+            'ipv6',
+            'macAddress',
+            'operatingSystem',
+            'operatingSystemVersion',
+            'manufacturer',
+            'model',
             'tags',
-            'user',
-            'id',
+            'user'
         ]
         return CommandResults(
             outputs_prefix='Armis.Device',
@@ -683,7 +704,6 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
 

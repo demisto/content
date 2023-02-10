@@ -1,4 +1,4 @@
-Invokes PenfieldAI backend to assign the incident to an online analyst.
+Invokes Penfield.AI backend to assign the incident to an online analyst.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

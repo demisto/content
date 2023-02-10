@@ -1,0 +1,18 @@
+{
+    "recordsTotal": 15,
+    "recordsFiltered": 15,
+    "data": [
+        {
+            "node": "localhost",
+            "packetPosEncoding": "gap0",
+            "packetsSize": 2147483898,
+            "num": 280,
+            "name": "/opt/arkime/raw/localhost-220523-00000280.pcap",
+            "filesize": 2147483898,
+            "locked": 0,
+            "first": 1653331569,
+            "packets": 9805564,
+            "compression": 0
+        }
+    ]
+}

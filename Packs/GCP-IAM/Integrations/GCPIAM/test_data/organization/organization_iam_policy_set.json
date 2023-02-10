@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "etag": "BwXTkFlfw44=",
+  "bindings": [
+    {
+      "role": "roles/bigquery.admin",
+      "members": [
+        "user:user-1@xsoar.com"
+      ]
+    },
+    {
+      "role": "roles/bigquery.user",
+      "members": [
+        "user:user-1@xsoar.com",
+        "user:user-2@xsoar.com"
+      ]
+    }
+  ]
+}

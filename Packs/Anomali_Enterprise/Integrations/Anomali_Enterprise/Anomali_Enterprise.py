@@ -223,7 +223,8 @@ def domain_command(client: Client, args: dict) -> List[CommandResults]:
             indicator_type=DBotScoreType.DOMAIN,
             integration_name=VENDOR_NAME,
             score=score,
-            malicious_description=str(output.get('malware_family', ''))
+            malicious_description=str(output.get('malware_family', '')),
+            reliability=demisto.params().get('integrationReliability')
         )
 
         domain = Common.Domain(

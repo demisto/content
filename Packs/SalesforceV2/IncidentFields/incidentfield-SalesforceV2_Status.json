@@ -1,0 +1,38 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Salesforce Case"
+    ],
+    "caseInsensitive": true,
+    "cliName": "salesforcestatus",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "fieldCalcScript": "SalesforceCaseStatusPicklist",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_salesforcestatus",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "SalesforceV2 Status",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "selectValues": [
+        "New",
+        "Closed"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

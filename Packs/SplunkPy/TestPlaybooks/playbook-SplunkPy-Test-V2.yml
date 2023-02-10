@@ -85,7 +85,7 @@ tasks:
         simple: demisto
       batch_limit: {}
       earliest_time:
-        simple: -1000d
+        simple: -1500d
       event_limit:
         simple: "1"
       latest_time: {}
@@ -123,7 +123,7 @@ tasks:
       app: {}
       batch_limit: {}
       earliest_time:
-        simple: -1000d
+        simple: -1500d
       event_limit: {}
       latest_time: {}
       query:
@@ -553,7 +553,7 @@ tasks:
       version: -1
       name: splunk-job-status
       description: checking the status of a job
-      script: SplunkPy|||splunk-job-status
+      script: '|||splunk-job-status'
       type: regular
       iscommand: true
       brand: SplunkPy

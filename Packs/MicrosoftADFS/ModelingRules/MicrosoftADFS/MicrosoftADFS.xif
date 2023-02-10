@@ -1,0 +1,54 @@
+[MODEL: dataset ="msft_adfs_raw", model=Auth]
+alter event_code=json_extract_scalar(EVENT, "$.code")
+| filter event_code in ("1200", "1201", "1206", "1207")
+| alter event_data = json_extract(winlog, "$.event_data")
+| alter event_xml = json_extract_scalar(event_data, "$.param2")
+| alter extract_timestamp = json_extract_scalar(EVENT, "$.created"),
+	original_event_id = json_extract_scalar(EVENT, "$.code"),
+	outcome = arrayindex( regextract(event_xml,"<AuditResult>(.*)<\/AuditResult>"),0),
+	application_name = arrayindex( regextract(event_xml,"<RelyingParty>(.*)<\/RelyingParty>"),0),
+	client_username = arrayindex( regextract(event_xml,"<UserId>(.*)<\/UserId>"),0),
+	Client_ipv4 = arrayindex( regextract(event_xml,"<IpAddress>(.*)<\/IpAddress>") ,0),
+	Client_user_agent = arrayindex( regextract(event_xml,"<UserAgentString>(.*)<\/UserAgentString>") ,0),
+	Target_url = arrayindex( regextract(event_xml,"<Endpoint>(.*)<\/Endpoint>") ,0),
+	original_event_description = arrayindex(regextract(MESSAGE, "(.*)[^\.]+"),0),
+	is_mfa_needed = arrayindex( regextract(event_xml,"<MfaPerformed>(.*)<\/MfaPerformed>") ,0),
+	Target_host_fqdn = arrayindex( regextract(event_xml,"<Server>(.*)<\/Server>"),0)
+| alter XDM.Auth.event_timestamp = parse_timestamp("%Y-%m-%dT%H:%M:%E3SZ",extract_timestamp),
+    XDM.Auth.original_event_id = original_event_id,
+    XDM.Auth.outcome = outcome,
+    XDM.Auth.Target.application.name = application_name,
+    XDM.Auth.Client.user.username = client_username,
+    XDM.Auth.Client.ipv4 = Client_ipv4,
+    XDM.Auth.Client.user_agent = Client_user_agent,
+    XDM.Auth.Target.url = Target_url,
+    XDM.Auth.original_event_description = original_event_description,
+    XDM.Auth.is_mfa_needed = to_boolean(is_mfa_needed),
+    XDM.Auth.Target.host.fqdn = Target_host_fqdn;
+
+
+[MODEL: dataset ="msft_adfs_raw", model=Audit]
+alter event_code=json_extract_scalar(EVENT, "$.code")
+| filter event_code in ("1202", "1203", "1204", "1205")
+| alter event_data = json_extract(winlog, "$.event_data")
+| alter event_xml = json_extract_scalar(event_data, "$.param2")
+| alter event_timestamp = json_extract_scalar(EVENT, "$.created"),
+    original_event_id = json_extract_scalar(EVENT, "$.code"),
+	audited_resource_type = arrayindex( regextract(event_xml,"<AuditType>(.*)<\/AuditType>"),0),
+	outcome = arrayindex( regextract(event_xml,"<AuditResult>(.*)<\/AuditResult>") ,0),
+	audited_resource_name = arrayindex( regextract(event_xml,"<RelyingParty>(.*)<\/RelyingParty>"),0),
+	TriggeredBy_identity_name = arrayindex( regextract(event_xml,"<UserId>(.*)<\/UserId>"),0),
+	TriggeredBy_ipv4 = arrayindex( regextract(event_xml,"<IpAddress>(.*)<\/IpAddress>"),0),
+	TriggeredBy_user_agent = arrayindex( regextract(event_xml,"<UserAgentString>(.*)<\/UserAgentString>"),0),
+	audited_resource_id = arrayindex( regextract(event_xml,"<Endpoint>(.*)<\/Endpoint>") ,0),
+	original_event_description = arrayindex(regextract(MESSAGE, "(.*)[^\.]+"),0)
+| alter XDM.Audit.event_timestamp = parse_timestamp("%Y-%m-%dT%H:%M:%E3SZ",event_timestamp ),
+    XDM.Audit.original_event_id = original_event_id,
+    XDM.Audit.audited_resource.type = audited_resource_type,
+    XDM.Audit.outcome = outcome,
+    XDM.Audit.audited_resource.name = audited_resource_name,
+    XDM.Audit.TriggeredBy.identity.name = TriggeredBy_identity_name,
+    XDM.Audit.TriggeredBy.ipv4 = TriggeredBy_ipv4,
+    XDM.Audit.TriggeredBy.user_agent = TriggeredBy_user_agent,
+    XDM.Audit.audited_resource.id = audited_resource_id,
+    XDM.Audit.original_event_description = original_event_description;

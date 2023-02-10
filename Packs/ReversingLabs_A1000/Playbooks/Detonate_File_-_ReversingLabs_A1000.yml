@@ -1,30 +1,29 @@
 id: Detonate File - ReversingLabs A1000
 version: -1
 name: Detonate File - ReversingLabs A1000
-description: Upload sample to ReversingLabs A1000 appliance and automatically retrieve
-  the analysis report.
-starttaskid: "0"
+description: Upload sample to ReversingLabs A1000 appliance and automatically retrieve full & classification reports. Calculate final classification.
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: b5751cc5-b463-40c3-80dc-4c32d5ade525
+  '0':
+    id: '0'
+    taskid: 60abf0ab-9aa6-46aa-8ed0-58240e5dc3d9
     type: start
     task:
-      id: b5751cc5-b463-40c3-80dc-4c32d5ade525
+      id: 60abf0ab-9aa6-46aa-8ed0-58240e5dc3d9
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": 100
         }
       }
     note: false
@@ -32,26 +31,28 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: f2710d7f-68af-447d-8f30-3222813663fc
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: af5879c4-cc27-4566-8c0d-77983c335110
     type: condition
     task:
-      id: f2710d7f-68af-447d-8f30-3222813663fc
+      id: af5879c4-cc27-4566-8c0d-77983c335110
       version: -1
       name: Is ReversingLabs A1000 v2 enabled?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "4"
+      - '3'
+      yes:
+      - '4'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -82,7 +83,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 230
+          "y": 270
         }
       }
     note: false
@@ -90,24 +91,26 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: 194c115a-3e57-4d57-8400-3a486a4918fd
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 3f9f0052-6637-48d4-8b50-020626bac857
     type: title
     task:
-      id: 194c115a-3e57-4d57-8400-3a486a4918fd
+      id: 3f9f0052-6637-48d4-8b50-020626bac857
       version: -1
       name: done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": 1170
+          "x": 30,
+          "y": 1490
         }
       }
     note: false
@@ -115,26 +118,28 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
-    taskid: 1dde1975-6706-4af6-853d-852764d6a1d1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 0522b01a-7123-4d41-8be1-85ba8fa2626d
     type: condition
     task:
-      id: 1dde1975-6706-4af6-853d-852764d6a1d1
+      id: 0522b01a-7123-4d41-8be1-85ba8fa2626d
       version: -1
       name: Is there a file  to detonate?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "5"
+      - '3'
+      yes:
+      - '5'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -154,12 +159,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "5":
-    id: "5"
-    taskid: 45461da5-9448-4dde-890c-6c242c08901d
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 67d9a923-4d43-4c68-86d1-703f84a34d11
     type: regular
     task:
-      id: 45461da5-9448-4dde-890c-6c242c08901d
+      id: 67d9a923-4d43-4c68-86d1-703f84a34d11
       version: -1
       name: reversinglabs-a1000-upload-sample-and-get-results
       description: Upload sample to A1000 and retrieve analysis results
@@ -169,12 +176,10 @@ tasks:
       brand: ReversingLabs A1000 v2
     nexttasks:
       '#none#':
-      - "3"
+      - '6'
     scriptarguments:
-      comment: {}
       entryId:
         simple: ${inputs.EntryID}
-      tags: {}
     separatecontext: false
     view: |-
       {
@@ -188,15 +193,87 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 8f9178a3-70f3-4d90-84c0-e5dcb93bd81e
+    type: regular
+    task:
+      id: 8f9178a3-70f3-4d90-84c0-e5dcb93bd81e
+      version: -1
+      name: reversinglabs-a1000-get-classification
+      description: Retrieve classification report for a sample
+      script: ReversingLabs A1000 v2|||reversinglabs-a1000-get-classification
+      type: regular
+      iscommand: true
+      brand: ReversingLabs A1000 v2
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      hash:
+        simple: ${File.SHA1}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: d155a788-800a-4a35-8878-a50e69b95e95
+    type: regular
+    task:
+      id: d155a788-800a-4a35-8878-a50e69b95e95
+      version: -1
+      name: A1000FinalClassification
+      description: Calculates A1000 final classification based on A1000 classification and A1000 full reports.
+      scriptName: A1000FinalClassification
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      a1000_classification_report:
+        simple: ${ReversingLabs.a1000_classification_report}
+      a1000_full_report:
+        simple: ${ReversingLabs.a1000_report}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1185,
-        "width": 760,
-        "x": 70,
-        "y": 50
+        "height": 1455,
+        "width": 800,
+        "x": 30,
+        "y": 100
       }
     }
   }

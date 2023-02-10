@@ -307,7 +307,9 @@ def fetch_incidents(client: Client, last_run, first_fetch_str):
                     used in ``last_run`` on the next fetch.
             incidents (``List[dict]``): List of incidents that will be created in XSOAR
     """
-    first_fetch = dateparser.parse(first_fetch_str).strftime(DATE_FORMAT)
+    first_fetch_date = dateparser.parse(first_fetch_str)
+    assert first_fetch_date is not None, f'could not parse {first_fetch_str}'
+    first_fetch = first_fetch_date.strftime(DATE_FORMAT)
     last_processed = last_run.get('last_fetch', first_fetch)
     now = dt.datetime.now().strftime(DATE_FORMAT)
 
@@ -334,7 +336,7 @@ def fetch_incidents(client: Client, last_run, first_fetch_str):
     return next_run, incidents
 
 
-def search_identities(client: Client, id: str, email: str, risk: int, active: bool):
+def search_identities(client: Client, id: str, email: str, risk: int, active: bool, filter: str):
     """
     Search identities by search/filter parameters (id, email, risk & active) using IdentityIQ SCIM API's.
     Command: identityiq-search-identities
@@ -364,12 +366,17 @@ def search_identities(client: Client, id: str, email: str, risk: int, active: bo
     else:
         url = IIQ_SCIM_USERS_EXT
         filter_list = []
-        if email is not None:
-            filter_list.append(''.join(('emails.value eq "', email, '"')))
-        if risk is not None:
-            filter_list.append(''.join(('urn:ietf:params:scim:schemas:sailpoint:1.0:User:riskScore ge ', str(risk))))
-        if active is not None:
-            filter_list.append(''.join(('active eq ', str(active).lower())))
+
+        # use custom filter
+        if filter is not None:
+            filter_list.append(filter)
+        else:
+            if email is not None:
+                filter_list.append(''.join(('emails.value eq "', email, '"')))
+            if risk is not None:
+                filter_list.append(''.join(('urn:ietf:params:scim:schemas:sailpoint:1.0:User:riskScore ge ', str(risk))))
+            if active is not None:
+                filter_list.append(''.join(('active eq ', str(active).lower())))
         # Combine the filters
         if filter_list is not None and len(filter_list) > 0:
             filter_string = ' and '.join(filter_list)
@@ -705,7 +712,8 @@ def main():
             email = demisto.args().get('email', None)
             risk = demisto.args().get('risk', 0)
             active = demisto.args().get('active', True)
-            response = search_identities(client, id, email, risk, active)
+            filter = demisto.args().get('filter', None)
+            response = search_identities(client, id, email, risk, active, filter)
             results = build_results('IdentityIQ.Identity', 'id', response)
 
         elif demisto.command() == 'identityiq-get-policyviolations':

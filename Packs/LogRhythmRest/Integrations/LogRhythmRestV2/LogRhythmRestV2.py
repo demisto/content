@@ -1,9 +1,15 @@
 import re
 import mimetypes
+import sys
+
 import dateparser
 from CommonServerPython import *  # noqa: F401
+import urllib3
 
 import demistomock as demisto  # noqa: F401
+
+urllib3.disable_warnings()
+
 
 ''' GLOBAL VARS '''
 ALARM_HEADERS = ['alarmId', 'alarmStatus', 'associatedCases', 'alarmRuleName', 'dateInserted', 'dateUpdated',
@@ -1036,7 +1042,7 @@ class Client(BaseClient):
 
             response = self._http_request('GET', 'lr-alarm-api/alarms/', params=params)
             alarms = response.get('alarmsSearchDetails')
-
+            alarms = alarms if alarms else []
             if created_after:
                 filtered_alarms = []
                 created_after = dateparser.parse(created_after)
@@ -1157,7 +1163,8 @@ class Client(BaseClient):
         evidences = self._http_request('GET', f'lr-case-api/cases/{case_id}/evidence', params=params)
 
         if evidence_number:
-            evidences = next((evidence for evidence in evidences if evidence.get('number') == int(evidence_number)), None)
+            evidences = next((evidence for evidence in evidences if evidence.get('number') == int(evidence_number)),
+                             None)
         return evidences
 
     def case_alarm_evidence_add_request(self, case_id, alarm_numbers):  # pragma: no cover
@@ -1266,7 +1273,8 @@ class Client(BaseClient):
 
     def hosts_list_request(self, host_name=None, entity_name=None, record_status=None, offset=None,
                            count=None, endpoint_id_list=None, endpoint_hostname_list=None):
-        params = assign_params(name=host_name, entity=entity_name, recordStatus=record_status, offset=offset, count=count)
+        params = assign_params(name=host_name, entity=entity_name, recordStatus=record_status, offset=offset,
+                               count=count)
 
         hosts = self._http_request('GET', 'lr-admin-api/hosts', params=params)
 
@@ -1303,17 +1311,20 @@ class Client(BaseClient):
         return response
 
     def list_summary_create_update_request(self, list_type, name, enabled, use_patterns, replace_existing, read_access,
-                                           write_access, restricted_read, entity_name, need_to_notify, does_expire, owner):
-        data = {"autoImportOption": {"enabled": enabled, "replaceExisting": replace_existing, "usePatterns": use_patterns},
-                "doesExpire": does_expire, "entityName": entity_name, "owner": int(owner),
-                "listType": list_type, "name": name, "needToNotify": need_to_notify, "readAccess": read_access,
-                "restrictedRead": restricted_read, "writeAccess": write_access}
+                                           write_access, restricted_read, entity_name, need_to_notify, does_expire,
+                                           owner):
+        data = {
+            "autoImportOption": {"enabled": enabled, "replaceExisting": replace_existing, "usePatterns": use_patterns},
+            "doesExpire": does_expire, "entityName": entity_name, "owner": int(owner),
+            "listType": list_type, "name": name, "needToNotify": need_to_notify, "readAccess": read_access,
+            "restrictedRead": restricted_read, "writeAccess": write_access}
 
         response = self._http_request('POST', 'lr-admin-api/lists', json_data=data)
 
         return response
 
     def list_details_and_items_get_request(self, list_id, max_items):
+        self._headers['maxItemsThreshold'] = str(sys.maxsize)
         raw_response = self._http_request('GET', f'lr-admin-api/lists/{list_id}')
         response = raw_response.copy()
         if max_items and response.get('items'):
@@ -1544,7 +1555,8 @@ def alarm_history_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     offset = args.get('offset')
     count = args.get('count')
 
-    alarm_history, raw_response = client.alarm_history_list_request(alarm_id, person_id, date_updated, type_, offset, count)
+    alarm_history, raw_response = client.alarm_history_list_request(alarm_id, person_id, date_updated, type_, offset,
+                                                                    count)
 
     if alarm_history:
         hr = tableToMarkdown(f'History for alarm {alarm_id}', alarm_history, headerTransform=pascalToSpace)
@@ -1684,7 +1696,8 @@ def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     entity_id = args.get('entity_id')
     resolution = args.get('resolution')
 
-    response = client.case_update_request(case_id, name, priority, external_id, due_date, summary, entity_id, resolution)
+    response = client.case_update_request(case_id, name, priority, external_id, due_date, summary, entity_id,
+                                          resolution)
 
     hr = tableToMarkdown(f'Case {case_id} updated successfully', response, headerTransform=pascalToSpace)
 
@@ -2047,7 +2060,8 @@ def list_summary_create_update_command(client: Client, args: Dict[str, Any]) -> 
     owner = args.get('owner')
 
     response = client.list_summary_create_update_request(
-        list_type, name, enabled, use_patterns, replace_existing, read_access, write_access, restricted_read, entity_name,
+        list_type, name, enabled, use_patterns, replace_existing, read_access, write_access, restricted_read,
+        entity_name,
         need_to_notify, does_expire, owner)
 
     hr = tableToMarkdown('List created successfully', response, headerTransform=pascalToSpace, headers=LIST_HEADERS)
@@ -2320,7 +2334,6 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResult
 
     if endpoints:
         for endpoint in endpoints:
-
             hr = tableToMarkdown('Logrhythm endpoint', endpoint, headerTransform=pascalToSpace)
 
             endpoint_indicator = Common.Endpoint(
@@ -2374,9 +2387,11 @@ def fetch_alarms(client: Client, limit: int, fetch_time: str, alarm_status_filte
     alarm_incidents = []
     last_run = demisto.getLastRun()
     alarm_last_run = last_run.get('AlarmLastRun')
-    first_run = dateparser.parse(fetch_time).strftime("%Y-%m-%dT%H:%M:%S")
+    fetch_time_date = dateparser.parse(fetch_time)
+    assert fetch_time_date is not None, f'could not parse {fetch_time}'
+    first_run = fetch_time_date.strftime("%Y-%m-%dT%H:%M:%S")
 
-    alarms_list_args = {'count': limit}
+    alarms_list_args: dict = {'count': limit}
 
     if alarm_last_run:
         alarms_list_args['created_after'] = alarm_last_run
@@ -2412,7 +2427,9 @@ def fetch_cases(client: Client, limit: int, fetch_time: str, fetch_case_evidence
     case_incidents = []
     last_run = demisto.getLastRun()
     case_last_run = last_run.get('CaseLastRun')
-    first_run = dateparser.parse(fetch_time).strftime("%Y-%m-%dT%H:%M:%SZ")
+    fetch_time_date = dateparser.parse(fetch_time)
+    assert fetch_time_date is not None, f'could not parse {fetch_time}'
+    first_run = fetch_time_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     cases_list_args = {'count': limit}
 
@@ -2421,7 +2438,7 @@ def fetch_cases(client: Client, limit: int, fetch_time: str, fetch_case_evidence
         cases_list_args['timestamp'] = case_last_run
     elif first_run:
         cases_list_args['timestamp_filter_type'] = 'createdAfter'  # type: ignore
-        cases_list_args['timestamp'] = first_run
+        cases_list_args['timestamp'] = first_run  # type: ignore
 
     # filter cases
     if case_tags_filter:
@@ -2487,7 +2504,6 @@ def main() -> None:  # pragma: no cover
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
         client: Client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=None)
 
         commands = {

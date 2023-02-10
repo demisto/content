@@ -1,199 +1,724 @@
-from html import unescape
-from typing import Tuple
-from urllib.parse import urlparse, parse_qs, ParseResult, unquote
-
+import ipaddress
+import urllib.parse
 from CommonServerPython import *
-
-ATP_REGEX = re.compile(r'(https://\w*|\w*)\.safelinks\.protection\.outlook\.com/.*\?url=')
-FIREEYE_REGEX = re.compile(r'(https:\/\/\w*|\w*)\.fireeye\.com\/.*\/url\?k=')
-PROOF_POINT_URL_REG = re.compile(r'https://urldefense(?:\.proofpoint)?\.(com|us)/(v[0-9])/')
-HTTP = 'http'
-PREFIX_TO_NORMALIZE = {
-    'hxxp',
-    'meow',
-    'hXXp',
-}
-# Tuple of starts_with, does_not_start_with (if exists), replace to.
-PREFIX_CHANGES: List[Tuple[str, Optional[str], str]] = [
-    ('https:/', 'https://', 'https://'),
-    ('http:/', 'http://', 'http://'),
-    ('https:\\', 'https:\\\\', 'https://'),
-    ('http:\\', 'http:\\\\', 'http://'),
-    ('https:\\\\', None, 'https://'),
-    ('http:\\\\', None, 'http://'),
-]
+from typing import Match
 
 
-def get_redirect_url_proof_point_v2(non_formatted_url: str, parse_results: ParseResult) -> str:
+class URLError(Exception):
+    pass
+
+
+class URLType(object):
     """
-    Extracts redirect URL from Proof Point V2.
-    Args:
-        non_formatted_url (str): Non formatted URL.
-        parse_results (ParseResult): Parse results of the given URL.
-
-    Returns:
-        (str): Redirected URL from Proof Point.
-    """
-    url_: str = get_redirect_url_from_query(non_formatted_url, parse_results, 'u')
-    trans = str.maketrans('-_', '%/')
-    url_ = url_.translate(trans)
-    return url_
-
-
-def get_redirect_url_proof_point_v3(non_formatted_url: str) -> str:
-    """
-    Extracts redirect URL from Proof Point V3.
-    Args:
-        non_formatted_url (str): Non formatted URL.
-
-    Returns:
-        (str): Redirected URL from Proof Point.
-    """
-    url_regex = re.compile(r'v3/__(?P<url>.+?)__;(?P<enc_bytes>.*?)!')
-    if match := url_regex.search(non_formatted_url):
-        non_formatted_url = match.group('url')
-    else:
-        demisto.error(f'Could not parse Proof Point redirected URL. Returning original URL: {non_formatted_url}')
-    return non_formatted_url
-
-
-def get_redirect_url_from_query(non_formatted_url: str, parse_results: ParseResult, redirect_param_name: str) -> str:
-    """
-    Receives an ATP Safe Link URL, returns the URL the ATP Safe Link points to.
-    Args:
-        non_formatted_url (str): The raw URL. For debugging purposes.
-        parse_results (str): ATP Safe Link URL parse results.
-        redirect_param_name (str): Name of the redirect parameter.
-    Returns:
-        (str): The URL the ATP Safe Link points to.
-    """
-    query_params_dict: Dict[str, List[str]] = parse_qs(parse_results.query)
-    if not (query_urls := query_params_dict.get(redirect_param_name, [])):
-        demisto.error(f'Could not find redirected URL. Returning the original URL: {non_formatted_url}')
-        return non_formatted_url
-    if len(query_urls) > 1:
-        demisto.debug(f'Found more than one URL query parameters for redirect in the given URL {non_formatted_url}\n'
-                      f'Returning the first URL: {query_urls[0]}')
-    url_: str = query_urls[0]
-    return url_
-
-
-def replace_protocol(url_: str) -> str:
-    """
-    Replaces URL protocol with expected protocol. Examples can be found in tests.
-    Args:
-        url_ (str): URL to replace the protocol by the given examples above.
-
-    Returns:
-        (str): URL with replaced protocol, if needed to replace, else the URL itself.
-    """
-    for prefix_to_normalize in PREFIX_TO_NORMALIZE:
-        if url_.startswith(prefix_to_normalize):
-            url_ = url_.replace(prefix_to_normalize, HTTP)
-    lowercase_url = url_.lower()
-    for starts_with, does_not_start_with, to_replace in PREFIX_CHANGES:
-        if lowercase_url.startswith(starts_with) and (
-                not does_not_start_with or not lowercase_url.startswith(does_not_start_with)):
-            url_ = url_.replace(starts_with, to_replace)
-    if url_.startswith('http:') and not url_.startswith('http:/'):
-        url_ = url_.replace('http:', 'http://')
-    if url_.startswith('https:') and not url_.startswith('https:/'):
-        url_ = url_.replace('https:', 'https://')
-    return url_
-
-
-def search_for_redirect_url_in_first_query_parameter(parse_results: ParseResult) -> Optional[str]:
-    """
-    Returns a redirect URL if finds it under the assumption:
-    1) The redirect URL is in first query parameter value.
-    2) The value starts with http.
-
-    If both terms exists, returns the value of the first parameter, else returns None.
-    Args:
-        parse_results (Str): Parse results of a non formatted URL.
-
-    Returns:
-        (Optional[str]): Redirected URL if satisfies above condition, None otherwise.
-    """
-    if not parse_results.query:
-        return None
-    # parse_results.query has a structure of <param1>=<param1-value>&<param2>=<param2-value>...
-    # if there are no query params, then parse_results.query is ''.
-    query_parameters: List[str] = parse_results.query.split('&')
-    # Having at least one query parameter means that the len is at least 2, because first cell is empty given above
-    # mentioned structure of <param1>=<param1-value>&<param2>=<param2-value>...
-    if query_parameters:
-        # First query parameter is of structure <param1>=<param1-value>
-        first_query_parameter: List[str] = query_parameters[0].split('=')
-        # Validation of unexpected split behaviour
-        if not len(first_query_parameter) == 2:
-            demisto.debug(
-                f"Unable to parse to following URL path: {parse_results.path} with query: {parse_results.query}"
-            )
-            return None
-        first_query_parameter_value: str = first_query_parameter[1]
-        # Redirect URL according to the given assumption
-        if first_query_parameter_value.startswith('http'):
-            return first_query_parameter_value
-    return None
-
-
-def format_urls(non_formatted_urls: List[str]) -> List[Dict]:
-    """
-    Formats a single URL.
-    Args:
-        non_formatted_urls (List[str]): Non formatted URLs.
-
-    Returns:
-        (Set[str]): Formatted URL, with its expanded URL if such exists.
+    A class to represent an url and its parts
     """
 
-    def format_single_url(non_formatted_url: str) -> List[str]:
-        demisto.debug(f"Starting to format URL {non_formatted_url}")
-        parse_results: ParseResult = urlparse(non_formatted_url)
-        additional_redirect_url: Optional[str] = None
-        if re.match(ATP_REGEX, non_formatted_url):
-            non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'url')
-        elif re.match(FIREEYE_REGEX, non_formatted_url):
-            if '&amp;' in non_formatted_url:
-                non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'amp;u')
-            else:
-                non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'u')
-        elif match := PROOF_POINT_URL_REG.search(non_formatted_url):
-            proof_point_ver: str = match.group(2)
-            if proof_point_ver == 'v3':
-                non_formatted_url = get_redirect_url_proof_point_v3(non_formatted_url)
-            elif proof_point_ver == 'v2':
-                non_formatted_url = get_redirect_url_proof_point_v2(non_formatted_url, parse_results)
-            else:
-                non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'u')
+    def __init__(self, raw_url: str):
+        self.raw = raw_url
+        self.scheme = ''
+        self.user_info = ''
+        self.hostname = ''
+        self.port = ''
+        self.path = ''
+        self.query = ''
+        self.fragment = ''
+
+    def __str__(self):
+        return (
+            f'Scheme = {self.scheme}\nUser_info = {self.user_info}\nHostname = {self.hostname}\nPort = {self.port}\n'
+            f'Path = {self.path}\nQuery = {self.query}\nFragment = {self.fragment}')
+
+
+class URLCheck(object):
+    """
+    This class will build and validate a URL based on "URL Living Standard" (https://url.spec.whatwg.org)
+    """
+    sub_delims = ("!", "$", "&", "'", "(", ")", "*", "+", ",", ";", "=")
+    brackets = ("\"", "'", "[", "]", "{", "}", "(", ")", ",")
+    url_code_points = ("!", "$", "&", "\"", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "=", "?", "@",
+                            "_", "~")
+
+    bracket_pairs = {
+        '{': '}',
+        '(': ')',
+        '[': ']',
+        '"': '"',
+        '\'': '\'',
+    }
+
+    def __init__(self, original_url: str):
+        """
+        Args:
+            original_url: The original URL input
+
+        Attributes:
+            self.modified_url: The URL while being parsed by the formatter char by char
+            self.original_url: The original URL as it was inputted
+            self.url - The parsed URL and its parts (as a URLType object - see above)
+            self.base: A pointer to the first char of the section being checked and validated
+            self.output: The final URL output by the formatter
+            self.inside_brackets = A flag to indicate the parser index is within brackets
+            self.port = A flag to state that a port is found in the URL
+            self.query = A flag to state that a query is found in the URL
+            self.fragment = A flag to state that a fragment is found in the URL
+            self.done = A flag to state that the parser is done and no more parsing is needed
+        """
+
+        self.modified_url = original_url
+        self.original_url = original_url
+        self.url = URLType(original_url)
+        self.base = 0  # This attribute increases as the url is being parsed
+        self.output = ''
+
+        self.inside_brackets = False
+        self.opening_bracket = ''
+        self.port = False
+        self.query = False
+        self.fragment = False
+        self.done = False
+
+        if self.original_url:
+            self.remove_leading_chars()
+
         else:
-            additional_redirect_url = search_for_redirect_url_in_first_query_parameter(parse_results)
-        # Common handling for unescape and normalizing
-        non_formatted_url = unquote(unescape(non_formatted_url.replace('[.]', '.')))
-        formatted_url = replace_protocol(non_formatted_url)
-        return [formatted_url, additional_redirect_url] if additional_redirect_url else [formatted_url]
+            raise URLError("Empty string given")
 
-    formatted_urls_groups = [format_single_url(url_) for url_ in non_formatted_urls]
-    return [{
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': urls,
-        'EntryContext': {'URL': urls} if urls else {}
-    } for urls in formatted_urls_groups]
+        if "//" in self.modified_url[:8]:
+            # The URL seems to have a scheme indicated by presence of "//"
+            self.scheme_check()
+
+        try:
+            # First slash after the scheme (if exists)
+            first_slash = self.modified_url[self.base:].index("/")
+
+        except ValueError:
+            first_slash = -1
+
+        try:
+            if "@" in self.modified_url[:first_slash]:
+                # Checks if url has '@' sign in its authority part
+
+                self.user_info_check()
+
+        except ValueError:
+            # No '@' in url at all
+            pass
+
+        self.host_check()
+
+        if not self.done and self.port:
+            self.port_check()
+
+        if not self.done:
+            self.path_check()
+
+        if not self.done and self.query:
+            self.query_check()
+
+        if not self.done and self.fragment:
+            self.fragment_check()
+
+    def __str__(self):
+        return f"{urllib.parse.unquote(self.output)}"
+
+    def __repr__(self):
+        return f"{urllib.parse.unquote(self.output)}"
+
+    def scheme_check(self):
+        """
+        Parses and validates the scheme part of the URL, accepts ascii and "+", "-", "." according to standard.
+        """
+
+        index = self.base
+        scheme = ''
+
+        while self.modified_url[index].isascii() or self.modified_url[index] in ("+", "-", "."):
+
+            char = self.modified_url[index]
+            if char in self.sub_delims:
+                raise URLError(f"Invalid character {char} at position {index}")
+
+            elif char == ":":
+
+                self.output += char
+                index += 1
+
+                if self.modified_url[index:index + 2] != "//":
+                    # If URL has ascii chars and ':' with no '//' it is invalid
+
+                    raise URLError(f"Invalid character {char} at position {index}")
+
+                else:
+                    self.url.scheme = scheme
+                    self.output += self.modified_url[index:index + 2]
+                    self.base = index + 2
+
+                    if self.base == len(self.modified_url):
+                        raise URLError("Only scheme provided")
+
+                    return
+
+            elif index == len(self.modified_url) - 1:
+                # Reached end of url and no ":" found (like "foo//")
+
+                raise URLError('Invalid scheme')
+
+            else:
+                # base is not incremented as it was incremented by 2 before
+                self.output += char
+                scheme += char
+                index += 1
+
+    def user_info_check(self):
+        """
+        Parses and validates the user_info part of the URL. Will only accept a username, password isn't allowed.
+        """
+
+        index = self.base
+        user_info = ""
+
+        if self.modified_url[index] == "@":
+            raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
+
+        else:
+            while self.modified_url[index] not in ('@', '/', '?', '#', '[', ']'):
+                self.output += self.modified_url[index]
+                user_info += self.modified_url[index]
+                index += 1
+
+            if self.modified_url[index] == '@':
+                self.output += self.modified_url[index]
+                self.url.user_info = user_info
+                self.base = index + 1
+                return
+
+            else:
+                raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
+
+    def host_check(self):
+        """
+        Parses and validates the host part of the URL. The domain must be valid, either a domain, IPv4 or an
+        IPv6 with square brackets.
+        """
+
+        index = self.base
+        host: Any = ''
+        is_ip = False
+
+        while index < len(self.modified_url) and self.modified_url[index] not in ('/', '?', '#'):
+
+            if self.modified_url[index] in self.sub_delims:
+                if self.modified_url[index] in self.brackets:
+                    # Just a small trick to stop the parsing if a bracket is found
+                    index = len(self.modified_url)
+                    self.check_done(index)
+
+                else:
+                    raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
+
+            elif self.modified_url[index] == "%" and not self.hex_check(index):
+                raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
+
+            elif self.modified_url[index] == ":" and not self.inside_brackets:
+                # ":" are only allowed if host is ipv6 in which case inside_brackets equals True
+                if index == len(self.modified_url) - 1:
+                    raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
+
+                elif index <= 4:
+                    # This might be an IPv6 with no scheme
+                    self.inside_brackets = True
+                    self.output = f"[{self.output}"  # Reading the bracket that was removed by the cleaner
+
+                else:
+                    self.port = True
+                    self.output += self.modified_url[index]
+                    index += 1
+                    self.base = index
+                    self.url.hostname = host
+                    return  # Going back to main to handle port part
+
+            elif self.modified_url[index] == "[":
+                if not self.inside_brackets and index == self.base:
+                    # if index==base we're at the first char of the host in which "[" is ok
+                    self.output += self.modified_url[index]
+                    index += 1
+                    self.inside_brackets = True
+
+                else:
+                    raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
+
+            elif self.modified_url[index] == "]":
+
+                if not self.inside_brackets:
+                    if self.check_domain(host) and all([char in self.brackets for char in self.modified_url[index:]]):
+                        # Domain is valid with trailing "]" and brackets, the formatter will remove the extra chars
+                        self.done = True
+                        return
+
+                    else:
+                        raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
+
+                else:
+                    try:
+                        ip = ipaddress.ip_address(host)
+                        is_ip = True
+
+                    except ValueError:
+                        raise URLError(f"Only IPv6 is allowed within square brackets, not {host}")
+
+                    if self.inside_brackets and ip.version == 6:
+                        self.output += self.modified_url[index]
+                        index += 1
+                        self.inside_brackets = False
+                        break
+
+                    else:
+                        raise URLError(f"Only IPv6 is allowed within square brackets, not {host}")
+
+            else:
+                self.output += self.modified_url[index]
+                host += self.modified_url[index]
+                index += 1
+
+        if not is_ip:
+            try:
+                ip = ipaddress.ip_address(host)
+
+                if ip.version == 6 and not self.output.endswith(']'):
+                    self.output = f"{self.output}]"  # Adding a closing square bracket for IPv6
+
+            except ValueError:
+                self.check_domain(host)
+
+        self.url.hostname = host
+        self.check_done(index)
+
+    def port_check(self):
+        """
+        Parses and validates the port part of the URL, accepts only digits. Index is starting after ":"
+        """
+
+        index = self.base
+        port = ""
+
+        while index < len(self.modified_url) and self.modified_url[index] not in ('/', '?', '#'):
+            if self.modified_url[index].isdigit():
+                self.output += self.modified_url[index]
+                port += self.modified_url[index]
+                index += 1
+
+            else:
+                raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
+
+        self.url.port = port
+        self.check_done(index)
+
+    def path_check(self):
+        """
+        Parses and validates the path part of the URL.
+        """
+
+        index = self.base
+        path = ""
+
+        while index < len(self.modified_url) and self.modified_url[index] not in ('?', '#'):
+            index, char = self.check_valid_character(index)
+            path += char
+
+        if self.check_done(index):
+            self.url.path = path
+            return
+
+        if self.modified_url[index] == "?":
+            self.query = True
+
+        elif self.modified_url[index] == "#":
+            self.fragment = True
+
+        self.output += self.modified_url[index]
+        index += 1
+        self.base = index
+        self.url.path = path
+
+    def query_check(self):
+        """
+        Parses and validates the query part of the URL. The query strats after a "?".
+        """
+        index = self.base
+        query = ''
+
+        while index < len(self.modified_url) and self.modified_url[index] != '#':
+            index, char = self.check_valid_character(index)
+            query += char
+
+        self.url.query = query
+
+        if self.check_done(index):
+            return
+
+        elif self.modified_url[index] == "#":
+            self.output += self.modified_url[index]
+            index += 1
+            self.base = index
+            self.fragment = True
+
+    def fragment_check(self):
+        """
+        Parses and validates the fragment part of the URL, will not allow gen and sub delims unless encoded
+        """
+
+        index = self.base
+        fragmet = ""
+
+        while index < len(self.modified_url):
+            index, char = self.check_valid_character(index)
+            fragmet += char
+
+        self.url.fragment = fragmet
+
+    def check_valid_character(self, index: int) -> tuple[int, str]:
+        """
+        Checks the validity of a character passed by the main formatter
+
+        Args:
+            index: the index of the character within the URL
+
+        Returns:
+            returns the new index after incrementation and the part of the URL that was checked
+
+        """
+
+        part = ""
+        char = self.modified_url[index]
+
+        if char == "%":
+            if not self.hex_check(index):
+                raise URLError(f"Invalid character {char} at position {index}")
+
+            else:
+                self.output += char
+                part += char
+                index += 1
+
+        elif char in self.brackets:
+            # char is a type of bracket or quotation mark
+
+            if index == len(self.modified_url) - 1 and not self.inside_brackets:
+                # Edge case of a bracket or quote at the end of the URL but not part of it
+                return len(self.modified_url), part
+
+            elif self.inside_brackets and char == self.bracket_pairs[self.opening_bracket]:
+                # If the char is a closing bracket check that it matches the opening one.
+                self.inside_brackets = False
+                self.output += char
+                part += char
+                index += 1
+
+            elif char in self.bracket_pairs:
+                # If the char is an opening bracket set `inside_brackets` flag to True
+                self.inside_brackets = True
+                self.opening_bracket = char
+                self.output += char
+                part += char
+                index += 1
+
+            else:
+                # The char is a closing bracket but there was no opening one.
+                return len(self.modified_url), part
+
+        elif char == '\\':
+            # Edge case of the url ending with quotes and an escape char before them
+            if self.modified_url[index + 1] == "\"":
+                return len(self.modified_url), part
+
+        elif not char.isalnum() and char not in self.url_code_points:
+            raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
+
+        else:
+            self.output += char
+            part += char
+            index += 1
+
+        return index, part
+
+    @staticmethod
+    def check_domain(host: str) -> bool:
+        """
+        Checks if the domain is a valid domain (has at least 1 dot and a tld >= 2)
+
+        Args:
+            host: The host string as extracted by the formatter
+
+        Returns:
+            True if the domain is valid
+
+        Raises:
+            URLError if the domain is invalid
+        """
+
+        if host.endswith("."):
+            host = host.rstrip(".")
+
+        if host.count(".") < 1:
+            raise URLError(f"Invalid domain {host}")
+
+        elif len(host.split(".")[-1]) < 2:
+            raise URLError(f"Invalid tld for {host}")
+
+        else:
+            return True
+
+    def hex_check(self, index: int) -> bool:
+        """
+        Checks the next two chars in the url are hex digits
+
+        Args:
+            index: points to the position of the % character, used as a pointer to chars.
+
+        Returns:
+            True if %xx is a valid hexadecimal code.
+
+        Raises:
+            ValueError if the chars after % are invalid
+        """
+
+        try:
+            int(self.modified_url[index + 1:index + 3], 16)
+            return True
+
+        except ValueError:
+            return False
+
+    def check_done(self, index: int) -> bool:
+        """
+        Checks if the validator already went over the URL and nothing is left to check.
+
+        Args:
+            index: The current index of the pointer
+
+        Returns:
+            True if the entire URL has been verified False if not.
+        """
+
+        if index == len(self.modified_url):
+            # End of inputted url, no need to test further
+            self.done = True
+            return True
+
+        elif self.modified_url[index] == "/":
+            #
+            self.output += self.modified_url[index]
+            index += 1
+
+        self.base = index
+        return False
+
+    def remove_leading_chars(self):
+        """
+        Will remove all leading chars of the following ("\"", "'", "[", "]", "{", "}", "(", ")", ",")
+        from the URL.
+        """
+
+        beginning = 0
+        end = -1
+
+        in_brackets = True
+
+        while in_brackets:
+            try:
+                if self.bracket_pairs[self.modified_url[beginning]] == self.modified_url[end]:
+                    beginning += 1
+                    end -= 1
+
+                else:
+                    in_brackets = False
+
+            except KeyError:
+                in_brackets = False
+
+        while self.modified_url[beginning] in self.brackets:
+            beginning += 1
+
+        if end == -1:
+            self.modified_url = self.modified_url[beginning:]
+
+        else:
+            self.modified_url = self.modified_url[beginning:end + 1]
+
+
+class URLFormatter(object):
+
+    # URL Security Wrappers
+    ATP_regex = re.compile('https://.*?\.safelinks\.protection\.outlook\.com/\?url=(.*?)&', re.I)
+    fireeye_regex = re.compile('.*?fireeye[.]com.*?&u=(.*)', re.I)
+    proofpoint_regex = re.compile('(?i)(?:proofpoint.com/v[1-2]/(?:url\?u=)?(.*?)(?:&amp|&d|$)|'
+                                  'urldefense[.]\w{2,3}/v3/__(.*?)(?:__;|$))')
+    trendmicro_regex = re.compile('https://.*?trendmicro\.com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&', re.I)
+
+    # Scheme slash fixer
+    scheme_fix = re.compile("https?(:[/|\\\]*)")
+
+    def __init__(self, original_url):
+        """
+        Main class for formatting a URL
+
+        Args:
+            original_url: The original URL in lower case
+
+        Raises:
+            URLError if an exception occurs
+        """
+
+        self.original_url = original_url
+        self.output = ''
+
+        url = self.correct_and_refang_url(self.original_url)
+        url = self.strip_wrappers(url)
+
+        try:
+            self.output = urllib.parse.unquote(URLCheck(url).output)
+
+        except URLError:
+            raise
+
+    def __repr__(self):
+        return f"{self.output}"
+
+    def __str__(self):
+        return f"{self.output}"
+
+    @staticmethod
+    def strip_wrappers(url: str) -> str:
+        """
+        Allows for stripping of multiple safety wrappers of URLs
+
+        Args:
+            url: The original wrapped URL
+
+        Returns:
+            The URL without wrappers
+        """
+
+        wrapper = True
+
+        while wrapper:
+            # Will strip multiple wrapped URLs, wrappers are finite the loop will stop once all wrappers were removed
+
+            if URLFormatter.fireeye_regex.match(url):
+                url = urllib.parse.unquote(URLFormatter.fireeye_regex.findall(url)[0])
+
+            elif URLFormatter.trendmicro_regex.match(url):
+                url = urllib.parse.unquote(URLFormatter.trendmicro_regex.findall(url)[0])
+
+            elif URLFormatter.ATP_regex.match(url):
+                url = urllib.parse.unquote(URLFormatter.ATP_regex.findall(url)[0])
+
+            elif URLFormatter.proofpoint_regex.findall(url):
+                url = URLFormatter.extract_url_proofpoint(URLFormatter.proofpoint_regex.findall(url)[0])
+
+            else:
+                wrapper = False
+
+        return url
+
+    @staticmethod
+    def extract_url_proofpoint(url: str) -> str:
+        """
+        Extracts the domain from the Proofpoint wrappers using a regex
+
+        Args:
+            url: The proofpoint wrapped URL
+
+        Returns:
+            Unquoted extracted URL as a string
+        """
+
+        if url[0]:
+            # Proofpoint v1 and v2
+            return urllib.parse.unquote((url[0].replace("-", "%").replace("_", "/")))
+
+        else:
+            # Proofpoint v3
+            return urllib.parse.unquote(url[1])
+
+    @staticmethod
+    def correct_and_refang_url(url: str) -> str:
+        """
+        Refangs URL and corrects its scheme
+
+        Args:
+            url: The original URL
+
+        Returns:
+            Refnaged corrected URL
+        """
+
+        schemas = re.compile("(meow|hxxp)", re.IGNORECASE)
+        url = url.replace("[.]", ".")
+        url = url.replace("[:]", ":")
+        url = re.sub(schemas, "http", url)
+
+        def fix_scheme(match: Match) -> str:
+            return re.sub(":(\\\\|/)*", "://", match.group(0))
+
+        return URLFormatter.scheme_fix.sub(fix_scheme, url)
+
+
+def _is_valid_cidr(cidr: str) -> bool:
+    """
+    Will check if "url" is a valid CIDR in order to ignore it
+    Args:
+        cidr: the suspected input
+
+    Returns:
+        True if inout is a valid CIDR
+
+    """
+    try:
+        ipaddress.ip_network(cidr)
+        return True
+    except ValueError:
+        return False
 
 
 def main():
-    try:
-        formatted_urls_groups: List[Dict] = format_urls(argToList(demisto.args().get('input')))
-        for formatted_urls_group in formatted_urls_groups:
-            demisto.results(formatted_urls_group)
-    except Exception as e:  # pragma: no cover
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute FormatURL. Error: {str(e)}')
+    raw_urls = demisto.args().get('input')
 
+    if isinstance(raw_urls, str):
+        raw_urls = raw_urls.split(",")
 
-''' ENTRY POINT '''
+    formatted_urls: List[str] = []
+
+    for url in raw_urls:
+        formatted_url = ''
+
+        if _is_valid_cidr(url):
+            # If input is a valid CIDR formatter will ignore it to let it become a CIDR
+            formatted_urls.append('')
+            continue
+
+        try:
+            formatted_url = URLFormatter(url).output
+
+        except URLError as e:
+            demisto.debug(e.__str__())
+
+        except Exception as e:
+            demisto.debug(traceback.format_exc() + str(e))  # print the traceback
+
+        finally:
+            formatted_urls.append(formatted_url)
+
+    output = [{
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': [urls],
+        'EntryContext': {'URL': urls},
+    } for urls in formatted_urls]
+
+    for url in output:
+        demisto.results(url)
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

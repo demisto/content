@@ -1,0 +1,259 @@
+{
+  "raw_response": {
+    "data": {
+      "globalSearchResults": {
+        "edges": [
+          {
+            "node": {
+              "id": "87906a5f-8061-452f-9972-91e89e5de871",
+              "name": "ABS-Recovery-VM-Small",
+              "objectType": "AzureNativeVm",
+              "physicalPath": [],
+              "azureRegion": "EastUS",
+              "isRelic": false,
+              "effectiveSlaDomain": {
+                "id": "DO_NOT_PROTECT",
+                "name": "DO_NOT_PROTECT",
+                "description": ""
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "2a169bef-7a83-4807-a848-d7252aa1d465",
+              "name": "absrecoveryvmsmall-osdisk-20210610-135505",
+              "objectType": "AzureNativeManagedDisk",
+              "physicalPath": [],
+              "azureRegion": "EastUS",
+              "isRelic": false,
+              "effectiveSlaDomain": {
+                "id": "UNPROTECTED",
+                "name": "UNPROTECTED",
+                "description": ""
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "91a6eaff-9803-4f21-a4c5-95fce3e78cf1",
+              "name": "absrecoveryvmsmall-osdisk-20210610-135505-rk_ci9cjbmi1u",
+              "objectType": "AzureNativeManagedDisk",
+              "physicalPath": [],
+              "azureRegion": "EastUS",
+              "isRelic": false,
+              "effectiveSlaDomain": {
+                "id": "UNPROTECTED",
+                "name": "UNPROTECTED",
+                "description": ""
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "71513938-8777-4e43-9cda-e7ff312053cf",
+              "name": "gcp-native-instance-1qzwwvzdjxqweqoilufoavmzf",
+              "objectType": "GcpNativeDisk",
+              "physicalPath": [],
+              "gcpZone": "us-central1-a",
+              "gcpRegion": "us-central1",
+              "gcpNativeProject": {
+                "name": "se-lab"
+              },
+              "effectiveSlaDomain": {
+                "id": "UNPROTECTED",
+                "name": "UNPROTECTED",
+                "description": ""
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "e060116b-f9dc-56a1-82a6-1b968d2f6cef",
+              "name": "Kali-VM",
+              "objectType": "VmwareVirtualMachine",
+              "physicalPath": [
+                {
+                  "fid": "cc03bc07-be88-5cde-9c92-5ffab30b4baf",
+                  "name": "sand2-esx02.rubrikdemo.com",
+                  "objectType": "VSphereHost"
+                },
+                {
+                  "fid": "6540fba8-9014-5a03-b7ba-8f25dac1f72c",
+                  "name": "Sandbox-2 Cluster",
+                  "objectType": "VSphereComputeCluster"
+                },
+                {
+                  "fid": "68e197e7-b3c8-58ce-bf16-2fe9a8349fa6",
+                  "name": "Sandbox-2 Datacenter",
+                  "objectType": "VSphereDatacenter"
+                },
+                {
+                  "fid": "02e13127-9811-593a-9abb-d937d9aad3bc",
+                  "name": "sand2-vcsa.rubrikdemo.com",
+                  "objectType": "VSphereVCenter"
+                }
+              ],
+              "cluster": {
+                "id": "4d4a41d5-8910-4e4d-9dca-0798f5fc6d61",
+                "name": "sand2-rbk01"
+              },
+              "primaryClusterLocation": {
+                "id": "4d4a41d5-8910-4e4d-9dca-0798f5fc6d61"
+              },
+              "isRelic": true,
+              "effectiveSlaDomain": {
+                "id": "DO_NOT_PROTECT",
+                "name": "DO_NOT_PROTECT",
+                "description": ""
+              },
+              "pendingSla": null
+            }
+          },
+          {
+            "node": {
+              "id": "72de9d42-1b54-4225-9a9c-b6fdcc099ee0",
+              "name": "Single Linux VM",
+              "objectType": "AppBlueprint",
+              "physicalPath": [],
+              "cluster": {
+                "id": "00000000-0000-0000-0000-000000000000",
+                "name": "Polaris"
+              },
+              "isRelic": true,
+              "effectiveSlaDomain": {
+                "id": "DO_NOT_PROTECT",
+                "name": "DO_NOT_PROTECT",
+                "description": ""
+              }
+            }
+          }
+        ],
+        "pageInfo": {
+          "endCursor": "Y3Vyc29yOmludDo1",
+          "startCursor": "Y3Vyc29yOmludDow",
+          "hasNextPage": false,
+          "hasPreviousPage": false
+        }
+      }
+    }
+  },
+  "outputs": [
+    {
+      "id": "87906a5f-8061-452f-9972-91e89e5de871",
+      "name": "ABS-Recovery-VM-Small",
+      "objectType": "AzureNativeVm",
+      "physicalPath": [],
+      "azureRegion": "EastUS",
+      "isRelic": false,
+      "effectiveSlaDomain": {
+        "id": "DO_NOT_PROTECT",
+        "name": "DO_NOT_PROTECT",
+        "description": ""
+      }
+    },
+    {
+      "id": "2a169bef-7a83-4807-a848-d7252aa1d465",
+      "name": "absrecoveryvmsmall-osdisk-20210610-135505",
+      "objectType": "AzureNativeManagedDisk",
+      "physicalPath": [],
+      "azureRegion": "EastUS",
+      "isRelic": false,
+      "effectiveSlaDomain": {
+        "id": "UNPROTECTED",
+        "name": "UNPROTECTED",
+        "description": ""
+      }
+    },
+    {
+      "id": "91a6eaff-9803-4f21-a4c5-95fce3e78cf1",
+      "name": "absrecoveryvmsmall-osdisk-20210610-135505-rk_ci9cjbmi1u",
+      "objectType": "AzureNativeManagedDisk",
+      "physicalPath": [],
+      "azureRegion": "EastUS",
+      "isRelic": false,
+      "effectiveSlaDomain": {
+        "id": "UNPROTECTED",
+        "name": "UNPROTECTED",
+        "description": ""
+      }
+    },
+    {
+      "id": "71513938-8777-4e43-9cda-e7ff312053cf",
+      "name": "gcp-native-instance-1qzwwvzdjxqweqoilufoavmzf",
+      "objectType": "GcpNativeDisk",
+      "physicalPath": [],
+      "gcpZone": "us-central1-a",
+      "gcpRegion": "us-central1",
+      "gcpNativeProject": {
+        "name": "se-lab"
+      },
+      "effectiveSlaDomain": {
+        "id": "UNPROTECTED",
+        "name": "UNPROTECTED",
+        "description": ""
+      }
+    },
+    {
+      "id": "e060116b-f9dc-56a1-82a6-1b968d2f6cef",
+      "name": "Kali-VM",
+      "objectType": "VmwareVirtualMachine",
+      "physicalPath": [
+        {
+          "fid": "cc03bc07-be88-5cde-9c92-5ffab30b4baf",
+          "name": "sand2-esx02.rubrikdemo.com",
+          "objectType": "VSphereHost"
+        },
+        {
+          "fid": "6540fba8-9014-5a03-b7ba-8f25dac1f72c",
+          "name": "Sandbox-2 Cluster",
+          "objectType": "VSphereComputeCluster"
+        },
+        {
+          "fid": "68e197e7-b3c8-58ce-bf16-2fe9a8349fa6",
+          "name": "Sandbox-2 Datacenter",
+          "objectType": "VSphereDatacenter"
+        },
+        {
+          "fid": "02e13127-9811-593a-9abb-d937d9aad3bc",
+          "name": "sand2-vcsa.rubrikdemo.com",
+          "objectType": "VSphereVCenter"
+        }
+      ],
+      "cluster": {
+        "id": "4d4a41d5-8910-4e4d-9dca-0798f5fc6d61",
+        "name": "sand2-rbk01"
+      },
+      "primaryClusterLocation": {
+        "id": "4d4a41d5-8910-4e4d-9dca-0798f5fc6d61"
+      },
+      "isRelic": true,
+      "effectiveSlaDomain": {
+        "id": "DO_NOT_PROTECT",
+        "name": "DO_NOT_PROTECT",
+        "description": ""
+      },
+      "pendingSla": null
+    },
+    {
+      "id": "72de9d42-1b54-4225-9a9c-b6fdcc099ee0",
+      "name": "Single Linux VM",
+      "objectType": "AppBlueprint",
+      "physicalPath": [],
+      "cluster": {
+        "id": "00000000-0000-0000-0000-000000000000",
+        "name": "Polaris"
+      },
+      "isRelic": true,
+      "effectiveSlaDomain": {
+        "id": "DO_NOT_PROTECT",
+        "name": "DO_NOT_PROTECT",
+        "description": ""
+      }
+    }
+  ],
+  "page_token": {
+    "next_page_token": "Y3Vyc29yOmludDo1",
+    "name": "rubrik-polaris-object-search",
+    "has_next_page": false
+  }
+}

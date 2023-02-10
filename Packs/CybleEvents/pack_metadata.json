@@ -1,0 +1,24 @@
+{
+    "name": "Cyble Events",
+    "description": "Cyble Events for Vision Users. Must have Vision API access to use the threat intelligence.",
+    "support": "partner",
+    "currentVersion": "1.0.3",
+    "author": "Cyble Infosec",
+    "url": "https://cyble.com/",
+    "email": "",
+    "created": "2022-03-22T17:37:18Z",
+    "certification": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {
+        "CommonScripts": {}
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

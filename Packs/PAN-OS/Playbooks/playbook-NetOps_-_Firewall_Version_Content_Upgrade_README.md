@@ -13,16 +13,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
-* panorama-download-latest-content-update
-* panorama-check-latest-panos-software
-* panorama-content-update-download-status
-* panorama-install-latest-content-update
-* panorama-download-panos-version
-* panorama-content-update-install-status
-* panorama-download-panos-status
-* panorama-device-reboot
-* panorama-install-panos-version
-* panorama-install-panos-status
+* pan-os-download-latest-content-update
+* pan-os-check-latest-panos-software
+* pan-os-content-update-download-status
+* pan-os-install-latest-content-update
+* pan-os-download-panos-version
+* pan-os-content-update-install-status
+* pan-os-download-panos-status
+* pan-os-device-reboot
+* pan-os-install-panos-version
+* pan-os-install-panos-status
 
 ## Playbook Inputs
 ---

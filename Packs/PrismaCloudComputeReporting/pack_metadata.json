@@ -1,0 +1,23 @@
+{
+    "name": "Prisma Cloud Compute Reporting (Deprecated)",
+    "description": "Deprecated. No available replacement.",
+    "support": "community",
+    "hidden": true,
+    "currentVersion": "1.0.3",
+    "author": "SA Team",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Cloud Services"
+    ],
+    "tags": [
+        "Palo Alto Networks Products"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": []
+}

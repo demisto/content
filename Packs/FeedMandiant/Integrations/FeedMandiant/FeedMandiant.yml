@@ -132,8 +132,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Mandiant Feed Integration.
-display: Mandiant Feed
+description: Retrieves indicators from the Mandiant Advantage Feed.
+display: Mandiant Advantage Feed
 name: FeedMandiant
 script:
   commands:
@@ -188,7 +188,7 @@ script:
     description: Get mandiant indicators.
     execution: false
     name: feed-mandiant-get-indicators
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.4.30607
   feed: true
   isfetch: false
   longRunning: false

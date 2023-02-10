@@ -5,12 +5,12 @@ from CommonServerUserPython import *  # noqa
 
 from copy import deepcopy
 import requests
-import traceback
 from typing import Dict, Tuple
 from datetime import timezone
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
@@ -713,7 +713,7 @@ def main() -> None:
         first_fetch = None
         if first_fetch_dt := arg_to_datetime(params.get('first_fetch', '3 days')):
             first_fetch = first_fetch_dt.isoformat()
-        max_fetch = min(arg_to_number(params.get('max_fetch', 50)), 100)
+        max_fetch = min(arg_to_number(params.get('max_fetch')) or 50, 100)
         alert_class = argToList(params.get('alert_class'))
         alert_type = argToList(params.get('alert_type'))
         if alert_class and alert_type:
@@ -775,7 +775,6 @@ def main() -> None:
             return_results(result)
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 

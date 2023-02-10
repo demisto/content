@@ -96,6 +96,16 @@ class TestParseCSV:
         self.mock_demisto(mocker, args_value=args, file_obj=file_obj)
         main()
         result = self.get_demisto_results()
+        files = result.get('EntryContext', {}).get('File', [])
+        sorted_files = ['1', '2', '3']
+        for f in files:
+            if f.get('MD5'):
+                sorted_files[0] = f
+            if f.get('SHA256'):
+                sorted_files[1] = f
+            if f.get('SHA1'):
+                sorted_files[2] = f
+        result['EntryContext']['File'] = sorted_files
         assert expected == result
 
     def test_main_with_hash_empty_file(self, mocker):

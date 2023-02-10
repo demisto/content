@@ -1,0 +1,2 @@
+[INGEST:vendor="proofpoint", product="trap", target_dataset="proofpoint_trap_raw", no_hit=keep]
+alter _time = updated_at;

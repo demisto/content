@@ -454,6 +454,11 @@ TEST_DATA = [
         '123456789012345678901234567890123456789012345678901234567890abcd',
         [None, None, '123456789012345678901234567890123456789012345678901234567890abcd']
     ),
+    (
+        'autofocus_sha256_response_wf_sample_has_null',
+        '6833e945695d2609de175c5f67693594748229962759f366b822be5fd568f292',
+        [None, None, '6833e945695d2609de175c5f67693594748229962759f366b822be5fd568f292']
+    ),
 ]
 
 
@@ -481,6 +486,30 @@ def test_search_file_command(mock_response, file_hash, expected_results):
     assert results[0].indicator.sha1 == expected_results[1]
     assert results[0].indicator.sha256 == expected_results[2]
     assert results[0].outputs.get('IndicatorValue') in expected_results
+
+
+@pytest.mark.parametrize(argnames='mock_response, domain',
+                         argvalues=[('autofocus_domain_response', 'mail16.amadeus.net')])
+def test_search_domain_command(mock_response, domain):
+    """
+     Given:
+         - A domain.
+     When:
+         - When running search_domain_command.
+     Then:
+         - Ensure the indicator contains the correct domain.
+     """
+
+    from AutofocusV2 import search_domain_command
+
+    with open(f'test_data/{mock_response}.json') as f:
+        response = json.load(f)
+
+    with requests_mock.Mocker() as m:
+        m.get('https://autofocus.paloaltonetworks.com/api/v1.0/tic', json=response)
+        results = search_domain_command(domain, None, False)
+
+    assert results[0].indicator.domain == domain
 
 
 @pytest.mark.parametrize(argnames='ioc_type, ioc_val',
@@ -521,3 +550,53 @@ def test_search_indicator_command__no_indicator(requests_mock, ioc_type, ioc_val
 
     # validate
     assert f'{ioc_val} was not found in AutoFocus' in result[0].readable_output
+
+
+@pytest.mark.parametrize('range_num,res_count', [(98, 1), (250, 3)])
+def test_search_session(requests_mock, range_num, res_count):
+    """
+    Given:
+        - Large amount of IPs to search sessions on.
+
+    When:
+        - Running the search_session.
+
+    Then:
+        - Validate the search is done for each batch of 100 IPs and the cookies are returned accordingly.
+    """
+
+    from AutofocusV2 import search_sessions
+
+    requests_mock.post('https://autofocus.paloaltonetworks.com/api/v1.0/sessions/search', json={'af_cookie': 'auto-focus-cookie'})
+
+    ips = [f'{i}.{i}.{i}.{i}' for i in range(range_num)]
+    res = search_sessions(ip=ips)
+
+    assert len(res) == res_count
+    for r in res:
+        assert r.get('AFCookie') == 'auto-focus-cookie'
+
+
+@pytest.mark.parametrize('range_num,res_count', [(98, 1), (250, 3)])
+def test_search_samples(requests_mock, range_num, res_count):
+    """
+    Given:
+        - Large amount of IPs to search samples on.
+
+    When:
+        - Running the search_samples.
+
+    Then:
+        - Validate the search is done for each batch of 100 IPs and the cookies are returned accordingly.
+    """
+
+    from AutofocusV2 import search_samples
+
+    requests_mock.post('https://autofocus.paloaltonetworks.com/api/v1.0/samples/search', json={'af_cookie': 'auto-focus-cookie'})
+
+    ips = [f'{i}.{i}.{i}.{i}' for i in range(range_num)]
+    res = search_samples(ip=ips)
+
+    assert len(res) == res_count
+    for r in res:
+        assert r.get('AFCookie') == 'auto-focus-cookie'

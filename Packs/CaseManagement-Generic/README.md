@@ -1,6 +1,6 @@
 # Case Management Pack Implementation Guide
 
-This dashboard is a quick primer for using this Case Management Pack.  Whether you're creating Incidents manually in XSOAR, or fetching from a SIEM, this pack provides some helpful content to help with those goals.
+Whether you're creating Incidents manually in XSOAR, or fetching from a SIEM, this pack provides some helpful content to help with those goals.
 
 ## Default Incident Type
 
@@ -14,11 +14,11 @@ Setting Case as the default type means you can enable a fetch from any integrati
 
 The Case type has an optimized layout for both the summary pages, and the new/edit screen.  This layout includes some useful action buttons for Analysts to utilize in their day to day.
 
-This layout can use used as a template for future Incident types you create in your system, you can copy it (5.5) or use as the default for a Incident type (6.0)
+This layout can be used as a template for future Incident types you create in your system.
 
 ## Playbook
 
-The default playbook for the Case type is 'Case Management - Generic', this playbook is very simple, but does have a few optional add-ons you might want to enable.  At it's core the playbook simply does the following:
+The default playbook for the Case type is 'Case Management - Generic v2', this playbook is very simple, but does have a few optional add-ons you might want to enable.  At it's core the playbook simply does the following:
 
 - Extract & Enrich Indicators: Extract IOCs (hashes, ips, urls) from the incoming Incident data, and mark these items as a note.
 - Pause and wait for Analyst review
@@ -28,17 +28,16 @@ The default playbook for the Case type is 'Case Management - Generic', this play
 Optionally this playbook has built in Timers for adding metrics for Mean Time to Assignment or Mean Time to Remediation to the metrics you are tracking in the system.  To take advantage of these timers, you can add the included TimersOnOwnerChange script to as a field trigger script on the Owner field.   This script will stop the Time to Assignment timer and start the Remediation SLA timer when an owner is first assigned to the Incident.
 
 To set this up:
-1. Settings -> Advanced -> Fields
+1. Settings -> Objects Setup -> Incidents -> Fields
 2. Find and edit the Owner field
 3. Select TimersOnOwnerChange on the 'Script to run when field value changes' option
 
 ## Dashboards
 
-This pack includes 3 dashboards:
+This pack includes 2 dashboards:
 
 - Incident Overview: High level summary of all Incidents in the system, by type, severity, owner, unassigned, etc.
 - My Incidents: Analyst focused dashboard for them to work Incidents assigned to them or Incidents they are participating in.  This dashboard also shows any War Room chats they may have been mentioned in.
-- Case Management Implementation Guide: That's this dashboard, and is intended as a guide for implementing this pack, feel free to delete it once done.
 
 ### Optional Widgets
 
@@ -56,6 +55,22 @@ This pack includes a pair of useful Incident action button scripts, which are ad
 
 - Assign to Me (AssignToMeButton): Assigns an Incident to the user who clicked the button.
 - Link Incidents (LinkIncidents): Allows a user to link or unlink Incidents, also takes a comma separated list of Incidents to link or unlink.
+
+## Dynamic Sections
+
+The CaseMgmtAnalystTools automation script is used as a dynamic section on the layout to provide a list of quick links to Analysts to help them investigate the Incident.  
+
+To create your own list, create an XSOAR list called "+Case Management Analyst Tools+", and add a Markdown Table with your own list.
+
+## Additional Automations
+
+The CaseMgmtIncidentTypesDisplay is a field display script that can be tied to the Type field.  Use this to restrict the Incident Types which are displayed to Analysts when created manually, and prevent changing the Incident Type from being changed on existing Incidents.  
+
+To set this up:
+1. Create an XSOAR list (Settings -> Advanced -> Lists) called +IncidentTypesFromList+ with a comma seperated list of Incident Types to display (i.e. Case,Phishing,Malware)
+1. Settings -> Objects Setup -> Incidents -> Fields
+2. Find and edit the Type field
+3. Select CaseMgmtIncidentTypesDisplay on the 'field display script' option
 
 # What Next?
 

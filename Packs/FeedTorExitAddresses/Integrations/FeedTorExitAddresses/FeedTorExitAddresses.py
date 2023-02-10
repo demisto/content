@@ -40,6 +40,7 @@ class Client(BaseClient):
         :return: ISO-8601 date string
         """
         parsed_date = dateparser.parse(date_string, settings={'TIMEZONE': 'UTC'})
+        assert parsed_date is not None, f'could not parse {date_string}'
         return parsed_date.strftime(DATE_FORMAT)
 
     def build_iterator(self, feedTags, limit):

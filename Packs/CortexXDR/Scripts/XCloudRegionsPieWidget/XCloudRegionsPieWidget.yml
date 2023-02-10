@@ -1,0 +1,18 @@
+commonfields:
+  id: XCloudRegionsPieWidget
+  version: -1
+name: XCloudRegionsPieWidget
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: XCLOUD dynamic section, showing the top ten regions types in a pie chart.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.8.39276
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

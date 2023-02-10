@@ -6,10 +6,11 @@ from CommonServerUserPython import *
 
 import json
 import requests
+import urllib3
 from requests.exceptions import MissingSchema, ConnectionError
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
@@ -447,6 +448,9 @@ def get_ip_reputation(client: Client, ip, threshold=None, status="active,inactiv
     params = build_params(value=ip, type="ip", status=status, limit=0)
     indicator = search_indicator_by_params(client, params, ip)
     if not indicator:
+        return_results(create_indicator_result_with_dbotscore_unknown(indicator=ip,
+                                                                      indicator_type=DBotScoreType.IP,
+                                                                      reliability=client.reliability))
         return
 
     threshold = threshold or client.default_threshold
@@ -487,6 +491,9 @@ def get_domain_reputation(client: Client, domain, threshold=None, status="active
     params = build_params(value=domain, type="domain", status=status, limit=0)
     indicator = search_indicator_by_params(client, params, domain)
     if not indicator:
+        return_results(create_indicator_result_with_dbotscore_unknown(indicator=domain,
+                                                                      indicator_type=DBotScoreType.DOMAIN,
+                                                                      reliability=client.reliability))
         return
 
     threshold = threshold or client.default_threshold
@@ -527,6 +534,9 @@ def get_file_reputation(client: Client, file, threshold=None, status="active,ina
     params = build_params(value=file, type="md5", status=status, limit=0)
     indicator = search_indicator_by_params(client, params, file)
     if not indicator:
+        return_results(create_indicator_result_with_dbotscore_unknown(indicator=file,
+                                                                      indicator_type=DBotScoreType.FILE,
+                                                                      reliability=client.reliability))
         return
 
     threshold = threshold or client.default_threshold
@@ -579,6 +589,9 @@ def get_url_reputation(client: Client, url, threshold=None, status="active,inact
     params = build_params(value=url, type="url", status=status, limit=0)
     indicator = search_indicator_by_params(client, params, url)
     if not indicator:
+        return_results(create_indicator_result_with_dbotscore_unknown(indicator=url,
+                                                                      indicator_type=DBotScoreType.URL,
+                                                                      reliability=client.reliability))
         return
 
     threshold = threshold or client.default_threshold
@@ -1014,8 +1027,8 @@ def main():
 
     params = demisto.params()
 
-    user_name = params.get('username')
-    api_key = params.get('apikey')
+    user_name = params.get('credentials', {}).get('identifier', '') or params.get('username', '')
+    api_key = params.get('credentials', {}).get('password', '') or params.get('apikey', '')
     server_url = params.get('url', '').strip('/')
 
     CREDENTIALS['username'] = user_name

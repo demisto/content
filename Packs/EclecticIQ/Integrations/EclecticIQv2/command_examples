@@ -1,0 +1,8 @@
+!EclecticIQ_create_observable type="ipv4" value="001.001.001.001" maliciousness="high"
+!EclecticIQ_create_sighting type="ipv4" value="001.001.001.001" description="sighting creation" title="sighting" tags="Alert" confidence_level="high"
+!EclecticIQ_lookup_observables type="ipv4" value="001.001.001.001"
+!EclecticIQ_create_observable type="email" value="example@example.com" maliciousness="medium"
+!EclecticIQ_create_sighting type="ipv6" value="2001:0db8:85a3:0000:0000:8a2e:0370:7334" description="sighting creation" title="sighting" tags="Alert" confidence_level="low"
+!EclecticIQ_lookup_observables type="ipv6" value="2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+!EclecticIQ_create_observable type="uri" value="https://examples.com" maliciousness="safe"
+!EclecticIQ_create_sighting type="uri" value="https://examples.com" description="sighting creation" title="sighting" tags="Alert" confidence_level="high" 

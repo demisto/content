@@ -11,7 +11,7 @@ import os.path
 import copy
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]  # pylint: disable=no-member
 
 if not demisto.params().get("proxy", True):
     del os.environ["HTTP_PROXY"]
@@ -36,18 +36,18 @@ def load_host_url():
 
 def hash_file(filename):
     '''Calculate the SHA1 of a file'''
-    h = hashlib.sha1()
+    # The function was taken from here:
+    # https://stackoverflow.com/questions/3431825/generating-an-md5-checksum-of-a-file#answer-3431838
+    h = hashlib.sha1()  # nosec
     with open(filename, 'rb') as f:
-        chunk = ''
-        while chunk != '':
-            chunk = f.read(1024)
+        for chunk in iter(lambda: f.read(1024), b""):
             h.update(chunk)
     return h.hexdigest()
 
 
 def hash_url(url):
     '''Calculate the SHA1 of a URL'''
-    h = hashlib.sha1()
+    h = hashlib.sha1()  # nosec
     h.update(url)
     return h.hexdigest()
 
@@ -72,12 +72,12 @@ def calculate_checksum(api_key, headers, body=''):
         for key in x_dtas_checksum_calculating_order_list:
             temp += headers[key]
     else:
-        for key, value in headers.iteritems():
+        for key, value in headers.items():
             if ('X-DTAS-' in key and 'X-DTAS-Checksum' not in key and 'X-DTAS-ChecksumCalculatingOrder' not in key):
                 temp += value
 
     temp += body
-    return hashlib.sha1(temp)  # lgtm [py/weak-sensitive-data-hashing]
+    return hashlib.sha1(temp.encode('utf-8'))  # nosec
 
 
 def http_request(uri, method, headers, body={}, params={}, files={}):
@@ -97,7 +97,7 @@ def http_request(uri, method, headers, body={}, params={}, files={}):
 
     if (res.status_code != 102 and (res.status_code < 200 or res.status_code >= 300)):
         raise Exception('Got status code ' + str(res.status_code) + ' with body '
-                        + res.content + ' with headers ' + str(res.headers))
+                        + str(res.content) + ' with headers ' + str(res.headers))
     return res
 
 

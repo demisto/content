@@ -1,0 +1,20 @@
+{
+  "malopId": "11.-7780537507363356527",
+  "remediationId": "248da40a-9ac2-4868-840b-e6d74e79a233",
+  "start": 1660031986906,
+  "end": 1660031987872,
+  "initiatingUser": "example@example.com",
+  "statusLog": [
+    {
+      "machineId": "-1845090846.1198775089551518743",
+      "targetId": "-1845090846.-1424333057657783286",
+      "status": "FAILURE",
+      "actionType": "KILL_PROCESS",
+      "error": {
+        "message": "Failed to get ProbeRemediationRequest for action: com.cybereason.commads.remediation.RemediationAction@4ab4a9e2. Ignoring remediation action.",
+        "errorType": "INVALID_ARGUMENT"
+      },
+      "timestamp": 1660031987373
+    }
+  ]
+}

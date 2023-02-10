@@ -1,0 +1,142 @@
+{
+    "id": "incident_categoryname",
+    "version": -1,
+    "modified": "2022-01-12T08:13:44.844285695Z",
+    "ownerOnly": false,
+    "cliName": "categoryname",
+    "description": "Alert category based on the alert source. An example of an XDR Agent alert category is Exploit Modules. ",
+    "name": "Category Name",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedToAll": true,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0",
+    "x2_fields": "alert_category",
+    "Aliases": [
+        {
+            "cliName": "alertcategory",
+            "type": "shortText",
+            "name": "Alert Category"
+        },
+        {
+            "cliName": "arguscasecategory",
+            "type": "shortText",
+            "name": "Argus Case Category"
+        },
+        {
+            "cliName": "bitsightriskcategory",
+            "type": "shortText",
+            "name": "BitSight Risk Category"
+        },
+        {
+            "cliName": "bmcremedyforcecategory",
+            "type": "shortText",
+            "name": "Bmc Remedyforce Category"
+        },
+        {
+            "cliName": "carbonblackesthreatcategory",
+            "type": "shortText",
+            "name": "Carbon Black ES Threat Category"
+        },
+        {
+            "cliName": "categories",
+            "type": "multiSelect",
+            "name": "Categories"
+        },
+        {
+            "cliName": "clarotycategory",
+            "type": "shortText",
+            "name": "Claroty Category"
+        },
+        {
+            "cliName": "cyberintcategory",
+            "type": "shortText",
+            "name": "Cyberint Category"
+        },
+        {
+            "cliName": "cyberpioncategory",
+            "type": "shortText",
+            "name": "Cyberpion Category"
+        },
+        {
+            "cliName": "expansecategory",
+            "type": "shortText",
+            "name": "Expanse Category"
+        },
+        {
+            "cliName": "googlecloudsccfindingcategory",
+            "type": "shortText",
+            "name": "GoogleCloudSCC Finding Category"
+        },
+        {
+            "cliName": "highlevelcategories",
+            "type": "multiSelect",
+            "name": "High Level Categories"
+        },
+        {
+            "cliName": "irondefensecategory",
+            "type": "singleSelect",
+            "name": "IronDefense Category"
+        },
+        {
+            "cliName": "irondefenseirondomecategory",
+            "type": "singleSelect",
+            "name": "IronDefense IronDome Category"
+        },
+        {
+            "cliName": "phishercategory",
+            "type": "shortText",
+            "name": "PhishER Category"
+        },
+        {
+            "cliName": "prismacloudcomputecategory",
+            "type": "shortText",
+            "name": "Prisma Cloud Compute Category"
+        },
+        {
+            "cliName": "qsscasecategory",
+            "type": "shortText",
+            "name": "QSS Case Category"
+        },
+        {
+            "cliName": "saassecuritycategory",
+            "type": "singleSelect",
+            "name": "Saas Security Category"
+        },
+        {
+            "cliName": "safebreachinsightcategory",
+            "type": "shortText",
+            "name": "SafeBreach Insight Category"
+        },
+        {
+            "cliName": "servicenowcategory",
+            "type": "singleSelect",
+            "name": "ServiceNow Category"
+        },
+        {
+            "cliName": "topdeskcategory",
+            "type": "shortText",
+            "name": "TOPdesk Category"
+        },
+        {
+            "cliName": "typeoffense",
+            "type": "shortText",
+            "name": "Type - Offense"
+        }
+    ]
+}

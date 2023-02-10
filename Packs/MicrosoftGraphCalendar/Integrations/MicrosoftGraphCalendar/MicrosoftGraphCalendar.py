@@ -133,10 +133,11 @@ def process_event_params(body: str = '', start: str = '', end: str = '', time_zo
 class MsGraphClient:
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify,
-                 proxy, default_user, self_deployed):
+                 proxy, default_user, self_deployed, certificate_thumbprint, private_key):
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
-                                         proxy=proxy, self_deployed=self_deployed)
+                                         proxy=proxy, self_deployed=self_deployed,
+                                         certificate_thumbprint=certificate_thumbprint, private_key=private_key)
         self.default_user = default_user
 
     def test_function(self):
@@ -515,6 +516,13 @@ def main():
     proxy = params.get('proxy', False)
     default_user = params.get('default_user')
     self_deployed: bool = params.get('self_deployed', False)
+    certificate_thumbprint = params.get('certificate_thumbprint')
+    private_key = params.get('private_key')
+    if not self_deployed and not enc_key:
+        raise DemistoException('Key must be provided. For further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+    elif not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
     commands = {
         'test-module': module_test_function_command,
@@ -532,7 +540,8 @@ def main():
     try:
         client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
                                               app_name=APP_NAME, base_url=url, verify=verify, proxy=proxy,
-                                              default_user=default_user, self_deployed=self_deployed)
+                                              default_user=default_user, self_deployed=self_deployed,
+                                              certificate_thumbprint=certificate_thumbprint, private_key=private_key)
         if 'user' not in demisto.args():
             demisto.args()['user'] = client.default_user
         # Run the command

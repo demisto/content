@@ -1,3 +1,4 @@
+beta: false
 category: Vulnerability Management
 commonfields:
   id: AzureRiskyUsers
@@ -7,6 +8,28 @@ configuration:
   name: client_id
   required: true
   type: 9
+  hiddenusername: true
+  displaypassword: Client ID
+- additionalinfo: Type of authentication - could be Client Credentials Authorization
+    Flow (recommended) or Device Code Flow.
+  defaultvalue: Device Code
+  display: Authentication Type
+  name: authentication_type
+  options:
+  - Client Credentials
+  - Device Code
+  required: true
+  type: 15
+- display: Tenant ID (for Client Credentials mode)
+  name: tenant_id
+  required: false
+  type: 0
+- display: Client Secret (for Client Credentials mode)
+  name: client_secret
+  required: false
+  type: 9
+  hiddenusername: true
+  displaypassword: Client Secret (for Client Credentials mode)
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -26,24 +49,23 @@ script:
     execution: false
     name: azure-risky-users-auth-test
   - deprecated: false
-    description: Starts the authorization process. You then follow the
-      instructions in the command results.
+    description: Starts the authorization process. Follow the instructions
+      in the command results.
     execution: false
     name: azure-risky-users-auth-start
   - deprecated: false
-    description: Completes the authorization process. Run this command after executing the azure-risky-users-auth-start command.
+    description: Completes the authorization process. Run this command after executing
+      the azure-risky-users-auth-start command.
     execution: false
     name: azure-risky-users-auth-complete
   - deprecated: false
-    description: Reruns the authentication.
-      process.
+    description: Reruns the authentication process.
     execution: false
     name: azure-risky-users-auth-reset
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Sets the Risk State to retrieve. Possible values are: "atRisk", "confirmedCompromised", "remediated", or "dismissed"'
-      isArray: false
+      description: Sets the Risk State to retrieve.
       name: risk_state
       predefined:
       - atRisk
@@ -68,7 +90,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Sets the Risk Level to retrieve. Possible values are: "low", "medium", or "high"'
+      description: Sets the Risk Level to retrieve. 
       isArray: false
       name: risk_level
       predefined:
@@ -78,7 +100,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a comma separated list of all risky users and their properties.
+    description: Returns a comma-separated list of all risky users and their properties.
     execution: false
     name: azure-risky-users-list
     outputs:
@@ -109,7 +131,8 @@ script:
       description: Indicates whether the user is deleted.
       type: Boolean
     - contextPath: AzureRiskyUsers.RiskyUser.isProcessing
-      description: Indicates whether a user's risky state is being processed by the backend.
+      description: Indicates whether a user's risky state is being processed by the
+        backend.
       type: Boolean
     - contextPath: AzureRiskyUsers.RiskyUser.riskDetail
       description: 'Details of the detected risk. Possible values are: none, adminGeneratedTemporaryPassword,
@@ -184,7 +207,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Sets the Risk State to retrieve. Possible values are: "atRisk", "confirmedCompromised", "remediated", or "dismissed"'
+      description: Sets the Risk State to retrieve. 
       isArray: false
       name: risk_state
       predefined:
@@ -197,7 +220,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Sets the Risk Level to retrieve. Possible values are: "low", "medium", or "high".'
+      description: Sets the Risk Level to retrieve. 
       isArray: false
       name: risk_level
       predefined:
@@ -207,7 +230,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a comma separated list of the Risk Detection objects and their properties.
+    description: Returns a comma-separated list of the Risk Detection objects and
+      their properties.
     execution: false
     name: azure-risky-users-risk-detections-list
     outputs:
@@ -391,7 +415,7 @@ script:
       description: 'Indicates the type of token issuer for the detected sign-in risk.
         Possible values are: AzureAD, ADFederationServices, UnknownFutureValue.'
       type: String
-  dockerimage: demisto/crypto:1.0.0.24380
+  dockerimage: demisto/crypto:1.0.0.45575
   feed: false
   isfetch: false
   longRunning: false
@@ -400,6 +424,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- AzureRiskyUsers
+fromversion: 6.0.0

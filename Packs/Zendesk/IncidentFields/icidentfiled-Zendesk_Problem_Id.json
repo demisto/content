@@ -1,0 +1,31 @@
+{
+    "id": "incident_zendeskproblemid",
+    "version": -1,
+    "modified": "2022-07-06T14:08:59.898344+03:00",
+    "name": "Zendesk Problem Id",
+    "ownerOnly": false,
+    "cliName": "zendeskproblemid",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Zendesk Ticket"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

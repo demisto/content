@@ -132,3 +132,6 @@ ignore=BA108,BA109
 
 [file:script-CommonUserServer.yml]
 ignore=BA108,BA109
+
+[file:QRadar_5_4_9_image.png]
+ignore=IM111

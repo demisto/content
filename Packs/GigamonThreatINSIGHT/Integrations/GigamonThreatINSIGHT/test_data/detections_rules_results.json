@@ -1,0 +1,100 @@
+{
+  "result_count": 2,
+  "total_count" : 28,
+  "active_rule_count": 2,
+  "enabled_rule_count": 2,
+  "sort_by": "updated",
+  "sort_order": "desc",
+  "offset": 0,
+  "limit": 50,
+  "rules": [
+      {
+          "uuid": "bea44b85-db4d-4a45-b66a-bf105f4607e8",
+          "account_uuid": "b1f533b5-6360-494a-9f8b-9d90f1ad0207",
+          "shared_account_uuids": [
+              "be85fe87-606a-4586-a53f-081f435af566",
+              "b1f533b5-6360-494a-9f8b-9d90f1ad0207"
+          ],
+          "run_account_uuids": [
+              "9a555e95-e868-4146-a23b-2b88da6a3304"
+          ],
+          "name": "TEST: ANY SURICATA 4",
+          "category": "Miscellaneous",
+          "query_signature": "sig_id != null",
+          "description": "For dev testing",
+          "severity": "low",
+          "confidence": "low",
+          "auto_resolution_minutes": 4320,
+          "enabled": true,
+          "device_ip_fields": ["DEFAULT"],
+          "indicator_fields": ["src.ip"],
+          "created_user_uuid": "2fe08725-fb52-4c84-99fe-6ab289aacdfb",
+          "created": "2018-03-22T02:39:22.343000Z",
+          "updated_user_uuid": "d104b62a-e8e5-4948-9b0b-d8be9ba1da97",
+          "updated": "2018-04-23T22:26:53.207000Z",
+          "critical_updated": "2018-04-23T22:26:53.207000Z",
+          "primary_attack_id": "T1213",
+          "secondary_attack_id": "T1069.003",
+          "specificity": "tactic",
+          "rule_accounts": [
+              {
+                  "account_uuid": "b1f533b5-6360-494a-9f8b-9d90f1ad0207",
+                  "muted": false,
+                  "muted_comment": null,
+                  "muted_user_uuid": null,
+                  "muted_timestamp": null,
+                  "detection_count": 27,
+                  "detection_muted_count": 0,
+                  "detection_resolved_count": 5,
+                  "first_seen": "2018-03-16T00:15:57.000000Z",
+                  "last_seen": "2018-04-24T19:29:00.000000Z"
+              }
+          ]
+      },
+      {
+          "uuid": "76fe117a-d940-4fae-84af-1fda3079e7b3",
+          "account_uuid": "be85fe87-606a-4586-a53f-081f435af566",
+          "shared_account_uuids": null,
+          "run_account_uuids": [
+              "be85fe87-606a-4586-a53f-081f435af566"
+          ],
+          "name": "Test A Rule",
+          "category": "Miscellaneous",
+          "query_signature": "ip = '8.8.8.8'",
+          "description": "This is a test rule. please disregard",
+          "severity": "low",
+          "confidence": "low",
+          "auto_resolution_minutes": 10080,
+          "enabled": true,
+          "device_ip_fields": ["DEFAULT"],
+          "indicator_fields": ["src.ip"],
+          "created_user_uuid": "cfee3328-43fd-4722-9ff5-935329cd7495",
+          "created": "2018-04-23T22:08:22.411000Z",
+          "updated_user_uuid": "cfee3328-43fd-4722-9ff5-935329cd7495",
+          "updated": "2018-04-23T22:08:22.411000Z",
+          "critical_updated": "2018-04-23T22:08:22.411000Z",
+          "primary_attack_id": "T1213",
+          "secondary_attack_id": null,
+          "specificity": "tactic",
+          "rule_accounts": [
+              {
+                  "account_uuid": "be85fe87-606a-4586-a53f-081f435af566",
+                  "muted": false,
+                  "muted_comment": null,
+                  "muted_user_uuid": null,
+                  "muted_timestamp": null,
+                  "detection_count": 2,
+                  "detection_muted_count": 0,
+                  "detection_resolved_count": 5,
+                  "first_seen": "2018-04-18T13:47:17.330000Z",
+                  "last_seen": "2018-04-24T17:14:19.678000Z"
+              }
+          ]
+      }],
+  "accounts": [
+    {
+      "uuid": "b1f533b5-6360-494a-9f8b-9d90f1ad0207",
+      "name": "Icebrg"
+    }
+  ]
+}

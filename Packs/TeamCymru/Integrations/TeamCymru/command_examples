@@ -1,0 +1,2 @@
+!ip ip=1.1.1.1 using=TeamCymru_instance
+!cymru-bulk-whois entry_id=${File.EntryID} using=TeamCymru_instance

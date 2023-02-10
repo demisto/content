@@ -1,8 +1,8 @@
 {
-    "name": "OpenLDAP",
-    "description": "Authenticate using Open LDAP",
+    "name": "LDAP Authentication",
+    "description": "Authenticate using Open LDAP or Active Directory",
     "support": "xsoar",
-    "currentVersion": "1.0.5",
+    "currentVersion": "2.0.10",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,7 +12,10 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "OpenLDAP",
+        "Active Directory Authentication"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

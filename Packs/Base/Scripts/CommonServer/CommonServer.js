@@ -1960,13 +1960,38 @@ function getDemistoVersion() {
         throw 'Failed retriving server version - ' + ex;
     }
 }
+/**
+ * Compare between two versions.
+ * @param {string} a - version.
+ * @param {string} b - version.
+ * @return {Integer} if A is bigger returns 1, if B is bigger returns -1,
+ * if they are equal returns 0.
+ */
+function compareVersions(a, b) {
+  if (a === b) {
+    return 0;
+  }
+  a_version = a.split('.')
+  b_version = b.split('.')
+  for (var i=0; i < a_version.length; i++) {
+      // A bigger than B
+      if (parseInt(a_version[i]) > parseInt(b_version[i])) {
+          return 1;
+      }
+      // B bigger than A
+      if (parseInt(a_version[i]) < parseInt(b_version[i])) {
+          return -1;
+      }
+  }
+}
 function isDemistoVersionGE(version, buildNumber) {
     var serverVersion = {};
     try {
         serverVersion = getDemistoVersion();
-        if (serverVersion.version > version) {
+        var versionComparison = compareVersions(serverVersion.version, version)
+        if (versionComparison > 0) {
             return true;
-        } else if (serverVersion.version === version) {
+        } else if (versionComparison === 0) {
             if (buildNumber) {
                 var intBuildNumber = parseInt(serverVersion.buildNumber);
                 if (isNaN(intBuildNumber)) {
@@ -2020,4 +2045,61 @@ function setVersionedIntegrationContext(context, sync, version) {
     } else {
         return setIntegrationContext(context);
     }
+}
+/* version should be given if theres a known version we must update according to.
+In case of a known version, retries should be set to 0 */
+function mergeVersionedIntegrationContext(args) {
+    var newContext = args.newContext;
+    var retries = args.retries || 0;
+    var version = args.version || 0;
+    var objectKey = args.objectKey || {};
+    var savedSuccessfully = false;
+    do {
+        logDebug("mergeVersionedIntegrationContext - retries: " + retries  + " given version: " + version)
+
+        var versionedIntegrationContext = getVersionedIntegrationContext(true, true) || {};
+        var context = versionedIntegrationContext.context;
+        mergeContexts(newContext, context, objectKey);
+        var response = setVersionedIntegrationContext(context, true, version || versionedIntegrationContext.version);
+        if(response.Error){
+            logDebug(response.Error)
+        }
+        else
+        {
+            savedSuccessfully = true;
+        }
+
+    } while (!savedSuccessfully && retries-- > 0);
+    if(!savedSuccessfully){
+        throw 'Did not merge context successfully.'
+    }
+}
+/*
+    This function will mutate existingContext, updating it according to newContext.
+*/
+function mergeContexts(newContext, existingContext, objectKeys ) {
+    var objectKeys = objectKeys || {};
+    for (var key in newContext) {
+        if('remove' === newContext[key]){
+            delete existingContext[key]
+        }
+        else if(existingContext[key] && objectKeys[key]){
+            existingContext[key] = mergeContextLists(newContext[key], existingContext[key], objectKeys[key]);
+        }
+        else{
+            existingContext[key] = newContext[key];
+        }
+    }
+}
+function mergeContextLists(newItems, oldItems, objectKey) {
+    //if have a list like {a : b, c : d}, {a:z, b : y} and the key is b
+    //should get the following { 'd': {a : b, c : d} , y : {a:z, b : y}
+    var toMapByKey = function(prev, curr) {
+        prev[curr[objectKey]] = curr;
+        return prev;
+    };
+
+    var oldItemsByKey = oldItems.reduce(toMapByKey, {});
+    var newItemsByKey = newItems.reduce(toMapByKey, {});
+    return Object.values(Object.assign(oldItemsByKey, newItemsByKey)).filter(function() {return !e['remove']});
 }

@@ -1,8 +1,8 @@
-id: Detonate File - CrowdStrike Falcon X
+id: Detonate File - CrowdStrike Falcon Intelligence Sandbox
 version: -1
-name: Detonate File - CrowdStrike Falcon X
+name: Detonate File - CrowdStrike Falcon Intelligence Sandbox
 description: |-
-  Detonates a File using CrowdStrike Falcon X sandbox.
+  Detonates a File using CrowdStrike Falcon Intelligence Sandbox.
   Accepted file formats:
   Portable executables: .exe, .scr, .pif, .dll, .com, .cpl, etc.
   Office documents: .doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub
@@ -114,7 +114,7 @@ tasks:
     task:
       id: c7c659db-15a7-4c9b-8f3d-72713eefe5f1
       version: -1
-      name: CrowdStrike Falcon X Get Report
+      name: CrowdStrike Falcon Intelligence Sandbox Get Report
       description: Get a full version of a sandbox report.
       script: CrowdStrike Falcon X|||cs-fx-get-full-report
       type: regular
@@ -167,9 +167,9 @@ tasks:
     task:
       id: ee402758-5d33-4edd-89fb-816dee6233c5
       version: -1
-      name: Is CrowdStrike Falcon X enabled?
+      name: Is CrowdStrike Falcon Intelligence Sandbox enabled?
       description: |
-        Verify that there is a valid instance of CrowdStrike Falcon X enabled.
+        Verify that there is a valid instance of CrowdStrike Falcon Intelligence Sandbox enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -396,7 +396,7 @@ tasks:
     task:
       id: 33e04243-7824-4475-8ea1-5c2366c22fd6
       version: -1
-      name: CrowdStrike Falcon X Upload File to Sandbox
+      name: CrowdStrike Falcon Intelligence Sandbox Upload File to Sandbox
       description: Upload a file for sandbox analysis.
       script: CrowdStrike Falcon X|||cs-fx-upload-file
       type: regular
@@ -406,11 +406,28 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      comment: {}
+      action_script:
+        simple: ${inputs.ActionScript}
+      command_line:
+        simple: ${inputs.CommandLine}
+      document_password:
+        simple: ${inputs.DocumentPassword}
+      enable_tor:
+        simple: "false"
+      environment_id:
+        simple: ${inputs.EnvironmentID}
+      sha256:
+        simple: ${csfalconx.resource.sha256}
+      submit_name:
+        simple: ${inputs.SubmitName}
+      system_date:
+        simple: ${inputs.SystemDate}
+      system_time:
+        simple: ${inputs.SystemTime}
       file:
         simple: ${inputs.File.EntryID}
       file_name:
-        simple: inputs.File.EntryID
+        simple: ${inputs.File.Name}
       is_confidential: {}
     separatecontext: false
     view: |-
@@ -440,18 +457,24 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      action_script: {}
-      command_line: {}
-      document_password: {}
+      action_script:
+        simple: ${inputs.ActionScript}
+      command_line:
+        simple: ${inputs.CommandLine}
+      document_password:
+        simple: ${inputs.DocumentPassword}
       enable_tor:
         simple: "false"
       environment_id:
-        simple: '160: Windows 10'
+        simple: ${inputs.EnvironmentID}
       sha256:
         simple: ${csfalconx.resource.sha256}
-      submit_name: {}
-      system_date: {}
-      system_time: {}
+      submit_name:
+        simple: ${inputs.SubmitName}
+      system_date:
+        simple: ${inputs.SystemDate}
+      system_time:
+        simple: ${inputs.SystemTime}
     separatecontext: false
     view: |-
       {
@@ -487,11 +510,52 @@ inputs:
     simple: "1"
   required: false
   description: Polling frequency - how often the polling command should run (minutes)
+  playbookInputQuery: null
 - key: Timeout
   value:
     simple: "15"
   required: false
   description: How much time to wait before a timeout occurs (minutes)
+  playbookInputQuery: null
+- key: EnvironmentID
+  value:
+    simple: "160: Windows 10"
+  required: false
+  description: Sandbox environment used for analysis.
+  playbookInputQuery: null
+- key: ActionScript
+  value: {}
+  required: false
+  description: Runtime script for sandbox analysis.
+  playbookInputQuery: null
+- key: CommandLine
+  value: {}
+  required: false
+  description: 'Command line script passed to the submitted file at runtime. Max length:
+    2048 characters.'
+  playbookInputQuery: null
+- key: DocumentPassword
+  value: {}
+  required: false
+  description: 'Auto-filled for Adobe or Office files that prompt for a password.
+    Max length: 32 characters.'
+  playbookInputQuery: null
+- key: SubmitName
+  value: {}
+  required: false
+  description: Name of the malware sample that’s used for file type detection. and
+    analysis.
+  playbookInputQuery: null
+- key: SystemDate
+  value: {}
+  required: false
+  description: Set a custom date for the sandbox environment in the format yyyy-MM-dd.
+  playbookInputQuery: null
+- key: SystemTime
+  value: {}
+  required: false
+  description: Sets a custom time for the sandbox environment in the format HH:mm.
+  playbookInputQuery: null
 outputs:
     - contextPath: csfalconx.resource.id
       description: Analysis ID.
@@ -499,7 +563,7 @@ outputs:
     - contextPath: csfalconx.resource.verdict
       description: Analysis verdict.
       type: String
-    - contextPath: csfalconx.resource.created_timpestamp
+    - contextPath: csfalconx.resource.created_timestamp
       description: Analysis start time.
       type: String
     - contextPath: csfalconx.resource.environment_id

@@ -1,0 +1,56 @@
+{
+  "duo_duo_raw": {
+    "access_device": {
+      "type": "string",
+      "is_array": false
+    },
+    "application": {
+      "type": "string",
+      "is_array": false
+    },
+    "eventtype": {
+      "type": "string",
+      "is_array": false
+    },
+    "factor": {
+      "type": "string",
+      "is_array": false
+    },
+    "isotimestamp": {
+      "type": "string",
+      "is_array": false
+    },
+    "action": {
+      "type": "string",
+      "is_array": false
+    },
+    "description": {
+      "type": "string",
+      "is_array": false
+    },
+    "object": {
+      "type": "string",
+      "is_array": false
+    },
+    "timestamp": {
+      "type": "string",
+      "is_array": false
+    },
+    "username": {
+      "type": "string",
+      "is_array": false
+    },
+    "context": {
+      "type": "string",
+      "is_array": false
+    },
+    "phone": {
+      "type": "string",
+      "is_array": false
+    },
+    "type": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

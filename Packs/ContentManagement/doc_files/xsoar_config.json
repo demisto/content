@@ -1,0 +1,64 @@
+{
+    "custom_packs": [
+        {
+            "id": "Pack1",
+            "url": "packs/Pack1/1.0.3/Pack1.zip"
+        },
+        {
+            "id": "Pack2",
+            "url": "packs/Pack2/1.0.1/Pack2.zip"
+        }
+    ],
+    "marketplace_packs": [
+        {
+            "id": "FeedJSON",
+            "version": "*"
+        },
+        {
+            "id": "GoogleCloudStorage",
+            "version": "*"
+        },
+        {
+            "id": "GitHub",
+            "version": "*"
+        },
+        {
+            "id": "DemistoRESTAPI",
+            "version": "*"
+        },
+        {
+            "id": "GraphQL",
+            "version": "*"
+        }
+    ],
+    "lists": [
+        {
+            "name": "List1",
+            "value": "Content of List1"
+        },
+        {
+            "name": "List2",
+            "value": "Content of List2",
+            "type": "dynamic",
+            "_comment": "when specify the dynamic type the list won't be overwritten by the CI/CD proccess"
+        }
+    ],
+    "jobs": [
+        {
+            "type": "Unclassified",
+            "name": "Job from pack1",
+            "playbookId": "playbook-Pack1-Job",
+            "scheduled": true,
+            "recurrent": true,
+            "cronView": true,
+            "cron": "0 10,15 * * *",
+            "startDate": "2021-01-07T15:10:04.000Z",
+            "endingDate": "2021-01-07T15:10:04.000Z",
+            "endingType": "never",
+            "timezoneOffset": -120,
+            "timezone": "Asia/Jerusalem",
+            "shouldTriggerNew": true,
+            "closePrevRun": true
+        }
+    ]
+}

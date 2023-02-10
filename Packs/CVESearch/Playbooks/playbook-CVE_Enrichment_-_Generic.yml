@@ -397,3 +397,5 @@ outputs:
 tests:
 - No tests (auto formatted)
 deprecated: true
+marketplaces:
+- xsoar

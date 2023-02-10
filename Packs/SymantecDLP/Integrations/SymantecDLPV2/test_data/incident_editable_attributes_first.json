@@ -1,0 +1,53 @@
+{
+    "incidentId": 3620,
+    "infoMap": {
+        "isHidingNotAllowed": false,
+        "incidentStatusName": "incident.status.New",
+        "severityId": 1,
+        "incidentStatusId": 1,
+        "isHidden": false,
+        "preventOrProtectStatusId": 0
+    },
+    "customAttributeGroups": [
+        {
+            "name": "custom_attribute_group.default",
+            "customAttributes": [
+                {
+                    "name": "Custom Attribute1",
+                    "index": 1,
+                    "displayOrder": 1,
+                    "value": null,
+                    "email": false
+                },
+                {
+                    "name": "cust2",
+                    "index": 2,
+                    "displayOrder": 2,
+                    "value": null,
+                    "email": false
+                },
+                {
+                    "name": "bla",
+                    "index": 3,
+                    "displayOrder": 3,
+                    "value": null,
+                    "email": false
+                }
+            ],
+            "nameInternationalized": true
+        },
+        {
+            "name": "att group2",
+            "customAttributes": [
+                {
+                    "name": "kjv",
+                    "index": 4,
+                    "displayOrder": 1,
+                    "value": null,
+                    "email": false
+                }
+            ],
+            "nameInternationalized": false
+        }
+    ]
+}

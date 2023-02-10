@@ -26,4 +26,6 @@ For more information, refer to the following [article](https://xsoar.pan.dev/doc
 
 The ***Application Secret*** and the ***Tenant ID*** integration parameters are required for this method.
 
+Run the ***msgraph-api-test*** command to ensure connectivity to Microsoft.
+
 The integration supports only Application permission type, and does not support Delegated permission type. 

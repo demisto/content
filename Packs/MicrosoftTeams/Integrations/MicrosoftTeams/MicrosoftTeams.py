@@ -1,28 +1,29 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-import requests
-from distutils.util import strtobool
-from flask import Flask, request, Response
-from gevent.pywsgi import WSGIServer
-import jwt
-import time
-from threading import Thread
-from typing import Match, Union, Optional, cast, Dict, Any, List, Tuple
 import re
-from jwt.algorithms import RSAAlgorithm
+import time
+from distutils.util import strtobool
 from tempfile import NamedTemporaryFile
+from threading import Thread
 from traceback import format_exc
+from typing import Any, Dict, List, Match, Optional, Tuple, Union, cast
+
+import jwt
+import requests
+from flask import Flask, Response, request
+from gevent.pywsgi import WSGIServer
+from jwt.algorithms import RSAAlgorithm
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()   # type: ignore
 
 ''' GLOBAL VARIABLES'''
 PARAMS: dict = demisto.params()
 BOT_ID: str = PARAMS.get('bot_id', '')
 BOT_PASSWORD: str = PARAMS.get('bot_password', '')
+tenant_id: str = PARAMS.get('tenant_id', '')
 USE_SSL: bool = not PARAMS.get('insecure', False)
 APP: Flask = Flask('demisto-teams')
 PLAYGROUND_INVESTIGATION_TYPE: int = 9
@@ -44,6 +45,7 @@ MESSAGE_TYPES: dict = {
 }
 
 if '@' in BOT_ID:
+    demisto.debug("setting tenant id in the integration context")
     BOT_ID, tenant_id, service_url = BOT_ID.split('@')
     set_integration_context({'tenant_id': tenant_id, 'service_url': service_url})
 
@@ -127,7 +129,7 @@ def process_incident_create_message(demisto_user: dict, message: str) -> str:
     name_pattern: str = r'(?<=name=).*'
     type_pattern: str = r'(?<=type=).*'
     json_match: Optional[Match[str]] = re.search(json_pattern, message)
-    created_incident: Union[dict, list]
+    created_incident: Union[dict, list] = []
     data: str = str()
     if json_match:
         if re.search(name_pattern, message) or re.search(type_pattern, message):
@@ -230,12 +232,13 @@ def get_team_member_id(requested_team_member: str, integration_context: dict) ->
     :param integration_context: Cached object to search for team member in
     :return: Team member ID
     """
+    demisto.debug(f"requested team member: {requested_team_member}")
     teams: list = json.loads(integration_context.get('teams', '[]'))
-
+    demisto.debug(f"we've got {len(teams)} teams saved in integration context")
     for team in teams:
         team_members: list = team.get('team_members', [])
         for team_member in team_members:
-            if requested_team_member in {team_member.get('name', ''), team_member.get('userPrincipalName', '')}:
+            if requested_team_member in {team_member.get('name', ''), team_member.get('userPrincipalName', '').lower()}:
                 return team_member.get('id')
 
     raise ValueError(f'Team member {requested_team_member} was not found')
@@ -702,14 +705,17 @@ def get_team_aad_id(team_name: str) -> str:
     :param team_name: Team name to get AAD ID of
     :return: team AAD ID
     """
+    demisto.debug(f'Team String {team_name}')
     integration_context: dict = get_integration_context()
     if integration_context.get('teams'):
         teams: list = json.loads(integration_context['teams'])
         for team in teams:
             if team_name == team.get('team_name', ''):
                 return team.get('team_aad_id', '')
-    url: str = f"{GRAPH_BASE_URL}/beta/groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team')"
+    url: str = f"{GRAPH_BASE_URL}/beta/groups?$filter=displayName eq '{team_name}' " \
+               "and resourceProvisioningOptions/Any(x:x eq 'Team')"
     response: dict = cast(Dict[Any, Any], http_request('GET', url))
+    demisto.debug(f'Response {response}')
     teams = response.get('value', [])
     for team in teams:
         if team.get('displayName', '') == team_name:
@@ -1148,6 +1154,7 @@ def send_message():
     message_type: str = demisto.args().get('messageType', '')
     original_message: str = demisto.args().get('originalMessage', '')
     message: str = demisto.args().get('message', '')
+    demisto.debug("Send message")
     try:
         adaptive_card: dict = json.loads(demisto.args().get('adaptive_card', '{}'))
     except ValueError:
@@ -1178,6 +1185,8 @@ def send_message():
             return
 
     team_member: str = demisto.args().get('team_member', '') or demisto.args().get('to', '')
+    if re.match(r'\b[^@]+@[^@]+\.[^@]+\b', team_member):  # team member is an email
+        team_member = team_member.lower()
 
     if not (team_member or channel_name):
         raise ValueError('No channel or team member to send message were provided.')
@@ -1398,9 +1407,12 @@ def member_added_handler(integration_context: dict, request_body: dict, channel_
         if bot_id in member_id:
             # The bot was added to a team, caching team ID and team members
             demisto.info(f'The bot was added to team {team_name}')
-            integration_context['tenant_id'] = tenant_id
-            integration_context['bot_name'] = recipient_name
-            break
+        else:
+            demisto.info(f'Someone was added to team {team_name}')
+        integration_context['tenant_id'] = tenant_id
+        integration_context['bot_name'] = recipient_name
+        break
+
     team_members: list = get_team_members(service_url, team_id)
 
     found_team: bool = False
@@ -1569,50 +1581,64 @@ def messages() -> Response:
     """
     Main handler for messages sent to the bot
     """
-    demisto.debug('Processing POST query...')
-    headers: dict = cast(Dict[Any, Any], request.headers)
-    if validate_auth_header(headers) is False:
-        demisto.info(f'Authorization header failed: {str(headers)}')
-    else:
-        request_body: dict = request.json
-        integration_context: dict = get_integration_context()
-        service_url: str = request_body.get('serviceUrl', '')
-        if service_url:
-            service_url = service_url[:-1] if service_url.endswith('/') else service_url
-            integration_context['service_url'] = service_url
-            set_integration_context(integration_context)
+    try:
+        demisto.debug('Processing POST query...')
+        headers: dict = cast(Dict[Any, Any], request.headers)
 
-        channel_data: dict = request_body.get('channelData', {})
-        event_type: str = channel_data.get('eventType', '')
-
-        conversation: dict = request_body.get('conversation', {})
-        conversation_type: str = conversation.get('conversationType', '')
-        conversation_id: str = conversation.get('id', '')
-
-        message_text: str = request_body.get('text', '')
-
-        # Remove bot mention
-        bot_name = integration_context.get('bot_name', '')
-        formatted_message: str = message_text.replace(f'<at>{bot_name}</at>', '')
-
-        value: dict = request_body.get('value', {})
-
-        if event_type == 'teamMemberAdded':
-            demisto.info('New Microsoft Teams team member was added')
-            member_added_handler(integration_context, request_body, channel_data)
-        elif value:
-            # In TeamsAsk process
-            demisto.info('Got response from user in MicrosoftTeamsAsk process')
-            entitlement_handler(integration_context, request_body, value, conversation_id)
-        elif conversation_type == 'personal':
-            demisto.info('Got direct message to the bot')
-            direct_message_handler(integration_context, request_body, conversation, formatted_message)
+        if validate_auth_header(headers) is False:
+            demisto.info(f'Authorization header failed: {str(headers)}')
         else:
-            demisto.info('Got message mentioning the bot')
-            message_handler(integration_context, request_body, channel_data, formatted_message)
-    demisto.info('Finished processing Microsoft Teams activity successfully')
-    demisto.updateModuleHealth('')
-    return Response(status=200)
+            request_body: dict = request.json
+            integration_context: dict = get_integration_context()
+            service_url: str = request_body.get('serviceUrl', '')
+            if service_url:
+                service_url = service_url[:-1] if service_url.endswith('/') else service_url
+                integration_context['service_url'] = service_url
+                set_integration_context(integration_context)
+
+            channel_data: dict = request_body.get('channelData', {})
+            event_type: str = channel_data.get('eventType', '')
+            demisto.debug(f"Event Type is: {event_type}")
+
+            conversation: dict = request_body.get('conversation', {})
+            conversation_type: str = conversation.get('conversationType', '')
+            conversation_id: str = conversation.get('id', '')
+            demisto.debug(f"conversation type is: {conversation_type}")
+
+            message_text: str = request_body.get('text', '')
+
+            # Remove bot mention
+            bot_name = integration_context.get('bot_name', '')
+            formatted_message: str = message_text.replace(f'<at>{bot_name}</at>', '')
+
+            value: dict = request_body.get('value', {})
+
+            if event_type == 'teamMemberAdded':
+                demisto.info('New Microsoft Teams team member was added')
+                member_added_handler(integration_context, request_body, channel_data)
+                demisto.debug(f'Updated team in the integration context. '
+                              f'Current saved teams: {json.dumps(get_integration_context().get("teams"))}')
+            elif value:
+                # In TeamsAsk process
+                demisto.info('Got response from user in MicrosoftTeamsAsk process')
+                entitlement_handler(integration_context, request_body, value, conversation_id)
+            elif conversation_type == 'personal':
+                demisto.info('Got direct message to the bot')
+                demisto.debug(f"Text is : {request_body.get('text')}")
+                if request_body.get("membersAdded", []):
+                    demisto.debug("the bot was added to a one-to-one chat")
+                direct_message_handler(integration_context, request_body, conversation, formatted_message)
+            else:
+                demisto.info('Got message mentioning the bot')
+                demisto.debug(f"the message is from: {request_body.get('from', {})}")
+                message_handler(integration_context, request_body, channel_data, formatted_message)
+        demisto.info('Finished processing Microsoft Teams activity successfully')
+        demisto.updateModuleHealth('')
+        return Response(status=200)
+    except Exception as e:
+        err_msg = f'Error occurred when handling incoming message {str(e)}'
+        demisto.error(err_msg)
+        return Response(response=err_msg, status=400)
 
 
 def ring_user_request(call_request_data):
@@ -1755,6 +1781,7 @@ def test_module():
 
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
+    demisto.debug("Main started...")
     commands: dict = {
         'test-module': test_module,
         'long-running-execution': long_running_loop,

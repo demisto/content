@@ -16,3 +16,6 @@ ignore=IF100
 
 [file:Armis.yml]
 ignore=IN145
+
+[file:Armis_image.png]
+ignore=IM111

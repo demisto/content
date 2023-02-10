@@ -7,15 +7,16 @@ import json
 import requests
 import socket
 import traceback
+import urllib3
 from typing import Callable, Tuple
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 PARAMS = demisto.params()
 
-API_KEY = AutoFocusKeyRetriever(PARAMS.get('api_key')).key
+API_KEY = AutoFocusKeyRetriever(PARAMS.get('credentials', {}).get('password') or PARAMS.get('api_key')).key
 
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = 'https://autofocus.paloaltonetworks.com'
@@ -321,6 +322,11 @@ def parse_response(resp, err_operation):
             raise Exception("Response status code: 409 \nRequested sample not found")
         res_json = resp.json()
         resp.raise_for_status()
+
+        if 'x-trace-id' in resp.headers:
+            # this debug log was request by autofocus team for debugging on their end purposes
+            demisto.debug(f'x-trace-id: {resp.headers["x-trace-id"]}')
+
         return res_json
     # Errors returned from AutoFocus
     except requests.exceptions.HTTPError:
@@ -806,20 +812,25 @@ def search_samples(query=None, scope=None, size=None, sort=None, order=None, fil
                    url=None, wildfire_verdict=None, first_seen=None, last_updated=None, artifact_source=None):
     validate_no_query_and_indicators(query, [file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated])
     if not query:
-        validate_no_multiple_indicators_for_search([file_hash, domain, ip, url])
-        query = build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated)
+        indicator_args_for_query = {
+            'file_hash': file_hash,
+            'domain': domain,
+            'ip': ip,
+            'url': url
+        }
+        used_indicator = validate_no_multiple_indicators_for_search(indicator_args_for_query)
+        search_result = []
+        for _batch in batch(indicator_args_for_query[used_indicator], batch_size=100):
+            query = build_sample_search_query(used_indicator, _batch, wildfire_verdict, first_seen, last_updated)
+            search_result.append(run_search('samples', query=query, scope=scope, size=size, sort=sort, order=order,
+                                            artifact_source=artifact_source))
+        return search_result
     return run_search('samples', query=query, scope=scope, size=size, sort=sort, order=order,
                       artifact_source=artifact_source)
 
 
-def build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated):
-    indicator_args_for_query = {
-        'file_hash': file_hash,
-        'domain': domain,
-        'ip': ip,
-        'url': url
-    }
-    indicator_list = build_indicator_children_query(indicator_args_for_query)
+def build_sample_search_query(used_indicator, indicators_values, wildfire_verdict, first_seen, last_updated):
+    indicator_list = build_indicator_children_query(used_indicator, indicators_values)
     indicator_query = build_logic_query('OR', indicator_list)
     filtering_args_for_search = {}  # type: ignore
     if wildfire_verdict:
@@ -839,19 +850,23 @@ def search_sessions(query=None, size=None, sort=None, order=None, file_hash=None
                     from_time=None, to_time=None):
     validate_no_query_and_indicators(query, [file_hash, domain, ip, url, from_time, to_time])
     if not query:
-        validate_no_multiple_indicators_for_search([file_hash, domain, ip, url])
-        query = build_session_search_query(file_hash, domain, ip, url, from_time, to_time)
+        indicator_args_for_query = {
+            'file_hash': file_hash,
+            'domain': domain,
+            'ip': ip,
+            'url': url
+        }
+        used_indicator = validate_no_multiple_indicators_for_search(indicator_args_for_query)
+        search_result = []
+        for _batch in batch(indicator_args_for_query[used_indicator], batch_size=100):
+            query = build_session_search_query(used_indicator, _batch, from_time, to_time)
+            search_result.append(run_search('sessions', query=query, size=size, sort=sort, order=order))
+        return search_result
     return run_search('sessions', query=query, size=size, sort=sort, order=order)
 
 
-def build_session_search_query(file_hash, domain, ip, url, from_time, to_time):
-    indicator_args_for_query = {
-        'file_hash': file_hash,
-        'domain': domain,
-        'ip': ip,
-        'url': url
-    }
-    indicator_list = build_indicator_children_query(indicator_args_for_query)
+def build_session_search_query(used_indicator, indicators_batch, from_time, to_time):
+    indicator_list = build_indicator_children_query(used_indicator, indicators_batch)
     indicator_query = build_logic_query('OR', indicator_list)
     time_filters_for_search = {}  # type: ignore
     if from_time and to_time:
@@ -888,12 +903,11 @@ def build_children_query(args_for_query):
     return children_list
 
 
-def build_indicator_children_query(args_for_query):
-    for key, val in args_for_query.items():
-        if val:
-            field_api_name = API_PARAM_DICT['search_arguments'][key]['api_name']  # type: ignore
-            operator = API_PARAM_DICT['search_arguments'][key]['operator']  # type: ignore
-            children_list = children_list_generator(field_api_name, operator, val)
+def build_indicator_children_query(used_indicator, indicators_values):
+    if indicators_values:
+        field_api_name = API_PARAM_DICT['search_arguments'][used_indicator]['api_name']  # type: ignore
+        operator = API_PARAM_DICT['search_arguments'][used_indicator]['operator']  # type: ignore
+        children_list = children_list_generator(field_api_name, operator, indicators_values)
     return children_list
 
 
@@ -916,17 +930,17 @@ def validate_no_query_and_indicators(query, arg_list):
                              'or use the builtin arguments, but not both')
 
 
-def validate_no_multiple_indicators_for_search(arg_list):
+def validate_no_multiple_indicators_for_search(arg_dict):
     used_arg = None
-    for arg in arg_list:
-        if arg and used_arg:
+    for arg, val in arg_dict.items():
+        if val and used_arg:
             return_error(f'The search command can receive one indicator type at a time, two were given: {used_arg}, '
                          f'{arg}. For multiple indicator types use the custom query')
-        elif arg:
+        elif val:
             used_arg = arg
     if not used_arg:
         return_error('In order to perform a samples/sessions search, a query or an indicator must be given.')
-    return
+    return used_arg
 
 
 def search_indicator(indicator_type, indicator_value):
@@ -1046,7 +1060,9 @@ def calculate_dbot_score(indicator_response, indicator_type):
         return VERDICTS_TO_DBOTSCORE.get(pan_db.lower(), 0)
     else:
         score = next(iter(latest_pan_verdicts.values()))
-        return VERDICTS_TO_DBOTSCORE.get(score.lower(), 0)
+        if score:
+            return VERDICTS_TO_DBOTSCORE.get(score.lower(), 0)
+        return 0
 
 
 def check_for_ip(indicator):
@@ -1480,9 +1496,10 @@ def search_domain_command(domain, reliability, create_relationships):
             domain = Common.Domain(
                 domain=domain_name,
                 dbot_score=dbot_score,
-                creation_date=indicator.get('whoisDomainCreationDate'),
-                expiration_date=indicator.get('whoisDomainExpireDate'),
-                updated_date=indicator.get('whoisDomainUpdateDate'),
+                # Converting date format from YYYY-MM-DD to DD-MM-YYYY due to a parsing problem on the server later
+                creation_date="-".join((indicator.get("whoisDomainCreationDate") or '').split("-")[::-1]),
+                expiration_date="-".join((indicator.get('whoisDomainExpireDate') or '').split("-")[::-1]),
+                updated_date="-".join((indicator.get('whoisDomainUpdateDate') or '').split("-")[::-1]),
                 admin_email=indicator.get('whoisAdminEmail'),
                 admin_name=indicator.get('whoisAdminName'),
                 admin_country=indicator.get('whoisAdminCountry'),

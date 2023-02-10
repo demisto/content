@@ -6,21 +6,60 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
 2. Search for CrowdstrikeFalcon.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| url | Server URL \(e.g., https://api.crowdstrike.com\) | True |
-| client_id | Client ID | True |
-| secret | Secret | True |
-| fetch_time | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
-| incidents_per_fetch | Max incidents per fetch | False |
-| fetch_query | Fetch query | False |
-| isFetch | Fetch incidents | False |
-| incidentType | Incident type | False |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
-| fetch_incidents_or_detections | Fetch types | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL (e.g., https://api.crowdstrike.com) |  | True |
+    | Client ID |  | True |
+    | Secret |  | True |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+    | Max incidents per fetch |  | False |
+    | Detections fetch query |  | False |
+    | Incidents fetch query |  | False |
+    | Fetch incidents |  | False |
+    | Incident type |  | False |
+    | Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from CrowdStrike Falcon to XSOAR\), Outgoing \(from XSOAR to CrowdStrike Falcon\), or Incoming and Outgoing \(to/from CrowdStrike Falcon and XSOAR\). | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Close Mirrored XSOAR Incident | When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in Cortex XSOAR. | False |
+    | Close Mirrored CrowdStrike Falcon Incident or Detection | When selected, closes the XSOAR incident, which is mirrored in CrowdStrike Falcon. | False |
+    | Fetch types | Choose what to fetch - incidents, detections, or both. | False |
 
 4.  Click **Test** to validate the URLs, token, and connection.
+
+### Required API client scope
+In order to use the CrowdStrike Falcon integration, your API client must be provisioned with the following scope and permissions:
+- Real Time Response - Read and Write
+- Alerts - Read and Write
+- Hosts - Read
+- IOC Manager - Read and Write
+
+### Incident Mirroring
+ 
+You can enable incident mirroring between Cortex XSOAR incidents and CrowdStrike Falcon incidents or detections (available from Cortex XSOAR version 6.0.0).
+
+To setup the mirroring follow these instructions:
+1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+2. Search for **CrowdStrike Falcon** and select your integration instance.
+3. Enable **Fetches incidents**.
+4. In the *Fetch types* integration parameter, select what to mirror - incidents or detections or both.
+5. Optional: You can go to the *Incidents fetch query* or *Detections fetch query* parameter and select the query to fetch the incidents or detections from CrowdStrike Falcon.
+6. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+    - Incoming - Any changes in CrowdStrike Falcon incidents (`state`, `status`, `tactics`, `techniques`, `objectives`, `tags`, `hosts.hostname`)
+      or detections (`status`, `severity`, `behaviors.tactic`, `behaviors.scenario`, `behaviors.objective`, `behaviors.technique`, `device.hostname`) 
+      will be reflected in XSOAR incidents.
+    - Outgoing - Any changes in XSOAR incidents will be reflected in CrowdStrike Falcon incidents (`tags`, `status`) or detections (`status`).
+    - Incoming And Outgoing - Changes in XSOAR incidents and CrowdStrike Falcon incidents or detections will be reflected in both directions.
+    - None - Turns off incident mirroring.
+7. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding incident or detection is closed in CrowdStrike Falcon.
+8. Optional: Check the *Close Mirrored CrowdStrike Falcon Incident or Detection* integration parameter to close the CrowdStrike Falcon incident or detection when the corresponding Cortex XSOAR incident is closed.
+
+Newly fetched incidents or detections will be mirrored in the chosen direction.  However, this selection does not affect existing incidents.
+
+**Important Notes**
+ - To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in XSOAR and CrowdStrike Falcon.
+ - When *mirroring in* incidents from CrowdStrike Falcon to XSOAR:
+   - For the `tags` field, tags can only be added from the remote system.
+   - When enabling the *Close Mirrored XSOAR Incident* integration parameter, the field in CrowdStrike Falcon that determines whether the incident was closed is the `status` field.
 
 ### 1. Search for a device
 
@@ -57,7 +96,7 @@ Searches for devices that match the query.
 | CrowdStrike.Device.FirstSeen | String | The first time the device was seen. | 
 | CrowdStrike.Device.LastSeen | String | The last time the device was seen. | 
 | CrowdStrike.Device.PolicyType | String | The policy type of the device. | 
-| CrowdStrike.Device.Status | String | The device status. | 
+| CrowdStrike.Device.Status | String | The device status which might be Online, Offline or Unknown. | 
 | Endpoint.Hostname | String | The endpoint's hostname. | 
 | Endpoint.OS | String | The endpoint's operation system. | 
 | Endpoint.OSVersion | String | The endpoint's operation system version. | 
@@ -124,12 +163,11 @@ Searches for devices that match the query.
 ```
 #### Human Readable Output
 
-### Devices
-
-| ID | Hostname | OS | Mac Address | Local IP | External IP | First Seen | Last Seen | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 336474ea6a524e7c68575f6508d84781 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | 8c-85-90-3d-ed-3e | 192.168.1.76 | 94.188.164.68 | 2017-12-28T22:38:11Z | 2019-03-28T02:36:41Z | contained |
-| 459146dbe524472e73751a43c63324f3 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | f0-18-98-74-8c-31 | 172.22.14.237 | 94.188.164.68 | 2017-12-10T11:01:20Z | 2019-03-17T10:03:17Z | contained |
+>### Devices
+>| ID | Hostname | OS | Mac Address | Local IP | External IP | First Seen | Last Seen | Status |
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+>| 336474ea6a524e7c68575f6508d84781 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | 8c-85-90-3d-ed-3e | 192.168.1.76 | 94.188.164.68 | 2017-12-28T22:38:11Z | 2019-03-28T02:36:41Z | contained |
+>| 459146dbe524472e73751a43c63324f3 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | f0-18-98-74-8c-31 | 172.22.14.237 | 94.188.164.68 | 2017-12-10T11:01:20Z | 2019-03-17T10:03:17Z | contained |
  
 
 ### 2. Get a behavior
@@ -206,12 +244,11 @@ Searches for and fetches the behavior that matches the query.
 ```
 #### Human Readable Output
 
-### Behavior ID: 3206
-
-| ID | File Name | Command Line | Scenario | IOC Type | IOC Value | User Name | SHA256 | MD5 | Process ID | 
-| ------ | --------------- | ----------------------------------------------------------------------- | ---------------- | ---------- | ------------------------------------------------------------------ | --------------------------------------- | ------------------------------------------------------------------ | ---------------------------------- | -------------------- |
-| 3206 |   spokeshave.jn |  /Library/spokeshave.jn/spokeshave.jn.app/Contents/MacOS/spokeshave.jn |   known\_malware   | sha256 |    df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266   | user@u-MacBook-Pro-2.local |   df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266   | b41d753a4b61c9fe4486190c3b78e124|   197949010450449117|
-|  3206   |xSf             |./xSf                                                                   |known\_malware   |sha256     |791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b|   root@u-MacBook-Pro-2.local|          791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b   |06dc9ff1857dcd4cdcd125b277955134   |197949016741905142|
+>### Behavior ID: 3206
+>| ID | File Name | Command Line | Scenario | IOC Type | IOC Value | User Name | SHA256 | MD5 | Process ID | 
+>| ------ | --------------- | ----------------------------------------------------------------------- | ---------------- | ---------- | ------------------------------------------------------------------ | --------------------------------------- | ------------------------------------------------------------------ | ---------------------------------- | -------------------- |
+>| 3206 |   spokeshave.jn |  /Library/spokeshave.jn/spokeshave.jn.app/Contents/MacOS/spokeshave.jn |   known\_malware   | sha256 |    df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266   | user@u-MacBook-Pro-2.local |   df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266   | b41d753a4b61c9fe4486190c3b78e124|   197949010450449117|
+>|  3206   |xSf             |./xSf                                                                   |known\_malware   |sha256     |791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b|   root@u-MacBook-Pro-2.local|          791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b   |06dc9ff1857dcd4cdcd125b277955134   |197949016741905142|
 
  
 
@@ -350,12 +387,11 @@ or by providing the IDs of the detections.
 ```
 #### Human Readable Output
 
-### Detections Found:
-
-  |ID                                                         |Status|            System                 |     Process Start Time     |          Customer ID                       | Max Severity|
-  |----------------------------------------------------------| ----------------- |--------------------------- |-------------------------------- |---------------------------------- |--------------|
-  |ldt:07893fedd2604bc66c3f7de8d1f537e3:1898376850347       |  false\_positive |  DESKTOP-S49VMIL            | 2019-03-21T20:32:55.654489974Z  | ed33ec93d2444d38abd3925803938a75  | 70|
-  |ldt:68b5432856c1496d7547947fc7d1aae4:1092318056279064902|   new             |  u-MacBook-Pro-2.local  | 2019-02-04T07:05:57.083205971Z  | ed33ec93d2444d38abd3925803938a75  | 30|
+>### Detections Found:
+>|ID                                                         |Status|            System                 |     Process Start Time     |          Customer ID                       | Max Severity|
+>|----------------------------------------------------------| ----------------- |--------------------------- |-------------------------------- |---------------------------------- |--------------|
+>|ldt:07893fedd2604bc66c3f7de8d1f537e3:1898376850347       |  false\_positive |  DESKTOP-S49VMIL            | 2019-03-21T20:32:55.654489974Z  | ed33ec93d2444d38abd3925803938a75  | 70|
+>|ldt:68b5432856c1496d7547947fc7d1aae4:1092318056279064902|   new             |  u-MacBook-Pro-2.local  | 2019-02-04T07:05:57.083205971Z  | ed33ec93d2444d38abd3925803938a75  | 30|
 
  
 
@@ -401,7 +437,7 @@ specified in your containment policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | The host agent ID (AID) of the host to contain. Get an agent ID from a detection. | Required | 
+| ids | The host agent ID (AID) of the host to contain. Get an agent ID from a detection. Can also be a comma separated list of IDs. | Required | 
 
  
 
@@ -491,10 +527,11 @@ Sends commands to hosts.
 ```
 
 #### Human Readable Output
-### Command ls C:\\ results
-|BaseCommand|Command|HostID|Stderr|Stdout|
-|---|---|---|---|---|
-| ls | ls C:\ | 284771ee197e422d5176d6634a62b934 |  | Directory listing for C:\ -<br/><br/>Name                                     Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |
+
+>### Command ls C:\\ results
+>|BaseCommand|Command|HostID|Stderr|Stdout|
+>|---|---|---|---|---|
+>| ls | ls C:\ | 284771ee197e422d5176d6634a62b934 |  | Directory listing for C:\ -<br/><br/>Name                                     Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |
 
 ### 8. cs-falcon-upload-script
 ---
@@ -615,10 +652,11 @@ Returns files based on the IDs given. These are used for the RTR `put` command.
 ```
 
 #### Human Readable Output
-### CrowdStrike Falcon file le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a
-|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|Type|
-|---|---|---|---|---|---|---|---|---|---|
-| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc | script |
+
+>### CrowdStrike Falcon file le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a
+>|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|Type|
+>|---|---|---|---|---|---|---|---|---|---|
+>| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc | script |
 
 ### 12. cs-falcon-list-files
 ---
@@ -670,10 +708,11 @@ Returns Returns a list of put-file ID's that are available for the user in the `
 ```
 
 #### Human Readable Output
-### CrowdStrike Falcon files
-|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|Type|
-|---|---|---|---|---|---|---|---|---|---|
-| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc | script |
+
+>### CrowdStrike Falcon files
+>|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|Type|
+>|---|---|---|---|---|---|---|---|---|---|
+>| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc | script |
 
 ### 13. cs-falcon-get-script
 ---
@@ -733,10 +772,11 @@ Return custom scripts based on the ID. Used for the RTR `runscript` command.
 ```
 
 #### Human Readable Output
-### CrowdStrike Falcon script le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a
-|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|
-|---|---|---|---|---|---|---|---|---|
-| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc |
+
+>### CrowdStrike Falcon script le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a
+>|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|
+>|---|---|---|---|---|---|---|---|---|
+>| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc |
 
 
 ### 14. cs-falcon-delete-script
@@ -809,10 +849,11 @@ Returns a list of custom script IDs that are available for the user in the `runs
 ```
 
 #### Human Readable Output
-### CrowdStrike Falcon scripts
-| CreatedBy | CreatedTime | Description | ID | ModifiedBy | ModifiedTime | Name | Permission| SHA256 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| spongobob@demisto.com |  2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc |
+
+>### CrowdStrike Falcon scripts
+>| CreatedBy | CreatedTime | Description | ID | ModifiedBy | ModifiedTime | Name | Permission| SHA256 |
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+>| spongobob@demisto.com |  2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc |
 
 
 ### 16. cs-falcon-run-script
@@ -861,10 +902,11 @@ Runs a script on the agent host.
 ```
 
 #### Human Readable Output
-### Command runscript -Raw=Write-Output 'Hello, World! results
-|BaseCommand|Command|HostID|Stderr|Stdout|
-|---|---|---|---|---|
-| runscript | runscript -Raw=Write-Output 'Hello, World! | 284771ee197e422d5176d6634a62b934 |  | Hello, World! |                                    Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |
+
+>### Command runscript -Raw=Write-Output 'Hello, World! results
+>|BaseCommand|Command|HostID|Stderr|Stdout|
+>|---|---|---|---|---|
+>| runscript | runscript -Raw=Write-Output 'Hello, World! | 284771ee197e422d5176d6634a62b934 |  | Hello, World! |                                    Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |
 
 
 ### 17. cs-falcon-run-get-command
@@ -922,10 +964,11 @@ The running status you requested the `get` command can be checked with `cs-falco
 ```
 
 #### Human Readable Output
-### Get command has requested for a file c:\Windows\notepad.exe
-|BaseCommand|Complete|FilePath|GetRequestID|HostID|Stderr|Stdout|TaskID|
-|---|---|---|---|---|---|---|---|
-| get | true | c:\Windows\notepad.exe | 107199bc-544c-4b0c-8f20-3094c062a115 | edfd6a04ad134c4344f8fb119a3ad88e |  | C:\Windows\notepad.exe | 9c820b97-6a60-4238-bc23-f63513970ec8 |
+
+>### Get command has requested for a file c:\Windows\notepad.exe
+>|BaseCommand|Complete|FilePath|GetRequestID|HostID|Stderr|Stdout|TaskID|
+>|---|---|---|---|---|---|---|---|
+>| get | true | c:\Windows\notepad.exe | 107199bc-544c-4b0c-8f20-3094c062a115 | edfd6a04ad134c4344f8fb119a3ad88e |  | C:\Windows\notepad.exe | 9c820b97-6a60-4238-bc23-f63513970ec8 |
 
 
 
@@ -990,10 +1033,11 @@ Retrieves the status of the batch get command which you requested at `cs-falcon-
 ```
 
 #### Human Readable Output
-### CrowdStrike Falcon files
-|CreatedAt|DeletedAt|ID|Name|SHA256|Size|TaskID|UpdatedAt|
-|---|---|---|---|---|---|---|---|
-| 2020-05-01T16:09:00Z |  | 185596 | \\Device\\HarddiskVolume2\\Windows\\notepad.exe | f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3 | 0 | b5c8f140-280b-43fd-8501-9900f837510b | 2020-05-01T16:09:00Z |
+
+>### CrowdStrike Falcon files
+>|CreatedAt|DeletedAt|ID|Name|SHA256|Size|TaskID|UpdatedAt|
+>|---|---|---|---|---|---|---|---|
+>| 2020-05-01T16:09:00Z |  | 185596 | \\Device\\HarddiskVolume2\\Windows\\notepad.exe | f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3 | 0 | b5c8f140-280b-43fd-8501-9900f837510b | 2020-05-01T16:09:00Z |
 
 
 ### 19. cs-falcon-status-command
@@ -1047,10 +1091,11 @@ Get status of an executed command on a host
 ```
 
 #### Human Readable Output
-### Command status results
-|BaseCommand|Complete|Stdout|TaskID|
-|---|---|---|---|
-| ls | true | Directory listing for C:\\ ...... | ae323961-5aa8-442e-8461-8d05c4541d7d |
+
+>### Command status results
+>|BaseCommand|Complete|Stdout|TaskID|
+>|---|---|---|---|
+>| ls | true | Directory listing for C:\\ ...... | ae323961-5aa8-442e-8461-8d05c4541d7d |
 
 
 ### 20. cs-falcon-get-extracted-file
@@ -1156,10 +1201,11 @@ Get a list of files for the specified RTR session on a host.
 ```
 
 #### Human Readable Output
-### CrowdStrike Falcon files
-|CreatedAt|DeletedAt|ID|Name|SHA256|Size|Stderr|Stdout|UpdatedAt|
-|---|---|---|---|---|---|---|---|---|
-| 2020-05-01T17:57:42Z |  | 186811 | \\Device\\HarddiskVolume2\\Windows\\notepad.exe | f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3 | 0 |  |  | 2020-05-01T17:57:42Z |
+
+>### CrowdStrike Falcon files
+>|CreatedAt|DeletedAt|ID|Name|SHA256|Size|Stderr|Stdout|UpdatedAt|
+>|---|---|---|---|---|---|---|---|---|
+>| 2020-05-01T17:57:42Z |  | 186811 | \\Device\\HarddiskVolume2\\Windows\\notepad.exe | f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3 | 0 |  |  | 2020-05-01T17:57:42Z |
 
 
 ### 22. cs-falcon-refresh-session
@@ -2072,7 +2118,8 @@ Lists incident summaries.
 >|ID|IPAddress|OS|OSVersion|Hostname|Status|MACAddress|Vendor
 >|---|---|---|---|---|---|---|---|
 >| 15dbb9d8f06b45fe9f61eb46e829d986 | 1.1.1.1 | Windows | Windows Server 2019| Hostname | Online | 1-1-1-1 | CrowdStrike Falcon|\n"
-### cs-falcon-create-host-group
+
+### 35. cs-falcon-create-host-group
 ***
 Create a host group
 
@@ -2132,7 +2179,7 @@ Create a host group
 >|---|---|---|---|---|---|---|---|
 >| api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:02.060242909Z | test_description | static | f82edc8a565d432a8114ebdbf255f5b2 | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:02.060242909Z | test_name_1 |
 
-### cs-falcon-update-host-group
+### 36. cs-falcon-update-host-group
 ***
 Update a host group.
 
@@ -2195,7 +2242,7 @@ Update a host group.
 >|---|---|---|---|---|---|---|---|---|
 >| device_id:[''],hostname:[''] | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | 4902d5686bed41ba88a37439f38913ba | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
 
-### cs-falcon-list-host-group-members
+### 37. cs-falcon-list-host-group-members
 ***
 Get the list of host group members.
 
@@ -2303,7 +2350,7 @@ Get the list of host group members.
 >|---|---|---|---|---|---|---|---|---|
 >| 0bde2c4645294245aca522971ccc44c4 | 35.224.136.145 | 10.128.0.19 | falcon-crowdstrike-sensor-centos7 | CentOS 7.9 | 42-01-0a-80-00-13 | 2021-08-08T11:33:21Z | 2021-08-25T07:50:47Z | normal |
 
-### cs-falcon-add-host-group-members
+### 38. cs-falcon-add-host-group-members
 ***
 Add host group members.
 
@@ -2364,7 +2411,7 @@ Add host group members.
 >|---|---|---|---|---|---|---|---|---|
 >| device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7',''] | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | 4902d5686bed41ba88a37439f38913ba | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
 
-### cs-falcon-remove-host-group-members
+### 39. cs-falcon-remove-host-group-members
 ***
 Remove host group members.
 
@@ -2425,7 +2472,7 @@ Remove host group members.
 >|---|---|---|---|---|---|---|---|---|
 >| device_id:[''],hostname:[''] | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | 4902d5686bed41ba88a37439f38913ba | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
 
-### cs-falcon-resolve-incident
+### 40. cs-falcon-resolve-incident
 ***
 Resolve incidents
 
@@ -2452,7 +2499,7 @@ There is no context output for this command.
 
 >inc:0bde2c4645294245aca522971ccc44c4:f3825bf7df684237a1eb62b39124ebef changed successfully to Closed
 >inc:07007dd3f95c4d628fb097072bf7f7f3:ecd5c5acd4f042e59be2f990e9ada258 changed successfully to Closed
-### cs-falcon-list-host-groups
+### 41. cs-falcon-list-host-groups
 ***
 List the available host groups.
 
@@ -3031,7 +3078,7 @@ List the available host groups.
 >|---|---|---|---|---|---|---|---|---|
 >| device_id:[''],hostname:[''] | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-26T10:02:50.175530821Z | description2 | static | 29ae859b9a01409d83bf7fb7f7a04c69 | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-26T10:02:52.026307768Z | test_16299721694081629972169408 |
 
-### cs-falcon-delete-host-groups
+### 42. cs-falcon-delete-host-groups
 ***
 Delete the requested host groups.
 
@@ -3059,7 +3106,7 @@ There is no context output for this command.
 >host group id 9a7291431c3046ccb7b750240f924854 deleted successfully
 
 
-### cs-falcon-search-custom-iocs
+### 43. cs-falcon-search-custom-iocs
 ***
 Returns a list of your uploaded IOCs that match the search criteria.
 
@@ -3098,23 +3145,46 @@ Returns a list of your uploaded IOCs that match the search criteria.
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
 
 
-#### Command Example
-```!cs-falcon-search-custom-iocs types="domain"```
-
+#### Command example
+```!cs-falcon-search-custom-iocs limit=2```
 #### Context Example
 ```json
 {
     "CrowdStrike": {
         "IOC": [
             {
-                "CreatedTime": "2020-09-30T10:59:37Z",
-                "Expiration": "2020-10-30T00:00:00Z",
-                "ID": "4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r",
-                "ModifiedTime": "2020-09-30T10:59:37Z",
-                "Severity": "high",
-                "Action": "prevent",
-                "Type": "domain",
-                "Value": "value"
+                "Action": "no_action",
+                "CreatedBy": "2bf188d347e44e08946f2e61ef590c24",
+                "CreatedTime": "2022-02-16T17:17:25.992164453Z",
+                "Description": "test",
+                "Expiration": "2022-02-17T13:47:57Z",
+                "ID": "04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4ec1",
+                "ModifiedBy": "2bf188d347e44e08946f2e61ef590c24",
+                "ModifiedTime": "2022-02-16T17:17:25.992164453Z",
+                "Platforms": [
+                    "mac"
+                ],
+                "Severity": "informational",
+                "Source": "Cortex XSOAR",
+                "Type": "ipv4",
+                "Value": "1.1.8.9"
+            },
+            {
+                "Action": "no_action",
+                "CreatedBy": "2bf188d347e44e08946f2e61ef590c24",
+                "CreatedTime": "2022-02-16T17:16:44.514398876Z",
+                "Description": "test",
+                "Expiration": "2022-02-17T13:47:57Z",
+                "ID": "54f12e3a1ef5af0612714f6acea8f34f18c5dc6be117ade949974633f949f412",
+                "ModifiedBy": "2bf188d347e44e08946f2e61ef590c24",
+                "ModifiedTime": "2022-02-16T17:16:44.514398876Z",
+                "Platforms": [
+                    "mac"
+                ],
+                "Severity": "informational",
+                "Source": "Cortex XSOAR",
+                "Type": "ipv4",
+                "Value": "4.1.8.9"
             }
         ]
     }
@@ -3124,11 +3194,12 @@ Returns a list of your uploaded IOCs that match the search criteria.
 #### Human Readable Output
 
 >### Indicators of Compromise
->|CreatedTime|Expiration|ID|ModifiedTime|Severity|Action|Type|Value|
->|---|---|---|---|---|---|---|---|
->| 2020-09-30T10:59:37Z | 2020-10-30T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-09-30T10:59:37Z | high | prevent | domain | value |
+>|ID|Action|Severity|Type|Value|Expiration|CreatedBy|CreatedTime|Description|ModifiedBy|ModifiedTime|Platforms|Policy|ShareLevel|Source|Tags|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4ec1 | no_action | informational | ipv4 | 1.1.8.9 | 2022-02-17T13:47:57Z | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:17:25.992164453Z | test | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:17:25.992164453Z | mac |  |  | Cortex XSOAR |  |
+>| 54f12e3a1ef5af0612714f6acea8f34f18c5dc6be117ade949974633f949f412 | no_action | informational | ipv4 | 4.1.8.9 | 2022-02-17T13:47:57Z | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:16:44.514398876Z | test | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:16:44.514398876Z | mac |  |  | Cortex XSOAR |  |
 
-### cs-falcon-get-custom-ioc
+### 44. cs-falcon-get-custom-ioc
 ***
 Gets the full definition of one or more indicators that you are watching.
 
@@ -3163,26 +3234,32 @@ Gets the full definition of one or more indicators that you are watching.
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
 
 
-#### Command Example
-```!cs-falcon-get-custom-ioc type="domain" value="test.domain.com"```
-
+#### Command example
+```!cs-falcon-get-custom-ioc type=ipv4 value=7.5.9.8```
 #### Context Example
 ```json
 {
     "CrowdStrike": {
-        "IOC": [
-            {
-                "CreatedTime": "2020-09-30T10:59:37Z",
-                "Expiration": "2020-10-30T00:00:00Z",
-                "ID": "4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r",
-                "ModifiedTime": "2020-09-30T10:59:37Z",
-                "Severity": "high",
-                "Action": "prevent",
-                "Source": "Demisto playbook",
-                "Type": "domain",
-                "Value": "test.domain.com"
-            }
-        ]
+        "IOC": {
+            "Action": "no_action",
+            "CreatedBy": "2bf188d347e44e08946f2e61ef590c24",
+            "CreatedTime": "2022-02-16T14:25:22.968603813Z",
+            "Expiration": "2022-02-17T17:55:09Z",
+            "ID": "04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4e12",
+            "ModifiedBy": "2bf188d347e44e08946f2e61ef590c24",
+            "ModifiedTime": "2022-02-16T14:25:22.968603813Z",
+            "Platforms": [
+                "linux"
+            ],
+            "Severity": "informational",
+            "Source": "cortex xsoar",
+            "Tags": [
+                "test",
+                "test1"
+            ],
+            "Type": "ipv4",
+            "Value": "7.5.9.8"
+        }
     }
 }
 ```
@@ -3190,11 +3267,11 @@ Gets the full definition of one or more indicators that you are watching.
 #### Human Readable Output
 
 >### Indicator of Compromise
->|CreatedTime|Description|Expiration|ID|ModifiedTime|Severity|Action|Source|Type|Value|
->|---|---|---|---|---|---|---|---|---|---|
->| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-02T13:55:26Z | high | prevent | Demisto playbook | domain | test.domain.com |
+>|ID|Action|Severity|Type|Value|Expiration|CreatedBy|CreatedTime|Description|ModifiedBy|ModifiedTime|Platforms|Policy|ShareLevel|Source|Tags|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4e12 | no_action | informational | ipv4 | 7.5.9.8 | 2022-02-17T17:55:09Z | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T14:25:22.968603813Z |  | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T14:25:22.968603813Z | linux |  |  | cortex xsoar | test,<br/>test1 |
 
-### cs-falcon-upload-custom-ioc
+### 45. cs-falcon-upload-custom-ioc
 ***
 Uploads an indicator for CrowdStrike to monitor.
 
@@ -3207,14 +3284,16 @@ Uploads an indicator for CrowdStrike to monitor.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ioc_type | The type of the indicator. Possible values are: "sha256", "md5", "domain", "ipv4", and "ipv6". | Required | 
-| value | The string representation of the indicator. | Required | 
+| value | A comma separated list of indicators. More than one value can be supplied in order to upload multiple IOCs of the same type but with different values. Note that the uploaded IOCs will have the same properties (as supplied in other arguments). | Required | 
 | action | Action to take when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided. prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity > Detections. Has a default severity value. prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity. detect - Enable detections for the indicator at the selected severity. | Required | 
 | platforms | The platforms that the indicator applies to. You can enter multiple platform names, separated by commas. Possible values are: mac, windows and linux. | Required | 
 | severity | The severity level to apply to this indicator. Possible values are: informational, low, medium, high and critical. | Required for the prevent and detect actions. Optional for no_action. | 
 | expiration | The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ssZ). | Optional | 
 | source | The source where this indicator originated. This can be used for tracking where this indicator was defined. Limited to 200 characters. | Optional | 
 | description | A meaningful description of the indicator. Limited to 200 characters. | Optional | 
-
+| applied_globally | Whether the indicator is applied globally. Either applied_globally or host_groups must be provided. Possible values are: true, false. | Optional | 
+| host_groups | List of host group IDs that the indicator applies to. Can be retrieved by running the cs-falcon-list-host-groups command. Either applied_globally or host_groups must be provided. | Optional | 
+| tags | List of tags to apply to the indicator. | Optional | 
 
 #### Context Output
 
@@ -3232,7 +3311,8 @@ Uploads an indicator for CrowdStrike to monitor.
 | CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. | 
 | CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. | 
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
-
+| CrowdStrike.IOC.Tags | Unknown | The tags of the IOC. | 
+| CrowdStrike.IOC.Platforms | Unknown | The platforms of the IOC. | 
 
 #### Command Example
 ```!cs-falcon-upload-custom-ioc ioc_type="domain" value="test.domain.com" action="prevent" severity="high" source="Demisto playbook" description="Test ioc" platforms="mac"```
@@ -3251,7 +3331,8 @@ Uploads an indicator for CrowdStrike to monitor.
             "Severity": "high",
             "Source": "Demisto playbook",
             "Type": "domain",
-            "Value": "test.domain.com"
+            "Value": "test.domain.com",
+            "Platforms": ["mac"]
         }
     }
 }
@@ -3264,7 +3345,7 @@ Uploads an indicator for CrowdStrike to monitor.
 >|---|---|---|---|---|---|---|---|---|---|
 >| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-02T13:55:26Z | prevent | high | Demisto playbook | domain | test.domain.com |
 
-### cs-falcon-update-custom-ioc
+### 46. cs-falcon-update-custom-ioc
 ***
 Updates an indicator for CrowdStrike to monitor.
 
@@ -3334,7 +3415,7 @@ Updates an indicator for CrowdStrike to monitor.
 >|---|---|---|---|---|---|---|---|---|---|
 >| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-02T13:55:26Z | prevent | high | Demisto playbook | domain | test.domain.com |
 
-### cs-falcon-delete-custom-ioc
+### 47. cs-falcon-delete-custom-ioc
 ***
 Deletes a monitored indicator.
 
@@ -3360,3 +3441,810 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Custom IOC 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r was successfully deleted.
+
+### 48. cs-falcon-batch-upload-custom-ioc
+***
+Uploads a batch of indicators.
+
+
+#### Base Command
+
+`cs-falcon-batch-upload-custom-ioc`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| multiple_indicators_json | A JSON object with list of CS Falcon indicators to upload. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IOC.Type | string | The type of the IOC. | 
+| CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
+| CrowdStrike.IOC.ID | string | The full ID of the indicator. | 
+| CrowdStrike.IOC.Severity | string | The severity level to apply to this indicator. | 
+| CrowdStrike.IOC.Source | string | The source of the IOC. | 
+| CrowdStrike.IOC.Action | string | Action to take when a host observes the custom IOC. | 
+| CrowdStrike.IOC.Expiration | string | The datetime when the indicator will expire. | 
+| CrowdStrike.IOC.Description | string | The description of the IOC. | 
+| CrowdStrike.IOC.CreatedTime | date | The datetime the IOC was created. | 
+| CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. | 
+| CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. | 
+| CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
+| CrowdStrike.IOC.Tags | Unknown | The tags of the IOC. | 
+| CrowdStrike.IOC.Platforms | Unknown | The platforms of the IOC. | 
+
+#### Command example
+```!cs-falcon-batch-upload-custom-ioc multiple_indicators_json=`[{"description": "test", "expiration": "2022-02-17T13:47:57Z", "type": "ipv4", "severity": "Informational", "value": "1.1.8.9", "action": "no_action", "platforms": ["mac"], "source": "Cortex XSOAR", "applied_globally": true}]` ```
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "IOC": {
+            "Action": "no_action",
+            "CreatedBy": "2bf188d347e44e08946f2e61ef590c24",
+            "CreatedTime": "2022-02-16T17:17:25.992164453Z",
+            "Description": "test",
+            "Expiration": "2022-02-17T13:47:57Z",
+            "ID": "04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4e12",
+            "ModifiedBy": "2bf188d347e44e08946f2e61ef590c24",
+            "ModifiedTime": "2022-02-16T17:17:25.992164453Z",
+            "Platforms": [
+                "mac"
+            ],
+            "Severity": "informational",
+            "Source": "Cortex XSOAR",
+            "Type": "ipv4",
+            "Value": "1.1.8.9"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Custom IOC 1.1.8.9 was created successfully
+>|Action|CreatedBy|CreatedTime|Description|Expiration|ID|ModifiedBy|ModifiedTime|Platforms|Severity|Source|Type|Value|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| no_action | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:17:25.992164453Z | test | 2022-02-17T13:47:57Z | "04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4e12 | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:17:25.992164453Z | mac | informational | Cortex XSOAR | ipv4 | 1.1.8.9 |
+
+### 49. cs-falcon-rtr-kill-process
+
+***
+Execute an active responder kill command on a single host.
+
+#### Base Command
+
+`cs-falcon-rtr-kill-process`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_id | The host ID in which you would like to kill the given process. | Required | 
+| process_ids | A comma-separated list of process IDs to kill. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Command.kill.ProcessID | String | The process ID that was killed. | 
+| CrowdStrike.Command.kill.Error | String | The error message raised if the command was failed. | 
+| CrowdStrike.Command.kill.HostID | String | The host ID. | 
+
+#### Command example
+
+```!cs-falcon-rtr-kill-process host_id=15dbb9d8f06b45fe9f61eb46e829d986 process_ids=5260,123```
+
+#### Context Example
+
+```json
+{
+  "CrowdStrike": {
+    "Command": {
+      "kill": [
+        {
+          "Error": "Cannot find a process with the process identifier 123.",
+          "HostID": "15dbb9d8f06b45fe9f61eb46e829d986",
+          "ProcessID": "123"
+        },
+        {
+          "Error": "Success",
+          "HostID": "15dbb9d8f06b45fe9f61eb46e829d986",
+          "ProcessID": "5260"
+        }
+      ]
+    }
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### CrowdStrike Falcon kill command on host 15dbb9d8f06b45fe9f61eb46e829d986:
+>|ProcessID|Error|
+>|---|---|
+>| 123 | Cannot find a process with the process identifier 123. |
+>| 5260 | Success |
+>Note: you don't see the following IDs in the results as the request was failed for them.
+> ID 123 failed as it was not found.
+
+### 50. cs-falcon-rtr-remove-file
+
+***
+Batch executes an RTR active-responder remove file across the hosts mapped to the given batch ID.
+
+#### Base Command
+
+`cs-falcon-rtr-remove-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_ids | A comma-separated list of the hosts IDs in which you would like to remove the file. | Required | 
+| file_path | The path to a file or a directoty that you would like to remove. | Required | 
+| os | The operatin system of the hosts given. As the revome command is different in each operatin system, you can choose only one operating system. Possible values are: Windows, Linux, Mac. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Command.rm.HostID | String | The host ID. | 
+| CrowdStrike.Command.rm.Error | String | The error message raised if the command was failed. | 
+
+#### Command example
+
+```!cs-falcon-rtr-remove-file file_path="c:\\testfolder" host_ids=15dbb9d8f06b45fe9f61eb46e829d986 os=Windows```
+
+#### Context Example
+
+```json
+{
+  "CrowdStrike": {
+    "Command": {
+      "rm": {
+        "Error": "Success",
+        "HostID": "15dbb9d8f06b45fe9f61eb46e829d986"
+      }
+    }
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### CrowdStrike Falcon rm over the file: c:\testfolder
+>|HostID|Error|
+>|---|---|
+>| 15dbb9d8f06b45fe9f61eb46e829d986 | Success |
+
+### 51. cs-falcon-rtr-list-processes
+
+***
+Executes an RTR active-responder ps command to get a list of active processes across the given host.
+
+#### Base Command
+
+`cs-falcon-rtr-list-processes`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_id | The host ID in which you would like to get the processes list from. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Command.ps.Filename | String | The the name of the result file to be returned. | 
+
+#### Command example
+
+```!cs-falcon-rtr-list-processes host_id=15dbb9d8f06b45fe9f61eb46e829d986```
+
+#### Context Example
+
+```json
+{
+  "CrowdStrike": {
+    "Command": {
+      "ps": {
+        "Filename": "ps-15dbb9d8f06b45fe9f61eb46e829d986"
+      }
+    }
+  },
+  "File": {
+    "EntryID": "1792@5e02fcd0-37ad-4124-836d-7e769ba0ae86",
+    "Info": "text/plain",
+    "MD5": "366bb9678c128d5091edfc1654b59efb",
+    "Name": "ps-15dbb9d8f06b45fe9f61eb46e829d986",
+    "SHA1": "73ee9b28b6705e0c818f3421d6220f2615919af3",
+    "SHA256": "a1fc102bd7c2f20eae6dc2060c615bffe8d88d255fb6df7a0ceacbb87e9f12cf",
+    "SHA512": "782f435f827fd1ebaf87a5536cc4cc51e28ed0bf4fcb5eb1dd957489bebebcb57fe01ea77bb31ea9e813b50fa7b2340d7813d7dfa18ca1c043f617dc9adf6871",
+    "SSDeep": "768:4jcAkTBaZ61QUEcDBdMoFwIxVvroYrohrbY2akHLnsa5fbqFEJtPNObzVj0ff+3K:4IraZ61QUEcDBdMoFwIxRJEbY2akHLnr",
+    "Size": 30798,
+    "Type": "ASCII text"
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### CrowdStrike Falcon ps command on host 15dbb9d8f06b45fe9f61eb46e829d986:
+>|Stdout|
+>|---|
+>|TOO MUCH INFO TO DISPLAY|
+
+### 52. cs-falcon-rtr-list-network-stats
+
+***
+Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given
+host.
+
+#### Base Command
+
+`cs-falcon-rtr-list-network-stats`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_id | The host ID in which you would like to get the network status and protocol statistics list from. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Command.netstat.Filename | String | The the name of the result file to be returned. | 
+
+#### Command example
+
+```!cs-falcon-rtr-list-network-stats host_id=15dbb9d8f06b45fe9f61eb46e829d986```
+
+#### Context Example
+
+```json
+{
+  "CrowdStrike": {
+    "Command": {
+      "netstat": {
+        "Filename": "netstat-15dbb9d8f06b45fe9f61eb46e829d986"
+      }
+    }
+  },
+  "File": {
+    "EntryID": "1797@5e02fcd0-37ad-4124-836d-7e769ba0ae86",
+    "Info": "text/plain",
+    "MD5": "fb013c14d8562a9cb8722319399ff617",
+    "Name": "netstat-15dbb9d8f06b45fe9f61eb46e829d986",
+    "SHA1": "e140104e7739b1dc5fa4072088bfbe4a864ce595",
+    "SHA256": "418d920ff2b44de1efa6658bec8412cbccae52b2983976a2922690ab99ab74c6",
+    "SHA512": "3a57c5c673ee10fd01433a2888a69bc2989f6e060bccca81459275514e33edb4be2ac193131f736c719a2170cb1bc5a890e2563a61403e1b169692b448a76a48",
+    "SSDeep": "48:XSvprPoeCfd8saowYL8zjt6yjjRchg24OI58RtTLvWptl6TtCla5n1lEtClMw/u:CRQeCxRmxVpIHUchCIvsCo",
+    "Size": 4987,
+    "Type": "ASCII text, with CRLF line terminators"
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### CrowdStrike Falcon netstat command on host 15dbb9d8f06b45fe9f61eb46e829d986:
+>|Stdout|
+>|---|
+>|TOO MUCH INFO TO DISPLAY|
+
+### 53. cs-falcon-rtr-read-registry
+
+***
+Executes an RTR active-responder read registry keys command across the given hosts. This command is valid only for
+Windows hosts.
+
+#### Base Command
+
+`cs-falcon-rtr-read-registry`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_ids | A comma-separated list of the hosts IDs in which you would like to get the registry keys from. | Required | 
+| registry_keys | A comma-separated list of the registy keys, subkeys or value to get. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!cs-falcon-rtr-read-registry host_ids=15dbb9d8f06b45fe9f61eb46e829d986 registry_keys=`
+HKEY_LOCAL_MACHINE,HKEY_USERS````
+
+#### Context Example
+
+```json
+{
+  "File": [
+    {
+      "EntryID": "1806@5e02fcd0-37ad-4124-836d-7e769ba0ae86",
+      "Info": "text/plain",
+      "MD5": "df38aa69dd1f46299b82983d56255433",
+      "Name": "reg-15dbb9d8f06b45fe9f61eb46e829d986HKEY_USERS",
+      "SHA1": "4211347d6d1593593bb1a47925048ce439dd0333",
+      "SHA256": "9bbb0e60ae5fe3c59c1eea9f3c97ce424ab7f7c57c562255bfebdaa75e855c54",
+      "SHA512": "67569a073dfc7c6098c081256710d2e58b365a29428a1a276a890e6cf8d6a716a586983d1965e11979e6ed24e9b7aa74c61a5e5953e154c39555b883b6a0360f",
+      "SSDeep": "12:uSn3PtdoI1pZI2WUNI2e6NI2vboI2vbP3I2zd:uSQIpZIII1aIUMIUjIcd",
+      "Size": 656,
+      "Type": "ASCII text, with CRLF, LF line terminators"
+    },
+    {
+      "EntryID": "1807@5e02fcd0-37ad-4124-836d-7e769ba0ae86",
+      "Info": "text/plain",
+      "MD5": "ff089d21c7289844a93d6d7173db76d2",
+      "Name": "reg-15dbb9d8f06b45fe9f61eb46e829d986HKEY_LOCAL_MACHINE",
+      "SHA1": "a37c792a78872565b013c1b246fbe4d28e3b4919",
+      "SHA256": "ea50a7fc75e8d2579dd4a89701bdf8e2c1263ea56d85ea6a9c4c0828770184bc",
+      "SHA512": "826467ac3afae2ebaaa9ea53d7fd4fb26fdce5bf6dfb45f215bfbbee4b2b6faae0a4266c5994b47b1898c409a73d4344d5faad8057c3494eae2300b1d7803568",
+      "SSDeep": "6:zYuSugMQEYPtdWCMwdiwf2Jai2FU42DGE25/:zYuSnMQXPtd9/eJqy7yfh",
+      "Size": 320,
+      "Type": "ASCII text, with CRLF, LF line terminators"
+    }
+  ]
+}
+```
+
+#### Human Readable Output
+
+> ### CrowdStrike Falcon reg command on hosts ['15dbb9d8f06b45fe9f61eb46e829d986']:
+>|FileName| Stdout                    |
+>|---------------------------|---|
+>| reg-15dbb9d8f06b45fe9f61eb46e829d986HKEY_USERS | TOO MUCH INFO TO DISPLAY  |
+>| reg-15dbb9d8f06b45fe9f61eb46e829d986HKEY_LOCAL_MACHINE | TOO MUCH INFO TO DISPLAY  |
+
+### 54. cs-falcon-rtr-list-scheduled-tasks
+
+***
+Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is
+valid only for Windows hosts.
+
+#### Base Command
+
+`cs-falcon-rtr-list-scheduled-tasks`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_ids | A comma-separated list of the hosts IDs in which you would like to get the list of scheduled tasks from. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!cs-falcon-rtr-list-scheduled-tasks host_ids=15dbb9d8f06b45fe9f61eb46e829d986```
+
+#### Context Example
+
+```json
+{
+  "CrowdStrike": {
+    "Command": {
+      "runscript": {
+        "Filename": "runscript-15dbb9d8f06b45fe9f61eb46e829d986"
+      }
+    }
+  },
+  "File": {
+    "EntryID": "1812@5e02fcd0-37ad-4124-836d-7e769ba0ae86",
+    "Info": "text/plain",
+    "MD5": "d853562a2ca7f7ffe02be92542c6735b",
+    "Name": "runscript-15dbb9d8f06b45fe9f61eb46e829d986",
+    "SHA1": "ec16f99efa4d66157bc02c90fe92ae0cc589bf80",
+    "SHA256": "76c37df75416c65faf403faceb3fe0aa1d49890a38af37420c09fc7f006bd32a",
+    "SHA512": "6284197b398952b455f4243216e829cbe04cab2838aac2bc9464f3b7798ad37e1369767b8d772e58e45a2eda763a7880b22d999f8eec46ca2d9509690540a5ae",
+    "SSDeep": "3072:zjQ3/3YHGa8dbXbpbItbo4W444ibNb9MTf2Wat4cuuEqk4W4ybmF54c4eEEEjX6f:EXN8Nbw",
+    "Size": 299252,
+    "Type": "ASCII text"
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### CrowdStrike Falcon runscript command on host 15dbb9d8f06b45fe9f61eb46e829d986:
+>| Stdout                    |
+---------------------------|---|
+>| TOO MUCH INFO TO DISPLAY  |
+
+### 55. cs-falcon-rtr-retrieve-file
+
+***
+Gets the RTR extracted file contents for the specified file path.
+
+#### Base Command
+
+`cs-falcon-rtr-retrieve-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_ids | A comma-separated list of the hosts IDs in which you would like to get file from. | Required | 
+| file_path | The file path of the required file to extract. | Required | 
+| filename | The filename to use for the archive name and the file within the archive. | Optional | 
+| interval_in_seconds | interval between polling. Default is 60 seconds. Must be higher than 10. | Optional | 
+| hosts_and_requests_ids | This is an internal argument used for the polling process, not to be used by the user. | Optional | 
+| SHA256 | This is an internal argument used for the polling process, not to be used by the user. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.File.FileName | String | The file name. | 
+| CrowdStrike.File.HostID | String | The hosd ID. | 
+| File.Size | Number | The size of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA512 | String | The SHA512 hash of the file. | 
+| File.Name | String | The name of the file. | 
+| File.SSDeep | String | The SSDeep hash of the file. | 
+| File.EntryID | String | EntryID of the file | 
+| File.Info | String | Information about the file. | 
+| File.Type | String | The file type. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Extension | String | The extension of the file. | 
+
+#### Command example
+
+```!cs-falcon-rtr-retrieve-file file_path=`C:\Windows\System32\Windows.Media.FaceAnalysis.dll` host_ids=15dbb9d8f06b45fe9f61eb46e829d986,046761c46ec84f40b27b6f79ce7cd32c```
+
+#### Human Readable Output
+
+> Waiting for the polling execution
+
+### 56. cs-falcon-get-detections-for-incident
+***
+Gets the detections for a specific incident.
+
+
+#### Base Command
+
+`cs-falcon-get-detections-for-incident`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The incident's id to get detections for. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IncidentDetection.incident_id | String | The incident id. | 
+| CrowdStrike.IncidentDetection.behavior_id | String | The behavior id connected to the incident. | 
+| CrowdStrike.IncidentDetection.detection_ids | String | A list of detection ids connected to the incident. | 
+
+#### Command example
+```!cs-falcon-get-detections-for-incident incident_id=`inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593````
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "IncidentDetection": {
+            "behavior_id": "ind:0bde2c4645294245aca522971ccc44c4:162589633341-10303-6705920",
+            "detection_ids": [
+                "ldt:0bde2c4645294245aca522971ccc44c4:38655034604"
+            ],
+            "incident_id": "inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Detection For Incident
+>|behavior_id|detection_ids|incident_id|
+>|---|---|---|
+>| ind:0bde2c4645294245aca522971ccc44c4:162590282130-10303-6707968 | ldt:0bde2c4645294245aca522971ccc44c4:38656254663 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
+>| ind:0bde2c4645294245aca522971ccc44c4:162596456872-10303-6710016 | ldt:0bde2c4645294245aca522971ccc44c4:38657629548 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
+>| ind:0bde2c4645294245aca522971ccc44c4:162597577534-10305-6712576 | ldt:0bde2c4645294245aca522971ccc44c4:38658614774 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
+>| ind:0bde2c4645294245aca522971ccc44c4:162589633341-10303-6705920 | ldt:0bde2c4645294245aca522971ccc44c4:38655034604 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
+
+# Spotlight
+
+### Using Spotlight APIs
+Spotlight identifies and gives info about specific vulnerabilities on your hosts using the Falcon sensor.
+
+### Required API client scope
+To access the Spotlight API, your API client must be assigned the spotlight-vulnerabilities:read scope.
+
+### Validating API data
+The Falcon sensor continuously monitors hosts for any changes and reports them as they occur.
+Depending on the timing of requests, Spotlight APIs can return values that are different from those shown by the Falcon console or an external source.
+There are other factors that can cause differences between API responses and other data sources.
+
+### API query syntax
+If an API query doesn’t exactly match the query used on the Spotlight Vulnerabilities page, the values might differ.
+
+### Expired vulnerabilities in Spotlight APIs
+If a host is deleted or inactive for 45 days, the status of vulnerabilities on that host changes to expired. Expired vulnerabilities are removed from Spotlight after 3 days. 
+Expired vulnerabilities are only visible in API responses and are not included in reports or the Falcon console.
+An external data source might not use the same data retention policy, which can lead to discrepancies with Spotlight APIs. For more info, see Data retention in Spotlight [https://falcon.crowdstrike.com/login/?next=%2Fdocumentation%2F43%2Ffalcon-spotlight-overview#data-retention-in-spotlight].
+
+### The following commands uses the Spotlight API:
+
+### cs-falcon-spotlight-search-vulnerability
+
+***
+Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
+
+#### Base Command
+
+`cs-falcon-spotlight-search-vulnerability`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+|filter| Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. | Optional |
+| aid |  Unique agent identifier (AID) of a sensor | Optional |
+| cve_id | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation | Optional |
+| cve_severity | Severity of the CVE. The possible values are: CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN, or NONE. | Optional |
+| tags | Name of a tag assigned to a host. Retrieve tags from Host Tags APIs | Optional |
+| status | Status of a vulnerability. This filter supports multiple values and negation. The possible values are: open, closed, reopen, expired. | Optional |
+| platform_name | Operating system platform. This filter supports negation. The possible values are: Windows, Mac, Linux. | Optional |
+| host_group | Unique system-assigned ID of a host group. Retrieve the host group ID from Host Group APIs | Optional |
+| host_type | Type of host a sensor is running on | Optional |
+| last_seen_within | Filter for vulnerabilities based on the number of days since a host last connected to CrowdStrike Falcon | Optional |
+| is_suppressed | Indicates if the vulnerability is suppressed by a suppression rule | Optional |
+| display_remediation_info | Display remediation information type of data to be returned for each vulnerability entity | Optional |
+| display_evaluation_logic_info | Whether to return logic information type of data for each vulnerability entity | Optional |
+| display_host_info | Whether to return host information type of data for each vulnerability entity | Optional |
+| limit | Maximum number of items to return (1-5000) | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Vulnerability.id | String | Unique system-assigned ID of the vulnerability. | 
+| CrowdStrike.Vulnerability.cid | String | Unique system-generated customer identifier (CID) of the account | 
+| CrowdStrike.Vulnerability.aid | String | Unique agent identifier (AID) of the sensor where the vulnerability was found | 
+| CrowdStrike.Vulnerability.created_timestamp | String | UTC date and time that the vulnerability was created in Spotlight | 
+| CrowdStrike.Vulnerability.updated_timestamp | String | UTC date and time of the last update made on the vulnerability | 
+| CrowdStrike.Vulnerability.status | String | Vulnerability's current status. Possible values are: open, closed, reopen, or expired | 
+| CrowdStrike.Vulnerability.apps.product_name_version | String | Name and version of the product associated with the vulnerability | 
+| CrowdStrike.Vulnerability.apps.sub_status | String | Status of each product associated with the vulnerability. Possible values are: open, closed, or reopen | 
+| CrowdStrike.Vulnerability.apps.remediation.ids | String | Remediation ID of each product associated with the vulnerability | 
+| CrowdStrike.Vulnerability.host_info.hostname | String | Name of the machine | 
+| CrowdStrike.Vulnerability.host_info.instance_id | String | Cloud instance ID of the host | 
+| CrowdStrike.Vulnerability.host_info.service_provider_account_id | String | Cloud service provider account ID for the host | 
+| CrowdStrike.Vulnerability.host_info.service_provider | String | Cloud service provider for the host | 
+| CrowdStrike.Vulnerability.host_info.os_build | String | Operating system build |
+| CrowdStrike.Vulnerability.host_info.product_type_desc | String | Type of host a sensor is running on | 
+| CrowdStrike.Vulnerability.host_info.local_ip | String | Device's local IP address |
+| CrowdStrike.Vulnerability.host_info.machine_domain | String | Active Directory domain name | 
+| CrowdStrike.Vulnerability.host_info.os_version | String | Operating system version |
+| CrowdStrike.Vulnerability.host_info.ou | String | Active directory organizational unit name | 
+| CrowdStrike.Vulnerability.host_info.site_name | String | Active directory site name |
+| CrowdStrike.Vulnerability.host_info.system_manufacturer | String | Name of the system manufacturer | 
+| CrowdStrike.Vulnerability.host_info.groups.id | String | Array of host group IDs that the host is assigned to |
+| CrowdStrike.Vulnerability.host_info.groups.name | String | Array of host group names that the host is assigned to |
+| CrowdStrike.Vulnerability.host_info.tags | String | Name of a tag assigned to a host |
+| CrowdStrike.Vulnerability.host_info.platform | String | Operating system platform |
+| CrowdStrike.Vulnerability.remediation.entities.id | String | Unique ID of the remediation |
+| CrowdStrike.Vulnerability.remediation.entities.reference | String | Relevant reference for the remediation that can be used to get additional details for the remediation |
+| CrowdStrike.Vulnerability.remediation.entities.title | String | Short description of the remediation |
+| CrowdStrike.Vulnerability.remediation.entities.action | String | Expanded description of the remediation |
+| CrowdStrike.Vulnerability.remediation.entities.link | String |  Link to the remediation page for the vendor |
+| CrowdStrike.Vulnerability.cve.id | String | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD) |
+| CrowdStrike.Vulnerability.cve.base_score | String | Base score of the CVE (float value between 1 and 10) |
+| CrowdStrike.Vulnerability.cve.severity | String | CVSS severity rating of the vulnerability |
+| CrowdStrike.Vulnerability.cve.exploit_status | String | Numeric value of the most severe known exploit |
+| CrowdStrike.Vulnerability.cve.exprt_rating | String | ExPRT rating assigned by CrowdStrike's predictive AI rating system |
+| CrowdStrike.Vulnerability.cve.description | String | Brief explanation of the CVE |
+| CrowdStrike.Vulnerability.cve.published_date | String | UTC timestamp with the date and time the vendor published the CVE |
+| CrowdStrike.Vulnerability.cve.vendor_advisory | String | Link to the vendor page where the CVE was disclosed |
+| CrowdStrike.Vulnerability.cve.exploitability_score | String | Exploitability score of the CVE (float values from 1-4) |
+| CrowdStrike.Vulnerability.cve.impact_score | String | Impact score of the CVE (float values from 1-6) |
+| CrowdStrike.Vulnerability.cve.vector | String | Textual representation of the metric values used to score the vulnerability |
+| CrowdStrike.Vulnerability.cve.remediation_level | String | CVSS remediation level of the vulnerability (U = Unavailable, or O = Official fix) |
+| CrowdStrike.Vulnerability.cve.cisa_info.is_cisa_kev | String | Whether to filter for vulnerabilities that are in the CISA Known Exploited Vulnerabilities (KEV) catalog |
+| CrowdStrike.Vulnerability.cve.cisa_info.due_date | String | Date before which CISA mandates subject organizations to patch the vulnerability |
+| CrowdStrike.Vulnerability.cve.spotlight_published_date | String | UTC timestamp with the date and time Spotlight enabled coverage for the vulnerability |
+| CrowdStrike.Vulnerability.cve.actors | String | Adversaries associated with the vulnerability |
+| CrowdStrike.Vulnerability.cve.name | String | The vulnerability name |
+
+#### Command example
+``` cs-falcon-spotlight-search-vulnerability filter=status:['open','closed'] cve_id=CVE-2021-2222 cve_severity='LOW,HIGH' display_host_info=false display_evaluation_logic_info=false display_remediation_info=false limit=1 ```
+#### Context Example
+```json
+{
+    "resources": [
+        {
+            "id": "id_num",
+            "cid": "cid_num",
+            "aid": "aid_num",
+            "created_timestamp": "2021-07-13T01:12:57Z",
+            "updated_timestamp": "2022-10-27T18:32:21Z",
+            "status": "open",
+            "apps": [
+                {
+                    "product_name_version": "product",
+                    "sub_status": "open",
+                    "remediation": {
+                        "ids": [
+                            "1234"
+                        ]
+                    },
+                    "evaluation_logic": {
+                        "id": "1234"
+                    }
+                }
+            ],
+            "suppression_info": {
+                "is_suppressed": false
+            },
+            "cve": {
+                "id": "CVE-2021-2222",
+                "base_score": 5.5,
+                "severity": "MEDIUM",
+                "exploit_status": 0,
+                "exprt_rating": "LOW",
+                "remediation_level": "O",
+                "cisa_info": {
+                    "is_cisa_kev": false
+                },
+                "spotlight_published_date": "2021-05-10T17:08:00Z",
+                "description": "description\n",
+                "published_date": "2021-02-25T23:15:00Z",
+                "vendor_advisory": [
+                    "web address"
+                ],
+                "exploitability_score": 1.8,
+                "impact_score": 3.6,
+                "vector": "vendor"
+            }
+        }
+    ]
+}
+```
+
+| CVE ID | CVE Severity | CVE Base Score | CVE Published Date | CVE Impact Score | CVE Exploitability Score | CVE Vector | 
+| --- | --- | --- | --- | --- | --- |  --- |
+| CVE-2021-2222 | LOW | 5.5 | 2021-05-10T17:08:00Z | 3.6 | 0 | vendor |
+### cs-falcon-spotlight-list-host-by-vulnerability
+***
+Retrieve vulnerability details for a specific ID and host. Supported with the CrowdStrike Spotlight license.
+
+#### Base Command
+
+`cs-falcon-spotlight-list-host-by-vulnerability`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cve_ids | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation | Required |
+| limit | Maximum number of items to return (1-5000) | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.VulnerabilityHost.id | String | Unique system-assigned ID of the vulnerability. | 
+| CrowdStrike.VulnerabilityHost.cid | String | Unique system-generated customer identifier (CID) of the account | 
+| CrowdStrike.VulnerabilityHost.aid | String | Unique agent identifier (AID) of the sensor where the vulnerability was found | 
+| CrowdStrike.VulnerabilityHost.created_timestamp | String | UTC date and time that the vulnerability was created in Spotlight | 
+| CrowdStrike.VulnerabilityHost.updated_timestamp | String | UTC date and time of the last update made on the vulnerability | 
+| CrowdStrike.VulnerabilityHost.status | String | Vulnerability's current status. Possible values are: open, closed, reopen, or expired. | 
+| CrowdStrike.VulnerabilityHost.apps.product_name_version | String | Name and version of the product associated with the vulnerability | 
+| CrowdStrike.VulnerabilityHost.apps.sub_status | String | Status of each product associated with the vulnerability | 
+| CrowdStrike.VulnerabilityHost.apps.remediation.ids | String | Remediation ID of each product associated with the vulnerability |
+| CrowdStrike.VulnerabilityHost.apps.evaluation_logic.id | String | Unique system-assigned ID of the vulnerability evaluation logic |
+| CrowdStrike.VulnerabilityHost.suppression_info.is_suppressed | String | Indicates if the vulnerability is suppressed by a suppression rule |
+| CrowdStrike.VulnerabilityHost.host_info.hostname | String | Name of the machine | 
+| CrowdStrike.VulnerabilityHost.host_info.instance_id | String | Cloud service provider account ID for the host | 
+| CrowdStrike.VulnerabilityHost.host_info.service_provider_account_id | String | Cloud service provider for the host | 
+| CrowdStrike.VulnerabilityHost.host_info.service_provider | String | Operating system build | 
+| CrowdStrike.VulnerabilityHost.host_info.os_build | String | Operating system build |
+| CrowdStrike.VulnerabilityHost.host_info.product_type_desc | String | Type of host a sensor is running on | 
+| CrowdStrike.VulnerabilityHost.host_info.local_ip | String | Device's local IP address |
+| CrowdStrike.VulnerabilityHost.host_info.machine_domain | String | Active Directory domain name | 
+| CrowdStrike.VulnerabilityHost.host_info.os_version | String | Operating system version |
+| CrowdStrike.VulnerabilityHost.host_info.ou | String | Active directory organizational unit name | 
+| CrowdStrike.VulnerabilityHost.host_info.site_name | String | Active directory site name |
+| CrowdStrike.VulnerabilityHost.host_info.system_manufacturer | String | Name of the system manufacturer | 
+| CrowdStrike.VulnerabilityHost.host_info.groups.id | String | Array of host group IDs that the host is assigned to |
+| CrowdStrike.VulnerabilityHost.host_info.groups.name | String | Array of host group names that the host is assigned to |
+| CrowdStrike.VulnerabilityHost.host_info.tags | String | Name of a tag assigned to a host |
+| CrowdStrike.VulnerabilityHost.host_info.platform | String | Operating system platform |
+| CrowdStrike.VulnerabilityHost.cve.id | String | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD) |
+
+#### Command example
+``` cs-falcon-spotlight-list-host-by-vulnerability cve_ids=CVE-2021-2222 ```
+#### Context Example
+```json
+{
+        {
+            "id": "id",
+            "cid": "cid",
+            "aid": "aid",
+            "created_timestamp": "2021-09-16T15:12:42Z",
+            "updated_timestamp": "2022-10-19T00:54:43Z",
+            "status": "open",
+            "apps": [
+                {
+                    "product_name_version": "prod",
+                    "sub_status": "open",
+                    "remediation": {
+                        "ids": [
+                            "id"
+                        ]
+                    },
+                    "evaluation_logic": {
+                        "id": "id"
+                    }
+                }
+            ],
+            "suppression_info": {
+                "is_suppressed": false
+            },
+            "host_info": {
+                "hostname": "host",
+                "local_ip": "10.128.0.7",
+                "machine_domain": "",
+                "os_version": "version",
+                "ou": "",
+                "site_name": "",
+                "system_manufacturer": "manufactor",
+                "tags": [],
+                "platform": "Windows",
+                "instance_id": "instance id",
+                "service_provider_account_id": "id",
+                "service_provider": "id",
+                "os_build": "os build",
+                "product_type_desc": "Server"
+            },
+            "cve": {
+                "id": "CVE-20212-2222"
+            }
+        }
+    
+}
+```
+
+#### Human Readable Output
+| CVE ID | Host Info hostname | Host Info os Version | Host Info Product Type Desc | Host Info Local IP | Host Info ou | Host Info Machine Domain | Host Info Site Name | CVE Exploitability Score | CVE Vector |
+| --- | --- | --- | --- |  --- | --- |  --- | --- |  --- | --- |
+| CVE-20212-2222 |  host | 1 | Server | ip |  |  | site | 5.5 |  |
+
+### cve
+Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
+
+#### Base Command
+
+`cve`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cve_id | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation | Required |
+
+#### Command example
+``` cve cve_id=CVE-2021-2222 ```
+
+#### Human Readable Output
+| ID | Severity | Published Date | Base Score |
+| --- | --- | --- | --- |
+| CVE-2021-2222 | HIGH | 2021-09-16T15:12:42Z | 1 |
+
+

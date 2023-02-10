@@ -4,16 +4,16 @@ from CommonServerPython import *
 import requests
 import json
 import re
-import urllib
+import urllib.parse
 
 ''' GLOBAL VARS '''
 SERVER = None
-BASE_URL = None
+BASE_URL = ''
 USERNAME = None
 PASSWORD = None
 USE_SSL = None
 FETCH_PRIORITY = 0
-FETCH_STATUS = None
+FETCH_STATUS = ''
 FETCH_QUEUE = None
 CURLY_BRACKETS_REGEX = r'\{(.*?)\}'  # Extracts string in curly brackets, e.g. '{string}' -> 'string'
 apostrophe = "'"
@@ -55,7 +55,7 @@ def ticket_string_to_id(ticket_string):
 def http_request(method, suffix_url, data=None, files=None, query=None):
     # Returns the http request
 
-    url = BASE_URL + suffix_url
+    url = urljoin(BASE_URL, suffix_url)
     params = {'user': USERNAME, 'pass': PASSWORD}
     if query:
         params.update(query)
@@ -87,7 +87,7 @@ def login():
         'pass': PASSWORD
     }
     res = SESSION.post(SERVER, data=data)  # type: ignore
-    response_text = res.text.encode('utf-8')
+    response_text = res.text
     are_credentials_wrong = 'Your username or password is incorrect' in response_text
     if are_credentials_wrong:
         return_error("Error: login failed. please check your credentials.")
@@ -103,11 +103,11 @@ def parse_ticket_data(raw_query):
     headers = ['ID', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner', 'InitialPriority',
                'FinalPriority']
     search_context = []
-    data = raw_tickets.content.split('\n')
+    data = raw_tickets.text.split('\n')
     data = data[2:]
     for line in data:
         split_line = line.split(': ')
-        search_ticket = get_ticket_request(split_line[0]).content
+        search_ticket = get_ticket_request(split_line[0]).text
         search_ticket = search_ticket.split('\n')
         search_ticket = search_ticket[2:]
         id_ticket = search_ticket[0].upper()
@@ -136,7 +136,6 @@ def parse_ticket_data(raw_query):
 def create_ticket_request(encoded):
     suffix_url = 'ticket/new'
     ticket_id = http_request('POST', suffix_url, data=encoded)
-
     return ticket_id
 
 
@@ -149,8 +148,7 @@ def create_ticket_attachments_request(encoded, files_data):
 
 def create_ticket():
     args = dict(demisto.args())
-    args = {arg: value.encode('utf-8') for arg, value in args.items() if isinstance(value, unicode)}
-
+    args = {arg: value for arg, value in args.items() if isinstance(value, str)}
     queue = args.get('queue')
     data = 'id: ticket/new\nQueue: {}\n'.format(queue)
 
@@ -203,9 +201,10 @@ def create_ticket():
             value = cf[equal_index + 1:]
             data = data + key + value + '\n'
 
-    attachments = args.get('attachment')
+    attachments = args.get('attachment', '')
+    files_data = {}
     if attachments:
-        files_data = {}
+
         if isinstance(attachments, list):  # Given as list
             attachments_list = attachments
         else:  # Given as string
@@ -216,13 +215,14 @@ def create_ticket():
             files_data['attachment_{:d}'.format(i + 1)] = (file_name, open(file['path'], 'rb'))
             data += 'Attachment: {}'.format(file_name)
 
-    encoded = "content=" + urllib.quote_plus(data)
+    encoded = "content=" + urllib.parse.quote_plus(data)
     if attachments:
         files_data.update({'content': (None, data)})  # type: ignore
         raw_ticket_res = create_ticket_attachments_request(encoded, files_data)
     else:
         raw_ticket_res = create_ticket_request(encoded)
-    ticket_id = re.findall('\d+', raw_ticket_res.content)[-1]
+    ticket_id = re.findall('\d+', raw_ticket_res.text)[-1]
+    demisto.debug(f"got ticket with id: {ticket_id}")
     if ticket_id == -1:
         return_error('Ticket creation failed')
 
@@ -241,7 +241,7 @@ def create_ticket():
     hr = 'Ticket {} was created successfully.'.format(ticket_id)
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': raw_ticket_res.content,
+        'Contents': raw_ticket_res.text,
         'ContentsFormat': formats['text'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': hr,
@@ -268,7 +268,7 @@ def fix_query_suffix(query):
 def build_search_query():
     raw_query = ''
     args = dict(demisto.args())
-    args = {arg: value.encode('utf-8') for arg, value in args.items() if isinstance(value, unicode)}
+    args = {arg: value for arg, value in args.items() if isinstance(value, str)}
     ticket_id = args.get('ticket-id')
     if ticket_id:
         raw_query += 'id={}{}{}+AND+'.format(apostrophe, ticket_id, apostrophe)
@@ -340,7 +340,7 @@ def search_ticket():
     headers = ['ID', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner', 'InitialPriority',
                'FinalPriority']
     search_context = []
-    data = raw_tickets.content.split('\n')
+    data = raw_tickets.text.split('\n')
     data = data[2:]
     results_limit = int(demisto.args().get('results_limit', 0))
     data = data if (results_limit == 0) else data[:results_limit]
@@ -349,7 +349,7 @@ def search_ticket():
         empty_line_response = ['NO OBJECTS SPECIFIED.', '']
         is_line_non_empty = split_line[0] != ''
         if is_line_non_empty:
-            search_ticket = get_ticket_request(split_line[0]).content
+            search_ticket = get_ticket_request(split_line[0]).text
             search_ticket = search_ticket.split('\n')
             search_ticket = search_ticket[2:]
             id_ticket = search_ticket[0].upper()
@@ -405,9 +405,9 @@ def close_ticket_request(ticket_id, encoded):
 def close_ticket():
     ticket_id = demisto.args().get('ticket-id')
     content = '\nStatus: resolved'
-    encoded = "content=" + urllib.quote_plus(content)
+    encoded = "content=" + urllib.parse.quote_plus(content)
     closed_ticket = close_ticket_request(ticket_id, encoded)
-    if '200 Ok' in closed_ticket.content:
+    if '200 Ok' in closed_ticket.text:
         ec = {
             'RTIR.Ticket(val.ID && val.ID === obj.ID)': {
                 'ID': int(ticket_id),
@@ -485,9 +485,9 @@ def edit_ticket():
             content = content + key + value + '\n'
 
     if arguments_given:
-        encoded = "content=" + urllib.quote_plus(content.encode('utf-8'))
+        encoded = "content=" + urllib.parse.quote_plus(content.encode('utf-8'))
         edited_ticket = edit_ticket_request(ticket_id, encoded)
-        if "200 Ok" in edited_ticket.content:
+        if "200 Ok" in edited_ticket.text:
             ticket_context = ({
                 'ID': ticket_id,
                 'Subject': subject,
@@ -531,7 +531,7 @@ def get_ticket_attachments(ticket_id):
         })
 
         suffix_url = 'ticket/{}/attachments/{}'.format(ticket_id, attachment_id)
-        raw_attachment_content = http_request('GET', suffix_url).content
+        raw_attachment_content = http_request('GET', suffix_url).text
         attachment_content = parse_attachment_content(attachment_id, raw_attachment_content)
         attachments_content.append(fileResult(attachment_name, attachment_content))
     return attachments, attachments_content
@@ -622,7 +622,7 @@ def get_ticket_history_by_id(ticket_id, history_id):
 
     suffix_url = 'ticket/{}/history/id/{}'.format(ticket_id, history_id)
     raw_history = http_request('GET', suffix_url)
-    return parse_history_response(raw_history.content)
+    return parse_history_response(raw_history.text)
 
 
 def parse_history_response(raw_history):
@@ -723,7 +723,8 @@ def get_ticket():
     if not raw_ticket or 'Ticket {} does not exist'.format(ticket_id) in raw_ticket.text:
         return_error('Failed to get ticket, possibly does not exist.')
     ticket_context = []
-    data = raw_ticket.content.split('\n')
+    data_list = raw_ticket.text
+    data = data_list.split('\n')
     data = data[2:]
     current_ticket = {}
     for line in data:
@@ -808,7 +809,7 @@ def add_comment_attachment(ticket_id, encoded, files_data):
     suffix_url = 'ticket/{}/comment'.format(ticket_id)
     comment = http_request('POST', suffix_url, files=files_data)
 
-    return comment.content
+    return comment.text
 
 
 def add_comment():
@@ -817,9 +818,10 @@ def add_comment():
     content = 'Action: comment\n'
     if text:
         content += '\nText: ' + text.encode('utf-8')
-    attachments = demisto.args().get('attachment')
+    attachments = demisto.args().get('attachment', '')
+    files_data = {}
     if attachments:
-        files_data = {}
+
         if isinstance(attachments, list):
             attachments_list = attachments
         else:  # Given as string
@@ -830,14 +832,14 @@ def add_comment():
             files_data['attachment_{:d}'.format(i + 1)] = (file_name, open(file['path'], 'rb'))
             content += 'Attachment: {}\n'.format(file_name)
 
-    encoded = "content=" + urllib.quote_plus(content)
+    encoded = "content=" + urllib.parse.quote_plus(content)
     if attachments:
         files_data.update({'content': (None, content)})  # type: ignore
         comment = add_comment_attachment(ticket_id, encoded, files_data)
         return_outputs('Added comment to ticket {} successfully.'.format(ticket_id), {}, comment)
     else:
         added_comment = add_comment_request(ticket_id, encoded)
-        if '200' in added_comment.content:
+        if '200' in added_comment.text:
             demisto.results('Added comment to ticket {} successfully.'.format(ticket_id))
         else:
             return_error('Failed to add comment')
@@ -860,9 +862,9 @@ def add_reply():
     if cc:
         content += '\nCc: ' + cc
     try:
-        encoded = "content=" + urllib.quote_plus(content)
+        encoded = "content=" + urllib.parse.quote_plus(content)
         added_reply = add_reply_request(ticket_id, encoded)
-        if '200' in added_reply.content:
+        if '200' in added_reply.text:
             demisto.results('Replied successfully to ticket {}.'.format(ticket_id))
         else:
             return_error('Failed to reply')
@@ -913,18 +915,20 @@ def main():
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
+    params = demisto.params()
+
     ''' GLOBAL VARS '''
     global SERVER, USERNAME, PASSWORD, BASE_URL, USE_SSL, FETCH_PRIORITY, FETCH_STATUS, FETCH_QUEUE, HEADERS, REFERER
-    SERVER = demisto.params().get('server', '')[:-1] if demisto.params().get('server', '').endswith(
-        '/') else demisto.params().get('server', '')
-    USERNAME = demisto.params()['credentials']['identifier']
-    PASSWORD = demisto.params()['credentials']['password']
+    SERVER = params.get('server', '')[:-1] if params.get('server', '').endswith(
+        '/') else params.get('server', '')
+    USERNAME = params.get('credentials').get('identifier', '')
+    PASSWORD = params.get('credentials').get('password', '')
     BASE_URL = urljoin(SERVER, '/REST/1.0/')
-    USE_SSL = not demisto.params().get('unsecure', False)
-    FETCH_PRIORITY = int(demisto.params()['fetch_priority']) - 1
-    FETCH_STATUS = demisto.params()['fetch_status']
-    FETCH_QUEUE = demisto.params()['fetch_queue']
-    REFERER = demisto.params().get('referer')
+    USE_SSL = not params.get('unsecure', False)
+    FETCH_PRIORITY = int(params.get('fetch_priority', "0")) - 1
+    FETCH_STATUS = params.get('fetch_status')
+    FETCH_QUEUE = params.get('fetch_queue')
+    REFERER = params.get('referer')
     HEADERS = {'Referer': REFERER} if REFERER else {}
 
     LOG('command is %s' % (demisto.command(),))
@@ -965,10 +969,10 @@ def main():
             add_reply()
 
     except Exception as e:
-        LOG(e.message)
+        LOG(e)
         LOG.print_log()
         raise
 
 
-if __name__ in ('__builtin__', 'builtins'):
+if __name__ in ('__builtin__', 'builtins', "__main__"):
     main()

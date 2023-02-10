@@ -2,9 +2,9 @@ from SearchIncidentsV2 import *
 import pytest
 
 data_test_check_if_found_incident = [
-    ([], 'failed to get incidents from demisto.\nGot: []'),
-    (None, 'failed to get incidents from demisto.\nGot: None'),
-    ('', 'failed to get incidents from demisto.\nGot: '),
+    ([], 'failed to get incidents from xsoar.\nGot: []'),
+    (None, 'failed to get incidents from xsoar.\nGot: None'),
+    ('', 'failed to get incidents from xsoar.\nGot: '),
     ([{'Contents': {'data': None}}], False),
     ([{'Contents': {'data': 'test'}}], True),
     ([{'Contents': {'test': 'test'}}], "{'test': 'test'}"),
@@ -47,6 +47,10 @@ data_test_is_id_valid = [
     (123, True),
     ('123', True),
     (123.3, False),
+    ('1,2,3', True),
+    ([1, 2, 3], True),
+    ('[1,2,3]', True),
+
 ]
 
 
@@ -99,7 +103,19 @@ FILTER_TO_MATCHED_INCIDENTS = [
     ({'type': ['Type-A', 'SomeType-A']}, ['2', '3']),
     ({'type': 'Another'}, []),
     ({'name': 'Phishing'}, ['1']),
-    ({'name': 'Phishing,Phishing Campaign'}, ['1', '2']),
+    ({'name': 'Phishing,Phishing Campaign'}, ['1', '2'])
+]
+
+INCIDENT = [
+    {'CustomFields':
+         {'hostname': 'host_name',  # noqa
+          'initiatedby': 'initiated_by',
+          'targetprocessname': 'target_process_name',
+          'username': 'user_name'},
+
+     'status': 0,
+     'severity': 1,
+     },
 ]
 
 
@@ -107,3 +123,60 @@ FILTER_TO_MATCHED_INCIDENTS = [
 def test_apply_filters(args, expected_incident_ids):
     incidents = apply_filters(EXAMPLE_INCIDENTS_RAW_RESPONSE, args)
     assert [incident['id'] for incident in incidents] == expected_incident_ids
+
+
+def get_incidents_mock(command, args, extract_contents=True, fail_on_error=True):
+    ids = args.get('id', '').split(',')
+    return [{'Contents': {'data': [incident for incident in EXAMPLE_INCIDENTS_RAW_RESPONSE if incident['id'] in ids]}}]
+
+
+@pytest.mark.parametrize('args,filtered_args,expected_result', [
+    ({}, {}, []),
+    (dict(trimevents='0'), {}, []),
+    (dict(trimevents='1'), dict(trimevents='1'), []),
+    ({'id': 1}, {'id': '1'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0]]),
+    ({'id': [1, 2]}, {'id': '1,2'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
+    ({'id': '1,2'}, {'id': '1,2'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
+])
+def test_filter_events(mocker, args, filtered_args, expected_result):
+    """
+    Given:
+        - The script args.
+
+    When:
+        - Running the search_incidents function.
+
+    Then:
+        - Validating the outputs as expected.
+        - Validating the filtered args that was sent to the api is as expected.
+    """
+    import SearchIncidentsV2
+    execute_mock = mocker.patch.object(SearchIncidentsV2, 'execute_command', side_effect=get_incidents_mock)
+    _, res, _ = SearchIncidentsV2.search_incidents(args)
+    assert res == expected_result
+    assert execute_mock.call_count == 1
+    assert execute_mock.call_args[0][1] == filtered_args
+
+
+@pytest.mark.parametrize('platform, link_type, expected_result', [
+    ('x2', 'alertLink', 'alerts?action:openAlertDetails='),
+    ('xsoar', 'incidentLink', '#/Details/'),
+])
+def test_add_incidents_link(mocker, platform, link_type, expected_result):
+    mocker.patch.object(demisto, 'getLicenseCustomField', return_value='')
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': ''})
+    data = add_incidents_link(EXAMPLE_INCIDENTS_RAW_RESPONSE, platform)
+    assert expected_result in data[0][link_type]
+
+
+def test_transform_to_alert_data():
+    incident = transform_to_alert_data(INCIDENT)[0]
+    assert incident['hostname'] == 'host_name'
+    assert incident['status'] == 'PENDING'
+    assert incident['severity'] == 'LOW'
+
+
+def test_summarize_incidents():
+    assert summarize_incidents({'add_fields_to_summarize_context': 'test'}, [{'id': 'test', 'CustomFields': {}}]) == [
+        {'closed': 'n/a', 'created': 'n/a', 'id': 'test', 'incidentLink': 'n/a', 'name': 'n/a', 'owner': 'n/a',
+         'severity': 'n/a', 'status': 'n/a', 'test': 'n/a', 'type': 'n/a'}]

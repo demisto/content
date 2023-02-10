@@ -6,10 +6,11 @@ from CommonServerUserPython import *
 
 import json
 import requests
+import urllib3
 from typing import List, Dict
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
@@ -69,8 +70,8 @@ def http_request(method: str, suffix_url: str, data=None):
             data=data,  # type: ignore
             headers=HEADERS
         )
-    except requests.exceptions.SSLError:
-        ssl_error = 'Could not connect to BeyondTrust: Could not verify certificate.'
+    except requests.exceptions.SSLError as e:
+        ssl_error = f'Could not connect to BeyondTrust, SSL error: {e}'
         return return_error(ssl_error)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
             requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:

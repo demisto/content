@@ -2,11 +2,11 @@
  "defaultIncidentType": "Google Cloud SCC Finding",
  "description": "Classifies Google Cloud SCC incidents",
  "feed": false,
- "id": "GoogleCloudSCC",
+ "id": "GoogleCloudSCC - Classifier",
  "keyTypeMap": {
   "Google Cloud SCC Finding": "Google Cloud SCC Finding"
  },
- "name": "GoogleCloudSCC - classifier",
+ "name": "GoogleCloudSCC - Classifier",
  "propagationLabels": [
   "all"
  ],

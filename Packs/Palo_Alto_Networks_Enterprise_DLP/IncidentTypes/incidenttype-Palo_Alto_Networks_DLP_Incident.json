@@ -1,0 +1,30 @@
+{
+    "id": "Data Loss Prevention",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Data Loss Prevention",
+    "prevName": "Data Loss Prevention",
+    "color": "#F50057",
+    "playbookId": "DLP Incident Feedback Loop",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": true,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Palo Alto Networks Enterprise DLP Incident Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "All",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "5.5.0"
+}

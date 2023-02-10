@@ -20,8 +20,8 @@ AWS_ROLE_ARN = demisto.params().get('roleArn')
 AWS_ROLE_SESSION_NAME = demisto.params().get('roleSessionName')
 AWS_ROLE_SESSION_DURATION = demisto.params().get('sessionDuration')
 AWS_ROLE_POLICY = None
-AWS_ACCESS_KEY_ID = demisto.params().get('access_key')
-AWS_SECRET_ACCESS_KEY = demisto.params().get('secret_key')
+AWS_ACCESS_KEY_ID = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('access_key')
+AWS_SECRET_ACCESS_KEY = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret_key')
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
 proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
 config = Config(
@@ -61,7 +61,7 @@ def parse_tag_field(tags_str):
             for f in tags_str.split(';'):
                 match = regex.match(f)
                 if match is None:
-                    demisto.log('could not parse field: %s' % (f,))
+                    demisto.debug('could not parse field: %s' % (f,))
                     continue
 
                 tags.append({

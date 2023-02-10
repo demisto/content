@@ -42,5 +42,6 @@
     },
     "typeId": "Indicator Feed",
     "toVersion": "5.9.9",
-    "version": -1
+    "version": -1,
+    "description": ""
 }

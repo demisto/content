@@ -143,11 +143,7 @@ EXPECTED_DOMAIN_RESULT = {
                     'Ref': [2],
                     'Source': 'Maltiverse Research Team'
                 }
-            ],
-            'ResolvedIP': {
-                'IP': ['172.217.7.174'],
-                'Timestamp': ['2019-03-17 12:57:27']
-            }
+            ]
         }
     ]
 }

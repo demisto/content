@@ -1,0 +1,41 @@
+{
+    "sha256": "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2",
+    "src": {
+        "report": "https://reported-domain.local/test.html"
+    },
+    "ioc_value": "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2",
+    "sha1": "",
+    "industry": [],
+    "fseen": "1620691200",
+    "ioc_type": "sha256",
+    "score": {
+        "total": "6",
+        "src": "76.8",
+        "tags": "0.89",
+        "frequency": "0.1"
+    },
+    "fp": {
+        "alarm": "false",
+        "descr": ""
+    },
+    "filename": [],
+    "cve": [],
+    "collect": "1644624000",
+    "lseen": "1644537600",
+    "description": "IOC with tags: malware. Related threats: medusa, flubot",
+    "threat": [
+        "medusa",
+        "flubot"
+    ],
+    "id": "c86948e7-eb72-3fe1-96e9-429e885cea3b",
+    "tags": {
+        "str": [
+            "malware"
+        ],
+        "codes": [
+            "10"
+        ]
+    },
+    "title": "RST Threat feed. IOC: sha256:f2ca1bb6c7e907d0...",
+    "md5": ""
+}

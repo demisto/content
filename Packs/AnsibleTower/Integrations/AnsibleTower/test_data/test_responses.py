@@ -156,3 +156,112 @@ ADHOC_COMMAND_LAUNCH_EXPECTED = \
      'status': 'pending',
      'type': 'ad_hoc_command',
      'url': '/api/v2/ad_hoc_commands/1/'}
+
+ANSIBLE_TOWER_JOB_EVENTS_LIST_BY_ID_RES = {
+    "count": 9,
+    "next": "null",
+    "previous": "null",
+    "results": [
+        {
+            "id": 165,
+            "type": "job_event",
+            "url": "/api/v2/job_events/165/",
+            "related": {
+                "job": "/api/v2/jobs/39/",
+                "children": "/api/v2/job_events/165/children/"
+            },
+            "summary_fields": {
+                "job": {
+                    "id": 39,
+                    "name": "Demo Job Template",
+                    "description": "",
+                    "status": "successful",
+                    "failed": False,
+                    "elapsed": 2.992,
+                    "type": "job",
+                    "job_template_id": 7,
+                    "job_template_name": "Demo Job Template"
+                },
+                "role": {}
+            },
+            "created": "2022-02-08T11:59:05.179012Z",
+            "modified": "2022-02-08T11:59:05.298323Z",
+            "job": 39,
+            "event": "playbook_on_start",
+            "counter": 1,
+            "event_display": "Playbook Started",
+            "event_data": {
+                "playbook": "hello_world.yml",
+                "playbook_uuid": "f86bf74e-17dd-45c4-864d-001e6b848cd3",
+                "uuid": "f86bf74e-17dd-45c4-864d-001e6b848cd3"
+            },
+            "event_level": 0,
+            "failed": False,
+            "changed": False,
+            "uuid": "f86bf74e-17dd-45c4-864d-001e6b848cd3",
+            "parent_uuid": "",
+            "host": "null",
+            "host_name": "",
+            "playbook": "hello_world.yml",
+            "play": "",
+            "task": "",
+            "role": "",
+            "stdout": "",
+            "start_line": 0,
+            "end_line": 0,
+            "verbosity": 0
+        }
+    ]
+}
+
+ANSIBLE_TOWER_JOB_EVENTS_LIST_BY_ID_EXPECTED = [
+        {
+            "id": 165,
+            "type": "job_event",
+            "url": "/api/v2/job_events/165/",
+            "related": {
+                "job": "/api/v2/jobs/39/",
+                "children": "/api/v2/job_events/165/children/"
+            },
+            "summary_fields": {
+                "job": {
+                    "id": 39,
+                    "name": "Demo Job Template",
+                    "description": "",
+                    "status": "successful",
+                    "failed": False,
+                    "elapsed": 2.992,
+                    "type": "job",
+                    "job_template_id": 7,
+                    "job_template_name": "Demo Job Template"
+                },
+                "role": {}
+            },
+            "created": "2022-02-08T11:59:05.179012Z",
+            "modified": "2022-02-08T11:59:05.298323Z",
+            "job": 39,
+            "event": "playbook_on_start",
+            "counter": 1,
+            "event_display": "Playbook Started",
+            "event_data": {
+                "playbook": "hello_world.yml",
+                "playbook_uuid": "f86bf74e-17dd-45c4-864d-001e6b848cd3",
+                "uuid": "f86bf74e-17dd-45c4-864d-001e6b848cd3"
+            },
+            "event_level": 0,
+            "failed": False,
+            "changed": False,
+            "uuid": "f86bf74e-17dd-45c4-864d-001e6b848cd3",
+            "parent_uuid": "",
+            "host": "null",
+            "host_name": "",
+            "playbook": "hello_world.yml",
+            "play": "",
+            "task": "",
+            "role": "",
+            "stdout": "",
+            "start_line": 0,
+            "end_line": 0,
+            "verbosity": 0
+        }
+]

@@ -1,6 +1,6 @@
 import json
 import time
-import urlparse
+import urllib.parse
 import httplib2
 
 import googleapiclient
@@ -17,12 +17,12 @@ from CommonServerPython import *  # noqa: F401
 
 # Params for assembling object of the Service Account Credentials File Contents
 PARAMS = demisto.params()
-SERVICE_ACT_PROJECT_ID = PARAMS.get('project_id').encode('utf-8')
-PRIVATE_KEY_ID = PARAMS.get('private_key_id').encode('utf-8')
-PRIVATE_KEY = PARAMS.get('private_key').encode('utf-8')
-CLIENT_EMAIL = PARAMS.get('client_email').encode('utf-8')
-CLIENT_ID = PARAMS.get('client_id').encode('utf-8')
-CLIENT_X509_CERT_URL = PARAMS.get('client_x509_cert_url').encode('utf-8')
+SERVICE_ACT_PROJECT_ID = PARAMS.get('project_id')
+PRIVATE_KEY_ID = PARAMS.get('private_key_id')
+PRIVATE_KEY = PARAMS.get('private_key')
+CLIENT_EMAIL = PARAMS.get('client_email')
+CLIENT_ID = PARAMS.get('client_id')
+CLIENT_X509_CERT_URL = PARAMS.get('client_x509_cert_url')
 PROXY = PARAMS.get('proxy')
 DISABLE_SSL = PARAMS.get('insecure')
 
@@ -56,7 +56,7 @@ def get_http_client_with_proxy():
     https_proxy = proxies['https']
     if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
         https_proxy = 'https://' + https_proxy
-    parsed_proxy = urlparse.urlparse(https_proxy)
+    parsed_proxy = urllib.parse.urlparse(https_proxy)
     proxy_info = httplib2.ProxyInfo(
         proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
         proxy_host=parsed_proxy.hostname,
@@ -111,7 +111,7 @@ def make_project_body(project_body):
     returns: (dict) body
         dict object formatted to be used in the create or update API call
     """
-    keys = project_body.keys()
+    keys = list(project_body.keys())
     body = {}
     if 'project_id' in keys:
         body['projectId'] = project_body['project_id']
@@ -641,7 +641,7 @@ def main():
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module()
-        elif demisto.command() in commands.keys():
+        elif demisto.command() in list(commands.keys()):
             service = build_and_authenticate()
             commands[demisto.command()](service)
 

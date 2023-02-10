@@ -1,0 +1,278 @@
+id: Recovery Plan
+version: -1
+name: Recovery Plan
+description: |-
+  This playbook handles all the recovery actions available with Cortex XSIAM, including the following tasks:
+  * Unisolate endpoint
+  * Restore quarantined file
+
+  Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6664776c-7209-42a0-8272-5f7f66756511
+    type: start
+    task:
+      id: 6664776c-7209-42a0-8272-5f7f66756511
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 82bb4625-493c-4e79-8ba2-9ded7a609000
+    type: condition
+    task:
+      id: 82bb4625-493c-4e79-8ba2-9ded7a609000
+      version: -1
+      name: Should unisolate the endpoint?
+      description: Whether to unisolate the endpoint.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.unIsolateEndpoint
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f44d89fc-f4c3-4c8b-84f1-c219fe4544ad
+    type: regular
+    task:
+      id: f44d89fc-f4c3-4c8b-84f1-c219fe4544ad
+      version: -1
+      name: Unisolate endpoint
+      description: Reverses the isolation of an endpoint.
+      script: '|||core-unisolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      endpoint_id:
+        complex:
+          root: inputs.endpointID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 10b17a6b-93a9-4d5a-8d84-7950f294732a
+    type: title
+    task:
+      id: 10b17a6b-93a9-4d5a-8d84-7950f294732a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 1f8e95ae-1cf7-44c0-896b-576fb895a635
+    type: condition
+    task:
+      id: 1f8e95ae-1cf7-44c0-896b-576fb895a635
+      version: -1
+      name: Should restore the quarantined file?
+      description: Whether to restore the quarantined file.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.releaseFile
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 80ff52ba-235e-49e9-8813-e4f79b1bd407
+    type: regular
+    task:
+      id: 80ff52ba-235e-49e9-8813-e4f79b1bd407
+      version: -1
+      name: Restore file
+      description: Restores a quarantined file on requested endpoints.
+      script: '|||core-restore-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      endpoint_id:
+        complex:
+          root: inputs.endpointID
+      file_hash:
+        complex:
+          root: inputs.FileHash
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_yes": 0.51,
+      "1_3_#default#": 0.54,
+      "4_3_#default#": 0.54,
+      "4_5_yes": 0.43
+    },
+    "paper": {
+      "dimensions": {
+        "height": 595,
+        "width": 940,
+        "x": 170,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: unIsolateEndpoint
+  value:
+    simple: "true"
+  required: false
+  description: Set to True to cancel the endpoint isolation.
+  playbookInputQuery:
+- key: releaseFile
+  value:
+    simple: "false"
+  required: false
+  description: Set to True to release the quarantined file.
+  playbookInputQuery:
+- key: endpointID
+  value: {}
+  required: false
+  description: The endpoint ID.
+  playbookInputQuery:
+- key: FileHash
+  value: {}
+  required: false
+  description: The file hash.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
+- xpanse
+fromversion: 6.6.0

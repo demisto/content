@@ -21,7 +21,7 @@ def main():
         B) Uses base branch of merged external PR as head branch of the new PR to master.
         C) Adds 'docs-approved' label if it was on the merged external PR.
         D) Requests review from the same users as on the merged external PR.
-        E) Labels the PR with the "Contribution" label.
+        E) Add the same labels that the external PR had to the internal PR (including contribution label).
         F) Assigns the same users as on the merged external PR.
 
     Will use the following env vars:
@@ -53,16 +53,11 @@ def main():
     pr = content_repo.create_pull(title=title, body=body, base=base_branch, head=head_branch, draft=False)
     print(f'{t.cyan}Internal PR Created - {pr.html_url}{t.normal}')
 
+    # labels should already contain the contribution label from the external PR.
     labels = [label.name for label in merged_pr.labels]
-    docs_approved_label = 'docs-approved'
-    if docs_approved_label in labels:
-        pr.add_to_labels(docs_approved_label)
-        print(f'{t.cyan}"docs-approved" label added{t.normal}')
-
-    # Add 'Contribution' Label to PR
-    contribution_label = 'Contribution'
-    pr.add_to_labels(contribution_label)
-    print(f'{t.cyan}Added "Contribution" label to the PR{t.normal}')
+    for label in labels:
+        pr.add_to_labels(label)
+        print(f'{t.cyan}"{label}" label added to the Internal PR{t.normal}')
 
     merged_by = merged_pr.merged_by.login
     reviewers, _ = merged_pr.get_review_requests()

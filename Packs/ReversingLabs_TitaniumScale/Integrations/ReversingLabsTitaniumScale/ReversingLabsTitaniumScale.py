@@ -5,7 +5,7 @@ import demistomock as demisto
 import requests
 import json
 
-VERSION = "v1.0.0"
+VERSION = "v1.0.3"
 USER_AGENT = f"ReversingLabs XSOAR TitaniumScale {VERSION}"
 HOST = demisto.params().get('host')
 TOKEN = demisto.params().get('token')

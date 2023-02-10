@@ -1,0 +1,32 @@
+{
+    "id": "incident_threatconnectgrouptype",
+    "description": "The association to bind to the tpeName field from Threatconnect.",
+    "version": -1,
+    "modified": "2022-09-04T13:20:24.268129Z",
+    "name": "ThreatConnect Group Type",
+    "ownerOnly": false,
+    "cliName": "threatconnectgrouptype",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "ThreatConnect"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

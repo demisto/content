@@ -321,6 +321,70 @@ RESPONSE_FETCH_INCIDENT_ITEM = {
     "watchlisted": False,
     "workflowName": "SOCTeamReview"
 }
+
+RESPONSE_FETCH_INCIDENT_ITEM_VERSION_6_4 = {
+    "assignedGroup": "SECURITYOPERATIONS",
+    "casecreatetime": 1579500273595,
+    "entity": "Users",
+    "incidentId": "10134",
+    "incidentStatus": "OPEN",
+    "incidentType": "Policy",
+    "isWhitelisted": False,
+    "lastUpdateDate": 1585227067399,
+    "parentCaseId": "",
+    "priority": "low",
+    "reason": [
+        "Resource: BLUECOAT",
+        {"Policies": ["Uploads to personal websites"]},
+        "Threat Model: Data egress via network uploads"
+    ],
+    "riskscore": 0,
+    "sandBoxPolicy": False,
+    "statusCompleted": False,
+    "tenantInfo": {
+        "tenantcolor": "#000000",
+        "tenantid": 1,
+        "tenantname": "Securonix",
+        "tenantshortcode": "SE"
+    },
+    "url": "demisto.com",
+    "violatorId": "12",
+    "violatorSubText": "1012",
+    "violatorText": "Secret secret",
+    "watchlisted": False,
+    "workflowName": "SOCTeamReview"
+}
+
+RESPONSE_FETCH_INCIDENT_ITEM_NO_THREAT_MODEL = {
+    "assignedGroup": "SECURITYOPERATIONS",
+    "casecreatetime": 1579500273595,
+    "entity": "Users",
+    "incidentId": "10134",
+    "incidentStatus": "OPEN",
+    "incidentType": "Policy",
+    "isWhitelisted": False,
+    "lastUpdateDate": 1585227067399,
+    "parentCaseId": "",
+    "priority": "low",
+    "reason": [
+        "Resource: BLUECOAT"
+    ],
+    "riskscore": 0,
+    "sandBoxPolicy": False,
+    "statusCompleted": False,
+    "tenantInfo": {
+        "tenantcolor": "#000000",
+        "tenantid": 1,
+        "tenantname": "Securonix",
+        "tenantshortcode": "SE"
+    },
+    "url": "demisto.com",
+    "violatorId": "12",
+    "violatorSubText": "1012",
+    "violatorText": "Secret secret",
+    "watchlisted": False,
+    "workflowName": "SOCTeamReview"
+}
 RESPONSE_FETCH_INCIDENT_ITEM_MULTIPLE_REASONS = {
     "assignedGroup": "SECURITYOPERATIONS",
     "casecreatetime": 1579500273595,

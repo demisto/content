@@ -1,0 +1,3 @@
+{
+  "reply": "import os\nimport sys\nimport traceback\n\n\ndef run(file_path):\n    path = os.path.expanduser(file_path)\n    path = os.path.expandvars(path)\n    if os.path.isabs(path):\n        try:\n            os.remove(path)\n        except IOError:\n            sys.stderr.write(f\"File not accessible: {path}\")\n            return False\n        except Exception as e:\n            sys.stderr.write(f\"Exception occured: {traceback.format_exc()}\")\n            return False\n    return True"
+}

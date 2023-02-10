@@ -1,0 +1,301 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Hurukai - Get Scheduled Task List
+inputs:
+- description: ''
+  key: agentid
+  playbookInputQuery:
+  required: true
+  value: {}
+name: Hurukai - Get Scheduled Task List
+outputs: []
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 96e7c0d9-271f-4386-882d-27cf58031a21
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: 96e7c0d9-271f-4386-882d-27cf58031a21
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": -980
+        }
+      }
+  '3':
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Ids:
+        simple: ${Harfanglab.Job.ID}
+      Interval:
+        simple: '1'
+      PollingCommandArgName:
+        simple: ids
+      PollingCommandName:
+        simple: harfanglab-job-info
+      Timeout:
+        simple: '60'
+      dt:
+        simple: Harfanglab.Job.Info(val.Status !== 'finished').ID
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 59b9734b-5fd8-43f5-8a41-822bf9efc51a
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 59b9734b-5fd8-43f5-8a41-822bf9efc51a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -260
+        }
+      }
+  '5':
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: cbbe80e6-ecce-4eef-8517-350fe911d4f4
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: cbbe80e6-ecce-4eef-8517-350fe911d4f4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 100
+        }
+      }
+  '6':
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agent_id:
+        simple: ${inputs.agentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Start a job to get the list of scheduled tasks from a host (Windows)
+      id: b11ba22d-9262-4bff-8a1b-e0e310006563
+      iscommand: true
+      name: harfanglab-job-scheduledtasklist
+      script: Hurukai|||harfanglab-job-scheduledtasklist
+      type: regular
+      version: -1
+    taskid: b11ba22d-9262-4bff-8a1b-e0e310006563
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -450
+        }
+      }
+  '7':
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Scheduled task list
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      job_id:
+        simple: ${Harfanglab.Job.ID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Get a hostname's list of scheduled tasks from job results
+      id: 7a094a17-244c-46e5-8727-bddd4bda155b
+      iscommand: true
+      name: harfanglab-result-scheduledtasklist
+      script: Hurukai|||harfanglab-result-scheduledtasklist
+      type: regular
+      version: -1
+    taskid: 7a094a17-244c-46e5-8727-bddd4bda155b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -90
+        }
+      }
+  '8':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Agent
+                root: Harfanglab
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: ostype
+                  operator: getField
+          operator: isEqualString
+          right:
+            value:
+              simple: windows
+      label: windows
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '5'
+      windows:
+      - '6'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 7f6fbb8d-3d5d-4431-8e21-ca432e8c6a00
+      iscommand: false
+      name: Which platform is the agent running on ?
+      type: condition
+      version: -1
+      description: ''
+    taskid: 7f6fbb8d-3d5d-4431-8e21-ca432e8c6a00
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": -670
+        }
+      }
+  '9':
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agent_id:
+        simple: ${inputs.agentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Get endpoint information from agent_id
+      id: c15e9b54-ff82-4310-8baf-55fec418e6ec
+      iscommand: true
+      name: harfanglab-get-endpoint-info
+      script: Hurukai|||harfanglab-get-endpoint-info
+      type: regular
+      version: -1
+    taskid: c15e9b54-ff82-4310-8baf-55fec418e6ec
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": -845
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1145,
+        "width": 530,
+        "x": 550,
+        "y": -980
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0
+description: Get the list of scheduled tasks

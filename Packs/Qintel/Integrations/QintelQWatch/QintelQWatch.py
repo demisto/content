@@ -111,8 +111,12 @@ def _set_fetch_params(params, now):
 
     last_run = demisto.getLastRun()
 
-    max_time = parse_date(MAX_START_TIME).timestamp()
-    start_time = parse_date(params.get('first_fetch')).timestamp()
+    max_start_time_date = parse_date(MAX_START_TIME)
+    assert max_start_time_date is not None
+    max_time = max_start_time_date.timestamp()
+    first_fetch_date = parse_date(params.get('first_fetch'))
+    assert first_fetch_date is not None, f"could not parse {params.get('first_fetch')}"
+    start_time = first_fetch_date.timestamp()
     if last_run and 'start_time' in last_run:
         start_time = last_run.get('start_time')
 

@@ -10,4 +10,4 @@ Using this pack, you can monitor and prevent phishing attacks by controlling the
 - Query the following PAN-OS log types: traffic, threat, url, data-filtering, and Wildfire.
 - Manage External Dynamic Lists (EDLs).
 
-As part of this pack, you will get several playbooks to facilitate your workflows. 
+As part of this pack, you will get several playbooks to facilitate your workflows.

@@ -1,0 +1,7 @@
+name: OneLogin Modeling Rule
+id: onelogin_modeling_rule
+fromversion: 6.8.0
+toversion: 6.9.9
+tags: onelogin
+rules: ''
+schema: ''

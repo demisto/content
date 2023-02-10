@@ -1,0 +1,7 @@
+fromversion: 6.8.0
+id: jamf_modeling_rule
+name: Jamf Modeling Rule
+rules: ''
+schema: ''
+tags: jamf
+toversion: 6.9.9

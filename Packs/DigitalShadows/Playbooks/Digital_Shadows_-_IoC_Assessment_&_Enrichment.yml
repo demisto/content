@@ -1,0 +1,871 @@
+id: Digital Shadows - IoC Assessment & Enrichment
+version: -1
+name: Digital Shadows - IoC Assessment & Enrichment
+description: Enrich indicators by providing intelligence and more associated indicators based on confirmed reporting in Digital Shadows SearchLight.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 26c6051b-dd8f-4e42-8b4d-49fe612f05ee
+    type: start
+    task:
+      id: 26c6051b-dd8f-4e42-8b4d-49fe612f05ee
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: 792460d8-d723-4dfa-88a7-03af9d4cae39
+    type: title
+    task:
+      id: 792460d8-d723-4dfa-88a7-03af9d4cae39
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '16':
+    id: '16'
+    taskid: a40dafdc-ced5-4664-8e82-1843b9faf58f
+    type: condition
+    task:
+      id: a40dafdc-ced5-4664-8e82-1843b9faf58f
+      version: -1
+      name: Is an IP Address Included?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      no:
+      - '30'
+      yes:
+      - '47'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IoC_IP
+            iscontext: true
+    - label: no
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.IoC_IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '17':
+    id: '17'
+    taskid: 95667365-0004-4290-85fe-2071303ef993
+    type: condition
+    task:
+      id: 95667365-0004-4290-85fe-2071303ef993
+      version: -1
+      name: Is a CVE Included?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      no:
+      - '13'
+      yes:
+      - '48'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IoC_CVE
+            iscontext: true
+    - label: no
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.IoC_CVE
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '30':
+    id: '30'
+    taskid: 4fe61d32-6d27-4ccc-8bdc-f18a1a7803f9
+    type: condition
+    task:
+      id: 4fe61d32-6d27-4ccc-8bdc-f18a1a7803f9
+      version: -1
+      name: Is a Domain Included?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      no:
+      - '43'
+      yes:
+      - '49'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IoC_Domain
+            iscontext: true
+    - label: no
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.IoC_Domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '43':
+    id: '43'
+    taskid: 4b2a5654-7208-4236-86d0-65e62c4a7a99
+    type: condition
+    task:
+      id: 4b2a5654-7208-4236-86d0-65e62c4a7a99
+      version: -1
+      name: Is a URL Included?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      no:
+      - '44'
+      yes:
+      - '50'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IoC_URL
+            iscontext: true
+    - label: no
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.IoC_URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '44':
+    id: '44'
+    taskid: 78a15d3f-61b9-439f-8679-a091a17179bb
+    type: condition
+    task:
+      id: 78a15d3f-61b9-439f-8679-a091a17179bb
+      version: -1
+      name: Is an MD5 Included?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      no:
+      - '45'
+      yes:
+      - '51'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IoC_MD5
+            iscontext: true
+    - label: no
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.IoC_MD5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '45':
+    id: '45'
+    taskid: beaf8a38-565b-4560-810e-838cad30b43a
+    type: condition
+    task:
+      id: beaf8a38-565b-4560-810e-838cad30b43a
+      version: -1
+      name: Is a SHA256 Included?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      no:
+      - '46'
+      yes:
+      - '52'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IoC_SHA256
+            iscontext: true
+    - label: no
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.IoC_SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '46':
+    id: '46'
+    taskid: 46050db4-8ded-4bc6-8c53-ec0ddc201796
+    type: condition
+    task:
+      id: 46050db4-8ded-4bc6-8c53-ec0ddc201796
+      version: -1
+      name: Is a SHA1 Included?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      no:
+      - '17'
+      yes:
+      - '53'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IoC_SHA1
+            iscontext: true
+    - label: no
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.IoC_SHA1
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '47':
+    id: '47'
+    taskid: 46fbcf9c-66fe-4ba7-8611-b46f252c56ec
+    type: playbook
+    task:
+      id: 46fbcf9c-66fe-4ba7-8611-b46f252c56ec
+      version: -1
+      name: Digital Shadows - IP_IoC Assessment & Enrichment
+      playbookName: Digital Shadows - IP_IoC Assessment & Enrichment
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: Enrichment of IP IOC types - sub-playbook for IOC Assessment & Enrichment playbook
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": -740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '30'
+    scriptarguments:
+      IoC_IP:
+        complex:
+          root: .
+          transformers:
+          - operator: DsSearchQueryArray
+            args:
+              cve: {}
+              domain: {}
+              ip:
+                value:
+                  simple: IP.Address
+                iscontext: true
+              md5: {}
+              sha1: {}
+              sha256: {}
+              url: {}
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+      forEach: true
+  '48':
+    id: '48'
+    taskid: 0675c44f-f006-471f-8fdb-408847659369
+    type: playbook
+    task:
+      id: 0675c44f-f006-471f-8fdb-408847659369
+      version: -1
+      name: Digital Shadows - CVE_IoC Assessment & Enrichment
+      playbookName: Digital Shadows - CVE_IoC Assessment & Enrichment
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: Enrichment of CVE IOC types - sub-playbook for IOC Assessment & Enrichment playbook
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      IoC_CVE:
+        complex:
+          root: .
+          transformers:
+          - operator: DsSearchQueryArray
+            args:
+              field:
+                value:
+                  simple: CVE.ID
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+      forEach: true
+  '49':
+    id: '49'
+    taskid: d970da70-c59d-4ad0-8ed3-af2512fa68d3
+    type: playbook
+    task:
+      id: d970da70-c59d-4ad0-8ed3-af2512fa68d3
+      version: -1
+      name: Digital Shadows - Domain_IoC Assessment & Enrichment
+      playbookName: Digital Shadows - Domain_IoC Assessment & Enrichment
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: Enrichment of Domain IOC types - sub-playbook for IOC Assessment & Enrichment playbook
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": -450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '43'
+    scriptarguments:
+      IoC_Domain:
+        complex:
+          root: .
+          transformers:
+          - operator: DsSearchQueryArray
+            args:
+              cve: {}
+              domain:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+              ip: {}
+              md5: {}
+              sha1: {}
+              sha256: {}
+              url: {}
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+      forEach: true
+  '50':
+    id: '50'
+    taskid: 3cfe8a7d-df2b-4ec4-8c75-6f85dffebe9c
+    type: playbook
+    task:
+      id: 3cfe8a7d-df2b-4ec4-8c75-6f85dffebe9c
+      version: -1
+      name: Digital Shadows - URL_IoC Assessment & Enrichment
+      playbookName: Digital Shadows - URL_IoC Assessment & Enrichment
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: Enrichment of URL IOC types - sub-playbook for IOC Assessment & Enrichment playbook
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '44'
+    scriptarguments:
+      IoC_URL:
+        complex:
+          root: .
+          transformers:
+          - operator: DsSearchQueryArray
+            args:
+              cve: {}
+              domain: {}
+              ip: {}
+              md5: {}
+              sha1: {}
+              sha256: {}
+              url:
+                value:
+                  simple: URL.Data
+                iscontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+      forEach: true
+  '51':
+    id: '51'
+    taskid: a4aabb83-b496-4fcf-8bfc-6354d80994b4
+    type: playbook
+    task:
+      id: a4aabb83-b496-4fcf-8bfc-6354d80994b4
+      version: -1
+      name: Digital Shadows - MD5_IoC Assessment & Enrichment
+      playbookName: Digital Shadows - MD5_IoC Assessment & Enrichment
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: Enrichment of MD5 IOC types - sub-playbook for IOC Assessment & Enrichment playbook
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '45'
+    scriptarguments:
+      IoC_MD5:
+        complex:
+          root: .
+          transformers:
+          - operator: DsSearchQueryArray
+            args:
+              cve: {}
+              domain: {}
+              ip: {}
+              md5:
+                value:
+                  simple: File.MD5
+                iscontext: true
+              sha1: {}
+              sha256: {}
+              url: {}
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+      forEach: true
+  '52':
+    id: '52'
+    taskid: 2e6d30df-c19a-40c8-81d5-7762a40507e6
+    type: playbook
+    task:
+      id: 2e6d30df-c19a-40c8-81d5-7762a40507e6
+      version: -1
+      name: Digital Shadows - SHA256_IoC Assessment & Enrichment
+      playbookName: Digital Shadows - SHA256_IoC Assessment & Enrichment
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: Enrichment of SHA256 IOC types - sub-playbook for IOC Assessment & Enrichment playbook
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 465
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '46'
+    scriptarguments:
+      IoC_SHA256:
+        complex:
+          root: .
+          transformers:
+          - operator: DsSearchQueryArray
+            args:
+              cve: {}
+              domain: {}
+              ip: {}
+              md5: {}
+              sha1: {}
+              sha256:
+                value:
+                  simple: File.SHA256
+                iscontext: true
+              url: {}
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+      forEach: true
+  '53':
+    id: '53'
+    taskid: 3b81c571-10c7-4334-8b6b-cae6275a0b10
+    type: playbook
+    task:
+      id: 3b81c571-10c7-4334-8b6b-cae6275a0b10
+      version: -1
+      name: Digital Shadows - SHA1_IoC Assessment & Enrichment
+      playbookName: Digital Shadows - SHA1_IoC Assessment & Enrichment
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: Enrichment of SHA1 IOC types - sub-playbook for IOC Assessment & Enrichment playbook
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      IoC_SHA1:
+        complex:
+          root: .
+          transformers:
+          - operator: DsSearchQueryArray
+            args:
+              cve: {}
+              domain: {}
+              ip: {}
+              md5: {}
+              sha1:
+                value:
+                  simple: File.SHA1
+                iscontext: true
+              sha256: {}
+              url: {}
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+      forEach: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2435,
+        "width": 820,
+        "x": 1060,
+        "y": -1080
+      }
+    }
+  }
+inputs:
+- key: IoC_IP
+  value:
+    complex:
+      root: IP
+      accessor: Address
+      transformers:
+      - operator: uniq
+  required: false
+  description: An IP address for assessment and enrichment
+  playbookInputQuery:
+- key: IoC_CVE
+  value:
+    complex:
+      root: CVE
+      accessor: ID
+      transformers:
+      - operator: uniq
+  required: false
+  description: A CVE for assessment and enrichment
+  playbookInputQuery:
+- key: IoC_Domain
+  value:
+    complex:
+      root: Domain.Name
+      filters:
+      - - operator: notContainsString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: portal-digitalshadows.com
+      transformers:
+      - operator: uniq
+  required: false
+  description: A domain for assessment and enrichment
+  playbookInputQuery:
+- key: IoC_URL
+  value:
+    complex:
+      root: URL.Data
+      filters:
+      - - operator: notContainsString
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+          right:
+            value:
+              simple: portal-digitalshadows.com
+      transformers:
+      - operator: uniq
+  required: false
+  description: A URL for assessment and enrichment
+  playbookInputQuery:
+- key: IoC_MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+      transformers:
+      - operator: uniq
+  required: false
+  description: A MD5 hash for assessment and enrichment
+  playbookInputQuery:
+- key: IoC_SHA256
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+      transformers:
+      - operator: uniq
+  required: false
+  description: A SHA256 hash for assessment and enrichment
+  playbookInputQuery:
+- key: IoC_SHA1
+  value:
+    complex:
+      root: File
+      accessor: SHA1
+      transformers:
+      - operator: uniq
+  required: false
+  description: A SHA1 hash for assessment and enrichment
+  playbookInputQuery:
+outputs:
+- contextPath: DBotScore.Indicator
+  description: Indicator Value
+  type: string
+- contextPath: DBotScore.Type
+  description: Indicator Type
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
