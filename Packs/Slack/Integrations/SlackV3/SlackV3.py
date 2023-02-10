@@ -2715,6 +2715,7 @@ def main() -> None:
         'slack-get-integration-context': slack_get_integration_context,
         'slack-edit-message': slack_edit_message,
         'slack-pin-message': pin_message
+        # Rich's Change to the code
     }
 
     command_name: str = demisto.command()
