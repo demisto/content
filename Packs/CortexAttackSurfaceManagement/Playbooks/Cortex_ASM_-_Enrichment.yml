@@ -567,7 +567,7 @@ tasks:
             args:
               chars:
                 value:
-                  simple: '[]"'
+                  simple: '[\"]'
     separatecontext: false
     continueonerrortype: ""
     view: |-

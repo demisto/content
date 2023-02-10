@@ -2245,7 +2245,7 @@ tasks:
             args:
               chars:
                 value:
-                  simple: '["]'
+                  simple: '[\"]'
     loop:
       iscommand: false
       exitCondition: ""
@@ -2277,7 +2277,7 @@ tasks:
             args:
               chars:
                 value:
-                  simple: '["]'
+                  simple: '[\"]]'
     separatecontext: true
     continueonerrortype: ""
     loop:
