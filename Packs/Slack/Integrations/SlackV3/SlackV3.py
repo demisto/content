@@ -2710,7 +2710,7 @@ def main() -> None:
         'slack-invite-to-channel': invite_to_channel,
         'slack-kick-from-channel': kick_from_channel,
         'slack-rename-channel': rename_channel,
-        #'slack-list-channels': list_channel ,
+        #'slack-list-channels': list_channel , # testing branch merges with Rich 
         'slack-get-user-details': get_user,
         'slack-get-integration-context': slack_get_integration_context,
         'slack-edit-message': slack_edit_message,
