@@ -2528,6 +2528,15 @@ def pin_message():
     except SlackApiError as slack_error:
         return_error(f"{slack_error}")
 
+def list_conversations():
+    """
+    List the conversations in the workspace
+    """
+
+    response = send_slack_request_sync(CLIENT, 'conversations.list')
+
+    demisto.results(response)
+
 
 def long_running_main():
     """
@@ -2710,12 +2719,11 @@ def main() -> None:
         'slack-invite-to-channel': invite_to_channel,
         'slack-kick-from-channel': kick_from_channel,
         'slack-rename-channel': rename_channel,
-        #'slack-list-channels': list_channel , # testing branch merges with Rich 
+        'slack-list-channels': list_conversations, 
         'slack-get-user-details': get_user,
         'slack-get-integration-context': slack_get_integration_context,
         'slack-edit-message': slack_edit_message,
         'slack-pin-message': pin_message
-        # Rich's Change to the code
     }
 
     command_name: str = demisto.command()
