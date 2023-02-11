@@ -122,9 +122,6 @@ class Client(CrowdStrikeClient):
         Returns:
             (list): parsed indicators
         """
-        if start_fetch := self.get_last_run() or self.first_fetch:
-            pass
-        sort = 'last_updated|asc'
         filter = f'({self.filter})' if self.filter else ''
         if self.type:
             type_fql = self.build_type_fql(self.type)
@@ -139,46 +136,73 @@ class Client(CrowdStrikeClient):
             filter = f'{filter}+(last_updated:>={manual_last_run})' if filter else f'(last_updated:>={manual_last_run})'
 
         if fetch_command:
-            sort = '_marker|asc'
             if last_run := self.get_last_run():
-                demisto.debug(f'last_run --> {last_run}')
                 filter = f'{filter}+({last_run})' if filter else f'({last_run})'
-            elif self.first_fetch:
-                last_run = f'last_updated:>={int(self.first_fetch)}'
-                filter = f'{filter}+({last_run})' if filter else f'({last_run})'
-                int_first_fetch = int(self.first_fetch)
-                demisto.debug(f'self.first_fetch --> {int_first_fetch}')
-                date_first_fetch = timestamp_to_datestring(int(self.first_fetch))
-                demisto.debug(f'date_first_fetch --> {date_first_fetch}')
+            else:
+                filter = self.handling_first_fetch_and_old_integration_context(filter)
 
-        demisto.info(f' filter {filter}')
-        params = assign_params(include_deleted=self.include_deleted,
-                               limit=limit,
-                               offset=offset, q=self.generic_phrase,
-                               filter=filter,
-                               sort=sort)
+        if filter or not fetch_command:
+            demisto.info(f' filter {filter}')
+            params = assign_params(include_deleted=self.include_deleted,
+                                   limit=limit,
+                                   offset=offset, q=self.generic_phrase,
+                                   filter=filter,
+                                   sort='_marker|asc')
 
-        response = self.get_indicators(params=params)
+            response = self.get_indicators(params=params)
 
-        # need to fetch all indicators after the limit
-        if pagination := response.get('meta', {}).get('pagination'):
-            pagination_limit = pagination.get('limit')
-            total = pagination.get('total', 0)
-            if pagination_limit < total:
-                new_last_marker_time = response.get('resources', [])[-1].get('_marker')
+            # need to fetch all indicators after the limit
+            if resources := response.get('resources', []):
+                new_last_marker_time = resources[-1].get('_marker')
             else:
                 new_last_marker_time = demisto.getIntegrationContext().get('last_marker_time')
-        else:
-            demisto.debug('OYLO --- there is no indicators')
+                demisto.debug('There is no indicators')
 
-        if response.get('meta', {}).get('pagination', {}).get('total', 0) and fetch_command:
-            ctx = demisto.getIntegrationContext()
-            ctx.update({'last_marker_time': new_last_marker_time})
-            demisto.setIntegrationContext(ctx)
-            demisto.info(f'set last_run: {new_last_marker_time}')
+            if fetch_command:
+                ctx = demisto.getIntegrationContext()
+                ctx.update({'last_marker_time': new_last_marker_time})
+                demisto.setIntegrationContext(ctx)
+                demisto.info(f'set last_run: {new_last_marker_time}')
 
-        indicators = self.create_indicators_from_response(response, self.tlp_color, self.feed_tags, self.create_relationships)
-        return indicators
+            indicators = self.create_indicators_from_response(response, self.tlp_color, self.feed_tags, self.create_relationships)
+            return indicators
+        return []
+
+    def handling_first_fetch_and_old_integration_context(self, filter: str) -> str:
+        '''
+        Checks whether the context integration is in an old implementation (`last_update`),
+        or whether this is the first time of the fetch,
+        If so, the function imports one indicator
+        and extracts the `_marker` from it to import the following indicators.
+
+        The function is only called in the following two cases:
+            1. In order to transfer the context integration to the new implementation.
+            2. the first time of fetch.
+
+        Returns:
+            filter with the _marker filter.
+        '''
+        if demisto.getIntegrationContext().get('last_updated') or self.first_fetch:
+            last_run = f'last_updated:>={int(self.first_fetch)}'
+            filter = f'{filter}+({last_run})' if filter else f'({last_run})'
+
+        params = assign_params(include_deleted=self.include_deleted,
+                               limit=1,
+                               q=self.generic_phrase,
+                               filter=filter,
+                               sort='last_updated|asc')
+        response = self.get_indicators(params=params)
+
+        # In case there is an indicator for extracting the `_marker`
+        if resources := response.get('resources', []):
+            _marker = resources[-1].get('_marker')
+            demisto.debug(f'Importing the indicator marker in first time --> {_marker}')
+            last_run = f"_marker:>'{_marker}'"
+            return f'{filter}+({last_run})' if filter else f'({last_run})'
+
+        # In case no indicator returned
+        demisto.debug('No indicator returned')
+        return ''
 
     @staticmethod
     def set_last_run():
@@ -480,11 +504,4 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    date_format = '%Y-%m-%dT%H:%M:%S'
-    date_ = parse_date_range('1 day')[0]
-    date_2 = arg_to_datetime('1 day')
-    print(timestamp_to_datestring('1675949246000', date_format))
-    print(date_.timestamp())
-    print(date_2)
-    print(date_2.timestamp())
-    # main()
+    main()
