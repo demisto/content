@@ -322,7 +322,7 @@ def test_retrieve_labels_command(mock_retrieve_labels_request):
     response = retrieve_labels_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveLabels'
-    assert response.outputs_key_field == 'labels.id'
+    assert response.outputs_key_field == 'id'
     assert 'labels' in response.outputs
     assert 'paginationInfo' in response.outputs
     assert response.outputs == official_response_retrieve_labels_request
@@ -335,7 +335,7 @@ def test_retrieve_a_specific_label_command(mock_retrieve_a_specific_label_reques
     response = retrieve_a_specific_label_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveASpecificLabel'
-    assert response.outputs_key_field == 'name'
+    assert response.outputs_key_field == 'id'
     assert 'id' in response.outputs
     assert 'name' in response.outputs
     assert response.outputs == official_response_retrieve_a_specific_label_request
@@ -354,7 +354,7 @@ def test_retrieve_incidents_command(mock_retrieve_incidents_request):
     response = retrieve_incidents_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveIncidents'
-    assert response.outputs_key_field == 'items.id'
+    assert response.outputs_key_field == 'id'
     assert 'items' in response.outputs
     assert 'timestamp' in response.outputs
     assert 'paginationInfo' in response.outputs
@@ -414,7 +414,7 @@ def test_retrieve_open_incidents_command(mock_retrieve_open_incidents_request):
     response = retrieve_open_incidents_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveOpenIncidents'
-    assert response.outputs_key_field == 'items.id'
+    assert response.outputs_key_field == 'id'
     assert 'items' in response.outputs
     assert 'timestamp' in response.outputs
     assert 'paginationInfo' in response.outputs
@@ -429,7 +429,7 @@ def test_retrieve_muted_incidents_command(mock_retrieve_muted_incidents_request)
     response = retrieve_muted_incidents_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveMutedIncidents'
-    assert response.outputs_key_field == 'items.id'
+    assert response.outputs_key_field == 'id'
     assert 'items' in response.outputs
     assert 'timestamp' in response.outputs
     assert 'paginationInfo' in response.outputs
@@ -444,7 +444,7 @@ def test_retrieve_closed_incidents_command(mock_retrieve_closed_incidents_reques
     response = retrieve_closed_incidents_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveClosedIncidents'
-    assert response.outputs_key_field == 'items.id'
+    assert response.outputs_key_field == 'id'
     assert 'items' in response.outputs
     assert 'timestamp' in response.outputs
     assert 'paginationInfo' in response.outputs
@@ -460,7 +460,7 @@ def test_retrieve_endpoints_by_incident_command(mock_retrieve_endpoints_by_incid
     response = retrieve_endpoints_by_incident_command(client, args)
 
     assert response.outputs_prefix == 'Lumu.RetrieveEndpointsByIncident'
-    assert response.outputs_key_field == 'items.label'
+    assert response.outputs_key_field == 'label'
     assert 'items' in response.outputs
     assert 'paginationInfo' in response.outputs
     assert response.outputs == official_response_retrieve_endpoints_by_incident_request

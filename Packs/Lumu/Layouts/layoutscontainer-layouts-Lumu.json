@@ -409,7 +409,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 6,
-                                "fieldId": "lumuactions2",
+                                "fieldId": "lumuactions",
                                 "height": 106,
                                 "id": "d310ddf0-99e2-11ed-9055-39047d049622",
                                 "index": 1,

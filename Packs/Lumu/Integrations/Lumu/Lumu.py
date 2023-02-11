@@ -279,7 +279,7 @@ def retrieve_labels_command(client: Client, args: Dict[str, Any]) -> CommandResu
     response = client.retrieve_labels_request(page, items)
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveLabels",
-        outputs_key_field="labels.id",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown('Labels', response.get('labels', []), headerTransform=pascalToSpace, removeNull=True)
@@ -297,7 +297,7 @@ def retrieve_a_specific_label_command(
 
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveASpecificLabel",
-        outputs_key_field="name",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown('Label', response, headerTransform=pascalToSpace, removeNull=True)
@@ -325,7 +325,7 @@ def retrieve_incidents_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveIncidents",
-        outputs_key_field="items.id",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
@@ -409,7 +409,7 @@ def retrieve_open_incidents_command(
     )
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveOpenIncidents",
-        outputs_key_field="items.id",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
@@ -435,7 +435,7 @@ def retrieve_muted_incidents_command(
     )
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveMutedIncidents",
-        outputs_key_field="items.id",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
@@ -461,7 +461,7 @@ def retrieve_closed_incidents_command(
     )
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveClosedIncidents",
-        outputs_key_field="items.id",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
@@ -482,7 +482,7 @@ def retrieve_endpoints_by_incident_command(
     )
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveEndpointsByIncident",
-        outputs_key_field="items.label",
+        outputs_key_field="label",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown('Incident endpoints', response.get('items', []),

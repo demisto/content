@@ -43,12 +43,12 @@ configuration:
   defaultvalue: "0"
   type: 0
   required: false
-- display: Total Incident per fecthing using lumu endpoint
+- display: Total Incident per fetching using lumu endpoint
   name: total_items_per_lumu_fetch
   defaultvalue: "30"
   type: 0
   required: false
-- display: Max time in seconds per fecthing using lumu endpoint
+- display: Max time in seconds per fetching using lumu endpoint
   name: max_time_fetching_lumu_incident
   defaultvalue: "4"
   type: 0
@@ -1038,7 +1038,7 @@ script:
     - contextPath: Lumu.GetCache.lumu_incidentsId
       type: string
       description: "Lumu incident ids processed"
-  dockerimage: demisto/python3:3.10.9.46807
+  dockerimage: demisto/python3:3.10.10.47713
   isfetch: true
   runonce: false
   subtype: python3

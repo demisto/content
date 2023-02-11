@@ -16,8 +16,8 @@ This integration was integrated and tested with version 20230207 of Lumu
     | Trust any certificate (not secure) |  | False |
     | API Key |  | True |
     | Incident Offset |  | False |
-    | Total Incident per fecthing using lumu endpoint |  | False |
-    | Max time in seconds per fecthing using lumu endpoint |  | False |
+    | Total Incident per fetching using lumu endpoint |  | False |
+    | Max time in seconds per fetching using lumu endpoint |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | Incidents Fetch Interval |  | False |
