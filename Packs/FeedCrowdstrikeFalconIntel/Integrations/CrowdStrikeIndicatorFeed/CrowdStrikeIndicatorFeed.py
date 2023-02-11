@@ -445,7 +445,7 @@ def main() -> None:
     first_fetch_param = params.get('first_fetch')
     first_fetch_datetime = arg_to_datetime(first_fetch_param) if first_fetch_param else None
     first_fetch = first_fetch_datetime.timestamp() if first_fetch_datetime else None
-    demisto.debug(f'first_fetch --> {first_fetch}')
+
     base_url = params.get('base_url')
     tlp_color = params.get('tlp_color')
     include_deleted = params.get('include_deleted', False)
