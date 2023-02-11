@@ -182,14 +182,15 @@ class Client(CrowdStrikeClient):
         Returns:
             filter with the _marker filter.
         '''
-        if demisto.getIntegrationContext().get('last_updated') or self.first_fetch:
-            last_run = f'last_updated:>={int(self.first_fetch)}'
-            filter = f'{filter}+({last_run})' if filter else f'({last_run})'
+        filter_for_first_fetch = filter
+        if last_run := demisto.getIntegrationContext().get('last_updated') or self.first_fetch:
+            last_run = f'last_updated:>={int(last_run)}'
+            filter_for_first_fetch = f'{filter}+({last_run})' if filter else f'({last_run})'
 
         params = assign_params(include_deleted=self.include_deleted,
                                limit=1,
                                q=self.generic_phrase,
-                               filter=filter,
+                               filter=filter_for_first_fetch,
                                sort='last_updated|asc')
         response = self.get_indicators(params=params)
 
