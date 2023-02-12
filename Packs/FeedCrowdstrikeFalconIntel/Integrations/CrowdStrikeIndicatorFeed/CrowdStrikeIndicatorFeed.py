@@ -218,16 +218,6 @@ class Client(CrowdStrikeClient):
         return '', []
 
     @staticmethod
-    def set_last_run():
-        """
-        Returns: Current timestamp
-        """
-        current_time = datetime.now()
-        current_timestamp = datetime.timestamp(current_time)
-        timestamp = str(int(current_timestamp))
-        return timestamp
-
-    @staticmethod
     def get_last_run() -> str:
         """ Gets last run time in timestamp
 
