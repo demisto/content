@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Dict
 from urllib.parse import quote
 import urllib3
 
@@ -237,7 +236,7 @@ class MsGraphClient:
 
 
 def suppress_errors_with_404_code(func):
-    def wrapper(client: MsGraphClient, args: Dict):
+    def wrapper(client: MsGraphClient, args: dict):
         try:
             return func(client, args)
         except NotFoundError as e:
@@ -271,7 +270,7 @@ def test_function(client, _):
 
 
 @suppress_errors_with_404_code
-def disable_user_account_command(client: MsGraphClient, args: Dict):
+def disable_user_account_command(client: MsGraphClient, args: dict):
     user = args.get('user')
     client.disable_user_account_session(user)
     human_readable = f'user: "{user}" account has been disabled successfully.'
@@ -279,7 +278,7 @@ def disable_user_account_command(client: MsGraphClient, args: Dict):
 
 
 @suppress_errors_with_404_code
-def unblock_user_command(client: MsGraphClient, args: Dict):
+def unblock_user_command(client: MsGraphClient, args: dict):
     user = args.get('user')
     client.unblock_user(user)
     human_readable = f'"{user}" unblocked. It might take several minutes for the changes to take affect across all ' \
@@ -288,14 +287,14 @@ def unblock_user_command(client: MsGraphClient, args: Dict):
 
 
 @suppress_errors_with_404_code
-def delete_user_command(client: MsGraphClient, args: Dict):
+def delete_user_command(client: MsGraphClient, args: dict):
     user = args.get('user')
     client.delete_user(user)
     human_readable = f'user: "{user}" was deleted successfully.'
     return human_readable, None, None
 
 
-def create_user_command(client: MsGraphClient, args: Dict):
+def create_user_command(client: MsGraphClient, args: dict):
     required_properties = {
         'accountEnabled': args.get('account_enabled'),
         'displayName': args.get('display_name'),
@@ -333,7 +332,7 @@ def create_user_command(client: MsGraphClient, args: Dict):
 
 
 @suppress_errors_with_404_code
-def update_user_command(client: MsGraphClient, args: Dict):
+def update_user_command(client: MsGraphClient, args: dict):
     user = args.get('user')
     updated_fields = args.get('updated_fields')
     delimiter = args.get('updated_fields_delimiter', ',')
@@ -343,7 +342,7 @@ def update_user_command(client: MsGraphClient, args: Dict):
 
 
 @suppress_errors_with_404_code
-def change_password_user_command(client: MsGraphClient, args: Dict):
+def change_password_user_command(client: MsGraphClient, args: dict):
     user = str(args.get('user'))
     password = str(args.get('password'))
     force_change_password_next_sign_in = args.get('force_change_password_next_sign_in', 'true') == 'true'
@@ -354,7 +353,7 @@ def change_password_user_command(client: MsGraphClient, args: Dict):
     return human_readable, {}, {}
 
 
-def get_delta_command(client: MsGraphClient, args: Dict):
+def get_delta_command(client: MsGraphClient, args: dict):
     properties = args.get('properties', '') + ',userPrincipalName'
     users_data = client.get_delta(properties)
     headers = list(set([camel_case_to_readable(p) for p in argToList(properties)] + ['ID', 'User Principal Name']))
@@ -365,7 +364,7 @@ def get_delta_command(client: MsGraphClient, args: Dict):
     return human_readable, outputs, users_data
 
 
-def get_user_command(client: MsGraphClient, args: Dict):
+def get_user_command(client: MsGraphClient, args: dict):
     user = args.get('user')
     properties = args.get('properties', '*')
     try:
@@ -394,7 +393,7 @@ def get_user_command(client: MsGraphClient, args: Dict):
     return human_readable, outputs, user_data
 
 
-def list_users_command(client: MsGraphClient, args: Dict):
+def list_users_command(client: MsGraphClient, args: dict):
     properties = args.get('properties', 'id,displayName,jobTitle,mobilePhone,mail')
     next_page = args.get('next_page', None)
     filters = args.get('filter', None)
@@ -419,7 +418,7 @@ def list_users_command(client: MsGraphClient, args: Dict):
 
 
 @suppress_errors_with_404_code
-def get_direct_reports_command(client: MsGraphClient, args: Dict):
+def get_direct_reports_command(client: MsGraphClient, args: dict):
     user = args.get('user')
 
     raw_reports = client.get_direct_reports(user)
@@ -437,7 +436,7 @@ def get_direct_reports_command(client: MsGraphClient, args: Dict):
 
 
 @suppress_errors_with_404_code
-def get_manager_command(client: MsGraphClient, args: Dict):
+def get_manager_command(client: MsGraphClient, args: dict):
     user = args.get('user')
     manager_data = client.get_manager(user)
     manager_readable, manager_outputs = parse_outputs(manager_data)
@@ -452,7 +451,7 @@ def get_manager_command(client: MsGraphClient, args: Dict):
 
 
 @suppress_errors_with_404_code
-def assign_manager_command(client: MsGraphClient, args: Dict):
+def assign_manager_command(client: MsGraphClient, args: dict):
     user = args.get('user')
     manager = args.get('manager')
     client.assign_manager(user, manager)
@@ -462,7 +461,7 @@ def assign_manager_command(client: MsGraphClient, args: Dict):
 
 
 @suppress_errors_with_404_code
-def revoke_user_session_command(client: MsGraphClient, args: Dict):
+def revoke_user_session_command(client: MsGraphClient, args: dict):
     user = args.get('user')
     client.revoke_user_session(user)
     human_readable = f'User: "{user}" sessions have been revoked successfully.'
