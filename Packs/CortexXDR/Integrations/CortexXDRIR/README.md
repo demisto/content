@@ -3221,7 +3221,7 @@ Gets a list of endpoints according to the passed filters, and changes their alia
 
 There is no context output for this command.
 #### Command example
-```!xdr-endpoint-alias-change new_alias_name=test scan_status=success ip_list=172.31.9.245```
+```!xdr-endpoint-alias-change new_alias_name=test scan_status=success ip_list=1.1.1.1```
 #### Human Readable Output
 
 >The endpoint alias was changed successfully.
