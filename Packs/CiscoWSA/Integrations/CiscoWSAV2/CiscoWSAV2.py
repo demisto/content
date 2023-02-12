@@ -62,7 +62,7 @@ class Client(BaseClient):
                 )
             raise e
 
-    def access_policy_list_request(self, policy_names: str | None) -> Dict[str, Any]:
+    def access_policy_list_request(self, policy_names: str | None) -> dict[str, Any]:
         """
         Access Policies list.
 
@@ -70,7 +70,7 @@ class Client(BaseClient):
             policy_names (str | None): Policies names to retrieve.
 
         Returns:
-            Dict[str, Any]: API response from Cisco WSA.
+            dict[str, Any]: API response from Cisco WSA.
         """
         params = assign_params(policy_names=policy_names)
 
@@ -270,7 +270,6 @@ class Client(BaseClient):
                             "custom_cats": {
                                 custom_categories_action: custom_categories
                             },
-                            # "exception_referred_embedded_content": {"state": "disable"},
                             "uncategorized_url": uncategorized_url,
                             "update_cats_action": update_categories_action,
                             "content_rating": {
@@ -300,7 +299,7 @@ class Client(BaseClient):
         policy_name: str,
         application: str,
         action: str,
-        values: Dict[str, Any],
+        values: dict[str, Any],
     ) -> Response:
         """
         Update access policy's applications settings.
@@ -309,7 +308,7 @@ class Client(BaseClient):
             policy_name (str): Policy name to update.
             application (str): Application to update.
             action (str): Action to perform on values.
-            values (Dict[str, Any]): Values to perform action on.
+            values (dict[str, Any]): Values to perform action on.
 
         Returns:
             Response: API response from Cisco WSA.
@@ -483,12 +482,12 @@ class Client(BaseClient):
             ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
-    def domain_map_list_request(self) -> Dict[str, Any]:
+    def domain_map_list_request(self) -> dict[str, Any]:
         """
         List domain mappings.
 
         Returns:
-            Dict[str, Any]: API response from Cisco WSA.
+            dict[str, Any]: API response from Cisco WSA.
         """
         return self._http_request(
             "GET", f"{V2_PREFIX}/configure/web_security/domain_map"
@@ -496,7 +495,7 @@ class Client(BaseClient):
 
     def domain_map_create_request(
         self, domain_name: str, ip_addresses: List[str], order: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Create domain mapping.
 
@@ -506,7 +505,7 @@ class Client(BaseClient):
             order (int): Index of domain map in the collection.
 
         Returns:
-            Dict[str, Any]: API response from Cisco WSA.
+            dict[str, Any]: API response from Cisco WSA.
         """
         data = [
             {"IP_addresses": ip_addresses, "domain_name": domain_name, "order": order}
@@ -522,7 +521,7 @@ class Client(BaseClient):
         new_domain_name: str | None,
         ip_addresses: str | None,
         order: int | None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Update domain map.
 
@@ -533,7 +532,7 @@ class Client(BaseClient):
             order (str | None): Index of domain map.
 
         Returns:
-            Dict[str, Any]: API response from Cisco WSA.
+            dict[str, Any]: API response from Cisco WSA.
         """
         data = remove_empty_elements(
             [
@@ -550,7 +549,7 @@ class Client(BaseClient):
             "PUT", f"{V2_PREFIX}/configure/web_security/domain_map", json_data=data
         )
 
-    def domain_map_delete_request(self, domain_name: str) -> Dict[str, Any]:
+    def domain_map_delete_request(self, domain_name: str) -> dict[str, Any]:
         """
         Delete domain map.
 
@@ -558,7 +557,7 @@ class Client(BaseClient):
             domain_name (str): Domain name to delete.
 
         Returns:
-            Dict[str, Any]: API response from Cisco WSA.
+            dict[str, Any]: API response from Cisco WSA.
         """
         data = {"domain_name": domain_name}
 
@@ -571,7 +570,7 @@ class Client(BaseClient):
     def identification_profiles_list_request(
         self,
         profile_names: List[str] | None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get identification profiles.
 
@@ -579,7 +578,7 @@ class Client(BaseClient):
             profile_names (str | None): Profile names to list.
 
         Returns:
-            Dict[str, Any]: API response from Cisco WSA.
+            dict[str, Any]: API response from Cisco WSA.
         """
         params = assign_params(
             profile_names=",".join(profile_names) if profile_names else None
@@ -744,12 +743,12 @@ class Client(BaseClient):
             ok_codes=[HTTPStatus.NO_CONTENT, HTTPStatus.MULTI_STATUS],
         )
 
-    def url_categories_list_request(self) -> Dict[str, Any]:
+    def url_categories_list_request(self) -> dict[str, Any]:
         """
         List URL categories.
 
         Returns:
-            Dict[str, Any]: API response from Cisco WSA.
+            dict[str, Any]: API response from Cisco WSA.
         """
         return self._http_request(
             "GET", f"{V3_PREFIX}/generic_resources/url_categories"
@@ -757,8 +756,8 @@ class Client(BaseClient):
 
 
 def pagination(
-    response: List[Dict[str, Any]], args: Dict[str, Any]
-) -> List[Dict[str, Any]]:
+    response: List[dict[str, Any]], args: dict[str, Any]
+) -> List[dict[str, Any]]:
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size"))
     limit = arg_to_number(args.get("limit", 50))
@@ -771,7 +770,7 @@ def pagination(
 
 
 def organize_policy_object_data(
-    objects: Dict[str, Any],
+    objects: dict[str, Any],
     object_type: str | None,
     object_action: str | None,
     object_values: List[str] | None,
@@ -783,7 +782,7 @@ def organize_policy_object_data(
     Organize policy object update data.
 
     Args:
-        objects (Dict[str, Any]): Original objects.
+        objects (dict[str, Any]): Original objects.
         object_type (str | None): Object type to update.
         object_action (str | None): Object action to update.
         object_values (List[str] | None): Object values to update.
@@ -823,13 +822,13 @@ def organize_policy_object_data(
     )
 
 
-def access_policy_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def access_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List access policies.
 
     Args:
         client (Client): Cisco WSA API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: readable outputs for XSOAR.
@@ -865,7 +864,7 @@ def access_policy_list_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 
 def access_policy_create_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     policy_name = args["policy_name"]
     policy_status = args["policy_status"]
@@ -889,14 +888,14 @@ def access_policy_create_command(
 
 
 def access_policy_update_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Update an access policy.
 
     Args:
         client (Client): Cisco WSA API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: readable outputs for XSOAR.
@@ -923,14 +922,14 @@ def access_policy_update_command(
 
 
 def access_policy_protocols_user_agents_update_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Update access policy's protocols and user agents settings.
 
     Args:
         client (Client): Cisco WSA API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: readable outputs for XSOAR.
@@ -953,14 +952,14 @@ def access_policy_protocols_user_agents_update_command(
 
 
 def access_policy_url_filtering_update_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Update access policy's URL filtering settings.
 
     Args:
         client (Client): Cisco WSA API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: readable outputs for XSOAR.
@@ -1001,14 +1000,14 @@ def access_policy_url_filtering_update_command(
 
 
 def access_policy_applications_update_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Update access policy's applications settings.
 
     Args:
         client (Client): Cisco WSA API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: readable outputs for XSOAR.
@@ -1031,14 +1030,14 @@ def access_policy_applications_update_command(
 
 
 def access_policy_objects_update_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Update access policy's objects settings.
 
     Args:
         client (Client): Cisco WSA API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: readable outputs for XSOAR.
@@ -1069,14 +1068,14 @@ def access_policy_objects_update_command(
 
 
 def access_policy_anti_malware_update_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Update access policy's anti-malware and reputation settings.
 
     Args:
         client (Client): Cisco WSA API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: readable outputs for XSOAR.
@@ -1107,14 +1106,14 @@ def access_policy_anti_malware_update_command(
 
 
 def access_policy_delete_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Delete access policy.
 
     Args:
         client (Client): Cisco WSA API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: readable outputs for XSOAR.
@@ -1133,13 +1132,13 @@ def access_policy_delete_command(
     )
 
 
-def domain_map_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def domain_map_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get domain mappings.
 
     Args:
         client (Client): Cisco WSA API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: readable outputs for XSOAR.
@@ -1176,13 +1175,13 @@ def domain_map_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def domain_map_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def domain_map_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Create domain mappings.
 
     Args:
         client (Client): Cisco WSA API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: readable outputs for XSOAR.
@@ -1205,13 +1204,13 @@ def domain_map_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
     return CommandResults(readable_output=readable_output, raw_response=response)
 
 
-def domain_map_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def domain_map_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Update domain mappings.
 
     Args:
         client (Client): Cisco WSA API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: readable outputs for XSOAR.
@@ -1237,14 +1236,14 @@ def domain_map_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 
 def domain_map_delete_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> Union[List[CommandResults], CommandResults]:
     """
     Delete domain mappings.
 
     Args:
         client (Client): Cisco WSA API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: readable outputs for XSOAR.
@@ -1279,14 +1278,14 @@ def domain_map_delete_command(
 
 
 def identification_profiles_list_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Get identification profiles.
 
     Args:
         client (Client): Cisco WSA API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: readable outputs for XSOAR.
@@ -1324,14 +1323,14 @@ def identification_profiles_list_command(
 
 
 def identification_profiles_create_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Create identification profiles.
 
     Args:
         client (Client): Cisco WSA API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: readable outputs for XSOAR.
@@ -1364,14 +1363,14 @@ def identification_profiles_create_command(
 
 
 def identification_profiles_update_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Update identification profiles.
 
     Args:
         client (Client): Cisco WSA API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: readable outputs for XSOAR.
@@ -1406,14 +1405,14 @@ def identification_profiles_update_command(
 
 
 def identification_profiles_delete_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> Union[List[CommandResults], CommandResults]:
     """
     Delete identification profiles.
 
     Args:
         client (Client): Cisco WSA API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: readable outputs for XSOAR.
@@ -1445,13 +1444,13 @@ def identification_profiles_delete_command(
         )
 
 
-def url_categories_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def url_categories_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get URL categories.
 
     Args:
         client (Client): Cisco WSA API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: readable outputs for XSOAR.
@@ -1485,8 +1484,8 @@ def test_module(client: Client) -> str:
 
 
 def main() -> None:
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
 
     base_url = params.get("base_url")
     username = params.get("credentials", {}).get("identifier")
