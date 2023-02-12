@@ -36,8 +36,7 @@ runonce: false
 dockerimage: demisto/python3:3.10.9.44472
 runas: DBotWeakRole
 fromversion: 6.5.0
-"marketplaces": [
-    "xsoar"
-]
+marketplaces:
+- xsoar
 tests:
 - No tests (auto formatted)
