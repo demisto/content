@@ -131,5 +131,6 @@ XSIAM_COMPONENT_FILES: set[FileType] = {
     FileType.XSIAM_REPORT,
     FileType.TRIGGER,
     FileType.MODELING_RULE_SCHEMA,
-    FileType.XDRC_TEMPLATE
+    FileType.XDRC_TEMPLATE,
+    FileType.LAYOUT_RULE
 }
