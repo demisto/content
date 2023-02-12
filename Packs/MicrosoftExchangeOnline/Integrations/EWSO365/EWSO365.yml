@@ -526,7 +526,7 @@ script:
     - defaultValue: '50'
       description: Maximum number of items to return. The default is 50.
       name: limit
-    - description: The mailbox to on which to apply the command.
+    - description: The mailbox on which to apply the command.
       name: target-mailbox
     - auto: PREDEFINED
       description: Whether the folder is a public folder. Can be "True" or "False". The default is "False".
