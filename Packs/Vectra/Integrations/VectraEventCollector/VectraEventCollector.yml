@@ -3,28 +3,33 @@ commonfields:
   id: VectraEventCollector
   version: -1
 configuration:
-- defaultvalue: https://dev.vectra.ai/
+- name: url
+  defaultvalue: https://dev.vectra.ai/
   display: Your server URL
-  name: url
   required: true
   type: 0
-- displaypassword: API Token
+- name: credentials
+  displaypassword: API Token
   additionalinfo: The API Token to use for authentication
-  name: credentials
   required: true
   hiddenusername: true
   type: 9
-- defaultvalue: 3 days
+- name: first_fetch
+  defaultvalue: 3 days
   display: First fetch time
-  name: first_fetch
   required: false
   type: 0
-- display: Trust any certificate (not secure)
-  name: insecure
+- defaultvalue: '100'
+  display: Fetch Limit
+  name: fetch_limit
+  required: false
+  type: 0
+- name: insecure
+  display: Trust any certificate (not secure)
   required: false
   type: 8
-- display: Use system proxy settings
-  name: proxy
+- name: proxy
+  display: Use system proxy settings
   required: false
   type: 8
 description: 'Collects Vectra Detections and Audits into XSIAM Events'

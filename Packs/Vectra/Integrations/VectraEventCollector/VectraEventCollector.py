@@ -13,14 +13,21 @@ import demistomock as demisto
 # TODO remove requests, used for BaseClient
 # import requests
 from CommonServerPython import *
-from typing import Dict, Any
-import json
+from typing import Dict, Any, Tuple
+
+# import json
+from urllib.parse import urlparse
 
 
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-
+INTEGRATION_CONFIG_KEY_URL = "url"
+INTEGRATION_CONFIG_KEY_FIRST_FETCH = "first_fetch"
+INTEGRATION_CONFIG_VALUE_FIRST_FETCH_DEFAULT = "3 days"
+INTEGRATION_CONFIG_KEY_MAX_FETCH = "fetch_limit"
+INTEGRATION_CONFIG_VALUE_MAX_FETCH = 100
+VENDOR = "Vectra"
 
 """ CLIENT CLASS """
 
@@ -29,14 +36,26 @@ class VectraClient(BaseClient):
 
     api_version = "2.2"
 
-    def __init__(self, config_url: str, verify: bool, proxy: bool, api_key: str):
+    def __init__(self, config: Dict[str, Any] = demisto.params()):
 
-        headers: Dict[str, Any] = {
-            "Content-Type": "application/json",
-            "Authorization": f"Token {api_key}",
-        }
-        base_url = urljoin(config_url, f"/api/v{self.api_version}/")
-        super().__init__(base_url, verify=verify, proxy=proxy, headers=headers)
+        # Check the integration config is valid
+        url = config.get(INTEGRATION_CONFIG_KEY_URL)
+        self.validate_url(url)
+
+        self.api_key = config.get("credentials", {}).get("password")
+        self.verify_certificate = not config.get("insecure", False)
+        self.proxy = config.get("proxy", False)
+        self.max_fetch = config.get(
+            INTEGRATION_CONFIG_KEY_MAX_FETCH, INTEGRATION_CONFIG_VALUE_MAX_FETCH
+        )
+
+        self.base_url = urljoin(url, f"/api/v{self.api_version}/")
+        super().__init__(
+            self.base_url,
+            verify=self.verify_certificate,
+            proxy=self.proxy,
+            headers=self.create_headers(),
+        )
 
     def check_auth(self) -> None:
 
@@ -51,8 +70,30 @@ class VectraClient(BaseClient):
 
         self._http_request(method="GET")
 
+    def validate_url(self, url: str):
 
-""" HELPER FUNCTIONS """
+        """
+        Helper function to check whether the supplied URL is valid or not.
+
+        Raises:
+            - `ValueError` when the URL cannot be parsed.
+        """
+
+        try:
+            result = urlparse(url)
+            return all([result.scheme, result.netloc])
+        except ValueError:
+            demisto.error(f"URL '{url}' is invalid.")
+            raise
+
+    def create_headers(self) -> Dict[str, str]:
+        # TODO
+        """ """
+
+        return {
+            "Content-Type": "application/json",
+            "Authorization": f"Token {self.api_key}",
+        }
 
 
 """ COMMAND FUNCTIONS """
@@ -82,6 +123,16 @@ def test_module(client: VectraClient) -> str:
     return "ok"
 
 
+def get_events(client: VectraClient, last_run: Dict[str, str] = demisto.getLastRun()):
+    pass
+
+
+def fetch_events(
+    client: VectraClient, first_fetch_ts: int
+) -> Tuple[Dict[str, str], Dict[str, Any]]:
+    pass
+
+
 """ MAIN FUNCTION """
 
 
@@ -92,32 +143,37 @@ def main() -> None:
     :rtype:
     """
 
-    # Handle configuration
+    cmd = demisto.command()
+    args = demisto.args()
 
-    # Handle Authentication
-    # If credentials are not chosen,
-    demisto.debug(demisto.params().get("credentials"))
-
-    api_key = demisto.params().get("credentials", {}).get("password")
-    config_url = demisto.params().get("url")
-    verify_certificate = not demisto.params().get("insecure", False)
-    proxy = demisto.params().get("proxy", False)
-    # first_fetch = demisto.params().get("first_fetch", "3 days")
-
-    demisto.debug(f"Command being called is {demisto.command()}")
+    demisto.debug(f"Command being called is '{cmd}'")
     try:
 
-        client = VectraClient(
-            config_url=config_url, api_key=api_key, verify=verify_certificate, proxy=proxy
-        )
+        client = VectraClient()
 
-        if demisto.command() == "test-module":
+        if cmd == "test-module":
             result = test_module(client)
             return_results(result)
 
-        # elif demisto.command() == "baseintegration-dummy":
-        #     pass
-        # return_results(baseintegration_dummy_command(client, demisto.args()))
+        elif cmd in ("vectra-get-events", "fetch-events"):
+            if cmd == "vectra-get-events":
+                should_push_events = argToBoolean(args.pop("should_push_events"))
+                events, results = get_events(client)
+                return_results(results)
+
+            else:
+                should_push_events = True
+                first_fetch_time = arg_to_datetime(
+                    arg=demisto.params().get("first_fetch", "3 days"),
+                    arg_name="First fetch time",
+                    required=True,
+                )
+                first_fetch_ts = int(first_fetch_time.timestamp()) if first_fetch_time else None
+                next_run, events = fetch_events(client=client, first_fetch_time=first_fetch_ts)
+                demisto.setLastRun(next_run)
+
+            if should_push_events:
+                send_events_to_xsiam(events, vendor=VENDOR, product=VENDOR)
 
     # Log exceptions and return errors
     except Exception as e:
