@@ -73,7 +73,7 @@ tasks:
       id: c5f41b44-aa87-40bb-81d7-16d14591a0b3
       version: -1
       name: Is there a zipped file?
-      description: 'Checked whether there is a zipped file in the incident. The following extensions are checked: 7z, gzip, tar, zip.'
+      description: 'Checks whether there is a zipped file in the incident. The following extensions are checked: 7z, gzip, tar, zip.'
       type: condition
       iscommand: false
       brand: ""
