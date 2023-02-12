@@ -646,17 +646,21 @@ def close_in_ms(delta: Dict[str, Any]) -> bool:
     """
     Closing in the remote system should happen only when both:
         1. The user asked for it
-        2. One of the closing fields appears in the delta
+        2. The closing field is in the delta
 
     The second is mandatory so we will not send a closing request at all of the mirroring requests that happen after closing an
     incident (in case where the incident is updated so there is a delta, but it is not the status that was changed).
     """
-    closing_fields = {'classification', 'classificationComment'}
-    return demisto.params().get('close_ticket') and any(field in delta for field in closing_fields)
+    closing_field = 'classification'
+    return demisto.params().get('close_ticket') and closing_field in delta
 
 
-def update_incident_request(client: AzureSentinelClient, incident_id: str, data: Dict[str, Any], delta: Dict[str, Any],
-                            close: bool = False) -> Dict[str, Any]:
+def update_incident_request(client: AzureSentinelClient, incident_id: str, data: Dict[str, Any], delta: Dict[str, Any]
+                            ) -> Dict[str, Any]:
+    required_fileds = ('severity', 'status', 'title')
+    if any(field not in data for field in required_fileds):
+        raise DemistoException(f'Update incident request is missing required fields: {required_fileds}')
+
     severity = SEVERITY[data.get('severity', '')]
     status = STATUS_NUM_TO_STR[data.get('status', '')]
     properties = {
@@ -667,11 +671,10 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
         'labels': [{'labelName': label.get('value'), 'type': label.get('type')} for label in delta.get('labels', [])],
         'firstActivityTimeUtc': delta.get('firstActivityTimeUtc'),
         'lastActivityTimeUtc': delta.get('lastActivityTimeUtc'),
+        'classification': delta.get('classification'),
+        'classificationComment': delta.get('classificationComment'),
+        'classificationReason': CLASSIFICATION_REASON.get(delta.get('classification', ''))
     }
-    if close:
-        properties['classification'] = delta.get('classification')
-        properties['classificationComment'] = delta.get('classificationComment')
-        properties['classificationReason'] = CLASSIFICATION_REASON.get(delta.get('classification', ''))
     remove_nulls_from_dictionary(properties)
     data = {
         'etag': delta.get('etag') or data.get('etag'),
@@ -685,7 +688,7 @@ def update_remote_incident(client: AzureSentinelClient, data: Dict[str, Any], de
                            incident_status: IncidentStatus, incident_id: str) -> str:
     if incident_status == IncidentStatus.DONE and close_in_ms(delta):
         demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
-        return str(update_incident_request(client, incident_id, data, delta, close=True))
+        return str(update_incident_request(client, incident_id, data, delta))
     elif incident_status == IncidentStatus.ACTIVE:
         demisto.debug(f'Updating incident with remote ID {incident_id} in remote system.')
         return str(update_incident_request(client, incident_id, data, delta))

@@ -4,6 +4,7 @@ import dateparser
 import pytest
 import requests
 import demistomock as demisto
+from CommonServerPython import IncidentStatus
 from AzureSentinel import AzureSentinelClient, list_incidents_command, list_incident_relations_command, \
     incident_add_comment_command, \
     get_update_incident_request_data, list_incident_entities_command, list_incident_comments_command, \
@@ -15,7 +16,8 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command, \
     list_threat_indicator_command, NEXTLINK_DESCRIPTION, process_incidents, fetch_incidents, fetch_incidents_additional_info, \
     get_modified_remote_data_command, get_remote_data_command, get_remote_incident_data, get_mapping_fields_command, \
-    update_remote_system_command, update_remote_incident, set_xsoar_incident_entries, build_threat_indicator_data, DEFAULT_SOURCE
+    update_remote_system_command, update_remote_incident, close_in_ms, update_incident_request, set_xsoar_incident_entries, \
+    build_threat_indicator_data, DEFAULT_SOURCE
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -1381,8 +1383,8 @@ class TestHappyPath:
         params = {
             'managed_identities_client_id': {'password': client_id},
             'use_managed_identities': 'True',
-            'subscription_id': {'password': 'test'},
-            'resource_group': 'test_resource_group',
+            'subscriptionID': 'test_subscription_id',
+            'resourceGroupName': 'test_resource_group',
             'tenant_id': 'test_tenant_id'
         }
         mocker.patch.object(demisto, 'params', return_value=params)
@@ -1600,3 +1602,76 @@ def test_update_remote_system_command(mocker):
 
     result = update_remote_system_command(mock_client(), args)
     assert result == 'incident-1'
+
+
+@pytest.mark.parametrize("incident_status, close_in_ms, expected_update_call", [
+    (IncidentStatus.DONE, True, True),  # incident_status == DONE, close_in_ms == True
+    (IncidentStatus.DONE, False, False),  # incident_status == DONE, close_in_ms == False
+    (IncidentStatus.ACTIVE, True, True),  # incident_status == ACTIVE, close_in_ms == True
+    (IncidentStatus.ACTIVE, False, True),  # incident_status == ACTIVE, close_in_ms == False
+    (IncidentStatus.PENDING, True, False),  # incident_status == PENDING, close_in_ms == True
+])
+def test_update_remote_incident(mocker, incident_status, close_in_ms, expected_update_call):
+    """
+    Given
+        - incident status
+    When
+        - running update_remote_incident
+    Then
+        - ensure the function call only when the incident status is DONE and close_in_ms is True
+          or when the incident status is ACTIVE
+    """
+    mocker.patch('AzureSentinel.close_in_ms', return_value=close_in_ms)
+    mock_update_status = mocker.patch('AzureSentinel.update_incident_request')
+    update_remote_incident(mock_client(), {}, {}, incident_status, 'incident-1')
+    assert mock_update_status.called == expected_update_call
+
+
+@pytest.mark.parametrize('delta, close_ticket_param, to_close', [
+    ({'classification': 'FalsePositive'}, True, True),
+    ({'classification': 'FalsePositive'}, False, False),
+    ({}, True, False),
+    ({}, False, False)
+])
+def test_close_in_ms(mocker, delta, close_ticket_param, to_close):
+    """
+    Given
+        - one of the close parameters
+    When
+        - outgoing mirroring triggered by a change in the incident
+    Then
+        - returns true if the incident was closed in XSOAR and the close_ticket parameter was set to true
+    """
+    mocker.patch.object(demisto, 'params', return_value={'close_ticket': close_ticket_param})
+    assert close_in_ms(delta) == to_close
+
+
+@pytest.mark.parametrize("data, delta, mock_response", [
+    (
+        {'title': 'New Title', 'severity': 2, 'status': 1},
+        {'title': 'New Title'},
+        {'title': 'New Title', 'severity': 'Medium', 'status': 'Active'}
+    ),
+    (
+        {'title': 'Title', 'severity': 1, 'status': 2},
+        {'classification': 'FalsePositive', 'classificationReason': 'InaccurateData'},
+        {'title': 'Title', 'severity': 'Low', 'status': 'Closed', 'classification': 'FalsePositive',
+         'classificationReason': 'InaccurateData'}
+    )
+])
+def test_update_incident_request(mocker, data, delta, mock_response):
+    """
+    Given
+        - data
+        - delta
+    When
+        - running update_incident_request
+    Then
+        - Ensure the client.http_request was called with the expected data
+    """
+    client = mock_client()
+    mock_response = {'etag': None, 'properties': mock_response}
+    mocker.patch.object(client, 'http_request', return_value=mock_response)
+
+    update_incident_request(client, 'id-incident-1', data, delta)
+    assert client.http_request.call_args[1]['data'] == mock_response
