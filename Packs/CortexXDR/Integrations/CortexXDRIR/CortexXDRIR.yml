@@ -998,12 +998,6 @@ script:
             "3 days" (relative date)
             "2019-10-21T23:45:00" (date)
           name: last_seen_lte
-        #- defaultValue: '0'
-        #description: Page number (for pagination). The default is 0 (the first page).
-        #name: page
-        #- defaultValue: '30'
-        #description: Maximum number of endpoints to return per page. The default and maximum is 30.
-        #name: limit
         - name: username
           description: The usernames to query for, accepts a single user, or comma-separated list of usernames.
           isArray: true
