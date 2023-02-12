@@ -18,7 +18,11 @@ filter
     xdm.event.outcome = if(outcome_result="SUCCESS", XDM_CONST.OUTCOME_SUCCESS, outcome_result="FAILURE", XDM_CONST.OUTCOME_FAILED, outcome_result="ALLOW", XDM_CONST.OUTCOME_SUCCESS, outcome_result="DENY", XDM_CONST.OUTCOME_FAILED, outcome_result="CHALLENGE", XDM_CONST.OUTCOME_PARTIAL, XDM_CONST.OUTCOME_UNKNOWN),
     xdm.event.outcome_reason = json_extract_scalar(outcome, "$.reason"),
     xdm.target.resource.id = arraystring (arraymap (json_extract_array (`target`,"$."), json_extract_scalar ("@element", "$.alternateId")),","),
-    xdm.target.resource.type = arraystring (arraymap (json_extract_array (`target`,"$."), json_extract_scalar ("@element", "$.type")),",")
+    xdm.target.resource.type = arraystring (arraymap (json_extract_array (`target`,"$."), json_extract_scalar ("@element", "$.type")),","),
+    xdm.source.user_agent = json_extract_scalar(client, "$.userAgent.rawUserAgent"),
+    xdm.source.host.os = json_extract_scalar(client, "$.userAgent.os"),
+    xdm.source.process.name = json_extract_scalar(client, "$.userAgent.browser"),
+    xdm.event.id = uuid
     //First and last name extraction
     | alter displayName = json_extract_scalar(actor, "$.displayName")
     | alter
@@ -45,4 +49,8 @@ filter
     xdm.event.outcome = if(outcome_result="SUCCESS",XDM_CONST.OUTCOME_SUCCESS, outcome_result="FAILURE", XDM_CONST.OUTCOME_FAILED, outcome_result="ALLOW", XDM_CONST.OUTCOME_SUCCESS, outcome_result="DENY", XDM_CONST.OUTCOME_FAILED, outcome_result="CHALLENGE", XDM_CONST.OUTCOME_PARTIAL, XDM_CONST.OUTCOME_UNKNOWN),
     xdm.event.outcome_reason = json_extract_scalar(outcome, "$.reason"),
     xdm.target.host.device_id = arraystring (arraymap (json_extract_array (`target`,"$."), json_extract_scalar ("@element", "$.alternateId")),","),
-    xdm.target.host.device_category = arraystring (arraymap (json_extract_array (`target`,"$."), json_extract_scalar ("@element", "$.type")),",");
+    xdm.target.host.device_category = arraystring (arraymap (json_extract_array (`target`,"$."), json_extract_scalar ("@element", "$.type")),","),
+    xdm.source.user_agent = json_extract_scalar(client, "$.userAgent.rawUserAgent"),
+    xdm.source.host.os = json_extract_scalar(client, "$.userAgent.os"),
+    xdm.source.process.name = json_extract_scalar(client, "$.userAgent.browser"),
+    xdm.event.id = uuid;
