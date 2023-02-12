@@ -5,14 +5,16 @@ SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT = {
     'state': 'created',
     'created_timestamp': '2020-05-12T15:34:11Z',
     'environment_id': 160,
-    'sha256': 'sha256'
+    'sha256': 'sha256',
+    'file_name': 'test.pdf'
 }
 
 SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT = {
     'submitted_id': 'id',
     'state': 'created',
     'created_timestamp': '2020-05-12T16:40:52Z',
-    'environment_id': 160
+    'environment_id': 160,
+    'url_name': 'https://www.google.com'
 }
 
 GET_REPORT_SUMMARY_CONTEXT = {
