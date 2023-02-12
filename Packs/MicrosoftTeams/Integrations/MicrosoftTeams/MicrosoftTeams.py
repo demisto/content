@@ -121,10 +121,8 @@ def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
                     "parameter and then run !microsoft-teams-auth-test to re-authenticate")
 
             error = response.get('error', {})
-            if isinstance(error, dict):
-                err_str: str = f"{error.get('code', '')}: {error.get('message', '')}"
-            else:
-                err_str = response.get('error_description', '')
+            err_str = (f"{error.get('code', '')}: {error.get('message', '')}" if isinstance(error, dict)
+                       else response.get('error_description', ''))
             if err_str:
                 return err_str
         elif api == 'bot':
@@ -451,9 +449,8 @@ def get_bot_access_token() -> str:
     integration_context: dict = get_integration_context()
     access_token: str = integration_context.get('bot_access_token', '')
     valid_until: int = integration_context.get('bot_valid_until', int)
-    if access_token and valid_until:
-        if epoch_seconds() < valid_until:
-            return access_token
+    if access_token and valid_until and epoch_seconds() < valid_until:
+        return access_token
     url: str = 'https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token'
     data: dict = {
         'grant_type': 'client_credentials',
@@ -527,8 +524,7 @@ def get_graph_access_token() -> str:
     if AUTH_TYPE == AUTHORIZATION_CODE_FLOW:
         data['redirect_uri'] = REDIRECT_URI
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-        refresh_token = refresh_token or get_refresh_token_from_auth_code_param()
-        if refresh_token:
+        if refresh_token := refresh_token or get_refresh_token_from_auth_code_param():
             demisto.debug('Using refresh token from integration context')
             data['grant_type'] = REFRESH_TOKEN
             data['refresh_token'] = refresh_token
@@ -612,11 +608,10 @@ def http_request(
             # Update message returns 202 if the request has been accepted for processing
             # Create channel with a membershipType value of shared, returns 202 and a link to the teamsAsyncOperation.
             return {}
-        if response.status_code == 201:
+        if response.status_code == 201 and not response.content:
             # For channel creation query (with a membershipType value of standard or private), chat creation,
             # Send message in a chat, and Add member returns 201 if successful
-            if not response.content:
-                return {}
+            return {}
         try:
             return response.json()
         except ValueError:
@@ -1110,9 +1105,7 @@ def pages_puller(response: Dict[str, Any], limit: int = 1) -> Tuple[list, str]:
     """
 
     response_data = response.get('value', [])
-    while next_link := response.get('@odata.nextLink'):  # There are more results
-        if len(response_data) >= limit:
-            break
+    while next_link := response.get('@odata.nextLink') and len(response_data) < limit:
         demisto.debug(f"Using response {next_link=}")
         response = cast(Dict[str, Any], http_request('GET', next_link))
         response_data.extend(response.get('value', []))
@@ -1577,9 +1570,10 @@ def user_remove_from_channel_command():
     remove user from channel
     This operation is allowed only for channels with a membershipType value of private or shared.
     """
-    channel_name: str = demisto.args().get('channel_name', '')
-    team_name: str = demisto.args().get('team', '')
-    member = demisto.args().get('member', '')
+    args = demisto.args()
+    channel_name: str = args.get('channel_name', '')
+    team_name: str = args.get('team', '')
+    member = args.get('member', '')
     team_id = get_team_aad_id(team_name)
     channel_id = get_channel_id(channel_name, team_id, investigation_id=None)
     if get_channel_type(channel_id, team_id) == 'standard':
@@ -1648,7 +1642,7 @@ def get_channel_type(channel_id, team_id) -> str:
     :param team_id: ID of the channel's team
     :return: The channel's membershipType
     """
-    url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/channels/{channel_id}'
+    url = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/channels/{channel_id}'
     response: dict = cast(Dict[Any, Any], http_request('GET', url))
     demisto.debug(f"The channel membershipType = {response.get('membershipType')}")
     return response.get('membershipType', 'standard')
@@ -1661,7 +1655,7 @@ def get_team_members(service_url: str, team_id: str) -> list:
     :param service_url: Bot service URL to query
     :return: List of team members
     """
-    url: str = f'{service_url}/v3/conversations/{team_id}/members'
+    url = f'{service_url}/v3/conversations/{team_id}/members'
     response: list = cast(List[Any], http_request('GET', url, api='bot'))
     return response
 
@@ -1673,7 +1667,7 @@ def get_channel_members(team_id: str, channel_id: str) -> List[Dict[str, Any]]:
     :param channel_id: ID of channel to get channel members of
     :return: List of channel members
     """
-    url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/channels/{channel_id}/members'
+    url = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/channels/{channel_id}/members'
     response: dict = cast(Dict[Any, Any], http_request('GET', url))
     return response.get('value', [])
 
@@ -2034,7 +2028,6 @@ def channel_mirror_loop():
                 f'An error occurred in channel mirror loop while trying to deserialize teams from cache: '
                 f'{str(json_decode_error)}'
             )
-            # demisto.debug(f'Cache object: {integration_context}')  # todo mask or delete.
             demisto.updateModuleHealth(f'An error occurred: {str(json_decode_error)}')
         except Exception as e:
             demisto.error(f'An error occurred in channel mirror loop: {str(e)}')
@@ -2529,9 +2522,9 @@ def main():
         handle_proxy()
         command: str = demisto.command()
         LOG(f'Command being called is {command}')
-        if command in commands.keys():
+        if command in commands:
             commands[command]()
-        elif command in commands_auth_code.keys():
+        elif command in commands_auth_code:
             validate_auth_code_flow_params(command)  # raises error in case one of the required params is missing
             commands_auth_code[command]()
         else:
