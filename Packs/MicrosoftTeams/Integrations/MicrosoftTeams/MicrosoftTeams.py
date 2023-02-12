@@ -503,10 +503,9 @@ def get_graph_access_token() -> str:
     refresh_token = integration_context.get('current_refresh_token', '')
     access_token: str = integration_context.get('graph_access_token', '')
     valid_until: int = integration_context.get('graph_valid_until', int)
-    if access_token and valid_until:
-        if epoch_seconds() < valid_until:
-            demisto.debug('Using access token from integration context')
-            return access_token
+    if access_token and valid_until and epoch_seconds() < valid_until:
+        demisto.debug('Using access token from integration context')
+        return access_token
     tenant_id: str = integration_context.get('tenant_id', '')
     if not tenant_id:
         raise ValueError(
