@@ -300,6 +300,19 @@ def test_syslog_send(mocker):
 
 
 def test_SyslogManager_tcp(mocker):
+    """
+    Given:
+    - address
+    - port
+    - facility
+    - log_level
+    - certificate: Certificate.
+    When:
+    - calling creating a logger using tcp protocol.
+
+    Then:
+    - Ensure manger, handler and logger are being created.
+    """
     from SyslogSender import SyslogManager, init_manager
     params = {
         'address': '127.0.0.1',
@@ -326,6 +339,19 @@ def test_SyslogManager_tcp(mocker):
 
 
 def test_SyslogManager_tls(mocker):
+    """
+    Given:
+    - address
+    - port
+    - facility
+    - log_level
+    - certificate: Certificate.
+    When:
+    - calling creating a logger using tls protocol.
+
+    Then:
+    - Ensure manger, handler and logger are being created.
+    """
     import SyslogSender
     from SyslogSender import SyslogManager, init_manager
     params = {
@@ -354,3 +380,22 @@ def test_SyslogManager_tls(mocker):
     handler = SyslogManager.init_handler_tls(manager, 'cert.pem')
     logger = SyslogManager._init_logger(manager, handler)
     assert logger.level == 10
+
+
+def test_main(mocker):
+    import SyslogSender
+    from SyslogSender import main
+    params = {'address': '127.0.0.1',
+              'port': '6514',
+              'protocol': 'tls',
+              'priority': 'LOG_DEBUG',
+              'facility': 'LOG_SYSLOG',
+              'certificate': 'cert.pem'}
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='syslog-send')
+    mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch.object(SyslogSender, 'send_log')
+    demisto_results_mocker = mocker.patch.object(demisto, 'results')
+    main()
+    assert demisto_results_mocker.called
+    assert demisto.results.call_args[0][0] == 'Message sent to Syslog successfully.'
