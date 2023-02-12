@@ -10,34 +10,31 @@ This playbook executes when no other playbook is associated with an incident. It
 - Allows the analyst to remediate the incident by blocking malicious indicators that were found.
 
 
+
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Get File Sample From Path - Generic V3
-* Entity Enrichment - Generic v2
 * Dedup - Generic v4
-* Get File Sample By Hash - Generic v3
-* Command-Line Analysis
+* Get File Sample - Generic
+* Detonate File - Generic
+* Calculate Severity - Generic v2
 * Search Endpoints By Hash - Generic V2
 * Extract Indicators From File - Generic v2
-* Detonate File - Generic
-* PCAP Analysis
-* Block Indicators - Generic v3
+* Entity Enrichment - Generic v3
 * Detonate URL - Generic
-* Calculate Severity - Generic v2
+* Block Indicators - Generic v3
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-* DeleteContext
-* UnzipFile
-* ParseEmailFilesV2
-* IdentifyAttachedEmail
+* GenerateInvestigationSummaryReport
 * Set
+* SetMultipleValues
 
 ### Commands
+* setIncident
 * closeInvestigation
 * extractIndicators
 
@@ -47,6 +44,8 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | ExtractIndicators | Determines whether indicators in this incident should be extracted manually. If you turned off Auto-extract for the current incident type, you may want to set this value to True. Otherwise indicators from this incident will not be extracted, which will negatively affect the efficacy of the playbook. | True | Optional |
+| MaliciousTagName | The tag to assign for indicators to block. Tagging indicators can be done through the buttons in the incident layout. | malicious | Optional |
+| BenignTagName | The tag to assign for allowed indicators. Tagging indicators can be done through the buttons in the incident layout. | benign | Optional |
 
 ## Playbook Outputs
 ---
