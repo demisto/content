@@ -19,7 +19,7 @@ yaml = YAML()
 
 SKIPPED_FILES = {"signatures.sf", "script-CommonServerPython.yml", "changelog.json"}
 
-
+# TEST
 def sort_dict(dct: dict):
     for k, v in dct.items():
         if isinstance(v, dict):
