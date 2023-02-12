@@ -56,7 +56,6 @@ alter raw_data = to_string(json_extract_scalar(event_data , "$.param2"))
     xdm.event.type = event_type_connection,
     xdm.session_context_id = to_string(record_id),
     xdm.source.user.username = to_string(json_extract_scalar(user, "$.name")),
-    xdm.source.user.user_type =  to_string(json_extract_scalar(user, "$.type")),
     xdm.source.host.hostname = host_name,
     xdm.alert.severity = coalesce(opcode, log_level),
     xdm.event.outcome = event_result;
