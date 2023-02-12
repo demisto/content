@@ -63,3 +63,34 @@ def test_get_alert_command(mocker, requests_mock):
     FireEyeETP.get_alert_command()
     results = demisto.results.call_args[0][0]
     assert results
+
+
+ALERTS = {'meta': {'fromLastModifiedOn':{'end': ''}},
+          'data': [
+                {'attributes': {'email': {'status': 'delivered (retroactive)', 'headers': {'subject': ''}},
+                                'alert': {'timestamp': '2023-02-08T19:34:17'}}}]}
+
+
+def test_fetch_incident_by_status_messages(mocker):
+    from FireEyeETP import fetch_incidents
+    mocker.patch('FireEyeETP.demisto.getLastRun', return_value={})
+    mocker.patch('FireEyeETP.get_alerts_request', return_value=ALERTS)
+    res = mocker.patch('FireEyeETP.demisto.incidents')
+    fetch_incidents()
+    assert res.call_args.args[0][0].get('rawJSON') == '{"email": {"status": "delivered (retroactive)", "headers": {"subject": ""}}, "alert": {"timestamp": "2023-02-08T19:34:17"}}'
+
+
+  
+ALERTS_2 = {'meta': {'fromLastModifiedOn':{'end': ''}},
+            'data': [
+                {'attributes': {'email': {'status': 'Moshe', 'headers': {'subject': ''}},
+                                'alert': {'timestamp': '2023-02-08T19:34:17'}}}]} 
+
+def test_fetch_incident_by_status_messages_2(mocker):
+    from FireEyeETP import fetch_incidents
+    mocker.patch('FireEyeETP.MESSAGE_STATUS', return_value='delivered (retroactive)')
+    mocker.patch('FireEyeETP.demisto.getLastRun', return_value={})
+    mocker.patch('FireEyeETP.get_alerts_request', return_value=ALERTS_2)
+    res = mocker.patch('FireEyeETP.demisto.incidents')
+    fetch_incidents()
+    assert not res.call_args.args[0]

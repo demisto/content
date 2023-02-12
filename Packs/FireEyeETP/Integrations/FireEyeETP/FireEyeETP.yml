@@ -35,8 +35,21 @@ configuration:
 - display: Messages status. All messages with the status specified will be imported as incidents.
   name: message_status
   defaultvalue: delivered (retroactive)
-  type: 0
+  options:
+    - accepted
+    - deleted
+    - delivered
+    - delivered (retroactive)
+    - dropped
+    - dropped oob
+    - dropped (oob retroactive)
+    - permanent failure
+    - processing
+    - quarantined
+    - rejected
+    - temporary failure
   required: false
+  type: 16
 script:
   script: '-'
   type: python
