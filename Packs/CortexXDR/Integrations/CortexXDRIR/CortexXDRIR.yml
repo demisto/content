@@ -1002,6 +1002,7 @@ script:
           description: The usernames to query for, accepts a single user, or comma-separated list of usernames.
           isArray: true
         - name: new_alias_name
+          required: true
           description: The requested alias name to change to.
         - name: scan_status
           description: The scan status of the endpoint.
