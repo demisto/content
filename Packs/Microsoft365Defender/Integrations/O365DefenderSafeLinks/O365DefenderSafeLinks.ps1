@@ -681,7 +681,7 @@ function GetAtpPolicyCommand {
         return "#### No records were found.", @{}, @{}
     }
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.AtpPolicy" = CreateContextForReport $raw_response }
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.AtpPolicy(obj.Guid === val.Guid)" = $raw_response }
     return $human_readable, $entry_context, $raw_response
 
 }
@@ -699,7 +699,7 @@ function SetAtpPolicyCommand {
         return "#### SetAtpPolicyCommand finished with no output.", @{}, @{}
     }
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.AtpPolicy" = CreateContextForReport $raw_response }
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.AtpPolicy(obj.Guid === val.Guid)" = $raw_response }
     return $human_readable, $entry_context, $raw_response
 }
 
