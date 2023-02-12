@@ -212,38 +212,18 @@ class CoreClient(BaseClient):
         endpoints = reply.get('reply').get('endpoints', [])
         return endpoints
 
-    def set_endpoints_alias(self, filters, new_alias_name):
+    def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str) -> dict:
+        """
+        This func is used to set the alias name of an endpoint.
 
-        # search_from = page_number * limit
-        # search_to = search_from + limit
-        request_data = {}
+        args:
+            filters: list of filters to get the endpoints
+            new_alias_name: the new alias name to set
 
-        # request_data = {
-        #     'search_from': search_from,
-        #     'search_to': search_to,
-        # }
+        returns: dict of the response(True if success else error message)
+        """
 
-        # if search_from:
-        #     request_data['search_from'] = search_from
-
-        # if search_to:
-        #     request_data['search_to'] = search_to
-
-        # if sort_by_first_seen:
-        #     request_data['sort'] = {
-        #         'field': 'first_seen',
-        #         'keyword': sort_by_first_seen
-        #     }
-        # elif sort_by_last_seen:
-        #     request_data['sort'] = {
-        #         'field': 'last_seen',
-        #         'keyword': sort_by_last_seen
-        #    }
-
-        # TODO make sure if you want the ip_list to be the identifier
-        # request_data['value'] = ip_list
-        request_data['filters'] = filters
-        request_data['alias'] = new_alias_name
+        request_data = {'filters': filters, 'alias': new_alias_name}
 
         return self._http_request(
             method='POST',
@@ -1809,19 +1789,8 @@ def get_endpoints_command(client, args):
     )
 
 
-def endpoint_alias_change_command(client, args):
-    # page_number = arg_to_int(
-    #     arg=args.get('page', '0'),
-    #     arg_name='Failed to parse "page". Must be a number.',
-    #     required=True
-    # )
-
-    # limit = arg_to_int(
-    #     arg=args.get('limit', '30'),
-    #     arg_name='Failed to parse "limit". Must be a number.',
-    #     required=True
-    # )
-
+def endpoint_alias_change_command(client: CoreClient, args) -> CommandResults:
+    # get arguments
     endpoint_id_list = argToList(args.get('endpoint_id_list'))
     dist_name = argToList(args.get('dist_name'))
     ip_list = argToList(args.get('ip_list'))
@@ -1853,32 +1822,16 @@ def endpoint_alias_change_command(client, args):
         arg_name='last_seen_lte'
     )
 
-    # sort_by_first_seen = args.get('sort_by_first_seen')
-    # sort_by_last_seen = args.get('sort_by_last_seen')
-
     username = argToList(args.get('username'))
-    filters = create_request_filters(
+
+    # create filters
+    filters: list[dict[str, str]] = create_request_filters(
         status=status, username=username, endpoint_id_list=endpoint_id_list, dist_name=dist_name,
         ip_list=ip_list, group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate,
         hostname=hostname, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
         last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte
     )
     client.set_endpoints_alias(filters=filters, new_alias_name=new_alias_name)
-
-    # standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False, integration_name)
-    # endpoint_context_list = []
-    # for endpoint in standard_endpoints:
-    #     endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
-    #     endpoint_context_list.append(endpoint_context)
-
-    # context = {
-    #     f'{integration_context_brand}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
-    #     Common.Endpoint.CONTEXT_PATH: endpoint_context_list,
-    #     f'{integration_context_brand}.Endpoint.count': len(standard_endpoints)
-    # }
-    # account_context = create_account_context(endpoints)
-    # if account_context:
-    #     context[Common.Account.CONTEXT_PATH] = account_context
 
     return CommandResults(
         readable_output="The endpoint alias was changed successfully.")
