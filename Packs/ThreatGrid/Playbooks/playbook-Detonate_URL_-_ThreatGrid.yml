@@ -373,4 +373,4 @@ outputs:
 - contextPath: ThreatGrid.Sample.ID
   description: The sample ID
 tests:
-- Detonate URL - Generic Test
+- No tests (deprecated)

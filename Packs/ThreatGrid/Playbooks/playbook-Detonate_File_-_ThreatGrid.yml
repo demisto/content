@@ -582,4 +582,4 @@ outputs:
 fromversion: 5.0.0
 deprecated: true
 tests:
-- Detonate File - Generic Test
+- No tests (deprecated)
