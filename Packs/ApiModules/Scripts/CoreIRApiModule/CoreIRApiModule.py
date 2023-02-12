@@ -1829,9 +1829,9 @@ def endpoint_alias_change_command(client: CoreClient, **args) -> CommandResults:
         status=status, username=username, endpoint_id_list=endpoint_id_list, dist_name=dist_name,
         ip_list=ip_list, group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate,
         hostname=hostname, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
-        last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte, scan_status = scan_status
+        last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte, scan_status=scan_status
     )
-    
+
     client.set_endpoints_alias(filters=filters, new_alias_name=new_alias_name)
 
     return CommandResults(
@@ -3437,14 +3437,14 @@ def create_request_filters(
             'operator': 'lte',
             'value': last_seen_lte
         })
-        
+
     if scan_status:
         filters.append({
             'field': 'scan_status',
             'operator': 'IN',
             'value': [scan_status]
         })
-        
+
     return filters
 
 
