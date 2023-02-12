@@ -1,20 +1,24 @@
-This playbook contains all the cloud provider sub playbooks for remediation
+Given the IP address, this playbook enriches Azure information relevant to ASM alerts.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* AWS - Security Group Remediation
-* Azure - Network Security Group Remediation
-* GCP - Firewall Remediation
+
+Azure - Enrichment
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
-This playbook does not use any scripts.
+
+* GetTime
+* GridFieldSetup
 
 ### Commands
+
 This playbook does not use any commands.
 
 ## Playbook Inputs
@@ -22,12 +26,14 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| RemediationRule | The security group that will used for remediating internet exposures.  | Remediation-Security-Group | Required |
+| RemoteIP | IP address of service. | alert.remoteip | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
-![Cortex ASM - Remediation](../doc_files/Cortex_ASM_-_Remediation.png)
+![Cortex ASM - Azure Enrichment](../doc_files/Cortex_ASM_-_Azure_Enrichment.png)
