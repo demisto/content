@@ -178,14 +178,12 @@ def test_ip():
         'priority': 'LOG_DEBUG',
         'facility': 'LOG_SYSLOG'
     }
-    address_after_encoding = params['address'].encode('utf-8')
-    ssl_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    ssl_sock.connect((address_after_encoding, 80))
+    address_after_encoding = base64.b64encode(params['address'].encode()).decode("utf-8")
+    # ssl_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     # Arrange
     manager = init_manager(params)
-    assert manager.address == 'aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vdGVzd' \
-                              'HMvc3RpbGxleGFtcGxlL3Rlc3R0aGlzZXhhcG1sZTEyMzQ1Njc4OQ=='
+    assert manager.address == address_after_encoding
     assert manager.port == 514
     assert manager.protocol == 'tcp'
     assert manager.logging_level == 10

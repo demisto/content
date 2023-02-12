@@ -64,88 +64,8 @@ UDP = 'udp'
 TLS = 'tls'
 PROTOCOLS = {TCP, UDP, TLS}
 
-''' Syslog Manager '''
 
-
-class SyslogManager:
-    def __init__(self, address: str, port: int, protocol: str, logging_level: int, facility: int, cert_path: str | None):
-        """
-        Class for managing instances of a syslog logger.
-        :param address: The IP address of the syslog server.
-        :param port: The port of the syslog server.
-        :param protocol: The messaging protocol (TCP / UDP / TLS).
-        :param logging_level: The logging level.
-        """
-        self.address = address
-        self.port = port
-        self.protocol = protocol
-        self.logging_level = logging_level
-        self.facility = facility
-        self.syslog_cert_path = cert_path
-
-    @contextmanager  # type: ignore[misc, arg-type]
-    def get_logger(self) -> Generator:
-        """
-        Get a new instance of a syslog logger.
-        :return: syslog logger
-        """
-        if self.protocol == TLS and self.syslog_cert_path:
-            handler = self.init_handler_tls(self.syslog_cert_path)
-            demisto.debug('get handler tls')
-        else:
-            handler = self.init_handler_udp_tcp_fix()
-        syslog_logger = self._init_logger(handler)
-        demisto.debug('logger was created ')
-        try:
-            yield syslog_logger
-        finally:
-            syslog_logger.removeHandler(handler)
-            handler.close()
-
-    def _get_handler(self) -> SysLogHandler:
-        """
-        Get a syslog handler for a logger according to provided parameters.
-        :return: syslog handler
-        """
-        address: Union[str, Tuple[str, int]] = (self.address, self.port)
-        kwargs: Dict[str, Any] = {
-            'facility': self.facility
-        }
-
-        if self.protocol == TCP:
-            kwargs['socktype'] = SOCK_STREAM
-        elif self.protocol == 'unix':
-            address = self.address
-
-        kwargs['address'] = address
-
-        return SysLogHandler(**kwargs)
-
-    def init_handler_udp_tcp_fix(self):
-        sock_kind = SOCK_STREAM if self.protocol == TCP else socket.SOCK_DGRAM
-        sh = Rfc5424SysLogHandler(address=(self.address, self.port),
-                                  facility=self.facility,
-                                  socktype=sock_kind,
-                                  timeout=10)
-        return sh
-
-    def init_handler_tls(self, certfile: str):
-        return SyslogHandlerTLS(address=self.address,
-                                port=self.port,
-                                cert_path=certfile,
-                                facility=self.facility,
-                                log_level=self.logging_level)
-
-    def _init_logger(self, handler) -> Logger:
-        """
-        Initialize a logger with a syslog handler.
-        :param handler: A syslog handler
-        :return: A syslog logger
-        """
-        syslog_logger = getLogger('SysLogLogger')
-        syslog_logger.setLevel(self.logging_level)
-        syslog_logger.addHandler(handler)
-        return syslog_logger
+'''SyslogHandlerTLS'''
 
 
 class SyslogHandlerTLS(logging.Handler):
@@ -208,6 +128,71 @@ class SyslogHandlerTLS(logging.Handler):
             if self.socket:
                 self.socket.close()
             demisto.error(str(e))
+
+
+''' Syslog Manager '''
+
+
+class SyslogManager:
+    def __init__(self, address: str, port: int, protocol: str, logging_level: int, facility: int, cert_path: str | None):
+        """
+        Class for managing instances of a syslog logger.
+        :param address: The IP address of the syslog server.
+        :param port: The port of the syslog server.
+        :param protocol: The messaging protocol (TCP / UDP / TLS).
+        :param logging_level: The logging level.
+        """
+        self.address = address
+        self.port = port
+        self.protocol = protocol
+        self.logging_level = logging_level
+        self.facility = facility
+        self.syslog_cert_path = cert_path
+
+    @contextmanager  # type: ignore[misc, arg-type]
+    def get_logger(self) -> Generator:
+        """
+        Get a new instance of a syslog logger.
+        :return: syslog logger
+        """
+        if self.protocol == TLS and self.syslog_cert_path:
+            handler = self.init_handler_tls(self.syslog_cert_path)
+            demisto.debug('get handler tls')
+        else:
+            handler = self._get_handler()
+        syslog_logger = self._init_logger(handler)
+        demisto.debug('logger was created ')
+        try:
+            yield syslog_logger
+        finally:
+            syslog_logger.removeHandler(handler)
+            handler.close()
+
+    def _get_handler(self) -> Rfc5424SysLogHandler:
+        sock_kind = SOCK_STREAM if self.protocol == TCP else socket.SOCK_DGRAM
+        sh = Rfc5424SysLogHandler(address=(self.address, self.port),
+                                  facility=self.facility,
+                                  socktype=sock_kind,
+                                  timeout=10)
+        return sh
+
+    def init_handler_tls(self, certfile: str):
+        return SyslogHandlerTLS(address=self.address,
+                                port=self.port,
+                                cert_path=certfile,
+                                facility=self.facility,
+                                log_level=self.logging_level)
+
+    def _init_logger(self, handler: Rfc5424SysLogHandler | SyslogHandlerTLS) -> Logger:
+        """
+        Initialize a logger with a syslog handler.
+        :param handler: A syslog handler
+        :return: A syslog logger
+        """
+        syslog_logger = getLogger('SysLogLogger')
+        syslog_logger.setLevel(self.logging_level)
+        syslog_logger.addHandler(handler)
+        return syslog_logger
 
 
 ''' HELPER FUNCTIONS '''
