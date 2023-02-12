@@ -369,7 +369,8 @@ class TestImportCommands:
         # prepare
         mocked_file_path = util_tmp_json_file()
         mocker.patch.object(demisto, 'getFilePath', return_value=mocked_file_path)
-        mocker.patch.object(Client, 'http_request', return_value={'success': True, 'import_session_id': 'test_session_id'})
+        mocker.patch.object(Client, 'http_request',
+                            return_value={'success': True, 'import_session_id': 'test_session_id'})
 
         # run
         result = import_ioc_with_approval(mock_client(), import_type, 'test_value')
@@ -466,6 +467,7 @@ class TestGetCommands:
     """
     Group the 'get' commands test
     """
+
     @staticmethod
     def mocked_http_get_response(command, **kwargs):
         mocked_file_path = 'test_data/mocked_get_commands_response.json'
@@ -961,3 +963,28 @@ def test_search_intelligence(mocker):
 
     assert result.outputs[0].get('itype') == 'c2_ip'
     assert result.outputs_prefix == 'ThreatStream.Intelligence'
+
+
+def test_search_intelligence_with_confidence(mocker):
+    """
+
+    Given:
+        - Various parameters to search intelligence by
+
+    When:
+        - Call search_intelligence command
+
+    Then:
+        - Validate the params passed correctly
+
+    """
+    mocked_ip_result = util_load_json('test_data/mocked_ip_response.json')
+    mocker.patch.object(Client, 'http_request', return_value=mocked_ip_result)
+
+    args = {'uuid': '9807794e-3de0-4340-91ca-cd82dd7b6d24',
+            'confidence': 'lt 80'}
+    client = mock_client()
+    search_intelligence(client, **args)
+    http_call_args = client.http_request.call_args.kwargs.get('params')
+    assert 'confidence' not in http_call_args
+    assert 'confidence__lt' in http_call_args
