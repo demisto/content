@@ -212,27 +212,7 @@ class CoreClient(BaseClient):
         endpoints = reply.get('reply').get('endpoints', [])
         return endpoints
 
-    def set_endpoints_alias(self,
-                            endpoint_id_list=None,
-                            dist_name=None,
-                            ip_list=None,
-                            group_name=None,
-                            platform=None,
-                            alias_name=None,
-                            isolate=None,
-                            hostname=None,
-                            # page_number=0,
-                            # limit=30,
-                            first_seen_gte=None,
-                            first_seen_lte=None,
-                            last_seen_gte=None,
-                            last_seen_lte=None,
-                            # sort_by_first_seen=None,
-                            # sort_by_last_seen=None,
-                            status=None,
-                            username=None,
-                            new_alias_name=None
-                            ):
+    def set_endpoints_alias(self, filters, new_alias_name):
 
         # search_from = page_number * limit
         # search_to = search_from + limit
@@ -242,13 +222,6 @@ class CoreClient(BaseClient):
         #     'search_from': search_from,
         #     'search_to': search_to,
         # }
-
-        filters = create_request_filters(
-            status=status, username=username, endpoint_id_list=endpoint_id_list, dist_name=dist_name,
-            ip_list=ip_list, group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate,
-            hostname=hostname, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
-            last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte
-        )
 
         # if search_from:
         #     request_data['search_from'] = search_from
@@ -1884,28 +1857,13 @@ def endpoint_alias_change_command(client, args):
     # sort_by_last_seen = args.get('sort_by_last_seen')
 
     username = argToList(args.get('username'))
-
-    client.set_endpoints_alias(
-        endpoint_id_list=endpoint_id_list,
-        dist_name=dist_name,
-        ip_list=ip_list,
-        group_name=group_name,
-        platform=platform,
-        alias_name=alias_name,
-        isolate=isolate,
-        hostname=hostname,
-        # page_number=page_number,
-        # limit=limit,
-        first_seen_gte=first_seen_gte,
-        first_seen_lte=first_seen_lte,
-        last_seen_gte=last_seen_gte,
-        last_seen_lte=last_seen_lte,
-        # sort_by_first_seen=sort_by_first_seen,
-        # sort_by_last_seen=sort_by_last_seen,
-        status=status,
-        username=username,
-        new_alias_name=new_alias_name
+    filters = create_request_filters(
+        status=status, username=username, endpoint_id_list=endpoint_id_list, dist_name=dist_name,
+        ip_list=ip_list, group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate,
+        hostname=hostname, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
+        last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte
     )
+    client.set_endpoints_alias(filters=filters, new_alias_name=new_alias_name)
 
     # standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False, integration_name)
     # endpoint_context_list = []
