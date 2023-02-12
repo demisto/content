@@ -136,9 +136,9 @@ class MsGraphClient:
 
     #  If successful, this method returns 204 No Content response code.
     #  Using resp_type=text to avoid parsing error.
-    def update_user(self, user, updated_fields):
+    def update_user(self, user: str, updated_fields: str, delimiter: str):
         body = {}
-        for key_value in updated_fields.split(','):
+        for key_value in updated_fields.split(delimiter):
             field, value = key_value.split('=', 2)
             body[field] = value
         self.ms_client.http_request(
@@ -336,8 +336,9 @@ def create_user_command(client: MsGraphClient, args: Dict):
 def update_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     updated_fields = args.get('updated_fields')
+    delimiter = args.get('updated_fields_delimiter', ',')
 
-    client.update_user(user, updated_fields)
+    client.update_user(user, updated_fields, delimiter)
     return get_user_command(client, args)
 
 
