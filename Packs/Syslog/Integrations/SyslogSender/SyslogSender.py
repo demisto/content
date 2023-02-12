@@ -82,15 +82,11 @@ class SyslogHandlerTLS(logging.Handler):
         # Create a TCP socket
         ssl_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # Wrap the socket with SSL
-        # In order to allow self signed certificate:
-        # 1. add:
-        #   context.verify_mode = ssl.CERT_NONE
-        #   ssl_context.check_hostname = False
-        # 2. remove the lines:
-        #   context.load_verify_locations(certificate)
         ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        ssl_context.check_hostname = False
-        ssl_context.verify_mode = ssl.CERT_NONE
+        # In order to allow self signed certificate, add the following lines:
+        # ssl_context.check_hostname = False
+        # ssl_context.verify_mode = ssl.CERT_NONE
+
         ssl_context.load_verify_locations(self.certfile)
         ssl_sock = ssl_context.wrap_socket(ssl_sock, server_hostname=self.address)
         self.socket = ssl_sock
