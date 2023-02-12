@@ -3225,3 +3225,4 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The endpoint alias was changed successfully.
+Note: If there is no error in the process, then this is the output even when the specific endpoint does not exist.
