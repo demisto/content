@@ -272,6 +272,23 @@ Tests connectivity of the email.
 #### Context Output
 
 There is no context output for this command.
+### msgraph-mail-auth-reset
+***
+Run this command to rerun the authentication process.
+
+
+#### Base Command
+
+`msgraph-mail-auth-reset`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+
+#### Context Output
+
+There is no context output for this command.
 ### msgraph-mail-list-emails
 ***
 Gets the properties of returned emails. Typically shows partial results. Use the "page_size" and "pages_to_pull" arguments to get all results.
