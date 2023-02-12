@@ -4,7 +4,6 @@ commonfields:
   version: -1
 configuration:
 - displaypassword: Service API Key
-  additionalinfo: The API Key to use for connection
   name: credentials
   required: true
   hiddenusername: true
@@ -18,14 +17,14 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+description: 'Infoblox BloxOne Threat Defense'
 display: 'Infoblox BloxOne Threat Defense'
 name: InfobloxBloxOneThreatDefense
 script:
   commands:
   - arguments:
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: 'The type of indcator to search by. Available values : host, ip, url, hash, email'
       isArray: false
       name: indicator_type
       required: true
@@ -38,26 +37,26 @@ script:
       - hash
       - email
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: 'The indicator to search on.'
       isArray: false
       name: value
       required: true
       secret: false
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: 'The sources to query. Multiple sources can be specified, if no source is specified, the call will search on all available sources. (you can see the list of the available sources by runing *bloxone-td-dossier-source-list*)'
       isArray: true
       name: sources
       required: false
       secret: false
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: 'The interval in seconds between each poll.'
       isArray: false
       name: interval_in_seconds
       required: false
       secret: false
       defaultValue: 10
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: 'The timeout in seconds until polling ends.'
       isArray: false
       name: timeout
       required: false
@@ -66,60 +65,81 @@ script:
     - description: 'used for polling'
       name: job_id
     deprecated: false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+    description: 'The Dossier Lookup API returns detailed information on the specified indicator from the requested sources.'
     execution: false
     polling: true
     name: bloxone-td-dossier-lookup-get
     outputs:
-    - contextPath: BloxOneTD.DossierLookup
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: BloxOneTD.DossierLookup.source
+      description: 'The Dossier source.'
+      type: String
+    - contextPath: BloxOneTD.DossierLookup.target
+      description: 'The targeted indicator.'
+      type: String
+    - contextPath: BloxOneTD.DossierLookup.task_id
+      description: 'The Dossier task id.'
+      type: String
+    - contextPath: BloxOneTD.DossierLookup.type
+      description: 'The indicator type.'
       type: String
   - name: bloxone-td-dossier-source-list
-    description: '[Enter a description of the data returned in this output.]'
+    description: 'Get available Dossier sources'
     outputs:
     - contextPath: BloxOneTD.DossierSource
-      description: '[Enter a description of the data returned in this output.]'
+      description: 'Available Dossier sources'
       type: String
   - arguments:
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: 'The free query filter argument.'
       isArray: false
       name: filter
       required: false
       secret: false
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: 'Filter by target domain.'
       isArray: false
       name: target_domain
       required: false
       secret: false
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: 'Filter by detected at greater then or equal to.'
       isArray: false
       name: detected_at
       required: false
       secret: false
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: 'Maximum number of results to return from the query. Default is 50.'
       isArray: false
       name: limit
       required: false
       secret: false
       defaultValue: 50
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: 'Return results starting at this offset. should be int - by default is 0'
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+    description: 'Lookalike Domain Lists.'
     execution: false
     polling: true
     name: bloxone-td-lookalike-domain-list
     outputs:
-    - contextPath: BloxOneTD.LookalikeDomain
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: BloxOneTD.LookalikeDomain.detected_at
+      description: 'The date of the lookalike detection.'
+      type: Date
+    - contextPath: BloxOneTD.LookalikeDomain.lookalike_domain
+      description: 'The lookalike domain.'
+      type: String
+    - contextPath: BloxOneTD.LookalikeDomain.lookalike_host
+      description: 'The lookalike host.'
+      type: String
+    - contextPath: BloxOneTD.LookalikeDomain.reason
+      description: 'The reason of the detection.'
+      type: String
+    - contextPath: BloxOneTD.LookalikeDomain.target_domain
+      description: 'The domain that was targeted by the lookalike domain.'
       type: String
   isfetch: false
   runonce: false

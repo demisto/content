@@ -22,21 +22,15 @@ class BloxOneTDClient(BaseClient):
                               limit: int = 50, offset: Optional[int] = None) -> List[Dict]:
         url_suffix = '/api/tdlad/v1/lookalike_domains'
         filter_params = {key: val for key, val in [('_limit', limit), ('_offset', offset)] if val}
+
         if user_filter:
-            assert not target_domain, "you can't use the 'filter' argument along with the 'target_domain' argument"
-            assert not detected_at, "you can't use the 'filter' argument along with the 'detected_at' argument"
-            filter_params['_filter'] = user_filter
-
+            _filter = user_filter
         elif target_domain:
-            _filter = [f'target_domain=="{target_domain}"']
-            if detected_at:
-                _filter.append(f'detected_at>="{detected_at}"')
+            _filter = f'target_domain=="{target_domain}"'
+        else: # detected_at != None
+            _filter = f'detected_at>="{detected_at}"'
 
-            filter_params['_filter'] = _filter
-            demisto.results(url_suffix)
-
-        else:
-            raise AssertionError("you must specify either one of arguments 'filter' or 'target_domain'")
+        filter_params['_filter'] = _filter
 
         return self._http_request('GET', url_suffix=url_suffix, params=filter_params).get('results', [])
 
@@ -82,8 +76,26 @@ def dossier_source_list_command(client: BloxOneTDClient) -> CommandResults:
     )
 
 
+def validate_and_format_lookalike_domain_list_args(args: Dict) -> Dict:
+    match len(list(filter(bool, [args.get('filter'), args.get('target_domain'), args.get('detected_at')]))):
+        case 0:
+            raise ValueError("You must spesify one of the following arguments 'target_domain', 'detected_at' or 'filter'.")
+        case 1:
+            pass
+        case _:
+            raise ValueError("You can spesify one of the following arguments 'target_domain', 'detected_at' or 'filter' not more.")
+
+    if args.get('detected_at'):
+        try:
+            args['detected_at'] = dateparser.parse(args['detected_at']).isoformat()
+        except AttributeError:
+            raise DemistoException(f"could not parse {args['detected_at']} as a time value.")
+    return args
+
+
 def lookalike_domain_list_command(client: BloxOneTDClient, args: Dict) -> CommandResults:
-    # TODO: convert relative times
+    args = validate_and_format_lookalike_domain_list_args(args)
+
     data = client.lookalike_domain_list(
         user_filter=args.get('filter'),
         target_domain=args.get('target_domain'),

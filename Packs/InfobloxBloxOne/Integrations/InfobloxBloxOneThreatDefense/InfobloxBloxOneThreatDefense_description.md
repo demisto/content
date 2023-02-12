@@ -1,8 +1,4 @@
-## BaseIntegration Help
+## Infoblox BloxOne Threat Defense Help
 
-Markdown file for integration configuration  help snippet. In this file add:
-
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
-
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+BloxOne Threat Defense is a hybrid cybersecurity solution that leverages DNS as the first line of defense to detect and block cyber threats.
+How to create a Service API Key - (here)[https://docs.infoblox.com/space/BloxOneThreatDefense/35472867/Creating+Service+API+Key]
