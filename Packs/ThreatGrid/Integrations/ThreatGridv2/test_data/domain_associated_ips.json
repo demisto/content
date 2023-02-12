@@ -1,0 +1,22 @@
+{
+    "api_version": "api_version",
+    "id": "id",
+    "request_id": "request_id",
+    "data": {
+        "domain": "data_domain",
+        "ips": [
+            {
+                "ip": "data_ips[0]_ip",
+                "details": "data[0]_details"
+            },
+            {
+                "ip": "data_ips[1]_ip",
+                "details": "data[1]_details"
+            },
+            {
+                "ip": "data_ips[9]_ip",
+                "details": "data_ips[9]_details"
+            }
+        ]
+    }
+}
