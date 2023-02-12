@@ -110,7 +110,7 @@ class Client(CrowdStrikeClient):
         )
         return response
 
-    def fetch_indicators(self, limit: Optional[int], offset: Optional[int] = 0, fetch_command=False, manual_last_run=0) -> list:
+    def fetch_indicators(self, limit: int, offset: Optional[int] = 0, fetch_command=False, manual_last_run=0) -> list:
         """ Get indicators from CrowdStrike API
 
         Args:
@@ -122,6 +122,7 @@ class Client(CrowdStrikeClient):
         Returns:
             (list): parsed indicators
         """
+        indicators: list[dict] = []
         filter = f'({self.filter})' if self.filter else ''
         if self.type:
             type_fql = self.build_type_fql(self.type)
@@ -139,7 +140,9 @@ class Client(CrowdStrikeClient):
             if last_run := self.get_last_run():
                 filter = f'{filter}+({last_run})' if filter else f'({last_run})'
             else:
-                filter = self.handling_first_fetch_and_old_integration_context(filter)
+                filter, indicators = self.handling_first_fetch_and_old_integration_context(filter)
+                if indicators:
+                    limit = limit - len(indicators)
 
         if filter or not fetch_command:
             demisto.info(f' filter {filter}')
@@ -164,11 +167,14 @@ class Client(CrowdStrikeClient):
                 demisto.setIntegrationContext(ctx)
                 demisto.info(f'set last_run: {new_last_marker_time}')
 
-            indicators = self.create_indicators_from_response(response, self.tlp_color, self.feed_tags, self.create_relationships)
+            indicators.extend(self.create_indicators_from_response(response,
+                                                                   self.tlp_color,
+                                                                   self.feed_tags,
+                                                                   self.create_relationships))
             return indicators
-        return []
+        return indicators
 
-    def handling_first_fetch_and_old_integration_context(self, filter: str) -> str:
+    def handling_first_fetch_and_old_integration_context(self, filter: str) -> tuple[str, list[dict]]:
         '''
         Checks whether the context integration is in an old implementation (`last_update`),
         or whether this is the first time of the fetch,
@@ -180,7 +186,9 @@ class Client(CrowdStrikeClient):
             2. the first time of fetch.
 
         Returns:
-            filter with the _marker filter.
+            Tuple:
+                1. filter with the _marker filter - str.
+                2. parse indicator that retrieved - list[dict].
         '''
         filter_for_first_fetch = filter
         if last_run := demisto.getIntegrationContext().get('last_updated') or self.first_fetch:
@@ -199,11 +207,15 @@ class Client(CrowdStrikeClient):
             _marker = resources[-1].get('_marker')
             demisto.debug(f'Importing the indicator marker in first time --> {_marker}')
             last_run = f"_marker:>'{_marker}'"
-            return f'{filter}+({last_run})' if filter else f'({last_run})'
+            parse_indicator = self.create_indicators_from_response(response,
+                                                                   self.tlp_color,
+                                                                   self.feed_tags,
+                                                                   self.create_relationships)
+            return f'{filter}+({last_run})' if filter else f'({last_run})', parse_indicator
 
         # In case no indicator returned
         demisto.debug('No indicator returned')
-        return ''
+        return '', []
 
     @staticmethod
     def set_last_run():
@@ -388,7 +400,7 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
     """
 
     offset = arg_to_number(args.get('offset', 0))
-    limit = arg_to_number(args.get('limit', 50))
+    limit = arg_to_number(args.get('limit', 50)) or 50
     last_run = arg_to_number(args.get('last_run', 0))
     parsed_indicators = client.fetch_indicators(
         limit=limit,
