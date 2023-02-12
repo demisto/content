@@ -888,7 +888,7 @@ def test_main(mocker):
     mocker.patch.object(
         demisto, 'params', return_value={
             'url': Base_url,
-            'apikey': api_key,
+            'apikey': {'password': api_key},
         }
     )
     mocker.patch('EclecticIQv2.EclecticIQ_lookup_observables', return_value={'name': 'test'})
@@ -909,7 +909,7 @@ def test_main_scenario(mocker):
     mocker.patch.object(
         demisto, 'params', return_value={
             'url': Base_url,
-            'apikey': api_key,
+            'apikey': {'password': api_key},
             'verify_certificate': verify,
             'proxy': proxy
         }
@@ -1014,7 +1014,7 @@ def test_main_scenario_1(mocker):
     mocker.patch.object(
         demisto, 'params', return_value={
             'url': Base_url,
-            'apikey': api_key,
+            'apikey': {'password': api_key},
             'verify_certificate': verify,
             'proxy': proxy
         }
@@ -1061,7 +1061,7 @@ def test_main_scenario_2(mocker):
     mocker.patch.object(
         demisto, 'params', return_value={
             'url': Base_url,
-            'apikey': api_key,
+            'apikey': {'password': api_key},
             'verify_certificate': verify,
             'proxy': proxy
         }
@@ -1107,7 +1107,7 @@ def test_main_scenario_3(mocker):
     mocker.patch.object(
         demisto, 'params', return_value={
             'url': Base_url,
-            'apikey': api_key,
+            'apikey': {'password': api_key},
             'verify_certificate': verify,
             'proxy': proxy
         }
