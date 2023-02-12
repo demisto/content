@@ -185,7 +185,7 @@ def test_crowdstrike_to_xsoar_types():
             {'last_updated': '1662650343'},
             {},
             '(last_updated:>=1662650343)',
-            ''
+            ('', 0)
         ),
         (
             '1662650320',
@@ -210,11 +210,12 @@ def test_crowdstrike_to_xsoar_types():
                     "ip_address_types": [],
                     "domain_types": [],
                     "malicious_confidence": "high",
-                    "_marker": "1662650343000005203a3dda6407f9843c09ef8c78"
+                    "_marker": "1662650343000005203a3dda6407f9843c09ef8c78",
+                    "labels": []
                 }
             ]},
             '(last_updated:>=1662650343)',
-            "(_marker:>'1662650343000005203a3dda6407f9843c09ef8c78')"
+            ("(_marker:>'1662650343000005203a3dda6407f9843c09ef8c78')", 1)
         ),
         (
             '1662650320',
@@ -239,11 +240,12 @@ def test_crowdstrike_to_xsoar_types():
                     "ip_address_types": [],
                     "domain_types": [],
                     "malicious_confidence": "high",
-                    "_marker": "1662650343000005203a3dda6407f9843c09ef8c78"
+                    "_marker": "1662650343000005203a3dda6407f9843c09ef8c78",
+                    "labels": []
                 }
             ]},
             '(last_updated:>=1662650320)',
-            "(_marker:>'1662650343000005203a3dda6407f9843c09ef8c78')"
+            ("(_marker:>'1662650343000005203a3dda6407f9843c09ef8c78')", 1)
         ),
         (
             '',
@@ -268,11 +270,12 @@ def test_crowdstrike_to_xsoar_types():
                     "ip_address_types": [],
                     "domain_types": [],
                     "malicious_confidence": "high",
-                    "_marker": "1662650343000005203a3dda6407f9843c09ef8c78"
+                    "_marker": "1662650343000005203a3dda6407f9843c09ef8c78",
+                    "labels": []
                 }
             ]},
             None,
-            "(_marker:>'1662650343000005203a3dda6407f9843c09ef8c78')"
+            ("(_marker:>'1662650343000005203a3dda6407f9843c09ef8c78')", 1)
         )
     ]
 )
@@ -296,4 +299,5 @@ def test_handling_first_fetch_and_old_integration_context(mocker,
     results = client.handling_first_fetch_and_old_integration_context(filter)
 
     assert get_indicator_call.call_args.kwargs['params'].get('filter') == filter_arg_call
-    assert results == expected_results
+    assert results[0] == expected_results[0]
+    assert len(results[1]) == expected_results[1]
