@@ -91,9 +91,11 @@ class SyslogManager:
         """
         if self.protocol == TLS and self.syslog_cert_path:
             handler = self.init_handler_tls(self.syslog_cert_path)
+            demisto.debug('get handler tls')
         else:
             handler = self.init_handler_udp_tcp_fix()
         syslog_logger = self._init_logger(handler)
+        demisto.debug('logger was created ')
         try:
             yield syslog_logger
         finally:
@@ -148,14 +150,38 @@ class SyslogManager:
 
 class SyslogHandlerTLS(logging.Handler):
     def __init__(self, address: str, port: int, log_level: int, facility: int, cert_path: str):
-        super().__init__()
+        """
+        Initialize a handler.
+        """
+        logging.Handler.__init__(self)
         self.address = address
         self.port = port
         self.certfile = cert_path
         self.facility = facility
-        self.log_level = log_level
-
-    append_nul = True   # some old syslog daemons expect a NUL terminator
+        self.level = log_level
+        try:
+            # Create a TCP socket
+            ssl_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        except OSError as exc:
+            err = exc
+            if ssl_sock is not None:
+                ssl_sock.close()
+            if err is not None:
+                raise err
+        # Wrap the socket with SSL
+        # In order to allow self signed certificate:
+        # 1. add:
+        #   context.verify_mode = ssl.CERT_NONE
+        #   ssl_context.check_hostname = False
+        # 2. remove the lines:
+        #   context.load_verify_locations(certificate)
+        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        ssl_context.check_hostname = False
+        ssl_context.verify_mode = ssl.CERT_NONE
+        ssl_context.load_verify_locations(self.certfile)
+        ssl_sock = ssl_context.wrap_socket(ssl_sock, server_hostname=self.address)
+        self.socket = ssl_sock
+        self.socket.connect((self.address, self.port))
 
     def emit(self, record):
         """
@@ -171,35 +197,16 @@ class SyslogHandlerTLS(logging.Handler):
                 msg = ident + msg
 
             # Calculate the priority value
-            priority = (self.facility << 3) | self.log_level
+            priority = (self.facility << 3) | self.level
             # Construct the syslog message.
-            syslog_message = f'<{priority}> ' + msg + '\n'
-            # Create a TCP socket
-            ssl_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-            # Wrap the socket with SSL
-            # In order to allow self certificate:
-            # 1. add:
-            #   context.verify_mode = ssl.CERT_NONE
-            # 2. remove the lines:
-            #   context.load_verify_locations(certificate)
-            #   ssl_context.check_hostname = False
-            ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-            ssl_context.check_hostname = False
-            ssl_context.verify_mode = ssl.CERT_NONE
-            ssl_context.load_verify_locations(self.certfile)
-            ssl_sock = ssl_context.wrap_socket(ssl_sock, server_hostname=self.address)
+            syslog_message = f'<{priority}> {msg}\n'.encode('utf-8')
 
             # Connect to the syslog server
-            ssl_sock.connect((self.address, self.port))
-            try:
-                # Message is a string- Convert to bytes as required by RFC 5424
-                ssl_sock.send(syslog_message.encode('utf-8'))
-            except Exception as e:
-                # ssl_sock.close()
-                demisto.error(str(e))
+            self.socket.send(syslog_message)
 
         except Exception as e:
+            if self.socket:
+                self.socket.close()
             demisto.error(str(e))
 
 
@@ -354,9 +361,7 @@ def syslog_send_notification(manager: SyslogManager, min_severity: int):
 def syslog_send(manager):
     message = demisto.args().get('message', '')
     log_level = demisto.args().get('level', 'INFO')
-
     send_log(manager, message, log_level)
-
     demisto.results('Message sent to Syslog successfully.')
 
 
@@ -367,7 +372,6 @@ def main():
     LOG(f'Command being called is {demisto.command()}')
     try:
         if demisto.command() == 'test-module':
-            # init_params()
             syslog_manager = init_manager(demisto.params())
             with syslog_manager.get_logger() as syslog_logger:  # type: Logger
                 syslog_logger.info('This is a test')
