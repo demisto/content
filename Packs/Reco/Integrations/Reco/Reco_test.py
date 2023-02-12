@@ -9,7 +9,7 @@ import pytest
 import datetime
 from Reco import RecoClient, fetch_incidents, map_reco_score_to_demisto_score, get_max_fetch
 
-from test_utils.structs import (
+from test_data.structs import (
     TableData,
     RowData,
     KeyValuePair,
