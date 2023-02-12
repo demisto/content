@@ -52,6 +52,26 @@ To get the *Subscription ID*, *Workspace Name* and *Resource Group* parameters, 
     | Close Mirrored Microsoft Sentinel Ticket | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Incident Mirroring
+You can enable incident mirroring between Cortex XSOAR incidents and Microsoft Sentinel incidents (available from Cortex XSOAR version 6.0.0).
+
+To setup the mirroring follow these instructions:
+1. Navigate to **Settings > Integrations > Servers & Services**.
+2. Search for **Microsoft Sentinel** and select your integration instance.
+3. Enable **Fetches incidents**.
+4. In the **Mirroring Direction** integration parameter, select in which direction the incidents should be mirrored:
+   * Incoming - Any changes in *Microsoft Sentinel* incidents will be reflected in XSOAR incidents.
+   * Outgoing - Any changes in XSOAR incidents will be reflected in *Microsoft Sentinel*.
+   * Incoming And Outgoing - Changes in XSOAR incidents and *Microsoft Sentinel* incidents will be reflected in both directions.
+   * None - Turns off incident mirroring.
+5. Optional: Check the **Close Mirrored XSOAR Incident** integration parameter to close the Cortex XSOAR incident when the corresponding incident is closed in *Microsoft Sentinel*.
+6. Optional: Check the **Close Mirrored Microsoft Sentinel Ticket** integration parameter to close the *Microsoft Sentinel* incident when the corresponding Cortex XSOAR incident is closed.
+
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in XSOAR and *Microsoft Sentinel*.
+
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
