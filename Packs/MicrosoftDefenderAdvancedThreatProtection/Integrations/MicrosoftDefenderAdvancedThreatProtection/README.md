@@ -67,6 +67,7 @@ Please add the following permissions to the app registration. Choose application
     | Authentication Type | Type of authentication - either Authorization Code \(recommended\) or Client Credentials. |  |
     | Application redirect URI (for authorization code mode) |  | False |
     | Authorization code | for user-auth mode - received from the authorization step. see Detailed Instructions section | False |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | UUID |
     | Status to filter out alerts for fetching as incidents| The property values are, "New", "InProgress" or "Resolved". Comma-separated lists are supported, e.g., New,Resolved. | New,In Progress,Resolved |
     | Severity to filter out alerts for fetching as incidents | The property values are, "Informational", "Low", "Medium" and "High". Comma-separated lists are supported, e.g., Medium,High. | Medium,High |
     | Maximum number of incidents to fetch | The maximum number of incidents to retrieve per fetch. | 50 |
