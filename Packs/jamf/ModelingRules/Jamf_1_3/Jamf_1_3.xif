@@ -9,7 +9,7 @@ alter
     xdm.event.id = json_extract_scalar(webhook, "$.id"),
     xdm.event.description = json_extract_scalar(webhook, "$.name"),
     xdm.event.type = json_extract_scalar(webhook, "$.webhookEvent"),
-    xdm.source.user.user_type = json_extract_scalar(Event, "$.trigger"),
+    xdm.event.outcome_reason = json_extract_scalar(Event, "$.trigger"),
     xdm.source.user.identifier = json_extract_scalar(Event, "$.patchPolicyId"),
     xdm.event.outcome = coalesce(json_extract_scalar(Event, "$.successful"), json_extract_scalar(Event, "$.operationSuccessful")),
     xdm.event.operation_sub_type = json_extract_scalar(Event, "$.restAPIOperationType"),
