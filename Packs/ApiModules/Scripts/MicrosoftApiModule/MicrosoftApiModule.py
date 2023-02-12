@@ -403,14 +403,14 @@ class MicrosoftClient(BaseClient):
             # (instance configuration).
             # Relevant for cases where the user re-generated his credentials therefore the refresh token was updated.
             if self.refresh_token_param:
-                demisto.error('Error in authentication: Oproxy server returned error, try authorizing with the Oproxy'
-                              ' again, this time using the refresh token from the integration parameters '
-                              '(instance configuration).')
+                demisto.error('Error in authentication: Oproxy server returned error, perform a second attempt'
+                              ' authorizing with the Oproxy, this time using the refresh token from the integration'
+                              ' parameters (instance configuration).')
                 content = self.refresh_token_param
                 oproxy_second_try_response = self._oproxy_authorize_build_request(headers, content, scope, resource)
 
                 if not oproxy_second_try_response.ok:
-                    demisto.error('Authentication failure from server (second try - using refresh token from the'
+                    demisto.error('Authentication failure from server (second attempt - using refresh token from the'
                                   ' integration parameters: {} {} {}'.format(oproxy_second_try_response.status_code,
                                                                              oproxy_second_try_response.reason,
                                                                              oproxy_second_try_response.text))
