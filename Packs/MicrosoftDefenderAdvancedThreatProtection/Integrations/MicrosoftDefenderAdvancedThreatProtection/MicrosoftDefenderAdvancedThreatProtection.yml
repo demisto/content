@@ -57,6 +57,7 @@ configuration:
   options:
   - Authorization Code
   - Client Credentials
+  - Azure Managed Identities
   type: 15
   section: Connect
   advanced: true
@@ -75,6 +76,13 @@ configuration:
   type: 9
   section: Connect
   advanced: true
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
+  section: Connect
 - name: Reliability
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
@@ -6673,7 +6681,7 @@ script:
       description: Troubleshooting information.
       type: String
     polling: true
-  dockerimage: demisto/crypto:1.0.0.45575
+  dockerimage: demisto/crypto:1.0.0.47103
   feed: false
   isfetch: true
   longRunning: false
