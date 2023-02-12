@@ -115,3 +115,19 @@ filter _path = "kerberos"
     xdm.auth.kerberos_tgt.spn_values = arraycreate(service),
     xdm.auth.kerberos_tgt.cname_values = arraycreate(client),
     xdm.auth.kerberos_tgt.encryption_type = if(lower_c_cipher ~= "des[\-|\_]cbc[\-|\_]crc", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DES_CBC_CRC, lower_c_cipher ~= "aes128[\_|\-]cts[\_|\-]hmac[\_|\-]sha1[\_|\-]96", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_AES128_CTS_HMAC_SHA1_96, lower_c_cipher ~= "aes128[\_|\-]cts[\_|\-]hmac[\_|\-]sha256[\_|\-]128", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_AES128_CTS_HMAC_SHA1_96, lower_c_cipher ~= "aes256[\_|\-]cts[\_|\-]hmac[\_|\-]sha1[\_|\-]96", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_AES256_CTS_HMAC_SHA1_96, lower_c_cipher ~= "aes256[\_|\-]cts[\_|\-]hmac[\_|\-]sha384[\_|\-]192", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_AES256_CTS_HMAC_SHA384_192, lower_c_cipher ~= "camellia128[\_|\-]cts[\_|\-]cmac", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_CAMELLIA128_CTS_CMAC, lower_c_cipher ~= "camellia256[\_|\-]cts[\_|\-]cmac", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_CAMELLIA256_CTS_CMAC, lower_c_cipher ~= "des3[\_|\-]cbc[\_|\-]md5", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DES3_CBC_MD5, lower_c_cipher ~= "des3[\_|\-]cbc[\_|\-]raw", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DES3_CBC_RAW, lower_c_cipher ~= "des3[\_|\-]cbc[\_|\-]sha1[\_|\-]kd", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DES3_CBC_SHA1_KD, lower_c_cipher ~= "des3[\_|\-]cbc[\_|\-]sha1", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DES3_CBC_SHA1, lower_c_cipher ~= "des[\_|\-]cbc[\_|\-]md4", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DES_CBC_MD4, lower_c_cipher ~= "des[\_|\-]cbc[\_|\-]md5", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DES_CBC_MD5, lower_c_cipher ~= "des[\_|\-]cbc[\_|\-]raw", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DES_CBC_RAW, lower_c_cipher ~= "des[\_|\-]ede3[\_|\-]cbc[\_|\-]env[\_|\-]oid", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DES_EDE3_CBC_ENV_OID, lower_c_cipher ~= "des[\_|\-]hmac[\_|\-]sha1", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DES_HMAC_SHA1, lower_c_cipher ~= "dsawithsha1[\_|\-]cmsoid", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DSAWITHSHA1_CMSOID, lower_c_cipher ~= "md5withrsaencryption[\_|\-]cmsoid", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_MD5WITHRSAENCRYPTION_CMSOID, lower_c_cipher ~= "rc2cbc[\_|\-]envoid", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_RC2CBC_ENVOID, lower_c_cipher ~= "rc4[\_|\-]hmac[\_|\-]exp", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_RC4_HMAC_EXP, lower_c_cipher ~= "rc4[\_|\-]hmac", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_RC4_HMAC, lower_c_cipher ~= "rsaencryption[\_|\-]envoid", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_RSAENCRYPTION_ENVOID, lower_c_cipher ~= "rsaes[\_|\-]oaep[\_|\-]env[\_|\-]oid", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_RSAES_OAEP_ENV_OID, lower_c_cipher ~= "sha1withrsaencryption[\_|\-]cmsoid", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_SHA1WITHRSAENCRYPTION_CMSOID, lower_c_cipher ~= "subkey[\_|\-]keymaterial", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_SUBKEY_KEYMATERIAL, to_string(lower_c_cipher));
+// DCE_RPC
+filter _path = "dce_rpc"
+| alter
+    xdm.source.ipv4 = if(id_orig_h ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", id_orig_h, null),
+    xdm.source.ipv6 = if(id_orig_h ~= ":", id_orig_h, null),
+    xdm.target.ipv4 = if(id_resp_h ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", id_resp_h, null),
+    xdm.target.ipv6 = if(id_resp_h ~= ":", id_resp_h, null),
+    xdm.source.port = to_integer(id_orig_p),
+    xdm.target.port = to_integer(id_resp_p),
+    xdm.event.type = _path,
+    xdm.observer.name = _system_name,
+    xdm.event.id = uid,
+    xdm.event.duration = to_integer(rtt),
+    xdm.intermediate.application.name = named_pipe,
+    xdm.source.host.hostname = endpoint,
+    xdm.event.outcome_reason = operation;
