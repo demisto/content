@@ -1188,6 +1188,8 @@ inputs:
   description: The tag to assign for allowed indicators. Tagging indicators can be done through the buttons in the incident layout.
   playbookInputQuery:
 outputs: []
+marketplaces:
+- xsoar
 tests:
 - No tests (auto formatted)
 fromversion: 8.0.0
