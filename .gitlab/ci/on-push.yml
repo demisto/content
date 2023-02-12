@@ -511,7 +511,7 @@ test-upload-flow:
   allow_failure: true
   script:
     - |
-      if ! $(git diff origin/master $CI_COMMIT_BRANCH --name-only | grep -q "Tests/\|Utils/") ; then
+      if ! $(git diff origin/master...$CI_COMMIT_BRANCH --name-only | grep -q "Tests/\|Utils/") ; then
         echo "No upload related files were modified, skipping upload test "
         exit 0
       fi
