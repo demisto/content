@@ -3058,3 +3058,20 @@ def test_add_or_remove_tag_endpoint_command(requests_mock, args, expected_filter
             'tag': 'test'
         }
     }
+
+
+def test_endpoint_alias_change_command(mocker):
+    """
+    Given:
+    - command arguments
+    when:
+    - executing the endpoint-alias-change command
+    then:
+    - make sure the body request was sent as expected to the api.
+    """
+    client = CoreClient(base_url=f'{Core_URL}/public_api/v1/', headers={})
+    mocker_set = mocker.patch.object(client, 'set_endpoints_alias', return_value="mocked")
+    from CoreIRApiModule import endpoint_alias_change_command  # , arg_to_timestamp, create_request_filters
+    endpoint_alias_change_command(client=client, first_seen_gte='2019-10-21T23:45:00', new_alias_name='test')
+    assert mocker_set.call_args[1] == {'filters': [{'field': 'first_seen',
+                                                    'operator': 'gte', 'value': 1571690700000}], 'new_alias_name': 'test'}
