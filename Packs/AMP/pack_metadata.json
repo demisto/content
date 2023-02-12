@@ -1,6 +1,6 @@
 {
     "name": "Cisco AMP",
-    "description": "Uses CISCO AMP Endpoint",
+    "description": "Uses CISCO AMP Endpoint. TEST",
     "support": "xsoar",
     "currentVersion": "2.0.1",
     "author": "Cortex XSOAR",

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Load external functions
+# Load external functions TEST
 # shellcheck disable=SC1091
 source "${0%/*}/adopt_utils.bash"
 
