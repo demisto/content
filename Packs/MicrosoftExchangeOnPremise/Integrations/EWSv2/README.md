@@ -30,6 +30,8 @@ Follow the instructions in the Fetched Incidents Data section.
 
 - Get email attachment information. Use the ```ews-get-attachment``` command to retrieve information on one attachment or all attachments of a message at once. It supports both file attachments and item attachments (e.g., email messages).
 - Delete email items from a mailbox. First, make sure you obtain the email item ID. The item ID can be obtained with one of the integration’s search commands. Use the ```ews-delete-items``` command to delete one or more items from the target mailbox in a single action. A less common use case is to remove emails that were marked as malicious from a user’s mailbox. You can delete the items permanently (hard delete), or delete the items (soft delete), so they can be recovered by running the ```ews-recover-messages``` command.
+- Send notifications to external users.
+- Send an email asking for a response to be returned as part of a playbook. See [Receiving an email reply](https://xsoar.pan.dev/docs/reference/scripts/email-ask-user)
 
 ## Configure EWS v2 on Cortex XSOAR
 

@@ -2198,16 +2198,12 @@ def get_none_empty_addresses(addresses_ls):
 def send_email(to, subject, body="", bcc=None, cc=None, reply_to=None, html_body=None,
                attach_ids="", attach_cids="", attach_names="", manual_attach_obj=[], from_mailbox=None,
                raw_message=None, from_address=None):
-    # account = get_account(from_mailbox or ACCOUNT_EMAIL)
-    # bcc: List[str] = get_none_empty_addresses(argToList(bcc))
-    # cc: List[str] = get_none_empty_addresses(argToList(cc))
-    # to: List[str] = get_none_empty_addresses(argToList(to))
-    # reply_to: List[str] = argToList(reply_to)
+
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
     bcc = get_none_empty_addresses(argToList(bcc))
     cc = get_none_empty_addresses(argToList(cc))
     to = get_none_empty_addresses(argToList(to))
-    reply_to = argToList(reply_to)
+    reply_to = reply_to
     # manual_attach_obj = manual_attach_obj if manual_attach_obj is not None else []
     subject = subject[:252] + '...' if len(subject) > 255 else subject
 
@@ -2216,7 +2212,7 @@ def send_email(to, subject, body="", bcc=None, cc=None, reply_to=None, html_body
     send_email_to_mailbox(
         account=account, to=to, subject=subject, body=body, bcc=bcc, cc=cc, reply_to=reply_to,
         html_body=html_body, attachments=attachments, raw_message=raw_message, from_address=from_address
-    )   # todo: if reply_to is paased as list it does not work
+    )
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,
