@@ -1800,6 +1800,8 @@ def endpoint_alias_change_command(client: CoreClient, **args) -> CommandResults:
     isolate = args.get('isolate')
     hostname = argToList(args.get('hostname'))
     status = args.get('status')
+    scan_status = args.get('scan_status')
+    username = argToList(args.get('username'))
     new_alias_name = str(args.get('new_alias_name'))
 
     first_seen_gte = arg_to_timestamp(
@@ -1822,15 +1824,14 @@ def endpoint_alias_change_command(client: CoreClient, **args) -> CommandResults:
         arg_name='last_seen_lte'
     )
 
-    username = argToList(args.get('username'))
-
     # create filters
     filters: list[dict[str, str]] = create_request_filters(
         status=status, username=username, endpoint_id_list=endpoint_id_list, dist_name=dist_name,
         ip_list=ip_list, group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate,
         hostname=hostname, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
-        last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte
+        last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte, scan_status = scan_status
     )
+    
     client.set_endpoints_alias(filters=filters, new_alias_name=new_alias_name)
 
     return CommandResults(
@@ -3335,6 +3336,7 @@ def create_request_filters(
     first_seen_lte=None,
     last_seen_gte=None,
     last_seen_lte=None,
+    scan_status=None,
 ):
     filters = []
 
@@ -3435,7 +3437,14 @@ def create_request_filters(
             'operator': 'lte',
             'value': last_seen_lte
         })
-
+        
+    if scan_status:
+        filters.append({
+            'field': 'scan_status',
+            'operator': 'IN',
+            'value': [scan_status]
+        })
+        
     return filters
 
 
