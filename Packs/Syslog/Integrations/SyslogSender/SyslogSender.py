@@ -10,7 +10,7 @@ from logging.handlers import SysLogHandler
 from distutils.util import strtobool
 from logging import Logger, getLogger, INFO, DEBUG, WARNING, ERROR, CRITICAL
 from socket import SOCK_STREAM
-from typing import Union, Tuple, Dict, Any, Generator
+from typing import Generator
 from tempfile import NamedTemporaryFile
 from rfc5424logging import Rfc5424SysLogHandler
 import socket
@@ -79,15 +79,8 @@ class SyslogHandlerTLS(logging.Handler):
         self.certfile = cert_path
         self.facility = facility
         self.level = log_level
-        try:
-            # Create a TCP socket
-            ssl_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        except OSError as exc:
-            err = exc
-            if ssl_sock is not None:
-                ssl_sock.close()
-            if err is not None:
-                raise err
+        # Create a TCP socket
+        ssl_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # Wrap the socket with SSL
         # In order to allow self signed certificate:
         # 1. add:
@@ -101,7 +94,14 @@ class SyslogHandlerTLS(logging.Handler):
         ssl_context.load_verify_locations(self.certfile)
         ssl_sock = ssl_context.wrap_socket(ssl_sock, server_hostname=self.address)
         self.socket = ssl_sock
-        self.socket.connect((self.address, self.port))
+        try:
+            self.socket.connect((self.address, self.port))
+        except OSError as exc:
+            err = exc
+            if ssl_sock is not None:
+                ssl_sock.close()
+            if err is not None:
+                raise err
 
     def emit(self, record):
         """
@@ -170,11 +170,10 @@ class SyslogManager:
 
     def _get_handler(self) -> Rfc5424SysLogHandler:
         sock_kind = SOCK_STREAM if self.protocol == TCP else socket.SOCK_DGRAM
-        sh = Rfc5424SysLogHandler(address=(self.address, self.port),
-                                  facility=self.facility,
-                                  socktype=sock_kind,
-                                  timeout=10)
-        return sh
+        return Rfc5424SysLogHandler(address=(self.address, self.port),
+                                    facility=self.facility,
+                                    socktype=sock_kind,
+                                    timeout=10)
 
     def init_handler_tls(self, certfile: str):
         return SyslogHandlerTLS(address=self.address,
