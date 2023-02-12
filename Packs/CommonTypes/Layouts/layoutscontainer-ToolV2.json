@@ -1,7 +1,7 @@
 {
-    "id": "Tool",
+    "id": "Tool Indicator",
     "version": -1,
-    "name": "Tool",
+    "name": "Tool Indicator",
     "system": false,
     "group": "indicator",
     "edit": {
@@ -591,5 +591,5 @@
         ]
     },
     "fromVersion": "6.10.0",
-    "description": ""
+    "description": "Tool Indicator Layout"
 }

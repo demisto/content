@@ -660,6 +660,6 @@
     "name": "Intrusion Set",
     "system": false,
     "version": -1,
-    "description": "",
+    "description": "Intrusion Set Layout",
 	"fromVersion": "6.10.0"
 }
