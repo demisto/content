@@ -2,8 +2,6 @@ commonfields:
   id: Volatility
   version: -1
 name: Volatility
-deprecated: true
-description: Deprecated. No available replacement.
 script: ''
 type: javascript
 tags:
@@ -11,8 +9,7 @@ tags:
 - forensics
 - volatility
 - server
-comment: Execute volatility with command and return tabular output. Incase where proper
-  json output is not supported, scripts returns error. User should use raw command.
+comment: Execute volatility with command and return tabular output. Incase where proper json output is not supported, scripts returns error. User should use raw command.
 system: true
 args:
 - name: cmd
@@ -30,3 +27,6 @@ scripttarget: 0
 dependson: {}
 timeout: 0s
 fromversion: 5.0.0
+deprecated: true
+tests:
+- No tests (auto formatted)
