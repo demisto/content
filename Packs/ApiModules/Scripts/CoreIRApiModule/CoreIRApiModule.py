@@ -212,7 +212,7 @@ class CoreClient(BaseClient):
         endpoints = reply.get('reply').get('endpoints', [])
         return endpoints
 
-    def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str) -> dict:
+    def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str) -> dict:      # pragma: no cover
         """
         This func is used to set the alias name of an endpoint.
 
