@@ -1,0 +1,68 @@
+{
+  "threats": [
+    {
+      "threat_id": 10141,
+      "threat_name": "test Picus Threat - 1",
+      "started_at": 1671800531000,
+      "release_date": 1671497925442,
+      "completed_at": 1671800542000,
+      "prevention": "unblocked",
+      "severity": "High",
+      "objectives": [
+        {
+          "objective_id": 11372,
+          "objective_name": "Exploitation",
+          "prevention": "achieved",
+          "actions": [
+            {
+              "action_id": 13392,
+              "action_name": "ProcessMaker Local File Inclusion Vulnerability Variant-1",
+              "prevention": "blocked",
+              "node_id": 62,
+              "has_detection_analysis": false
+            },
+            {
+              "action_id": 13433,
+              "action_name": "Oracle Business Intelligence Local File Inclusion (LFI) Vulnerability",
+              "prevention": "blocked",
+              "node_id": 63,
+              "has_detection_analysis": false
+            }
+          ]
+        }
+      ],
+      "has_detection_analysis": false
+    },
+    {
+      "threat_id": 10143,
+      "threat_name": "test Picus Threat - 2",
+      "started_at": 1671800546000,
+      "release_date": 1671497925940,
+      "completed_at": 1671800554000,
+      "prevention": "unblocked",
+      "severity": "High",
+      "objectives": [
+        {
+          "objective_id": 11374,
+          "objective_name": "Exploitation",
+          "prevention": "achieved",
+          "actions": [
+            {
+              "action_id": 23482,
+              "action_name": "SQL Injection Evasion for PostgreSQL by using JSON-Based SQL Variant-1",
+              "prevention": "unblocked",
+              "node_id": 3,
+              "has_detection_analysis": false
+            }
+          ]
+        }
+      ],
+      "has_detection_analysis": false
+    }
+  ],
+  "pages": {
+    "total_count": 2,
+    "limit": 10,
+    "offset": 0
+  }
+}
