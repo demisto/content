@@ -1,2 +1,5 @@
+[file:SyslogSender.yml]
+ignore=IN116
+
 [known_words]
 RFC
