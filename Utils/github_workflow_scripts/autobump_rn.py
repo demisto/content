@@ -2,7 +2,7 @@ import json
 from abc import ABC, abstractmethod
 from enum import Enum
 from packaging.version import Version
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 import urllib3
 import argparse
 from blessings import Terminal
@@ -19,6 +19,7 @@ import os
 urllib3.disable_warnings()
 
 print = timestamped_print
+t = Terminal()
 
 '''@@ -2,7 +2,7 @@
      "name": "Common Types",
@@ -34,8 +35,6 @@ REPO_MANE = 'content'
 BASE = 'master'
 
 SKIPPING_MESSAGE = 'Skipping Auto-Bumping release notes.'
-NOT_UPDATE_RN_LABEL = 'ignore-auto-bump-version'
-LAST_SUITABLE_UPDATE_TIME_DAYS = 14
 RELEASE_NOTES_DIR = "ReleaseNotes"
 PACK_METADATA_FILE = 'pack_metadata.json'
 NOT_XSOAR_SUPPORTED_PACK = 'Pack is not xsoar supported'
@@ -43,47 +42,99 @@ NOT_XSOAR_SUPPORTED_PACK = 'Pack is not xsoar supported'
 
 # todo: skip reasons class
 class SkipReason(str, Enum):
-    NOT_XSOAR_SUPPORTED_PACK = 'Pack is not xsoar supported'
+    NOT_XSOAR_SUPPORTED_PACK = 'Pack is not xsoar supported.'
     LAST_MODIFIED_TIME = 'The PR was not updated in last {} days.'
+    NOT_UPDATE_RN_LABEL_EXIST = 'Label {} exist in this PR.'
+    NO_RELEASE_NOTES_CHANGED = 'No changes were detected on {} directory'
 
 
 # todo:dataclass
 class ConditionResult:
-    def __int__(self, should_skip, reason):
-        self._should_skip = should_skip
-        self._reason = reason
+    def __init__(self, should_skip: bool, reason: Optional[SkipReason] = None):
+        assert reason if should_skip else True
+        self.should_skip = should_skip
+        self.reason = reason
 
 
-# todo: class for Base Condition
 class BaseCondition(ABC):
 
-    @property
+    def __init__(self, pr: PullRequest, git_repo: Repo):
+        self.pr = pr
+        self.git_repo = git_repo
+        self.next_cond = None
+
+    def set_next_condition(self, condition: 'BaseCondition'):
+        self.next_cond = condition
+        return self.next_cond
+
     @abstractmethod
-    def skip_reason(self) -> SkipReason:
+    def generate_skip_reason(self) -> SkipReason:
         raise NotImplementedError
 
     @abstractmethod
-    def check(self, **kwargs) -> ConditionResult:
+    def _check(self, previous_result: Optional[ConditionResult] = None) -> ConditionResult:
         raise NotImplementedError
+
+    def check(self, previous_result: Optional[ConditionResult] = None) -> ConditionResult:
+        curr_result = self._check(previous_result=previous_result)
+        if curr_result.should_skip:
+            print(f'{t.red} PR: {self.pr.number} {curr_result.reason} {SKIPPING_MESSAGE}')
+            return curr_result
+        elif self.next_cond:
+            self.next_cond.check(curr_result)
+        else:
+            return curr_result
 
 
 class LastModifiedCondition(BaseCondition):
     LAST_SUITABLE_UPDATE_TIME_DAYS = 14
 
-    @property
-    def skip_reason(self) -> SkipReason:
+    def generate_skip_reason(self) -> SkipReason:
         return SkipReason.LAST_MODIFIED_TIME.format(self.LAST_SUITABLE_UPDATE_TIME_DAYS)
 
-    def check(self, **kwargs) -> ConditionResult:
-        pass
+    def _check(self, previous_result: Optional[ConditionResult] = None) -> ConditionResult:
+        print(f'PR last update date: {str(self.pr.last_modified)}')
+        if self.pr.updated_at < datetime.now() - timedelta(days=self.LAST_SUITABLE_UPDATE_TIME_DAYS):
+            return ConditionResult(should_skip=True, reason=self.generate_skip_reason())
+        else:
+            return ConditionResult(should_skip=False)
+
+
+class LabelCondition(BaseCondition):
+    NOT_UPDATE_RN_LABEL = 'ignore-auto-bump-version'
+
+    def generate_skip_reason(self) -> SkipReason:
+        return SkipReason.NOT_UPDATE_RN_LABEL_EXIST.format(self.NOT_UPDATE_RN_LABEL)
+
+    def _check(self, previous_result: Optional[ConditionResult] = None) -> ConditionResult:
+        pr_labels = [label.name for label in self.pr.labels]
+        print(f'PR labels are: {", ".join(pr_labels)}')
+        if self.NOT_UPDATE_RN_LABEL in pr_labels:
+            return ConditionResult(should_skip=True, reason=self.generate_skip_reason())
+        else:
+            return ConditionResult(should_skip=False)
+
+
+class ModifiedFilesCondition(BaseCondition):
+    RELEASE_NOTES_DIR = RELEASE_NOTES_DIR
+
+    def generate_skip_reason(self) -> SkipReason:
+        return SkipReason.NO_RELEASE_NOTES_CHANGED.format(self.RELEASE_NOTES_DIR)
+
+    def _check(self, previous_result: Optional[ConditionResult] = None) -> ConditionResult:
+        pr_files = list(self.pr.get_files())
+        pr_files_names = [f.filename for f in pr_files]
+        if f"/{RELEASE_NOTES_DIR}/" not in ' '.join(pr_files_names):
+            return ConditionResult(should_skip=True, reason=self.generate_skip_reason())
+        else:
+            return ConditionResult(should_skip=False)
 
 
 class PackSupportCondition(BaseCondition):
-    @property
-    def skip_reason(self) -> SkipReason:
+    def generate_skip_reason(self) -> SkipReason:
         return SkipReason.NOT_XSOAR_SUPPORTED_PACK
 
-    def check(self, **kwargs) -> ConditionResult:
+    def _check(self, previous_result: Optional[ConditionResult] = None, **kwargs) -> ConditionResult:
         pass
 
 
@@ -160,8 +211,6 @@ def main():
     options = arguments_handler()
     github_token = options.github_token
 
-    t = Terminal()
-
     git_repo_obj = Repo(os.getcwd())
     git_repo_obj.remote().fetch()
 
@@ -174,20 +223,14 @@ def main():
         pr_files = list(pr.get_files())
         pr_files_names = [f.filename for f in pr_files]
         print(f'{t.yellow}Looking on pr {pr_number=}: {pr.updated_at=}, {pr_branch=}')
-        if pr.updated_at < datetime.now() - timedelta(days=LAST_SUITABLE_UPDATE_TIME_DAYS):
-            print(f'{t.red}The PR {pr_number} was not updated in last {LAST_SUITABLE_UPDATE_TIME_DAYS} days.'
-                  f'{SKIPPING_MESSAGE}')
-            continue
-        if NOT_UPDATE_RN_LABEL in [label.name for label in pr.labels]:
-            print(f'{t.red}Label {NOT_UPDATE_RN_LABEL} exist in PR {pr_number}. {SKIPPING_MESSAGE}')
-            continue
 
-        # todo: check that both rn and metadata files changed at the pr for same pack
-        if f"/{RELEASE_NOTES_DIR}/" not in ' '.join(pr_files_names):
-            print(f'{t.red}No changes were detected on {RELEASE_NOTES_DIR} directory in PR {pr_number}. '
-                  f'{SKIPPING_MESSAGE}')
-            continue
+        first_condition = LastModifiedCondition(pr=pr, git_repo=git_repo_obj)
+        first_condition.set_next_condition(
+            LabelCondition(pr=pr, git_repo=git_repo_obj)).set_next_condition(
+            ModifiedFilesCondition(pr=pr, git_repo=git_repo_obj))
 
+        first_condition.check()
+        continue
         changed_rn_files = [f for f in pr_files_names if RELEASE_NOTES_DIR in f]
         changed_metadata_files = [f for f in pr_files_names if PACK_METADATA_FILE in f]
         conflict_only_rn_and_metadata, conflict_files = has_conflict_on_given_files(
