@@ -112,6 +112,10 @@ LAST_RUN_IDS = "ids"
 LAST_RUN_FOLDER = "folderName"
 ERROR_COUNTER = "errorCounter"
 
+# Types of filter
+MODIFIED_FILTER = "modified-time"
+RECEIVED_FILTER = "received-time"
+
 # headers
 ITEMS_RESULTS_HEADERS = [
     "sender",
@@ -2214,7 +2218,7 @@ def parse_incident_from_item(item):     # pragma: no cover
     return incident
 
 
-def fetch_emails_as_incidents(client: EWSClient, last_run):
+def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter):
     """
     Fetch incidents
     :param client: EWS Client
@@ -2230,6 +2234,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
             client.folder_name,
             last_run.get(LAST_RUN_TIME),
             excluded_ids,
+            incident_filter,
         )
 
         incidents = []
@@ -2237,11 +2242,24 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
         emails_ids = []  # Used for mark emails as read
         demisto.debug(f'{APP_NAME} - Started fetch with {len(last_emails)} at {last_run.get(LAST_RUN_TIME)}')
         current_fetch_ids = set()
+
+        last_fetch_time = last_run.get(LAST_RUN_TIME)
+
+        last_modification_time = last_fetch_time
+        if isinstance(last_modification_time, EWSDateTime):
+            last_modification_time = last_modification_time.ewsformat()
+
         for item in last_emails:
             if item.message_id:
                 current_fetch_ids.add(item.message_id)
                 incident = parse_incident_from_item(item)
                 incidents.append(incident)
+
+                if incident_filter == MODIFIED_FILTER:
+                    item_modified_time = item.last_modified_time.ewsformat()
+                    if last_modification_time is None or last_modification_time < item_modified_time:
+                        last_modification_time = item_modified_time
+
                 if item.id:
                     emails_ids.append(item.id)
 
@@ -2250,9 +2268,10 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
 
         demisto.debug(f'{APP_NAME} - ending fetch - got {len(incidents)} incidents.')
 
-        last_fetch_time = last_run.get(LAST_RUN_TIME)
-
-        last_incident_run_time = incident.get("occurred", last_fetch_time)
+        if incident_filter == MODIFIED_FILTER:
+            last_incident_run_time = last_modification_time
+        else:  # default case - using 'received' time
+            last_incident_run_time = incident.get("occurred", last_fetch_time)
 
         # making sure both last fetch time and the time of most recent incident are the same type for comparing.
         if isinstance(last_incident_run_time, EWSDateTime):
@@ -2299,7 +2318,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
 
 
 def fetch_last_emails(
-        client: EWSClient, folder_name="Inbox", since_datetime=None, exclude_ids=None
+        client: EWSClient, folder_name="Inbox", since_datetime=None, exclude_ids=None, incident_filter=RECEIVED_FILTER
 ):
     """
     Fetches last emails
@@ -2313,7 +2332,10 @@ def fetch_last_emails(
     demisto.debug(f"Finished getting the folder named {folder_name} by path")
     log_memory()
     if since_datetime:
-        qs = qs.filter(datetime_received__gte=since_datetime)
+        if incident_filter == MODIFIED_FILTER:
+            qs = qs.filter(last_modified_time__gte=since_datetime)
+        else:  # default to "received" time
+            qs = qs.filter(datetime_received__gte=since_datetime)
     else:
         tz = EWSTimeZone('UTC')
         first_fetch_datetime = dateparser.parse(FETCH_TIME)
@@ -2426,8 +2448,12 @@ def sub_main():     # pragma: no cover
             demisto.results(test_module(client, params.get('max_fetch')))
         elif command == "fetch-incidents":
             last_run = demisto.getLastRun()
-            incidents = fetch_emails_as_incidents(client, last_run)
+            incident_filter = params.get('incidentFilter', RECEIVED_FILTER)
+            if incident_filter not in [RECEIVED_FILTER, MODIFIED_FILTER]:  # Ensure it's one of the allowed filter values
+                incident_filter = RECEIVED_FILTER  # or if not, force it to the default, RECEIVED_FILTER
+            incidents = fetch_emails_as_incidents(client, last_run, incident_filter)
             demisto.debug(f"Saving incidents with size {sys.getsizeof(incidents)}")
+
             demisto.incidents(incidents)
 
         # special outputs commands
