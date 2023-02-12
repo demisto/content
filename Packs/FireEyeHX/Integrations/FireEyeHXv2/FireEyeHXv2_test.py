@@ -1984,10 +1984,9 @@ def test_headers_file_acquisition_package_request(requests_mock, mocker):
         )
     ]
 )
-def test_validation_baseurl(baseurl: str, expected_error: str):
-
-    from FireEyeHXv2 import validation_base_url
+def test_validate_base_url(baseurl: str, expected_error: str):
+    from FireEyeHXv2 import validate_base_url
 
     with pytest.raises(ValueError) as e:
-        validation_base_url(baseurl)
+        validate_base_url(baseurl)
     assert str(e.value) == expected_error

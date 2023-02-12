@@ -1614,7 +1614,7 @@ def get_indicator_conditions(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def validation_base_url(base_url: str) -> None:
+def validate_base_url(base_url: str) -> None:
     # Any of the folloiwng combinations is not allowed as suffix: /v3, /api/v3, /hx/api/v3 etc.
     # The error message is built to include the complete suffix that should be removed (rather than running 2 or 3 times,
     # seeing an error each time)
@@ -3187,7 +3187,7 @@ def main() -> None:
 
     # get the service API url
     base_url = params.get('server')
-    validation_base_url(base_url)
+    validate_base_url(base_url)
     base_url = urljoin(base_url, '/hx/api/v3/')
 
     # if your Client class inherits from BaseClient, SSL verification is
