@@ -3,6 +3,7 @@ commonfields:
   version: -1
 name: Volatility
 deprecated: true
+description: Deprecated. No available replacement.
 script: ''
 type: javascript
 tags:
