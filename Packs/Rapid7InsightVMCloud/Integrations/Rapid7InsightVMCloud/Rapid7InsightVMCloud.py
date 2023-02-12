@@ -246,7 +246,7 @@ def get_scan_engines_command(client: Client, page: int, size: int) -> CommandRes
     endpoint = f"/v4/integration/scan/engine"
     response = client.make_request(method=method, url_suffix=endpoint, params=params)
     if int(args.get("size")) > 500:
-        return_error("Exceed size limit")
+        return_error("You're over the maximum size limit(500), please choose a lower size value")
     else:
         response = client.make_request(
             method=method,
