@@ -211,7 +211,7 @@ def get_scan_command(client: Client, scan_id=str) -> CommandResults:
     if response:
         response_data = response
         markdown = tableToMarkdown(
-            'This is Required Scan Information',
+            'This is the Required Scan Information',
             response_data
         )
         result = CommandResults(
