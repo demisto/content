@@ -87,7 +87,7 @@ script:
     description: Query the details for a specific Start Light event
   isfetch: true
   runonce: false
-  dockerimage: demisto/python3:3.10.9.46807
+  dockerimage: demisto/python3:3.10.10.47713
 tests:
 - No test
 fromversion: 6.8.0
