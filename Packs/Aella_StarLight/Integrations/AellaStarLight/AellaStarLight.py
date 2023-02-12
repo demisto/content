@@ -55,7 +55,8 @@ def make_rest_call(end_point, username, password, action_result,
 
     try:
         resp_json = r.json()
-    except Exception:
+    except Exception as e:
+        demisto.debug(f"Error while parsing response JSON: {e}")
         action_result['status'] = 'Json parse error {}'.format(
             r.text.replace('{', ' ').replace('}', ' '))
         return
