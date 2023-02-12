@@ -144,7 +144,7 @@ class Client(CrowdStrikeClient):
                     limit = limit - len(indicators)
 
         if filter or not fetch_command:
-            demisto.info(f' filter {filter}')
+            demisto.info(f'{filter=}')
             params = assign_params(include_deleted=self.include_deleted,
                                    limit=limit,
                                    offset=offset, q=self.generic_phrase,
@@ -158,13 +158,14 @@ class Client(CrowdStrikeClient):
                 new_last_marker_time = resources[-1].get('_marker')
             else:
                 new_last_marker_time = demisto.getIntegrationContext().get('last_marker_time')
-                demisto.debug('There is no indicators')
+                demisto.debug('There are no indicators, using last_marker_time from Integration Context')
 
             if fetch_command:
                 ctx = demisto.getIntegrationContext()
+                demisto.info(f"last_marker_time before updating: {ctx.get('last_marker_time')}")
                 ctx.update({'last_marker_time': new_last_marker_time})
                 demisto.setIntegrationContext(ctx)
-                demisto.info(f'set last_run: {new_last_marker_time}')
+                demisto.info(f'set last_run to: {new_last_marker_time=}')
 
             indicators.extend(self.create_indicators_from_response(response,
                                                                    self.tlp_color,
@@ -204,7 +205,7 @@ class Client(CrowdStrikeClient):
         # In case there is an indicator for extracting the `_marker`
         if resources := response.get('resources', []):
             _marker = resources[-1].get('_marker')
-            demisto.debug(f'Importing the indicator marker in first time --> {_marker}')
+            demisto.debug(f'Importing the indicator marker in first time: {_marker=}')
             last_run = f"_marker:>'{_marker}'"
             parse_indicator = self.create_indicators_from_response(response,
                                                                    self.tlp_color,
@@ -212,7 +213,7 @@ class Client(CrowdStrikeClient):
                                                                    self.create_relationships)
             return f'{filter}+({last_run})' if filter else f'({last_run})', parse_indicator
 
-        # In case no indicator returned
+        # In case no indicator is returned
         demisto.debug('No indicator returned')
         return '', []
 
@@ -221,13 +222,15 @@ class Client(CrowdStrikeClient):
         """ Gets last run time in timestamp
 
         Returns:
-            last run in timestamp, or '' if no last run
+            last run in timestamp, or '' if no last run.
+            Taken from Integration Context key last_marker_time.
+
         """
         if last_run := demisto.getIntegrationContext().get('last_marker_time'):
             demisto.info(f'get last_run: {last_run}')
             params = f"_marker:>'{last_run}'"
         else:
-            demisto.debug('There is no last_run')
+            demisto.debug('There is no last_run (last_marker_time in Integration Context)')
             params = ''
         return params
 

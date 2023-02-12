@@ -210,12 +210,12 @@ def test_crowdstrike_to_xsoar_types():
                     "ip_address_types": [],
                     "domain_types": [],
                     "malicious_confidence": "high",
-                    "_marker": "1662650343000005203a3dda6407f9843c09ef8c78",
+                    "_marker": "test_marker_test",
                     "labels": []
                 }
             ]},
             '(last_updated:>=1662650343)',
-            ("(_marker:>'1662650343000005203a3dda6407f9843c09ef8c78')", 1)
+            ("(_marker:>'test_marker_test')", 1)
         ),
         (
             '1662650320',
@@ -240,12 +240,12 @@ def test_crowdstrike_to_xsoar_types():
                     "ip_address_types": [],
                     "domain_types": [],
                     "malicious_confidence": "high",
-                    "_marker": "1662650343000005203a3dda6407f9843c09ef8c78",
+                    "_marker": "test_marker_test",
                     "labels": []
                 }
             ]},
             '(last_updated:>=1662650320)',
-            ("(_marker:>'1662650343000005203a3dda6407f9843c09ef8c78')", 1)
+            ("(_marker:>'test_marker_test')", 1)
         ),
         (
             '',
@@ -270,12 +270,12 @@ def test_crowdstrike_to_xsoar_types():
                     "ip_address_types": [],
                     "domain_types": [],
                     "malicious_confidence": "high",
-                    "_marker": "1662650343000005203a3dda6407f9843c09ef8c78",
+                    "_marker": "test_marker_test",
                     "labels": []
                 }
             ]},
             None,
-            ("(_marker:>'1662650343000005203a3dda6407f9843c09ef8c78')", 1)
+            ("(_marker:>'test_marker_test')", 1)
         )
     ]
 )
