@@ -91,14 +91,14 @@ DEVICE_GET_COMMAND_RETURN_FIELDS = [
 ]
 
 DEVICE_GET_LOCATION_COMMAND_RETURN_FIELDS = [
-    "geoData.location.geoAddress.city",
-    "geoData.location.point.coordinates",
-    "geoData.location.geoAddress.state",
-    "geoData.location.geoAddress.country",
-    "geoData.location.geoAddress.countryCode",
-    "geoData.location.locationTechnology",
-    "geoData.location.accuracy",
-    "geoData.location.lastUpdateDateTimeUtc"
+    "geoData.location.coordinates",
+    "geoData.geoAddress.city",
+    "geoData.geoAddress.state",
+    "geoData.geoAddress.countryCode",
+    "geoData.geoAddress.country",
+    "geoData.locationTechnology",
+    "geoData.accuracy",
+    "geoData.lastUpdate",
 ]
 
 
