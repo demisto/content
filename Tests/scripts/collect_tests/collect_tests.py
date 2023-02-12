@@ -49,7 +49,7 @@ class CollectionReason(str, Enum):
     TEST_PLAYBOOK_CHANGED = 'test playbook changed'
     MAPPER_CHANGED = 'mapper file changed, configured as incoming_mapper_id in test conf'
     CLASSIFIER_CHANGED = 'classifier file changed, configured as classifier_id in test conf'
-    DEFAULT_REPUTATION_TESTS = 'default reputation tests'
+    DEFAULT_REPUTATION_TESTS = 'Indicator type file changed, running reputation tests from conf.json[\'reputation_tests\']'
     ALWAYS_INSTALLED_PACKS = 'packs that are always installed'
     PACK_TEST_DEPENDS_ON = 'a test depends on this pack'
     NON_XSOAR_SUPPORTED = 'support level is not xsoar: collecting the pack, not collecting tests'
