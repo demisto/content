@@ -1953,3 +1953,40 @@ def test_headers_file_acquisition_package_request(requests_mock, mocker):
     client.file_acquisition_package_request('acquisition_id')
     assert requests_mock.request_history[0].headers.get('Accept') == 'application/octet-stream'
     assert requests_mock.request_history[0].headers.get('X-FeApi-Token') == 'test'
+
+
+@pytest.mark.parametrize(
+    'baseurl, expected_error',
+    [
+        (
+            '<dummy_url>/hx',
+            'The base URL is invalid please set the base URL without including /hx'
+        ),
+        (
+            '<dummy_url>/hx/',
+            'The base URL is invalid please set the base URL without including /hx'
+        ),
+        (
+            '<dummy_url>/hx/api',
+            'The base URL is invalid please set the base URL without including /hx/api'
+        ),
+        (
+            '<dummy_url>/hx/api/',
+            'The base URL is invalid please set the base URL without including /hx/api'
+        ),
+        (
+            '<dummy_url>/hx/api/v3',
+            'The base URL is invalid please set the base URL without including /hx/api/v3'
+        ),
+        (
+            '<dummy_url>/hx/api/v3/',
+            'The base URL is invalid please set the base URL without including /hx/api/v3'
+        )
+    ]
+)
+def test_validate_base_url(baseurl: str, expected_error: str):
+    from FireEyeHXv2 import validate_base_url
+
+    with pytest.raises(ValueError) as e:
+        validate_base_url(baseurl)
+    assert str(e.value) == expected_error
