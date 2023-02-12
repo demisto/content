@@ -10,7 +10,7 @@ Use Core REST APIs
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Core Server URL |  | True |
-    | Auth ID |  | True |
+    | Auth ID | The Auth ID that is linked to the API Key (relevant for Cortex XSIAM and Cortex XSOAR 8.0.0 and above). | True |
     | Authentication method | Whether authentication should be using "Standard" API key or "Advanced" API key. | True |
     | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
     | Core Server API Key (Password) |  | True |
