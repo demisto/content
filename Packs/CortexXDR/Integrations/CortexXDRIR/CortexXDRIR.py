@@ -1251,7 +1251,7 @@ def main():  # pragma: no cover
             return_results(get_endpoints_command(client, args))
 
         elif command == 'xdr-endpoint-alias-change':
-            return_results(endpoint_alias_change_command(client, args))
+            return_results(endpoint_alias_change_command(client, **args))
 
         elif command == 'xdr-insert-parsed-alert':
             return_outputs(*insert_parsed_alert_command(client, args))

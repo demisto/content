@@ -1789,7 +1789,7 @@ def get_endpoints_command(client, args):
     )
 
 
-def endpoint_alias_change_command(client: CoreClient, args) -> CommandResults:
+def endpoint_alias_change_command(client: CoreClient, **args) -> CommandResults:
     # get arguments
     endpoint_id_list = argToList(args.get('endpoint_id_list'))
     dist_name = argToList(args.get('dist_name'))
@@ -1800,7 +1800,7 @@ def endpoint_alias_change_command(client: CoreClient, args) -> CommandResults:
     isolate = args.get('isolate')
     hostname = argToList(args.get('hostname'))
     status = args.get('status')
-    new_alias_name = args.get('new_alias_name')
+    new_alias_name = str(args.get('new_alias_name'))
 
     first_seen_gte = arg_to_timestamp(
         arg=args.get('first_seen_gte'),
