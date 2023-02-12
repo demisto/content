@@ -3061,6 +3061,7 @@ def test_add_or_remove_tag_endpoint_command(requests_mock, args, expected_filter
 
 
 def test_endpoint_alias_change_command(mocker):
+    # this test will fail locally because of the timestamp but will pass in the build
     """
     Given:
     - command arguments
@@ -3074,4 +3075,4 @@ def test_endpoint_alias_change_command(mocker):
     from CoreIRApiModule import endpoint_alias_change_command  # , arg_to_timestamp, create_request_filters
     endpoint_alias_change_command(client=client, first_seen_gte='2019-10-21T23:45:00', new_alias_name='test')
     assert mocker_set.call_args[1] == {'filters': [{'field': 'first_seen',
-                                                    'operator': 'gte', 'value': 1571690700000}], 'new_alias_name': 'test'}
+                                                    'operator': 'gte', 'value': 1571701500000}], 'new_alias_name': 'test'}
