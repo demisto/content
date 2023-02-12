@@ -6,7 +6,6 @@ from CommonServerUserPython import *  # noqa
 from CrowdStrikeApiModule import *  # noqa: E402
 
 # IMPORTS
-from datetime import datetime
 import urllib3
 
 urllib3.disable_warnings()
