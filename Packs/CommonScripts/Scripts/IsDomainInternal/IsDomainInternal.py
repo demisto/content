@@ -5,23 +5,13 @@ from CommonServerPython import *  # noqa: F401
 
 POLLING_TIME = 2  # Interval to wait in seconds when polling to check if indicator was created
 
-
-def check_domain_internal(domain, internal_domains):
+def is_domain_internal(domain, internal_domains):
     parts = domain.split(".")
     for i in range(len(parts), 0, -1):
         sub = ".".join(parts[-i:])
         if sub in internal_domains:
             return True
     return False
-
-
-def create_markdown_table(domain_list):
-    domain_list = sorted(domain_list, key=lambda x: not x['Internal'])
-    markdown_string = "| Domain Name | Internal |\n| --- | --- |\n"
-    for domain in domain_list:
-        markdown_string += f"| {domain['Name']} | {domain['Internal']} |\n"
-    return markdown_string
-
 
 def main():
     internal_domains_list = demisto.args().get("InternalDomainsListName", "InternalDomains")
@@ -37,15 +27,15 @@ def main():
         try:
             internal_domains = internal_domains.split("\n")
         except Exception as ex:
-            return_error(
-                f"Could not parse the internal domains list. Please make sure that the list contains domain names, separated by new lines.\nThe exact error is: {ex}")
+            return_error(f"Could not parse the internal domains list. Please make sure that the list contains domain names, separated by new lines.\nThe exact error is: {ex}")
     else:
         demisto.results("No internal domains were specified.")
         return
 
+
     # Create list of domain names with internal property
-    domain_list = [{"Name": domain, "Internal": check_domain_internal(domain, internal_domains)} for domain in
-                   domains_to_check]
+    domain_list = [{"Name": domain, "Internal": is_domain_internal(domain, internal_domains)} for domain in domains_to_check]
+
 
     for domain in domain_list:
         args_exists_check = {
@@ -76,9 +66,11 @@ def main():
         # successfully set the Internal property of the domain name, we need to ensure creation and then edit the indicator ourselves.
         demisto.executeCommand("setIndicator", args_create_or_set_indicator)
 
+
+
     # Create entry context and human-readable results
     entry_context = {"Domain(val.Name == obj.Name)": domain_list}
-    md_table = create_markdown_table(domain_list)
+    md_table = tableToMarkdown(name="Domain Names", t=sorted(domain_list, key=lambda x: not x['Internal']), headers=["Name", "Internal"])
     entry_to_return = {
         "Type": entryTypes['note'],
         "Contents": domain_list,
@@ -88,9 +80,9 @@ def main():
         "Tags": ['Internal_Domain_Check_Results']
     }
 
+
     # Return results
     demisto.results(entry_to_return)
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
