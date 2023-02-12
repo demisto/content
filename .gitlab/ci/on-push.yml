@@ -511,7 +511,7 @@ test-upload-flow:
   script:
     - |
     - section_start "Checks Whether to Trigger a Test Upload"
-    - .Utils/should_trigger_test_upload.sh
+    - ./Utils/should_trigger_test_upload.sh
     - section_end "Checks Whether to Trigger a Test Upload"
 
     - section_start "Create Testing Branch"
