@@ -1,0 +1,75 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Reco
+  version: -1
+configuration:
+- display: Server URL (e.g. https://host.reco.ai/api/v1)
+  name: url
+  required: true
+  type: 0
+- section: Connect
+  display: JWT app token
+  displaypassword: API Token
+  name: api_token
+  type: 4
+  required: true
+  hiddenusername: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: '200'
+  display: Max fetch
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: Incidents SaaS Source
+  name: source
+  required: false
+  type: 0
+- additionalinfo: Created At time before which incidents will be fetched
+  name: before
+  required: false
+  type: 0
+- additionalinfo: Created At time after which incidents will be fetched
+  name: after
+  required: false
+  type: 0
+- additionalinfo: Risk level of the incidents to fetch
+  name: risk_level
+  required: false
+  type: 0
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+  section: Collect
+description: Reco is a Saas data security solution that protects your data from accidental leaks and malicious attacks.
+display: Reco
+name: Reco
+script:
+  dockerimage: demisto/python3:3.10.10.47713
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: "-"
+  subtype: python3
+  type: python
+tests:
+- No tests
+fromversion: 6.5.0
