@@ -198,14 +198,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.26.67"
+version = "1.26.69"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.29.67,<1.30.0"
+botocore = ">=1.29.69,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -214,7 +214,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.67"
+version = "1.29.69"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
@@ -2855,7 +2855,7 @@ python-versions = "*"
 
 [[package]]
 name = "stevedore"
-version = "4.1.1"
+version = "5.0.0"
 description = "Manage dynamic plugins for Python applications"
 category = "dev"
 optional = false
@@ -3071,7 +3071,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-markdown"
-version = "3.4.2.2"
+version = "3.4.2.3"
 description = "Typing stubs for Markdown"
 category = "dev"
 optional = false
@@ -3421,7 +3421,7 @@ python-versions = "*"
 
 [[package]]
 name = "zipp"
-version = "3.12.1"
+version = "3.13.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
 category = "dev"
 optional = false
@@ -3637,12 +3637,12 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
-    {file = "boto3-1.26.67-py3-none-any.whl", hash = "sha256:159ab54ab301a213aea0dbebfe97c12909fd9180110a2b78aaa712c2d7d1a929"},
-    {file = "boto3-1.26.67.tar.gz", hash = "sha256:c2e21ac64370fee1f3dccd97b4767e89d046c45c00faec27c36405618e34c7e5"},
+    {file = "boto3-1.26.69-py3-none-any.whl", hash = "sha256:9a0a29179957cb26fa8c3c1fddf66b18efaeaf633e08db5fb53815ffb0421419"},
+    {file = "boto3-1.26.69.tar.gz", hash = "sha256:eb8cde24a4c5755c35126e8cd460e6b51c63d04292419e7e95721232720c7e5b"},
 ]
 botocore = [
-    {file = "botocore-1.29.67-py3-none-any.whl", hash = "sha256:424c5fa21913d85ea990928acf35622a4f2b7f0750133b96adaa8c642bb6a878"},
-    {file = "botocore-1.29.67.tar.gz", hash = "sha256:0ccec4a906b6b8c7bb6bc5226509059ee9ed94d3cf1014487ef5b8e56801e6a3"},
+    {file = "botocore-1.29.69-py3-none-any.whl", hash = "sha256:2a4ab8bcb3177daa425019e125c09996b9a6a1a62bb0baaaeeb86ffd552719cc"},
+    {file = "botocore-1.29.69.tar.gz", hash = "sha256:7e1bebca013544fbc298cb58603bfccd5f71b49c720a5c33c07cf5dfc8145a1f"},
 ]
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
@@ -5748,8 +5748,8 @@ starkbank-ecdsa = [
     {file = "starkbank-ecdsa-2.2.0.tar.gz", hash = "sha256:9399c3371b899d4a235b68a1ed7919d202fbf024bd2c863ae8ebdad343c2a63a"},
 ]
 stevedore = [
-    {file = "stevedore-4.1.1-py3-none-any.whl", hash = "sha256:aa6436565c069b2946fe4ebff07f5041e0c8bf18c7376dd29edf80cf7d524e4e"},
-    {file = "stevedore-4.1.1.tar.gz", hash = "sha256:7f8aeb6e3f90f96832c301bff21a7eb5eefbe894c88c506483d355565d88cc1a"},
+    {file = "stevedore-5.0.0-py3-none-any.whl", hash = "sha256:bd5a71ff5e5e5f5ea983880e4a1dd1bb47f8feebbb3d95b592398e2f02194771"},
+    {file = "stevedore-5.0.0.tar.gz", hash = "sha256:2c428d2338976279e8eb2196f7a94910960d9f7ba2f41f3988511e95ca447021"},
 ]
 tabulate = [
     {file = "tabulate-0.9.0-py3-none-any.whl", hash = "sha256:024ca478df22e9340661486f85298cff5f6dcdba14f3813e8830015b9ed1948f"},
@@ -5853,8 +5853,8 @@ types-ipaddress = [
     {file = "types_ipaddress-1.0.8-py3-none-any.whl", hash = "sha256:4933b74da157ba877b1a705d64f6fa7742745e9ffd65e51011f370c11ebedb55"},
 ]
 types-markdown = [
-    {file = "types-Markdown-3.4.2.2.tar.gz", hash = "sha256:394e205effefbd12103220f370287ab28e99534f3e12a6408734aae79b7e6119"},
-    {file = "types_Markdown-3.4.2.2-py3-none-any.whl", hash = "sha256:d0cf7706aed5f489a6233406990b7f35c3211882dd69aa034634de1ad367b231"},
+    {file = "types-Markdown-3.4.2.3.tar.gz", hash = "sha256:6beea6429478c64dcc45f1f420e4e4693f356ff9ec7380f898efe5b3c3472c18"},
+    {file = "types_Markdown-3.4.2.3-py3-none-any.whl", hash = "sha256:2c4e84e81025ca9bfd0d227f03703cdec939fbbd2f0b21c2554031923178d69e"},
 ]
 types-mock = [
     {file = "types-mock-4.0.15.2.tar.gz", hash = "sha256:83fe479741adb92210c3c92f006fe058297d5051e93c2cec36f1a9e0bae16e9e"},
@@ -6250,8 +6250,8 @@ z3-solver = [
     {file = "z3_solver-4.12.1.0-py2.py3-none-win_amd64.whl", hash = "sha256:aa0e06d42070774a2f89818c412514d41fc84578f32d617de618b214e5ed8154"},
 ]
 zipp = [
-    {file = "zipp-3.12.1-py3-none-any.whl", hash = "sha256:6c4fe274b8f85ec73c37a8e4e3fa00df9fb9335da96fb789e3b96b318e5097b3"},
-    {file = "zipp-3.12.1.tar.gz", hash = "sha256:a3cac813d40993596b39ea9e93a18e8a2076d5c378b8bc88ec32ab264e04ad02"},
+    {file = "zipp-3.13.0-py3-none-any.whl", hash = "sha256:e8b2a36ea17df80ffe9e2c4fda3f693c3dad6df1697d3cd3af232db680950b0b"},
+    {file = "zipp-3.13.0.tar.gz", hash = "sha256:23f70e964bc11a34cef175bc90ba2914e1e4545ea1e3e2f67c079671883f9cb6"},
 ]
 zope-interface = [
     {file = "zope.interface-5.5.2-cp27-cp27m-macosx_10_14_x86_64.whl", hash = "sha256:a2ad597c8c9e038a5912ac3cf166f82926feff2f6e0dabdab956768de0a258f5"},
