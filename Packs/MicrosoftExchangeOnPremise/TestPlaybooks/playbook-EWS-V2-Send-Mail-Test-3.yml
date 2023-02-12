@@ -1,6 +1,6 @@
 id: EWS V2 Send Mail Test 3
 version: -1
-name: EWS Mail Sender Test 3
+name: EWS V2 Send Mail Test 3
 starttaskid: "0"
 tasks:
   "0":
