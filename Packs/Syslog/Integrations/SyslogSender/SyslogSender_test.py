@@ -1,6 +1,7 @@
 from CommonServerPython import *
 import pytest
 from contextlib import contextmanager
+import unittest
 
 
 class Logger:
@@ -168,9 +169,20 @@ def test_send_with_non_default_log_level(mocker):
     assert results == 'Message sent to Syslog successfully.'
 
 
-def test_ip():
+def test_init_manager_address():
+    """
+    Given:
+    - address
+    - port
+    - priority
+    - facility
+    When:
+    - Preparing global variables and creating the StreamServer.
+
+    Then:
+    - Ensure globals are set as expected and server is returned with expected attributes.
+    """
     from SyslogSender import init_manager
-    #  socket.gethostbyname(hostname)
     params = {
         'address': 'https://www.example.com/tests/stillexample/testthisexapmle123456789',
         'port': '514',
@@ -179,7 +191,6 @@ def test_ip():
         'facility': 'LOG_SYSLOG'
     }
     address_after_encoding = base64.b64encode(params['address'].encode()).decode("utf-8")
-    # ssl_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     # Arrange
     manager = init_manager(params)
@@ -188,3 +199,36 @@ def test_ip():
     assert manager.protocol == 'tcp'
     assert manager.logging_level == 10
     assert manager.facility == 5
+
+
+def test_prepare_certificate_file():
+    """
+    Given:
+    - certificate: Certificate.
+    When:
+    - Preparing global variables and creating the StreamServer.
+
+    Then:
+    - Ensure globals are set as expected and server is returned with expected attributes.
+    """
+    from SyslogSender import prepare_certificate_file
+    result = prepare_certificate_file('example')
+    assert len(result)
+
+
+def test_SyslogHandlerTLS_init(mocker):
+    from SyslogSender import SyslogHandlerTLS
+    address = '127.0.0.1'
+    port = 6514
+    log_level = logging.DEBUG
+    facility = 0
+    cert_path = 'cert.pem'
+    mocker.patch('ssl.SSLContext.load_verify_locations', return_value=None)
+    mocker.patch.object(ssl.SSLContext, 'wrap_socket')
+    mocker.patch.object(socket.socket, 'connect')
+    handler = SyslogHandlerTLS(address, port, log_level, facility, cert_path)
+    assert handler.address == address
+    assert handler.port == port
+    assert handler.certfile == cert_path
+    assert handler.facility == facility
+    assert handler.level == log_level
