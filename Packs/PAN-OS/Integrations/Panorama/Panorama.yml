@@ -5284,11 +5284,11 @@ script:
     - description: The device group for which to return applications.
       name: device-group
       required: false
-    - description: When specified, returned in the list are limited to applications whose name match the specified string.
+    - description: When specified, the results returned in the list are limited to applications whose names match the specified string.
       name: name_match
       required: false
       isArray: false
-    - description: When specified, returned in the list are limited to applications whose name contains the specified string.
+    - description: When specified, the results returned in the list are limited to applications whose names contain the specified string.
       name: name_contain
       required: false
       isArray: false
@@ -5327,7 +5327,7 @@ script:
       - 'client-server'
       - 'network-protocol'
       - 'peer-to-peer'
-    - description: "A comma-separated list, possible values are: 'virus-ident', 'evasive-behavior', 'file-type-ident', 'consume-big-bandwidth', 'used-by-malware', 'able-to-transfer-file', 'has-known-vulnerability', 'tunnel-other-application', 'prone-to-misuse', 'pervasive-use', 'file-forward', 'is-saas'."
+    - description: "A comma-separated list of characteristics. Possible values are: 'virus-ident', 'evasive-behavior', 'file-type-ident', 'consume-big-bandwidth', 'used-by-malware', 'able-to-transfer-file', 'has-known-vulnerability', 'tunnel-other-application', 'prone-to-misuse', 'pervasive-use', 'file-forward', 'is-saas'."
       name: characteristics
       required: false
       isArray: false
@@ -9399,7 +9399,7 @@ script:
     description: Deletes an application-group
     name: pan-os-delete-application-group
     outputs: []
-  dockerimage: demisto/pan-os-python:1.0.0.47142
+  dockerimage: demisto/pan-os-python:1.0.0.48063
   feed: false
   isfetch: true
   longRunning: false

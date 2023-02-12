@@ -698,10 +698,12 @@ def build_xpath_filter(name_match: str = None, name_contains: str = None, filter
         xpath str
     """
     xpath_prefix = ''
-    if name_match:
-        xpath_prefix = f"@name='{name_match}'"
-    if name_contains:
-        xpath_prefix = f"contains(@name,'{name_contains}')"
+    if name_match and name_contains:
+        xpath_prefix = f"@name='{name_match}'andcontains(@name,'{name_contains}')"
+    elif name_contains:
+        xpath_prefix += f"contains(@name,'{name_contains}')"
+    elif name_match:
+        xpath_prefix += f"@name='{name_match}'"
     if filters:
         for key, value in filters.items():
             if key in APPILICATION_FILTERS:

@@ -2564,13 +2564,13 @@ Returns a list of applications.
 | --- | --- | --- |
 | predefined | Whether to list predefined applications. Possible values are: true, false. Default is false. | Optional | 
 | device-group | The device group for which to return applications. | Optional | 
-| name_match | When specified, returned in the list are limited to applications whose name match the specified string. | Optional | 
-| name_contain | When specified, returned in the list are limited to applications whose name contains the specified string. | Optional | 
+| name_match | When specified, the results returned in the list are limited to applications whose names match the specified string. | Optional | 
+| name_contain | When specified, the results returned in the list are limited to applications whose names contain the specified string. | Optional | 
 | risk | The application risk (1 to 5). Possible values are: 1, 2, 3, 4, 5. | Optional | 
 | category | The application category. Possible values are: collaboration, business-systems, networking, media. | Optional | 
 | sub_category | The application sub-category. | Optional | 
 | technology | The application technology. Possible values are: browser-based, client-server, network-protocol, peer-to-peer. | Optional | 
-| characteristics | A comma-separated list, possible values are: 'virus-ident', 'evasive-behavior', 'file-type-ident', 'consume-big-bandwidth', 'used-by-malware', 'able-to-transfer-file', 'has-known-vulnerability', 'tunnel-other-application', 'prone-to-misuse', 'pervasive-use', 'file-forward', 'is-saas'. | Optional | 
+| characteristics | A comma-separated list of characteristics. Possible values are: 'virus-ident', 'evasive-behavior', 'file-type-ident', 'consume-big-bandwidth', 'used-by-malware', 'able-to-transfer-file', 'has-known-vulnerability', 'tunnel-other-application', 'prone-to-misuse', 'pervasive-use', 'file-forward', 'is-saas'. | Optional | 
 | limit | The maximum number of results to retrieve. Default is 50. | Optional | 
 
 
