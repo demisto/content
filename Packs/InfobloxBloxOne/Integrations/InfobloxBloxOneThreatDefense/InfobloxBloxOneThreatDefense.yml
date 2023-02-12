@@ -1,0 +1,131 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: InfobloxBloxOneThreatDefense
+  version: -1
+configuration:
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+display: 'Infoblox BloxOne Threat Defense'
+name: InfobloxBloxOneThreatDefense
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      isArray: false
+      name: indicator_type
+      required: true
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - host
+      - ip
+      - url
+      - hash
+      - email
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      isArray: true
+      name: sources
+      required: false
+      secret: false
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: 10
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+      defaultValue: 600
+    - description: 'used for polling'
+      name: job_id
+    deprecated: false
+    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+    execution: false
+    polling: true
+    name: bloxone-td-dossier-lookup-get
+    outputs:
+    - contextPath: BloxOneTD.DossierLookup
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  - name: bloxone-td-dossier-source-list
+    description: '[Enter a description of the data returned in this output.]'
+    outputs:
+    - contextPath: BloxOneTD.DossierSource
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  - arguments:
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      isArray: false
+      name: target_domain
+      required: false
+      secret: false
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      isArray: false
+      name: detected_at
+      required: false
+      secret: false
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+      defaultValue: 50
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+    execution: false
+    polling: true
+    name: bloxone-td-lookalike-domain-list
+    outputs:
+    - contextPath: BloxOneTD.LookalikeDomain
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.7.35188
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
