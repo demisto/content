@@ -217,6 +217,15 @@ def test_prepare_certificate_file():
 
 
 def test_SyslogHandlerTLS_init(mocker):
+    """
+    Given:
+    - certificate: Certificate.
+    When:
+    - Preparing global variables and creating the SyslogHandlerTLS handler.
+
+    Then:
+    - Ensure globals are set as expected.
+    """
     from SyslogSender import SyslogHandlerTLS
     address = '127.0.0.1'
     port = 6514
@@ -232,3 +241,19 @@ def test_SyslogHandlerTLS_init(mocker):
     assert handler.certfile == cert_path
     assert handler.facility == facility
     assert handler.level == log_level
+
+
+def test_SyslogManager():
+    from SyslogSender import SyslogManager
+    address = '127.0.0.1'
+    port = 6514
+    log_level = logging.DEBUG
+    facility = 0
+    cert_path = 'cert.pem'
+    protocol = 'udp'
+    handler = SyslogManager(address, port, protocol, log_level, facility, cert_path)
+    assert handler.address == address
+    assert handler.port == port
+    assert handler.syslog_cert_path == cert_path
+    assert handler.facility == facility
+    assert handler.logging_level == log_level
