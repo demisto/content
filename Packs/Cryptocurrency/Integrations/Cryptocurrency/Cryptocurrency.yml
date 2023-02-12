@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Cryptocurrency
   version: -1
@@ -8,25 +11,29 @@ configuration:
   display: Source Reliability
   name: reliability
   options:
-    - A - Completely reliable
-    - B - Usually reliable
-    - C - Fairly reliable
-    - D - Not usually reliable
-    - E - Unreliable
-    - F - Reliability cannot be judged
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
   required: false
   type: 15
+  section: Collect
+  advanced: true
 - additionalinfo: Reputation for the Cryptocurrency indicators. Default is Suspicious.
   defaultvalue: Suspicious
   display: Reputation
   name: reputation
   options:
-    - None
-    - Good
-    - Suspicious
-    - Bad
+  - None
+  - Good
+  - Suspicious
+  - Bad
   required: false
   type: 15
+  section: Collect
+  advanced: true
 description: Cryptocurrency will help classify Cryptocurrency indicators with the configured score when ingested.
 display: Cryptocurrency
 name: Cryptocurrency
@@ -63,7 +70,7 @@ script:
       description: The cryptocurrency type. e.g. 'bitcoin'.
       type: string
     description: Return Cryptocurrency reputation.
-  dockerimage: demisto/python3:3.10.9.42008
+  dockerimage: demisto/python3:3.10.9.46807
   longRunning: false
   longRunningPort: false
   runonce: false

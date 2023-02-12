@@ -1,4 +1,4 @@
-EXPECTED_FINDING_OUTPUTS = [{'AccountId': 'string',
+FINDING_OUTPUTS = [{'AccountId': 'string',
                              'Arn': 'string',
                              'Confidence': 123.0,
                              'CreatedAt': '2022-11-08T14:24:52.908Z',
@@ -352,3 +352,5 @@ EXPECTED_FINDING_OUTPUTS = [{'AccountId': 'string',
                              'Title': 'title',
                              'Type': 'string',
                              'UpdatedAt': '2022-09-07T13:48:00.814Z'}]
+
+EXPECTED_FINDING_OUTPUTS = {'AWS.GuardDuty.Findings(val.FindingId === obj.Id)': FINDING_OUTPUTS}

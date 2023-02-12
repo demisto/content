@@ -54,7 +54,7 @@
 
 .download-demisto-conf:
   - section_start "Download content-test-conf" --collapsed
-  - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/download_demisto_conf.log
+  - ./Tests/scripts/download_demisto_conf.sh | tee --append $ARTIFACTS_FOLDER/logs/download_demisto_conf.log
   - SECRET_CONF_PATH=$(cat secret_conf_path)
   - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpid "$GSM_PROJECT_ID"
   - section_end "Download content-test-conf"
@@ -171,6 +171,7 @@
     - neo4j-admin set-initial-password test
     - neo4j start
     - python --version
+    - python2 --version
     - python3 --version
     - pip3 --version
     - node --version
@@ -208,6 +209,7 @@
     paths:
       - /builds/xsoar/content/unit-tests
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   services:
     - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
@@ -240,17 +242,20 @@
       else
         echo "demisto-sdk version: $(demisto-sdk --version)"
         echo "mypy version: $(mypy --version)"
+        echo "flake8 py2 version: $(python2 -m flake8 --version)"
         echo "flake8 py3 version: $(python3 -m flake8 --version)"
+        echo "bandit py2 version: $(python2 -m bandit --version 2>&1)"
         echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
+        echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
         echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
         SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -vvv -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER
+          demisto-sdk lint -vvv -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER --docker-image all
         else
           if [[ -n $BUCKET_UPLOAD ]]; then
-            demisto-sdk lint -vvv -p 8 -g --no-mypy --prev-ver $LAST_UPLOAD_COMMIT -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -idp $ARTIFACTS_FOLDER/id_set.json -cdam
+            demisto-sdk lint -vvv -p 8 -g --no-mypy --prev-ver $LAST_UPLOAD_COMMIT -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam
           else
             echo "Skipping, Should run on circleCi."
           fi
@@ -267,6 +272,7 @@
         fi
       fi
     - section_end "Run Unit Testing and Lint"
+    - job-done
 
 .run-validations:
   stage: unittests-and-validations
@@ -279,32 +285,12 @@
     expire_in: 30 days
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   script:
     - section_start "Look For Secrets"
     - demisto-sdk secrets --post-commit --ignore-entropy
     - section_end "Look For Secrets"
-    - section_start "Create id set"
-    - *create-id-set
-    - section_end "Create id set"
-    - section_start "Merge public and private id sets"
-    - |
-      if [[ $CI_COMMIT_BRANCH =~ pull/[0-9]+ ]]; then
-          echo "Skipping, Should not run on contributor's branch."
-      else
-        gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
-        echo "successfully activated google cloud service account"
-
-        echo "Download private ID set"
-        gsutil cp "gs://marketplace-dist/content/private_id_set.json" $ARTIFACTS_FOLDER/unified_id_set.json
-        echo "successfully downloaded private ID set"
-        gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
-
-        echo "Merge public and private ID sets"
-        demisto-sdk merge-id-sets -i1 ./Tests/id_set.json -i2 $ARTIFACTS_FOLDER/unified_id_set.json -o $ARTIFACTS_FOLDER/unified_id_set.json
-        echo "successfully merged public and private ID sets"
-      fi
-    - section_end "Merge public and private id sets"
     - section_start "Copy Tests To Artifact Folder"
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Copy Tests To Artifact Folder"
@@ -332,6 +318,7 @@
             echo "No such branch in content-test-conf: $UNDERSCORE_CI_BRANCH"
           else
             echo "ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo."
+            job-done
             exit 1
           fi
         }
@@ -353,3 +340,9 @@
 
     - python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
     - section_end "Validate landingPageSections.json"
+    - job-done
+
+.jobs-done-check:
+  stage: are-jobs-realy-done
+  script:
+    - python3 Tests/scripts/check_jobs_done.py --job-done-files $PIPELINE_JOBS_FOLDER

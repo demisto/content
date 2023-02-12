@@ -12,35 +12,80 @@ configuration:
   required: true
   type: 0
   section: Connect
-- display: Application ID or Client ID
-  additionalinfo: See the Help tab.
+- name: creds_auth_id
+  required: false
+  type: 9
+  section: Connect
+  displaypassword: Application ID or Client ID
+  hiddenusername: true
+- name: creds_tenant_id
+  required: false
+  type: 9
+  section: Connect
+  displaypassword: Token or Tenant ID
+  hiddenusername: true
+- name: creds_enc_key
+  required: false
+  type: 9
+  section: Connect
+  displaypassword: Key or Client Secret
+  hiddenusername: true
+- additionalinfo: See the Help tab.
+  display: Application ID or Client ID
   name: auth_id
-  required: true
+  required: false
   type: 4
   section: Connect
-- display: Token or Tenant ID
-  additionalinfo: See the Help tab.
+  hidden: true
+- additionalinfo: See the Help tab.
+  display: Token or Tenant ID
   name: tenant_id
-  required: true
+  required: false
   type: 4
   section: Connect
+  hidden: true
 - display: Key or Client Secret
-  additionalinfo: See the Help tab.
   name: enc_key
   required: false
   type: 4
   section: Connect
-- additionalinfo: Used for certificate authentication as it appears in the "Certificates & secrets" page of the app.
-  display: Certificate Thumbprint
+  additionalinfo: See the Help tab.
+  hidden: true
+- display: Certificate Thumbprint
+  name: creds_certificate
+  required: false
+  type: 9
+  section: Connect
+  displaypassword: Private Key
+- display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
   section: Connect
-- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
-  display: Private Key
+  additionalinfo: Used for certificate authentication as it appears in the "Certificates & secrets" page of the app.
+  hidden: true
+- display: Private Key
   name: private_key
   required: false
   type: 14
+  section: Connect
+  additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  hidden: true
+- additionalinfo: Relevant only if the integration is running on Azure VM. 
+    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
+    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
+    For additional information, see the Help tab.
+  display: Use Azure Managed Identities
+  name: use_managed_identities
+  required: false
+  type: 8
+  section: Connect
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
@@ -93,19 +138,15 @@ configuration:
   type: 0
   section: Collect
   advanced: true
-- display: Fetched incidents filter 
-  additionalinfo: Use this field to filter fetched incidents according
-    to any of the alert properties. Overrides the providers list, if given. Filter should be in the format "{property} eq
-    '{property-value}'". Multiple filters can be applied separated with " and ", for example
-    "createdDateTime eq YYYY-MM-DD and severity eq 'high'".
+- display: Fetched incidents filter
+  additionalinfo: Use this field to filter fetched incidents according to any of the alert properties. Overrides the providers list, if given. Filter should be in the format "{property} eq '{property-value}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'".
   hidden: false
   name: fetch_filter
   required: false
   type: 0
   section: Collect
   advanced: true
-description: Unified gateway to security insights - all from a unified Microsoft Graph
-  Security API.
+description: Unified gateway to security insights - all from a unified Microsoft Graph Security API.
 display: Microsoft Graph Security
 name: Microsoft Graph
 script:
@@ -362,7 +403,7 @@ script:
     - contextPath: MsGraph.User.Name
       description: User name
       type: string
-  dockerimage: demisto/crypto:1.0.0.42817
+  dockerimage: demisto/crypto:1.0.0.47103
   feed: false
   isfetch: true
   longRunning: false

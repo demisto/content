@@ -554,7 +554,7 @@ def main():
                                 current_commit_hash, index_generation, landing_page_sections=landing_page_sections)
 
     # get the lists of packs divided by their status
-    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+    successful_packs, _, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs)

@@ -2,7 +2,7 @@
     "name": "Illumio Rapid Ransomware Containment",
     "description": "Provides integrations and playbooks to interact with Illumio Core APIs and automate network security tasks",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.3",
     "author": "Illumio",
     "url": "https://support.illumio.com",
     "email": "app-integrations@illumio.com",
@@ -10,14 +10,11 @@
         "Network Security"
     ],
     "tags": [
-        "Network",
-        "Security",
-        "Incident Response"
     ],
     "useCases": [
-        "Rapid Breach Response"
     ],
     "keywords": [
+        "Rapid Breach Response",
         "Zero Trust",
         "Security",
         "Network",

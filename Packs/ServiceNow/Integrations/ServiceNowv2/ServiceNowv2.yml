@@ -134,28 +134,38 @@ configuration:
   name: custom_fields
   required: false
   type: 12
-- additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR.
-  defaultvalue: 'false'
-  display: Close Mirrored XSOAR Incident
+- additionalinfo: Define how to close the mirrored tickets in Cortex XSOAR. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'. Choose 'None' to disable closing the mirrored tickets in Cortex XSOAR.
+  defaultvalue: 'None'
+  display: Mirrored XSOAR Ticket closure method
   name: close_incident
   required: false
-  type: 8
-- additionalinfo: Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
-  defaultvalue: None
-  display: Mirrored ServiceNow Ticket closure method
-  name: close_ticket_multiple_options
+  type: 15
   options:
   - None
   - closed
   - resolved
+- additionalinfo: 'Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason.'
+  defaultvalue: ''
+  display: Mirrored XSOAR Ticket custom close state code
+  name: server_close_custom_state
+  required: false
+  type: 0
+- additionalinfo: Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
+  defaultvalue: 'None'
+  display: Mirrored ServiceNow Ticket closure method
+  name: close_ticket_multiple_options
   required: false
   type: 15
-- additionalinfo: Define how to close the mirrored tickets in ServiceNow with a custom state. Enter here the custom closure state code (should be an integer) to override the default closure method. If the closure code does not exist, the default code will be used instead.
-  defaultvalue: ''
+  options:
+  - None
+  - closed
+  - resolved
+- defaultvalue: ''
   display: Mirrored ServiceNow Ticket custom close state code
   name: close_custom_state
   required: false
   type: 0
+  additionalinfo: Define how to close the mirrored tickets in ServiceNow with a custom state. Enter here the custom closure state code (should be an integer) to override the default closure method. If the closure code does not exist, the default code will be used instead.
 - defaultvalue: 'false'
   display: Close Mirrored ServiceNow Ticket
   name: close_ticket
@@ -169,7 +179,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'false'
-  display: Trust any certificate (not secure)
+  display: 'Trust any certificate (not secure)'
   name: insecure
   required: false
   type: 8
@@ -1844,25 +1854,23 @@ script:
       isArray: false
       name: use_display_value
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
-        - incident
-        - problem
-        - change_request
-        - sc_request
-        - sc_task
-        - sc_req_item
-        - sn_si_incident
-    description: Gets notes from the specified ServiceNow ticket. Notes can be retrieved either by granting "Read permissions"
-      for the sys_journal_field table, or by setting the `use_display_value` parameter to true.
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+      - sc_req_item
+      - sn_si_incident
+    description: Gets notes from the specified ServiceNow ticket. Notes can be retrieved either by granting "Read permissions" for the sys_journal_field table, or by setting the `use_display_value` parameter to true.
     name: servicenow-get-ticket-notes
     outputs:
     - contextPath: ServiceNow.Ticket.ID
@@ -2150,7 +2158,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api
       type: string
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.9.46807
   isfetch: true
   ismappable: true
   isremotesyncin: true

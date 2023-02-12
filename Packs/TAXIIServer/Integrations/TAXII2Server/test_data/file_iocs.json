@@ -2,58 +2,6 @@
     "iocs": [
         {
             "CustomFields": {
-                "sha1": "some_sha1_1"
-            },
-            "calculatedTime": "2021-12-28T14:58:19.704886+02:00",
-            "comments": [
-                {
-                    "category": "Sighting",
-                    "content": "Created",
-                    "created": "2021-12-28T14:58:19.625554+02:00",
-                    "entryId": "",
-                    "id": "df0430b7-42ed-4900-8a3c-776752d6baf5",
-                    "modified": "0001-01-01T00:00:00Z",
-                    "sortValues": null,
-                    "source": "@DBot",
-                    "type": "IndicatorCommentTimeLine",
-                    "user": "@DBot",
-                    "version": 0
-                }
-            ],
-            "expirationSource": {
-                "brand": "",
-                "expirationInterval": 0,
-                "expirationPolicy": "never",
-                "instance": "",
-                "moduleId": "",
-                "setTime": "2021-12-28T14:58:19.625546+02:00",
-                "source": "indicatorType",
-                "user": ""
-            },
-            "expirationStatus": "active",
-            "firstSeen": "2021-12-28T14:58:19.704886+02:00",
-            "firstSeenEntryID": "8204@e99f97d1-7225-4c75-896c-3c960febbe8c",
-            "id": "5214325",
-            "indicator_type": "File",
-            "investigationIDs": [
-                "e99f97d1-7225-4c75-896c-3c960febbe8c"
-            ],
-            "lastReputationRun": "2021-12-28T14:58:18.991562+02:00",
-            "lastSeen": "2021-12-28T14:58:19.704886+02:00",
-            "lastSeenEntryID": "8204@e99f97d1-7225-4c75-896c-3c960febbe8c",
-            "modified": "2021-12-28T14:58:19.712449+02:00",
-            "score": 0,
-            "sortValues": [
-                " \u0001\u0016b;\u0012x\u0001TEp",
-                "5214325"
-            ],
-            "source": "DBot",
-            "timestamp": "2021-12-28T14:58:19.712448+02:00",
-            "value": "some_sha1_1",
-            "version": 1
-        },
-        {
-            "CustomFields": {
                 "sha1": "some_sha1_2"
             },
             "calculatedTime": "2021-12-28T14:58:19.704369+02:00",
@@ -102,6 +50,57 @@
             "source": "DBot",
             "timestamp": "2021-12-28T14:58:19.711496+02:00",
             "value": "some_sha1_2",
+            "version": 1
+        },{
+            "CustomFields": {
+                "sha1": "some_sha1_1"
+            },
+            "calculatedTime": "2021-12-28T14:58:19.704886+02:00",
+            "comments": [
+                {
+                    "category": "Sighting",
+                    "content": "Created",
+                    "created": "2021-12-28T14:58:19.625554+02:00",
+                    "entryId": "",
+                    "id": "df0430b7-42ed-4900-8a3c-776752d6baf5",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                }
+            ],
+            "expirationSource": {
+                "brand": "",
+                "expirationInterval": 0,
+                "expirationPolicy": "never",
+                "instance": "",
+                "moduleId": "",
+                "setTime": "2021-12-28T14:58:19.625546+02:00",
+                "source": "indicatorType",
+                "user": ""
+            },
+            "expirationStatus": "active",
+            "firstSeen": "2021-12-28T14:58:19.704886+02:00",
+            "firstSeenEntryID": "8204@e99f97d1-7225-4c75-896c-3c960febbe8c",
+            "id": "5214325",
+            "indicator_type": "File",
+            "investigationIDs": [
+                "e99f97d1-7225-4c75-896c-3c960febbe8c"
+            ],
+            "lastReputationRun": "2021-12-28T14:58:18.991562+02:00",
+            "lastSeen": "2021-12-28T14:58:19.704886+02:00",
+            "lastSeenEntryID": "8204@e99f97d1-7225-4c75-896c-3c960febbe8c",
+            "modified": "2021-12-28T14:58:19.712449+02:00",
+            "score": 0,
+            "sortValues": [
+                " \u0001\u0016b;\u0012x\u0001TEp",
+                "5214325"
+            ],
+            "source": "DBot",
+            "timestamp": "2021-12-28T14:58:19.712448+02:00",
+            "value": "some_sha1_1",
             "version": 1
         },
         {
@@ -293,7 +292,7 @@
                     "value": "some_sha1_5"
                 }
             },
-            "score": 2,
+            "score": 0,
             "sortValues": [
                 " \u0001\u0016b$<\u0019EZ\f\u0018",
                 "5199192"
@@ -391,7 +390,7 @@
                     "value": "some_sha1_6"
                 }
             },
-            "score": 2,
+            "score": 0,
             "sortValues": [
                 " \u0001\u0016b$<\u0019EY\u000f\u0018",
                 "5197481"
@@ -491,7 +490,7 @@
                     "value": "some_sha1_7"
                 }
             },
-            "score": 2,
+            "score": 0,
             "sortValues": [
                 " \u0001\u0016b$<\u0019EX\n0",
                 "5198982"

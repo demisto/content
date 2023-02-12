@@ -9,6 +9,8 @@ from typing import Dict, Tuple
 from tempfile import NamedTemporaryFile
 
 from charset_normalizer import from_bytes
+import quopri
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -39,17 +41,32 @@ def sign_email(client: Client, args: Dict):
     """
     send a S/MIME-signed message via SMTP.
     """
-    message_body = args.get('message_body', '')
-    buf = makebuf(message_body.encode())
+    use_transport_encoding: bool = argToBoolean(args.get('use_transport_encoding', 'false'))
+    if use_transport_encoding:
+        message_body = (
+            b'Content-Type: text/plain;  charset="utf-8"\nContent-Transfer-Encoding: quoted-printable\n\n'
+            + quopri.encodestring(args.get('message_body', '').encode("utf-8"))
+        )
+        buf = makebuf(message_body)
 
-    client.smime.load_key(client.private_key_file, client.public_key_file)
-    p7 = client.smime.sign(buf, SMIME.PKCS7_DETACHED)
+        client.smime.load_key(client.private_key_file, client.public_key_file)
+        p7 = client.smime.sign(buf, SMIME.PKCS7_DETACHED)
 
-    buf = makebuf(message_body.encode())
+        buf = makebuf(message_body)
+        out = BIO.MemoryBuffer()
 
-    out = BIO.MemoryBuffer()
+        client.smime.write(out, p7, buf)
+    else:
+        message_body = args.get('message_body', '')
+        buf = makebuf(message_body.encode())  # type: ignore
 
-    client.smime.write(out, p7, buf, SMIME.PKCS7_TEXT)
+        client.smime.load_key(client.private_key_file, client.public_key_file)
+        p7 = client.smime.sign(buf, SMIME.PKCS7_DETACHED)
+
+        buf = makebuf(message_body.encode())  # type: ignore
+        out = BIO.MemoryBuffer()
+
+        client.smime.write(out, p7, buf, SMIME.PKCS7_TEXT)
     signed = out.read().decode('utf-8')
     signed_message = signed.split('\n\n')
     headers = signed_message[0].replace(': ', '=').replace('\n', ',')
@@ -266,7 +283,7 @@ def test_module(client, *_):
         os.unlink(test_file.name)
 
 
-def main():
+def main():  # pragma: no cover
 
     public_key: str = demisto.params().get('public_key', '')
     private_key: str = demisto.params().get('private_key', '')

@@ -11,3 +11,5 @@ The **Sentinel One - Endpoint data collection** playbook collects endpoint infor
 The pack includes the **SentinelOne v2** integration and the **Sentinel One - Endpoint data collection** playbook.
 ## How does this pack work?
 Create an instance of the **SentinelOne v2** integration and start fetching information from the SentinelOne database.
+
+Note: Support for this Pack will be moved to the Partner on Feb 15, 2023.

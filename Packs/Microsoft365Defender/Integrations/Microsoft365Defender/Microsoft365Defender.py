@@ -23,8 +23,9 @@ class Client:
     @logger
     def __init__(self, app_id: str, verify: bool, proxy: bool, base_url: str = BASE_URL, tenant_id: str = None,
                  enc_key: str = None, client_credentials: bool = False, certificate_thumbprint: Optional[str] = None,
-                 private_key: Optional[str] = None):
-        if '@' in app_id:
+                 private_key: Optional[str] = None,
+                 managed_identities_client_id: Optional[str] = None):
+        if app_id and '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
             integration_context.update(current_refresh_token=refresh_token)
@@ -52,6 +53,8 @@ class Client:
             enc_key=enc_key,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
+            managed_identities_client_id=managed_identities_client_id,
+            managed_identities_resource_uri=Resources.security_center
         )
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore
 
@@ -216,7 +219,7 @@ def test_context_for_token(client: Client) -> None:
     Returns:
 
     """
-    if client.client_credentials:
+    if client.client_credentials or client.ms_client.managed_identities_client_id:
         return
     if not (get_integration_context().get('access_token') or get_integration_context().get('current_refresh_token')):
         raise DemistoException(
@@ -609,8 +612,12 @@ def main() -> None:
     tenant_id = params.get('tenant_id') or params.get('_tenant_id')
     client_credentials = params.get('client_credentials', False)
     enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
-    certificate_thumbprint = params.get('certificate_thumbprint')
-    private_key = params.get('private_key')
+    certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or \
+        params.get('certificate_thumbprint', '')
+
+    private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
+                   or params.get('private_key', ''))
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
 
     first_fetch_time = params.get('first_fetch', '3 days').strip()
     fetch_limit = arg_to_number(params.get('max_fetch', 10))
@@ -621,7 +628,7 @@ def main() -> None:
     args = demisto.args()
 
     try:
-        if not app_id:
+        if not managed_identities_client_id and not app_id:
             raise Exception('Application ID must be provided.')
 
         client = Client(
@@ -634,6 +641,7 @@ def main() -> None:
             client_credentials=client_credentials,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
+            managed_identities_client_id=managed_identities_client_id
         )
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
