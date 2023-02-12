@@ -194,7 +194,7 @@ def get_template_list_command(client: Client) -> CommandResults:
     if offset is not None and limit is None:
         raise DemistoException("limit should be set.")
     elif offset is None and limit is not None:
-        raise DemistoException("offset sohuld be set.")
+        raise DemistoException("offset should be set.")
 
     if offset is not None and limit is not None:
         query_parameters = "?" + "limit=" + limit + "&" + "offset=" + offset
