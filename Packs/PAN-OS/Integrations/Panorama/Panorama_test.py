@@ -1135,6 +1135,9 @@ def test_apply_security_profiles_command_main_flow(mocker):
 
 class TestPanoramaEditRuleCommand:
     EDIT_SUCCESS_RESPONSE = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE = {
+        'response': {'@status': 'success', 'result': 'Successfully added comment for xpath'}
+    }
 
     @staticmethod
     @pytest.fixture()
@@ -1254,11 +1257,12 @@ class TestPanoramaEditRuleCommand:
         assert http_req_mocker.call_args.kwargs.get('body').get('element') == '<disabled>no</disabled>'
 
     @staticmethod
-    def test_edit_rule_main_flow(mocker):
+    def test_edit_rule_main_flow_disable_rule(mocker):
         """
         Given
-         - integrations parameters.
+         - panorama integrations parameters.
          - pan-os-edit-rule command arguments including device_group.
+         - arguments to disable the rule
 
         When -
             running the pan-os-edit-rule command through the main flow
@@ -1301,12 +1305,60 @@ class TestPanoramaEditRuleCommand:
             'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}
         }
 
+    @staticmethod
+    def test_edit_rule_main_flow_update_audit_comment(mocker):
+        """
+        Given
+         - panorama integrations parameters.
+         - pan-os-edit-rule command arguments including device_group.
+         - arguments to edit audit comment of a rule
 
-def test_panorama_edit_address_group_command_main_flow(mocker):
+        When -
+            running the pan-os-edit-rule command through the main flow
+
+        Then
+         - make sure the context output is returned as expected.
+         - make sure the device group gets overriden by the command arguments.
+        """
+        from Panorama import main
+
+        mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+        mocker.patch.object(
+            demisto,
+            'args',
+            return_value={
+                "rulename": "test",
+                "element_to_change": "audit-comment",
+                "element_value": "some string",
+                "behaviour": "replace",
+                "pre_post": "pre-rulebase",
+                "device-group": "new device group"
+            }
+        )
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-rule')
+        request_mock = mocker.patch(
+            'Panorama.http_request', return_value=TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
+        )
+
+        res = mocker.patch('demistomock.results')
+        main()
+
+        # make sure that device group is getting overriden by the device-group from command arguments.
+        assert request_mock.call_args.kwargs['body'] == {
+            'type': 'op',
+            'cmd': "<set><audit-comment><xpath>/config/devices/entry[@name='localhost.localdomain']/device-group"
+                   "/entry[@name='new device group']/pre-rulebase/security/rules/entry[@name='test']"
+                   "</xpath><comment>some string</comment></audit-comment></set>",
+            'key': 'thisisabogusAPIKEY!'
+        }
+        assert res.call_args.args[0]['Contents'] == TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
+
+
+def test_panorama_edit_address_group_command_main_flow_edit_description(mocker):
     """
     Given
      - integrations parameters.
-     - pan-os-edit-address-group command arguments including device_group
+     - pan-os-edit-address-group command arguments including device_group and description to add.
 
     When -
         running the pan-os-edit-address-group command through the main flow
@@ -1342,6 +1394,46 @@ def test_panorama_edit_address_group_command_main_flow(mocker):
         'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}
     }
     assert res.call_args.args[0]['HumanReadable'] == 'Address Group test was edited successfully.'
+
+
+def test_panorama_edit_address_group_command_remove_single_address(mocker):
+    """
+    Given
+     - pan-os-edit-address-group command arguments including a single address to remove.
+
+    When
+     - running the pan-os-edit-address-group command through the main flow
+
+    Then
+     - make sure an exception is raised because address group must always have at least one address.
+    """
+    import Panorama
+
+    Panorama.DEVICE_GROUP = integration_panorama_params['device_group']
+
+    mocker.patch(
+        'Panorama.http_request',
+        return_value={
+            'response': {
+                '@status': 'success', 'result': {
+                    'entry': {
+                        '@name': 'test5',
+                        'static': {'member': ['5.5.5.5']},
+                        'description': 'dfdf'
+                    }
+                }
+            }
+        }
+    )
+
+    with pytest.raises(DemistoException) as exc_info:
+        Panorama.panorama_edit_address_group_command(
+            {'name': 'test', 'device-group': 'Shared', 'type': 'static', 'element_to_remove': '5.5.5.5'}
+        )
+
+    assert exc_info.type == DemistoException
+    assert exc_info.value.message == "cannot remove ['5.5.5.5'] addresses from address group test, " \
+                                     "address-group test must have at least one address in its configuration"
 
 
 @pytest.mark.parametrize(
@@ -1925,7 +2017,7 @@ class TestPanoramaPushToDeviceGroupCommand:
     def test_panorama_push_to_devices_command_with_polling(self, mocker, api_response_queue):
         """
         Given:
-            - pan-os-push-to-device-group command arguments
+            - pan-os-push-to-device-group command arguments including device-group.
             - a queue for api responses of the following:
                 1) first value in the queue is the panorama push to the device group api response
                 2) panorama job status api response which indicates job isn't done yet (different number each time)
@@ -1941,17 +2033,21 @@ class TestPanoramaPushToDeviceGroupCommand:
               that it returns the expected output.
             - make sure readable output is printed out only once.
             - make sure context output is returned only when polling is finished.
+            - make sure the device-group from argument overrides the device-group from parameter in context.
         """
         import requests
         import Panorama
         from Panorama import panorama_push_to_device_group_command
         from CommonServerPython import ScheduledCommand
-        Panorama.DEVICE_GROUP = 'device-group'
 
         args = {
             'description': 'a simple push',
-            'polling': 'true'
+            'polling': 'true',
+            'device-group': 'device-group-from-command-arg'
         }
+
+        # mimcs the piece of code which decides which device-group will be set into DEVICE_GROUP parameter.
+        Panorama.DEVICE_GROUP = args.get('device-group') or 'device-group-from-integration-params'
 
         Panorama.API_KEY = 'APIKEY'
         mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
@@ -1974,6 +2070,7 @@ class TestPanoramaPushToDeviceGroupCommand:
             command_result = panorama_push_to_device_group_command(polling_args)
 
         assert command_result.outputs.get('JobID') == '123'
+        assert command_result.outputs.get('DeviceGroup') == 'device-group-from-command-arg'
         assert command_result.outputs.get('Status') == 'Completed'
         assert command_result.outputs.get('Details')
         assert command_result.outputs.get('Warnings')

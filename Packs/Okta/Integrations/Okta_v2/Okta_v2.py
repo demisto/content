@@ -1,8 +1,7 @@
+import urllib3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
-
-import urllib3
 
 # IMPORTS
 # Disable insecure warnings
@@ -319,7 +318,9 @@ class Client(BaseClient):
                 'Created': user.get('created'),
                 'Activated': user.get('activated'),
                 'StatusChanged': user.get('statusChanged'),
-                'PasswordChanged': user.get('passwordChanged')
+                'PasswordChanged': user.get('passwordChanged'),
+                'Manager': user.get('profile', {}).get('manager'),
+                'ManagerEmail': user.get('profile', {}).get('managerEmail')
             }
             if user.get('group'):
                 user['Group'] = user.get('group')
@@ -364,6 +365,8 @@ class Client(BaseClient):
                     'Login': user.get('profile', {}).get('login'),
                     'Email': user.get('profile', {}).get('email'),
                     'Second Email': user.get('profile', {}).get('secondEmail'),
+                    'Manager': user.get('profile', {}).get('manager'),
+                    'Manager Email': user.get('profile', {}).get('managerEmail')
                 }
                 additionalData = {
                     'ID': user.get('id'),
@@ -394,7 +397,9 @@ class Client(BaseClient):
                     'Last Name': user.get('profile').get('lastName'),
                     'Mobile Phone': user.get('profile').get('mobilePhone'),
                     'Last Login': user.get('lastLogin'),
-                    'Status': user.get('status')
+                    'Status': user.get('status'),
+                    'Manager': user.get('profile', {}).get('manager'),
+                    'Manager Email': user.get('profile', {}).get('managerEmail')
                 }
                 users.append(user)
             return users
