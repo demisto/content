@@ -250,13 +250,13 @@ def incident_data_to_xsoar_format(inc_data, is_fetch_incidents=False):
         'Deleted': False
     }
     if is_fetch_incidents:
-        formatted_data.update({
+        formatted_data |= {
             'owner': properties.get('owner'),
             'relatedAnalyticRuleIds': [rule_id.split('/')[-1] for rule_id in properties.get('relatedAnalyticRuleIds', [])],
             "classification": properties.get('classification'),
             "classificationComment": properties.get('classificationComment'),
             "classificationReason": properties.get('classificationReason')
-        })
+        }
     return formatted_data
 
 
@@ -517,7 +517,7 @@ def get_modified_remote_data_command(client: AzureSentinelClient, args: Dict[str
     next_link = True
     while next_link:
         full_url = next_link if isinstance(next_link, str) else None
-        params = {'$filter': f'properties/lastModifiedTimeUtc ge {last_update}'} if not full_url else None
+        params = None if full_url else {'$filter': f'properties/lastModifiedTimeUtc ge {last_update}'}
 
         response = client.http_request('GET', 'incidents', full_url=full_url, params=params)
         raw_incidents += response.get('value', [])
@@ -1230,7 +1230,6 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
             'filter': f'properties/createdTimeUtc ge {latest_created_time_str}',
             'orderby': 'properties/createdTimeUtc asc',
         }
-        raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
 
     else:
         demisto.debug("handle via id")
@@ -1241,7 +1240,8 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
             'filter': f'properties/incidentNumber gt {last_incident_number}',
             'orderby': 'properties/incidentNumber asc',
         }
-        raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
+
+    raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
 
     fetch_incidents_additional_info(client, raw_incidents)
 
