@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 9fcb9777-e364-41dc-8731-689560834d05
+    taskid: c5f41b44-aa87-40bb-81d7-16d14591a0b3
     type: condition
     task:
-      id: 9fcb9777-e364-41dc-8731-689560834d05
+      id: c5f41b44-aa87-40bb-81d7-16d14591a0b3
       version: -1
       name: Is there a zipped file?
       description: 'Checked whether there is a zipped file in the incident. The following extensions are checked: 7z, gzip, tar, zip.'
@@ -124,7 +124,27 @@ tasks:
                     right:
                       value:
                         simple: zip
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: rar
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: gz
+                    ignorecase: true
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -142,10 +162,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: bad5b638-440c-46c0-8365-db43011433bf
+    taskid: a0822541-24c7-4c65-86f3-6afc288bbb2e
     type: regular
     task:
-      id: bad5b638-440c-46c0-8365-db43011433bf
+      id: a0822541-24c7-4c65-86f3-6afc288bbb2e
       version: -1
       name: Unzip file
       description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
@@ -187,10 +207,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: ae94940c-18b1-42d6-8c00-ab5306ac61f3
+    taskid: ee6e7c90-b233-4a54-8600-8f5e531fb4bd
     type: regular
     task:
-      id: ae94940c-18b1-42d6-8c00-ab5306ac61f3
+      id: ee6e7c90-b233-4a54-8600-8f5e531fb4bd
       version: -1
       name: Save zip file in a separate key
       description: Set a value in context under the key you entered.
@@ -240,6 +260,24 @@ tasks:
               right:
                 value:
                   simple: zip
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: rar
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: gz
+              ignorecase: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
