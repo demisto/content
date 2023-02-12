@@ -423,31 +423,31 @@ script:
     - contextPath: MicrosoftTeams.ChatList.messages.id
       description: Unique ID of the message.
       type: String
-    - contextPath: MicrosoftTeams..ChatList.messages.replyToId
+    - contextPath: MicrosoftTeams.ChatList.messages.replyToId
       description: ID of the parent chat message or root chat message of the thread.
       type: String
-    - contextPath: MicrosoftTeams..ChatList.messages.etag
+    - contextPath: MicrosoftTeams.ChatList.messages.etag
       description: Version number of the chat message.
       type: String
-    - contextPath: MicrosoftTeams..ChatList.messages.messageType
+    - contextPath: MicrosoftTeams.ChatList.messages.messageType
       description: The type of chat message.
       type: String
-    - contextPath: MicrosoftTeams..ChatList.messages.createdDateTime
+    - contextPath: MicrosoftTeams.ChatList.messages.createdDateTime
       description: Timestamp of when the chat message was created.
       type: String
-    - contextPath: MicrosoftTeams..ChatList.messages.lastModifiedDateTime
+    - contextPath: MicrosoftTeams.ChatList.messages.lastModifiedDateTime
       description: Timestamp when the chat message is created (initial setting) or modified, including when a reaction is added or removed.
       type: String
-    - contextPath: MicrosoftTeams..ChatList.messages.lastEditedDateTime
+    - contextPath: MicrosoftTeams.ChatList.messages.lastEditedDateTime
       description: Timestamp when edits to the chat message were made. Triggers an "Edited" flag in the Teams UI. If no edits are made the value is null.
       type: String
-    - contextPath: MicrosoftTeams..ChatList.messages.deletedDateTime
+    - contextPath: MicrosoftTeams.ChatList.messages.deletedDateTime
       description: Timestamp at which the chat message was deleted, or null if not deleted.
       type: String
-    - contextPath: MicrosoftTeams..ChatList.messages.subject
+    - contextPath: MicrosoftTeams.ChatList.messages.subject
       description: The subject of the chat message, in plaintext.
       type: String
-    - contextPath: MicrosoftTeams..ChatList.messages.summary
+    - contextPath: MicrosoftTeams.ChatList.messages.summary
       description: Summary text of the chat message that could be used for push notifications and summary views or fall back views.
       type: String
     - contextPath: MicrosoftTeams.ChatList.messages.chatId
@@ -674,7 +674,7 @@ script:
     description: Retrieves a list of chats that the user is part of. If 'chat' is specified - retrieves this chat only.
     name: microsoft-teams-chat-list
     outputs:
-    - contextPath: MicrosoftTeams.ChatList.id
+    - contextPath: MicrosoftTeams.ChatList.chatId
       description: The chat's unique identifier.
       type: String
     - contextPath: MicrosoftTeams.ChatList.topic
@@ -713,7 +713,7 @@ script:
       required: true
     description: Updates the chat name. It can only be set for group chats.
     name: microsoft-teams-chat-update
-  dockerimage: demisto/teams:1.0.0.47279
+  dockerimage: demisto/teams:1.0.0.48135
   feed: false
   isfetch: false
   longRunning: true

@@ -808,7 +808,7 @@ def get_chat_id_and_type(chat: str) -> Tuple[str, str]:
     :return: chat_id, chat_type
     """
     demisto.debug(f'Given chat: {chat}')
-    url: str = f"{GRAPH_BASE_URL}/v1.0/chats/"
+    url = f"{GRAPH_BASE_URL}/v1.0/chats/"
 
     # case1 - chat = chat_id
     if chat.endswith(GROUP_CHAT_ID_SUFFIX) or chat.endswith(ONEONONE_CHAT_ID_SUFFIX):
@@ -867,7 +867,7 @@ def add_user_to_channel(team_aad_id: str, channel_id: str, user_id: str, is_owne
     """
     Request for adding user to channel
     """
-    url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_aad_id}/channels/{channel_id}/members'
+    url = f'{GRAPH_BASE_URL}/v1.0/teams/{team_aad_id}/channels/{channel_id}/members'
     user_role = ["owner"] if is_owner else []
     request_json: dict = create_conversation_member(user_id, user_role)
     http_request('POST', url, json_=request_json)
@@ -1050,7 +1050,7 @@ def send_message_in_chat(content: str, message_type: str, chat_id: str, content_
     :param content_type: The content type: html/text
     :return: dict of the chatMessage object
     """
-    url: str = f'{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/messages'
+    url = f'{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/messages'
     request_json = {
         "body": {
             "content": content,
@@ -1069,7 +1069,7 @@ def chat_update_name(chat_id: str, topic: str):
     :param chat_id: The chat id
     :param topic: The new chat name
     """
-    url: str = f"{GRAPH_BASE_URL}/v1.0/chats/{chat_id}"
+    url = f"{GRAPH_BASE_URL}/v1.0/chats/{chat_id}"
     request_json = {'topic': topic}
     http_request('PATCH', url, json_=request_json)
 
@@ -1083,7 +1083,7 @@ def add_user_to_chat(chat_id: str, user_type: str, user_id: str, share_history: 
     :param share_history: whether to share history
     """
 
-    url: str = f"{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/members"
+    url = f"{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/members"
 
     request_json = {
         '@odata.type': '#microsoft.graph.aadUserConversationMember',
@@ -1095,7 +1095,7 @@ def add_user_to_chat(chat_id: str, user_type: str, user_id: str, share_history: 
     http_request('POST', url, json_=request_json)
 
 
-def pages_puller(response: Dict[str, Any], limit: int = 1) -> Tuple[list, str]:
+def pages_puller(response: Dict[str, Any], limit: int = 1) -> Tuple[List, Optional[str]]:
     """
     Retrieves a limited number of pages by repeatedly making requests to the API using the nextLink URL
     until it has reached the specified limit or there are no more pages to retrieve,
@@ -1105,7 +1105,7 @@ def pages_puller(response: Dict[str, Any], limit: int = 1) -> Tuple[list, str]:
     """
 
     response_data = response.get('value', [])
-    while next_link := response.get('@odata.nextLink') and len(response_data) < limit:
+    while (next_link := response.get('@odata.nextLink')) and len(response_data) < limit:
         demisto.debug(f"Using response {next_link=}")
         response = cast(Dict[str, Any], http_request('GET', next_link))
         response_data.extend(response.get('value', []))
@@ -1119,7 +1119,7 @@ def get_chats_list(odata_params: dict, chat_id: Optional[str] = None) -> Dict[st
     :param chat_id: when chat argument was provided - Retrieve a single chat
     :return: The response body - collection of chat objects.
     """
-    url: str = f"{GRAPH_BASE_URL}/v1.0/chats/"
+    url = f"{GRAPH_BASE_URL}/v1.0/chats/"
     if chat_id:
         url += chat_id
     return cast(Dict[str, Any], http_request('GET', url, params=odata_params))
@@ -1132,7 +1132,7 @@ def get_messages_list(chat_id: str, odata_params: dict) -> Dict[str, Any]:
     :param odata_params: The OData query parameters.
     :return: The response body - collection of chatMessage objects.
     """
-    url: str = f"{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/messages"
+    url = f"{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/messages"
     return cast(Dict[str, Any], http_request('GET', url, params=odata_params))
 
 
@@ -1143,7 +1143,7 @@ def get_chat_members(chat_id: str) -> List[Dict[str, Any]]:
     :return: List of chat members
     """
 
-    url: str = f"{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/members"
+    url = f"{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/members"
     response: dict = cast(Dict[Any, Any], http_request('GET', url))
     return response.get('value', [])
 
@@ -1153,7 +1153,7 @@ def get_signed_in_user() -> Dict[str, str]:
     Get the properties of the signed-in user
     :return: the properties of the signed-in user
     """
-    url: str = f"{GRAPH_BASE_URL}/v1.0/me"
+    url = f"{GRAPH_BASE_URL}/v1.0/me"
     return cast(Dict[str, str], http_request('GET', url))
 
 
@@ -1166,7 +1166,7 @@ def create_chat(chat_type: str, users: list, chat_name: str = "") -> dict:
     :return: The chat data
     """
     demisto.debug(f'create {chat_type} chat with users = {users}')
-    url: str = f'{GRAPH_BASE_URL}/v1.0/chats'
+    url = f'{GRAPH_BASE_URL}/v1.0/chats'
 
     # Add the caller as owner member
     caller_id: str = get_signed_in_user().get('id', '')
@@ -1277,9 +1277,10 @@ def chat_create_command():
     Note: Only one one-on-one chat can exist between two members.
     If a one-on-one chat already exists, this operation will return the existing chat and not create a new one.
     """
-    chat_type: str = demisto.args().get('chat_type', 'group')
-    chat_name: str = demisto.args().get('chat_name', '')
-    members: list = argToList(demisto.args().get('member', ''))
+    args = demisto.args()
+    chat_type: str = args.get('chat_type', 'group')
+    chat_name: str = args.get('chat_name', '')
+    members: list = argToList(args.get('member', ''))
 
     # get users ids and userTypes:
     users, invalid_members = [], []
@@ -1321,10 +1322,11 @@ def message_send_to_chat_command():
     """
     Send a new chatMessage in the specified chat.
     """
-    content: str = demisto.args().get('content', '')
-    content_type: str = demisto.args().get('content_type', 'text')
-    message_type: str = demisto.args().get('message_type', 'message')
-    chat: str = demisto.args().get('chat', '')
+    args = demisto.args()
+    content: str = args.get('content', '')
+    content_type: str = args.get('content_type', 'text')
+    message_type: str = args.get('message_type', 'message')
+    chat: str = args.get('chat', '')
     chat_id, _ = get_chat_id_and_type(chat)
 
     message_data: dict = send_message_in_chat(content, message_type, chat_id, content_type)
@@ -1377,12 +1379,13 @@ def chat_add_user_command():
     """
     Add a conversationMember to a chat.
     """
-    chat: str = demisto.args().get('chat', '')
+    args = demisto.args()
+    chat: str = args.get('chat', '')
     chat_id, chat_type = get_chat_id_and_type(chat)
     if chat_type != 'group':
         raise ValueError("Adding a member is allowed only on group chat.")
-    members: list = argToList(demisto.args().get('member', ''))
-    share_history = argToBoolean(demisto.args().get('share_history', True))
+    members: list = argToList(args.get('member', ''))
+    share_history = argToBoolean(args.get('share_history', True))
 
     invalid_members, hr_members = [], []
     for member in members:
@@ -1546,7 +1549,7 @@ def remove_user_from_channel(team_id: str, channel_id: str, membership_id: str):
     :param channel_id: The channel id
     :param membership_id: the user membership_id
     """
-    url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/channels/{channel_id}/members/{membership_id}'
+    url = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/channels/{channel_id}/members/{membership_id}'
     http_request('DELETE', url)
 
 
@@ -1559,10 +1562,12 @@ def get_user_membership_id(member: str, team_id: str, channel_id: str) -> str:
     :return: the user membership_id
     """
     channel_members: List[Dict[str, Any]] = get_channel_members(team_id, channel_id)
-    for user in channel_members:
-        if user.get('displayName') == member:
-            return user.get('id', '')
-    return ''
+    return next(
+        (
+            user.get('id', '') for user in channel_members if user.get('displayName') == member
+        ),
+        '',
+    )
 
 
 def user_remove_from_channel_command():
@@ -1864,19 +1869,7 @@ def send_message():
     channel_id: str = str()
     personal_conversation_id: str = str()
     if channel_name:
-        team_name: str = demisto.args().get('team', '') or demisto.params().get('team', '')
-        team_aad_id: str = get_team_aad_id(team_name)
-        investigation_id: str = str()
-        if message_type == MESSAGE_TYPES['mirror_entry']:
-            # Got an entry from the War Room to mirror to Teams
-            # Getting investigation ID in case channel name is custom and not the default
-            investigation: dict = demisto.investigation()
-            investigation_id = investigation.get('id', '')
-        channel_id = get_channel_id(channel_name, team_aad_id, investigation_id)
-        if get_channel_type(channel_id, team_aad_id) != 'standard':
-            raise ValueError('Posting a message or adaptive card to a private\shared channel is currently '
-                             'not supported.')
-
+        channel_id = get_channel_id_for_send_notification(channel_name, message_type)
     elif team_member:
         team_member_id: str = get_team_member_id(team_member, integration_context)
         personal_conversation_id = create_personal_conversation(integration_context, team_member_id)
@@ -1917,6 +1910,28 @@ def send_message():
 
     send_message_request(service_url, recipient, conversation)
     demisto.results('Message was sent successfully.')
+
+
+def get_channel_id_for_send_notification(channel_name: str, message_type: str):
+    """
+    Returns the channel ID to send the message to
+    :param channel_name: The name of the channel.
+    :param message_type: The type of message to be sent.
+    :return: the channel ID
+    """
+    team_name: str = demisto.args().get('team', '') or demisto.params().get('team', '')
+    team_aad_id: str = get_team_aad_id(team_name)
+    investigation_id: str = str()
+    if message_type == MESSAGE_TYPES['mirror_entry']:
+        # Got an entry from the War Room to mirror to Teams
+        # Getting investigation ID in case channel name is custom and not the default
+        investigation: dict = demisto.investigation()
+        investigation_id = investigation.get('id', '')
+    channel_id = get_channel_id(channel_name, team_aad_id, investigation_id)
+    if get_channel_type(channel_id, team_aad_id) != 'standard':
+        raise ValueError('Posting a message or adaptive card to a private\shared channel is currently '
+                         'not supported.')
+    return channel_id
 
 
 def mirror_investigation():
