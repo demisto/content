@@ -2780,7 +2780,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: AWS,GCP
+              simple: AWS,GCP,Azure
       - - operator: isNotEmpty
           left:
             value:
@@ -3017,6 +3017,6 @@ tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
 marketplaces:
-  - marketplacev2
+- marketplacev2
 contentitemexportablefields:
   contentitemfields: {}
