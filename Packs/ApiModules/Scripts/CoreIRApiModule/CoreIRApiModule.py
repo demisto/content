@@ -10,7 +10,7 @@ from typing import Tuple, Callable
 urllib3.disable_warnings()
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
-XSOAR_RESOLVED_STATUS = {
+XSOAR_RESOLVED_STATUS_TO_XDR = {
     'Other': 'resolved_other',
     'Duplicate': 'resolved_duplicate',
     'False Positive': 'resolved_false_positive',
@@ -1272,14 +1272,20 @@ def run_polling_command(client: CoreClient,
                         polling_value: List,
                         stop_polling: bool = False) -> CommandResults:
     """
-    args: demito args
-    cmd: the command to schedule by after the current command
-    command_function: the function which is runs the actual command
-    command_decision_field: the field in the response based on it what the command status and if the command occurred
-    results_function: the function which we are polling on and retrieves the status of the command_function
-    polling_field: the field which from the result of the results_function which we are interested in its value
-    polling_value: list of values of the polling_field we want to check
-    stop_polling: yes - polling_value is stopping, not - polling_value not stopping
+    Arguments:
+    args: args
+    cmd: the scheduled command's name (as appears in the yml file) to run in the following polling.
+    command_function: the pythonic function that executes the command.
+    command_decision_field: the field that is retrieved from the command_function's response that indicates
+    the command_function status.
+    results_function: the pythonic result function which we want to poll on.
+    polling_field: the field that is retrieved from the results_function's response and indicates the polling status.
+    polling_value: list of values of the polling_field we want to check. The list can contain values to stop or
+    continue polling on, not both.
+    stop_polling: True - polling_value stops the polling. False - polling_value does not stop the polling.
+
+    Return:
+    command_results(CommandResults)
     """
 
     ScheduledCommand.raise_error_if_not_supported()
@@ -2534,7 +2540,7 @@ def handle_outgoing_issue_closure(remote_args):
 
         if close_notes := update_args.get('closeNotes'):
             update_args['resolve_comment'] = close_notes
-        update_args['status'] = XSOAR_RESOLVED_STATUS.get(update_args.get('closeReason', 'Other'))
+        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason', 'Other'))
         demisto.debug(f"Closing Remote incident with status {update_args['status']}")
 
 
