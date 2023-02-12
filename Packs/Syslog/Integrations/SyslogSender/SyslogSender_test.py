@@ -178,18 +178,15 @@ def test_ip():
         'priority': 'LOG_DEBUG',
         'facility': 'LOG_SYSLOG'
     }
-    x = 'https://www.google.com/search?q=how+to+create+a+socket&rlz=1C5GCEM_enIL1018IL1018&oq=how+to+create+a+socket&aqs=chrome..69i57j0i512l6j69i64.6820j0j7&sourceid=chrome&ie=UTF-8'
-    size = len(x.encode('utf-8'))
-    if len(x.encode('utf-8')) >= 64: 
-        x = 'what'
-    s.connect(("www.python.org", 80))
+    address_after_encoding = params['address'].encode('utf-8')
+    ssl_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    ssl_sock.connect((address_after_encoding, 80))
 
     # Arrange
     manager = init_manager(params)
-    # urllib.parse.urlparse
-    assert manager.address == 'aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vdGVzdHMvc3RpbGxleGFtcGxlL3Rlc3R0aGlzZXhhcG1sZTEyMzQ1Njc4OQ=='
+    assert manager.address == 'aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vdGVzd' \
+                              'HMvc3RpbGxleGFtcGxlL3Rlc3R0aGlzZXhhcG1sZTEyMzQ1Njc4OQ=='
     assert manager.port == 514
     assert manager.protocol == 'tcp'
     assert manager.logging_level == 10
     assert manager.facility == 5
-    

@@ -34,11 +34,6 @@ configuration:
   required: false
   type: 12
   additionalinfo: Required for TLS
-- display: Private Key
-  additionalinfo: Required for TLS
-  name: private_key
-  required: false
-  type: 14
 - defaultvalue: LOG_USER
   display: Facility
   name: facility
