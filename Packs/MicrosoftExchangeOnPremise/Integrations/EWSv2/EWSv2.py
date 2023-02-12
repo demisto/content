@@ -693,21 +693,8 @@ class MarkAsJunk(EWSAccountService):
         return junk
 
 
-# def send_email_to_mailbox(
-#     account: Account,
-#     to: List[str],
-#     subject: str,
-#     body: str,
-#     bcc: List[str],
-#     cc: List[str],
-#     reply_to: List[str],
-#     html_body: Optional[str] = None,
-#     attachments: Optional[List[str]] = None,
-#     raw_message: Optional[str] = None,
-#     from_address: Optional[str] = None
-# ):      # pragma: no cover
 def send_email_to_mailbox(account, to, subject, body, bcc, cc, reply_to, html_body=None, attachments=None,
-                          raw_message=None, from_address=None):
+                          raw_message=None, from_address=None):     # pragma: no cover
     """
     Send an email to a mailbox.
 
@@ -1692,7 +1679,7 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
                                 headers=ITEMS_RESULTS_HEADERS if selected_all_fields else None)
 
 
-def get_out_of_office_state(target_mailbox=None):
+def get_out_of_office_state(target_mailbox=None):   # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     oof = account.oof_settings
     oof_dict = {
