@@ -10874,8 +10874,12 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     client = BaseClient(base_url=xsiam_url)
 
     # retry mechanism in case there is a rate limit (429) from xsiam.
-    for attempt_num in range(1, num_of_attempts + 1):
-        demisto.debug('Sending events into xsiam: attempt number {attempt_num}'.format(attempt_num=attempt_num))
+    status_code = None
+    attempt_num = 1
+
+    while status_code != 200 and attempt_num < num_of_attempts + 1:
+        demisto.debug('Sending events into xsiam, attempt number {attempt_num}'.format(attempt_num=attempt_num))
+        # in the last try we should raise an exception if any error occurred, including 429
         ok_codes = (200, 429) if attempt_num < num_of_attempts else ()
         response = client._http_request(
             method='POST',
@@ -10886,14 +10890,13 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
             ok_codes=ok_codes,
             resp_type='response'
         )
-        demisto.debug('received status code: {status_code}'.format(status_code=response.status_code))
-        if response.status_code == 200:
-            break
-        else:
-            time.sleep(1)  # pylint: disable=sleep-exists
+        status_code = response.status_code
+        demisto.debug('received status code: {status_code}'.format(status_code=status_code))
+        if status_code == 429:
+            time.sleep(1)
+        attempt_num += 1
 
     raw_response = response.json()
-
     if raw_response.get('error').lower() != 'false':
         raise DemistoException(header_msg + raw_response.get('error'))
 
