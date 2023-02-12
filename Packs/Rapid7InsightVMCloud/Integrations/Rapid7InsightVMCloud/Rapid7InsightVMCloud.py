@@ -160,15 +160,6 @@ def search_assets_command(client: Client, hostname: None, page: str, size: str) 
         "asset": f"{assets}"
 
     }
-
-    headers = [
-        "id",
-        "host_name",
-        "ip",
-        "os_vendor",
-        "total_vulnerabilities"
-    ]
-
     response = client.make_request(
         method=method,
         url_suffix=endpoint,
@@ -298,7 +289,6 @@ def start_scan_command(client: Client, asset_id: str, name: str) -> CommandResul
     )
     if response:
         scan_response = response.get("scans")
-        headers = ["id", "engine_id", "asset_ids", "name"]
         markdown = tableToMarkdown(
             'This is required Scan Result',
             scan_response
