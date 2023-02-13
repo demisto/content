@@ -126,7 +126,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-description: Use the Azure Sentinel integration to get and manage incidents and get related entity information for incidents.
+description: "Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR)."
 display: Microsoft Sentinel
 name: Azure Sentinel
 script:
@@ -1848,7 +1848,7 @@ script:
     - contextPath: AzureSentinel.ThreatIndicator.Types
       description: The threat types of the indicator.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.47103
+  dockerimage: demisto/crypto:1.0.0.47970
   feed: false
   isfetch: true
   longRunning: false
