@@ -163,7 +163,7 @@ class Client(CrowdStrikeClient):
                 new_last_marker_time = resources[-1].get('_marker')
             else:
                 new_last_marker_time = demisto.getIntegrationContext().get('last_marker_time')
-                last_marker_time_for_debug = new_last_marker_time or 'Not data yet'
+                last_marker_time_for_debug = new_last_marker_time or 'No data yet'
                 demisto.debug('There are no indicators, '
                               f'using last_marker_time={last_marker_time_for_debug} from Integration Context')
 
