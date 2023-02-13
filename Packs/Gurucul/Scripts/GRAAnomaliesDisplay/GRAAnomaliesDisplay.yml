@@ -15,6 +15,6 @@ timeout: 900ns
 runonce: false
 dockerimage: demisto/python3:3.10.10.47713
 runas: DBotWeakRole
-fromversion: 6.5.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
