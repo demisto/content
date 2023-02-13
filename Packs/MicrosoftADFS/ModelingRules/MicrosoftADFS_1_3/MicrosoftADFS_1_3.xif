@@ -1,6 +1,8 @@
 [MODEL: dataset = microsoft_windows_raw]
 // xml part
-alter audit_type = arrayindex(regextract(event_data , "<AuditType>([^<]+)"),0),
+alter userName = to_string(json_extract_scalar(user, "$.name")),
+    accountName = arrayindex(regextract(message ,"Account\sName\:\s+(\S+)"),0),
+    audit_type = arrayindex(regextract(event_data , "<AuditType>([^<]+)"),0),
     user_id = arrayindex(regextract(event_data ,"\<UserId\>([^\<]*)"),0),
     mfa_method = arrayindex(regextract(event_data ,"\<MfaMethod\>([^\<]*)"),0),
     device_id = arrayindex(regextract(event_data ,"\<DeviceId\>([^\<]*)"),0),
@@ -53,7 +55,7 @@ alter audit_type = arrayindex(regextract(event_data , "<AuditType>([^<]+)"),0),
     xdm.event.id = to_string(event_id),
     xdm.event.type = event_type_connection,
     xdm.session_context_id = to_string(record_id),
-    xdm.source.user.username = to_string(json_extract_scalar(user, "$.name")),
+    xdm.source.user.username = coalesce(userName ,accountName),
     xdm.source.host.hostname = host_name,
     xdm.alert.severity = coalesce(opcode, log_level),
     xdm.event.outcome = event_result;

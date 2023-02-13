@@ -1,6 +1,7 @@
 [MODEL: dataset=alibaba_action_trail_raw]
 filter
     event_eventtype in("ApiCall","ConsoleOperation","AliyunServiceEvent","PasswordReset")
+| alter userType = arraycreate( coalesce(event_useridentity_type,""))
 | alter
     xdm.event.type = event_eventtype,
     xdm.target.cloud.region = event_acsregion,
@@ -9,7 +10,7 @@ filter
     xdm.target.resource.name = event_resourcename,
     xdm.target.resource.type = event_resourcetype,
     xdm.source.ipv4 = event_sourceipaddress,
-    xdm.source.user.groups = arraycreate( coalesce(event_useridentity_type,"")),
+    xdm.source.user.user_type = if(userType in("root-account","cloudsso-user","saml-user","alibaba-cloud-account"),XDM_CONST.USER_TYPE_REGULAR, userType in("ram-user","assumed-role"),XDM_CONST.USER_TYPE_SERVICE_ACCOUNT ,to_string(userType)),
     xdm.source.user.identifier = event_useridentity_principalid,
     xdm.source.user.username = event_useridentity_username,
     xdm.event.outcome=event_errormessage,
@@ -18,12 +19,13 @@ filter
 
 filter
     event_eventtype in("ConsoleSignin","ConsoleSignout")
+| alter userType = arraycreate( coalesce(event_useridentity_type,""))
 | alter
     xdm.source.location.region = event_acsregion,
     xdm.event.id = event_eventid,
     xdm.event.operation = event_eventname,
     xdm.source.ipv4 = event_sourceipaddress,
-    xdm.source.user.groups = arraycreate( coalesce(event_useridentity_type,"")),
+    xdm.source.user.user_type = if(userType in("root-account","cloudsso-user","saml-user","alibaba-cloud-account"),XDM_CONST.USER_TYPE_REGULAR, userType in("ram-user","assumed-role"),XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,to_string(userType)),
     xdm.source.user.identifier = event_useridentity_principalid,
     xdm.source.user.username = event_useridentity_username,
     xdm.session_context_id=event_useridentity_accesskeyid,
