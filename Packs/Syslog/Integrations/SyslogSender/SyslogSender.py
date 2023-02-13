@@ -69,7 +69,7 @@ PROTOCOLS = {TCP, UDP, TLS}
 
 
 class SyslogHandlerTLS(logging.Handler):
-    def __init__(self, address: str, port: int, log_level: int, facility: int, cert_path: str):
+    def __init__(self, address: str, port: int, log_level: int, facility: int, cert_path: str, if_self_sign_cert: bool):
         """
         Initialize a handler.
         """
@@ -84,9 +84,10 @@ class SyslogHandlerTLS(logging.Handler):
         # Wrap the socket with SSL
         ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
         ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
-        # In order to allow self signed certificate, add the following lines:
-        ssl_context.check_hostname = False
-        ssl_context.verify_mode = ssl.CERT_NONE
+        # In order to allow self signed certificate:
+        if if_self_sign_cert:
+            ssl_context.check_hostname = False
+            ssl_context.verify_mode = ssl.CERT_NONE
 
         ssl_context.load_verify_locations(self.certfile)
         ssl_sock = ssl_context.wrap_socket(ssl_sock, server_hostname=self.address)
@@ -131,7 +132,7 @@ class SyslogHandlerTLS(logging.Handler):
 
 
 class SyslogManager:
-    def __init__(self, address: str, port: int, protocol: str, logging_level: int, facility: int, cert_path: str | None):
+    def __init__(self, address: str, port: int, protocol: str, logging_level: int, facility: int, cert_path: str | None, self_signed_certificate: bool):
         """
         Class for managing instances of a syslog logger.
         :param address: The IP address of the syslog server.
@@ -145,6 +146,7 @@ class SyslogManager:
         self.logging_level = logging_level
         self.facility = facility
         self.syslog_cert_path = cert_path
+        self.self_signed_cert = self_signed_certificate
 
     @contextmanager  # type: ignore[misc, arg-type]
     def get_logger(self) -> Generator:
@@ -153,7 +155,7 @@ class SyslogManager:
         :return: syslog logger
         """
         if self.protocol == TLS and self.syslog_cert_path:
-            handler = self.init_handler_tls(self.syslog_cert_path)
+            handler = self.init_handler_tls(self.syslog_cert_path, self.self_signed_cert)
             demisto.debug('get handler tls')
         else:
             handler = self._get_handler()
@@ -172,12 +174,13 @@ class SyslogManager:
                                     socktype=sock_kind,
                                     timeout=10)
 
-    def init_handler_tls(self, certfile: str):
+    def init_handler_tls(self, certfile: str, self_signed_cert: bool):
         return SyslogHandlerTLS(address=self.address,
                                 port=self.port,
                                 cert_path=certfile,
                                 facility=self.facility,
-                                log_level=self.logging_level)
+                                log_level=self.logging_level,
+                                if_self_sign_cert=self.self_signed_cert)
 
     def _init_logger(self, handler: Rfc5424SysLogHandler | SyslogHandlerTLS) -> Logger:
         """
@@ -225,6 +228,7 @@ def init_manager(params: dict) -> SyslogManager:
     certificate_path: Optional[str] = None
     max_port = 65535
     default_port = 6514 if protocol == 'tls' else 514
+    self_signed_certificate = params.get('self_signed_certificate', False)
     try:
         port = int(params.get('port', default_port))
     except (ValueError, TypeError):
@@ -237,7 +241,7 @@ def init_manager(params: dict) -> SyslogManager:
         raise DemistoException('A certificate must be provided in TLS protocol.')
     if certificate and protocol == 'tls':
         certificate_path = prepare_certificate_file(certificate)
-    return SyslogManager(address, port, protocol, logging_level, facility, certificate_path)
+    return SyslogManager(address, port, protocol, logging_level, facility, certificate_path, self_signed_certificate)
 
 
 def send_log(manager: SyslogManager, message: str, log_level: str):

@@ -33,7 +33,12 @@ configuration:
   name: certificate
   required: false
   type: 12
-  additionalinfo: Required for TLS
+  additionalinfo: Required for TLS.
+- display: self signed certificate
+  name: self_signed_certificate
+  required: false
+  type: 8
+  additionalinfo: Required for TLS. Check if the certificate is self signed.
 - defaultvalue: LOG_USER
   display: Facility
   name: facility
