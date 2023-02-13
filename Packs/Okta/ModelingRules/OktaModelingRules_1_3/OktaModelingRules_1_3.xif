@@ -24,7 +24,8 @@ filter
     xdm.source.user_agent = json_extract_scalar(client, "$.userAgent.rawUserAgent"),
     xdm.source.host.os = json_extract_scalar(client, "$.userAgent.os"),
     xdm.source.process.name = json_extract_scalar(client, "$.userAgent.browser"),
-    xdm.event.id = uuid
+    xdm.event.id = uuid,
+    xdm.source.asn.as_name =  json_extract_scalar(securityContext,"$.asOrg")
     //First and last name extraction
     | alter displayName = json_extract_scalar(actor, "$.displayName")
     | alter
@@ -57,4 +58,5 @@ filter
     xdm.source.user_agent = json_extract_scalar(client, "$.userAgent.rawUserAgent"),
     xdm.source.host.os = json_extract_scalar(client, "$.userAgent.os"),
     xdm.source.process.name = json_extract_scalar(client, "$.userAgent.browser"),
-    xdm.event.id = uuid;
+    xdm.event.id = uuid,
+    xdm.source.asn.as_name =  json_extract_scalar(securityContext,"$.asOrg");
