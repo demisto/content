@@ -2197,7 +2197,7 @@ tasks:
     task:
       id: 753cc713-56c2-45ad-8dd2-5a97b031b38b
       version: -1
-      name: Delete contect
+      name: Delete context
       description: |-
         Delete field from context.
 
