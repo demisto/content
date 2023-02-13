@@ -1,16 +1,13 @@
 id: Mirror SentinelOne Ticket
-version: 42
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Mirror SentinelOne Ticket
 description: |-
-  Mirror SentinelOne Ticket is designed to serve as a sub-playbook, which enables ticket mirroring with SentinelOne.
-  It enables you to manage SentinelOne tickets in Cortex xSOAR while data is continuously synced between SentinelOne and Cortex xSOAR, including SentinelOne schema, fields, comments, work notes, and attachments.
+  Mirror SentinelOne Ticket is designed to serve as a playbook, which enables ticket mirroring with SentinelOne.
+  It enables you to manage SentinelOne tickets in Cortex xSOAR while data is continuously synced between SentinelOne and Cortex xSOAR, including SentinelOne schema, fields.
 
-  To enable OOTB mirroring, use the SentinelOne Create ticket  - common mappers for incoming and outgoing mirroring.
+  To enable mirroring, use the SentinelOne Incident  - common mappers for incoming and outgoing mirroring by enabling mirroring direction.
 
-  FieldPolling - You can the FieldPolling value to true if you only want to be informed when the ticket is resolved or closed. If FieldPolling is set to true, the FieldPolling Playbook will poll for the state(SentinelOne State field) of the SentinelOne ticket until it marks as either resolved or closed.
-
-  In Addition to the playbook, we recommend that you use the included layout for SentinelOne Ticket, which helps visualize SentinelOne ticket information in Cortex xSOAR.
+  In Addition to the playbook, we recommend that you use the included layout for SentinelOne Incident, which helps visualize SentinelOne incident information in Cortex xSOAR.
   You can add the new layout as a tab to existing layouts using the Edit Layout page.
 starttaskid: "0"
 tasks:
@@ -22,6 +19,7 @@ tasks:
       id: f6578767-2459-4d8b-8101-a1e1e1011e76
       version: -1
       name: ""
+      description: Start.
       iscommand: false
       brand: ""
     nexttasks:
@@ -96,6 +94,7 @@ tasks:
       id: 4cf02609-998b-45a4-874e-5b52d440c693
       version: -1
       name: Done
+      description: end.
       type: title
       iscommand: false
       brand: ""
@@ -146,3 +145,6 @@ inputs:
     Out\n3. Both"
   playbookInputQuery: null
 outputs: []
+tests:
+ -  No tests
+fromversion: 6.0.0

@@ -3275,7 +3275,7 @@ def run_remote_script_command(client: Client, args: dict) -> CommandResults:
         raw_response=run_remote_script)
 
 
-def get_mappping_fields_command():
+def get_mapping_fields_command():
     """
     Returns the list of fields to map in outgoing mirroring, for incidents.
     """
@@ -3618,6 +3618,10 @@ def main():
             "sentinelone-fetch-threat-file": fetch_threat_file,
             "sentinelone-get-installed-applications": get_installed_applications,
             "sentinelone-initiate-endpoint-scan": initiate_endpoint_scan,
+            "get-remote-data": get_remote_data_command,
+            "get-modified-remote-data": get_modified_remote_data_command,
+            "update-remote-system": update_remote_system_command,
+            "get-mapping-fields": get_mapping_fields_command,
         },
         "2.0": {
             "sentinelone-mark-as-threat": mark_as_threat_command,
@@ -3673,17 +3677,6 @@ def main():
             fetch_incidents(
                 client, fetch_limit, first_fetch_time, fetch_threat_rank, fetch_site_ids
             )
-        # for incoming mirroring (S1 - XSOAR)
-        elif command == "get-remote-data":
-            return_results(get_remote_data_command(client, demisto.args()))
-        elif command == "get-modified-remote-data":
-            return_results(get_modified_remote_data_command(client, demisto.args()))
-
-        # for outcoming mirroring (XSOAR - S1)
-        elif command == "update-remote-system":
-            return_results(update_remote_system_command(client, demisto.args()))
-        elif command == "get-mapping-fields":
-            return_results(get_mappping_fields_command())
         else:
             if command in commands["common"]:
                 return_results(commands["common"][command](client, demisto.args()))

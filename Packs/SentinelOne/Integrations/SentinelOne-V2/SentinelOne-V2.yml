@@ -2181,16 +2181,16 @@ script:
       isArray: true
     outputs:
     - contextPath: SentinelOne.RunRemoteScript.pendingExecutionId
-      description: ID of created pending execution, present only if pending flag is true
+      description: ID of created pending execution, present only if pending flag is true.
       type: string
     - contextPath: SentinelOne.RunRemoteScript.pending
-      description: Flag indicating if requested script execution requires approval and is created as pending execution
+      description: Flag indicating if requested script execution requires approval and is created as pending execution.
       type: boolean
     - contextPath: SentinelOne.RunRemoteScript.affected
-      description: Number of entities affected by the requested operation
+      description: Number of entities affected by the requested operation.
       type: number
     - contextPath: SentinelOne.RunRemoteScript.parentTaskId
-      description: The parent task id of the script execution task, null in case of pending execution
+      description: The parent task id of the script execution task, null in case of pending execution.
       type: string
     description: Run a remote script that was uploaded to the SentinelOne Script Library.
     name: sentinelone-run-remote-script
@@ -2216,7 +2216,7 @@ script:
       command is used as part of a Mirroring feature, which is available from version
       6.1.
     name: get-modified-remote-data
-  dockerimage: demisto/python3:3.10.9.46807
+  dockerimage: demisto/python3:3.10.10.47713
   isfetch: true
   ismappable: true
   isremotesyncin: true
