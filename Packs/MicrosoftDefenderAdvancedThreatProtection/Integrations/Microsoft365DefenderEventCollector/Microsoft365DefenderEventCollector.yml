@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Microsoft 365 Defender Event Collector
   version: -1
@@ -13,26 +16,32 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - additionalinfo: The Client (Application) ID to use to connect.
   display: Client (Application) ID
   name: client_id
   required: true
   type: 0
+  section: Connect
 - displaypassword: Client Secret
   name: credentials
   required: true
   type: 9
   hiddenusername: true
+  section: Connect
 - display: Tenant ID
   name: tenant_id
   required: true
   type: 0
+  section: Connect
+  advanced: true
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   hidden: false
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - defaultvalue: '30'
   additionalinfo: The time limit in seconds for fetch alerts to run. Leave this empty to cancel the timeout limit.
   display: Fetch alerts timeout
@@ -40,6 +49,8 @@ configuration:
   name: fetch_timeout
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - defaultvalue: '1000'
   display: Number of alerts for each fetch.
   hidden: false
@@ -47,20 +58,27 @@ configuration:
   required: false
   type: 0
   additionalinfo: Due to API limitations, the maximum is 10,000.
+  section: Collect
 - display: Fetch events
   name: isFetchEvents
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Verify SSL Certificate
   hidden: false
   name: verify
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Microsoft 365 Defender Event Collector integration.
 display: Microsoft Defender for Endpoint Event Collector
 name: Microsoft 365 Defender Event Collector
@@ -100,7 +118,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/pydantic-jwt3:1.0.0.33550
+  dockerimage: demisto/pydantic-jwt3:1.0.0.43088
 fromversion: 6.8.0
 marketplaces:
 - marketplacev2

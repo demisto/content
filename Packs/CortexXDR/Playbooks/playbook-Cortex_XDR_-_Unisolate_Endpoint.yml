@@ -292,3 +292,4 @@ tests:
 - Test XDR Playbook
 - Cortex XDR - IOC - Test
 fromversion: 5.5.0
+toversion: 6.1.9

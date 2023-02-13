@@ -21,6 +21,7 @@ DBOT_SCORE_DICT: Dict[str, int] = {'malicious': Common.DBotScore.BAD,
                                    'suspicious': Common.DBotScore.SUSPICIOUS,
                                    'no specific threat': Common.DBotScore.GOOD}
 OUTPUTS_PREFIX = 'csfalconx.resource'
+ONE_MINUTE = 60
 
 
 def convert_environment_id_string_to_int(
@@ -58,7 +59,7 @@ class Client:
         self._username = username
         self._password = password
         self._session = requests.Session()
-        self._token = self._generate_token()
+        self._token = self._get_access_token()
         self._headers = {'Authorization': 'bearer ' + self._token}
         self.reliability = reliability
         if not proxy:
@@ -213,10 +214,35 @@ class Client:
                 .format(err_type, exception.errno, exception.strerror)
             raise DemistoException(err_msg, exception)
 
-    def _generate_token(self) -> str:
+    def _get_access_token(self) -> str:
         """Generate an Access token using the user name and password
         :return: valid token
         """
+        integration_context = get_integration_context()
+        access_token = integration_context.get('access_token')
+        token_initiate_time = integration_context.get('token_initiate_time')
+        token_expiration_seconds = integration_context.get('token_expiration_seconds')
+
+        if access_token and not is_token_expired(
+            token_initiate_time=float(token_initiate_time),
+            token_expiration_seconds=float(token_expiration_seconds)
+        ):
+            demisto.info('access token from integration context is still valid')
+            return access_token
+
+        # there's no token or it is expired
+        access_token, token_expiration_seconds = self._get_token_request()
+        integration_context = {
+            'access_token': access_token,
+            'token_expiration_seconds': token_expiration_seconds,
+            'token_initiate_time': time.time()
+        }
+        demisto.info('Updating new access token to the integration context...')
+        set_integration_context(context=integration_context)
+
+        return access_token
+
+    def _get_token_request(self):
         body = {
             'client_id': self._username,
             'client_secret': self._password
@@ -227,8 +253,8 @@ class Client:
         headers = {
             'Authorization': f'Basic {base64.b64encode(byte_creds).decode()}'
         }
-        token_res = self._http_request('POST', '/oauth2/token', data=body, headers=headers)
-        return token_res.get('access_token')
+        token_response = self._http_request('POST', '/oauth2/token', data=body, headers=headers)
+        return token_response.get('access_token'), token_response.get('expires_in')
 
     def upload_file(
             self,
@@ -453,6 +479,24 @@ class Client:
         return self._http_request('Get', '/falconx/queries/submissions/v1', params=params)
 
 
+def is_token_expired(token_initiate_time: float, token_expiration_seconds: float) -> bool:
+    """
+    Check whether a token has expired. a token considered expired if it has been reached to its expiration date in
+    seconds minus a minute to be on the safe side.
+
+    for example ---> time.time() = 300, token_initiate_time = 240, token_expiration_seconds = 120
+    300.0001 - 240 < 120 - 60
+
+    Args:
+        token_initiate_time (float): the time in which the token was initiated in seconds.
+        token_expiration_seconds (float): the time in which the token should be expired in seconds.
+
+    Returns:
+        bool: True if token has expired, False if not.
+    """
+    return time.time() - token_initiate_time >= token_expiration_seconds - ONE_MINUTE
+
+
 def filter_dictionary(dictionary: dict, fields_to_keep: Optional[tuple], sort_by_field_list: bool = False) -> dict:
     """
     Filters a dictionary and keeps only the keys that appears in the given list
@@ -541,7 +585,7 @@ def parse_file_results(report_to_results: Dict[str, RawCommandResults]) -> List[
                 continue
 
             result.indicator = max_indicators.get(sha256)
-            readable_output = tableToMarkdown("CrowdStrike Falcon X response:", result.output)
+            readable_output = tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output)
             added_hashes.add(sha256)
 
         else:  # no output for this report_id
@@ -796,7 +840,7 @@ def upload_file_command(  # type: ignore[return]
             outputs_key_field='sha256',
             outputs_prefix=OUTPUTS_PREFIX,
             outputs=result.output,
-            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+            readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output),
             raw_response=response,
         )
 
@@ -847,7 +891,7 @@ def send_uploaded_file_to_sandbox_analysis_command(
         outputs_key_field='submitted_id',
         outputs_prefix=OUTPUTS_PREFIX,
         outputs=result.output,
-        readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+        readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output),
         raw_response=result.response,
         indicator=result.indicator
     )
@@ -892,7 +936,7 @@ def send_url_to_sandbox_analysis_command(
         outputs_key_field='submitted_id',
         outputs_prefix=OUTPUTS_PREFIX,
         outputs=result.output,
-        readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+        readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output),
         raw_response=response,
         indicator=result.indicator)
 
@@ -949,10 +993,10 @@ def get_full_report_command(
     for result in results:
         if result.output:
             if human_readable_values := filter_dictionary(result.output, hr_fields, sort_by_field_list=True):
-                readable_output = tableToMarkdown("CrowdStrike Falcon X response:",
+                readable_output = tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:",
                                                   t=human_readable_values, headers=hr_fields)
             else:
-                readable_output = tableToMarkdown("CrowdStrike Falcon X response:", result.output)
+                readable_output = tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output)
         else:
             readable_output = 'There are no results yet for this sample, its analysis might not have been completed. ' \
                               'Please wait to download the report.\n' \
@@ -1034,7 +1078,7 @@ def get_report_summary_command(
                 outputs_key_field='id',
                 outputs_prefix=OUTPUTS_PREFIX,
                 outputs=result.output,
-                readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output)
+                readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output)
                 if result.output else no_outputs_msg,
                 raw_response=result.response,
                 indicator=result.indicator
@@ -1065,7 +1109,7 @@ def get_analysis_status_command(
             CommandResults(outputs_key_field='id',
                            outputs_prefix=OUTPUTS_PREFIX,
                            outputs=result.output,
-                           readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+                           readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output),
                            raw_response=result.response,
                            # not returning indicator
                            )
@@ -1089,14 +1133,15 @@ def download_ioc_command(
     response: Optional[dict] = None
     try:
         response = client.download_ioc(id, name, accept_encoding)
-        if response.get('File'):  # In case the returned response is a file, output the file to the war room.
+        # In case the returned response is a file, output the file to the war room.
+        if isinstance(response, dict) and response.get('File'):
             return response
         else:
             return CommandResults(
                 outputs_prefix=OUTPUTS_PREFIX,
                 outputs_key_field='ioc',
                 outputs=response,
-                readable_output=tableToMarkdown("CrowdStrike Falcon X response:", response),
+                readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", response),
                 raw_response=response
             )
     except Exception as e:
@@ -1120,7 +1165,7 @@ def check_quota_status_command(
         CommandResults(
             outputs_prefix=OUTPUTS_PREFIX,
             outputs_key_field='id',
-            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+            readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output),
             raw_response=response,
             outputs=result.output
         )
@@ -1167,7 +1212,7 @@ def find_sandbox_reports_command(
             'FindReport': found_reports,
         }
 
-        readable_output = tableToMarkdown("CrowdStrike Falcon X response:", {'resource': all_report_ids}) \
+        readable_output = tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", {'resource': all_report_ids}) \
             if all_report_ids else f'No reports found for hashes {hashes}.'
         return CommandResults(
             outputs_key_field='id',
@@ -1187,7 +1232,7 @@ def find_sandbox_reports_command(
             outputs_key_field='id',
             outputs_prefix=OUTPUTS_PREFIX,
             outputs=result.output,
-            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+            readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output),
             raw_response=result.response,
         )
 
@@ -1214,7 +1259,7 @@ def find_submission_id_command(
         outputs_key_field='id',
         outputs_prefix=OUTPUTS_PREFIX,
         outputs=result.output,
-        readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+        readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output),
         raw_response=result.response,
     )
 

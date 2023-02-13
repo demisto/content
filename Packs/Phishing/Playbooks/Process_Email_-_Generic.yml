@@ -1,8 +1,7 @@
 id: process_email_-_generic
 version: -1
 name: Process Email - Generic
-description: Add email details to the relevant context entities and handle the case
-  where original emails are attached.
+description: Deprecated. Use Process Email - Generic v2 instead.
 starttaskid: "0"
 tasks:
   "0":
@@ -38,11 +37,7 @@ tasks:
       id: 161bad06-c10f-4c3b-8599-1743e279f703
       version: -1
       name: Do we have original emails attached?
-      description: Identify whether the incident includes an email message attached
-        as an eml or msg file and return the answer to playbook. Also saves the identified
-        entry ID to context for use for later. Commonly used in automated playbooks
-        that handle phishing reports sent to a special phishing mailbox set up by
-        the security team.
+      description: Identify whether the incident includes an email message attached as an eml or msg file and return the answer to playbook. Also saves the identified entry ID to context for use for later. Commonly used in automated playbooks that handle phishing reports sent to a special phishing mailbox set up by the security team.
       scriptName: IdentifyAttachedEmail
       type: condition
       iscommand: false
@@ -77,8 +72,7 @@ tasks:
       id: f1c1a160-c3ff-482b-88b9-d7036e969bc6
       version: -1
       name: Add original email details to context
-      description: Sets the details of the email that was forwarded under the Email
-        context key.
+      description: Sets the details of the email that was forwarded under the Email context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -91,9 +85,7 @@ tasks:
       key:
         simple: Email
       value:
-        simple: '${inputs={To: val[''Email''], CC: val[''Email/cc''], From: val[''Email/from''],
-          Subject: val[''Email/subject''], Text: val[''Email/text''], HTML: val[''Email/html''],
-          Headers: val[''Email/headers''], Format: val[''Email/format'']}}'
+        simple: '${inputs={To: val[''Email''], CC: val[''Email/cc''], From: val[''Email/from''], Subject: val[''Email/subject''], Text: val[''Email/text''], HTML: val[''Email/html''], Headers: val[''Email/headers''], Format: val[''Email/format'']}}'
     reputationcalc: 2
     separatecontext: false
     view: |-
@@ -114,9 +106,7 @@ tasks:
       id: d0f5ab21-0c90-46fd-89e7-d1c2a7aa32d1
       version: -1
       name: Extract email artifacts and attachments
-      description: Parses an email from an EML or MSG file and populates all relevant
-        context data to investigate the email. Also extracts indicators from the email
-        messages.
+      description: Parses an email from an EML or MSG file and populates all relevant context data to investigate the email. Also extracts indicators from the email messages.
       scriptName: ParseEmailFiles
       type: regular
       iscommand: false
@@ -151,8 +141,7 @@ tasks:
       id: 6340d4ba-b3c6-403e-80de-10f3c5ccbe05
       version: -1
       name: Can an image of the email be rendered?
-      description: Checks whether the email is HTML-formatted, and whether the Rasterize
-        integration is enabled.
+      description: Checks whether the email is HTML-formatted, and whether the Rasterize integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -416,8 +405,7 @@ tasks:
       id: d772520f-9b09-4a4b-8f8f-4f43e5402473
       version: -1
       name: Display email information in layout
-      description: Updates Cortex XSOAR incident fields using data from the email
-        object.
+      description: Updates Cortex XSOAR incident fields using data from the email object.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -426,31 +414,6 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      1longtexttest: {}
-      aaaa: {}
-      accountgroups: {}
-      accountid: {}
-      accountinformationbreached: {}
-      accountname: {}
-      activedirectoryaccountstatus: {}
-      activedirectorydisplayname: {}
-      activedirectorypasswordstatus: {}
-      addLabels: {}
-      adgroupname: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      agentid: {}
-      alertlevel: {}
-      amarkdownsection: {}
-      anothernumberpleasejusttomakesure: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      arcsightcaseid: {}
-      assetid: {}
-      associatedmaliciousdomains: {}
-      attach: {}
-      attachamenthash: {}
       attachmentcount:
         complex:
           root: Email
@@ -484,127 +447,8 @@ tasks:
         complex:
           root: Email
           accessor: Attachment.Type
-      attackerhostisolated: {}
-      attackeripblocked: {}
-      attackerusername: {}
-      awsinstancename: {}
-      backupowner: {}
-      bbb: {}
-      blah: {}
-      blockedaction: {}
-      bool1: {}
-      bool2: {}
-      booleansummary: {}
-      booleantest: {}
-      boolfield: {}
-      booltest: {}
-      bpareport: {}
-      breachconfirmation: {}
-      bugtraq: {}
-      casenumber: {}
-      ccc: {}
-      ccipaddress: {}
-      city: {}
-      clarotyalertresolved: {}
-      clarotyalerttype: {}
-      clarotycategory: {}
-      clarotynetworkid: {}
-      clarotyrelatedassets: {}
-      clarotyresourceid: {}
-      clarotysiteid: {}
-      cleanname: {}
-      closeNotes: {}
-      closeReason: {}
-      code42alerttype: {}
-      code42fileevents: {}
-      commandline: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      companypropertystatus: {}
-      compliance: {}
-      constvalue: {}
-      contactaddress: {}
-      contactemailaddress: {}
-      contactname: {}
-      contacttelephonenumber: {}
-      coordinates: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      customfield: {}
-      cve: {}
-      cvss: {}
-      cymulateimmediatethreatsattackid: {}
-      cymulateimmediatethreatsfiletype: {}
-      cymulateimmediatethreatsid: {}
-      cymulateimmediatethreatsmitigations: {}
-      cymulateimmediatethreatsmodule: {}
-      cymulateimmediatethreatspayloadname: {}
-      cymulateimmediatethreatsstatus: {}
-      cymulateimmediatethreatsvector: {}
-      dataencryptionstatus: {}
-      date2: {}
-      datepicker: {}
-      datetimeofthebreach: {}
-      daysbetweenreportcreation: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
       deleteEmptyField:
         simple: "True"
-      department: {}
-      departmentadmin: {}
-      dest: {}
-      desthostname: {}
-      destinationip: {}
-      destinationports: {}
-      destntdomain: {}
-      destos: {}
-      details: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionticketed: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      devicegsuiteaccountstatus: {}
-      devicename: {}
-      digitalguardianactivity: {}
-      digitalguardianalarmname: {}
-      digitalguardianarcuid: {}
-      digitalguardianattachmentfilename: {}
-      digitalguardianclassification: {}
-      digitalguardiancommandline: {}
-      digitalguardiancomputername: {}
-      digitalguardiandestinationaddress: {}
-      digitalguardiandestinationdnsdomain: {}
-      digitalguardianemailrecipient: {}
-      digitalguardianemailsender: {}
-      digitalguardianemailsubject: {}
-      digitalguardianfilename: {}
-      digitalguardianparentprocessname: {}
-      digitalguardianpolicy: {}
-      digitalguardianprocessname: {}
-      digitalguardianremoteport: {}
-      digitalguardiansensitivity: {}
-      digitalguardiansourceaddress: {}
-      digitalguardiansourceip: {}
-      digitalguardianthreattype: {}
-      digitalguardianusername: {}
-      dpoemailaddress: {}
-      dponotification: {}
-      dstip: {}
-      duoaccountstatus: {}
-      duration: {}
-      email: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailautoreply: {}
       emailbcc:
         complex:
           root: Email
@@ -628,7 +472,6 @@ tasks:
           accessor: HTML
           transformers:
           - operator: Stringify
-      emailbodyhtmlraw: {}
       emailcc:
         complex:
           root: Email
@@ -636,7 +479,6 @@ tasks:
           transformers:
           - operator: uniq
           - operator: Stringify
-      emailclassification: {}
       emailclientname:
         complex:
           root: Email
@@ -648,9 +490,6 @@ tasks:
           transformers:
           - operator: uniq
           - operator: Stringify
-      emailfromdisplayname: {}
-      emailheaders: {}
-      emailheaders2: {}
       emailhtml:
         complex:
           root: Email
@@ -675,7 +514,6 @@ tasks:
           accessor: HeadersMap.Message-ID
           transformers:
           - operator: uniq
-      emailreceived: {}
       emailreplyto:
         complex:
           root: Email
@@ -688,7 +526,6 @@ tasks:
           accessor: HeadersMap.Return-Path
           transformers:
           - operator: uniq
-      emailsenderdomain: {}
       emailsenderip:
         complex:
           root: Email
@@ -714,7 +551,6 @@ tasks:
           transformers:
           - operator: uniq
           - operator: Stringify
-      emailsubjectlanguage: {}
       emailto:
         complex:
           root: Email
@@ -736,363 +572,6 @@ tasks:
       emailurlclicked:
         complex:
           root: EmailUrlClicked
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      enisacategory: {}
-      escalationdate: {}
-      eventid: {}
-      exactlywhathappenedandatwhattimes: {}
-      exfiltratedfiles: {}
-      expanseexposuretype: {}
-      expanserawjsonevent: {}
-      expanseseverity: {}
-      extrahopapplianceid: {}
-      extrahophostname: {}
-      falses: {}
-      fetchid: {}
-      fetchtype: {}
-      field1: {}
-      field2: {}
-      field3: {}
-      field4: {}
-      filehash: {}
-      filehashblocked: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      financialinformationbreached: {}
-      firstseen: {}
-      fwlogs: {}
-      gatenumber: {}
-      globaldirectoryvisibility: {}
-      googleaccountstatus: {}
-      googleadminrolesstatus: {}
-      googledisplayname: {}
-      googledrivestatus: {}
-      googlemailstatus: {}
-      googlepasswordstatus: {}
-      grid: {}
-      hash: {}
-      healthinsurancebreached: {}
-      helloworldid: {}
-      helloworldstatus: {}
-      helloworldtype: {}
-      hjhj: {}
-      host: {}
-      hostname: {}
-      howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
-      howwastheincidentcontainedanderadicated: {}
-      howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
-      htmlimage: {}
-      htmlrenderedimage: {}
-      htmltypefield: {}
-      id: {}
-      illusionblackattackerid: {}
-      illusionblackattacktype: {}
-      illusionblackdecoyid: {}
-      illusionblackevents: {}
-      illusionblackthreatparse: {}
-      illusivenetworkshasforensics: {}
-      illusivenetworkshostname: {}
-      illusivenetworksid: {}
-      illusivenetworkslastseenuser: {}
-      illusivenetworkssourceoperatingsystem: {}
-      illusivenetworksstepstocrownjewel: {}
-      illusivenetworksstepstodomainadmin: {}
-      important: {}
-      importantfield: {}
-      indenideviceid: {}
-      indeniissueid: {}
-      individualsnotification: {}
-      infectedhost: {}
-      infectedhostnames: {}
-      infectedhosts: {}
-      intelblockcomment: {}
-      intelblockurl: {}
-      internalemail: {}
-      internalusage: {}
-      investigationstage: {}
-      isolated: {}
-      isthedatasubjecttodpia: {}
-      itaytestfield: {}
-      jiraticketid: {}
-      killchain: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastseen: {}
-      likelyimpact: {}
-      lob: {}
-      loginattemptcount: {}
-      logzioalerteventid: {}
-      logzioalertid: {}
-      logzioalertsummary: {}
-      logziotags: {}
-      longtextone: {}
-      longtexttoo: {}
-      macaddress: {}
-      mailbody: {}
-      mailboxdelegation: {}
-      maliciousbehavior: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      maliciousdomainsblocked: {}
-      malwarefamily: {}
-      managementnotification: {}
-      manageremail: {}
-      markdowntest: {}
-      mdtest: {}
-      measurestomitigate: {}
-      medianotification: {}
-      medicalinformationbreached: {}
-      mitigated: {}
-      mttd: {}
-      multilinetext: {}
-      mydate: {}
-      myfield: {}
-      myname: {}
-      myseverity: {}
-      name: {}
-      newmarkdownfield: {}
-      newtextfield: {}
-      niststage: {}
-      noatext: {}
-      numberofports: {}
-      numberofuniqueports: {}
-      numberplease: {}
-      objecttype: {}
-      occurred: {}
-      offboardingdate: {}
-      offboardingstage: {}
-      oktaaccountstatus: {}
-      originalhtml: {}
-      oriwithspace: {}
-      otherpiidatabreached: {}
-      owner: {}
-      parentprocessid: {}
-      participants: {}
-      passwordexpirationstatus: {}
-      penteraoperationdetails: {}
-      phase: {}
-      phishingsender: {}
-      phishingsenderdomain: {}
-      phishingsubtype: {}
-      pid: {}
-      piidatatype: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      portsblocked: {}
-      portscantimestamp: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      previouscoordinates: {}
-      previouscountry: {}
-      previoussignindatetime: {}
-      previoussourceip: {}
-      priority: {}
-      prismacloudcomputeactivitytype: {}
-      prismacloudcomputeappid: {}
-      prismacloudcomputecategory: {}
-      prismacloudcomputecollections: {}
-      prismacloudcomputecommand: {}
-      prismacloudcomputecontainer: {}
-      prismacloudcomputecredentialid: {}
-      prismacloudcomputedistribution: {}
-      prismacloudcomputeerror: {}
-      prismacloudcomputeforensic: {}
-      prismacloudcomputefqdn: {}
-      prismacloudcomputefunction: {}
-      prismacloudcomputehost: {}
-      prismacloudcomputeimage: {}
-      prismacloudcomputeinteractive: {}
-      prismacloudcomputekubernetesresource: {}
-      prismacloudcomputelabels: {}
-      prismacloudcomputeline: {}
-      prismacloudcomputelogfile: {}
-      prismacloudcomputemarkdown: {}
-      prismacloudcomputemessage: {}
-      prismacloudcomputeproject: {}
-      prismacloudcomputeprotected: {}
-      prismacloudcomputeprovider: {}
-      prismacloudcomputerawalertjson: {}
-      prismacloudcomputeregion: {}
-      prismacloudcomputeregistry: {}
-      prismacloudcomputerule: {}
-      prismacloudcomputeruntime: {}
-      prismacloudcomputeservice: {}
-      prismacloudcomputeservicetype: {}
-      prismacloudcomputetotal: {}
-      prismacloudcomputetype: {}
-      prismacloudcomputeuser: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      qradaroffenceid: {}
-      quarantined: {}
-      queues: {}
-      rating: {}
-      rawparticipants: {}
-      region: {}
-      regionid: {}
-      relatedincidentssummary: {}
-      replacePlaybook: {}
-      reporteduser: {}
-      reporteremailaddress: {}
-      reportinguser: {}
-      residentnotificationoption: {}
-      residentsemailaddress: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskmitigationactionrequirements: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      samaccountname: {}
-      sansstage: {}
-      scansourcetype: {}
-      screenshot: {}
-      screenshot2: {}
-      secretarynotification: {}
-      sectorofaffectedparty: {}
-      selector: {}
-      sender: {}
-      sensitive: {}
-      severity: {}
-      shift: {}
-      shiftnotes: {}
-      signature: {}
-      signindatetime: {}
-      single: {}
-      single2: {}
-      sixgillalertid: {}
-      sixgillcontent: {}
-      sixgillthreatlevel: {}
-      sixgillthreattype: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      source: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourceip1: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcip: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      statewherethebreachtookplace: {}
-      subcat: {}
-      subcategory: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      subtype: {}
-      successfullogin: {}
-      suggestionsanddiscussionofhowtoimprovetheteam: {}
-      summary: {}
-      systemdefault: {}
-      systems: {}
-      targetfirewallversion: {}
-      targethostname: {}
-      team: {}
-      telefield: {}
-      telephoneno: {}
-      teleselect: {}
-      terminatedaction: {}
-      test: {}
-      test2: {}
-      test111: {}
-      testassociationdumpme: {}
-      testfield: {}
-      testguy: {}
-      testhtml: {}
-      thisismysuperlongfield: {}
-      threatactor: {}
-      tier2owner: {}
-      timeassignedtolevel2: {}
-      timefield1: {}
-      timelevel1: {}
-      timetomitigate: {}
-      timetotriage: {}
-      tldr: {}
-      tlp: {}
-      trapsid: {}
-      travelmaplink: {}
-      triggeredsecurityprofile: {}
-      tttttt: {}
-      type: {}
-      uniquebiometricdatabreached: {}
-      uniquefiled: {}
-      uniqueidentificationnumberbreached: {}
-      urlsslverification: {}
-      user: {}
-      useraccountcontrol: {}
-      userdisabledstatus: {}
-      useremail: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      vvvv: {}
-      wereanystepsoractionstakenthatmighthaveinhibitedtherecovery: {}
-      whatadditionaltoolsorresourcesareneededtodetectanalyzeandmitigatefutureincidents: {}
-      whataretheareasthatneedimprovement: {}
-      whatcorrectiveactionscanpreventsimilarincidentsinthefuture: {}
-      whatinformationwasneededsooner: {}
-      whatprecursorsorindicatorsshouldbewatchedforinthefuturetodetectsimilarincidents: {}
-      whatwasthescopeoftheincident: {}
-      whatwastheworkperformedduringrecovery: {}
-      whatweretheareaswherethecirtteamswereeffective: {}
-      whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs: {}
-      whenwastheproblemfirstdetectedandbywhom: {}
-      whereisdatahosted: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrurl: {}
-      xdrusercount: {}
-      zattachmentsgeneric: {}
-      zmaltegoimage: {}
-      zvtfirstseen: {}
-      zvtother: {}
-      zvtvendorcount: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -1113,8 +592,7 @@ tasks:
       id: 94c91957-8000-4bc6-8bb0-20e47c260310
       version: -1
       name: Display email headers in layout
-      description: Fills the "Email Headers" grid field in the incident layout with
-        the email attachment's headers.
+      description: Fills the "Email Headers" grid field in the incident layout with the email attachment's headers.
       scriptName: SetGridField
       type: regular
       iscommand: false
@@ -1157,8 +635,7 @@ tasks:
       id: a915bae7-16a6-41cb-81bc-3fe3917b3e46
       version: -1
       name: Were email headers extracted successfully?
-      description: Checks whether the email headers were extracted from the original
-        email that was either attached or retrieved using available email integrations.
+      description: Checks whether the email headers were extracted from the original email that was either attached or retrieved using available email integrations.
       type: condition
       iscommand: false
       brand: ""
@@ -1261,9 +738,7 @@ tasks:
       id: 9c9c52d2-81ed-4dc4-820b-0be7f403ecc4
       version: -1
       name: Save incident files separately from email attachments
-      description: Saves the files that were initially involved with the incident
-        in a separate context key so that they are available separate from email
-        attachment files.
+      description: Saves the files that were initially involved with the incident in a separate context key so that they are available separate from email attachment files.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1764,4 +1239,5 @@ outputs:
   type: unknown
 fromversion: 5.0.0
 tests:
-- Process Email - Generic - Test - Incident Starter
+- No tests (deprecated)
+deprecated: true

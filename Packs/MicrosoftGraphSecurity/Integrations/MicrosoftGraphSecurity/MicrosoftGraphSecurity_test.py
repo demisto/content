@@ -267,9 +267,9 @@ def mock_request(method, url_suffix, params):
 
 
 @pytest.mark.parametrize('filter_query, expected_filter_query', [
-    ("Category eq 'Malware' and Severity eq 'High'", "contains(category, 'malware') and severity eq 'high'"),
-    ("Severity eq 'High'", "severity eq 'high'"),
-    ("Category eq 'Malware'", "contains(category, 'malware')")
+    ("Category eq 'Malware' and Severity eq 'High'", "Category eq 'Malware' and Severity eq 'High'"),
+    ("Severity eq 'High'", "Severity eq 'High'"),
+    ("Category eq 'Malware'", "Category eq 'Malware'")
 ])
 def test_filter_query(filter_query, expected_filter_query, mocker):
     from MicrosoftGraphSecurity import MicrosoftClient
