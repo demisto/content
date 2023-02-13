@@ -14,8 +14,8 @@ For more information about registering a calling bot see the [Microsoft Teams Do
 #### Authorize Cortex XSOAR for Azure Active Directory Users (Self deployed Azure App)
 
 There are two different authentication methods for self-deployed configuration: 
-- [Client Credentials flow](https://github.com/demisto/content/blob/4934c888873f507e4788b2a95fa4e39c87995395/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/README.md#client-credentials-flow)
-- [Authorization Code flow](https://github.com/demisto/content/blob/4934c888873f507e4788b2a95fa4e39c87995395/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/README.md#authorization-code-flow)
+- [Client Credentials flow](https://github.com/demisto/content/blob/60fe336388dea5e5aab762c591db6cac367094f8/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/README.md#client-credentials-flow)
+- [Authorization Code flow](https://github.com/demisto/content/blob/60fe336388dea5e5aab762c591db6cac367094f8/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/README.md#authorization-code-flow)
 
 In order to use ***microsoft-teams-ring-user***, you must use the **Client Credentials flow**.
 
