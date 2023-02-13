@@ -8,7 +8,7 @@ commonfields:
 configuration:
 - display: IP Address (e.g., 127.0.0.1)
   name: address
-  required: true
+  required: false
   type: 0
   section: Connect
   additionalinfo: A Syslog server address must be provided.
@@ -17,7 +17,7 @@ configuration:
   required: false
   type: 0
   section: Connect
-  additionalinfo: When using UDP or TCP, port 514 is the default. Else,when using TLS, port 6514 is the default. 
+  additionalinfo: When using UDP or TCP, port 514 is the default. Else,when using TLS, port 6514 is the default.
 - defaultvalue: UDP
   display: Protocol
   name: protocol
@@ -29,7 +29,7 @@ configuration:
   type: 15
   section: Connect
   advanced: true
-  additionalinfo: TLS version supported are 1.2 and above.
+  additionalinfo: TLS versions supported are 1.2 and above.
 - display: Certificate
   name: certificate
   required: false
@@ -92,8 +92,7 @@ configuration:
   - Critical
   required: false
   type: 15
-description: Use the Syslog Sender integration to send messages and mirror incident
-  War Room entries to Syslog.
+description: Use the Syslog Sender integration to send messages and mirror incident War Room entries to Syslog.
 display: Syslog Sender
 name: Syslog Sender
 script:
@@ -230,7 +229,7 @@ script:
     description: Sends a message to Syslog.
     execution: false
     name: syslog-send
-  dockerimage: devdemisto/syslog:1.0.0.47388
+  dockerimage: demisto/syslog:1.0.0.48196
   feed: false
   isfetch: false
   longRunning: false

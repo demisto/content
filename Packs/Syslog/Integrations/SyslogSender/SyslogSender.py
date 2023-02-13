@@ -220,7 +220,7 @@ def init_manager(params: dict) -> SyslogManager:
     :param params: Parameters for the syslog manager.
     :return: syslog manager
     """
-    address = params.get('address', '')
+    address = params.get('address')
     port = int(params.get('port', 514))
     protocol = params.get('protocol', UDP).lower()
     facility = FACILITY_DICT.get(params.get('facility', 'LOG_SYSLOG'), SysLogHandler.LOG_SYSLOG)
@@ -230,6 +230,8 @@ def init_manager(params: dict) -> SyslogManager:
     max_port = 65535
     default_port = 6514 if protocol == 'tls' else 514
     self_signed_certificate = params.get('self_signed_certificate', False)
+    if not address:
+        raise DemistoException('A address must be provided.')
     try:
         port = int(params.get('port', default_port))
     except (ValueError, TypeError):
