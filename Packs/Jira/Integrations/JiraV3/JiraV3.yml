@@ -1085,26 +1085,23 @@ script:
       - 'kanban'
       - 'simple'
     - default: false
-      description: Add description. This argument will be ignored if page or page_size arguments were given.
+      description: Add description. This argument will be ignored if page or page_size arguments were given. Default value is 50
       isArray: false
       name: limit
       required: false
       secret: false
-      defaultValue: '50'
     - default: false
-      description: Add description.
+      description: Add description. Default value is 0
       isArray: false
       name: page
       required: false
       secret: false
-      defaultValue: '0'
     - default: false
-      description: Add description
+      description: Add description. Default value is 50
       isArray: false
       name: page_size
       required: false
       secret: false
-      defaultValue: '50'
     deprecated: false
     description: Get board data
     execution: false
@@ -1205,26 +1202,23 @@ script:
       required: false
       secret: false
     - default: false
-      description: Add description. This argument will be ignored if page or page_size arguments were given.
+      description: Add description. This argument will be ignored if page or page_size arguments were given. Default value is 50
       isArray: false
       name: limit
       required: false
       secret: false
-      defaultValue: '50'
     - default: false
-      description: Add description.
+      description: Add description. Default value is 0
       isArray: false
       name: page
       required: false
       secret: false
-      defaultValue: '0'
     - default: false
-      description: Add description
+      description: Add description. Default value is 50
       isArray: false
       name: page_size
       required: false
       secret: false
-      defaultValue: '50'
     deprecated: false
     description: Get issues from backlog of specific board
     execution: false
@@ -1233,6 +1227,42 @@ script:
     - contextPath: Jira.BoardBacklog.id
       description: The ID of the board.
       type: number
+    - contextPath: Ticket.Id
+      description: The ticket ID.
+      type: number
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: string
+    - contextPath: Ticket.Assignee
+      description: The user assigned to the ticket.
+      type: string
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+      type: string
+    - contextPath: Ticket.Summary
+      description: The ticket summary.
+      type: string
+    - contextPath: Ticket.Status
+      description: The ticket status.
+      type: string
+    - contextPath: Ticket.Priority
+      description: The ticket priority.
+      type: String
+    - contextPath: Ticket.ProjectName
+      description: The ticket project name.
+      type: String
+    - contextPath: Ticket.DueDate
+      description: The due date.
+      type: Date
+    - contextPath: Ticket.Created
+      description: The time the ticket was created.
+      type: Date
+    - contextPath: Ticket.LastSeen
+      description: The last time the ticket was viewed.
+      type: Date
+    - contextPath: Ticket.LastUpdate
+      description: The last time the ticket was updated.
+      type: Date
   - arguments:
     - default: false
       description: The board ID.
@@ -1247,34 +1277,67 @@ script:
       required: false
       secret: false
     - default: false
-      description: Add description. This argument will be ignored if page or page_size arguments were given.
+      description: Add description. This argument will be ignored if page or page_size arguments were given. Default value is 50
       isArray: false
       name: limit
       required: false
       secret: false
-      defaultValue: '50'
     - default: false
-      description: Add description.
+      description: Add description. Default value is 0
       isArray: false
       name: page
       required: false
       secret: false
-      defaultValue: '0'
     - default: false
-      description: Add description
+      description: Add description. Default value is 50
       isArray: false
       name: page_size
       required: false
       secret: false
-      defaultValue: '50'
     deprecated: false
-    description: Get issues from backlog of specific board
+    description: Get all issues from a specific board
     execution: false
     name: jira-board-issue-list
     outputs:
     - contextPath: Jira.BoardIssue.id
       description: The ID of the board.
       type: number
+    - contextPath: Ticket.Id
+      description: The ticket ID.
+      type: number
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: string
+    - contextPath: Ticket.Assignee
+      description: The user assigned to the ticket.
+      type: string
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+      type: string
+    - contextPath: Ticket.Summary
+      description: The ticket summary.
+      type: string
+    - contextPath: Ticket.Status
+      description: The ticket status.
+      type: string
+    - contextPath: Ticket.Priority
+      description: The ticket priority.
+      type: String
+    - contextPath: Ticket.ProjectName
+      description: The ticket project name.
+      type: String
+    - contextPath: Ticket.DueDate
+      description: The due date.
+      type: Date
+    - contextPath: Ticket.Created
+      description: The time the ticket was created.
+      type: Date
+    - contextPath: Ticket.LastSeen
+      description: The last time the ticket was viewed.
+      type: Date
+    - contextPath: Ticket.LastUpdate
+      description: The last time the ticket was updated.
+      type: Date
   - arguments:
     - default: false
       description: The board ID.
@@ -1283,32 +1346,23 @@ script:
       required: true
       secret: false
     - default: false
-      description: A JQL query to filter the issues.
-      isArray: false
-      name: jql_query
-      required: false
-      secret: false
-    - default: false
-      description: Add description. This argument will be ignored if page or page_size arguments were given.
+      description: Add description. This argument will be ignored if page or page_size arguments were given. Default value is 50
       isArray: false
       name: limit
       required: false
       secret: false
-      defaultValue: '50'
     - default: false
-      description: Add description.
+      description: Add description. Default value is 0
       isArray: false
       name: page
       required: false
       secret: false
-      defaultValue: '0'
     - default: false
-      description: Add description
+      description: Add description. Default value is 50
       isArray: false
       name: page_size
       required: false
       secret: false
-      defaultValue: '50'
     deprecated: false
     description: Get issues from backlog of specific board
     execution: false
@@ -1317,6 +1371,217 @@ script:
     - contextPath: Jira.BoardSprint.id
       description: The ID of the board.
       type: number
+    - contextPath: Jira.BoardSprint.Sprints
+      description: The sprints in the board.
+      type: object
+    - contextPath: Jira.BoardSprint.Sprints.id
+      description: The ID of the sprint.
+      type: number
+    - contextPath: Jira.BoardSprint.Sprints.self
+      description: The url of the sprint.
+      type: string
+    - contextPath: Jira.BoardSprint.Sprints.state
+      description: The state of the sprint.
+      type: string
+    - contextPath: Jira.BoardSprint.Sprints.name
+      description: The name of the sprint.
+      type: string
+    - contextPath: Jira.BoardSprint.Sprints.startDate
+      description: The starting date of the sprint.
+      type: string
+    - contextPath: Jira.BoardSprint.Sprints.endDate
+      description: The ending date of the sprint.
+      type: string
+    - contextPath: Jira.BoardSprint.Sprints.completeDate
+      description: The date the sprint was completed.
+      type: string
+    - contextPath: Jira.BoardSprint.Sprints.originBoardId
+      description: The ID of the origin board.
+      type: string
+    - contextPath: Jira.BoardSprint.Sprints.goal
+      description: The goal of the sprint.
+      type: string
+  - arguments:
+    - default: false
+      description: The board ID.
+      isArray: false
+      name: board_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filters results to epics that are either done or not done. This uses the `Epic Status` field, and not the `Status` field for the issue.
+      isArray: false
+      name: done
+      required: false
+      secret: false
+      defaultValue: 'false'
+      predefined:
+      - 'false'
+      - 'true'
+    - default: false
+      description: Add description. This argument will be ignored if page or page_size arguments were given. Default value is 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Add description. Default value is 0
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Add description. Default value is 50
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Get all epics from a specific board
+    execution: false
+    name: jira-board-epic-list
+    outputs:
+    - contextPath: Jira.BoardEpic.id
+      description: The ID of the board.
+      type: number
+    - contextPath: Jira.BoardEpic.Epics
+      description: Holds the data of the epic issues.
+      type: object
+    - contextPath: Jira.BoardEpic.Epics.id
+      description: The ID of the epic.
+      type: number
+    - contextPath: Jira.BoardEpic.Epics.key
+      description: The key of the epic.
+      type: string
+    - contextPath: Jira.BoardEpic.Epics.self
+      description: The url of the epic.
+      type: string
+    - contextPath: Jira.BoardEpic.Epics.name
+      description: The name of the epic.
+      type: string
+    - contextPath: Jira.BoardEpic.Epics.summary
+      description: The summary of the epic.
+      type: string
+    - contextPath: Jira.BoardEpic.Epics.done
+      description: Whether the epic has been completed or not.
+      type: boolean
+    - contextPath: Jira.BoardEpic.Epics.color
+      description: Data about the color of the epic.
+      type: object
+    - contextPath: Jira.BoardEpic.Epics.color.key
+      description: The key of the color associated with the epic.
+      type: string
+  - arguments:
+    - default: false
+      description: The board ID.
+      isArray: false
+      name: board_id
+      required: false
+      secret: false
+    - default: false
+      description: The sprint ID.
+      isArray: false
+      name: sprint_id
+      required: true
+      secret: false
+    - default: false
+      description: A JQL query to filter the issues.
+      isArray: false
+      name: jql_query
+      required: false
+      secret: false
+    - default: false
+      description: Add description. This argument will be ignored if page or page_size arguments were given. Default value is 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Add description. Default value is 0
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Add description. Default value is 50
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Get all issues in a sprint.
+    execution: false
+    name: jira-sprint-issue-list
+    outputs:
+    - contextPath: Jira.SprintIssues.boardId
+      description: The ID of the board.
+      type: number
+    - contextPath: Ticket.Id
+      description: The ticket ID.
+      type: number
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: string
+    - contextPath: Ticket.Assignee
+      description: The user assigned to the ticket.
+      type: string
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+      type: string
+    - contextPath: Ticket.Summary
+      description: The ticket summary.
+      type: string
+    - contextPath: Ticket.Status
+      description: The ticket status.
+      type: string
+    - contextPath: Ticket.Priority
+      description: The ticket priority.
+      type: String
+    - contextPath: Ticket.ProjectName
+      description: The ticket project name.
+      type: String
+    - contextPath: Ticket.DueDate
+      description: The due date.
+      type: Date
+    - contextPath: Ticket.Created
+      description: The time the ticket was created.
+      type: Date
+    - contextPath: Ticket.LastSeen
+      description: The last time the ticket was viewed.
+      type: Date
+    - contextPath: Ticket.LastUpdate
+      description: The last time the ticket was updated.
+      type: Date
+  - arguments:
+    - default: false
+      description: The issues to move to the sprint.
+      isArray: false
+      name: issues
+      required: true
+      secret: false
+    - default: false
+      description: The sprint ID.
+      isArray: false
+      name: sprint_id
+      required: true
+      secret: false
+    - default: false
+      description: To rank the issues before the stated issue (supports issue key and ID).
+      isArray: false
+      name: rank_before_issue
+      required: false
+      secret: false
+    - default: false
+      description: To rank the issues after the stated issue (supports issue key and ID).
+      isArray: false
+      name: rank_after_issue
+      required: false
+      secret: false
+    deprecated: false
+    description: Moves issues to a sprint, for a given sprint ID. Issues can only be moved to open or active sprints. At most 50 issues may be moved at once.
+    execution: false
+    name: jira-sprint-issue-move
   dockerimage: demisto/btfl-soup:1.0.1.45563
   script: ''
   type: python
