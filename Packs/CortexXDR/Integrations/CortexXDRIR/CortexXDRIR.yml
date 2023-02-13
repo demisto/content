@@ -1016,7 +1016,7 @@ script:
             - pending_cancellation
             - success
             - error
-      description: Gets a list of endpoints according to the passed filters, and changes their alias name. Filtering by multiple fields will be concatenated using AND condition (OR is not supported).
+      description: Gets a list of endpoints according to the passed filters, and changes their alias name. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported).
       name: xdr-endpoint-alias-change
     - description: Gets a list of all the agent versions to use for creating a distribution list.
       name: xdr-get-distribution-versions
