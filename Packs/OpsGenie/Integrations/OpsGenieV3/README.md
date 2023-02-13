@@ -1593,6 +1593,57 @@ Remove a tag from the OpsGenie alert.
 >|---|---|---|---|---|---|---|
 >| Remove Tags | b15c7555-d685-4a96-8798-46320618004e | 3cc69931-167f-411c-a331-768997c29d2e | true | 2021-12-01T13:49:02.53Z | Removed tags | true |
 
+### opsgenie-invite-user
+***
+Invite a user to OpsGenie
+
+#### Base Command
+
+`opsgenie-invite-user`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username  | E-mail address of the user. | Required | 
+| fullName | Name of the user | Required | 
+| role | Role of user. It may be one of admin, user or the name of a custom role you've created.| Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpsGenie.User.Id | String | ID of the User | 
+| OpsGenie.User.name | String | Username of the user | 
+
+
+#### Command Example
+```!opsgenie-assign-alert alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286 owner_username=b@g.com```
+
+#### Context Example
+```json
+{
+    "OpsGenie": {
+        "AssignAlert": {
+            "action": "Assign",
+            "alertId": "",
+            "alias": "",
+            "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
+            "isSuccess": false,
+            "processedAt": "2021-12-01T13:48:24.942Z",
+            "status": "Alert does not exist",
+            "success": false
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### OpsGenie
+>|action|alertId|alias|integrationId|isSuccess|processedAt|status|success|
+>|---|---|---|---|---|---|---|---|
+>| Assign |  |  | 3cc69931-167f-411c-a331-768997c29d2e | false | 2021-12-01T13:48:24.942Z | Alert does not exist | false |
 
 ### opsgenie-get-teams
 ***
