@@ -1618,7 +1618,7 @@ Invite a user to OpsGenie
 
 
 #### Command Example
-```!opsgenie-assign-alert alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286 owner_username=b@g.com```
+```!opsgenie-invite-user username=test@example.com fullName="Test XSOAR" role=user```
 
 #### Context Example
 ```json
