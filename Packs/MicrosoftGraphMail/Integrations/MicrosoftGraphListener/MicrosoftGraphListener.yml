@@ -495,6 +495,9 @@ script:
   - description: Tests connectivity of the email.
     name: msgraph-mail-test
     arguments: []
+  - description: Run this command to rerun the authentication process.
+    name: msgraph-mail-auth-reset
+    arguments: []
   - name: msgraph-mail-list-emails
     arguments:
     - name: odata
@@ -685,7 +688,7 @@ script:
       - Read
       - Unread
     description: Update the status of an email to read / unread.
-  dockerimage: demisto/crypto:1.0.0.47103
+  dockerimage: demisto/crypto:1.0.0.47970
   isfetch: true
   runonce: false
   script: ''
