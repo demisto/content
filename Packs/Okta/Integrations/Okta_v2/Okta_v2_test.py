@@ -29,7 +29,9 @@ user_data = {
         "displayName": "test1",
         "secondEmail": "test@this.com",
         "login": "test@this.com",
-        "email": "test@this.com"
+        "email": "test@this.com",
+        "manager": "manager",
+        "managerEmail": "manager@test.com"
     },
     "credentials": {
         "provider": {
@@ -617,13 +619,15 @@ def util_load_json(path: str):
           'Status': 'PROVISIONED', 'Type': 'Okta', 'Created': "2020-02-19T08:18:20.000Z",
           'Activated': "2020-02-20T11:44:43.000Z",
           'StatusChanged': "2020-02-20T11:45:24.000Z",
-          'PasswordChanged': "2020-02-19T08:18:21.000Z"}, 'test@this.com'),
+          'PasswordChanged': "2020-02-19T08:18:21.000Z", "Manager": "manager", "ManagerEmail": "manager@test.com"},
+         'test@this.com'),
         ({"userId": "", "username": "test@this.com", "verbose": 'true'},
          {'ID': 'TestID', 'Username': 'test@this.com', 'DisplayName': 'test this', 'Email': 'test@this.com',
           'Status': 'PROVISIONED', 'Type': 'Okta', 'Created': "2020-02-19T08:18:20.000Z",
           'Activated': "2020-02-20T11:44:43.000Z",
           'StatusChanged': "2020-02-20T11:45:24.000Z",
-          'PasswordChanged': "2020-02-19T08:18:21.000Z"}, 'Additional Data'),
+          'PasswordChanged': "2020-02-19T08:18:21.000Z", "Manager": "manager", "ManagerEmail": "manager@test.com"},
+         'Additional Data'),
     ]
 )
 def test_get_user_command(mocker, args, expected_context, expected_readable):
@@ -642,13 +646,15 @@ def test_get_user_command(mocker, args, expected_context, expected_readable):
           'Status': 'PROVISIONED', 'Type': 'Okta', 'Created': "2020-02-19T08:18:20.000Z",
           'Activated': "2020-02-20T11:44:43.000Z",
           'StatusChanged': "2020-02-20T11:45:24.000Z",
-          'PasswordChanged': "2020-02-19T08:18:21.000Z"}, 'test@this.com'),
+          'PasswordChanged': "2020-02-19T08:18:21.000Z", "Manager": "manager", "ManagerEmail": "manager@test.com"},
+         'test@this.com'),
         ({"userId": "", "username": "test@this.com", "verbose": 'true'},
          {'ID': 'TestID', 'Username': 'test@this.com', 'DisplayName': 'test this', 'Email': 'test@this.com',
           'Status': 'PROVISIONED', 'Type': 'Okta', 'Created': "2020-02-19T08:18:20.000Z",
           'Activated': "2020-02-20T11:44:43.000Z",
           'StatusChanged': "2020-02-20T11:45:24.000Z",
-          'PasswordChanged': "2020-02-19T08:18:21.000Z"}, 'Additional Data'),
+          'PasswordChanged': "2020-02-19T08:18:21.000Z", "Manager": "manager", "ManagerEmail": "manager@test.com"},
+         'Additional Data'),
     ]
 )
 def test_list_user_command(mocker, args, expected_context, expected_readable):
