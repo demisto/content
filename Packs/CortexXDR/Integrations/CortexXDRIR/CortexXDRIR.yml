@@ -22,7 +22,7 @@ configuration:
       - Both
     required: false
     type: 15
-  - display: Server URL (copy URL from XDR - click ? to see more info.)
+  - display: Server URL (copy URL from XDR)
     name: url
     required: true
     type: 0
