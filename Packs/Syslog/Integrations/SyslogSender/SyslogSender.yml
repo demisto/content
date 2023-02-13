@@ -229,7 +229,7 @@ script:
     description: Sends a message to Syslog.
     execution: false
     name: syslog-send
-  dockerimage: demisto/syslog:1.0.0.48196
+  dockerimage: demisto/syslog:1.0.0.48267
   feed: false
   isfetch: false
   longRunning: false
