@@ -14,13 +14,13 @@ def is_domain_internal(domain, internal_domains):
     return False
 
 def main():
-    internal_domains_list = demisto.args().get("InternalDomainsListName", "InternalDomains")
+    internal_domains_list_name = demisto.args().get("InternalDomainsListName", "InternalDomains")
     domains_to_check = argToList(demisto.args().get("Domains", None))
 
     # Get the list of internal domains from the XSOAR list:
-    internal_domains = demisto.executeCommand("getList", {"listName": internal_domains_list})[0]['Contents']
+    internal_domains = demisto.executeCommand("getList", {"listName": internal_domains_list_name})[0]['Contents']
     if "Item not found" in internal_domains:
-        return_error(f"The list name {internal_domains_list} does not exist.")
+        return_error(f"The list name {internal_domains_list_name} does not exist.")
 
     # Split internal domains from XSOAR list to be a list:
     if internal_domains:
