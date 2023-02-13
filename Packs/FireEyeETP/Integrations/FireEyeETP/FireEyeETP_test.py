@@ -2,6 +2,7 @@ import demistomock as demisto
 import pytest
 import FireEyeETP
 
+
 def test_malware_readable_data():
     """
     Given:
@@ -119,14 +120,16 @@ def test_fetch_incident_by_status_messages_mismatch_status(mocker, params, alert
 
 PARAMS_3 = {'message_status': 'delivered (retroactive), deleted'}
 ALERTS_3 = {'meta': {'fromLastModifiedOn': {'end': ''}},
-              'data': [
+            'data': [
                 {'attributes': {'email': {'status': 'delivered (retroactive)', 'headers': {'subject': ''}},
                                 'alert': {'timestamp': '2023-02-08T19:34:17'}}},
                 {'attributes': {'email': {'status': 'deleted', 'headers': {'subject': ''}},
                                 'alert': {'timestamp': '2023-02-08T19:34:17'}}}
             ]}
-EXPECTED_INCIDENTS_3 = ['{"email": {"status": "delivered (retroactive)", "headers": {"subject": ""}}, "alert": {"timestamp": "2023-02-08T19:34:17"}}',
-                        '{"email": {"status": "deleted", "headers": {"subject": ""}}, "alert": {"timestamp": "2023-02-08T19:34:17"}}']
+EXPECTED_INCIDENTS_3 = [
+    '{"email": {"status": "delivered (retroactive)", "headers": {"subject": ""}},'
+    ' "alert": {"timestamp": "2023-02-08T19:34:17"}}',
+    '{"email": {"status": "deleted", "headers": {"subject": ""}}, "alert": {"timestamp": "2023-02-08T19:34:17"}}']
 
 
 @pytest.mark.parametrize('params, alerts, expected_incidents', [(PARAMS_3, ALERTS_3, EXPECTED_INCIDENTS_3)])
