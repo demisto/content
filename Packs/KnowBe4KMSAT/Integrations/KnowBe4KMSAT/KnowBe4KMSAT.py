@@ -386,7 +386,7 @@ def kmsat_account_info_list_command(client: Client, args: dict) -> CommandResult
         [
             "name",
             "type",
-            "domain",
+            "domains",
             "admins",
             "subscription_level",
             "number_of_seats",
