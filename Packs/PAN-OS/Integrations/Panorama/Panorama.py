@@ -194,8 +194,20 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
 }
 
 RULE_FILTERS = ('nat-type', 'action')
-
-
+APPILICATION_FILTERS = ('risk', 'category', 'subcategory', 'technology')
+CHARACTERISTICS_LIST=('virus-ident', 
+'file-type-ident', 
+'evasive-behavior', 
+'consume-big-bandwidth', 
+'used-by-malware', 
+'able-to-transfer-file', 
+'has-known-vulnerability', 
+'tunnel-other-application', 
+'prone-to-misuse', 
+'pervasive-use', 
+'data-ident', 
+'file-forward',
+'is-saas')
 class PAN_OS_Not_Found(Exception):
     """ PAN-OS Error. """
 
@@ -692,13 +704,15 @@ def get_pan_os_major_version() -> int:
     return major_version
 
 
-def build_xpath_filter(rule_name: str = None, filters: dict = None) -> str:
+def build_xpath_filter(name_match: str = None, name_contains: str = None, filters: dict = None) -> str:
     xpath_prefix = ''
-    if rule_name:
-        xpath_prefix = f"@name='{rule_name}'"
+    if name_match:
+        xpath_prefix = f"@name='{name_match}'"
+    if name_contains:
+        xpath_prefix = f"contains(@name,'{name_contains}')"
     if filters:
         for key, value in filters.items():
-            if key in RULE_FILTERS:
+            if key in RULE_FILTERS or key in APPILICATION_FILTERS:
                 if xpath_prefix:
                     xpath_prefix += 'and'
                 xpath_prefix += f"({key}='{value}')"
@@ -707,6 +721,11 @@ def build_xpath_filter(rule_name: str = None, filters: dict = None) -> str:
                     if xpath_prefix:
                         xpath_prefix += 'and'
                     xpath_prefix += f"(tag/member='{tag}')"
+            if key == 'characteristics':
+                for characteristic in value:
+                    if xpath_prefix:
+                        xpath_prefix += 'and'
+                    xpath_prefix += f"({characteristic}='yes')"
     return xpath_prefix
 
 
@@ -718,33 +737,6 @@ def filter_rules_by_status(disabled: str, rules: list) -> list:
 
 
 ''' FUNCTIONS'''
-
-def build_xpath_filter(name_match: str = None, name_contains: str = None, filters: dict = None) -> str:
-    """Builds xpath according to the filters.
-
-    Returns:
-        xpath str
-    """
-    xpath_prefix = ''
-    if name_match and name_contains:
-        xpath_prefix = f"@name='{name_match}'andcontains(@name,'{name_contains}')"
-    elif name_contains:
-        xpath_prefix += f"contains(@name,'{name_contains}')"
-    elif name_match:
-        xpath_prefix += f"@name='{name_match}'"
-    if filters:
-        for key, value in filters.items():
-            if key in APPILICATION_FILTERS:
-                if xpath_prefix:
-                    xpath_prefix += 'and'
-                xpath_prefix += f"({key}='{value}')"
-            if key == 'characteristics':
-                for characteristic in value:
-                    if xpath_prefix:
-                        xpath_prefix += 'and'
-                    xpath_prefix += f"({characteristic}='yes')"
-    return xpath_prefix
-
 
 def panorama_test(fetch_params):
     """
@@ -3509,7 +3501,7 @@ def panorama_list_rules(xpath: str, name: str = None, filters: dict = None, quer
 
     if query:
         params["xpath"] = f'{params["xpath"]}[{query}]'
-    elif xpath_filter := build_xpath_filter(name, filters):
+    elif xpath_filter := build_xpath_filter(name, None ,filters):
         params["xpath"] = f'{params["xpath"]}[{xpath_filter}]'
 
     result = http_request(
@@ -4148,6 +4140,10 @@ def prettify_applications_arr(applications_arr: Union[List[dict], dict]):
         applications_arr = [applications_arr]
     for i in range(len(applications_arr)):
         application = applications_arr[i]
+        application_characteristics_list=[]
+        for key,value in application.items():
+            if key in CHARACTERISTICS_LIST and value=='yes':
+                application_characteristics_list.append(str(key))
         pretty_application_arr.append({
             'Category': application.get('category'),
             'SubCategory': application.get('subcategory'),
@@ -4155,6 +4151,7 @@ def prettify_applications_arr(applications_arr: Union[List[dict], dict]):
             'Technology': application.get('technology'),
             'Name': application.get('@name'),
             'Description': application.get('description'),
+            'Characteristics': application_characteristics_list,
             'Id': application.get('@id'),
         })
     return pretty_application_arr
@@ -4178,6 +4175,8 @@ def panorama_list_applications(args:Dict[str, str], predefined: bool) -> Union[L
     )
     name_match = args.get('name_match')
     name_contain = args.get('name_contain')
+    if name_match and name_contain:
+        raise Exception('Please specify name_match or name_contain')
     xpath_filter = build_xpath_filter(name_match,name_contain,filters)
     demisto.debug("xpath_filter", xpath_filter)
     if predefined:  # if predefined = true, no need for device group.
@@ -4222,14 +4221,14 @@ def panorama_list_applications_command(args:Dict[str, str] ,predefined: Optional
     applications_arr_output = prettify_applications_arr(applications_arr)
     limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT_PAGE_SIZE
     applications_arr_output=applications_arr_output[:limit]
-    headers = ['Id', 'Name', 'Risk', 'Category', 'SubCategory', 'Technology', 'Description']
+    headers = ['Id', 'Name', 'Risk', 'Category', 'SubCategory', 'Technology', 'Description', 'Characteristics']
 
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': applications_arr,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Applications', t=applications_arr_output, headers=headers),
+        'HumanReadable': tableToMarkdown('Applications', t=applications_arr_output, headers=headers, removeNull=True),
         'EntryContext': {
             "Panorama.Applications(val.Name == obj.Name)": applications_arr_output
         }
@@ -11756,7 +11755,7 @@ def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] =
 
     if query:
         _xpath = f"{_xpath}/rules/entry[{query}]"
-    elif xpath_filter := build_xpath_filter(name, filters):
+    elif xpath_filter := build_xpath_filter(name, None ,filters):
         _xpath = f"{_xpath}/rules/entry[{xpath_filter}]"
 
     if element:
@@ -12529,7 +12528,7 @@ def build_pbf_xpath(name, pre_post, element_to_change=None, filters: dict = None
 
     if query:
         _xpath = f"{_xpath}/rules/entry[{query}]"
-    elif xpath_filter := build_xpath_filter(name, filters):
+    elif xpath_filter := build_xpath_filter(name, None,filters):
         _xpath = f"{_xpath}/rules/entry[{xpath_filter}]"
 
     if element_to_change:

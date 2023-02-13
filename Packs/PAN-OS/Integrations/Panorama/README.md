@@ -2585,6 +2585,7 @@ Returns a list of applications.
 | Panorama.Applications.Technology | string | The application technology. | 
 | Panorama.Applications.Risk | number | The application risk \(1 to 5\). | 
 | Panorama.Applications.Description | string | The application description. | 
+| Panorama.Applications.Characteristics | string | The application characteristics. | 
 
 
 #### Command Example

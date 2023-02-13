@@ -6383,8 +6383,8 @@ class TestFetchIncidentsFlows:
         assert last_id_dict.get('Y_log_type', '') == '000000002'
 
 
-@pytest.mark.parametrize('name, filters, expected_result', mock_rules.get_mock_rules)
-def test_build_xpath_filter(name, filters, expected_result):
+@pytest.mark.parametrize('name_match, name_contain,, filters, expected_result', mock_rules.get_mock_rules)
+def test_build_xpath_filter(name_match, name_contain, filters, expected_result):
     from Panorama import build_xpath_filter
-    mock_result = build_xpath_filter(name, filters)
+    mock_result = build_xpath_filter(name_match, name_contain, filters)
     assert mock_result == expected_result

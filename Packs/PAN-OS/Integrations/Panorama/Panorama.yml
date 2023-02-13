@@ -5339,6 +5339,9 @@ script:
     description: Returns a list of applications.
     name: pan-os-list-applications
     outputs:
+    - contextPath: Panorama.Applications.Characteristics
+      description: The application characteristics.
+      type: string
     - contextPath: Panorama.Applications.Name
       description: The application name.
       type: string
