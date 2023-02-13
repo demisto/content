@@ -1624,15 +1624,9 @@ Invite a user to OpsGenie
 ```json
 {
     "OpsGenie": {
-        "AssignAlert": {
-            "action": "Assign",
-            "alertId": "",
-            "alias": "",
-            "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
-            "isSuccess": false,
-            "processedAt": "2021-12-01T13:48:24.942Z",
-            "status": "Alert does not exist",
-            "success": false
+        "User": {
+            "id": "f14b51c9-151b-48b2-afda-e2fcc182f230-1613001837514",
+            "name": "test@example.com"
         }
     }
 }
