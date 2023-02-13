@@ -85,6 +85,8 @@
   - section_start "Git - Job Start Actions" --collapsed
   - git checkout -B $CI_COMMIT_BRANCH $CI_COMMIT_SHA
   - git config diff.renameLimit 6000
+  # we merge from origin/master to make sure we have the latest changes, should fail if there are conflicts.
+  - git merge origin/master
   - section_end "Git - Job Start Actions"
   - mkdir -p -m 777 $ARTIFACTS_FOLDER/
   - |
