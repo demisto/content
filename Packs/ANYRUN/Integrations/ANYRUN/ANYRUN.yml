@@ -27,24 +27,41 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
+      default: false
       defaultValue: 'false'
       description: If true, gets team history. If empty, gets your submitted analyses history.
+      isArray: false
       name: team
       predefined:
       - 'true'
       - 'false'
-    - defaultValue: '0'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
       description: The number of analyses to skip.
+      isArray: false
       name: skip
       predefined:
       - ''
-      auto: PREDEFINED
-    - defaultValue: '25'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '25'
       description: Limits the history retrieved/searched to the specified number of executed analyses. The range is 1-100.
+      isArray: false
       name: limit
-    - description: File name, hash, or task ID by which to filter the task history.
+      required: false
+      secret: false
+    - default: false
+      description: File name, hash, or task ID by which to filter the task history.
+      isArray: false
       name: filter
+      required: false
+      secret: false
+    deprecated: false
     description: Get analysis history.
+    execution: false
     name: anyrun-get-history
     outputs:
     - contextPath: ANYRUN.Task.Name
@@ -78,10 +95,15 @@ script:
       description: SSDeep hash of the submitted file.
       type: String
   - arguments:
-    - description: Unique task ID. A task ID is returned when submitting a file or URL for analysis using the `anyrun-run-analysis` command. Task IDs can also be located in the `ID` field of the output of executing the `anyrun-get-history` command.
+    - default: false
+      description: Unique task ID. A task ID is returned when submitting a file or URL for analysis using the `anyrun-run-analysis` command. Task IDs can also be located in the `ID` field of the output of executing the `anyrun-get-history` command.
+      isArray: false
       name: task
       required: true
+      secret: false
+    deprecated: false
     description: Gets the report of a task created for a submitted file or URL.
+    execution: false
     name: anyrun-get-report
     outputs:
     - contextPath: ANYRUN.Task.AnalysisDate
@@ -302,82 +324,121 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
+      default: false
       defaultValue: file
       description: Type of new task.
+      isArray: false
       name: obj_type
       predefined:
       - file
       - url
       - remote file
-    - description: EntryID of the file to analyze.
+      required: false
+      secret: false
+    - default: false
+      description: EntryID of the file to analyze.
+      isArray: false
       name: file
-    - description: URL, used only if 'obj_type' command argument is 'url' or 'download'. Permitted size is 5-512 characters long.
+      required: false
+      secret: false
+    - default: false
+      description: URL, used only if 'obj_type' command argument is 'url' or 'download'. Permitted size is 5-512 characters long.
+      isArray: false
       name: obj_url
+      required: false
+      secret: false
     - auto: PREDEFINED
-      description: Browser name, used only for "url" type.
-      name: obj_ext_browser
-      predefined:
-      - 'Internet Explorer'
-      - 'Google Chrome'
-      - Mozilla Firefox
-      - Opera
-      - Microsoft Edge
-    - auto: PREDEFINED
+      default: false
       defaultValue: '32'
       description: Bitness of OS.
+      isArray: false
       name: env_bitness
       predefined:
       - '32'
       - '64'
+      required: false
+      secret: false
+    - name: obj_ext_browser
+      auto: PREDEFINED
+      predefined:
+      - Internet Explorer
+      - Google Chrome
+      - Mozilla Firefox
+      - Opera
+      - Microsoft Edge
+      description: Browser name, used only for "url" type.
     - auto: PREDEFINED
+      default: false
       defaultValue: Windows 7
       description: Version of Windows OS.
+      isArray: false
       name: env_version
       predefined:
       - Windows Vista
       - Windows 7
       - Windows 8.1
       - Windows 10
+      required: false
+      secret: false
     - auto: PREDEFINED
-      defaultValue: 'complete'
+      default: false
+      defaultValue: complete
       description: Environment preset type.
+      isArray: false
       name: env_type
       predefined:
-      - 'complete'
-      - 'clean'
+      - complete
+      - clean
       - office
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: 'true'
       description: Network connection state.
+      isArray: false
       name: opt_network_connect
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: 'false'
       description: Heavy evasion option.
+      isArray: false
       name: opt_kernel_heavyevasion
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: owner
       description: Privacy settings for generated task.
+      isArray: false
       name: opt_privacy_type
       predefined:
       - owner
       - bylink
       - public
+      required: false
+      secret: false
+    deprecated: false
     description: Submit a file or url for analysis.
+    execution: false
     name: anyrun-run-analysis
     outputs:
     - contextPath: ANYRUN.Task.ID
       description: ID of the task created to analyze the submission.
       type: String
-  dockerimage: demisto/python3:3.10.10.47713
+  dockerimage: demisto/python3:3.10.9.40422
   subtype: python3
+  isfetch: false
   runonce: false
-  script: ''
+  script: '-'
   type: python
 tests:
 - ANYRUN-Test
