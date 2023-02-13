@@ -845,8 +845,8 @@ def generate_login_url(client: MicrosoftClient) -> CommandResults:
                 f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}'
 
     result_msg = f"""### Authorization instructions
-1. Click on the [login URL]({login_url}) to sigh in and grant Cortex XSOAR permissions for your Azure Service Management.
-You are automatically redirected to a link with the following structure:
+1. Click on the [login URL]({login_url}) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
