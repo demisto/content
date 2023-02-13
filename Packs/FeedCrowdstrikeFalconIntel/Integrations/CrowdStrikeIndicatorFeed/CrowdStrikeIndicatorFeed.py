@@ -137,7 +137,8 @@ class Client(CrowdStrikeClient):
             filter_string = f"{filter_string}+({malicious_confidence_fql})" if filter_string else f'({malicious_confidence_fql})'
 
         if manual_last_run:
-            filter_string = f'{filter_string}+(last_updated:>={manual_last_run})' if filter_string else f'(last_updated:>={manual_last_run})'
+            filter_string = f'{filter_string}+(last_updated:>={manual_last_run})' \
+                            if filter_string else f'(last_updated:>={manual_last_run})'
 
         if fetch_command:
             if last_run := self.get_last_run():
