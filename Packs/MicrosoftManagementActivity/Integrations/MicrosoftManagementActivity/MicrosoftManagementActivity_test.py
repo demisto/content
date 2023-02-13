@@ -458,8 +458,8 @@ def create_client(timeout: int = 15):
     proxy = demisto.params().get('proxy', False)
 
     client = Client(base_url, verify=verify_certificate, proxy=proxy, self_deployed=True, auth_and_token_url="test",
-                    refresh_token="test", enc_key="test", auth_code="test", tenant_id="test", redirect_uri="",
-                    timeout=timeout)
+                    refresh_token="test", refresh_token_param="test", enc_key="test", auth_code="test",
+                    tenant_id="test", redirect_uri="", timeout=timeout)
 
     return client
 
