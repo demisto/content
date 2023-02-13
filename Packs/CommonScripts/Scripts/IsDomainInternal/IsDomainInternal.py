@@ -67,8 +67,7 @@ def main():
         # successfully set the Internal property of the domain name, we need to ensure creation and then edit the indicator ourselves.
         demisto.executeCommand("setIndicator", args_create_or_set_indicator)
 
-    # Create entry context and human-readable results
-    entry_context = {"Domain(val.Name == obj.Name)": domain_list}
+    # Create context and human-readable results
     md_table = tableToMarkdown(name="Domain Names", t=sorted(domain_list, key=lambda x: not x['Internal']),
                                headers=["Name", "Internal"])
 
