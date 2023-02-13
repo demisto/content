@@ -58,7 +58,7 @@ FILTER_OBJS = {
 }
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
-EXTRACT_TIMESTAMP_REGEX = r"\((.+)\)"
+EXTRACT_TIMESTAMP_REGEX = r"(\d{4}),\s(Jan(uary)?|Feb(ruary)?|Mar(ch)?|Apr(il)?|May|Jun(e)?|Jul(y)?|Aug(ust)?|Sep(tember)?|Oct(ober)?|Nov(ember)?|Dec(ember)?)\s(\d{1,2})"
 
 # disable warnings coming from taxii2client - https://github.com/OTRF/ATTACK-Python-Client/issues/43#issuecomment-1016581436
 logging.getLogger("taxii2client.v20").setLevel(logging.ERROR)
@@ -326,7 +326,7 @@ def extract_timestamp_from_description(description: str) -> str:
     if not description or 'Citation' in description or 'n.d' in description:
         return ''
     match = re.search(EXTRACT_TIMESTAMP_REGEX, description)
-    timestamp = match.group(1) if match else ''
+    timestamp = match.group(0) if match else ''
     return timestamp
 
 
@@ -679,7 +679,7 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        return_error(e)
+        return_error(str(e))
 
 
 from TAXII2ApiModule import *  # noqa: E402
