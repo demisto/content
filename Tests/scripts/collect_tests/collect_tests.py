@@ -16,7 +16,7 @@ from Tests.scripts.collect_tests.constants import (
     DEFAULT_REPUTATION_TESTS, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
     ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK,
     SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES,
-    ALWAYS_INSTALLED_PACKS_MAPPING, MODELING_RULE_COMPONENT_FILES)
+    ALWAYS_INSTALLED_PACKS_MAPPING, MODELING_RULE_COMPONENT_FILES, XSIAM_COMPONENT_FILES)
 from Tests.scripts.collect_tests.exceptions import (
     DeprecatedPackException, IncompatibleMarketplaceException,
     InvalidTestException, NonDictException, NonXsoarSupportedPackException,
@@ -61,6 +61,7 @@ class CollectionReason(str, Enum):
     MODELING_RULE_TEST_DATA_CHANGED = 'modeling rule\'s associated testdata file was changed'
     MODELING_RULE_NIGHTLY = 'nightly testing of modeling rules'
     DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
+    XSIAM_COMPONENT_CHANGED = 'xsiam component was changed'
 
 
 REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
@@ -609,6 +610,55 @@ class TestCollector(ABC):
             is_nightly=is_nightly
         )
 
+    def _collect_pack_for_xsiam_component(
+        self, pack_id: str, reason_description: str, changed_file_path: Path,
+        content_item_range: Optional[VersionRange] = None, is_nightly: bool = False,
+        reason: Optional[CollectionReason] = None
+    ) -> CollectionResult:
+        """Create a CollectionResult for a pack because of an xsiam component.
+
+        Marks the pack being collected and the modeling rule that needs to be tested
+
+        Args:
+            pack_id (str): the id of the pack being collected
+            reason (Optional[CollectionReason]): the reason the pack is being collected. Defaults to None.
+            reason_description (str): the reason the pack is being collected
+            changed_file_path (Path): the path to the file that was modified
+            content_item_range (Optional[VersionRange], optional): version range. Defaults to None.
+            is_nightly (Optional[bool]): whether this is a nightly flow. Defaults to False.
+
+        Returns:
+            CollectionResult: the object detailing the pack to collect and the modeling rule that should be tested
+        """
+        # Not validating compatibility with function so xsoar & marketplacev2 supported packs will be installed if needed.
+        if self.marketplace != MarketplaceVersions.MarketplaceV2:
+            logger.info(f'Not collecting pack {pack_id} for XSIAM component {changed_file_path} because '
+                        f'it is not a collection for an XSIAM (MarketplaceV2) marketplace - '
+                        f'marketplace is {self.marketplace}')
+            raise NothingToCollectException(changed_file_path, 'packs for XSIAM components are only collected for XSIAM')
+
+        pack = PACK_MANAGER.get_pack_metadata(pack_id)
+
+        version_range = content_item_range \
+            if pack.version_range.is_default \
+            else (pack.version_range | content_item_range)
+
+        if not reason:
+            file_type = find_type(changed_file_path.as_posix())
+            reason = f"{CollectionReason.XSIAM_COMPONENT_CHANGED} {file_type.value}"
+
+        return CollectionResult(
+            test=None,
+            modeling_rule_to_test=None,
+            pack=pack_id,
+            reason=reason,
+            version_range=version_range,
+            reason_description=reason_description,
+            conf=self.conf,
+            id_set=self.id_set,
+            is_nightly=is_nightly
+        )
+
     def __validate_skipped_integration(self, id_: str, path: Path):
         if id_ in self.conf.skipped_integrations:
             raise NothingToCollectException(path, 'integration is skipped')
@@ -653,6 +703,8 @@ class TestCollector(ABC):
                 # For XSIAM machines we collect tests that have not xsoar marketplace.
                 # Tests for the packs that has only mpv2, or mpv2 and xpanse marketplaces,
                 # will run on xsiam machines only.
+                # However only xsiam component files will be collected anyway in
+                # _collect_xsiam_and_modeling_pack function.
                 if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
                         (MarketplaceVersions.XSOAR in content_item_marketplaces):
                     raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
@@ -851,6 +903,24 @@ class BranchTestCollector(TestCollector):
                 allow_incompatible_marketplace=override_support_level_compatibility,
             )
 
+    def _collect_xsiam_and_modeling_pack(self,
+                                         file_type: Optional[FileType],
+                                         pack_id: str, reason_description: str,
+                                         path: Path,
+                                         content_item_range: Optional[VersionRange]) -> Optional[CollectionResult]:
+        if file_type in MODELING_RULE_COMPONENT_FILES:
+            # mark pack for installation and mark the modeling rule for dynamic testing
+            return self._collect_pack_for_modeling_rule(
+                pack_id=pack_id, reason_description=reason_description,
+                changed_file_path=path, content_item_range=content_item_range
+            )
+
+        # if the file is an xsiam component and is not a modeling rule
+        return self._collect_pack_for_xsiam_component(
+            pack_id=pack_id, reason_description=reason_description,
+            changed_file_path=path, content_item_range=content_item_range
+        )
+
     def _collect_single(self, path: Path) -> Optional[CollectionResult]:
         self._validate_path(path)
 
@@ -869,7 +939,7 @@ class BranchTestCollector(TestCollector):
             content_item = ContentItem(path)
             self._validate_content_item_compatibility(content_item, is_integration='Integrations' in path.parts)
         except IncompatibleMarketplaceException:
-            if file_type not in MODELING_RULE_COMPONENT_FILES:
+            if file_type not in (MODELING_RULE_COMPONENT_FILES | XSIAM_COMPONENT_FILES):
                 raise
         except NonDictException:
             content_item = None  # py, md, etc. Anything not dictionary-based. Suitable logic follows, see collect_yml
@@ -880,12 +950,12 @@ class BranchTestCollector(TestCollector):
         if file_type in ONLY_INSTALL_PACK_FILE_TYPES:
             content_item_range = content_item.version_range if content_item else None
 
-            if file_type in MODELING_RULE_COMPONENT_FILES:
-                # mark pack for installation and mark the modeling rule for dynamic testing
-                return self._collect_pack_for_modeling_rule(
-                    pack_id=pack_id, reason_description=reason_description,
-                    changed_file_path=path, content_item_range=content_item_range
+            if file_type in (MODELING_RULE_COMPONENT_FILES | XSIAM_COMPONENT_FILES):
+                return self._collect_xsiam_and_modeling_pack(
+                    file_type=file_type, pack_id=pack_id, reason_description=reason_description,
+                    path=path, content_item_range=content_item_range
                 )
+
             else:
                 # install pack without collecting tests.
                 return self._collect_pack(
@@ -1230,7 +1300,8 @@ def output(result: Optional[CollectionResult]):
     logger.info(f'collected {len(tests)} test playbooks:\n{test_str}')
     logger.info(f'collected {len(packs_to_install)} packs to install:\n{packs_to_install_str}')
     logger.info(f'collected {len(packs_to_upload)} packs to upload:\n{packs_to_upload_str}')
-    logger.info(f'collected {len(modeling_rules_to_test_str)} modeling rules to test:\n{modeling_rules_to_test_str}')
+    num_of_modeling_rules = len(modeling_rules_to_test_str.split("\n"))
+    logger.info(f'collected {num_of_modeling_rules} modeling rules to test:\n{modeling_rules_to_test_str}')
     logger.info(f'collected {len(machines)} machines: {machine_str}')
 
     PATHS.output_tests_file.write_text(test_str)
