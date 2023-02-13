@@ -109,7 +109,11 @@ class Client(CrowdStrikeClient):
         )
         return response
 
-    def fetch_indicators(self, limit: int, offset: Optional[int] = 0, fetch_command=False, manual_last_run=0) -> list:
+    def fetch_indicators(self,
+                         limit: int,
+                         offset: int = 0,
+                         fetch_command: bool = False,
+                         manual_last_run: int = 0) -> list:
         """ Get indicators from CrowdStrike API
 
         Args:
@@ -139,12 +143,12 @@ class Client(CrowdStrikeClient):
             if last_run := self.get_last_run():
                 filter = f'{filter}+({last_run})' if filter else f'({last_run})'
             else:
-                filter, indicators = self.handling_first_fetch_and_old_integration_context(filter)
+                filter, indicators = self.handle_first_fetch_context_before_2_1_0(filter)
                 if indicators:
                     limit = limit - len(indicators)
 
         if filter or not fetch_command:
-            demisto.info(f'{filter=}')
+            demisto.debug(f'{filter=}')
             params = assign_params(include_deleted=self.include_deleted,
                                    limit=limit,
                                    offset=offset, q=self.generic_phrase,
@@ -158,25 +162,26 @@ class Client(CrowdStrikeClient):
                 new_last_marker_time = resources[-1].get('_marker')
             else:
                 new_last_marker_time = demisto.getIntegrationContext().get('last_marker_time')
-                demisto.debug('There are no indicators, using last_marker_time from Integration Context')
+                demisto.debug('There are no indicators, '
+                              f'using last_marker_time={new_last_marker_time} from Integration Context')
 
             if fetch_command:
-                ctx = demisto.getIntegrationContext()
-                demisto.info(f"last_marker_time before updating: {ctx.get('last_marker_time')}")
-                ctx.update({'last_marker_time': new_last_marker_time})
-                demisto.setIntegrationContext(ctx)
+                context = demisto.getIntegrationContext()
+                demisto.info(f"last_marker_time before updating: {context.get('last_marker_time')}")
+                context.update({'last_marker_time': new_last_marker_time})
+                demisto.setIntegrationContext(context)
                 demisto.info(f'set last_run to: {new_last_marker_time=}')
 
             indicators.extend(self.create_indicators_from_response(response,
                                                                    self.tlp_color,
                                                                    self.feed_tags,
                                                                    self.create_relationships))
-            return indicators
         return indicators
 
-    def handling_first_fetch_and_old_integration_context(self, filter: str) -> tuple[str, list[dict]]:
+    def handle_first_fetch_context_before_2_1_0(self, filter: str) -> tuple[str, list[dict]]:
         '''
-        Checks whether the context integration is in an old implementation (`last_update`),
+        Checks whether the context integration uses the format used up to version 2_1_0
+        (when the `last_update` parameter was removed),
         or whether this is the first time of the fetch,
         If so, the function imports one indicator
         and extracts the `_marker` from it to import the following indicators.
@@ -391,9 +396,9 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
         readable_output, raw_response
     """
 
-    offset = arg_to_number(args.get('offset', 0))
+    offset = arg_to_number(args.get('offset', 0)) or 0
     limit = arg_to_number(args.get('limit', 50)) or 50
-    last_run = arg_to_number(args.get('last_run', 0))
+    last_run = arg_to_number(args.get('last_run', 0)) or 0
     parsed_indicators = client.fetch_indicators(
         limit=limit,
         offset=offset,
