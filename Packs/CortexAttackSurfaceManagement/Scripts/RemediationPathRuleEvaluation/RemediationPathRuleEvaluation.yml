@@ -24,7 +24,7 @@ comment: For a given alert and remediation path rules that are defined for that 
 commonfields:
   id: RemediationPathRuleEvaluation
   version: -1
-dockerimage: demisto/python3:3.10.9.46807
+dockerimage: demisto/python3:3.10.10.47713
 enabled: true
 name: RemediationPathRuleEvaluation
 runas: DBotWeakRole
@@ -34,6 +34,6 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
-fromversion: 6.5.0
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
