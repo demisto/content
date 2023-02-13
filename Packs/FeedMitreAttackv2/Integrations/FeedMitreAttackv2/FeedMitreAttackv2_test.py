@@ -225,7 +225,10 @@ def test_filter_attack_pattern_object_by_attack_id(attack_id, attack_pattern_obj
 @pytest.mark.parametrize('description, expected_result', [
     ('Gross, J. (2016, February 23). Operation Dust Storm. Retrieved December 22, 2021.', '2016, February 23'),
     ('Cisco. (n.d.). Cisco IOS Software Integrity Assurance - Command History. Retrieved October 21, 2020.', ''),
-    ('Citation: Security Affairs Elderwood Sept 2012)', '')
+    ('Citation: Security Affairs Elderwood Sept 2012)', ''),
+    (
+    'Insikt Group (Recorded Future). (2017, May 17). Recorded Future Research Concludes Chinese Ministry of State Security Behind APT3. Retrieved June 18, 2017.',
+    '2017, May 17')
 ])
 def test_extract_timestamp_from_description(description, expected_result):
     from FeedMitreAttackv2 import extract_timestamp_from_description
