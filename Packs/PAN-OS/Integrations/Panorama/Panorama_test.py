@@ -12,6 +12,7 @@ from CommonServerPython import DemistoException, CommandResults
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 import dateparser
 import test_data.fetch_incidents_input as fetch_incidents_input
+import test_data.mock_rules as mock_rules
 from freezegun import freeze_time
 
 integration_firewall_params = {
@@ -3948,13 +3949,13 @@ class TestPanOSListNatRulesCommand:
                 'Name': 'test', 'Tags': 'test tag', 'SourceZone': '1.1.1.1', 'DestinationZone': '1.1.1.1',
                 'SourceAddress': 'any', 'DestinationAddress': 'any', 'DestinationInterface': None,
                 'Service': 'any', 'Description': None, 'SourceTranslation': None, 'DynamicDestinationTranslation': None,
-                'DestinationTranslation': None
+                'DestinationTranslation': None, 'Disabled': 'yes'
             },
             {
                 'Name': 'test-2', 'Tags': None, 'SourceZone': '2.2.2.2', 'DestinationZone': '2.2.2.2',
                 'SourceAddress': 'any', 'DestinationAddress': 'any', 'DestinationInterface': None,
                 'Service': 'any', 'Description': None, 'SourceTranslation': None, 'DynamicDestinationTranslation': None,
-                'DestinationTranslation': None
+                'DestinationTranslation': None, 'Disabled': 'no'
             }
         ]
 
@@ -5041,19 +5042,19 @@ class TestPanOSListPBFRulesCommand:
                     }
                 },
                 'EnforceSymmetricReturn': {'nexthop-address-list': {'entry': {'@name': '1.1.1.1'}}, 'enabled': 'yes'},
-                'Target': {'negate': 'no'}, 'Application': '3pc', 'Service': 'application-default'
+                'Target': {'negate': 'no'}, 'Application': '3pc', 'Service': 'application-default', 'Disabled': None
             },
             {
                 'Name': 'test2', 'Description': None, 'Tags': None, 'SourceZone': ['1.1.1.1', '2.2.2.2'],
                 'SourceInterface': None, 'SourceAddress': 'any', 'SourceUser': 'any', 'DestinationAddress': 'any',
                 'Action': {'no-pbf': {}}, 'EnforceSymmetricReturn': {'enabled': 'no'}, 'Target': {'negate': 'no'},
-                'Application': 'any', 'Service': 'any'
+                'Application': 'any', 'Service': 'any', 'Disabled': "yes"
             },
             {
                 'Name': 'test3', 'Description': None, 'Tags': None, 'SourceZone': None, 'SourceInterface': 'a2',
                 'SourceAddress': 'any', 'SourceUser': 'any', 'DestinationAddress': 'any',
                 'Action': {'discard': {}}, 'EnforceSymmetricReturn': {'enabled': 'no'}, 'Target': {'negate': 'no'},
-                'Application': 'any', 'Service': 'any'
+                'Application': 'any', 'Service': 'any', 'Disabled': "no"
             }
         ]
 
@@ -5110,8 +5111,8 @@ class TestPanOSListPBFRulesCommand:
         expected_context = [
             {
                 'Name': 'test', 'Description': 'this is a test description', 'Tags': ['test tag', 'dag_test_tag'],
-                'SourceZone': '1.1.1.1', 'SourceInterface': None, 'SourceAddress': '1.1.1.1', 'SourceUser': 'pre-logon',
-                'DestinationAddress': '1.1.1.1',
+                'SourceZone': '1.1.1.1', 'SourceInterface': None, 'Disabled': None, 'SourceAddress': '1.1.1.1',
+                'SourceUser': 'pre-logon', 'DestinationAddress': '1.1.1.1',
                 'Action': {
                     'forward': {
                         'nexthop': {'ip-address': '2.2.2.2'},
@@ -6382,53 +6383,8 @@ class TestFetchIncidentsFlows:
         assert last_id_dict.get('Y_log_type', '') == '000000002'
 
 
-case_only_name = (
-    'name',
-    None,
-    {},
-    "@name='name'"
-)
-
-case_only_name_match: tuple = (
-    None,
-    'name_match',
-    {},
-    "contains(@name,'name_match')"
-)
-
-case_with_characteristics = (
-    'name',
-    None,
-    {'category': 'some_category',
-     'characteristics': ['file-type-ident', 'consume-big-bandwidth', 'used-by-malware'],
-     'risk': '5',
-     'sub_category': 'some_sub_category',
-     'technology': 'browser-based'
-     },
-    "@name='name'and(category='some_category')and(file-type-ident='yes')and(consume-big-bandwidth='yes')"
-    "and(used-by-malware='yes')and(risk='5')and(technology='browser-based')"
-)
-case_empty: tuple = (
-    '',
-    '',
-    {},
-    ''
-)
-get_mock_rules = [case_only_name, case_only_name_match, case_with_characteristics, case_empty]
-
-
-@pytest.mark.parametrize('name_match, name_contains, filters, expected_result', get_mock_rules)
-def test_build_xpath_filter(name_match, name_contains, filters, expected_result):
-    """
-    Given
-    - Filters: str and dict.
-
-    When -
-        running the pan-os-list-applictions command.
-
-    Then
-     - make sure the str xpath is correct.
-    """
+@pytest.mark.parametrize('name, filters, expected_result', mock_rules.get_mock_rules)
+def test_build_xpath_filter(name, filters, expected_result):
     from Panorama import build_xpath_filter
-    mock_result = build_xpath_filter(name_match, name_contains, filters)
+    mock_result = build_xpath_filter(name, filters)
     assert mock_result == expected_result
