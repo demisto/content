@@ -58,7 +58,8 @@ FILTER_OBJS = {
 }
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
-EXTRACT_TIMESTAMP_REGEX = r"(\d{4}),\s(Jan(uary)?|Feb(ruary)?|Mar(ch)?|Apr(il)?|May|Jun(e)?|Jul(y)?|Aug(ust)?|Sep(tember)?|Oct(ober)?|Nov(ember)?|Dec(ember)?)\s(\d{1,2})"
+EXTRACT_TIMESTAMP_REGEX = r"(\d{4}),\s(Jan(uary)?|Feb(ruary)?|Mar(ch)?|Apr(il)?|May|Jun(e)?|" \
+                          r"Jul(y)?|Aug(ust)?|Sep(tember)?|Oct(ober)?|Nov(ember)?|Dec(ember)?)\s(\d{1,2})"
 
 # disable warnings coming from taxii2client - https://github.com/OTRF/ATTACK-Python-Client/issues/43#issuecomment-1016581436
 logging.getLogger("taxii2client.v20").setLevel(logging.ERROR)
