@@ -132,7 +132,8 @@ class SyslogHandlerTLS(logging.Handler):
 
 
 class SyslogManager:
-    def __init__(self, address: str, port: int, protocol: str, logging_level: int, facility: int, cert_path: str | None, self_signed_certificate: bool):
+    def __init__(self, address: str, port: int, protocol: str, logging_level: int,
+                 facility: int, cert_path: str | None, self_signed_certificate: bool):
         """
         Class for managing instances of a syslog logger.
         :param address: The IP address of the syslog server.

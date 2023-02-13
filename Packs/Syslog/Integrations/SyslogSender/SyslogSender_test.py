@@ -239,7 +239,7 @@ def test_SyslogHandlerTLS_init(mocker):
     mocker.patch('ssl.SSLContext.load_verify_locations', return_value=None)
     mocker.patch.object(ssl.SSLContext, 'wrap_socket')
     mocker.patch.object(socket.socket, 'connect')
-    handler = SyslogHandlerTLS(address, port, log_level, facility, cert_path)
+    handler = SyslogHandlerTLS(address, port, log_level, facility, cert_path, False)
     assert handler.address == address
     assert handler.port == port
     assert handler.certfile == cert_path
@@ -268,7 +268,8 @@ def test_SyslogManager():
     facility = 0
     cert_path = 'cert.pem'
     protocol = 'udp'
-    handler = SyslogManager(address, port, protocol, log_level, facility, cert_path)
+    self_signed = True
+    handler = SyslogManager(address, port, protocol, log_level, facility, cert_path, self_signed)
     assert handler.address == address
     assert handler.port == port
     assert handler.syslog_cert_path == cert_path
