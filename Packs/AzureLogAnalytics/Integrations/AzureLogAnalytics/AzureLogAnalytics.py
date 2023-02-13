@@ -31,6 +31,10 @@ class Client:
                  private_key, client_credentials, managed_identities_client_id=None):
 
         tenant_id = refresh_token if self_deployed else ''
+        # MicrosoftClient gets refresh_token_param as well as refresh_token which is the current refresh token from the
+        # integration context (if exists) so It will be possible to manually update the refresh token param for an
+        # existing integration instance.
+        refresh_token_param = refresh_token
         refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
             f'{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/{workspace_name}'
@@ -38,6 +42,7 @@ class Client:
             self_deployed=self_deployed,
             auth_id=auth_and_token_url,  # client_id for client credential
             refresh_token=refresh_token,
+            refresh_token_param=refresh_token_param,
             enc_key=enc_key,  # client_secret for client credential
             redirect_uri=redirect_uri,
             token_retrieval_url='https://login.microsoftonline.com/{tenant_id}/oauth2/token',
