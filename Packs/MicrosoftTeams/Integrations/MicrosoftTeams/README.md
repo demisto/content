@@ -210,7 +210,7 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
 1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
-4. For the following permissions, search for, select the checkbox and click **Add permissions**.
+4. For the following permissions, search for the permission, select the checkbox, and click **Add permissions**.
   - User.Read.All
   - Group.ReadWrite.All
   - Calls.Initiate.All
@@ -224,9 +224,9 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
 
 #### Authentication Using the Client Credentials Flow
 
-1. Choose the 'Client Credentials' option in the ***Authentication Type*** parameter.
-2. Enter your Client/Application ID in the ***Bot ID*** parameter. 
-3. Enter your Client Secret in the ***Bot Password*** parameter.
+1. Choose the 'Client Credentials' option in the **Authentication Type** parameter.
+2. Enter your Client/Application ID in the **Bot ID** parameter. 
+3. Enter your Client Secret in the **Bot Password** parameter.
 4. Save the instance.
 
 
@@ -236,46 +236,46 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
 1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
-4. For the following permissions, search for, select the checkbox and click **Add permissions**.
+4. For the following permissions, search for the permission, select the checkbox and click **Add permissions**.
     ##### Required Application Permissions:
-      1. User.Read.All
-      2. Group.ReadWrite.All
-      3. OnlineMeetings.ReadWrite.All
-      4. ChannelMember.ReadWrite.All
-      5. Channel.Create
-      6. Chat.Create
+      - User.Read.All
+      - Group.ReadWrite.All
+      - OnlineMeetings.ReadWrite.All 
+      - ChannelMember.ReadWrite.All
+      - Channel.Create
+      - Chat.Create
 
     ##### Required Delegated Permissions:
-      1. ChannelMessage.Send
-      2. Chat.ReadWrite
-      3. ChatMessage.Send
-      4. Group.ReadWrite.All
-      5. Channel.Create
-      6. ChannelSettings.ReadWrite.All
-      7. ChatMember.ReadWrite
-      8. Chat.Create
+      - ChannelMessage.Send
+      - Chat.ReadWrite
+      - ChatMessage.Send
+      - Group.ReadWrite.All
+      - Channel.Create
+      - ChannelSettings.ReadWrite.All
+      - ChatMember.ReadWrite
+      - Chat.Create
 5. Verify that all permissions were added, and click **Grant admin consent for Demisto**.
 6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
-7. Click **Expose an API and add Application ID URI (id only)  
-8. Click **Expose an API > Add a scope > 
+7. Click **Expose an API** and add **Application ID URI**
+8. Click **Expose an API > Add a scope** > 
    - Chat.ReadWrite
    - ChatMessage.Send
    - ChannelSettings.ReadWrite.All
    - ChannelMember.Read.All
-9. Click **Authentication > Platform configurations > Add a platform. Choose Web and add Redirect URIs: https://login.microsoftonline.com/common/oauth2/nativeclient
+9. Click **Authentication > Platform configurations > Add a platform.** Choose **Web** and add Redirect URIs: https://login.microsoftonline.com/common/oauth2/nativeclient
 
 #### Authentication Using the Authorization Code Flow
 
-1. Choose the 'Authorization Code' option in the ***Authentication Type*** parameter.
-2. Enter your Client/Application ID in the ***Bot ID*** parameter. 
-3. Enter your Client Secret in the ***Bot Password*** parameter.
-4. Enter your Application redirect URI in the ***Application redirect URI*** parameter.
-5. Copy the following URL and replace the ***TENANT_ID***, ***CLIENT_ID*** and ***REDIRECT_URI*** with your own client ID and redirect URI, accordingly.
+1. Choose the 'Authorization Code' option in the **Authentication Type** parameter.
+2. Enter your Client/Application ID in the **Bot ID** parameter. 
+3. Enter your Client Secret in the **Bot Password** parameter.
+4. Enter your Application redirect URI in the **Application redirect URI** parameter.
+5. Copy the following URL and replace the **TENANT_ID**, **CLIENT_ID** and **REDIRECT_URI** with your own client ID and redirect URI, accordingly.
 https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=code&response_mode=query&scope=offline_access%20https%3A%2F%2Fgraph.microsoft.com%2F.default&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&state=12345. When prompted, accept the Microsoft authorization request for the required permissions. You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&state=12345&session_state=SESSION_STATE```
-6. Copy the ***AUTH_CODE*** (without the “code=” prefix) and paste it in your instance configuration under the **Authorization code** parameter. 
+6. Copy the **AUTH_CODE** (without the “code=” prefix) and paste it in your instance configuration under the **Authorization code** parameter. 
 7. Save the instance.
-8. Run the ***!microsoft-teams-auth-test*** command - a 'Success' message should be printed to the War Room.
+8. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
 
 
 
@@ -288,13 +288,13 @@ https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Name | The integration instance name.<br />If using Cortex XSOAR rerouting configuration, insert here the instance name you configured in the messaging endpoint. | True |
-    | Bot ID | Bot ID | True |
-    | Bot Password | Bot Password | True |
+    | Bot ID | Bot ID. | True |
+    | Bot Password | Bot Password. | True |
     | Tenant ID |  | False |
     | Authentication Type |  | True |
     | Application redirect URI (for Authorization Code mode) |  | False |
-    | Authorization code | For Authorization Code flow mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
-    | Default team | Default team - team to which messages and notifications are sent. If a team is specified as a command argument, it overrides this parameter | True |
+    | Authorization code | For Authorization Code flow mode. Received from the authorization step. See the Detailed Instructions \(?\) section | False |
+    | Default team | The team to which messages and notifications are sent. If a team is specified as a command argument, it overrides this parameter. | True |
     | Notifications channel |  | True |
     | Certificate (Required for HTTPS) |  | False |
     | Private Key (Required for HTTPS) |  | False |
@@ -304,8 +304,8 @@ https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Long running instance |  | False |
-    | Listen port, e.g. 7000 (Required for investigation mirroring and direct messages) | longRunningPort | False |
-    | Incident type | Incident type | False |
+    | Listen port, e.g., 7000 (Required for investigation mirroring and direct messages) | longRunningPort | False |
+    | Incident type | Incident type. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 5. Click the **Save & exit** button.
@@ -342,12 +342,12 @@ https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=
 
 ## Known Limitations
 ---
-- In some cases, you might encounter a problem, where no communication is created between Teams and the messaging endpoint, when adding a bot to the team. You can workaround this problem by adding any member to the team the bot was added to. It's supposed to trigger a communication and solve the issue.
+- In some cases, you might encounter a problem, where no communication is created between Teams and the messaging endpoint, when adding a bot to the team. You can work around this problem by adding any member to the team the bot was added to. It will trigger a communication and solve the issue.
 - The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command is only supported when using the `Client Credentials flow` due to a limitation in Microsoft's permissions system. 
 - In addition, the chat commands are only supported when using the `Authorization Code flow`.
-- Posting a message or adaptive card to a private/shared channel is currently not supported in the *send-notification* command. Thus, also the *mirror_investigation* command does not support private/shared channels. For more information, see the [Microsoft General known issues and limitations](https://learn.microsoft.com/en-us/connectors/teams/#general-known-issues-and-limitations).
+- Posting a message or adaptive card to a private/shared channel is currently not supported in the ***send-notification*** command. Thus, also the ***mirror_investigation*** command does not support private/shared channels. For more information, see [Microsoft General known issues and limitations](https://learn.microsoft.com/en-us/connectors/teams/#general-known-issues-and-limitations).
 - In case of multiple chats/users sharing the same name, the first one will be taken.
-- See Microsoft documentation to [Limits and specifications for Microsoft Teams](https://learn.microsoft.com/en-us/microsoftteams/limits-specifications-teams)
+- See Microsoft documentation for [Limits and specifications for Microsoft Teams](https://learn.microsoft.com/en-us/microsoftteams/limits-specifications-teams).
 
 
 ## Commands
@@ -407,8 +407,8 @@ Mirrors the Cortex XSOAR investigation to the specified Microsoft Teams channel.
 | **Argument Name** | **Description**                                                                                                                                                                                          | **Required** |
 |-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
 | mirror_type       | The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring. Possible values are: all, chat, none. Default is all. | Optional     | 
-| autoclose         | Whether to auto-close the channel when the incident is closed in Cortex XSOAR. If "true", the channel will be auto-closed. Default is "true". Possible values are: true, false. Default is true.         | Optional     | 
-| direction         | The mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both". Possible values are: Both, FromDemisto, ToDemisto. Default is both.                                                               | Optional     | 
+| autoclose         | Whether to auto-close the channel when the incident is closed in Cortex XSOAR. If "true", the channel will be auto-closed. Possible values are: true, false. Default is true.                            | Optional     | 
+| direction         | The mirroring direction. Possible values are: Both, FromDemisto, ToDemisto. Default is both.                                                                                                             | Optional     | 
 | team              | The team in which to mirror the Cortex XSOAR investigation. If not specified, the default team configured in the integration parameters will be used.                                                    | Optional     | 
 | channel_name      | The name of the channel. The default is "incident-INCIDENTID".                                                                                                                                           | Optional     | 
 
@@ -696,10 +696,10 @@ Retrieves a list of members from a channel.
 | MicrosoftTeams.ChannelList.channelName                         | String   | The name of the channel.                                                                             | 
 | MicrosoftTeams.ChannelList.members.displayName                 | String   | The display name of the members.                                                                     | 
 | MicrosoftTeams.ChannelList.members.email                       | String   | The email of the members.                                                                            | 
-| MicrosoftTeams.ChannelList.members.id                          | String   | The id of the members.                                                                               | 
+| MicrosoftTeams.ChannelList.members.id                          | String   | The ID of the members.                                                                               | 
 | MicrosoftTeams.ChannelList.members.roles                       | String   | The roles of the members.                                                                            | 
-| MicrosoftTeams.ChannelList.members.tenantId                    | String   | The tenantId of the members.                                                                         | 
-| MicrosoftTeams.ChannelList.members.userId                      | String   | The userId of the members.                                                                           | 
+| MicrosoftTeams.ChannelList.members.tenantId                    | String   | The tenant ID of the members.                                                                        | 
+| MicrosoftTeams.ChannelList.members.userId                      | String   | The user ID of the members.                                                                          | 
 | MicrosoftTeams.ChannelList.members.visibleHistoryStartDateTime | String   | The timestamp denoting how far back a conversation's history is shared with the conversation member. | 
 
 ##### Command Example
@@ -727,11 +727,11 @@ Note: Only one oneOnOne chat can exist between two members. If a oneOnOne chat a
 
 ##### Input
 
-| **Argument Name** | **Description**                                                                                                                                   | **Required** |
-|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| chat_type         | Specifies the type of chat. Possible values are - group and oneOnOne. Default is "group". Possible values are: group, oneOnOne. Default is group. | Required     | 
-| member            | Display name/mail/UPN of user that should be added to the chat. Can be an array.                                                                  | Optional     | 
-| chat_name         | The title of the chat. The chat title can be provided only if the chat is of group type.                                                          | Optional     | 
+| **Argument Name** | **Description**                                                                          | **Required** |
+|-------------------|------------------------------------------------------------------------------------------|--------------|
+| chat_type         | Specifies the type of chat. Possible values are: group, oneOnOne. Default is group.      | Required     | 
+| member            | Display name/mail/UPN of user that should be added to the chat. Can be an array.         | Optional     | 
+| chat_name         | The title of the chat. The chat title can be provided only if the chat is of group type. | Optional     | 
 
 
 ##### Context Output
@@ -772,12 +772,12 @@ Sends a new chat message in the specified chat.
 
 ##### Input
 
-| **Argument Name** | **Description**                                                                              | **Required** |
-|-------------------|----------------------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID / group chat name (topic) / oneOnOne Member (Display name/mail/UPN).             | Required     | 
-| content           | The content of the chat message.                                                             | Required     | 
-| content_type      | The message content type - Plaintext/HTML. Possible values are: text, html. Default is text. | Optional     | 
-| message_type      | The type of chat message. Default is message.                                                | Optional     | 
+| **Argument Name** | **Description**                                                                  | **Required** |
+|-------------------|----------------------------------------------------------------------------------|--------------|
+| chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). | Required     | 
+| content           | The content of the chat message.                                                 | Required     | 
+| content_type      | The message content type. Possible values are: text, html. Default is text.      | Optional     | 
+| message_type      | The type of chat message. Default is message.                                    | Optional     | 
 
 
 #### Context Output
@@ -833,11 +833,11 @@ Adds a member (user) to a group chat.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                       | **Required** |
-|-------------------|-----------------------------------------------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID or group chat name (topic) to which to add the member.                                                    | Required     | 
-| member            | Display name/mail/UPN of user that should be added to the chat. Can be an array.                                      | Required     | 
-| share_history     | Whether to share the whole history of the chat. Default is "true". Possible values are: true, false. Default is True. | Optional     | 
+| **Argument Name** | **Description**                                                                                    | **Required** |
+|-------------------|----------------------------------------------------------------------------------------------------|--------------|
+| chat              | The chat ID or group chat name (topic) to which to add the member.                                 | Required     | 
+| member            | Display name/mail/UPN of user that should be added to the chat. Can be an array.                   | Required     | 
+| share_history     | Whether to share the whole history of the chat. Possible values are: true, false. Default is True. | Optional     | 
 
 
 #### Context Output
@@ -877,10 +877,10 @@ Retrieves a list of members from a chat.
 | MicrosoftTeams.ChatList.chatId                              | String   | The chat's unique identifier.                                                                        | 
 | MicrosoftTeams.ChatList.members.displayName                 | String   | The display name of the members.                                                                     | 
 | MicrosoftTeams.ChatList.members.email                       | String   | The email of the members.                                                                            | 
-| MicrosoftTeams.ChatList.members.id                          | String   | The id of the members.                                                                               | 
+| MicrosoftTeams.ChatList.members.id                          | String   | The ID of the members.                                                                               | 
 | MicrosoftTeams.ChatList.members.roles                       | String   | The roles of the members.                                                                            | 
-| MicrosoftTeams.ChatList.members.tenantId                    | String   | The tenantId of the members.                                                                         | 
-| MicrosoftTeams.ChatList.members.userId                      | String   | The userId of the members.                                                                           | 
+| MicrosoftTeams.ChatList.members.tenantId                    | String   | The tenant ID of the members.                                                                        | 
+| MicrosoftTeams.ChatList.members.userId                      | String   | The user ID of the members.                                                                          | 
 | MicrosoftTeams.ChatList.members.visibleHistoryStartDateTime | String   | The timestamp denoting how far back a conversation's history is shared with the conversation member. | 
 
 ##### Command Example
@@ -908,14 +908,14 @@ Retrieves a list of chats that the user is part of. If 'chat' is specified - ret
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                           | **Required** |
-|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID / group chat name (topic) / oneOnOne Member (Display name/mail/UPN).                                                                          | Optional     | 
-| filter            | Filters results. For example: topic eq 'testing'. For more query examples, see https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http . | Optional     | 
-| expand            | Expands the results to include members or lastMessagePreview properties. Possible values are: members, lastMessagePreview.                                | Optional     | 
-| limit             | The number of results to retrieve. Default value is 50. Default is 50.                                                                                    | Optional     | 
-| next_link         | A link that specifies a starting point to use for subsequent calls.                                                                                       | Optional     | 
-| page_size         | Number of results to return per page. Default is 50.                                                                                                      | Optional     | 
+| **Argument Name** | **Description**                                                                                                                                          | **Required** |
+|-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).                                                                         | Optional     | 
+| filter            | Filters results. For example: topic eq 'testing'. For more query examples, see https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http. | Optional     | 
+| expand            | Expands the results to include members or lastMessagePreview properties. Possible values are: members, lastMessagePreview.                               | Optional     | 
+| limit             | The number of results to retrieve. Default is 50.                                                                                                        | Optional     | 
+| next_link         | A link that specifies a starting point to use for subsequent calls.                                                                                      | Optional     | 
+| page_size         | Number of results to return per page. Default is 50.                                                                                                     | Optional     | 
 
 
 #### Context Output
@@ -959,8 +959,8 @@ Retrieves a list of messages in a chat.
 
 | **Argument Name** | **Description**                                                                                                                                                                       | **Required** |
 |-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID / group chat name (topic) / oneOnOne Member (Display name/mail/UPN).                                                                                                      | Required     | 
-| limit             | The number of results to retrieve. Default value is 50. Default is 50.                                                                                                                | Optional     | 
+| chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).                                                                                                      | Required     | 
+| limit             | The number of results to retrieve. Default is 50.                                                                                                                                     | Optional     | 
 | order_by          | Orders results by lastModifiedDateTime (default) or createdDateTime in descending order. Possible values are: lastModifiedDateTime, createdDateTime. Default is lastModifiedDateTime. | Optional     | 
 | next_link         | A link that specifies a starting point to use for subsequent calls.                                                                                                                   | Optional     | 
 | page_size         | Number of results to return per page. Default is 50.                                                                                                                                  | Optional     | 

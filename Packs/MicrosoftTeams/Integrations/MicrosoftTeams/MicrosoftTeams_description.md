@@ -14,12 +14,12 @@ For more information about registering a calling bot see the [Microsoft Teams Do
 #### Authorize Cortex XSOAR for Azure Active Directory Users (Self deployed Azure App)
 
 There are two different authentication methods for self-deployed configuration: 
-- [Client Credentials flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow)
-- [Authorization Code flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
+- [Client Credentials flow](https://github.com/demisto/content/blob/4934c888873f507e4788b2a95fa4e39c87995395/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/README.md#client-credentials-flow)
+- [Authorization Code flow](https://github.com/demisto/content/blob/4934c888873f507e4788b2a95fa4e39c87995395/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/README.md#authorization-code-flow)
 
-In order to use ***microsoft-teams-ring-user***, you must use the ****Client Credentials flow****.
+In order to use ***microsoft-teams-ring-user***, you must use the **Client Credentials flow**.
 
-In order to use the following commands, you must use the ****Authorization Code flow****:
+In order to use the following commands, you must use the **Authorization Code flow**:
   - ***microsoft-teams-chat-create***
   - ***microsoft-teams-message-send-to-chat***
   - ***microsoft-teams-chat-add-user***
@@ -29,8 +29,5 @@ In order to use the following commands, you must use the ****Authorization Code 
   - ***microsoft-teams-chat-update***
 
 
-**Note:** When using the Authorization Code flow, make sure the user you authenticate with has the relevant roles in Azure AD in order to execute the operation.
-
-#### Self deployed configuration
-- [Client Credentials flow](https://github.com/demisto/content/blob/4934c888873f507e4788b2a95fa4e39c87995395/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/README.md#client-credentials-flow)
-- [Authorization Code flow](https://github.com/demisto/content/blob/4934c888873f507e4788b2a95fa4e39c87995395/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/README.md#authorization-code-flow)
+**Note:** When using the Authorization Code flow, make sure the user you authenticate with has the relevant roles in Azure AD in order to execute the operation. 
+          To verify that authentication was configured correctly, run the ***!microsoft-teams-auth-test*** command.
