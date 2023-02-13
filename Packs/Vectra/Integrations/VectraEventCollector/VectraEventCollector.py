@@ -35,6 +35,7 @@ VENDOR = "Vectra"
 class VectraClient(BaseClient):
 
     api_version = "2.2"
+    endpoints = ("detections", "audits")
 
     def __init__(self, config: Dict[str, Any] = demisto.params()):
 
@@ -57,18 +58,13 @@ class VectraClient(BaseClient):
             headers=self.create_headers(),
         )
 
-    def check_auth(self) -> None:
-
+    def get_endpoints(self) -> Dict[str, str]:
         """
-        Sends a request to the API root to check the authentication.
-        If the authentication succeeds, the API responds with an empty `Dict`.
-        If the authentication fails, we get back `{"detail": "Invalid token."}`
-
-        Returns:
-            - Empty `Dict` if the authentication is successful, the error `Dict` otherwise
+        Sends a request to the API root to check the authentication. The API root responds with a `Dict[str,str]`
+        of API endpoints and URLs.
         """
 
-        self._http_request(method="GET")
+        return self._http_request(method="GET")
 
     def validate_url(self, url: str):
 
@@ -102,25 +98,37 @@ class VectraClient(BaseClient):
 def test_module(client: VectraClient) -> str:
     """Tests API connectivity and authentication'
 
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
+    `
 
-    :type client: ``Client``
-    :param Client: client to use
+        Since the event collection works with the audit and detection APIs, we want to ensure that the user has access
+        to them so we check if these endpoints exist in the response.
 
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+        Arguments:
+            - ``client` (``VectraClient``): An instance of a Vectra API HTTP client.
+
+        Returns:
+            `str` `'ok'` if test passed, anything else will raise an exception.
     """
 
-    try:
+    demisto.debug(f"Testing connection and authentication to {client._base_url}...")
 
-        client.check_auth()
+    try:
+        endpoints: Dict[str, str] = client.get_endpoints()
+
+        demisto.debug(
+            f"User has access to the following endpoints returned: {list(endpoints.keys())}"
+        )
+
+        # Checks that the authenticated user has access to the required endpoints
+        if all(ep in endpoints for ep in client.endpoints):
+            demisto.debug("User has access to the all required endpoints.")
+            return "ok"
+        else:
+            return f"""User doesn't have access to endpoints {client.endpoints}, only to {','.join(list(endpoints.keys()))}.
+                    Check with your Vectra account administrator."""
 
     except Exception as e:
         return f"Error authenticating: {str(e)}"
-
-    return "ok"
 
 
 def get_events(client: VectraClient, last_run: Dict[str, str] = demisto.getLastRun()):
@@ -173,7 +181,12 @@ def main() -> None:
                 demisto.setLastRun(next_run)
 
             if should_push_events:
+                demisto.debug(f"Sending events {len(events)} to XSIAM...")
                 send_events_to_xsiam(events, vendor=VENDOR, product=VENDOR)
+                demisto.debug(f"{len(events)} events sent to XSIAM.")
+
+        else:
+            raise NotImplementedError(f"command '{cmd}' is not implemented.")
 
     # Log exceptions and return errors
     except Exception as e:
