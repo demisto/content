@@ -14,7 +14,7 @@ from typing import Any, Dict
 import os
 import traceback
 from string import Template
-
+from threading import Timer
 
 class Handler:
     @staticmethod
@@ -321,6 +321,9 @@ def run_long_running(params: Dict = None, is_test: bool = False):
             test_nginx_web_server(nginx_port, params)
             nginx_log_monitor = gevent.spawn(nginx_log_monitor_loop, nginx_process)
             demisto.updateModuleHealth('')
+            timer = Timer(300, signal_handler_profiling_dump, kwargs={'_sig': None, '_frame': None})
+            timer.start()
+            # add one more thread for memory usage dump
             server.serve_forever()
     except Exception as e:
         error_message = str(e)
@@ -329,6 +332,8 @@ def run_long_running(params: Dict = None, is_test: bool = False):
         raise ValueError(error_message)
 
     finally:
+        if not is_test:
+            timer.cancel()
         if nginx_process:
             try:
                 nginx_process.terminate()
