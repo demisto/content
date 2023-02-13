@@ -8,11 +8,11 @@ from CrowdStrikeFalconX import Client, \
     check_quota_status_command, find_sandbox_reports_command, find_submission_id_command, run_polling_command, \
     pop_polling_related_args, is_new_polling_search, arrange_args_for_upload_func, remove_polling_related_args, \
     DBotScoreReliability, parse_indicator
-from TestsInput.context import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT, SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT, \
+from test_data.context import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT, SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT, \
     GET_FULL_REPORT_CONTEXT, GET_REPORT_SUMMARY_CONTEXT, GET_ANALYSIS_STATUS_CONTEXT, CHECK_QUOTA_STATUS_CONTEXT, \
     FIND_SANDBOX_REPORTS_CONTEXT, FIND_SUBMISSION_ID_CONTEXT, MULTIPLE_ERRORS_RESULT, GET_FULL_REPORT_CONTEXT_EXTENDED, \
     FIND_SANDBOX_REPORTS_HASH_CONTEXT, FIND_SANDBOX_REPORTS_NOT_FOUND_HASH_CONTEXT
-from TestsInput.http_responses import SEND_UPLOADED_FILE_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE, \
+from test_data.http_responses import SEND_UPLOADED_FILE_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE, \
     SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE, GET_FULL_REPORT_HTTP_RESPONSE, GET_REPORT_SUMMARY_HTTP_RESPONSE, \
     CHECK_QUOTA_STATUS_HTTP_RESPONSE, FIND_SANDBOX_REPORTS_HTTP_RESPONSE, FIND_SUBMISSION_ID_HTTP_RESPONSE, \
     GET_ANALYSIS_STATUS_HTTP_RESPONSE, MULTI_ERRORS_HTTP_RESPONSE, NO_ERRORS_HTTP_RESPONSE, \
@@ -185,6 +185,7 @@ def test_cs_falcon_x_polling_related_commands(command, args, http_response, cont
     - validate the expected_result and the created context
     """
     mocker.patch.object(Client, '_get_access_token')
+    mocker.patch.object(demisto, 'get', return_value={'sha256': 'sha256', 'file_name': 'test.pdf'})
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
                     proxy=False, reliability=DBotScoreReliability.B)
 
@@ -352,10 +353,10 @@ def test_running_polling_command_new_search_for_url(mocker):
                     proxy=False, reliability=DBotScoreReliability.B)
 
     mocker.patch.object(Client, 'send_url_to_sandbox_analysis',
-                        return_value=SEND_UPLOADED_FILE_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE)
+                        return_value=SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE)
     mocker.patch.object(Client, 'get_full_report', return_value=GET_FULL_REPORT_HTTP_RESPONSE)
 
-    expected_outputs = SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT
+    expected_outputs = SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT
     command_results = run_polling_command(client, args, 'cs-fx-submit-url', send_url_to_sandbox_analysis_command,
                                           get_full_report_command, 'URL')
 
@@ -377,6 +378,7 @@ def test_running_polling_command_new_search_for_file(mocker):
     args = SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS_POLLING
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
     mocker.patch.object(Client, '_get_access_token')
+    mocker.patch.object(demisto, 'get', return_value={'sha256': 'sha256', 'file_name': 'test.pdf'})
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
                     proxy=False, reliability=DBotScoreReliability.B)
 
