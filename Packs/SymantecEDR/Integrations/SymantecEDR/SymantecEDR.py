@@ -16,7 +16,7 @@ DEFAULT_TIMEOUT = 600
 
 # Symantec TOKEN timeout 60 mins
 SESSION_TIMEOUT_SEC = 3600
-ISO8901_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
+ISO8601_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 INTEGRATION_CONTEXT_NAME = 'SymantecEDR'
 DEFAULT_OFFSET = 0
 DEFAULT_PAGE_SIZE = 50
@@ -136,20 +136,42 @@ class Client(BaseClient):
         self.access_token = token
 
     @property
-    def headers(self):
+    def headers(self) -> dict:
+        """
+        Client headers method
+        Returns:
+            self.headers
+        """
         if self.access_token is None:  # for logging in, before self.access_token is set
             return {'Content-Type': 'application/json'}
 
         return {'Authorization': f'Bearer {self.access_token}', 'Content-Type': 'application/json'}
 
+    @staticmethod
+    def get_access_token_from_context(global_context: dict[str, Any]) -> str | None:
+        """
+        Symantec EDR on-premise get previous access token from global integration context
+        Args:
+            global_context(dict): Integration Context data
+        Returns:
+            return token or None
+        """
+        if save_timestamp := global_context.get('access_token_timestamp'):
+            now_timestamp = int(time.time())
+            if token := global_context.get('access_token'):
+                time_diff = int(now_timestamp - save_timestamp)
+                if time_diff <= SESSION_TIMEOUT_SEC:
+                    return token
+                else:
+                    LOG('Access token expired')
+        return None
+
     def get_access_token_or_login(self) -> None:
         """
         Generate Access token
-        Returns:
-            self.access_token
         """
         global_context = demisto.getIntegrationContext()
-        if last_access_token := get_access_token_from_context(global_context):
+        if last_access_token := self.get_access_token_from_context(global_context):
             self.access_token = last_access_token
             LOG("Access token still active. Re-use the same token")
         else:
@@ -166,9 +188,7 @@ class Client(BaseClient):
                 if error_msg := HTTP_ERRORS.get(exc.response.status_code):
                     raise DemistoException(f'{error_msg}', res=exc.response) from exc
                 else:
-                    # if it is unknown error - get the message from the error itself
-                    raise DemistoException(
-                        f'Something went wrong with the http call. Error: {str(exc)}') from exc
+                    raise
 
             LOG("Generated Access token.")
             self.access_token = response.json().get("access_token")
@@ -180,18 +200,13 @@ class Client(BaseClient):
 
         return None
 
-    def http_request(
-            self,
-            method: str,
-            url_suffix: str,
-            params: dict[str, Any] = None,
-            json_data: dict[str, Any] = None
-    ) -> Dict[str, Any]:
+    def http_request(self, method: str, endpoint: str, params: dict[str, Any] = None, json_data: dict[str, Any] = None)\
+            -> dict[str, Any]:
         """
         Call Symantec EDR On-prem POST and GET Request API
         Args:
             method (str): Request Method support POST and GET
-            url_suffix (str): API endpoint
+            endpoint (str): API endpoint
             params (dict): URL parameters to specify the query for GET.
             json_data (dict): The dictionary to send in a request for POST.
 
@@ -201,7 +216,7 @@ class Client(BaseClient):
         try:
             response = self._http_request(
                 method=method.upper(),
-                url_suffix=url_suffix,
+                url_suffix=endpoint,
                 headers=self.headers,
                 json_data=json_data,
                 params=params,
@@ -213,18 +228,16 @@ class Client(BaseClient):
             if error_msg := HTTP_ERRORS.get(exc.response.status_code):
                 raise DemistoException(f'{error_msg}', res=exc.response) from exc
             else:
-                # if it is unknown error - get the message from the error itself
-                raise DemistoException(
-                    f'Something went wrong with the http call. Error: {str(exc)}') from exc
+                raise
 
         return response.json()
 
-    def query_patch_api(self, endpoint: str, payload: list[dict[str, Any]]):
+    def http_request_patch(self, endpoint: str, payload: list) -> requests.Response:
         """
         Call the PATCH api to add/modify or update to the endpoint
         Args:
             endpoint (str): Symantec EDR endpoint resources operation add, update, delete
-            payload (List): request body
+            payload (list): request body
         Returns:
             return response
         """
@@ -242,64 +255,399 @@ class Client(BaseClient):
             if error_msg := HTTP_ERRORS.get(exc.response.status_code):
                 raise DemistoException(f'{error_msg}', res=exc.response) from exc
             else:
-                # if it is unknown error - get the message from the error itself
-                raise DemistoException(
-                    f'Something went wrong with the http call. Error: {str(exc)}') from exc
+                raise
 
         return response
+
+    def list_domain_file(self, payload: dict) -> dict[str, Any]:
+        """
+        Client method for domain file association list
+        Args:
+            payload (dict): request json body
+        Returns:
+            return response json
+        """
+        return self.http_request(
+            method='POST',
+            endpoint='/atpapi/v2/associations/entities/domains-files',
+            params={},
+            json_data=payload
+        )
+
+    def list_endpoint_domain(self, payload: dict) -> dict[str, Any]:
+        """
+        Client method for endpoint domain association list
+        Args:
+            payload (dict): request json body
+        Returns:
+            return response json
+        """
+        return self.http_request(
+            method='POST',
+            endpoint='/atpapi/v2/associations/entities/endpoints-domains',
+            params={},
+            json_data=payload
+        )
+
+    def list_endpoint_file(self, payload: dict) -> dict[str, Any]:
+        """
+        Client method for endpoint file association list
+        Args:
+            payload (dict): request json body
+        Returns:
+            return response json
+        """
+        return self.http_request(
+            method='POST',
+            endpoint='/atpapi/v2/associations/entities/endpoints-files',
+            params={},
+            json_data=payload
+        )
+
+    def get_audit_event(self, payload: dict) -> dict[str, Any]:
+        """
+        Client method for get Audit Events
+        Args:
+            payload (dict): request json body
+        Returns:
+            return response json
+        """
+        return self.http_request(
+            method='POST',
+            endpoint='/atpapi/v2/auditevents',
+            params={},
+            json_data=payload
+        )
+
+    def get_event_list(self, payload: dict) -> dict[str, Any]:
+        """
+        Client method for get Events List
+        Args:
+            payload (dict): request json body
+        Returns:
+            return response json
+        """
+        return self.http_request(
+            method='POST',
+            endpoint='/atpapi/v2/events',
+            params={},
+            json_data=payload
+        )
+
+    def get_system_activity(self, payload: dict) -> dict[str, Any]:
+        """
+        Client method for get System Activity
+        Args:
+            payload (dict): request json body
+        Returns:
+            return response json
+        """
+        return self.http_request(
+            method='POST',
+            endpoint='/atpapi/v2/systemactivities',
+            params={},
+            json_data=payload
+        )
+
+    def get_event_for_incident(self, payload: dict) -> dict[str, Any]:
+        """
+        Client method for get event for Incident
+        Args:
+            payload (dict): request json body
+        Returns:
+            return response json
+        """
+        return self.http_request(
+            method='POST',
+            endpoint='/atpapi/v2/incidentevents',
+            params={},
+            json_data=payload
+        )
+
+    def get_incident(self, payload: dict) -> dict[str, Any]:
+        """
+        Client method for get Incident
+        Args:
+            payload (dict): request json body
+        Returns:
+            return response json
+        """
+        return self.http_request(
+            method='POST',
+            endpoint='/atpapi/v2/incidents',
+            params={},
+            json_data=payload
+        )
+
+    def get_incident_comment(self, payload: dict, uuid: str) -> dict[str, Any]:
+        """
+        Client method for get Incident
+        Args:
+            payload (dict): request json body
+            uuid (str): Incident Unique ID
+        Returns:
+            return response json
+        """
+        return self.http_request(
+            method='POST',
+            endpoint=f'/atpapi/v2/incidents/{uuid}/comments',
+            params={},
+            json_data=payload
+        )
+
+    def add_incident_comment(self, uuid: str, value: str) -> requests.Response:
+        """
+        Client method for add Incident comment
+
+        Args:
+            uuid : Incident Unique ID
+            value : Incident Comment
+        Returns:
+            return response json
+        """
+        request_data = {
+            'op': 'add',
+            'path': f'/{uuid}/comments',
+            'value': value[:512]
+        }
+        demisto.debug(f'Add comment data: {request_data}')
+        return self.http_request_patch(
+            endpoint='/atpapi/v2/incidents',
+            payload=[request_data]
+        )
+
+    def close_incident(self, uuid: str, value: int) -> requests.Response:
+        """
+        Client method for close incident
+
+        Args:
+            uuid : Incident Unique ID
+            value : Incident Comment
+        Returns:
+            return response json
+        """
+        request_data = {
+            'op': 'replace',
+            'path': f'/{uuid}/state',
+            'value': value
+        }
+        return self.http_request_patch(
+            endpoint='/atpapi/v2/incidents',
+            payload=[request_data]
+        )
+
+    def update_incident(self, uuid: str, value: int) -> requests.Response:
+        """
+        Client method for update incident Resolution
+
+        Args:
+            uuid : Incident Unique ID
+            value : Incident Comment
+        Returns:
+            return response json
+        """
+        request_data = {
+            'op': 'replace',
+            'path': f'/{uuid}/resolution',
+            'value': value
+        }
+        return self.http_request_patch(
+            endpoint='/atpapi/v2/incidents',
+            payload=[request_data]
+        )
+
+    def get_file_instance(self, payload: dict, sha2: str | None) -> dict[str, Any]:
+        """
+        Client method for get file instance
+        Args:
+            payload (dict): request json body
+            sha2 (str): file sha2 value
+        Returns:
+            return response json
+        """
+        endpoint = f'/atpapi/v2/entities/files/{sha2}/instances' if sha2 else '/atpapi/v2/entities/files/instances'
+
+        return self.http_request(
+            method='POST',
+            endpoint=endpoint,
+            params={},
+            json_data=payload
+        )
+
+    def get_domain_instance(self, payload: dict) -> dict[str, Any]:
+        """
+        Client method for get domain instance
+        Args:
+            payload (dict): request json body
+        Returns:
+            return response json
+        """
+        return self.http_request(
+            method='POST',
+            endpoint='/atpapi/v2/entities/domains/instances',
+            params={},
+            json_data=payload
+        )
+
+    def get_endpoint_instance(self, payload: dict) -> dict[str, Any]:
+        """
+        Client method for get endpoint instance
+        Args:
+            payload (dict): request json body
+        Returns:
+            return response json
+        """
+        return self.http_request(
+            method='POST',
+            endpoint='/atpapi/v2/entities/endpoints/instances',
+            params={},
+            json_data=payload
+        )
+
+    def get_allow_list(self, payload: dict) -> dict[str, Any]:
+        """
+        Client method for get allow list
+        Args:
+            payload (dict): request json body
+        Returns:
+            return response json
+        """
+        return self.http_request(
+            method='GET',
+            endpoint='/atpapi/v2/policies/allow_list',
+            params=payload,
+            json_data={}
+        )
+
+    def get_deny_list(self, payload: dict) -> dict[str, Any]:
+        """
+        Client method for get deny list
+        Args:
+            payload (dict): request json body
+        Returns:
+            return response json
+        """
+        return self.http_request(
+            method='GET',
+            endpoint='/atpapi/v2/policies/deny_list',
+            params=payload,
+            json_data={}
+        )
+
+    def get_cancel_endpoint(self, command_id: str) -> dict[str, Any]:
+        """
+        Client method for cancel endpoint
+        Args:
+            command_id (str): command_id separate by commas
+        Returns:
+            return response json
+        """
+        payload = {'action': 'cancel_command', 'targets': argToList(command_id)}
+        return self.http_request(
+            method='POST',
+            endpoint='/atpapi/v2/commands',
+            params={},
+            json_data=payload
+        )
+
+    def get_delete_endpoint(self, device_uid: str, file_sha2: str) -> dict[str, Any]:
+        """
+        Client method for delete endpoint
+        Args:
+            device_uid (str): Endpoint device id
+            file_sha2 (str): Endpoint file sha2
+        Returns:
+            return response json
+        """
+        payload = {
+            'action': 'delete_endpoint_file',
+            'targets': [{'device_uid': device_uid, 'hash': file_sha2}]
+        }
+        return self.http_request(
+            method='POST',
+            endpoint='/atpapi/v2/commands',
+            params={},
+            json_data=payload
+        )
+
+    def get_isolate_endpoint(self, device_uid: str) -> dict[str, Any]:
+        """
+        Client method for Isolate endpoint
+        Args:
+            device_uid (str): Endpoint Device UUID
+        Returns:
+            return response json
+        """
+        payload = {'action': 'isolate_endpoint', 'targets': argToList(device_uid)}
+        return self.http_request(
+            method='POST',
+            endpoint='/atpapi/v2/commands',
+            params={},
+            json_data=payload
+        )
+
+    def get_rejoin_endpoint(self, device_uid: str) -> dict[str, Any]:
+        """
+        Client method for Rejoin endpoint
+        Args:
+            device_uid (str): Endpoint Device UUID
+        Returns:
+            return response json
+        """
+        payload = {'action': 'rejoin_endpoint', 'targets': argToList(device_uid)}
+        return self.http_request(
+            method='POST',
+            endpoint='/atpapi/v2/commands',
+            params={},
+            json_data=payload
+        )
+
+    def get_status_endpoint(self, command_id: str, payload: dict) -> dict[str, Any]:
+        """
+        Client method for get endpoint status
+        Args:
+            command_id (str): Endpoint command_id
+            payload: request body
+
+        Returns:
+            return response json
+        """
+        return self.http_request(
+            method='POST',
+            endpoint=f'/atpapi/v2/commands/{command_id}',
+            params={},
+            json_data=payload)
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def get_access_token_from_context(global_context: dict[str, Any]):
-    """
-    Symantec EDR on-premise get previous access token from global integration context
-    Args:
-        global_context(dict): Integration Context data
-    Returns:
-        return token or None
-    """
-    if save_timestamp := global_context.get('access_token_timestamp'):
-        now_timestamp = int(time.time())
-        if token := global_context.get('access_token'):
-            time_diff = int(now_timestamp - save_timestamp)
-        # if token := global_context.get('access_token'):
-            if time_diff <= SESSION_TIMEOUT_SEC:
-                return token
-            else:
-                LOG('Access token expired')
-        # return None
-    else:
-        LOG('Access Token not found in integration context')
-
-    return None
-
-
-def convert_to_iso8601(timestamp: str | None, timezone_letter: str = 'Z') -> str:
+def convert_to_iso8601(timestamp: str | None, timezone_letter: str = 'Z') -> str | None:
     """ Convert timestamp from Symantec EDR to iso 8601 format
 
     Args:
-        timestamp: Any valid timestamp or provide timedelta e.g. now, "<n> days", "<n> weeks", "<n> months""
+        timestamp: Any valid timestamp or provide timedelta e.g. now, "<n> days", "<n> weeks",
+        "<n> months", "1 months ago"
         timezone_letter: The timezone letter as per Symantec EDR
 
     Returns: return timestamp in iso 8601 format.
 
     """
     if not timestamp:
-        return ''
+        LOG("Not identified any timestamp")
+        return None
 
     if datetime_from_timestamp := dateparser.parse(timestamp, settings={
         'TIMEZONE': 'UTC',
         'TO_TIMEZONE': timezone_letter,
         'RETURN_AS_TIMEZONE_AWARE': True
     }):
-        return datetime_from_timestamp.strftime(ISO8901_DATE_FORMAT)[:-3] + timezone_letter
+        return datetime_from_timestamp.strftime(ISO8601_DATE_FORMAT)[:-3] + timezone_letter
     else:
         raise ValueError(f'{timestamp} could not be parsed')
 
 
-def get_headers_from_summary_data(summary_data: list[dict]):
+def extract_headers_for_readable_output(summary_data: list[dict]) -> list:
     """
     Symantec EDR formatting Readable output Header
     Args:
@@ -310,83 +658,86 @@ def get_headers_from_summary_data(summary_data: list[dict]):
 
     """
     if not summary_data:
-        demisto.debug('Unable to find Readable Summary Data.')
-        return []
+        raise DemistoException('No Readable output data found to display.')
 
     headers = summary_data[0] if summary_data else {}
     headers = list(headers.keys())
     return [camelize_string(column) for column in headers]
 
 
-def get_data_of_current_page(offset: int, limit: int, data_list: list[dict[str, Any]]):
+def get_data_of_current_page(response_data: list[dict[str, Any]], offset: int, limit: int) -> list:
     """
     Retrieve list element based on offset and limit
     Args:
-        offset (int): Offset
-        limit (int): Page Limit
-        data_list (list): Raw API result list
+        response_data (list): Raw API result list
+        offset (int) : Offset
+        limit (int) : Page Limit
 
     Returns:
         Return List of object from the response according to the limit, page and page_size.
 
     """
+
     if offset >= 0 and limit >= 0:
-        return data_list[offset:(offset + limit)]
-    return data_list[:limit]
+        return response_data[offset:(offset + limit)]
+    return response_data[:limit]
 
 
-def pagination(page: int | None, page_size: int | None):
-    """
-    Define pagination.
-    Args:
-        # page: The page number.
-        # page_size: The number of requested results per page.
-    Returns:
-        limit (int): Records per page.
-        offset (int): The number of records to be skipped.
-    """
-    if page is None:
-        # Default OFFSET value is 0
-        page = DEFAULT_OFFSET
-    elif page <= 0:
-        raise DemistoException(PAGE_NUMBER_ERROR_MSG)
-
-    if page_size is None:
-        page_size = DEFAULT_PAGE_SIZE
-    elif page_size <= 0:
-        raise DemistoException(PAGE_SIZE_ERROR_MSG)
-
-    limit = page_size
-    offset = (page - 1) * page_size if page > 0 else page
-
-    return limit, offset
-
-
-def compile_command_title_string(context_name: str, page: int | None, page_size: int | None, total_record: int | None) \
+def compile_command_title_string(context_name: str, args: dict, record: int) \
         -> str:
     """
     Symantec EDR on-premise display title and pagination
+        If page/page_size are input, then limit should be ignored.
+        If only page or page_size were input,
+        then the default for the other that is missing will be added in the code.
+        limit can work by itself independently, without page and page_size
     Args:
         context_name (str): Commands sub context name
-        page (int): page Number
-        page_size (int): Page Size
-        total_record (int): Total Records return by API
+        args (dict): demisto.args()
+        record (int): Total Number of Records
     Returns:
         Return the title for the readable output
+
     """
-    if page and page_size and (page > 0 and page_size > 0):
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('page_size'))
+
+    if page is None and page_size:
+        page = 1
+
+    if page_size is None and page:
+        page_size = DEFAULT_PAGE_SIZE
+        if DEFAULT_PAGE_SIZE > record:
+            page_size = record
+
+    if (page and page_size) and (page > 0 and page_size > 0):
         return f'{context_name} List\nShowing page {page}\n' \
-               f'Showing {page_size} out of {total_record} Record(s) Found.'
+               f'Showing {page_size} out of {record} Record(s) Found.'
 
     return f"{context_name} List"
 
 
 def parse_process_sub_object(data: dict) -> dict:
+    """
+    Retrieve event process sub object data
+    Args:
+        data (dict): Event process data
+    Returns:
+        return process data
+    """
     ignore_key_list: list[str] = ['file', 'user']
     return extract_raw_data(data, ignore_key_list)
 
 
 def parse_attacks_sub_object(data: list[dict]) -> dict:
+    """
+    Retrieve event attacks sub object data
+    Args:
+        data (dict): Event attacks data
+
+    Returns:
+        return attacks data
+    """
     ignore_key_list: list[str] = ['tactic_ids', 'tactic_uids']
     attacks_dict = extract_raw_data(data, ignore_key_list, prefix='attacks')
 
@@ -400,7 +751,6 @@ def parse_attacks_sub_object(data: list[dict]) -> dict:
             attacks_dict |= tactic_ids_dict
 
         # tactic uids
-        # tactic_uids_list = attack.get('tactic_uids', [])
         if tactic_uids_list := attack.get('tactic_uids', []):
             tactic_uids_dict = {
                 f'attacks_tactic_uids_{cnt}': convert_list_to_str(tactic_uids_list)
@@ -412,33 +762,70 @@ def parse_attacks_sub_object(data: list[dict]) -> dict:
 
 
 def parse_event_data_sub_object(data: dict[str, Any]) -> dict:
+    """
+    Retrieve event data sub object data
+    Args:
+        data (dict): Event data
+    Returns:
+        return event data
+    """
     result: dict = {}
-    for key, func in (
-        ('event_data_sepm_server', extract_raw_data),
-        ('event_data_search_config', extract_raw_data),
-        ('event_data_atp_service', extract_raw_data),
+    for key in (
+        'event_data_sepm_server',
+        'event_data_search_config',
+        'event_data_atp_service',
     ):
         if values := data.get(key):
-            result |= func(values, [], key)
+            result |= extract_raw_data(values, [], key)
+
     return result
 
 
 def parse_enriched_data_sub_object(data: dict[str, Any]) -> dict:
+    """
+    Retrieve event enriched sub object data
+    Args:
+        data (dict): Event enriched data
+    Returns:
+        return enriched data
+    """
     return extract_raw_data(data, [], 'enriched_data')
 
 
-def parse_user_sub_object(data: dict[str, Any], obj_prefix: str | None = None) -> dict:
+def parse_user_sub_object(data: dict[str, Any], obj_prefix: Optional[str]) -> dict:
+    """
+    Retrieve event user sub object data
+    Args:
+        data (dict): Event user data
+        obj_prefix (optional) : Object prefix name
+    Returns:
+        return user data
+    """
     prefix = f'{obj_prefix}_user' if obj_prefix else 'user'
     return extract_raw_data(data, [], prefix)
 
 
-def parse_xattributes_sub_object(data: dict[str, Any], obj_prefix: str | None = None) -> dict:
+def parse_xattributes_sub_object(data: dict[str, Any], obj_prefix: Optional[str]) -> dict:
+    """
+    Retrieve event xattributes sub object data
+    Args:
+        data (dict): Event xattribute data
+        obj_prefix (optional) : Object prefix name
+    Returns:
+        return event data
+    """
     prefix = f'{obj_prefix}_xattributes' if obj_prefix else 'xattributes'
     return extract_raw_data(data, [], prefix)
 
 
 def parse_event_actor_sub_object(data: dict[str, Any]) -> dict:
-
+    """
+    Retrieve event actor object data
+    Args:
+        data (dict): Event actor data
+    Returns:
+        return event actor data
+    """
     # Sub Object will be fetched separately
     ignore_key: list[str] = ['file', 'user', 'xattributes']
 
@@ -450,24 +837,53 @@ def parse_event_actor_sub_object(data: dict[str, Any]) -> dict:
         ('xattributes', parse_xattributes_sub_object),
     ):
         if values := data.get(key):
-            result |= func(values, key)
+            result |= func(values, key)  # type: ignore[operator]
     return result
 
 
-def parse_file_sub_object(data: dict[str, Any], obj_prefix: str | None = None) -> dict:
+def parse_file_sub_object(data: dict[str, Any], obj_prefix: Optional[str]) -> dict:
+    """
+    Retrieve event file object data
+    Args:
+        data (dict): Event monitor data
+        obj_prefix (optional) : added object prefix
+    Returns:
+        return to event dict
+    """
     prefix = f'{obj_prefix}_file' if obj_prefix else 'file'
     return extract_raw_data(data, ['signature_value_ids'], prefix)
 
 
 def parse_monitor_source_sub_object(data: dict[str, Any]) -> dict:
+    """
+    Retrieve event monitor object data
+    Args:
+        data (dict): Event monitor data
+    Returns:
+        return to event dict
+    """
     return extract_raw_data(data, [], prefix='monitor_source')
 
 
 def parse_connection_sub_object(data: dict[str, Any]) -> dict:
+    """
+    Retrieve event connection object data and return Event dict
+    Args:
+        data (dict): Event connection data
+    Returns:
+        return Data dict
+    """
     return extract_raw_data(data, [], prefix='connection')
 
 
 def convert_list_to_str(data: Optional[list] = None) -> str:
+    """
+    Convert list value to string with comma seperator
+    Args:
+        data (list): values
+    Returns:
+        return string
+    """
     seperator = ','
     return seperator.join(map(str, data)) if isinstance(data, list) else ''
 
@@ -536,7 +952,7 @@ def domain_instance_readable_output(results: list[dict], title: str) -> tuple[st
         }
         summary_data.append(domain_instance)
 
-    headers = get_headers_from_summary_data(summary_data)
+    headers = extract_headers_for_readable_output(summary_data)
     markdown = tableToMarkdown(title, camelize(summary_data, '_'), headers=headers, removeNull=True)
     return markdown, summary_data
 
@@ -574,7 +990,7 @@ def system_activity_readable_output(results: list[dict], title: str) -> tuple[st
         summary_data.append(system_activity)
         context_data.append(event_data)
 
-    headers = get_headers_from_summary_data(summary_data)
+    headers = extract_headers_for_readable_output(summary_data)
     markdown = tableToMarkdown(title, camelize(summary_data, '_'), headers=headers, removeNull=True)
     return markdown, context_data
 
@@ -602,7 +1018,7 @@ def endpoint_instance_readable_output(results: list[dict], title: str) -> str:
         }
         summary_data.append(endpoint_instance)
 
-    headers = get_headers_from_summary_data(summary_data)
+    headers = extract_headers_for_readable_output(summary_data)
     return tableToMarkdown(
         title,
         camelize(summary_data, "_"),
@@ -648,7 +1064,7 @@ def incident_readable_output(results: list[dict], title: Optional[str] = None) -
         summary_data.append(incident)
     summary_data_sorted = sorted(summary_data, key=lambda d: d['incident_id'], reverse=True)
 
-    headers = get_headers_from_summary_data(summary_data)
+    headers = extract_headers_for_readable_output(summary_data)
     markdown = tableToMarkdown(title, camelize(summary_data_sorted, '_'), headers=headers, removeNull=True)
     return markdown, summary_data
 
@@ -688,7 +1104,7 @@ def audit_event_readable_output(results: list[dict], title: str) -> tuple[str, l
 
     summary_data_sorted = sorted(summary_data, key=lambda d: d['time'], reverse=True)
 
-    headers = get_headers_from_summary_data(summary_data)
+    headers = extract_headers_for_readable_output(summary_data)
     markdown = tableToMarkdown(title, camelize(summary_data_sorted, '_'), headers=headers, removeNull=True)
     return markdown, context_data
 
@@ -729,7 +1145,7 @@ def incident_event_readable_output(results: list[dict], title: Optional[str] = N
 
     summary_data_sorted = sorted(summary_data, key=lambda d: d['time'], reverse=True)
 
-    headers = get_headers_from_summary_data(summary_data)
+    headers = extract_headers_for_readable_output(summary_data)
     markdown = tableToMarkdown(title, camelize(summary_data_sorted, '_'), headers=headers, removeNull=True)
     return markdown, context_data
 
@@ -757,27 +1173,27 @@ def incident_comment_readable_output(results: list[dict], title: str, incident_i
         }
         summary_data.append(incident_comment)
 
-    headers = get_headers_from_summary_data(summary_data)
+    headers = extract_headers_for_readable_output(summary_data)
     markdown = tableToMarkdown(title, camelize(summary_data, '_'), headers=headers, removeNull=True)
     return markdown, summary_data
 
 
-def generic_readable_output(results_list: list[dict], title: str) -> str:
+def generic_readable_output(results: list[dict], title: str) -> str:
     """
      Generic Readable output data for markdown
      Args:
-         results_list (list): Generic Endpoint Response results data
+         results (list): Generic Endpoint Response results data
          title (str): Title string
      Returns:
          A string representation of the Markdown table
      """
     readable_output = []
-    for data in results_list:
-        ignore_key_list: list[str] = []
-        row = extract_raw_data(data, ignore_key_list)
+    for data in results:
+        # ignore_key_list: list[str] = []
+        row = extract_raw_data(data, [])
         readable_output.append(row)
 
-    headers = get_headers_from_summary_data(readable_output)
+    headers = extract_headers_for_readable_output(readable_output)
     return tableToMarkdown(title, camelize(readable_output, "_"), headers=headers, removeNull=True)
 
 
@@ -960,19 +1376,21 @@ def get_association_filter_query(args: dict) -> str:
         return query
 
 
-def post_request_body(args: dict, limit: int = 1) -> dict:
+# def post_request_body(args: dict, limit: int = 1) -> dict:
+def post_request_body(args: dict) -> dict[str, Any]:
     """
     This function creates a default payload based on the demisto.args().
     Args:
         args: demisto.args()
-        limit: min Limit
     Returns:
         Return request body payload.
     """
     # Default payload
+    limit, offset = get_query_limit(args)
     payload: dict[str, Any] = {
         'verb': 'query',
-        'limit': get_query_limit(args, limit)
+        'limit': limit,
+        'offset': offset
     }
 
     if from_time := convert_to_iso8601(args.get('start_time')):
@@ -984,31 +1402,66 @@ def post_request_body(args: dict, limit: int = 1) -> dict:
     return payload
 
 
-def get_query_limit(args: dict, page_limit: int) -> int:
+def pagination(page: int | None, page_size: int | None) -> tuple[int, int]:
+    """
+    Define pagination.
+    Args:
+        # page: The page number.
+        # page_size: The number of requested results per page.
+    Returns:
+        limit (int): Records per page.
+        offset (int): The number of records to be skipped.
+    """
+    if page is None:
+        # Default OFFSET value is 0 Or Page = 0
+        page = DEFAULT_OFFSET
+    elif page <= 0:
+        raise DemistoException(PAGE_NUMBER_ERROR_MSG)
+
+    if page_size is None:
+        page_size = DEFAULT_PAGE_SIZE
+    elif page_size <= 0:
+        raise DemistoException(PAGE_SIZE_ERROR_MSG)
+
+    limit = (page * page_size) if page > 0 else page_size
+    offset = (page - 1) * page_size if page > 0 else page
+
+    return limit, offset
+
+
+def get_query_limit(args: dict) -> tuple[int, int]:
     """
     This function determine the query limit based on the demisto.args().
+
+    Scenarios:
+        If page/page_size are input, then limit should be ignored.
+        If only page or page_size were input,
+        then the default for the other that is missing will be added in the code.
+        Limit can work by itself independently, without page and page_size
+
     Args:
         args: demisto.args()
-        page_limit: Maximum page limit
     Returns:
-        Return limit
+        limit (int)
+        offset (int)
     """
-    max_limit = args.get('limit', DEFAULT_PAGE_SIZE)
-    page_size = args.get('page_size')
+    # Set default value to page, page_limit and page_size
+    page = arg_to_number(args.get('page'), arg_name='page')
+    page_size = arg_to_number(args.get('page_size'), arg_name='page_size')
 
-    if page_size and (page_limit > int(max_limit)):
-        # in case user pass the page_size or limit, limit will ignore
-        return page_limit
-    else:
-        return page_limit if page_limit != DEFAULT_PAGE_SIZE else max_limit
+    if page or page_size:
+        page_limit, offset = pagination(page, page_size)
+        return page_limit, offset
+
+    limit = args.get('limit', DEFAULT_PAGE_SIZE)
+    return limit, DEFAULT_OFFSET
 
 
-def get_params_query(args: dict, page_limit: int) -> dict:
+def get_params_query(args: dict) -> dict:
     """
     This function creates a query param based on the demisto.args().
     Args:
         args: demisto.args()
-        page_limit: Page Limit (int)
     Returns:
         Return arguments dict.
     """
@@ -1021,8 +1474,10 @@ def get_params_query(args: dict, page_limit: int) -> dict:
     if sha256 := args.get('sha256'):
         check_valid_indicator_value('sha256', sha256)
 
+    limit, offset = get_query_limit(args)
     return {
-        'limit': get_query_limit(args, page_limit),
+        'limit': limit,
+        'offset': offset,
         'ip': ip,
         'url': args.get('url'),
         'sha256': sha256,
@@ -1060,7 +1515,7 @@ def check_valid_indicator_value(indicator_type: str, indicator_value: str) -> bo
     return True
 
 
-def get_incident_uuid(client: Client, args: dict[str, Any]):
+def get_incident_uuid(client: Client, args: dict[str, Any]) -> str | None:
     """
       Get the incident UUID
       Args:
@@ -1071,25 +1526,22 @@ def get_incident_uuid(client: Client, args: dict[str, Any]):
     """
     payload = post_request_body(args)
 
+    # offset not support by API therefore need to be removed
+    payload.pop('offset')
+
     # search query as Lucene query string
     if search_query := get_incident_filter_query(args):
         payload['query'] = search_query
-
+    demisto.debug(f'UUID Payload: {payload}')
     if not (
-        raw_data := client.http_request(
-            method='POST',
-            url_suffix='/atpapi/v2/incidents',
-            params={},
-            json_data=payload,
-        ).get('result', [])
+        raw_data := client.get_incident(payload).get('result', [])
     ):
-        raise DemistoException(f'Incident ID not found {args.get("incident_id")}'
-                               f'due to older than 30 days or Not exists. Try with time range Arguments')
-    if uuid := raw_data[0].get('uuid'):
-        return uuid
+        raise DemistoException(f'Incident ID not found {args.get("incident_id")}, '
+                               f'May be incident is older than 30 days or Not exists. Try with time range Arguments')
+    return uuid if (uuid := raw_data[0].get('uuid')) else None
 
 
-def get_request_payload(args: dict[str, Any], query_type: Optional[str] = None):
+def get_request_payload(args: dict[str, Any], query_type: Optional[str] = None) -> dict:
     """
     Create payload for request the endpoints
     Args:
@@ -1097,22 +1549,14 @@ def get_request_payload(args: dict[str, Any], query_type: Optional[str] = None):
         query_type: query type : association, event, incident, allow_list, deny_list
     Returns:
         payload (dict): Return payload for request body
-        page_limit (int): page limit value
-        offset (int): Pagination offset value
-        page_size (int): page size or default value
     """
-    # Set default value to page, page_limit and page_size
-    page = arg_to_number(args.get('page', 1), arg_name='page')
-    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
-    page_limit, offset = pagination(page, page_size)
-
     if query_type in {'allow_list', 'deny_list'}:
         limit = arg_to_number(args.get('limit'))
         if limit and (limit < 10 or limit > 1000):
             raise ValueError('Invalid input limit: Value between Minimum = 10 , Maximum = 1000')
-        payload = get_params_query(args, page * page_limit)
+        payload = get_params_query(args)
     else:
-        payload = post_request_body(args, page * page_limit)
+        payload = post_request_body(args)
 
     # search query as Lucene query string
     if query_type == 'association':
@@ -1128,7 +1572,7 @@ def get_request_payload(args: dict[str, Any], query_type: Optional[str] = None):
     if search_query:
         payload['query'] = search_query
 
-    return payload, page_limit, offset, page_size
+    return payload
 
 
 ''' COMMAND FUNCTIONS '''
@@ -1148,7 +1592,7 @@ def test_module(client: Client) -> str:
     try:
         response_json = client.http_request(
             method='POST',
-            url_suffix='/atpapi/v2/incidents',
+            endpoint='/atpapi/v2/incidents',
             params={},
             json_data={"verb": "query", 'limit': 1})
         if response_json:
@@ -1156,7 +1600,7 @@ def test_module(client: Client) -> str:
 
     except Exception as e:
         raise DemistoException(
-            'Server Error make sure Server URL and Server Port are correctly set. Error: {e}'
+            '{e}\nMake sure the Server URL and port are correctly set'
         ) from e
     return message
 
@@ -1165,34 +1609,34 @@ def get_domain_file_association_list_command(client: Client, args: dict[str, Any
     """
     List of Domain and File association
     Args:
-        client: Symantec EDR on-premise client objectd to use.
+        client: Symantec EDR on-premise client object.
         args: all command arguments, usually passed from ``demisto.args()``.
     Returns:
         CommandResults: A ``CommandResults`` object
     """
-    endpoint = '/atpapi/v2/associations/entities/domains-files'
+    payload = get_request_payload(args, 'association')
+    offset = payload.pop('offset', 0)
 
-    payload, limit, offset, page_size = get_request_payload(args, 'association')
-    raw_response: dict[str, Any] = client.http_request(method='POST', url_suffix=endpoint, params={}, json_data=payload)
-    title = compile_command_title_string(
-        'Domain File Association',
-        arg_to_number(args.get('page', 0)),
-        page_size,
-        arg_to_number(raw_response.get('total'))
+    raw_response = client.list_domain_file(payload)
+
+    title = compile_command_title_string('Domain File Association', args, int(raw_response.get('total', 0)))
+
+    printable_result = get_data_of_current_page(
+        raw_response.get('result', []),
+        offset,
+        payload.get('limit', 0)
     )
 
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
-
-    if page_result:
-        readable_output = generic_readable_output(page_result, title)
+    if printable_result:
+        readable_output = generic_readable_output(printable_result, title)
     else:
         readable_output = 'No Domain and File association data to present.'
 
     return CommandResults(
-        readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.DomainFileAssociation',
         outputs_key_field='',
-        outputs=page_result,
+        readable_output=readable_output,
+        outputs=printable_result,
         raw_response=raw_response,
         ignore_auto_extract=True
     )
@@ -1208,21 +1652,14 @@ def get_endpoint_domain_association_list_command(client: Client, args: dict[str,
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    endpoint = '/atpapi/v2/associations/entities/endpoints-domains'
+    payload = get_request_payload(args, 'association')
+    offset = payload.pop('offset', 0)
 
-    payload, limit, offset, page_size = get_request_payload(args, 'association')
-    raw_response: dict[str, Any] = client.http_request(method='POST', url_suffix=endpoint, params={}, json_data=payload)
-    title = compile_command_title_string(
-        "Endpoint Domain Association",
-        arg_to_number(args.get('page', 0)),
-        page_size,
-        arg_to_number(raw_response.get('total'))
-    )
+    raw_response = client.list_endpoint_domain(payload)
+    title = compile_command_title_string('Endpoint Domain Association', args, int(raw_response.get('total', 0)))
 
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
-
-    if page_result:
-        readable_output = generic_readable_output(page_result, title)
+    if printable_result := get_data_of_current_page(raw_response.get('result', []), offset, payload.get('limit', 0)):
+        readable_output = generic_readable_output(printable_result, title)
     else:
         readable_output = 'No Endpoint Domain association data to present.'
 
@@ -1230,7 +1667,7 @@ def get_endpoint_domain_association_list_command(client: Client, args: dict[str,
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.EndpointDomainAssociation',
         outputs_key_field='',
-        outputs=page_result,
+        outputs=printable_result,
         raw_response=raw_response,
         ignore_auto_extract=True
     )
@@ -1246,26 +1683,14 @@ def get_endpoint_file_association_list_command(client: Client, args: dict[str, A
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    endpoint = '/atpapi/v2/associations/entities/endpoints-files'
+    payload = get_request_payload(args, 'association')
+    offset = payload.pop('offset', 0)
 
-    payload, limit, offset, page_size = get_request_payload(args, 'association')
-    raw_response: dict[str, Any] = client.http_request(
-        method='POST',
-        url_suffix=endpoint,
-        params={},
-        json_data=payload
-    )
-    title = compile_command_title_string(
-        "Endpoint File Association",
-        arg_to_number(args.get('page', 0)),
-        page_size,
-        arg_to_number(raw_response.get('total'))
-    )
+    raw_response = client.list_endpoint_file(payload)
+    title = compile_command_title_string('Endpoint File Association', args, int(raw_response.get('total', 0)))
 
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
-
-    if page_result:
-        readable_output = generic_readable_output(page_result, title)
+    if printable_result := get_data_of_current_page(raw_response.get('result', []), offset, payload.get('limit', 0)):
+        readable_output = generic_readable_output(printable_result, title)
     else:
         readable_output = 'No Endpoint File association data to present.'
 
@@ -1273,7 +1698,7 @@ def get_endpoint_file_association_list_command(client: Client, args: dict[str, A
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.EndpointFileAssociation',
         outputs_key_field='',
-        outputs=page_result,
+        outputs=printable_result,
         raw_response=raw_response,
         ignore_auto_extract=True
     )
@@ -1290,20 +1715,13 @@ def get_audit_event_command(client: Client, args: dict[str, Any]) -> CommandResu
             result.
     """
     context_data: list = []
-    endpoint = '/atpapi/v2/auditevents'
-    payload, limit, offset, page_size = get_request_payload(args, 'event')
-    raw_response = client.http_request(method='POST', url_suffix=endpoint, params={}, json_data=payload)
+    payload = get_request_payload(args, 'event')
+    offset = payload.pop('offset', 0)
 
-    title = compile_command_title_string(
-        "Audit Event",
-        arg_to_number(args.get('page', 0)),
-        page_size,
-        arg_to_number(raw_response.get('total'))
-    )
+    raw_response = client.get_audit_event(payload)
+    title = compile_command_title_string('Audit Event', args, int(raw_response.get('total', 0)))
 
-    if page_result := get_data_of_current_page(
-        offset, limit, raw_response.get('result', [])
-    ):
+    if page_result := get_data_of_current_page(raw_response.get('result', []), offset, payload.get('limit', 0)):
         readable_output, context_data = audit_event_readable_output(page_result, title)
     else:
         readable_output = 'No Audit Event data to present.'
@@ -1329,20 +1747,13 @@ def get_event_list_command(client: Client, args: dict[str, Any]) -> CommandResul
             result.
     """
     context_data: list = []
-    endpoint = '/atpapi/v2/events'
-    payload, limit, offset, page_size = get_request_payload(args, 'event')
-    raw_response = client.http_request(method='POST', url_suffix=endpoint, params={}, json_data=payload)
+    payload = get_request_payload(args, 'event')
+    offset = payload.pop('offset', 0)
 
-    title = compile_command_title_string(
-        "Event",
-        arg_to_number(args.get('page', 0)),
-        page_size,
-        arg_to_number(raw_response.get('total'))
-    )
+    raw_response = client.get_event_list(payload)
+    title = compile_command_title_string('Event', args, int(raw_response.get('total', 0)))
 
-    if page_result := get_data_of_current_page(
-        offset, limit, raw_response.get('result', [])
-    ):
+    if page_result := get_data_of_current_page(raw_response.get('result', []), offset, payload.get('limit', 0)):
         readable_output, context_data = incident_event_readable_output(page_result, title)
     else:
         readable_output = 'No Event data to present.'
@@ -1368,20 +1779,13 @@ def get_system_activity_command(client: Client, args: dict[str, Any]) -> Command
             result.
     """
     context_data: list = []
-    endpoint = '/atpapi/v2/systemactivities'
-    payload, limit, offset, page_size = get_request_payload(args, 'event')
-    raw_response = client.http_request(method='POST', url_suffix=endpoint, params={}, json_data=payload)
+    payload = get_request_payload(args, 'event')
+    offset = payload.pop('offset', 0)
 
-    title = compile_command_title_string(
-        "System Activities",
-        arg_to_number(args.get('page', 0)),
-        page_size,
-        arg_to_number(raw_response.get('total'))
-    )
+    raw_response = client.get_system_activity(payload)
+    title = compile_command_title_string('System Activities', args, int(raw_response.get('total', 0)))
 
-    if page_result := get_data_of_current_page(
-        offset, limit, raw_response.get('result', [])
-    ):
+    if page_result := get_data_of_current_page(raw_response.get('result', []), offset, payload.get('limit', 0)):
         readable_output, context_data = system_activity_readable_output(page_result, title)
     else:
         readable_output = 'No Endpoint Instances data to present.'
@@ -1407,20 +1811,13 @@ def get_event_for_incident_list_command(client: Client, args: dict[str, Any]) ->
             result.
     """
     context_data: list = []
-    endpoint = '/atpapi/v2/incidentevents'
-    payload, limit, offset, page_size = get_request_payload(args, 'event')
-    raw_response = client.http_request(method='POST', url_suffix=endpoint, params={}, json_data=payload)
+    payload = get_request_payload(args, 'event')
+    offset = payload.pop('offset', 0)
 
-    title = compile_command_title_string(
-        'Event for Incident',
-        arg_to_number(args.get('page', 0)),
-        page_size,
-        arg_to_number(raw_response.get('total'))
-    )
+    raw_response = client.get_event_for_incident(payload)
+    title = compile_command_title_string('Event for Incident', args, int(raw_response.get('total', 0)))
 
-    if page_result := get_data_of_current_page(
-        offset, limit, raw_response.get('result', [])
-    ):
+    if page_result := get_data_of_current_page(raw_response.get('result', []), offset, payload.get('limit', 0)):
         readable_output, context_data = incident_event_readable_output(page_result, title)
     else:
         readable_output = 'No Event for Incidents data to present.'
@@ -1446,21 +1843,13 @@ def get_incident_list_command(client: Client, args: dict[str, Any]) -> CommandRe
             result.
     """
     context_data: list = []
-    endpoint = '/atpapi/v2/incidents'
+    payload = get_request_payload(args, 'incident')
+    offset = payload.pop('offset', 0)
 
-    payload, limit, offset, page_size = get_request_payload(args, 'incident')
-    demisto.debug(f'Incident Payload: {payload}')
-    raw_response = client.http_request(method='POST', url_suffix=endpoint, params={}, json_data=payload)
-    title = compile_command_title_string(
-        'Incident',
-        arg_to_number(args.get('page', 0)),
-        page_size,
-        arg_to_number(raw_response.get('total'))
-    )
+    raw_response = client.get_incident(payload)
+    title = compile_command_title_string('Incident', args, int(raw_response.get('total', 0)))
 
-    if page_result := get_data_of_current_page(
-        offset, limit, raw_response.get('result', [])
-    ):
+    if page_result := get_data_of_current_page(raw_response.get('result', []), offset, payload.get('limit', 0)):
         readable_output, context_data = incident_readable_output(page_result, title)
     else:
         readable_output = 'No Incidents data to present.'
@@ -1485,26 +1874,27 @@ def get_incident_comments_command(client: Client, args: dict[str, Any]) -> Comma
             result.
     """
     context_data: list = []
-
     # Get UUID based on incident_id
     uuid = get_incident_uuid(client, args)
-    endpoint = f'/atpapi/v2/incidents/{uuid}/comments'
+    args.pop('incident_id')
+    if uuid is None:
+        raise ValueError("Error: Missing Incident unique ID.")
+    demisto.debug(f'UUID : {uuid}, Args: {args}')
 
-    # Argument incident_id not be required in further incident command query therefor
-    # remove it from args
-    incident_id = args.pop("incident_id", None)
-    payload, limit, offset, page_size = get_request_payload(args, 'incident')
-    raw_response = client.http_request(method='POST', url_suffix=endpoint, params={}, json_data=payload)
-    title = compile_command_title_string(
-        'Incident Comment',
-        arg_to_number(args.get('page', 0)),
-        page_size,
-        arg_to_number(raw_response.get('total'))
+    payload = get_request_payload(args, 'incident')
+    demisto.debug(f"Payload: {payload}")
+    offset = payload.pop('offset', 0)
+
+    raw_response = client.get_incident_comment(payload, uuid)
+    title = compile_command_title_string('Incident Comment', args, int(raw_response.get('total', 0)))
+    page_result = get_data_of_current_page(
+        raw_response.get('result', []),
+        int(offset),
+        int(payload.get('limit', 0))
     )
+    incident_id = args.pop("incident_id", None)
 
-    if page_result := get_data_of_current_page(
-        offset, limit, raw_response.get('result', [])
-    ):
+    if page_result:
         readable_output, context_data = incident_comment_readable_output(page_result, title, incident_id)
     else:
         readable_output = 'No Incident Comments data to present.'
@@ -1526,68 +1916,56 @@ def patch_incident_update_command(client: Client, args: dict[str, Any]) -> Comma
           client: client object to use.
           args: all command arguments, usually passed from ``demisto.args()``.
       Returns:
-          CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
+          CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
+          that contains an updated
               result.
     """
-    endpoint = '/atpapi/v2/incidents'
-
-    # Get UUID based on incident_id
-    uuid = get_incident_uuid(client, args)
     action = args.get('action_type')
-    value: str = args.get('value', '')
     if action not in INCIDENT_PATCH_ACTION:
         raise ValueError(f'Invalid Incident Patch Operation: Supported values are : {INCIDENT_PATCH_ACTION}')
 
-    action_list: list[dict[str, Any]] = []
-    # Incident Add Comment
-    if action == 'add_comment':
-        if not value:
-            raise ValueError('Incident comments not found. Enter comments to add')
+    # Get UUID based on incident_id
+    status = 0
+    action_desc = ''
+    if uuid := get_incident_uuid(client, args):
+        # Incident Add Comment
+        if action == 'add_comment':
+            value = args.get('value', '')
+            if not value:
+                raise ValueError('No Incident comment found. Enter incident comment add to incident')
 
-        action_desc = 'Add Comment'
-        add_comment = {
-            'op': 'add',
-            'path': f'/{uuid}/comments',
-            'value': value[:512]
-        }
-        action_list.append(add_comment)
-        # Incident Close Incident
-    elif action == 'closed':
-        action_desc = 'Close Incident'
-        close_action = {
-            'op': 'replace',
-            'path': f'/{uuid}/state',
-            'value': 4
-        }
-        action_list.append(close_action)
-        # Incident Update Resolution
-    elif action == 'update_resolution':
-        action_desc = 'Update Status'
-        if not value.isnumeric():
-            raise ValueError(f'Invalid Incident Resolution value, it must be integer: '
-                             f'The Support values {INCIDENT_RESOLUTION}')
-        update_state = {
-            'op': 'replace',
-            'path': f'/{uuid}/resolution',
-            'value': arg_to_number(value)
-        }
-        action_list.append(update_state)
-    else:
-        raise DemistoException(f'Unable to perform Incident update. '
-                               f'Only supported following action {INCIDENT_PATCH_ACTION}')
+            action_desc = 'Add Comment'
+            response = client.add_incident_comment(uuid, value)
+            status = response.status_code
 
-    response = client.query_patch_api(endpoint, action_list)
-    title = f'Incident {action_desc}'
+            # Incident Close Incident
+        elif action == 'close_incident':
+            action_desc = 'Close Incident'
+            response = client.close_incident(uuid, 4)
+            status = response.status_code
 
-    if response.status_code == 204:
+            # Incident Update Resolution
+        elif action == 'update_resolution':
+            action_desc = 'Update Status'
+            if not args.get('value'):
+                raise ValueError(f'Invalid Incident Resolution value. provide integer value'
+                                 f'Resolution supported values were {INCIDENT_RESOLUTION}')
+            response = client.update_incident(uuid, int(args.get('value', 0)))
+            status = response.status_code
+
+        else:
+            raise DemistoException(
+                f'Unable to perform Incident update. Only support by following action {INCIDENT_PATCH_ACTION}')
+
+    if status == 204:
         summary_data = {
             'incident_id': args.get('incident_id'),
             'Message': 'Successfully Updated',
         }
         headers = list(summary_data.keys())
-        readable_output = tableToMarkdown(title, summary_data, headers=headers, removeNull=True)
+        readable_output = tableToMarkdown(f'Incident {action_desc}', summary_data, headers=headers, removeNull=True)
     else:
-        readable_output = f'Failed {action}. Response from endpoint {response.get("status")}'
+        readable_output = f'Failed {action}. Response from endpoint {status}'
 
     return CommandResults(
         readable_output=readable_output,
@@ -1605,25 +1983,19 @@ def get_file_instance_command(client: Client, args: dict[str, Any]) -> CommandRe
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    if sha256 := args.get('file_sha2'):
-        check_valid_indicator_value('sha256', sha256)
+    if sha2 := args.get('file_sha2'):
+        check_valid_indicator_value('sha256', sha2)
 
-    endpoint = \
-        f'/atpapi/v2/entities/files/{args.get("file_sha2")}/instances' \
-        if args.get('file_sha2') \
-        else '/atpapi/v2/entities/files/instances'
+    payload = get_request_payload(args)
+    offset = payload.pop('offset', 0)
 
-    payload, limit, offset, page_size = get_request_payload(args)
-    raw_response: dict[str, Any] = client.http_request(method='POST', url_suffix=endpoint, params={}, json_data=payload)
-
-    title = compile_command_title_string(
-        'File Instances',
-        arg_to_number(args.get('page', 0)),
-        page_size,
-        arg_to_number(raw_response.get('total'))
+    raw_response = client.get_file_instance(payload, sha2)
+    title = compile_command_title_string('File Instances', args, int(raw_response.get('total', 0)))
+    page_result = get_data_of_current_page(
+        raw_response.get('result', []),
+        offset,
+        payload.get('limit', 0)
     )
-
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -1644,28 +2016,20 @@ def get_domain_instance_command(client: Client, args: dict[str, Any]) -> Command
     """
     Get Domain Instance
     Args:
-        client: Symantec EDR on-premise client objectd to use.
+        client: Symantec EDR on-premise client object to use.
         args: all command arguments, usually passed from ``demisto.args()``.
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
     context_data: list = []
-    endpoint = '/atpapi/v2/entities/domains/instances'
-    payload, limit, offset, page_size = get_request_payload(args)
+    payload = get_request_payload(args)
+    offset = payload.pop('offset', 0)
 
-    raw_response: dict[str, Any] = client.http_request(method='POST', url_suffix=endpoint, params={}, json_data=payload)
+    raw_response = client.get_domain_instance(payload)
+    title = compile_command_title_string('Domain Instances', args, int(raw_response.get('total', 0)))
 
-    title = compile_command_title_string(
-        'Domain Instances',
-        arg_to_number(args.get('page', 0)),
-        page_size,
-        arg_to_number(raw_response.get('total'))
-    )
-
-    if page_result := get_data_of_current_page(
-        offset, limit, raw_response.get('result', [])
-    ):
+    if page_result := get_data_of_current_page(raw_response.get('result', []), offset, payload.get('limit', 0)):
         readable_output, context_data = domain_instance_readable_output(page_result, title)
     else:
         readable_output = 'No Domain Instances data to present.'
@@ -1684,25 +2048,22 @@ def get_endpoint_instance_command(client: Client, args: dict[str, Any]) -> Comma
     """
     Get Endpoint Instance
     Args:
-        client: Symantec EDR on-premise client objectd to use.
+        client: Symantec EDR on-premise client object to use.
         args: all command arguments, usually passed from ``demisto.args()``.
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    endpoint = '/atpapi/v2/entities/endpoints/instances'
+    payload = get_request_payload(args)
+    offset = payload.pop('offset', 0)
 
-    payload, limit, offset, page_size = get_request_payload(args)
-
-    raw_response: dict[str, Any] = client.http_request(method='POST', url_suffix=endpoint, params={}, json_data=payload)
-    title = compile_command_title_string(
-        'Endpoint Instances',
-        arg_to_number(args.get('page', 0)),
-        page_size,
-        arg_to_number(raw_response.get('total'))
+    raw_response = client.get_endpoint_instance(payload)
+    title = compile_command_title_string('Endpoint Instances', args, int(raw_response.get('total', 0)))
+    page_result = get_data_of_current_page(
+        raw_response.get('result', []),
+        offset,
+        payload.get('limit', 0)
     )
-
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
 
     if page_result:
         readable_output = endpoint_instance_readable_output(page_result, title)
@@ -1723,24 +2084,22 @@ def get_allow_list_command(client: Client, args: dict[str, Any]) -> CommandResul
     """
    Get Allow List Policies
     Args:
-        client: Symantec EDR on-premise client objectd to use.
+        client: Symantec EDR on-premise client object to use.
         args: all command arguments, usually passed from ``demisto.args()``.
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    endpoint = '/atpapi/v2/policies/allow_list'
-    payload, limit, offset, page_size = get_request_payload(args, 'allow_list')
-    raw_response = client.http_request(method='GET', url_suffix=endpoint, params=payload, json_data={})
+    payload = get_request_payload(args, 'allow_list')
+    offset = payload.pop('offset', 0)
 
-    title = compile_command_title_string(
-        'Allow List Policy',
-        arg_to_number(args.get('page', 0)),
-        page_size,
-        arg_to_number(raw_response.get('total'))
+    raw_response = client.get_allow_list(payload)
+    title = compile_command_title_string('Allow List Policy', args, int(raw_response.get('total', 0)))
+    page_result = get_data_of_current_page(
+        raw_response.get('result', []),
+        offset,
+        payload.get('limit', 0)
     )
-
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -1761,25 +2120,22 @@ def get_deny_list_command(client: Client, args: dict[str, Any]) -> CommandResult
     """
     Get deny List Policies
     Args:
-        client: Symantec EDR on-premise client objectd to use.
+        client: Symantec EDR on-premise client object to use.
         args: all command arguments, usually passed from ``demisto.args()``.
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    endpoint = '/atpapi/v2/policies/deny_list'
-    payload, limit, offset, page_size = get_request_payload(args, 'deny_list')
+    payload = get_request_payload(args, 'deny_list')
+    offset = payload.pop('offset', 0)
 
-    raw_response = client.http_request(method='GET', url_suffix=endpoint, params=payload, json_data={})
-
-    title = compile_command_title_string(
-        "Deny List Policy",
-        arg_to_number(args.get('page', 0)),
-        page_size,
-        arg_to_number(raw_response.get('total'))
+    raw_response = client.get_deny_list(payload)
+    title = compile_command_title_string('Deny List Policy', args, raw_response.get('total', 0))
+    page_result = get_data_of_current_page(
+        raw_response.get('result', []),
+        offset,
+        payload.get('limit', 0)
     )
-
-    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -1817,31 +2173,30 @@ def get_endpoint_command(client: Client, args: dict[str, Any], command: str) -> 
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    endpoint = "/atpapi/v2/commands"
-    device_uid = args.get('device_id')
-    file_sha2 = args.get('sha2')
-    command_id = args.get('command_id')
+    device_uid = args.get('device_id', '')
+    file_sha2 = args.get('sha2', '')
+    command_id = args.get('command_id', '')
 
     if command == 'symantec-edr-endpoint-cancel-command':
-        payload = {'action': 'cancel_command', 'targets': argToList(command_id)}
+        raw_response = client.get_cancel_endpoint(command_id)
+        action_type = 'Cancel Endpoint'
     elif command == 'symantec-edr-endpoint-delete-file':
         if device_uid and file_sha2:
-            payload = {
-                'action': 'delete_endpoint_file',
-                'targets': argToList({'device_uid': device_uid, 'hash': file_sha2})
-            }
+            raw_response = client.get_delete_endpoint(device_uid, file_sha2)
+            action_type = 'Delete Endpoint'
         else:
             raise DemistoException('Invalid Arguments. '
                                    'Both "device_id" and "sha2" arguments is required for endpoint delete action')
     elif command == 'symantec-edr-endpoint-isolate':
-        payload = {'action': 'isolate_endpoint', 'targets': argToList(device_uid)}
+        action_type = 'Isolate Endpoint'
+        raw_response = client.get_isolate_endpoint(device_uid)
     elif command == 'symantec-edr-endpoint-rejoin':
-        payload = {'action': 'rejoin_endpoint', 'targets': argToList(device_uid)}
+        action_type = 'Rejoin Endpoint'
+        raw_response = client.get_rejoin_endpoint(device_uid)
     else:
         raise DemistoException('Endpoint Command action not found.')
 
-    raw_response = client.http_request(method='POST', url_suffix=endpoint, params={}, json_data=payload)
-    title = f'Command {payload.get("action")}'
+    title = f'Command {action_type}'
 
     summary_data = {
         "Message": raw_response.get('message'),
@@ -1850,7 +2205,7 @@ def get_endpoint_command(client: Client, args: dict[str, Any], command: str) -> 
 
     headers = list(summary_data.keys())
     return CommandResults(
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Command.{payload.get("action")}',
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Command.{action_type}',
         outputs_key_field='command_id',
         outputs=raw_response,
         readable_output=tableToMarkdown(title, summary_data, headers=headers, removeNull=True),
@@ -1869,15 +2224,12 @@ def get_endpoint_status_command(client: Client, args: dict[str, Any]) -> Command
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    command_id = args.get('command_id')
-    endpoint = f'/atpapi/v2/commands/{command_id}'
-
+    command_id = args.get('command_id', '')
+    readable_data = []
     payload = post_request_body(args)
-    raw_response: dict[str, Any] = client.http_request(
-        method='POST',
-        url_suffix=endpoint,
-        params={},
-        json_data=payload)
+    payload.pop('offset', 0)
+
+    raw_response = client.get_status_endpoint(command_id, payload)
 
     summary_data = {
         "state": raw_response.get('state'),
@@ -1892,7 +2244,8 @@ def get_endpoint_status_command(client: Client, args: dict[str, Any]) -> Command
 
     if summary_data:
         title = "Command Status"
-        readable_output = generic_readable_output(argToList(summary_data), title)
+        readable_data.append(summary_data)
+        readable_output = generic_readable_output(readable_data, title)
     else:
         readable_output = 'No command status data to present.'
 
@@ -1943,19 +2296,22 @@ def fetch_incidents(client: Client) -> list:
     start_time_n, end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=client.first_fetch)
 
     if last_run and 'time' in last_run:
-        start_time_lastrun = convert_to_iso8601(last_run.get('time'))
+        payload['start_time'] = convert_to_iso8601(last_run.get('time'))
+    else:
+        payload['start_time'] = start_time
 
-    payload['start_time'] = start_time_lastrun if last_run else start_time
-    results = client.http_request(
-        method='POST',
-        url_suffix='/atpapi/v2/incidents',
-        params={},
-        json_data=payload
-    ).get('result', [])
+    # payload['start_time'] = start_time_lastrun if last_run else start_time
+    result = client.get_incident(payload).get('result', [])
+    # results = client.http_request(
+    #     method='POST',
+    #     url_suffix='/atpapi/v2/incidents',
+    #     params={},
+    #     json_data=payload
+    # ).get('result', [])
 
     incidents, events_result, comments_result = [], [], []
-    if results:
-        _, incidents_context = incident_readable_output(results)
+    if result:
+        _, incidents_context = incident_readable_output(result)
         # Map severity to Demisto severity for incident creation
         xsoar_severity_map = {'High': 3, 'Medium': 2, 'Low': 1}
 
@@ -1970,10 +2326,9 @@ def fetch_incidents(client: Client) -> list:
                     if last_run
                     else {"verb": "query", "start_time": start_time}
                 )
-
                 comments_result = client.http_request(
                     method='POST',
-                    url_suffix=f'/atpapi/v2/incidents/{incident_uuid}/comments',
+                    endpoint=f'/atpapi/v2/incidents/{incident_uuid}/comments',
                     params={},
                     json_data=payload).get('result', [])
 
@@ -1986,7 +2341,7 @@ def fetch_incidents(client: Client) -> list:
                 }
                 events_result = client.http_request(
                     method='POST',
-                    url_suffix='/atpapi/v2/incidentevents',
+                    endpoint='/atpapi/v2/incidentevents',
                     params={},
                     json_data=payload
                 ).get('result', [])
@@ -2021,7 +2376,7 @@ def fetch_incidents(client: Client) -> list:
         look_back=30,
         created_time_field='occurred',
         id_field='name',
-        date_format=ISO8901_DATE_FORMAT
+        date_format=ISO8601_DATE_FORMAT
     )
 
     demisto.debug(f'last run at the end of the incidents fetching {last_run},'
@@ -2046,17 +2401,17 @@ def get_sandbox_verdict(client: Client, args: Dict[str, Any]) -> CommandResults:
      """
     sha2 = args.get('file')
     endpoint = f'/atpapi/v2/sandbox/results/{sha2}/verdict'
-
+    readable_data = []
     response = client.http_request(
         method='GET',
-        url_suffix=endpoint,
+        endpoint=endpoint,
         params={},
         json_data={}
     )
 
     file_res = client.http_request(
         method='GET',
-        url_suffix=f'/atpapi/v2/entities/files/{sha2}',
+        endpoint=f'/atpapi/v2/entities/files/{sha2}',
         params={},
         json_data={}
     )
@@ -2065,7 +2420,8 @@ def get_sandbox_verdict(client: Client, args: Dict[str, Any]) -> CommandResults:
     # Sandbox verdict
     title = "Sandbox Verdict"
     if response:
-        readable_output = generic_readable_output(argToList(response), title)
+        readable_data.append(response)
+        readable_output = generic_readable_output(readable_data, title)
     else:
         readable_output = f'{title} does not have data to present. \n'
 
@@ -2088,6 +2444,7 @@ def check_sandbox_status(client: Client, args: Dict[str, Any]) -> CommandResults
          CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
              result.
     """
+    readable_data = []
     title = "File Sandbox Status"
     if not (command_id := args.get('command_id')):
         raise DemistoException('Command ID missing.')
@@ -2096,7 +2453,7 @@ def check_sandbox_status(client: Client, args: Dict[str, Any]) -> CommandResults
     try:
         response = client.http_request(
             method='GET',
-            url_suffix=endpoint,
+            endpoint=endpoint,
             params={},
             json_data={}
         )
@@ -2104,17 +2461,20 @@ def check_sandbox_status(client: Client, args: Dict[str, Any]) -> CommandResults
         raise DemistoException(f'Unable to get Sandbox Status. Error {e}') from e
     # Query Sandbox Command Status
     summary_data = {}
-    if sandbox_status := response.get("status", ((),))[0]:
-        summary_data = {
-            'command_id': command_id,
-            'status': SANDBOX_STATE.get(str(sandbox_status.get('state'))),
-            'message': sandbox_status.get('message'),
-            'target': sandbox_status.get('target'),
-            'error_code': sandbox_status.get('error_code')
-        }
+    if sandbox_status := response.get("status"):
+        # sandbox = sandbox_status[0] if sandbox_status else {}
+        for status in sandbox_status:
+            summary_data = {
+                'command_id': command_id,
+                'status': SANDBOX_STATE.get(str(status.get('state', ''))),
+                'message': status.get('message', ''),
+                'target': status.get('target', ''),
+                'error_code': status.get('error_code', '')
+            }
 
     if summary_data:
-        readable_output = generic_readable_output(argToList(summary_data), title)
+        readable_data.append(summary_data)
+        readable_output = generic_readable_output(readable_data, title)
     else:
         readable_output = f'{title} does not have data to present. \n'
 
@@ -2147,7 +2507,7 @@ def issue_sandbox_command(client: Client, args: Dict[str, Any]) -> CommandResult
         'action': 'analyze',
         'targets': argToList(sha2)
     }
-    response = client.http_request(method='POST', url_suffix=endpoint, params={}, json_data=payload)
+    response = client.http_request(method='POST', endpoint=endpoint, params={}, json_data=payload)
 
     # Get Issue Sandbox Command
     title = "Issue Sandbox Command"
@@ -2176,21 +2536,22 @@ def run_polling_command(client: Client, args: dict, cmd: str, status_func: Calla
     and returns a ScheduledCommand object that schedules the next 'results' function, until the polling is complete.
     Args:
         client: Symantec EDR cient object
-        args: the arguments required to the command being called, under cmd
+        args: the arguments required to the command being called
         cmd: the command to schedule by after the current command
         status_func : The function that check the file scan status and return either completed or error status
         results_func: the function that retrieves the verdict based on file sandbox status
 
 
     Returns:
-
+        return CommandResults
     """
     demisto.debug(f'-- Polling Command --\nArguments : {args}')
     demisto.debug(f'Integration Global Context Data: {demisto.getIntegrationContext()}')
 
     ScheduledCommand.raise_error_if_not_supported()
-    interval_in_secs: int = args.get('interval_in_seconds', DEFAULT_INTERVAL)
-    timeout_in_seconds: int = args.get('timeout_in_seconds', DEFAULT_TIMEOUT)
+    interval_in_secs: int = int(args.get('interval_in_seconds', DEFAULT_INTERVAL))
+    timeout_in_seconds: int = int(args.get('timeout_in_seconds', DEFAULT_TIMEOUT))
+    # polling: bool = args.get('polling', True)
 
     # Check for ongoing file scanning command_id if exist
     if pre_cmd_id := demisto.getIntegrationContext().get('command_id'):
@@ -2259,13 +2620,18 @@ def run_polling_command(client: Client, args: dict, cmd: str, status_func: Calla
         )
 
         # result with scheduled_command only - no update to the war room
-        command_result = CommandResults(scheduled_command=scheduled_command,
-                                        ignore_auto_extract=True
-                                        )
-        return command_result
+        return CommandResults(
+            scheduled_command=scheduled_command,
+            ignore_auto_extract=True
+        )
 
 
 def file_scheduled_polling_command(client: Client, args: Dict[str, Any]):
+    """
+    File Scheduled Polling file command
+    Returns:
+        return polling CommandResults
+    """
     return run_polling_command(client, args, 'file', check_sandbox_status, get_sandbox_verdict)
 
 
@@ -2358,7 +2724,7 @@ def main() -> None:
             # file Sandbox (Reputation command)
             "file": file_scheduled_polling_command
         }
-        command_output: CommandResults | str = ""
+        command_output: CommandResults | str
         if command == "test-module":
             command_output = test_module(client)
         elif command == 'fetch-incidents':
