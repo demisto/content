@@ -5186,6 +5186,7 @@ script:
       - profile-setting
       - source-user
       - service
+      - audit-comment
       required: true
     - description: The new value for the parameter.
       name: element_value
@@ -9346,7 +9347,7 @@ script:
     description: Deletes an application-group
     name: pan-os-delete-application-group
     outputs: []
-  dockerimage: demisto/pan-os-python:1.0.0.45668
+  dockerimage: demisto/pan-os-python:1.0.0.47142
   feed: false
   isfetch: true
   longRunning: false
