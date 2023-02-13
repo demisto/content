@@ -1,10 +1,10 @@
 {
-    "id": "incident_sentinelrelations",
+    "id": "incident_microsoftsentinelalerts",
     "version": -1,
-    "modified": "2023-01-24T10:49:19.087597+02:00",
-    "name": "Sentinel Relations",
+    "modified": "2023-01-23T14:32:17.888913987Z",
+    "name": "Microsoft Sentinel Alerts",
     "ownerOnly": false,
-    "cliName": "sentinelrelations",
+    "cliName": "microsoftmicrosoftsentinelalerts",
     "type": "grid",
     "closeForm": false,
     "editForm": true,
@@ -63,8 +63,8 @@
             "selectValues": null
         },
         {
-            "key": "etag",
-            "displayName": "etag",
+            "key": "kind",
+            "displayName": "kind",
             "type": "shortText",
             "orgType": "shortText",
             "required": false,
@@ -78,8 +78,8 @@
         {
             "key": "properties",
             "displayName": "properties",
-            "type": "shortText",
-            "orgType": "shortText",
+            "type": "longText",
+            "orgType": "longText",
             "required": false,
             "script": "",
             "width": 150,

@@ -89,25 +89,25 @@
                 "Resource ID": {
                     "simple": "Etag"
                 },
-                "Sentinel Alert Count": {
+                "Microsoft Sentinel Alert Count": {
                     "simple": "AlertsCount"
                 },
-                "Sentinel Alerts": {
+                "Microsoft Sentinel Alerts": {
                     "simple": "alerts"
                 },
-                "Sentinel Classification Comment": {
+                "Microsoft Sentinel Classification Comment": {
                     "simple": "classificationComment"
                 },
-                "Sentinel Comments": {
+                "Microsoft Sentinel Comments": {
                     "simple": "comments"
                 },
-                "Sentinel Entities": {
+                "Microsoft Sentinel Entities": {
                     "simple": "entities"
                 },
-                "Sentinel Incident Number": {
+                "Microsoft Sentinel Incident Number": {
                     "simple": "IncidentNumber"
                 },
-                "Sentinel Label": {
+                "Microsoft Sentinel Label": {
                     "complex": {
                         "filters": [],
                         "root": "Label",
@@ -118,7 +118,7 @@
                         ]
                     }
                 },
-                "Sentinel Owner": {
+                "Microsoft Sentinel Owner": {
                     "complex": {
                         "filters": [],
                         "root": "owner",
@@ -129,10 +129,10 @@
                         ]
                     }
                 },
-                "Sentinel Relations": {
+                "Microsoft Sentinel Relations": {
                     "simple": "relations"
                 },
-                "Sentinel Rule Id": {
+                "Microsoft Sentinel Rule Id": {
                     "simple": "relatedAnalyticRuleIds"
                 },
                 "Source Create time": {

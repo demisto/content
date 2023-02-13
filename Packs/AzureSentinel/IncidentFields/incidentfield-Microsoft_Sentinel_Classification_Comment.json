@@ -1,10 +1,10 @@
 {
-    "id": "incident_sentinelclassificationcomment",
+    "id": "incident_microsoftsentinelclassificationcomment",
     "version": -1,
     "modified": "2023-01-23T14:21:26.632488+02:00",
-    "name": "Sentinel Classification Comment",
+    "name": "Microsoft Sentinel Classification Comment",
     "ownerOnly": false,
-    "cliName": "sentinelclassificationcomment",
+    "cliName": "microsoftsentinelclassificationcomment",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

@@ -1,10 +1,10 @@
 {
-    "id": "incident_sentinelalerts",
+    "id": "incident_microsoftsentinelcomments",
     "version": -1,
-    "modified": "2023-01-23T14:32:17.888913987Z",
-    "name": "Sentinel Alerts",
+    "modified": "2023-01-24T10:33:49.737792+02:00",
+    "name": "Microsoft Sentinel Comments",
     "ownerOnly": false,
-    "cliName": "sentinelalerts",
+    "cliName": "microsoftsentinelcomments",
     "type": "grid",
     "closeForm": false,
     "editForm": true,
@@ -63,8 +63,8 @@
             "selectValues": null
         },
         {
-            "key": "kind",
-            "displayName": "kind",
+            "key": "etag",
+            "displayName": "etag",
             "type": "shortText",
             "orgType": "shortText",
             "required": false,

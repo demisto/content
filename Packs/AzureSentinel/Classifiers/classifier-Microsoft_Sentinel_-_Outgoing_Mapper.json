@@ -90,7 +90,7 @@
                     "simple": "starttime"
                 },
                 "labels": {
-                    "simple": "sentinellabel"
+                    "simple": "microsoftsentinellabel"
                 },
                 "lastActivityTimeUtc": {
                     "simple": "lastseen"

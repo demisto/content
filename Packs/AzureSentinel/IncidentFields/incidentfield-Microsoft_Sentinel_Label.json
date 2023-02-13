@@ -1,10 +1,11 @@
 {
-    "id": "incident_sentinelowner",
+    "id": "incident_microsoftsentinellabel",
     "version": -1,
-    "modified": "2023-01-23T10:44:48.974736+02:00",
-    "name": "Sentinel Owner",
+    "modified": "2023-01-23T11:26:26.423338+02:00",
+    "name": "Microsoft Sentinel Label",
     "ownerOnly": false,
-    "cliName": "sentinelowner",
+    "description": "tooltip",
+    "cliName": "microsoftsentinellabel",
     "type": "grid",
     "closeForm": false,
     "editForm": true,
@@ -24,8 +25,8 @@
     "caseInsensitive": true,
     "columns": [
         {
-            "key": "objectid",
-            "displayName": "objectId",
+            "key": "name",
+            "displayName": "Name",
             "type": "shortText",
             "orgType": "shortText",
             "required": false,
@@ -37,34 +38,8 @@
             "selectValues": null
         },
         {
-            "key": "email",
-            "displayName": "email",
-            "type": "shortText",
-            "orgType": "shortText",
-            "required": false,
-            "script": "",
-            "width": 150,
-            "isDefault": true,
-            "fieldCalcScript": "",
-            "isReadOnly": false,
-            "selectValues": null
-        },
-        {
-            "key": "userprincipalname",
-            "displayName": "userPrincipalName",
-            "type": "shortText",
-            "orgType": "shortText",
-            "required": false,
-            "script": "",
-            "width": 150,
-            "isDefault": true,
-            "fieldCalcScript": "",
-            "isReadOnly": false,
-            "selectValues": null
-        },
-        {
-            "key": "assignedto",
-            "displayName": "assignedTo",
+            "key": "type",
+            "displayName": "Type",
             "type": "shortText",
             "orgType": "shortText",
             "required": false,
