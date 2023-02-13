@@ -1,8 +1,3 @@
-
- log("$$$$$$$$2")
- log(JSON.stringify(params.credentials)),
- log("$$$$$$$$2")
-
  var reliability = params.integrationReliability;
 
  if(!reliability){

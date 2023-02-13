@@ -245,5 +245,5 @@ script:
       description: String that was searched.
     description: Searches for extracted strings identified within malware campaigns.
   runonce: false
-deprecated: false
+deprecated: true
 fromversion: 5.0.0
