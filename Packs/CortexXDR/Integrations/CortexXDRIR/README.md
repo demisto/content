@@ -3189,7 +3189,7 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Palo Alto Networks Cortex XDR - Investigation and Response.
 ### xdr-endpoint-alias-change
 ***
-Gets a list of endpoints according to the passed filters, and changes their alias name. Filtering by multiple fields will be concatenated using AND condition (OR is not supported).
+Gets a list of endpoints according to the passed filters, and changes their alias name. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported).
 
 
 #### Base Command
@@ -3203,16 +3203,16 @@ Gets a list of endpoints according to the passed filters, and changes their alia
 | endpoint_id_list | A comma-separated list of endpoint IDs. | Optional | 
 | dist_name | A comma-separated list of distribution package names or installation package names.<br/>Example: dist_name1,dist_name2. | Optional | 
 | ip_list | A comma-separated list of IP addresses.<br/>Example: 8.8.8.8,1.1.1.1. | Optional | 
-| group_name | The group name to which the agent belongs.<br/>Example: group_name1,group_name2. | Optional | 
-| platform | The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". . Possible values are: windows, linux, macos, android. | Optional | 
+| group_name | A comma-separated list of group names to which the agent belongs.<br/>Example: group_name1,group_name2. | Optional | 
+| platform | The endpoint platform. Valid values are\: windows, linux, macos, or android. . Possible values are: windows, linux, macos, android. | Optional | 
 | alias_name | A comma-separated list of alias names.<br/>Examples: alias_name1,alias_name2. | Optional | 
 | isolate | Specifies whether the endpoint was isolated or unisolated. Possible values are: isolated, unisolated.  Note: This argument returns only the first endpoint that matches. | Optional | 
-| hostname | Hostname<br/>Example: hostname1,hostname2. | Optional | 
+| hostname | A comma-separated list of hostnames<br/>Example: hostname1,hostname2. | Optional | 
 | first_seen_gte | All the agents that were first seen after {first_seen_gte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
 | first_seen_lte | All the agents that were first seen before {first_seen_lte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
-| last_seen_gte | All the agents that were last seen before {last_seen_gte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
+| last_seen_gte | All the agents that were last seen after {last_seen_gte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
 | last_seen_lte | All the agents that were last seen before {last_seen_lte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
-| username | The usernames to query for, accepts a single user, or comma-separated list of usernames. | Optional | 
+| username | The usernames to query for. Accepts a single user, or comma-separated list of usernames. | Optional | 
 | new_alias_name | The requested alias name to change to. | Required | 
 | scan_status | The scan status of the endpoint. Possible values are: none, pending, in_progress, canceled, aborted, pending_cancellation, success, error. | Optional | 
 

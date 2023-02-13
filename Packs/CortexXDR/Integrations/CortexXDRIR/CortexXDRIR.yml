@@ -940,9 +940,7 @@ script:
             Example: 8.8.8.8,1.1.1.1
           isArray: true
           name: ip_list
-        - description: |-
-            The group name to which the agent belongs.
-            Example: group_name1,group_name2
+        - description: A comma-separated list of group names to which the agent belongs.
           isArray: true
           name: group_name
         - description: 'The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". '
@@ -965,9 +963,7 @@ script:
           predefined:
             - isolated
             - unisolated
-        - description: |-
-            Hostname
-            Example: hostname1,hostname2
+        - description: A comma-separated list of hostnames.
           isArray: true
           name: hostname
         - description: |-
@@ -985,7 +981,7 @@ script:
             "2019-10-21T23:45:00" (date)
           name: first_seen_lte
         - description: |-
-            All the agents that were last seen before {last_seen_gte}.
+            All the agents that were last seen after {last_seen_gte}.
             Supported values:
             1579039377301 (time in milliseconds)
             "3 days" (relative date)
@@ -999,11 +995,11 @@ script:
             "2019-10-21T23:45:00" (date)
           name: last_seen_lte
         - name: username
-          description: The usernames to query for, accepts a single user, or comma-separated list of usernames.
+          description: The usernames to query for. Accepts a single user, or comma-separated list of usernames.
           isArray: true
         - name: new_alias_name
           required: true
-          description: The requested alias name to change to.
+          description: The alias name to change to.
         - name: scan_status
           description: The scan status of the endpoint.
           auto: PREDEFINED
