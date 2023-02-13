@@ -389,6 +389,7 @@ def kmsat_account_info_list_command(client: Client, args: dict) -> CommandResult
             "domains",
             "admins",
             "subscription_level",
+            "subscription_end_date",
             "number_of_seats",
             "current_risk_score",
         ],
