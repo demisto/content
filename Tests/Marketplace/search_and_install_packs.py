@@ -148,6 +148,9 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
             dependencies_data: list = []
             dependants_ids = [pack_id]
             reseponse_data = ast.literal_eval(response_data).get('dependencies', [])
+            if pack_id in ['Whois', 'CiscoStealthwatch', 'MicrosoftDefenderAdvancedThreatProtection', 'AlibabaActionTrail', 'DeveloperTools']:
+                with open(os.path.join(os.getenv("ARTIFACTS_FOLDER"), f'dep_resp_{pack_id}.json'), 'w') as f:
+                    f.write(json.dumps(reseponse_data))
             create_dependencies_data_structure(reseponse_data, dependants_ids, dependencies_data, dependants_ids)
             dependencies_str = ', '.join([dep['id'] for dep in dependencies_data])
             if dependencies_data:
