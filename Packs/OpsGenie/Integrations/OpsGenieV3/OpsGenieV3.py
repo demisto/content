@@ -7,8 +7,6 @@ from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 DEFAULT_POLL_INTERVAL = 5
-
-
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
