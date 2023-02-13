@@ -243,6 +243,7 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
       3. OnlineMeetings.ReadWrite.All
       4. ChannelMember.ReadWrite.All
       5. Channel.Create
+      6. Chat.Create
 
     ##### Required Delegated Permissions:
       1. ChannelMessage.Send
@@ -252,7 +253,7 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
       5. Channel.Create
       6. ChannelSettings.ReadWrite.All
       7. ChatMember.ReadWrite
-      8. Chat.ReadWrite
+      8. Chat.Create
 5. Verify that all permissions were added, and click **Grant admin consent for Demisto**.
 6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
 7. Click **Expose an API and add Application ID URI (id only)  
