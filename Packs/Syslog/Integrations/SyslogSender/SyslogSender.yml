@@ -29,6 +29,7 @@ configuration:
   type: 15
   section: Connect
   advanced: true
+  additionalinfo: TLS version supported are 1.2 and above.
 - display: Certificate
   name: certificate
   required: false

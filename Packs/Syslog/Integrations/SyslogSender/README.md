@@ -6,7 +6,7 @@ Use the Syslog Sender integration to send messages and mirror incident War Room 
 
 ## Use Cases
 ---
-* Send messages to Syslog via TCP or UDP or SSL.
+* Send messages to Syslog via TCP or UDP or TLS.
 * Mirror incident war room entries to Syslog.
 
 ## Configure Syslog Sender on Cortex XSOAR
