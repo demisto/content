@@ -1,5 +1,6 @@
 import demistomock as demisto
-
+import pytest
+import FireEyeETP
 
 def test_malware_readable_data():
     """
@@ -65,32 +66,83 @@ def test_get_alert_command(mocker, requests_mock):
     assert results
 
 
-ALERTS = {'meta': {'fromLastModifiedOn':{'end': ''}},
-          'data': [
+PARAMS = {'message_status': 'delivered (retroactive)'}
+ALERTS_1 = {'meta': {'fromLastModifiedOn': {'end': ''}},
+            'data': [
                 {'attributes': {'email': {'status': 'delivered (retroactive)', 'headers': {'subject': ''}},
+                                'alert': {'timestamp': '2023-02-08T19:34:17'}}}]}
+EXPECTED_INCIDENTS_1 = '{"email": {"status": "delivered (retroactive)", "headers": {"subject": ""}},' \
+                       ' "alert": {"timestamp": "2023-02-08T19:34:17"}}'
+
+
+@pytest.mark.parametrize('params, alerts, expected_incidents', [(PARAMS, ALERTS_1, EXPECTED_INCIDENTS_1)])
+def test_fetch_incident_by_status_messages(mocker, params, alerts, expected_incidents):
+    """
+    Given:
+        - A status message similar to the alert's status
+    When:
+        - Running fetch-incidents command
+    Then:
+        - Ensure one incident was fetched as expected
+    """
+    mocker.patch.object(FireEyeETP, 'MESSAGE_STATUS', ['delivered (retroactive)'])
+    mocker.patch('FireEyeETP.demisto.getLastRun', return_value={})
+    mocker.patch('FireEyeETP.get_alerts_request', return_value=alerts)
+    res = mocker.patch('FireEyeETP.demisto.incidents')
+    FireEyeETP.fetch_incidents()
+    assert res.call_args.args[0][0].get('rawJSON') == expected_incidents
+
+
+ALERTS_2 = {'meta': {'fromLastModifiedOn': {'end': ''}},
+            'data': [
+                {'attributes': {'email': {'status': 'deleted', 'headers': {'subject': ''}},
                                 'alert': {'timestamp': '2023-02-08T19:34:17'}}}]}
 
 
-def test_fetch_incident_by_status_messages(mocker):
-    from FireEyeETP import fetch_incidents
+@pytest.mark.parametrize('params, alerts, len_expected_incidents', [(PARAMS, ALERTS_2, 0)])
+def test_fetch_incident_by_status_messages_mismatch_status(mocker, params, alerts, len_expected_incidents):
+    """
+    Given:
+        - A status message differs from to the alert's status
+    When:
+        - Running fetch-incidents command
+    Then:
+        - Ensure no incidents were fetched as expected
+    """
+    mocker.patch.object(FireEyeETP, 'MESSAGE_STATUS', ['delivered (retroactive)'])
     mocker.patch('FireEyeETP.demisto.getLastRun', return_value={})
-    mocker.patch('FireEyeETP.get_alerts_request', return_value=ALERTS)
+    mocker.patch('FireEyeETP.get_alerts_request', return_value=alerts)
     res = mocker.patch('FireEyeETP.demisto.incidents')
-    fetch_incidents()
-    assert res.call_args.args[0][0].get('rawJSON') == '{"email": {"status": "delivered (retroactive)", "headers": {"subject": ""}}, "alert": {"timestamp": "2023-02-08T19:34:17"}}'
+    FireEyeETP.fetch_incidents()
+    assert len(res.call_args.args[0]) == len_expected_incidents
 
 
-  
-ALERTS_2 = {'meta': {'fromLastModifiedOn':{'end': ''}},
-            'data': [
-                {'attributes': {'email': {'status': 'Moshe', 'headers': {'subject': ''}},
-                                'alert': {'timestamp': '2023-02-08T19:34:17'}}}]} 
+PARAMS_3 = {'message_status': 'delivered (retroactive), deleted'}
+ALERTS_3 = {'meta': {'fromLastModifiedOn': {'end': ''}},
+              'data': [
+                {'attributes': {'email': {'status': 'delivered (retroactive)', 'headers': {'subject': ''}},
+                                'alert': {'timestamp': '2023-02-08T19:34:17'}}},
+                {'attributes': {'email': {'status': 'deleted', 'headers': {'subject': ''}},
+                                'alert': {'timestamp': '2023-02-08T19:34:17'}}}
+            ]}
+EXPECTED_INCIDENTS_3 = ['{"email": {"status": "delivered (retroactive)", "headers": {"subject": ""}}, "alert": {"timestamp": "2023-02-08T19:34:17"}}',
+                        '{"email": {"status": "deleted", "headers": {"subject": ""}}, "alert": {"timestamp": "2023-02-08T19:34:17"}}']
 
-def test_fetch_incident_by_status_messages_2(mocker):
-    from FireEyeETP import fetch_incidents
-    mocker.patch('FireEyeETP.MESSAGE_STATUS', return_value='delivered (retroactive)')
+
+@pytest.mark.parametrize('params, alerts, expected_incidents', [(PARAMS_3, ALERTS_3, EXPECTED_INCIDENTS_3)])
+def test_fetch_incident_by_status_messages_with_two_status(mocker, params, alerts, expected_incidents):
+    """
+    Given:
+        - A list of status message similar to the alert's status
+    When:
+        - Running fetch-incidents command
+    Then:
+        - Ensure 2 incidents were fetched as expected
+    """
+    mocker.patch.object(FireEyeETP, 'MESSAGE_STATUS', ['delivered (retroactive)', 'deleted'])
     mocker.patch('FireEyeETP.demisto.getLastRun', return_value={})
-    mocker.patch('FireEyeETP.get_alerts_request', return_value=ALERTS_2)
+    mocker.patch('FireEyeETP.get_alerts_request', return_value=alerts)
     res = mocker.patch('FireEyeETP.demisto.incidents')
-    fetch_incidents()
-    assert not res.call_args.args[0]
+    FireEyeETP.fetch_incidents()
+    for incident, expected_incident in zip(res.call_args.args[0], expected_incidents):
+        assert incident.get('rawJSON') == expected_incident
