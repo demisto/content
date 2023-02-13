@@ -1452,8 +1452,7 @@
         {
             "integrations": [
                 "EWSO365",
-                "EWS v2",
-                "EWS Mail Sender"
+                "EWS v2"
             ],
             "playbookID": "EWS search-mailbox test",
             "instance_names": [
@@ -2388,7 +2387,6 @@
             "fromversion": "6.0.0",
             "timeout": 1200,
             "integrations": [
-                "EWS Mail Sender",
                 "Demisto REST API",
                 "Rasterize",
                 "EWS v2"
@@ -2404,7 +2402,6 @@
             "fromversion": "6.0.0",
             "timeout": 1700,
             "integrations": [
-                "EWS Mail Sender",
                 "Demisto REST API",
                 "Rasterize",
                 "EWS v2"
@@ -4495,7 +4492,6 @@
             "fromversion": "6.0.0",
             "timeout": 4600,
             "integrations": [
-                "EWS Mail Sender",
                 "Demisto REST API",
                 "Rasterize",
                 "EWS v2"
@@ -4511,7 +4507,6 @@
             "fromversion": "6.0.0",
             "timeout": 7000,
             "integrations": [
-                "EWS Mail Sender",
                 "Demisto REST API",
                 "Rasterize",
                 "Demisto Lock",
@@ -4736,7 +4731,6 @@
             "playbookID": "Send Email To Recipients",
             "fromversion": "5.0.0",
             "integrations": [
-                "EWS Mail Sender",
                 "EWS v2"
             ],
             "instance_names": [
@@ -5830,7 +5824,7 @@
         "DShield Feed",
         "Demisto REST API",
         "EDL",
-        "EWS Mail Sender",
+        "EWS v2",
         "ElasticsearchFeed",
         "Fastly Feed",
         "Feodo Tracker IP Blocklist Feed",
