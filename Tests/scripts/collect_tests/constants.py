@@ -62,7 +62,6 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.CORRELATION_RULE,
     FileType.XSIAM_DASHBOARD,
     FileType.XSIAM_REPORT,
-    FileType.REPORT,
     FileType.GENERIC_TYPE,
     FileType.GENERIC_FIELD,
     FileType.GENERIC_MODULE,
@@ -117,4 +116,15 @@ MODELING_RULE_COMPONENT_FILES: set[FileType] = {
     FileType.MODELING_RULE_XIF,
     FileType.MODELING_RULE_SCHEMA,
     FileType.MODELING_RULE_TEST_DATA,
+}
+
+XSIAM_COMPONENT_FILES: set[FileType] = {
+    FileType.PARSING_RULE,
+    FileType.CORRELATION_RULE,
+    FileType.XSIAM_DASHBOARD,
+    FileType.XSIAM_REPORT,
+    FileType.TRIGGER,
+    FileType.MODELING_RULE_SCHEMA,
+    FileType.XDRC_TEMPLATE,
+    FileType.LAYOUT_RULE
 }
