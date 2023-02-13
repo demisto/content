@@ -1792,16 +1792,16 @@ def get_endpoints_command(client, args):
 def endpoint_alias_change_command(client: CoreClient, **args) -> CommandResults:
     # get arguments
     endpoint_id_list = argToList(args.get('endpoint_id_list'))
-    dist_name = argToList(args.get('dist_name'))
+    dist_name_list = argToList(args.get('dist_name'))
     ip_list = argToList(args.get('ip_list'))
-    group_name = argToList(args.get('group_name'))
-    platform = argToList(args.get('platform'))
-    alias_name = argToList(args.get('alias_name'))
+    group_name_list = argToList(args.get('group_name'))
+    platform_list = argToList(args.get('platform'))
+    alias_name_list = argToList(args.get('alias_name'))
     isolate = args.get('isolate')
-    hostname = argToList(args.get('hostname'))
+    hostname_list = argToList(args.get('hostname'))
     status = args.get('status')
     scan_status = args.get('scan_status')
-    username = argToList(args.get('username'))
+    username_list = argToList(args.get('username'))
     new_alias_name = str(args.get('new_alias_name'))
 
     first_seen_gte = arg_to_timestamp(
@@ -1826,12 +1826,13 @@ def endpoint_alias_change_command(client: CoreClient, **args) -> CommandResults:
 
     # create filters
     filters: list[dict[str, str]] = create_request_filters(
-        status=status, username=username, endpoint_id_list=endpoint_id_list, dist_name=dist_name,
-        ip_list=ip_list, group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate,
-        hostname=hostname, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
+        status=status, username=username_list, endpoint_id_list=endpoint_id_list, dist_name=dist_name_list,
+        ip_list=ip_list, group_name=group_name_list, platform=platform_list, alias_name=alias_name_list, isolate=isolate,
+        hostname=hostname_list, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
         last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte, scan_status=scan_status
     )
-
+    # importent: the API will return True even if the endpoint does not exist, so its a good idea to check 
+    # the results by a get_endpoints command
     client.set_endpoints_alias(filters=filters, new_alias_name=new_alias_name)
 
     return CommandResults(

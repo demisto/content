@@ -3061,7 +3061,6 @@ def test_add_or_remove_tag_endpoint_command(requests_mock, args, expected_filter
 
 
 def test_endpoint_alias_change_command(mocker):
-    # this test will fail locally because of the timestamp but will pass in the build
     """
     Given:
     - command arguments
