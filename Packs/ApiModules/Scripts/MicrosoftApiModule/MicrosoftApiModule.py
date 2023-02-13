@@ -1,3 +1,4 @@
+# pylint: disable=E9010, E9011
 import traceback
 
 import demistomock as demisto
