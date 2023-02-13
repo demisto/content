@@ -1,6 +1,5 @@
-Provide the API KEY by following the instructions:  
-<~XSIAM>
 ### Generate an API Key and API Key ID
+<~XSIAM>
 1. In your Cortex XSIAM platform, go to Settings -> Configurations -> API Keys.
 2. Click the **+New Key** button in the top right corner.
 3. Generate a key of type **Advanced**.
@@ -28,10 +27,9 @@ In version 6.x.x:
 4. Copy and paste the key.
 
 ### URL
-1. In Cortex XSOAR 8.0.0 and above, go to Settings -> API Keys.
+In Cortex XSOAR 8.0.0 and above
+1. Go to Settings -> API Keys.
 2. Click the **Copy URL** button in the top right corner.
-
 </~XSOAR>
 
 Provide Auth ID when using<~XSIAM> Cortex XSIAM </~XSIAM><~XSOAR> Cortex XSOAR 8.0.0 and above. If the version is 6.x.x, you can leave it empty </~XSOAR>.
-The Auth ID can be found next to the generated API Key in the "API Keys" page.
