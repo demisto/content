@@ -45,8 +45,9 @@ tasks:
       name: Get File Sample By Hash - Generic v3
       description: |-
         This playbook returns a file sample correlating to a hash in the War Room using the following sub-playbooks:
-        - Get binary file by MD5 hash from Carbon Black telemetry data - VMware Carbon Black EDR v2.
-        - Get the threat (file) attached to a specific SHA256 hash - Cylance Protect v2.
+        - Get the binary file from Carbon Black by its MD5 hash
+        - Get File Sample By Hash - Cylance Protect v2
+        - Code42 File Download
       playbookName: Get File Sample By Hash - Generic v3
       type: playbook
       iscommand: false
@@ -95,8 +96,8 @@ tasks:
       name: Get File Sample From Path - Generic V3
       description: |
         This playbook returns a file sample from a specified path and host that you input in the following playbooks:
-        1) PS Remote Get File Sample From Path.
-        2) Get File Sample From Path - VMware Carbon Black EDR (Live Response API).
+        - PS Remote Get File Sample From Path
+        - Get File Sample From Path - VMware Carbon Black EDR - Live Response API
       playbookName: Get File Sample From Path - Generic V3
       type: playbook
       iscommand: false
@@ -293,7 +294,7 @@ inputs:
       root: Endpoint
       accessor: Hostname
   required: false
-  description: The hostname from which to retrieve the f ile.
+  description: The hostname from which to retrieve the file.
   playbookInputQuery:
 - key: AgentID
   value:
@@ -301,7 +302,7 @@ inputs:
       root: incident
       accessor: agentid
   required: false
-  description: The Agent ID that should be used to retrieve the file.
+  description: The agent ID that should be used to retrieve the file.
   playbookInputQuery:
 - key: FilePath
   value:
@@ -333,7 +334,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: File
-  description: File objects - includes the zipped file and any unzipped files.
+  description: File objects. Includes the zipped file and any unzipped files.
   type: unknown
 - contextPath: File.Size
   description: The size of the file.
@@ -342,7 +343,7 @@ outputs:
   description: The type of the file.
   type: string
 - contextPath: File.Info
-  description: General information of the file.
+  description: General information about the file.
   type: string
 - contextPath: File.MD5
   description: The MD5 hash of the file.
