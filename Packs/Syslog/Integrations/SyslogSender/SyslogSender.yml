@@ -35,7 +35,7 @@ configuration:
   required: false
   type: 12
   additionalinfo: Required for TLS.
-- display: self signed certificate
+- display: Self Signed Certificate
   name: self_signed_certificate
   required: false
   type: 8
