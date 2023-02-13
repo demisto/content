@@ -29,7 +29,7 @@ def main():
         except Exception as ex:
             return_error(f"Could not parse the internal domains list. Please make sure that the list contains domain names, separated by new lines.\nThe exact error is: {ex}")
     else:
-        demisto.results("No internal domains were specified.")
+        demisto.results("No internal domains were found under {internal_domains_list_name}.")
         return
 
 
