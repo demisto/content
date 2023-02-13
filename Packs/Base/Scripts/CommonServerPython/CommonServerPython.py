@@ -10880,7 +10880,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     while status_code != 200 and attempt_num < num_of_attempts + 1:
         demisto.debug('Sending events into xsiam, attempt number {attempt_num}'.format(attempt_num=attempt_num))
         # in the last try we should raise an exception if any error occurred, including 429
-        ok_codes = (200, 429) if attempt_num < num_of_attempts else ()
+        ok_codes = (200, 429) if attempt_num < num_of_attempts else None
         response = client._http_request(
             method='POST',
             full_url=urljoin(xsiam_url, '/logs/v1/xsiam'),
