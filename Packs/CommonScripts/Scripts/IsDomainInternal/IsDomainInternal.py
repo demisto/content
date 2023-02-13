@@ -28,15 +28,15 @@ def main():
         try:
             internal_domains = internal_domains.split("\n")
         except Exception as ex:
-            return_error(f"Could not parse the internal domains list. Please make sure that the list contains domain names, separated by new lines.\nThe exact error is: {ex}")
+            return_error(
+                f"Could not parse the internal domains list. Please make sure that the list contains domain names, separated by new lines.\nThe exact error is: {ex}")
     else:
         demisto.results("No internal domains were found under {internal_domains_list_name}.")
         return
 
-
     # Create list of domain names with internal property
-    domain_list = [{"Name": domain, "Internal": is_domain_internal(domain, internal_domains)} for domain in domains_to_check]
-
+    domain_list = [{"Name": domain, "Internal": is_domain_internal(domain, internal_domains)} for domain in
+                   domains_to_check]
 
     for domain in domain_list:
         args_exists_check = {
@@ -67,23 +67,14 @@ def main():
         # successfully set the Internal property of the domain name, we need to ensure creation and then edit the indicator ourselves.
         demisto.executeCommand("setIndicator", args_create_or_set_indicator)
 
-
-
     # Create entry context and human-readable results
     entry_context = {"Domain(val.Name == obj.Name)": domain_list}
-    md_table = tableToMarkdown(name="Domain Names", t=sorted(domain_list, key=lambda x: not x['Internal']), headers=["Name", "Internal"])
-    entry_to_return = {
-        "Type": entryTypes['note'],
-        "Contents": domain_list,
-        "ContentsFormat": "text",
-        "HumanReadable": md_table,
-        "EntryContext": entry_context,
-        "Tags": ['Internal_Domain_Check_Results']
-    }
+    md_table = tableToMarkdown(name="Domain Names", t=sorted(domain_list, key=lambda x: not x['Internal']),
+                               headers=["Name", "Internal"])
 
-
-    # Return results
-    demisto.results(entry_to_return)
+    cmd_res = CommandResults(outputs=domain_list, readable_output=md_table, outputs_prefix="Domain",
+                             outputs_key_field="Name", tags=["Internal_Domain_Check_Results"])
+    return_results(cmd_res)
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
