@@ -31,12 +31,15 @@ def test_prettify_report_entry():
     assert expected_report_dict == prettify_report_entry_res
 
 
-def test_prettify_verdict():
-    expected_verdict_dict = dict({
-        'MD5': "md5_hash", 'SHA256': "sha256_hash", 'Verdict': "1", 'VerdictDescription': 'malware'})
-    prettify_verdict_res = prettify_verdict(
-        {'md5': "md5_hash", 'sha256': "sha256_hash", 'verdict': "1"})
-    assert expected_verdict_dict == prettify_verdict_res
+@pytest.mark.parametrize('verdict_dict, expected_verdict', [
+    ({'md5': "md5_hash", 'sha256': "sha256_hash", 'verdict': "1"},
+     {'MD5': "md5_hash", 'SHA256': "sha256_hash", 'Verdict': "1", 'VerdictDescription': 'malware'}),
+    ({'md5': "md5_hash", 'sha256': "sha256_hash", 'verdict': "5"},
+     {'MD5': "md5_hash", 'SHA256': "sha256_hash", 'Verdict': "5", 'VerdictDescription': 'c2'})
+])
+def test_prettify_verdict(verdict_dict, expected_verdict):
+    prettify_verdict_res = prettify_verdict(verdict_dict)
+    assert expected_verdict == prettify_verdict_res
 
 
 def test_prettify_url_verdict():
