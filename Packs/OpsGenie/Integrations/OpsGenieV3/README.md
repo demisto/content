@@ -1635,9 +1635,9 @@ Invite a user to OpsGenie
 #### Human Readable Output
 
 >### OpsGenie
->|action|alertId|alias|integrationId|isSuccess|processedAt|status|success|
->|---|---|---|---|---|---|---|---|
->| Assign |  |  | 3cc69931-167f-411c-a331-768997c29d2e | false | 2021-12-01T13:48:24.942Z | Alert does not exist | false |
+>|Id|name|
+>|---|---|
+>| 3cc69931-167f-411c-a331-768997c29d2e | test@example.com |
 
 ### opsgenie-get-teams
 ***
