@@ -644,7 +644,7 @@ Removes a member (user) from a private/shared channel.
 
 ##### Required Permissions
 
-`ChannelMember.ReadWrite.All` - Delegated, Application
+`ChannelMember.ReadWrite.All` - Application
 
 ##### Input
 
@@ -676,8 +676,8 @@ Retrieves a list of members from a channel.
 
 ##### Required Permissions
 
-`ChannelMember.Read.All` - Delegated, Application
-`ChannelMember.ReadWrite.All` - Delegated, Application
+`ChannelMember.Read.All` - Application
+`ChannelMember.ReadWrite.All` - Application
 
 ##### Input
 
