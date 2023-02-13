@@ -1,16 +1,17 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 from typing import Optional
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 
-import re
-import os
 import json
+import os
+import re
+from base64 import b64encode
+
 import requests
 import urllib3
-from base64 import b64encode
 
 ''' GLOBAL VARS / INSTANCE CONFIGURATION '''
 
@@ -878,6 +879,7 @@ def run_analysis(args):
             args['env_version'] = '10'
         else:
             args['env_version'] = '7'
+
         url_suffix = 'analysis'
         response = http_request('POST', url_suffix, data=args, files=files)
         return response
