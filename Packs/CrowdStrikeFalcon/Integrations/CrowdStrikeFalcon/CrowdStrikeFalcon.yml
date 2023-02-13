@@ -2896,6 +2896,106 @@ script:
     - contextPath: CrowdStrike.VulnerabilityHost.cve.id
       description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD).
       type: String
+  - name: cs-falcon-get-incident-behavior
+    arguments:
+    - name: behavior_id
+      required: true
+      description: The incident behavior ID to search
+    outputs:
+    - contextPath: CrowdStrike.Behavior.meta.powered_by
+      description: The incident API
+    - contextPath: CrowdStrike.Behavior.meta.query_time
+      description: The query time
+    - contextPath: CrowdStrike.Behavior.meta.trace_id
+      description: The trace ID
+    - contextPath: CrowdStrike.Behavior.resources.template_instance_id
+      description: The template ID
+    - contextPath: CrowdStrike.Behavior.resources.filepath
+      description: The file path
+    - contextPath: CrowdStrike.Behavior.resources.tactic_id
+      description: The tactic ID
+    - contextPath: CrowdStrike.Behavior.resources.domain
+      description: The domain
+    - contextPath: CrowdStrike.Behavior.resources.sha256
+      description: The sha256
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition
+      description: The pattern disposition
+    - contextPath: CrowdStrike.Behavior.resources.behavior_id
+      description: The behavior ID
+    - contextPath: CrowdStrike.Behavior.resources.incident_id
+      description: The incident ID
+    - contextPath: CrowdStrike.Behavior.resources.display_name
+      description: The display name
+    - contextPath: CrowdStrike.Behavior.resources.pattern_id
+      description: The pattern ID
+    - contextPath: CrowdStrike.Behavior.resources.technique_id
+      description: The technique ID
+    - contextPath: CrowdStrike.Behavior.resources.incident_ids
+      description: The incident ID
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.rooting
+      description: Rooting
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.fs_operation_blocked
+      description: FS operation blocked
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.detect
+      description: Detect
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.blocking_unsupported_or_disabled
+      description: Blocking unsupported or disabled
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.kill_action_failed
+      description: Kill action failed
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.bootup_safeguard_enabled
+      description: Bootup safeguard enabled
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.policy_disabled
+      description: Policy disabled
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.kill_parent
+      description: Kill parent
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.suspend_process
+      description: Suspend process
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.critical_process_disabled
+      description: Critical process disabled
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.quarantine_file
+      description: Quarantine file
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.suspend_parent
+      description: Suspend parent
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.kill_process
+      description: Kill process
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.indicator
+      description: Indicator
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.kill_subprocess
+      description: Kill subprocess
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.sensor_only
+      description: Sensor only
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.registry_operation_blocked
+      description: Registry operation blocked
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.operation_blocked
+      description: Operation blocked
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.quarantine_machine
+      description: Quarantine machine
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.inddet_mask
+      description: Inddet mask
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.process_blocked
+      description: Process Blocked
+    - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.handle_operation_downgraded
+      description: ' Handle operation downgraded'
+    - contextPath: CrowdStrike.Behavior.resources.cmdline
+      description: The command line
+    - contextPath: CrowdStrike.Behavior.resources.technique
+      description: The technique
+    - contextPath: CrowdStrike.Behavior.resources.timestamp
+      description: The timestamp
+    - contextPath: CrowdStrike.Behavior.resources.tactic
+      description: The tactic
+    - contextPath: CrowdStrike.Behavior.resources.objective
+      description: The objective
+    - contextPath: CrowdStrike.Behavior.resources.compound_tto
+      description: Compound TTO
+    - contextPath: CrowdStrike.Behavior.resources.aid
+      description: The resource AID
+    - contextPath: CrowdStrike.Behavior.resources.cid
+      description: The resource CID
+    - contextPath: CrowdStrike.Behavior.resources.user_name
+      description: The user name
+    description: Searches for and fetches the incident behavior for the given incident
+      behavior ID
   dockerimage: demisto/python3:3.10.9.44472
   isfetch: true
   ismappable: true
