@@ -3071,7 +3071,7 @@ def test_endpoint_alias_change_command(mocker):
     """
     client = CoreClient(base_url=f'{Core_URL}/public_api/v1/', headers={})
     mocker_set = mocker.patch.object(client, 'set_endpoints_alias')
-    from CoreIRApiModule import endpoint_alias_change_command  # , arg_to_timestamp, create_request_filters
-    endpoint_alias_change_command(client=client, first_seen_gte='2019-10-21T23:45:00', new_alias_name='test')
-    assert mocker_set.call_args[1] == {'filters': [{'field': 'first_seen',
-                                                    'operator': 'gte', 'value': 1571701500000}], 'new_alias_name': 'test'}
+    from CoreIRApiModule import endpoint_alias_change_command
+    endpoint_alias_change_command(client=client, status="connected", new_alias_name='test')
+    assert mocker_set.call_args[1] == {'filters': [{'field': 'endpoint_status',
+                                                   'operator': 'IN', 'value': ['connected']}], 'new_alias_name': 'test'}
