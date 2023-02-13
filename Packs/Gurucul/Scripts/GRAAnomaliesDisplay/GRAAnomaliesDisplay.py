@@ -5,6 +5,7 @@ from CommonServerPython import *
 def _get_incident():
     return demisto.incident()
 
+
 def getAnomaliesByCaseId():
     incident = _get_incident()
 
@@ -34,7 +35,8 @@ def getAnomaliesByCaseId():
                         updatedAnomalies.append(newAnomaly)
 
                         for oldAnomaly in oldAnomalies:
-                            if oldAnomaly['anomalyname'] == anomaly['anomalyName'] and (oldAnomaly['status'] != anomaly['status'] or oldAnomaly['assignee'] != anomaly['assignee']):
+                            if oldAnomaly['anomalyname'] == anomaly['anomalyName'] and \
+                                    (oldAnomaly['status'] != anomaly['status'] or oldAnomaly['assignee'] != anomaly['assignee']):
                                 anomaliesChangedCount += 1
                                 break
 
@@ -45,11 +47,14 @@ def getAnomaliesByCaseId():
                     if anomaliesChangedCount != 0:
                         execute_command("setIncident", {"id": incident['id'], "gracaseanomalydetails": updatedAnomalies})
                         if anomaliesChangedCount == 1:
-                            return_results(f'There is 1 anomaly update identified for this case. Refresh Analytical Features for updated attributes list.')
+                            return_results('There is 1 anomaly update identified for this case. '
+                                           'Refresh Analytical Features for updated attributes list.')
                         else:
-                            return_results(f'There are {anomaliesChangedCount} anomaly updates identified for this case. Refresh Analytical Features for updated attributes list.')
+                            return_results(f'There are {anomaliesChangedCount} anomaly updates identified for this '
+                                           f'case. Refresh Analytical Features for updated attributes list.')
                     else:
                         return_results('There are no anomaly changes identified for this case.')
+
 
 def main():
     try:

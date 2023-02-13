@@ -3,7 +3,6 @@ import json
 from datetime import datetime
 
 
-
 def _get_incident():
     return demisto.incidents()[0]
 
