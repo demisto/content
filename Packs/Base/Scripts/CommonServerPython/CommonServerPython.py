@@ -1913,6 +1913,8 @@ def appendContext(key, data, dedup=False):
         elif isinstance(existing, dict):
             if isinstance(data, dict):
                 new_val = [existing, data]  # type: ignore[assignment]
+            elif isinstance(data, list) and all([isinstance(sub_data, dict) for sub_data in data]):
+                new_val = [existing] + data  # For cases the context have only one value but we append a few values at once.
             else:
                 new_val = data + existing  # will raise a self explanatory TypeError
 
