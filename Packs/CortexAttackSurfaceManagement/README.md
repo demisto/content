@@ -94,13 +94,12 @@ Playbook that pulls remediation guidance off of a list based on ASM RuleID to be
 #### Cortex ASM - Remediation
 
 Playbook that is used as a container folder for all remediation of ASM alerts.	
-
 ![Cortex ASM - Remediation](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation.png)
 
 #### Cortex ASM - Azure Enrichment
 
 Playbook that given the IP address enriches Azure information relevant to ASM alerts.	
-![Cortex ASM - Azure Enrichment](https://raw.githubusercontent.com/demisto/content/69b67c9a2330cbe9002d6d0ec8f32dbccb0c6877/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Azure_Enrichment.png)
+![Cortex ASM - Azure Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Azure_Enrichment.png)
 
 #### Cortex ASM - GCP Enrichment
 
@@ -128,7 +127,7 @@ This content pack includes the [generateASMReport](#generateasmreport) script:
 #### GenerateASMReport
 
 This automation helps generate an ASM alert summary report with important information found via the playbook run.
-![GenerateASMReport](https://raw.githubusercontent.com/demisto/content/d6d88d2066ef1f0868e8e61c5f20a71766f3cae1/Packs/CortexAttackSurfaceManagement/doc_files/GenerateASMReport.png)
+![GenerateASMReport](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/GenerateASMReport.png)
 
 #### SnmpDetection
 
