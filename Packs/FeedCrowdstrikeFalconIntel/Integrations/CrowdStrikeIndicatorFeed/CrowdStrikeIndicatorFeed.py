@@ -216,7 +216,8 @@ class Client(CrowdStrikeClient):
                                                                    self.tlp_color,
                                                                    self.feed_tags,
                                                                    self.create_relationships)
-            return f'{filter}+({last_run})' if filter else f'({last_run})', parse_indicator
+            filter = f'{filter}+({last_run})' if filter else f'({last_run})'
+            return filter, parse_indicator
 
         # In case no indicator is returned
         demisto.debug('No indicator returned')
