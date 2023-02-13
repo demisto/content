@@ -296,7 +296,7 @@ def test_handling_first_fetch_and_old_integration_context(mocker,
     mocker.patch('CrowdStrikeIndicatorFeed.demisto.getIntegrationContext', return_value=integration_context)
     get_indicator_call = mocker.patch.object(client, 'get_indicators', return_value=get_indicators_response)
 
-    results = client.handle_first_fetch_context_before_2_1_0(filter)
+    results = client.handle_first_fetch_context_or_pre_2_1_0(filter)
 
     assert get_indicator_call.call_args.kwargs['params'].get('filter') == filter_arg_call
     assert results[0] == expected_results[0]
