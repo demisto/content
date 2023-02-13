@@ -137,7 +137,7 @@ tags:
 - slack
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.1.25933
+dockerimage: demisto/python3:3.10.10.47713
 runonce: false
 tests:
 - no test - Untestable
