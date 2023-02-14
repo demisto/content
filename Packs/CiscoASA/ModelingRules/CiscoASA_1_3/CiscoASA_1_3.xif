@@ -1,11 +1,8 @@
 [MODEL: dataset=cisco_asa_raw]
 alter
     event_id = to_integer(arrayindex(regextract(_raw_log, "ASA\-[session]*\-*\d\-(\d+)\:"),0)),
-    priority = arrayindex(regextract(_raw_log, "\<(\d+)\>"),0),
     severity = arrayindex(regextract(_raw_log, "ASA\-[session]*\-*(\d+)\-\d+\:"),0),
-    message = arrayindex(regextract(_raw_log, "\%ASA\-\d\-\d+[\:|\s\-]+\s(.*)"),0),
-    bytes = arrayindex(regextract(_raw_log,"bytes\s*(\d+)\s+"),0),
-    threat_level = arrayindex(regextract(_raw_log,"threat-level\:\s*([^\,]+)\,"),0)
+    message = arrayindex(regextract(_raw_log, "\%ASA\-\d\-\d+[\:|\s\-]+\s(.*)"),0)
 // Action
 | alter action1 = arrayindex(regextract(_raw_log ,"\d+\-\d+\:\s([a-zA-Z]+[\s|\-][a-zA-Z]{2,}\s+[a-zA-Z\s]{3,})"),0),
     action2 = arrayindex(regextract(_raw_log ,"([a-zA-Z]{3,}\s[a-zA-Z]{3,}\s[a-zA-Z\s]{3,})\.*$"),0),
@@ -57,7 +54,7 @@ alter
     bytes3  = arrayindex(regextract(_raw_log ,"packet\s([0-9]+)\sbytes"),0),
     bytes4  = arrayindex(regextract(_raw_log ,"size\s\=\s([0-9]+)\sbytes"),0),
     bytes5 = arrayindex(regextract(_raw_log ,"\,\sBytes\:\s([0-9]+)"),0)
-| alter sent_bytes = to_integer(coalesce(bytes1 , bytes2 , bytes3 , bytes4 ))
+| alter sent_bytes = to_integer(coalesce(bytes1 , bytes2 , bytes3 , bytes4,bytes5 ))
 // ------------------------------ create source/dest ip/port/interface part ---------------------------------
 //option 1
 // <source_ip>/<source_port> to <dest_ip>/<dest_port>
