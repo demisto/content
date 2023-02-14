@@ -1246,10 +1246,10 @@ script:
     - name: html_body
       description: HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument.
     - name: attach_ids
-      description: 'A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
+      description: 'A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attach_ids=15@8,19@8.'
       isArray: true
     - name: attach_names
-      description: A CSV list of names of attachments to send. Should be the same number of elements as attachIDs.
+      description: A CSV list of names of attachments to send. Should be the same number of elements as attach_ids.
       isArray: true
     - name: attach_cids
       description: A CSV list of CIDs to embed attachments within the email itself.
@@ -1268,7 +1268,7 @@ script:
     execution: false
     name: send-mail
   - arguments:
-    - name: inReplyTo
+    - name: in_reply_to
       required: true
       description: ID of the item to reply to.
     - name: to
@@ -1282,15 +1282,15 @@ script:
       description: Subject for the email to be sent.
     - name: body
       description: The contents (body) of the email to be sent.
-    - name: htmlBody
+    - name: html_body
       description: HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument.
-    - name: attachIDs
-      description: 'A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
+    - name: attach_ids
+      description: 'A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attach_ids=15@8,19@8.'
       isArray: true
-    - name: attachNames
-      description: A CSV list of names of attachments to send. Should be the same number of elements as attachIDs.
+    - name: attach_names
+      description: A CSV list of names of attachments to send. Should be the same number of elements as attach_ids.
       isArray: true
-    - name: attachCIDs
+    - name: attach_cids
       description: A CSV list of CIDs to embed attachments within the email itself.
       isArray: true
     deprecated: false

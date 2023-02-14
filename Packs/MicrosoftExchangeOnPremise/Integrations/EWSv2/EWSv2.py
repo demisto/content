@@ -739,9 +739,11 @@ def send_email_to_mailbox(account, to, subject, body, bcc, cc, reply_to, html_bo
     return m
 
 
-def send_email_reply_to_mailbox(account, inReplyTo, to, body, subject=None, bcc=None, cc=None, html_body=None,
-                                attachments=[]):      # pragma: no cover
-    item_to_reply_to = account.inbox.get(id=inReplyTo)
+def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bcc=None, cc=None, html_body=None,
+                                attachments=None):      # pragma: no cover
+    if attachments is None:
+        attachments = []
+    item_to_reply_to = account.inbox.get(id=in_reply_to)
     if isinstance(item_to_reply_to, ErrorItemNotFound):
         raise Exception(item_to_reply_to)
 
@@ -2144,9 +2146,9 @@ def collect_manual_attachments(manual_attach_obj):      # pragma: no cover
     return attachments
 
 
-def process_attachments(attach_cids="", attach_ids="", attach_names="", manual_attach_obj=[]):      # pragma: no cover
-    # if manualAttachObj is None:
-    #     manualAttachObj = []
+def process_attachments(attach_cids="", attach_ids="", attach_names="", manual_attach_obj=None):      # pragma: no cover
+    if manual_attach_obj is None:
+        manual_attach_obj = []
     file_entries_for_attachments = []  # type: list
     attachments_names = []  # type: list
 
@@ -2229,18 +2231,18 @@ def send_email(to, subject, body="", bcc=None, cc=None, reply_to=None, html_body
     }
 
 
-def reply_email(to, inReplyTo, body="", subject="", bcc=None, cc=None, htmlBody=None, attachIDs="", attachCIDs="",
-                attachNames="", from_mailbox=None, manualAttachObj=None):     # pragma: no cover
+def reply_email(to, in_reply_to, body="", subject="", bcc=None, cc=None, html_body=None, attach_ids="", attach_cids="",
+                attach_names="", from_mailbox=None, manual_attach_obj=None):     # pragma: no cover
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
     bcc = bcc.split(",") if bcc else None
     cc = cc.split(",") if cc else None
     to = to.split(",") if to else None
-    manualAttachObj = manualAttachObj if manualAttachObj is not None else []
+    manual_attach_obj = manual_attach_obj if manual_attach_obj is not None else []
     subject = subject[:252] + '...' if len(subject) > 255 else subject
 
-    attachments, attachments_names = process_attachments(attachCIDs, attachIDs, attachNames, manualAttachObj)
+    attachments, attachments_names = process_attachments(attach_cids, attach_ids, attach_names, manual_attach_obj)
 
-    send_email_reply_to_mailbox(account, inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments)
+    send_email_reply_to_mailbox(account, in_reply_to, to, body, subject, bcc, cc, html_body, attachments)
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,
