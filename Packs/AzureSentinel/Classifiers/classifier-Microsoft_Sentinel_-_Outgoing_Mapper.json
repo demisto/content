@@ -89,9 +89,9 @@
                 "firstActivityTimeUtc": {
                     "simple": "starttime"
                 },
-                "labels": {
-                    "simple": "microsoftsentinellabel"
-                },
+				"tags": {
+					"simple": "tags"
+				},
                 "lastActivityTimeUtc": {
                     "simple": "lastseen"
                 },

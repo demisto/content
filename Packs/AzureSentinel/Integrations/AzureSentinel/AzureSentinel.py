@@ -64,11 +64,11 @@ MIRROR_STATUS_DICT = {
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
 INTEGRATION_INSTANCE = demisto.integrationInstance()
 
-INCOMING_MIRRORED_FIELDS = ['ID', 'Etag', 'Title', 'Description', 'Severity', 'Status', 'Label', 'FirstActivityTimeUTC',
+INCOMING_MIRRORED_FIELDS = ['ID', 'Etag', 'Title', 'Description', 'Severity', 'Status', 'tags', 'FirstActivityTimeUTC',
                                   'LastActivityTimeUTC', 'LastModifiedTimeUTC', 'CreatedTimeUTC', 'IncidentNumber', 'AlertsCount',
                                   'AlertProductNames', 'Tactics', 'relatedAnalyticRuleIds', 'IncidentUrl', 'classification',
                                   'classificationComment', 'alerts', 'entities', 'comments', 'relations']
-OUTGOING_MIRRORED_FIELDS = {'etag', 'title', 'description', 'severity', 'status', 'labels', 'firstActivityTimeUtc',
+OUTGOING_MIRRORED_FIELDS = {'etag', 'title', 'description', 'severity', 'status', 'tags', 'firstActivityTimeUtc',
                             'lastActivityTimeUtc', 'classification', 'classificationComment', 'classificationReason'}
 OUTGOING_MIRRORED_FIELDS = {filed: pascalToSpace(filed) for filed in OUTGOING_MIRRORED_FIELDS}
 
@@ -250,6 +250,7 @@ def incident_data_to_xsoar_format(inc_data, is_fetch_incidents=False):
     }
     if is_fetch_incidents:
         formatted_data |= {
+            'tags': [label.get('labelName') for label in properties.get('labels', [])],
             'owner': properties.get('owner'),
             'relatedAnalyticRuleIds': [rule_id.split('/')[-1] for rule_id in properties.get('relatedAnalyticRuleIds', [])],
             "classification": properties.get('classification'),
@@ -677,7 +678,7 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
         'description': delta.get('description'),
         'severity': LEVEL_TO_SEVERITY[data.get('severity', '')],
         'status': 'Active',
-        'labels': [{'labelName': label.get('value'), 'type': label.get('type')} for label in delta.get('labels', [])],
+        'labels': [{'labelName': label, 'type': 'User'} for label in delta.get('tags', [])],
         'firstActivityTimeUtc': delta.get('firstActivityTimeUtc'),
         'lastActivityTimeUtc': delta.get('lastActivityTimeUtc')
     }

@@ -107,17 +107,6 @@
                 "Microsoft Sentinel Incident Number": {
                     "simple": "IncidentNumber"
                 },
-                "Microsoft Sentinel Label": {
-                    "complex": {
-                        "filters": [],
-                        "root": "Label",
-                        "transformers": [
-                            {
-                                "operator": "ConvertKeysToTableFieldFormat"
-                            }
-                        ]
-                    }
-                },
                 "Microsoft Sentinel Owner": {
                     "complex": {
                         "filters": [],
@@ -149,6 +138,9 @@
                 },
                 "Tactic": {
                     "simple": "Tactics"
+                },
+                "Tags": {
+                    "simple": "tags"
                 },
                 "Vendor Product": {
                     "simple": "AlertProductNames"
