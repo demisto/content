@@ -60,7 +60,8 @@ RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
 EXTRACT_TIMESTAMP_REGEX = r"(\d{4}),\s?(Jan(uary)?|Feb(ruary)?|Mar(ch)?|Apr(il)?|May|Jun(e)?|" \
                           r"Jul(y)?|Aug(ust)?|Sep(tember)?|Oct(ober)?|Nov(ember)?|Dec(ember)?)\s?(\d{1,2})"
-
+ACCEPTABLE_DATE_FORMAT = ["%Y, %B %d", "%Y, %b %d"]
+SERVER_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 # disable warnings coming from taxii2client - https://github.com/OTRF/ATTACK-Python-Client/issues/43#issuecomment-1016581436
 logging.getLogger("taxii2client.v20").setLevel(logging.ERROR)
 
@@ -250,7 +251,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
         url = external_reference.get('url', '')
         description = external_reference.get('description')
         source_name = external_reference.get('source_name')
-        time_stamp = extract_timestamp_from_description(description)
+        time_stamp = extract_date_time_from_description(description)
         publications.append({'link': url, 'title': description, 'source': source_name, 'timestamp': time_stamp})
 
     mitre_id = [external.get('external_id') for external in indicator_json.get('external_references', [])
@@ -323,12 +324,21 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     return generic_mapping_fields
 
 
-def extract_timestamp_from_description(description: str) -> str:
+def extract_date_time_from_description(description: str) -> str:
+    date_time_result = ''
     if not description or 'Citation' in description or 'n.d' in description:
-        return ''
+        return date_time_result
     match = re.search(EXTRACT_TIMESTAMP_REGEX, description)
-    timestamp = match.group(0) if match else ''
-    return timestamp
+    if match:
+        date_time_str = f"{match.group(1)}, {match.group(2)} {match.group(14)}"
+        for date_format in ACCEPTABLE_DATE_FORMAT:
+            try:
+                parsed_date_time = datetime.strptime(date_time_str, date_format)
+                date_time_result = datetime.strftime(parsed_date_time, SERVER_DATE_FORMAT)
+                break
+            except ValueError:
+                continue
+    return date_time_result
 
 
 def get_tlp(indicator_json: dict) -> str:
