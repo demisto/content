@@ -3170,3 +3170,6 @@ script:
   isremotesyncin: true
   isremotesyncout: true
 sourcemoduleid: Cortex XDR - IR
+defaultmapperin: Cortex XDR - IR-mapper
+defaultclassifier: Cortex XDR Incident Handler - Classifier
+defaultmapperout: Cortex XDR - IR-out-mapper
