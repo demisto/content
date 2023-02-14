@@ -1,0 +1,19 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Dev_PlaybookAlert_Classifier",
+    "keyTypeMap": {
+        "cyber_vulnerability": "Dev_Cyber_Vuln",
+        "domain_abuse": "Dev_Domain_Abuse"
+    },
+    "name": "Dev_PlaybookAlert_Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "category"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.8.0"
+}
