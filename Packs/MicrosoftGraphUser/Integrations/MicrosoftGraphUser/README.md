@@ -605,9 +605,6 @@ Supported only in a self deployed app flow with the Permission: Directory.Access
 | force_change_password_with_mfa | Whether to change the password with MFA. Possible values are: true, false. Default is false. | Optional | 
 
 
-#### Context Output
-
-There is no context output for this command.
 ### msgraph-user-test
 ***
 Tests connectivity to Microsoft Graph User.
