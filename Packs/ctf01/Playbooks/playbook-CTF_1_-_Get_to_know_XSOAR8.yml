@@ -378,7 +378,7 @@ tasks:
         tooltip: You can see that information easily from pack's overview
         readonly: false
       title: Get to know the Marketplace
-      description: "Go to the Marketplace, search, and download the content pack \"CTF 2\". \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/new_marketplace.gif)"
+      description: "Go to the Marketplace, search, and download the content pack \"CTF 2\".\n(Since there are multiple users on the same system - it might be downloaded already) \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/new_marketplace.gif)"
       sender: ""
       expired: false
       totalanswers: 0
