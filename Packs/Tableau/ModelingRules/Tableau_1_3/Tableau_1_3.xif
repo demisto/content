@@ -1,4 +1,4 @@
-[MODEL: dataset="tableau_tableau_raw"]
+[MODEL: dataset="tableau_log_raw"]
 alter tokenPayload = arrayindex(regextract(_raw_log, "\(([^\)]*)\)"),0),
     requestPayload = arrayindex(regextract(_raw_log, "Request\s([^\$]*)"),0)
 | alter
