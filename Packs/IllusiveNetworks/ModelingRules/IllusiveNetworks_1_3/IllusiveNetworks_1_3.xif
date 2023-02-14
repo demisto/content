@@ -11,7 +11,6 @@ filter
     xdm.alert.severity = cefSeverity,
     xdm.source.cloud.project = cefDeviceProduct,
     xdm.source.agent.version = cefDeviceVersion,
-    xdm.event.type = cefDeviceEventClassId,
     xdm.alert.description = if(cefName = "Violation", msg),
     xdm.source.user.user_type = if(cs1 = "USER_CREDENTIALS", cs3),
     xdm.target.resource.name = if(cs1 = "CROWN_JEWEL_CREDENTIALS", cs3),
