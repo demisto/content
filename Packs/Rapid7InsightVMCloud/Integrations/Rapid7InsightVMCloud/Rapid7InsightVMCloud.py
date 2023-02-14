@@ -3,14 +3,11 @@ from CommonServerPython import *  # noqa: F401
 
 """IMPORTS"""
 
-import json
-from datetime import datetime
-from typing import Dict, List, Optional, Tuple, Union
 
-import dateparser
+from typing import Dict, Optional, Union
+
 import urllib3
 from requests import Response
-from requests.exceptions import ConnectionError, MissingSchema
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -84,7 +81,7 @@ def test_module_command(client: Client, *_) -> str:
     """
 
     method: str = "GET"
-    url_suffix: str = f"/admin/health"
+    url_suffix: str = "/admin/health"
 
     try:
         response: Union[Response, Dict] = client.make_request(method=method, url_suffix=url_suffix, resp_type="response")
@@ -105,7 +102,7 @@ def get_health_check_command(client: Client) -> dict:
     """
 
     method = 'GET'
-    endpoint = f"/admin/health"
+    endpoint = "/admin/health"
     response = client.make_request(method=method, url_suffix=endpoint)
     if response:
         return response
@@ -153,7 +150,7 @@ def search_assets_command(client: Client, hostname: None, page: str, size: str) 
         "size": args.get("size")
     }
     method = "POST"
-    endpoint = f"/v4/integration/assets"
+    endpoint = "/v4/integration/assets"
 
     assets = f"asset.name CONTAINS '{host_name}'"
     data = {
@@ -233,9 +230,7 @@ def get_scan_engines_command(client: Client, page: int, size: int) -> CommandRes
         "page": args.get("page"),
         "size": args.get("size")
     }
-    res = int(params.get('page'))
-    endpoint = f"/v4/integration/scan/engine"
-    response = client.make_request(method=method, url_suffix=endpoint, params=params)
+    endpoint = "/v4/integration/scan/engine"
     if int(args.get("size")) > 500:
         return_error("You're over the maximum size limit(500), please choose a lower size value")
     else:
@@ -327,7 +322,7 @@ def last_sites_command(client: Client, page: int, size=int) -> CommandResults:
 
     else:
         method = "POST"
-        endpoint = f"/v4/integration/sites"
+        endpoint = "/v4/integration/sites"
         headers = ["name", "type"]
         response = client.make_request(
             method=method,
@@ -361,8 +356,6 @@ def search_vulnerabilities_command(client: Client, query: str, page: int, size=i
     """
 
     args = demisto.args()
-    page = args.get("page")
-    size = args.get("size")
     query = args.get("query")
     params = {
         "page": args.get("page"),
@@ -372,7 +365,7 @@ def search_vulnerabilities_command(client: Client, query: str, page: int, size=i
         return_error("Exceed size limit")
     else:
         method = "POST"
-        endpoint = f"/v4/integration/vulnerabilities"
+        endpoint = "/v4/integration/vulnerabilities"
         data = {
             "vulnerability": query
         }
