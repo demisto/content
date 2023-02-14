@@ -67,7 +67,6 @@ def test_get_alert_command(mocker, requests_mock):
     assert results
 
 
-PARAMS = {'message_status': 'delivered (retroactive)'}
 ALERTS_1 = {'meta': {'fromLastModifiedOn': {'end': ''}},
             'data': [
                 {'attributes': {'email': {'status': 'delivered (retroactive)', 'headers': {'subject': ''}},
@@ -76,8 +75,7 @@ EXPECTED_INCIDENTS_1 = '{"email": {"status": "delivered (retroactive)", "headers
                        ' "alert": {"timestamp": "2023-02-08T19:34:17"}}'
 
 
-@pytest.mark.parametrize('params, alerts, expected_incidents', [(PARAMS, ALERTS_1, EXPECTED_INCIDENTS_1)])
-def test_fetch_incident_by_status_messages(mocker, params, alerts, expected_incidents):
+def test_fetch_incident_by_status_messages(mocker):
     """
     Given:
         - A status message similar to the alert's status
@@ -88,10 +86,10 @@ def test_fetch_incident_by_status_messages(mocker, params, alerts, expected_inci
     """
     mocker.patch.object(FireEyeETP, 'MESSAGE_STATUS', ['delivered (retroactive)'])
     mocker.patch('FireEyeETP.demisto.getLastRun', return_value={})
-    mocker.patch('FireEyeETP.get_alerts_request', return_value=alerts)
+    mocker.patch('FireEyeETP.get_alerts_request', return_value=ALERTS_1)
     res = mocker.patch('FireEyeETP.demisto.incidents')
     FireEyeETP.fetch_incidents()
-    assert res.call_args.args[0][0].get('rawJSON') == expected_incidents
+    assert res.call_args.args[0][0].get('rawJSON') == EXPECTED_INCIDENTS_1
 
 
 ALERTS_2 = {'meta': {'fromLastModifiedOn': {'end': ''}},
@@ -100,8 +98,7 @@ ALERTS_2 = {'meta': {'fromLastModifiedOn': {'end': ''}},
                                 'alert': {'timestamp': '2023-02-08T19:34:17'}}}]}
 
 
-@pytest.mark.parametrize('params, alerts, len_expected_incidents', [(PARAMS, ALERTS_2, 0)])
-def test_fetch_incident_by_status_messages_mismatch_status(mocker, params, alerts, len_expected_incidents):
+def test_fetch_incident_by_status_messages_mismatch_status(mocker):
     """
     Given:
         - A status message differs from to the alert's status
@@ -112,13 +109,12 @@ def test_fetch_incident_by_status_messages_mismatch_status(mocker, params, alert
     """
     mocker.patch.object(FireEyeETP, 'MESSAGE_STATUS', ['delivered (retroactive)'])
     mocker.patch('FireEyeETP.demisto.getLastRun', return_value={})
-    mocker.patch('FireEyeETP.get_alerts_request', return_value=alerts)
+    mocker.patch('FireEyeETP.get_alerts_request', return_value=ALERTS_2)
     res = mocker.patch('FireEyeETP.demisto.incidents')
     FireEyeETP.fetch_incidents()
-    assert len(res.call_args.args[0]) == len_expected_incidents
+    assert len(res.call_args.args[0]) == 0
 
 
-PARAMS_3 = {'message_status': 'delivered (retroactive), deleted'}
 ALERTS_3 = {'meta': {'fromLastModifiedOn': {'end': ''}},
             'data': [
                 {'attributes': {'email': {'status': 'delivered (retroactive)', 'headers': {'subject': ''}},
@@ -132,8 +128,7 @@ EXPECTED_INCIDENTS_3 = [
     '{"email": {"status": "deleted", "headers": {"subject": ""}}, "alert": {"timestamp": "2023-02-08T19:34:17"}}']
 
 
-@pytest.mark.parametrize('params, alerts, expected_incidents', [(PARAMS_3, ALERTS_3, EXPECTED_INCIDENTS_3)])
-def test_fetch_incident_by_status_messages_with_two_status(mocker, params, alerts, expected_incidents):
+def test_fetch_incident_by_status_messages_with_two_status(mocker):
     """
     Given:
         - A list of status message similar to the alert's status
@@ -144,8 +139,8 @@ def test_fetch_incident_by_status_messages_with_two_status(mocker, params, alert
     """
     mocker.patch.object(FireEyeETP, 'MESSAGE_STATUS', ['delivered (retroactive)', 'deleted'])
     mocker.patch('FireEyeETP.demisto.getLastRun', return_value={})
-    mocker.patch('FireEyeETP.get_alerts_request', return_value=alerts)
+    mocker.patch('FireEyeETP.get_alerts_request', return_value=ALERTS_3)
     res = mocker.patch('FireEyeETP.demisto.incidents')
     FireEyeETP.fetch_incidents()
-    for incident, expected_incident in zip(res.call_args.args[0], expected_incidents):
+    for incident, expected_incident in zip(res.call_args.args[0], EXPECTED_INCIDENTS_3):
         assert incident.get('rawJSON') == expected_incident
