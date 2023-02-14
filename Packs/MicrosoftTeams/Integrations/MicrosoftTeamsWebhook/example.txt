@@ -1,0 +1,2 @@
+ms-teams-message message="Hello from XSOAR"
+ms-teams-message message="Data Collection Form" additional_url="Data collection form link" url_title="Data Collection Task for Incident 1234"

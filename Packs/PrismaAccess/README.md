@@ -24,3 +24,22 @@ The integration includes commands to:
  - Run a custom CLI command
 
 The integration uses both the Panorama XML API and SSH into the PAN-OS CLI. SSH is based on the netmiko library and will use the netmiko docker image.
+
+
+### Prisma SASE
+---
+
+Integrate with Prisma SASE to view or make changes to Prisma Access configurations.
+
+The integration includes commands to:
+ - Create, update, delete and get security rules.
+ - Create, update, delete and get address objects.
+ - Create, update, delete and get external dynamic lists.
+ - Create, update, delete and get custom URL categories.
+ - Create, update, delete and get tags.
+ - Create, update, delete and get address groups.
+ - Get configuration jobs.
+ - Push all configuration jobs.
+
+
+The integration uses the Prisma SASE Multi-tenant API documented here: [Prisma SASE API](https://pan.dev).
