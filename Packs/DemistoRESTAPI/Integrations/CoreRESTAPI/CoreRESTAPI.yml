@@ -195,7 +195,7 @@ script:
         description: File name of download
       - name: description
         description: Description of file entry
-    description: Download files from Demisto server
+    description: Download files from core server
   - name: core-api-multipart
     arguments:
       - name: uri
@@ -206,14 +206,14 @@ script:
         description: File entry ID
       - name: body
         description: Request body
-    description: Send HTTP Multipart request to upload files to Demisto server
+    description: Send HTTP Multipart request to upload files to core server
   - name: core-delete-incidents
     arguments:
     - name: ids
       required: true
       description: IDs of the incidents to delete
       isArray: true
-    description: Delete Demisto incidents
+    description: Delete core incidents
     execution: true
   - name: core-api-install-packs
     arguments:
@@ -247,7 +247,7 @@ script:
       predefined:
         - 'true'
         - 'false'
-    description: Upload packs to Demisto server from url or the marketplace.
+    description: Upload packs to core server from url or the marketplace.
   runonce: false
 tests:
 - No tests
