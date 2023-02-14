@@ -154,6 +154,12 @@ class MetadataCondition(BaseCondition, ABC):
         commits = pr.get_commits()
         branches = git_repo.branches
         hi = "hi"
+        parent_sha = commits[0].parents[0].sha
+        base_sha = pr.base.sha
+        if pr.base.sha not in [c for c in commits]:
+            print("here")
+            parent_sha = commits[0].parents[0].sha
+        hi = "hi"
         with checkout(git_repo, pr.base.sha):
             pr_base_metadata = load_json(metadata_path)
         return origin_base_pack_metadata, branch_pack_metadata, pr_base_metadata
