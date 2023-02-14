@@ -3501,7 +3501,7 @@ def panorama_list_rules(xpath: str, name: str = None, filters: dict = None, quer
 
     if query:
         params["xpath"] = f'{params["xpath"]}[{query}]'
-    elif xpath_filter := build_xpath_filter(name_match=name, filters= filters):
+    elif xpath_filter := build_xpath_filter(name_match=name, filters=filters):
         params["xpath"] = f'{params["xpath"]}[{xpath_filter}]'
 
     result = http_request(
@@ -11755,7 +11755,7 @@ def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] =
 
     if query:
         _xpath = f"{_xpath}/rules/entry[{query}]"
-    elif xpath_filter := build_xpath_filter(name_match=name, filters= filters):
+    elif xpath_filter := build_xpath_filter(name_match=name, filters=filters):
         _xpath = f"{_xpath}/rules/entry[{xpath_filter}]"
 
     if element:
@@ -12528,7 +12528,7 @@ def build_pbf_xpath(name, pre_post, element_to_change=None, filters: dict = None
 
     if query:
         _xpath = f"{_xpath}/rules/entry[{query}]"
-    elif xpath_filter := build_xpath_filter(name_match=name, filters= filters):
+    elif xpath_filter := build_xpath_filter(name_match=name, filters=filters):
         _xpath = f"{_xpath}/rules/entry[{xpath_filter}]"
 
     if element_to_change:
