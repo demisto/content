@@ -18,7 +18,7 @@ configuration:
   hiddenusername: true
 - display: Base marketplace url
   name: marketplace_url
-  defaultvalue: https://storage.googleapis.com/marketplace-dist/content/packs/
+  defaultvalue: https://marketplace.xsoar.paloaltonetworks.com/
   type: 0
   required: false
 - display: Trust any certificate (not secure)

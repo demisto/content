@@ -489,7 +489,7 @@ def main():
         if not self_deployed and not enc_key:
             raise DemistoException('Key must be provided. For further information see '
                                    'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
-        if self_deployed and ((auth_code and not redirect_uri) or (not auth_code and redirect_uri)):
+        if self_deployed and auth_code and not redirect_uri:
             raise DemistoException('Please provide both Application redirect URI and Authorization code '
                                    'for Authorization Code flow, or None for the Client Credentials flow')
         elif not enc_key and not (certificate_thumbprint and private_key):
@@ -524,8 +524,11 @@ def main():
                                               certificate_thumbprint=certificate_thumbprint,
                                               private_key=private_key,
                                               managed_identities_client_id=managed_identities_client_id)
-        human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
-        return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
+        if command == 'msgraph-user-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
+        else:
+            human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
+            return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 
     except Exception as err:
         return_error(str(err))
