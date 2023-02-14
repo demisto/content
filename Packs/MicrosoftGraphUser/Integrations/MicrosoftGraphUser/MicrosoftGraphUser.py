@@ -333,9 +333,9 @@ def create_user_command(client: MsGraphClient, args: dict):
 
 @suppress_errors_with_404_code
 def update_user_command(client: MsGraphClient, args: dict):
-    user = args.get('user')
-    updated_fields = args.get('updated_fields')
-    delimiter = args.get('updated_fields_delimiter', ',')
+    user: str = args['user']
+    updated_fields: str = args['updated_fields']
+    delimiter: str = args.get('updated_fields_delimiter', ',')
 
     client.update_user(user, updated_fields, delimiter)
     return get_user_command(client, args)
