@@ -646,7 +646,7 @@ def kmsat_phishing_security_tests_list_command(
             "duration",
             "categories",
             "template",
-            "landing-page",
+            "landing_page",
             "scheduled_count",
             "delivered_count",
             "opened_count",
@@ -757,7 +757,11 @@ def kmsat_phishing_security_tests_failed_recipients_list_command(
     items_total = len(response)
 
     # Sets paging_end False if the response count is less than the per_page
-    if(len(response) < int(params.get('per_page'))):
+    per_page = 100
+    if (params.get('per_page')):
+        per_page = int(params.get('per_page'))
+        
+    if(len(response) < per_page):
         paging_end = True
 
     data = []
@@ -955,7 +959,11 @@ def kmsat_training_enrollments_list_command(
     items_total = len(response)
 
     # Sets paging_end False if the response count is less than the per_page
-    if(len(response) < int(params.get('per_page'))):
+    per_page = 100
+    if (params.get('per_page')):
+        per_page = int(params.get('per_page'))
+        
+    if(len(response) < per_page):
         paging_end = True
 
     # Adds only the filtered items to the response with counts

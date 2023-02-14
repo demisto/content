@@ -308,9 +308,18 @@ def test_phishing_security_tests_failed_recipients_list(requests_mock):
     )
     args: dict = {"pst_id": 1}
     result = kmsat_phishing_security_tests_failed_recipients_list_command(client, args)
+    valid_response = {
+        "data": mock_response_data,
+        "meta": {
+            "filtered_items_in_page": 1,
+            "items_total": 1,
+            "paging_end": True
+        }
+    }
+    
     assert result.outputs_prefix == "KMSAT.PhishingSecurityPST"
     assert result.outputs_key_field == "recipient_id"
-    assert result.outputs == mock_response_data
+    assert result.outputs == valid_response
 
 
 def test_phishing_campaigns_security_tests_list(requests_mock):
@@ -416,9 +425,17 @@ def test_training_enrollments_list(requests_mock):
     )
     args: dict = {}
     result = kmsat_training_enrollments_list_command(client, args)
+    valid_response = {
+        "data" : mock_response_data,
+        "meta": {
+            "filtered_items_in_page": 0,
+            "items_total": 4,
+            "paging_end": True
+        }
+    }
     assert result.outputs_prefix == "KMSAT.TrainingEnrollments"
     assert result.outputs_key_field == "enrollment_id"
-    assert result.outputs == mock_response_data
+    assert result.outputs == valid_response
 
 
 def test_status_training_enrollments_list(requests_mock):
@@ -453,12 +470,17 @@ def test_status_training_enrollments_list(requests_mock):
     expectedStatus: str = "Passed"
     args: dict = {"status": expectedStatus}
     result = kmsat_training_enrollments_list_command(client, args)
+
     assert result.outputs_prefix == "KMSAT.TrainingEnrollments"
-    assert result.outputs_key_field == "enrollment_id"    
-    assert len(result.outputs) == 2
+    assert result.outputs_key_field == "enrollment_id"   
+    assert len(result.outputs["data"]) == 2
     assert len(mock_response_data) > 2
-    for enrollment in result.outputs:
+    for enrollment in result.outputs["data"]:
         assert enrollment["status"] == expectedStatus
+    responseMeta = result.outputs["meta"]
+    assert responseMeta["filtered_items_in_page"] == 2
+    assert responseMeta["items_total"] == len(mock_response_data)
+    assert responseMeta["paging_end"]
 
 
 def test_get_user_event_types(requests_mock):
