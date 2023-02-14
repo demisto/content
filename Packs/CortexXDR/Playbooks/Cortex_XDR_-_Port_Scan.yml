@@ -1602,12 +1602,11 @@ tasks:
     task:
       id: b69262ea-4383-4218-824b-e13233a2c5a1
       version: -1
-      name: Isolate Endpoint - Generic
+      name: Isolate Endpoint - Generic V2
       description: |-
-        This playbook isolates a given endpoint using the following integrations:
-        - Carbon Black Enterprise Response
-        - Palo Alto Networks Traps
-      playbookName: Isolate Endpoint - Generic
+        This playbook isolates a given endpoint using various endpoint product integrations.
+        Make sure to provide valid playbook inputs for the integration you are using.
+      playbookName: Isolate Endpoint - Generic V2
       type: playbook
       iscommand: false
       brand: ""
@@ -1615,27 +1614,21 @@ tasks:
       '#none#':
       - "61"
     scriptarguments:
-      EndpointId:
-        complex:
-          root: PaloAltoNetworksXDREndpoint
-          filters:
-          - - operator: in
-              left:
-                value:
-                  simple: PaloAltoNetworksXDREndpoint.endpoint_name
-                iscontext: true
-              right:
-                value:
-                  simple: AttackerHostnames
-                iscontext: true
-          accessor: endpoint_id
-          transformers:
-          - operator: uniq
-      Hostname:
+      Endpoint_hostname:
         complex:
           root: AttackerHostnames
           transformers:
           - operator: uniq
+      Endpoint_id:
+        complex:
+          root: |2-
+
+            PaloAltoNetworksXDREndpoint
+          accessor: endpoint_id
+      Endpoint_ip:
+        complex:
+          root: IP
+          accessor: Address
     separatecontext: true
     loop:
       iscommand: false
