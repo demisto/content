@@ -846,8 +846,8 @@ def get_dbotscore(response: Dict[str, Any]) -> int:
     te_severity = dict_safe_get(response, ['response', 'te', 'severity'])
     te_combined_verdict = dict_safe_get(response, ['response', 'te', 'combined_verdict'])
     if av_confidence == 0 and av_severity == 0 and \
-            te_combined_verdict == 'Benign' and (te_severity == 0 or te_severity is None) and (te_confidence
-                                                                                               <= 1 or te_confidence is None):
+            te_combined_verdict.lower() == 'benign' and (te_severity == 0 or te_severity is None) and \
+            (te_confidence <= 1 or te_confidence is None):
         score = Common.DBotScore.GOOD
 
     elif te_severity == 1:
