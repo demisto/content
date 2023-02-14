@@ -71,13 +71,14 @@ class Client(BaseClient):
                  proxy: bool, self_deployed, refresh_token: str, auth_and_token_url: str,
                  enc_key: Optional[str], auth_code: str, tenant_id: str, redirect_uri: str, timeout: int,
                  certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None,
-                 managed_identities_client_id: Optional[str] = None):
+                 managed_identities_client_id: Optional[str] = None, refresh_token_param: Optional[str] = ''):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.tenant_id = tenant_id
         self.suffix_template = '{}/activity/feed/subscriptions/{}'
         self.access_token = None
         self.self_deployed = self_deployed
         self.refresh_token = refresh_token
+        self.refresh_token_param = refresh_token_param
         self.auth_and_token_url = auth_and_token_url
         self.enc_key = enc_key
         self.timeout = timeout
@@ -91,6 +92,7 @@ class Client(BaseClient):
                                          verify=verify,
                                          proxy=proxy,
                                          refresh_token=self.refresh_token,
+                                         refresh_token_param=self.refresh_token_param,
                                          ok_codes=(200, 201, 202, 204),
                                          timeout=self.timeout,
                                          scope='',
@@ -560,7 +562,11 @@ def main():
             elif not enc_key and not (certificate_thumbprint and private_key):
                 raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
-        refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
+        # Client gets refresh_token_param as well as refresh_token which is the current refresh token from the
+        # integration context (if exists) so It will be possible to manually update the refresh token param for an
+        # existing integration instance.
+        refresh_token_param = refresh_token
+        refresh_token = get_integration_context().get('current_refresh_token') or refresh_token_param
 
         client = Client(
             base_url=base_url,
@@ -569,6 +575,7 @@ def main():
             proxy=proxy,
             self_deployed=self_deployed,
             refresh_token=refresh_token,
+            refresh_token_param=refresh_token_param,
             auth_and_token_url=auth_id,
             timeout=calculate_timeout_value(params=params, args=args),
             enc_key=enc_key,
