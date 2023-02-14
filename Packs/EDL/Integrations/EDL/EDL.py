@@ -814,6 +814,8 @@ def route_edl() -> Response:
     on_demand = params.get('on_demand')
     created = datetime.now(timezone.utc)
     edl = get_edl_on_demand() if on_demand else create_new_edl(request_args)
+    LOG(get_message_memory_dump(None, None))
+    LOG.print_log()
     etag = f'"{hashlib.sha1(edl.encode()).hexdigest()}"'    # nosec
     query_time = (datetime.now(timezone.utc) - created).total_seconds()
     edl_size = 0
