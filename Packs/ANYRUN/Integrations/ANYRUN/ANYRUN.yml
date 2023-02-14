@@ -358,6 +358,15 @@ script:
       - '64'
       required: false
       secret: false
+    - name: obj_ext_browser
+      auto: PREDEFINED
+      predefined:
+      - Internet Explorer
+      - Google Chrome
+      - Mozilla Firefox
+      - Opera
+      - Microsoft Edge
+      description: Browser name, used only for "url" type.
     - auto: PREDEFINED
       default: false
       defaultValue: Windows 7
@@ -425,7 +434,7 @@ script:
     - contextPath: ANYRUN.Task.ID
       description: ID of the task created to analyze the submission.
       type: String
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.10.47713
   subtype: python3
   isfetch: false
   runonce: false

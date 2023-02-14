@@ -68,5 +68,6 @@ runonce: false
 marketplaces:
 - xsoar
 - marketplacev2
+- xpanse
 tests:
 - No tests
