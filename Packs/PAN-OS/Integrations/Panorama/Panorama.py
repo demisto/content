@@ -426,11 +426,11 @@ def do_pagination(
     page_size: int = DEFAULT_LIMIT_PAGE_SIZE,
     limit: int = DEFAULT_LIMIT_PAGE_SIZE
 ):
-    if page is not None:
+    if isinstance(entries,list) and page is not None:
         if page <= 0:
             raise DemistoException(f'page {page} must be a positive number')
         entries = entries[(page - 1) * page_size:page_size * page]  # do pagination
-    else:
+    elif isinstance(entries,list):
         entries = entries[:limit]
 
     return entries
@@ -4166,7 +4166,6 @@ def panorama_list_applications(args:Dict[str, str], predefined: bool) -> Union[L
         'key': API_KEY
     }
     filters = assign_params(
-        name_match=args.get('name_match'),
         risk=args.get('risk'),
         category=args.get('category'),
         subcategory=args.get('sub_category'),
@@ -4174,6 +4173,7 @@ def panorama_list_applications(args:Dict[str, str], predefined: bool) -> Union[L
         characteristics=argToList(args.get('characteristics')),
     )
     name_match = args.get('name_match')
+    demisto.debug('name_match',name_match)
     name_contain = args.get('name_contain')
     if name_match and name_contain:
         raise Exception('Please specify only one of name_match/name_contain')
@@ -4217,10 +4217,12 @@ def panorama_list_applications_command(args:Dict[str, str]):
     List all applications
     """
     predefined = args.get('predefined') == 'true'
-    applications_arr = panorama_list_applications(args,predefined)
-    applications_arr_output = prettify_applications_arr(applications_arr)
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('page_size')) or DEFAULT_LIMIT_PAGE_SIZE
     limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT_PAGE_SIZE
-    applications_arr_output=applications_arr_output[:limit]
+    applications_arr = panorama_list_applications(args,predefined)
+    entries = do_pagination(applications_arr, page=page, page_size=page_size, limit=limit)
+    applications_arr_output = prettify_applications_arr(entries)
     headers = ['Id', 'Name', 'Risk', 'Category', 'SubCategory', 'Technology', 'Description', 'Characteristics']
 
     return_results({

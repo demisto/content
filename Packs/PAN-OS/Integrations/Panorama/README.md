@@ -2571,7 +2571,9 @@ Returns a list of applications.
 | sub_category | The application sub-category. | Optional | 
 | technology | The application technology. Possible values are: browser-based, client-server, network-protocol, peer-to-peer. | Optional | 
 | characteristics | A comma-separated list of characteristics. Possible values are: 'virus-ident', 'evasive-behavior', 'file-type-ident', 'consume-big-bandwidth', 'used-by-malware', 'able-to-transfer-file', 'has-known-vulnerability', 'tunnel-other-application', 'prone-to-misuse', 'pervasive-use', 'file-forward', 'is-saas'. | Optional | 
-| limit | The maximum number of results to retrieve. Default is 50. | Optional | 
+| limit | The maximum number of rules to retrieve. Will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The page size of the applications to return. Default is 50. | Optional | 
+| page | The page at which to start listing applications. Must be a positive number. | Optional | 
 
 
 #### Context Output
