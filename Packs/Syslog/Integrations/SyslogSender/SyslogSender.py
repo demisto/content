@@ -1,7 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import base64
+# import base64
+import idna
+from dns.resolver import Resolver, query
+
 
 ''' IMPORTS '''
 
@@ -156,7 +159,7 @@ class SyslogManager:
         :return: syslog logger
         """
         if self.protocol == TLS and self.syslog_cert_path:
-            handler = self.init_handler_tls(self.syslog_cert_path, self.self_signed_cert)
+            handler = self.init_handler_tls(self.syslog_cert_path)
             demisto.debug('get handler tls')
         else:
             handler = self._get_handler()
@@ -172,10 +175,10 @@ class SyslogManager:
         sock_kind = SOCK_STREAM if self.protocol == TCP else socket.SOCK_DGRAM
         return Rfc5424SysLogHandler(address=(self.address, self.port),
                                     facility=self.facility,
-                                    socktype=sock_kind,
+                                    socktype=sock_kind,                                    
                                     timeout=10)
 
-    def init_handler_tls(self, certfile: str, self_signed_cert: bool):
+    def init_handler_tls(self, certfile: str):
         return SyslogHandlerTLS(address=self.address,
                                 port=self.port,
                                 cert_path=certfile,
@@ -238,8 +241,17 @@ def init_manager(params: dict) -> SyslogManager:
         raise DemistoException(f'Invalid listen port - {port}. Make sure your port is a number')
     if port < 0 or max_port < port:
         raise DemistoException(f'Given port: {port} is not valid and must be between 0-{max_port}')
-    if len(address) >= 64:
-        address = base64.b64encode(address.encode()).decode("utf-8")
+    if len(address) >= 64 and idna.encode(address) != address:
+        # socket module calls with long host names can fail with idna codec error is still an open issue
+        # https://github.com/python/cpython/issues/77139
+        # this section To extract the IP address from an IDNA-encoded network address
+
+        # Decode IDNA-encoded domain name
+        domain_name = idna.decode(address)
+        # Perform DNS query to get IP address
+        answers = Resolver(query(domain_name, 'A'))
+        demisto.debug(address)
+        address = answers[0].address
     if protocol == 'tls' and not certificate:
         raise DemistoException('A certificate must be provided in TLS protocol.')
     if certificate and protocol == 'tls':
