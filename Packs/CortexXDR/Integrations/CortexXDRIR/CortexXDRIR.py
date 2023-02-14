@@ -1,10 +1,15 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+3
+
 import hashlib
 import secrets
 import string
 from itertools import zip_longest
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+
+
+
 from CoreIRApiModule import *
 
 # Disable insecure warnings
@@ -33,6 +38,13 @@ XDR_INCIDENT_FIELDS = {
     "manual_severity": {"description": "Incident severity assigned by the user. "
                                        "This does not affect the calculated severity low medium high",
                         "xsoar_field_name": "severity"},
+}
+
+XSOAR_RESOLVED_STATUS_TO_XDR = {
+    'Other': 'resolved_other',
+    'Duplicate': 'resolved_duplicate',
+    'False Positive': 'resolved_false_positive',
+    'Resolved': 'resolved_true_positive',
 }
 
 MIRROR_DIRECTION = {
@@ -302,45 +314,6 @@ class Client(CoreClient):
 
         return incidents
 
-    def update_incident(self, incident_id, status=None, assigned_user_mail=None, assigned_user_pretty_name=None, severity=None,
-                        resolve_comment=None, unassign_user=None, add_comment=None):
-        update_data: dict[str, Any] = {}
-
-        if unassign_user and (assigned_user_mail or assigned_user_pretty_name):
-            raise ValueError("Can't provide both assignee_email/assignee_name and unassign_user")
-        if unassign_user:
-            update_data['assigned_user_mail'] = 'none'
-
-        if assigned_user_mail:
-            update_data['assigned_user_mail'] = assigned_user_mail
-
-        if assigned_user_pretty_name:
-            update_data['assigned_user_pretty_name'] = assigned_user_pretty_name
-
-        if status:
-            update_data['status'] = status
-
-        if severity:
-            update_data['manual_severity'] = severity
-
-        if resolve_comment:
-            update_data['resolve_comment'] = resolve_comment
-
-        if add_comment:
-            update_data['comment'] = {'comment_action': 'add', 'value': add_comment}
-
-        request_data = {
-            'incident_id': incident_id,
-            'update_data': update_data,
-        }
-
-        self._http_request(
-            method='POST',
-            url_suffix='/incidents/update_incident/',
-            json_data={'request_data': request_data},
-            timeout=self.timeout
-        )
-
     def get_incident_extra_data(self, incident_id, alerts_limit=1000):
         """
         Returns incident by id
@@ -528,30 +501,6 @@ def get_incidents_command(client, args):
     )
 
 
-def update_incident_command(client, args):
-    incident_id = args.get('incident_id')
-    assigned_user_mail = args.get('assigned_user_mail')
-    assigned_user_pretty_name = args.get('assigned_user_pretty_name')
-    status = args.get('status')
-    severity = args.get('manual_severity')
-    unassign_user = args.get('unassign_user') == 'true'
-    resolve_comment = args.get('resolve_comment')
-    add_comment = args.get('add_comment')
-
-    client.update_incident(
-        incident_id=incident_id,
-        assigned_user_mail=assigned_user_mail,
-        assigned_user_pretty_name=assigned_user_pretty_name,
-        unassign_user=unassign_user,
-        status=status,
-        severity=severity,
-        resolve_comment=resolve_comment,
-        add_comment=add_comment,
-    )
-
-    return f'Incident {incident_id} has been updated', None, None
-
-
 def check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time_timestamp, last_modified_incidents_dict):
     if incident_id in last_modified_incidents_dict:  # search the incident in the dict of modified incidents
         incident_modification_time_in_xdr = int(str(last_modified_incidents_dict[incident_id]))
@@ -600,252 +549,8 @@ def get_incident_extra_data_command(client, args):
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
 
     demisto.debug(f"Performing extra-data request on incident: {incident_id}")
-    raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
-    raw_incidents = [
-        {
-            "alert_categories": [
-                "Credential Access"
-            ],
-            "alert_count": 1,
-            "alerts": [
-                {
-                    "description": "DC1ENV12APC05 successfully accessed administrator by systematically guessing the user's password 22 times over an hour with 2 successful logons and 20 failed attempts. The user did not log in successfully from 137.184.208.116 during the last 30 days. Over the past 30 days, DC1ENV12APC05 has had an average of 0 failed login attempts with the user administrator from 137.184.208.116 per day",
-                    "action": "DETECTED",
-                    "action_country": "UNKNOWN",
-                    "action_external_hostname": "kali",
-                    "action_file_macro_sha256": None,
-                    "action_file_md5": None,
-                    "action_file_name": None,
-                    "action_file_path": None,
-                    "action_file_sha256": None,
-                    "action_local_ip": None,
-                    "action_local_ip_v6": None,
-                    "action_local_port": 0,
-                    "action_pretty": "Detected",
-                    "action_process_causality_id": None,
-                    "action_process_image_command_line": None,
-                    "action_process_image_name": None,
-                    "action_process_image_sha256": None,
-                    "action_process_instance_id": None,
-                    "action_process_signature_status": "N/A",
-                    "action_process_signature_vendor": None,
-                    "action_registry_data": None,
-                    "action_registry_full_key": None,
-                    "action_registry_key_name": None,
-                    "action_registry_value_name": None,
-                    "action_remote_ip": "137.184.208.116",
-                    "action_remote_ip_v6": None,
-                    "action_remote_port": "3389",
-                    "actor_causality_id": "AdkP08aY7RwAAAL0AAAAAA==",
-                    "actor_process_causality_id": "AdkP08aY7RwAAAL0AAAAAA==",
-                    "actor_process_command_line": "C:\\WINDOWS\\system32\\lsass.exe",
-                    "actor_process_image_md5": "289d6a47b7692510e2fd3b51979a9fed",
-                    "actor_process_image_name": "lsass.exe",
-                    "actor_process_image_path": "C:\\Windows\\System32\\lsass.exe",
-                    "actor_process_image_sha256": "0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650",
-                    "actor_process_instance_id": "AdkP08aY7RwAAAL0AAAAAA==",
-                    "actor_process_os_pid": 756,
-                    "actor_process_signature_status": "Signed",
-                    "actor_process_signature_vendor": "Microsoft Corporation",
-                    "actor_thread_thread_id": 4020,
-                    "agent_data_collection_status": None,
-                    "agent_device_domain": None,
-                    "agent_fqdn": None,
-                    "agent_host_boot_time": 1671032983204,
-                    "agent_install_type": "STANDARD",
-                    "agent_ip_addresses_v6": None,
-                    "agent_is_vdi": None,
-                    "agent_os_sub_type": "Windows 10 [10.0 (Build 19044)]",
-                    "agent_os_type": "Windows",
-                    "agent_version": "7.9.0.18674",
-                    "alert_id": "150807",
-                    "alert_type": "Unclassified",
-                    "association_strength": 50,
-                    "attempt_counter": None,
-                    "bioc_category_enum_key": None,
-                    "bioc_indicator": None,
-                    "case_id": 413,
-                    "category": "Credential Access",
-                    "causality_actor_causality_id": "AdkP08aY7RwAAAL0AAAAAA==",
-                    "causality_actor_process_command_line": "C:\\WINDOWS\\system32\\lsass.exe",
-                    "causality_actor_process_execution_time": 1671033022857,
-                    "causality_actor_process_image_md5": "289d6a47b7692510e2fd3b51979a9fed",
-                    "causality_actor_process_image_name": "lsass.exe",
-                    "causality_actor_process_image_path": "C:\\Windows\\System32\\lsass.exe",
-                    "causality_actor_process_image_sha256": "0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650",
-                    "causality_actor_process_signature_status": "Signed",
-                    "causality_actor_process_signature_vendor": "Microsoft Corporation",
-                    "cloud_provider": None,
-                    "cluster_name": None,
-                    "container_id": None,
-                    "contains_featured_host": "NO",
-                    "contains_featured_ip": "NO",
-                    "contains_featured_user": "NO",
-                    "deduplicate_tokens": None,
-                    "detection_timestamp": 1671730626096,
-                    "dns_query_name": None,
-                    "dst_action_country": "-",
-                    "dst_action_external_hostname": None,
-                    "dst_action_external_port": None,
-                    "dst_agent_id": "",
-                    "dst_association_strength": 0,
-                    "dst_causality_actor_process_execution_time": None,
-                    "dynamic_fields": None,
-                    "end_match_attempt_ts": None,
-                    "endpoint_id": "f6ba1a18c35d416c8e27a319cc2fea09",
-                    "event_id": "ODczNjk1Mzc1MTMwMzI1NjA1Nw==",
-                    "event_sub_type": 1,
-                    "event_timestamp": 1671730625375,
-                    "event_type": "Login",
-                    "events_length": 1,
-                    "external_id": "2a6a3f42-9d2d-4226-922f-28e4c2a3147f",
-                    "filter_rule_id": None,
-                    "fw_app_category": None,
-                    "fw_app_id": "",
-                    "fw_app_subcategory": None,
-                    "fw_app_technology": None,
-                    "fw_device_name": "",
-                    "fw_email_recipient": None,
-                    "fw_email_sender": None,
-                    "fw_email_subject": None,
-                    "fw_interface_from": "",
-                    "fw_interface_to": "",
-                    "fw_is_phishing": "N/A",
-                    "fw_misc": None,
-                    "fw_rule": "",
-                    "fw_rule_id": None,
-                    "fw_serial_number": "",
-                    "fw_url_domain": None,
-                    "fw_vsys": None,
-                    "fw_xff": None,
-                    "host_ip": "172.16.12.40",
-                    "host_ip_list": [
-                                "172.16.12.40"
-                    ],
-                    "host_name": "DC1ENV12APC05",
-                    "identity_sub_type": None,
-                    "identity_type": None,
-                    "image_name": None,
-                    "is_pcap": False,
-                    "is_whitelisted": False,
-                    "last_modified_ts": None,
-                    "local_insert_ts": 1671731192490,
-                    "mac": None,
-                    "matching_service_rule_id": "fd879de7-fb74-44f0-b699-805d0b08b1fd",
-                    "matching_status": "MATCHED",
-                    "mitre_tactic_id_and_name": "TA0006 - Credential Access",
-                    "mitre_technique_id_and_name": "T1110.001 - Brute Force: Password Guessing",
-                    "module_id": None,
-                    "name": "Possible external RDP Brute-Force",
-                            "operation_name": None,
-                            "original_tags": "DS:PANW/XDR Agent",
-                            "os_actor_causality_id": None,
-                            "os_actor_effective_username": None,
-                            "os_actor_process_causality_id": "AdkP08aY7RwAAAL0AAAAAA==",
-                            "os_actor_process_command_line": "C:\\WINDOWS\\system32\\lsass.exe",
-                            "os_actor_process_image_name": "lsass.exe",
-                            "os_actor_process_image_path": "C:\\Windows\\System32\\lsass.exe",
-                            "os_actor_process_image_sha256": "0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650",
-                            "os_actor_process_instance_id": "AdkP08aY7RwAAAL0AAAAAA==",
-                            "os_actor_process_os_pid": 756,
-                            "os_actor_process_signature_status": "Signed",
-                            "os_actor_process_signature_vendor": "Microsoft Corporation",
-                            "os_actor_thread_thread_id": 4020,
-                            "project": None,
-                            "referenced_resource": None,
-                            "resolution_comment": None,
-                            "resolution_status": "STATUS_010_NEW",
-                            "resource_sub_type": None,
-                            "resource_type": None,
-                            "severity": "low",
-                            "source": "XDR Analytics",
-                            "starred": False,
-                            "story_id": "ODczNjk1Mzc1MTMwMzI1NjA1Nw==",
-                            "tags": "DS:PANW/XDR Agent",
-                            "user_agent": None,
-                            "user_name": "administrator"
-                }
-            ],
-            "alerts_grouping_status": "Disabled",
-            "assigned_user_mail": None,
-            "assigned_user_pretty_name": None,
-            "creation_time": 1671731222757,
-            "critical_severity_alert_count": 0,
-            "description": "'Possible external RDP Brute-Force' generated by XDR Analytics detected on host dc1env12apc05 involving user env12\\administrator",
-            "file_artifacts": [
-                {
-                    "alert_count": 1,
-                    "file_name": "lsass.exe",
-                    "file_sha256": "0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650",
-                    "file_signature_status": "SIGNATURE_SIGNED",
-                    "file_signature_vendor_name": "Microsoft Corporation",
-                    "file_wildfire_verdict": "BENIGN",
-                    "is_malicious": False,
-                    "is_manual": False,
-                    "is_process": True,
-                    "low_confidence": False,
-                    "type": "HASH"
-                }
-            ],
-            "detection_time": None,
-            "high_severity_alert_count": 0,
-            "host_count": 1,
-            "hosts": [
-                "dc1env12apc05:f6ba1a18c35d416c8e27a319cc2fea09"
-            ],
-            "incident_id": "413",
-            "incident_name": None,
-            "incident_sources": [
-                "XDR Analytics"
-            ],
-            "is_blocked": False,
-            "low_severity_alert_count": 1,
-            "manual_description": None,
-            "manual_score": None,
-            "manual_severity": None,
-            "med_severity_alert_count": 0,
-            "mitre_tactics_ids_and_names": [
-                "TA0006 - Credential Access"
-            ],
-            "mitre_techniques_ids_and_names": [
-                "T1110.001 - Brute Force: Password Guessing"
-            ],
-            "modification_time": 1675069594952,
-            "network_artifacts": [
-                {
-                    "alert_count": 1,
-                    "is_manual": False,
-                    "network_country": "UNKNOWN",
-                    "network_domain": "kali",
-                    "network_remote_ip": None,
-                    "network_remote_port": 0,
-                    "type": "DOMAIN"
-                }
-            ],
-            "original_tags": [
-                "DS:PANW/XDR Agent"
-            ],
-            "notes": None,
-            "predicted_score": None,
-            "resolve_comment": None,
-            "resolved_timestamp": None,
-            "rule_based_score": None,
-            "severity": "low",
-            "starred": False,
-            "status": "new",
-            "tags": [
-                        "DS:PANW/XDR Agent"
-            ],
-            "user_count": 1,
-            "users": [
-                "env12\\administrator"
-            ],
-            "wildfire_hits": 0,
-            "xdr_url": "https://myxdrtenant.donotclick/incident-view?caseId=413",
-            "aggregated_score": None
-        }
-
-    ]
+    raw_incident = {'incident': {'incident_id': '413', 'is_blocked': False, 'incident_name': None, 'creation_time': 1671731222757, 'modification_time': 1675721186878, 'detection_time': None, 'status': 'resolved_false_positive', 'severity': 'low', 'description': "'Possible external RDP Brute-Force' generated by XDR Analytics detected on host dc1env12apc05 involving user env12\\administrator", 'assigned_user_mail': None, 'assigned_user_pretty_name': None, 'alert_count': 1, 'low_severity_alert_count': 1, 'med_severity_alert_count': 0, 'high_severity_alert_count': 0, 'critical_severity_alert_count': 0, 'user_count': 1, 'host_count': 1, 'notes': None, 'resolve_comment': None, 'resolved_timestamp': 1675721186878, 'manual_severity': None, 'manual_description': None, 'xdr_url': 'https://mytenanet.xdr.us.paloaltonetworks.com/incident-view?caseId=413', 'starred': False, 'hosts': ['dc1env12apc05:f6ba1a18c35d416c8e27a319cc2fea09'], 'users': ['env12\\administrator'], 'incident_sources': ['XDR Analytics'], 'rule_based_score': None, 'predicted_score': None, 'manual_score': None, 'aggregated_score': None, 'wildfire_hits': 0, 'alerts_grouping_status': 'Disabled', 'mitre_tactics_ids_and_names': ['TA0006 - Credential Access'], 'mitre_techniques_ids_and_names': ['T1110.001 - Brute Force: Password Guessing'], 'alert_categories': ['Credential Access'], 'original_tags': ['DS:PANW/XDR Agent'], 'tags': ['DS:PANW/XDR Agent']}, 'alerts': {'total_count': 1, 'data': [{'external_id': '2a6a3f42-9d2d-4226-922f-28e4c2a3147f', 'severity': 'low', 'matching_status': 'MATCHED', 'end_match_attempt_ts': None, 'local_insert_ts': 1671731192490, 'last_modified_ts': None, 'bioc_indicator': None, 'matching_service_rule_id': 'fd879de7-fb74-44f0-b699-805d0b08b1fd', 'attempt_counter': None, 'bioc_category_enum_key': None, 'case_id': 413, 'is_whitelisted': False, 'starred': False, 'deduplicate_tokens': None, 'filter_rule_id': None, 'mitre_technique_id_and_name': 'T1110.001 - Brute Force: Password Guessing', 'mitre_tactic_id_and_name': 'TA0006 - Credential Access', 'agent_version': '7.9.0.18674', 'agent_ip_addresses_v6': None, 'agent_device_domain': None, 'agent_fqdn': None, 'agent_os_type': 'Windows', 'agent_os_sub_type': 'Windows 10 [10.0 (Build 19044)]', 'agent_data_collection_status': None, 'mac': None, 'agent_is_vdi': None, 'agent_install_type': 'STANDARD', 'agent_host_boot_time': 1671032983204, 'event_sub_type': 1, 'module_id': None, 'association_strength': 50, 'dst_association_strength': 0, 'story_id': 'ODczNjk1Mzc1MTMwMzI1NjA1Nw==', 'event_id': 'ODczNjk1Mzc1MTMwMzI1NjA1Nw==', 'event_type': 'Login', 'event_timestamp': 1671730625375, 'actor_process_instance_id': 'AdkP08aY7RwAAAL0AAAAAA==', 'actor_process_image_path': 'C:\\Windows\\System32\\lsass.exe', 'actor_process_image_name': 'lsass.exe', 'actor_process_command_line': 'C:\\WINDOWS\\system32\\lsass.exe', 'actor_process_signature_status': 'Signed', 'actor_process_signature_vendor': 'Microsoft Corporation', 'actor_process_image_sha256': '0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650', 'actor_process_image_md5': '289d6a47b7692510e2fd3b51979a9fed', 'actor_process_causality_id': 'AdkP08aY7RwAAAL0AAAAAA==', 'actor_causality_id': 'AdkP08aY7RwAAAL0AAAAAA==', 'actor_process_os_pid': 756, 'actor_thread_thread_id': 4020, 'causality_actor_process_image_name': 'lsass.exe', 'causality_actor_process_command_line': 'C:\\WINDOWS\\system32\\lsass.exe', 'causality_actor_process_image_path': 'C:\\Windows\\System32\\lsass.exe', 'causality_actor_process_signature_vendor': 'Microsoft Corporation', 'causality_actor_process_signature_status': 'Signed', 'causality_actor_causality_id': 'AdkP08aY7RwAAAL0AAAAAA==', 'causality_actor_process_execution_time': 1671033022857, 'causality_actor_process_image_md5': '289d6a47b7692510e2fd3b51979a9fed', 'causality_actor_process_image_sha256': '0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650', 'action_file_path': None, 'action_file_name': None, 'action_file_md5': None, 'action_file_sha256': None, 'action_file_macro_sha256': None, 'action_registry_data': None, 'action_registry_key_name': None, 'action_registry_value_name': None, 'action_registry_full_key': None, 'action_local_ip': 'None', 'action_local_ip_v6': None, 'action_local_port': 0, 'action_remote_ip': '137.184.208.116', 'action_remote_ip_v6': None, 'action_remote_port': 0, 'action_external_hostname': 'kali', 'action_country': 'UNKNOWN', 'action_process_instance_id': None, 'action_process_causality_id': None, 'action_process_image_name': None, 'action_process_image_sha256': None, 'action_process_image_command_line': None, 'action_process_signature_status': 'N/A', 'action_process_signature_vendor': None, 'os_actor_effective_username': None, 'os_actor_process_instance_id': 'AdkP08aY7RwAAAL0AAAAAA==', 'os_actor_process_image_path': 'C:\\Windows\\System32\\lsass.exe', 'os_actor_process_image_name': 'lsass.exe', 'os_actor_process_command_line': 'C:\\WINDOWS\\system32\\lsass.exe', 'os_actor_process_signature_status': 'Signed', 'os_actor_process_signature_vendor': 'Microsoft Corporation', 'os_actor_process_image_sha256': '0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650', 'os_actor_process_causality_id': 'AdkP08aY7RwAAAL0AAAAAA==', 'os_actor_causality_id': None, 'os_actor_process_os_pid': 756, 'os_actor_thread_thread_id': 4020, 'fw_app_id': '', 'fw_interface_from': '', 'fw_interface_to': '', 'fw_rule': '', 'fw_rule_id': None, 'fw_device_name': '', 'fw_serial_number': '', 'fw_url_domain': None, 'fw_email_subject': None, 'fw_email_sender': None, 'fw_email_recipient': None, 'fw_app_subcategory': None, 'fw_app_category': None, 'fw_app_technology': None, 'fw_vsys': None, 'fw_xff': None, 'fw_misc': None, 'fw_is_phishing': 'N/A', 'dst_agent_id': '', 'dst_causality_actor_process_execution_time': None, 'dns_query_name': None, 'dst_action_external_hostname': None, 'dst_action_country': '-', 'dst_action_external_port': None, 'is_pcap': False, 'contains_featured_host': 'NO', 'contains_featured_user': 'NO', 'contains_featured_ip': 'NO', 'image_name': None, 'container_id': None, 'cluster_name': None, 'referenced_resource': None, 'operation_name': None, 'identity_sub_type': None, 'identity_type': None, 'project': None, 'cloud_provider': None, 'resource_type': None, 'resource_sub_type': None, 'user_agent': None, 'alert_type': 'Unclassified', 'resolution_status': 'STATUS_010_NEW', 'resolution_comment': None, 'dynamic_fields': None, 'tags': 'DS:PANW/XDR Agent', 'events_length': 1, 'alert_id': '150807', 'detection_timestamp': 1671730626096, 'name': 'Possible external RDP Brute-Force', 'category': 'Credential Access', 'endpoint_id': 'f6ba1a18c35d416c8e27a319cc2fea09', 'description': "DC1ENV12APC05 successfully accessed administrator by systematically guessing the user's password 22 times over an hour with 2 successful logons and 20 failed attempts. The user did not log in successfully from 137.184.208.116 during the last 30 days. Over the past 30 days, DC1ENV12APC05 has had an average of 0 failed login attempts with the user administrator from 137.184.208.116 per day", 'host_ip': '172.16.12.40', 'host_name': 'DC1ENV12APC05', 'source': 'XDR Analytics', 'action': 'DETECTED', 'action_pretty': 'Detected', 'user_name': 'administrator', 'original_tags': 'DS:PANW/XDR Agent'}]}, 'network_artifacts': {'total_count': 1, 'data': [{'type': 'DOMAIN', 'alert_count': 1, 'is_manual': False, 'network_domain': 'kali', 'network_remote_ip': None, 'network_remote_port': 0, 'network_country': 'UNKNOWN'}]}, 'file_artifacts': {'total_count': 1, 'data': [{'type': 'HASH', 'alert_count': 1, 'is_manual': False, 'is_malicious': False, 'is_process': True, 'file_name': 'lsass.exe', 'file_sha256': '0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650', 'file_signature_status': 'SIGNATURE_SIGNED', 'file_signature_vendor_name': 'Microsoft Corporation', 'file_wildfire_verdict': 'BENIGN', 'low_confidence': False}]}}
+    #client.get_incident_extra_data(incident_id, alerts_limit)
 
     incident = raw_incident.get('incident')
     incident_id = incident.get('incident_id')
@@ -902,7 +607,6 @@ def get_incident_extra_data_command(client, args):
         context_output[Common.IP.CONTEXT_PATH] = ip_context
     if process_context:
         context_output['Process(val.Name && val.Name == obj.Name)'] = process_context
-
     return (
         '\n'.join(readable_output),
         context_output,
@@ -1190,33 +894,6 @@ def get_remote_data_command(client, args):
         )
 
 
-def update_remote_system_command(client, args):
-    remote_args = UpdateRemoteSystemArgs(args)
-
-    if remote_args.delta:
-        demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
-                      f'incident {remote_args.remote_incident_id}')
-    try:
-        if remote_args.incident_changed:
-            update_args = get_update_args(remote_args)
-
-            update_args['incident_id'] = remote_args.remote_incident_id
-            demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
-            update_incident_command(client, update_args)
-
-        else:
-            demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
-                          f'as it is not new nor changed')
-
-        return remote_args.remote_incident_id
-
-    except Exception as e:
-        demisto.debug(f"Error in outgoing mirror for incident {remote_args.remote_incident_id} \n"
-                      f"Error message: {str(e)}")
-
-        return remote_args.remote_incident_id
-
-
 def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
                     statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None):
     # Get the last fetch time, if exists
@@ -1237,505 +914,993 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     else:
         if statuses:
             raw_incidents = []
-            # for status in statuses:
-            # raw_incidents += client.get_incidents(gte_creation_time_milliseconds=last_fetch, status=status,
-            #                                     limit=max_fetch, sort_by_creation_time='asc', starred=starred,
-            #                                    starred_incidents_fetch_window=starred_incidents_fetch_window)
+            #for status in statuses:
+                #raw_incidents += client.get_incidents(gte_creation_time_milliseconds=last_fetch, status=status,
+                 #                                     limit=max_fetch, sort_by_creation_time='asc', starred=starred,
+                  #                                    starred_incidents_fetch_window=starred_incidents_fetch_window)
             raw_incidents = sorted(raw_incidents, key=lambda inc: inc['creation_time'])
             raw_incidents = [
                 {
-                    "alert_categories": [
-                        "Credential Access"
-                    ],
-                    "alert_count": 1,
-                    "alerts": [
-                        {
-                            "description": "DC1ENV12APC05 successfully accessed administrator by systematically guessing the user's password 22 times over an hour with 2 successful logons and 20 failed attempts. The user did not log in successfully from 137.184.208.116 during the last 30 days. Over the past 30 days, DC1ENV12APC05 has had an average of 0 failed login attempts with the user administrator from 137.184.208.116 per day",
-                            "action": "DETECTED",
-                            "action_country": "UNKNOWN",
-                            "action_external_hostname": "kali",
-                            "action_file_macro_sha256": None,
-                            "action_file_md5": None,
-                            "action_file_name": None,
-                            "action_file_path": None,
-                            "action_file_sha256": None,
-                            "action_local_ip": None,
-                            "action_local_ip_v6": None,
-                            "action_local_port": 0,
-                            "action_pretty": "Detected",
-                            "action_process_causality_id": None,
-                            "action_process_image_command_line": None,
-                            "action_process_image_name": None,
-                            "action_process_image_sha256": None,
-                            "action_process_instance_id": None,
-                            "action_process_signature_status": "N/A",
-                            "action_process_signature_vendor": None,
-                            "action_registry_data": None,
-                            "action_registry_full_key": None,
-                            "action_registry_key_name": None,
-                            "action_registry_value_name": None,
-                            "action_remote_ip": "137.184.208.116",
-                            "action_remote_ip_v6": None,
-                            "action_remote_port": "3889",
-                            "actor_causality_id": "AdkP08aY7RwAAAL0AAAAAA==",
-                            "actor_process_causality_id": "AdkP08aY7RwAAAL0AAAAAA==",
-                            "actor_process_command_line": "C:\\WINDOWS\\system32\\lsass.exe",
-                            "actor_process_image_md5": "289d6a47b7692510e2fd3b51979a9fed",
-                            "actor_process_image_name": "lsass.exe",
-                            "actor_process_image_path": "C:\\Windows\\System32\\lsass.exe",
-                            "actor_process_image_sha256": "0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650",
-                            "actor_process_instance_id": "AdkP08aY7RwAAAL0AAAAAA==",
-                            "actor_process_os_pid": 756,
-                            "actor_process_signature_status": "Signed",
-                            "actor_process_signature_vendor": "Microsoft Corporation",
-                            "actor_thread_thread_id": 4020,
-                            "agent_data_collection_status": None,
-                            "agent_device_domain": None,
-                            "agent_fqdn": None,
-                            "agent_host_boot_time": 1671032983204,
-                            "agent_install_type": "STANDARD",
-                            "agent_ip_addresses_v6": None,
-                            "agent_is_vdi": None,
-                            "agent_os_sub_type": "Windows 10 [10.0 (Build 19044)]",
-                            "agent_os_type": "Windows",
-                            "agent_version": "7.9.0.18674",
-                            "alert_id": "150807",
-                            "alert_type": "Unclassified",
-                            "association_strength": 50,
-                            "attempt_counter": None,
-                            "bioc_category_enum_key": None,
-                            "bioc_indicator": None,
-                            "case_id": 413,
-                            "category": "Credential Access",
-                            "causality_actor_causality_id": "AdkP08aY7RwAAAL0AAAAAA==",
-                            "causality_actor_process_command_line": "C:\\WINDOWS\\system32\\lsass.exe",
-                            "causality_actor_process_execution_time": 1671033022857,
-                            "causality_actor_process_image_md5": "289d6a47b7692510e2fd3b51979a9fed",
-                            "causality_actor_process_image_name": "lsass.exe",
-                            "causality_actor_process_image_path": "C:\\Windows\\System32\\lsass.exe",
-                            "causality_actor_process_image_sha256": "0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650",
-                            "causality_actor_process_signature_status": "Signed",
-                            "causality_actor_process_signature_vendor": "Microsoft Corporation",
-                            "cloud_provider": None,
-                            "cluster_name": None,
-                            "container_id": None,
-                            "contains_featured_host": "NO",
-                            "contains_featured_ip": "NO",
-                            "contains_featured_user": "NO",
-                            "deduplicate_tokens": None,
-                            "detection_timestamp": 1671730626096,
-                            "dns_query_name": None,
-                            "dst_action_country": "-",
-                            "dst_action_external_hostname": None,
-                            "dst_action_external_port": None,
-                            "dst_agent_id": "",
-                            "dst_association_strength": 0,
-                            "dst_causality_actor_process_execution_time": None,
-                            "dynamic_fields": None,
-                            "end_match_attempt_ts": None,
-                            "endpoint_id": "f6ba1a18c35d416c8e27a319cc2fea09",
-                            "event_id": "ODczNjk1Mzc1MTMwMzI1NjA1Nw==",
-                            "event_sub_type": 1,
-                            "event_timestamp": 1671730625375,
-                            "event_type": "Login",
-                            "events_length": 1,
-                            "external_id": "2a6a3f42-9d2d-4226-922f-28e4c2a3147f",
-                            "filter_rule_id": None,
-                            "fw_app_category": None,
-                            "fw_app_id": "",
-                            "fw_app_subcategory": None,
-                            "fw_app_technology": None,
-                            "fw_device_name": "",
-                            "fw_email_recipient": None,
-                            "fw_email_sender": None,
-                            "fw_email_subject": None,
-                            "fw_interface_from": "",
-                            "fw_interface_to": "",
-                            "fw_is_phishing": "N/A",
-                            "fw_misc": None,
-                            "fw_rule": "",
-                            "fw_rule_id": None,
-                            "fw_serial_number": "",
-                            "fw_url_domain": None,
-                            "fw_vsys": None,
-                            "fw_xff": None,
-                            "host_ip": "172.16.12.40",
-                            "host_ip_list": [
-                                "172.16.12.40"
-                            ],
-                            "host_name": "DC1ENV12APC05",
-                            "identity_sub_type": None,
-                            "identity_type": None,
-                            "image_name": None,
-                            "is_pcap": False,
-                            "is_whitelisted": False,
-                            "last_modified_ts": None,
-                            "local_insert_ts": 1671731192490,
-                            "mac": None,
-                            "matching_service_rule_id": "fd879de7-fb74-44f0-b699-805d0b08b1fd",
-                            "matching_status": "MATCHED",
-                            "mitre_tactic_id_and_name": "TA0006 - Credential Access",
-                            "mitre_technique_id_and_name": "T1110.001 - Brute Force: Password Guessing",
-                            "module_id": None,
-                            "name": "Possible external RDP Brute-Force",
-                            "operation_name": None,
-                            "original_tags": "DS:PANW/XDR Agent",
-                            "os_actor_causality_id": None,
-                            "os_actor_effective_username": None,
-                            "os_actor_process_causality_id": "AdkP08aY7RwAAAL0AAAAAA==",
-                            "os_actor_process_command_line": "C:\\WINDOWS\\system32\\lsass.exe",
-                            "os_actor_process_image_name": "lsass.exe",
-                            "os_actor_process_image_path": "C:\\Windows\\System32\\lsass.exe",
-                            "os_actor_process_image_sha256": "0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650",
-                            "os_actor_process_instance_id": "AdkP08aY7RwAAAL0AAAAAA==",
-                            "os_actor_process_os_pid": 756,
-                            "os_actor_process_signature_status": "Signed",
-                            "os_actor_process_signature_vendor": "Microsoft Corporation",
-                            "os_actor_thread_thread_id": 4020,
-                            "project": None,
-                            "referenced_resource": None,
-                            "resolution_comment": None,
-                            "resolution_status": "STATUS_010_NEW",
-                            "resource_sub_type": None,
-                            "resource_type": None,
-                            "severity": "low",
-                            "source": "XDR Analytics",
-                            "starred": False,
-                            "story_id": "ODczNjk1Mzc1MTMwMzI1NjA1Nw==",
-                            "tags": "DS:PANW/XDR Agent",
-                            "user_agent": None,
-                            "user_name": "administrator"
-                        }
-                    ],
-                    "alerts_grouping_status": "Disabled",
-                    "assigned_user_mail": None,
-                    "assigned_user_pretty_name": None,
-                    "creation_time": 1671731222757,
-                    "critical_severity_alert_count": 0,
-                    "description": "'Possible external RDP Brute-Force' generated by XDR Analytics detected on host dc1env12apc05 involving user env12\\administrator",
-                    "file_artifacts": [
-                        {
-                            "alert_count": 1,
-                            "file_name": "lsass.exe",
-                            "file_sha256": "0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650",
-                            "file_signature_status": "SIGNATURE_SIGNED",
-                            "file_signature_vendor_name": "Microsoft Corporation",
-                            "file_wildfire_verdict": "BENIGN",
-                            "is_malicious": False,
-                            "is_manual": False,
-                            "is_process": True,
-                            "low_confidence": False,
-                            "type": "HASH"
-                        }
-                    ],
-                    "detection_time": None,
-                    "high_severity_alert_count": 0,
-                    "host_count": 1,
-                    "hosts": [
-                        "dc1env12apc05:f6ba1a18c35d416c8e27a319cc2fea09"
-                    ],
-                    "incident_id": "413",
-                    "incident_name": None,
-                    "incident_sources": [
-                        "XDR Analytics"
-                    ],
-                    "is_blocked": False,
-                    "low_severity_alert_count": 1,
-                    "manual_description": None,
-                    "manual_score": None,
-                    "manual_severity": None,
-                    "med_severity_alert_count": 0,
-                    "mitre_tactics_ids_and_names": [
-                        "TA0006 - Credential Access"
-                    ],
-                    "mitre_techniques_ids_and_names": [
-                        "T1110.001 - Brute Force: Password Guessing"
-                    ],
-                    "modification_time": 1675069594952,
-                    "network_artifacts": [
-                        {
-                            "alert_count": 1,
-                            "is_manual": False,
-                            "network_country": "UNKNOWN",
-                            "network_domain": "kali",
-                            "network_remote_ip": None,
-                            "network_remote_port": 0,
-                            "type": "DOMAIN"
-                        }
-                    ],
-                    "original_tags": [
-                        "DS:PANW/XDR Agent"
-                    ],
-                    "notes": None,
-                    "predicted_score": None,
-                    "resolve_comment": None,
-                    "resolved_timestamp": None,
-                    "rule_based_score": None,
-                    "severity": "low",
-                    "starred": False,
-                    "status": "new",
-                    "tags": [
-                        "DS:PANW/XDR Agent"
-                    ],
-                    "user_count": 1,
-                    "users": [
-                        "env12\\administrator"
-                    ],
-                    "wildfire_hits": 0,
-                    "xdr_url": "https://myxdrtenant.donotclick/incident-view?caseId=413",
-                    "aggregated_score": None
-                }
+          "alert_categories": [
+            "Credential Access"
+          ],
+          "alert_count": 1,
+          "alerts": [
+            {
+              "description": "DC1ENV12APC05 successfully accessed administrator by systematically guessing the user's password 22 times over an hour with 2 successful logons and 20 failed attempts. The user did not log in successfully from 137.184.208.116 during the last 30 days. Over the past 30 days, DC1ENV12APC05 has had an average of 0 failed login attempts with the user administrator from 137.184.208.116 per day",
+              "action": "DETECTED",
+              "action_country": "UNKNOWN",
+              "action_external_hostname": "kali",
+              "action_file_macro_sha256": None,
+              "action_file_md5": None,
+              "action_file_name": None,
+              "action_file_path": None,
+              "action_file_sha256": None,
+              "action_local_ip": None,
+              "action_local_ip_v6": None,
+              "action_local_port": 0,
+              "action_pretty": "Detected",
+              "action_process_causality_id": None,
+              "action_process_image_command_line": None,
+              "action_process_image_name": None,
+              "action_process_image_sha256": None,
+              "action_process_instance_id": None,
+              "action_process_signature_status": "N/A",
+              "action_process_signature_vendor": None,
+              "action_registry_data": None,
+              "action_registry_full_key": None,
+              "action_registry_key_name": None,
+              "action_registry_value_name": None,
+              "action_remote_ip": "137.184.208.116",
+              "action_remote_ip_v6": None,
+              "action_remote_port": "3889",
+              "actor_causality_id": "AdkP08aY7RwAAAL0AAAAAA==",
+              "actor_process_causality_id": "AdkP08aY7RwAAAL0AAAAAA==",
+              "actor_process_command_line": "C:\\WINDOWS\\system32\\lsass.exe",
+              "actor_process_image_md5": "289d6a47b7692510e2fd3b51979a9fed",
+              "actor_process_image_name": "lsass.exe",
+              "actor_process_image_path": "C:\\Windows\\System32\\lsass.exe",
+              "actor_process_image_sha256": "0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650",
+              "actor_process_instance_id": "AdkP08aY7RwAAAL0AAAAAA==",
+              "actor_process_os_pid": 756,
+              "actor_process_signature_status": "Signed",
+              "actor_process_signature_vendor": "Microsoft Corporation",
+              "actor_thread_thread_id": 4020,
+              "agent_data_collection_status": None,
+              "agent_device_domain": None,
+              "agent_fqdn": None,
+              "agent_host_boot_time": 1671032983204,
+              "agent_install_type": "STANDARD",
+              "agent_ip_addresses_v6": None,
+              "agent_is_vdi": None,
+              "agent_os_sub_type": "Windows 10 [10.0 (Build 19044)]",
+              "agent_os_type": "Windows",
+              "agent_version": "7.9.0.18674",
+              "alert_id": "150807",
+              "alert_type": "Unclassified",
+              "association_strength": 50,
+              "attempt_counter": None,
+              "bioc_category_enum_key": None,
+              "bioc_indicator": None,
+              "case_id": 413,
+              "category": "Credential Access",
+              "causality_actor_causality_id": "AdkP08aY7RwAAAL0AAAAAA==",
+              "causality_actor_process_command_line": "C:\\WINDOWS\\system32\\lsass.exe",
+              "causality_actor_process_execution_time": 1671033022857,
+              "causality_actor_process_image_md5": "289d6a47b7692510e2fd3b51979a9fed",
+              "causality_actor_process_image_name": "lsass.exe",
+              "causality_actor_process_image_path": "C:\\Windows\\System32\\lsass.exe",
+              "causality_actor_process_image_sha256": "0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650",
+              "causality_actor_process_signature_status": "Signed",
+              "causality_actor_process_signature_vendor": "Microsoft Corporation",
+              "cloud_provider": None,
+              "cluster_name": None,
+              "container_id": None,
+              "contains_featured_host": "NO",
+              "contains_featured_ip": "NO",
+              "contains_featured_user": "NO",
+              "deduplicate_tokens": None,
+              "detection_timestamp": 1671730626096,
+              "dns_query_name": None,
+              "dst_action_country": "-",
+              "dst_action_external_hostname": None,
+              "dst_action_external_port": None,
+              "dst_agent_id": "",
+              "dst_association_strength": 0,
+              "dst_causality_actor_process_execution_time": None,
+              "dynamic_fields": None,
+              "end_match_attempt_ts": None,
+              "endpoint_id": "f6ba1a18c35d416c8e27a319cc2fea09",
+              "event_id": "ODczNjk1Mzc1MTMwMzI1NjA1Nw==",
+              "event_sub_type": 1,
+              "event_timestamp": 1671730625375,
+              "event_type": "Login",
+              "events_length": 1,
+              "external_id": "2a6a3f42-9d2d-4226-922f-28e4c2a3147f",
+              "filter_rule_id": None,
+              "fw_app_category": None,
+              "fw_app_id": "",
+              "fw_app_subcategory": None,
+              "fw_app_technology": None,
+              "fw_device_name": "",
+              "fw_email_recipient": None,
+              "fw_email_sender": None,
+              "fw_email_subject": None,
+              "fw_interface_from": "",
+              "fw_interface_to": "",
+              "fw_is_phishing": "N/A",
+              "fw_misc": None,
+              "fw_rule": "",
+              "fw_rule_id": None,
+              "fw_serial_number": "",
+              "fw_url_domain": None,
+              "fw_vsys": None,
+              "fw_xff": None,
+              "host_ip": "172.16.12.40",
+              "host_ip_list": [
+                "172.16.12.40"
+              ],
+              "host_name": "DC1ENV12APC05",
+              "identity_sub_type": None,
+              "identity_type": None,
+              "image_name": None,
+              "is_pcap": False,
+              "is_whitelisted": False,
+              "last_modified_ts": None,
+              "local_insert_ts": 1671731192490,
+              "mac": None,
+              "matching_service_rule_id": "fd879de7-fb74-44f0-b699-805d0b08b1fd",
+              "matching_status": "MATCHED",
+              "mitre_tactic_id_and_name": "TA0006 - Credential Access",
+              "mitre_technique_id_and_name": "T1110.001 - Brute Force: Password Guessing",
+              "module_id": None,
+              "name": "Possible external RDP Brute-Force",
+              "operation_name": None,
+              "original_tags": "DS:PANW/XDR Agent",
+              "os_actor_causality_id": None,
+              "os_actor_effective_username": None,
+              "os_actor_process_causality_id": "AdkP08aY7RwAAAL0AAAAAA==",
+              "os_actor_process_command_line": "C:\\WINDOWS\\system32\\lsass.exe",
+              "os_actor_process_image_name": "lsass.exe",
+              "os_actor_process_image_path": "C:\\Windows\\System32\\lsass.exe",
+              "os_actor_process_image_sha256": "0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650",
+              "os_actor_process_instance_id": "AdkP08aY7RwAAAL0AAAAAA==",
+              "os_actor_process_os_pid": 756,
+              "os_actor_process_signature_status": "Signed",
+              "os_actor_process_signature_vendor": "Microsoft Corporation",
+              "os_actor_thread_thread_id": 4020,
+              "project": None,
+              "referenced_resource": None,
+              "resolution_comment": None,
+              "resolution_status": "STATUS_010_NEW",
+              "resource_sub_type": None,
+              "resource_type": None,
+              "severity": "low",
+              "source": "XDR Analytics",
+              "starred": False,
+              "story_id": "ODczNjk1Mzc1MTMwMzI1NjA1Nw==",
+              "tags": "DS:PANW/XDR Agent",
+              "user_agent": None,
+              "user_name": "administrator"
+            }
+          ],
+          "alerts_grouping_status": "Disabled",
+          "assigned_user_mail": None,
+          "assigned_user_pretty_name": None,
+          "creation_time": 1671731222757,
+          "critical_severity_alert_count": 0,
+          "description": "'Possible external RDP Brute-Force' generated by XDR Analytics detected on host dc1env12apc05 involving user env12\\administrator",
+          "file_artifacts": [
+            {
+              "alert_count": 1,
+              "file_name": "lsass.exe",
+              "file_sha256": "0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650",
+              "file_signature_status": "SIGNATURE_SIGNED",
+              "file_signature_vendor_name": "Microsoft Corporation",
+              "file_wildfire_verdict": "BENIGN",
+              "is_malicious": False,
+              "is_manual": False,
+              "is_process": True,
+              "low_confidence": False,
+              "type": "HASH"
+            }
+          ],
+          "detection_time": None,
+          "high_severity_alert_count": 0,
+          "host_count": 1,
+          "hosts": [
+            "dc1env12apc05:f6ba1a18c35d416c8e27a319cc2fea09"
+          ],
+          "incident_id": "413",
+          "incident_name": None,
+          "incident_sources": [
+            "XDR Analytics"
+          ],
+          "is_blocked": False,
+          "low_severity_alert_count": 1,
+          "manual_description": None,
+          "manual_score": None,
+          "manual_severity": None,
+          "med_severity_alert_count": 0,
+          "mitre_tactics_ids_and_names": [
+            "TA0006 - Credential Access"
+          ],
+          "mitre_techniques_ids_and_names": [
+            "T1110.001 - Brute Force: Password Guessing"
+          ],
+          "modification_time": 1675069594952,
+          "network_artifacts": [
+            {
+              "alert_count": 1,
+              "is_manual": False,
+              "network_country": "UNKNOWN",
+              "network_domain": "kali",
+              "network_remote_ip": None,
+              "network_remote_port": 0,
+              "type": "DOMAIN"
+            }
+          ],
+          "original_tags": [
+            "DS:PANW/XDR Agent"
+          ],
+          "notes": None,
+          "predicted_score": None,
+          "resolve_comment": None,
+          "resolved_timestamp": None,
+          "rule_based_score": None,
+          "severity": "low",
+          "starred": False,
+          "status": "new",
+          "tags": [
+            "DS:PANW/XDR Agent"
+          ],
+          "user_count": 1,
+          "users": [
+            "env12\\administrator"
+          ],
+          "wildfire_hits": 0,
+          "xdr_url": "https://mytenanet.xdr.us.paloaltonetworks.com/incident-view?caseId=413",
+          "aggregated_score": None
+        },{
+        "aggregated_score": 14,
+        "alert_categories": [
+            "Privilege Escalation"
+        ],
+        "alert_count": 1,
+        "alerts": [
+            {
+                "action": "DETECTED",
+                "action_country": "UNKNOWN",
+                "action_external_hostname": None,
+                "action_file_macro_sha256": None,
+                "action_file_md5": None,
+                "action_file_name": None,
+                "action_file_path": None,
+                "action_file_sha256": None,
+                "action_local_ip": None,
+                "action_local_ip_v6": None,
+                "action_local_port": None,
+                "action_pretty": "Detected",
+                "action_process_causality_id": None,
+                "action_process_image_command_line": None,
+                "action_process_image_name": None,
+                "action_process_image_sha256": None,
+                "action_process_instance_id": None,
+                "action_process_signature_status": "N/A",
+                "action_process_signature_vendor": None,
+                "action_registry_data": "C:\\Windows\\regedit.exe",
+                "action_registry_full_key": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\sethc.exe\\Debugger",
+                "action_registry_key_name": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\sethc.exe",
+                "action_registry_value_name": "Debugger",
+                "action_remote_ip": None,
+                "action_remote_ip_v6": None,
+                "action_remote_port": None,
+                "actor_causality_id": "AdklBdr5uVIAABZIAAAAAA==",
+                "actor_process_causality_id": "AdklBdr5uVIAABZIAAAAAA==",
+                "actor_process_command_line": "regedit",
+                "actor_process_image_md5": "999a30979f6195bf562068639ffc4426",
+                "actor_process_image_name": "nothinghere.gpg",
+                "actor_process_image_path": "C:\\Temp\\nothinghere.gpg",
+                "actor_process_image_sha256": "92f24fs2927173aaa1f6e064aaa9815b117e8a7c4a0988ac918170",
+                "actor_process_instance_id": "AdklBdxb0K0AABcwAAAAAA==",
+                "actor_process_os_pid": 5936,
+                "actor_process_signature_status": "Signed",
+                "actor_process_signature_vendor": "Microsoft Corporation",
+                "actor_thread_thread_id": 5932,
+                "agent_data_collection_status": None,
+                "agent_device_domain": None,
+                "agent_fqdn": None,
+                "agent_host_boot_time": 1673363273815,
+                "agent_install_type": "STANDARD",
+                "agent_ip_addresses_v6": None,
+                "agent_is_vdi": None,
+                "agent_os_sub_type": "Windows 10 [10.0 (Build 19044)]",
+                "agent_os_type": "Windows",
+                "agent_version": "7.9.0.18674",
+                "alert_id": "171696",
+                "alert_type": "Unclassified",
+                "association_strength": 50,
+                "attempt_counter": None,
+                "bioc_category_enum_key": "PRIVILEGE_ESCALATION",
+                "bioc_indicator": "[{\"pretty_name\":\"Registry\",\"data_type\":None,\"render_type\":\"entity\",\"entity_map\":None,\"dml_ui\":False},{\"pretty_name\":\"registry data\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"attributes\",\"dml_type\":None},{\"pretty_name\":\"!=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"*:\\\\Users\\\\Public\\\\PSAppDeployToolkit*\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"AND\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"registry key name\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"attributes\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"HKEY_LOCAL_MACHINE\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Image File Execution Options*\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"AND\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"registry value name\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"attributes\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"Debugger\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"AND\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"action type\",\"data_type\":\"ENUM\",\"render_type\":\"attribute\",\"entity_map\":\"action\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"action\"},{\"pretty_name\":\"set_registry_value\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"action\"},{\"pretty_name\":\"Process\",\"data_type\":None,\"render_type\":\"entity\",\"entity_map\":None,\"dml_ui\":False},{\"pretty_name\":\"initiated by\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"xdr_actor\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\"cmd.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"powershell.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"wscript.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"cscript.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"mshta.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"rundll32.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"cgo name\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"xdr_causality_actor\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\"cmd.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"powershell.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"wscript.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"cscript.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"mshta.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"rundll32.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\"Host\",\"data_type\":None,\"render_type\":\"entity\",\"entity_map\":None,\"dml_ui\":False},{\"pretty_name\":\"host os\",\"data_type\":\"ENUM\",\"render_type\":\"attribute\",\"entity_map\":\"xdr_agent\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"xdr_agent\"},{\"pretty_name\":\"windows\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_agent\"}]",
+                "case_id": 425,
+                "category": "Privilege Escalation",
+                "causality_actor_causality_id": "AdklBdr5uVIAABZIAAAAAA==",
+                "causality_actor_process_command_line": "\"C:\\Windows\\system32\\cmd.exe\"",
+                "causality_actor_process_execution_time": 1673363506291,
+                "causality_actor_process_image_md5": "8a2122e8162dbef04694b9c3e0b6cdee",
+                "causality_actor_process_image_name": "cmd.exe",
+                "causality_actor_process_image_path": "C:\\Windows\\System32\\cmd.exe",
+                "causality_actor_process_image_sha256": "b99d61d874728edc0918ca0eb10eab93d381e7367e377406e65963366c874450",
+                "causality_actor_process_signature_status": "Signed",
+                "causality_actor_process_signature_vendor": "Microsoft Corporation",
+                "cloud_provider": None,
+                "cluster_name": None,
+                "container_id": None,
+                "contains_featured_host": "NO",
+                "contains_featured_ip": "NO",
+                "contains_featured_user": "NO",
+                "deduplicate_tokens": None,
+                "description": "Registry registry data != *:\\Users\\Public\\PSAppDeployToolkit* AND registry key name = HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options* AND registry value name = Debugger AND action type = set_registry_value Process initiated by = cmd.exe, powershell.exe, wscript.exe, cscript.exe, mshta.exe, rundll32.exe, cgo name = cmd.exe, powershell.exe, wscript.exe, cscript.exe, mshta.exe, rundll32.exe Host host os = windows",
+                "detection_timestamp": 1673363529207,
+                "dns_query_name": None,
+                "dst_action_country": None,
+                "dst_action_external_hostname": None,
+                "dst_action_external_port": None,
+                "dst_agent_id": None,
+                "dst_association_strength": 0,
+                "dst_causality_actor_process_execution_time": None,
+                "dynamic_fields": None,
+                "end_match_attempt_ts": None,
+                "endpoint_id": "e60d43c1cb1348408f0639bc912235dd",
+                "event_id": "AAABhZw9HXAwPI68AAB/bA==",
+                "event_sub_type": 4,
+                "event_timestamp": 1673363529207,
+                "event_type": "Registry Event",
+                "events_length": 1,
+                "external_id": "9fec9a0d-e2ce-4266-ba53-c9004fad2c03",
+                "filter_rule_id": None,
+                "fw_app_category": None,
+                "fw_app_id": None,
+                "fw_app_subcategory": None,
+                "fw_app_technology": None,
+                "fw_device_name": None,
+                "fw_email_recipient": None,
+                "fw_email_sender": None,
+                "fw_email_subject": None,
+                "fw_interface_from": None,
+                "fw_interface_to": None,
+                "fw_is_phishing": "N/A",
+                "fw_misc": None,
+                "fw_rule": None,
+                "fw_rule_id": None,
+                "fw_serial_number": None,
+                "fw_url_domain": None,
+                "fw_vsys": None,
+                "fw_xff": None,
+                "host_ip": "172.16.121.11",
+                "host_ip_list": [
+                    "172.16.121.11"
+                ],
+                "host_name": "DC1ENV12APC02",
+                "identity_sub_type": None,
+                "identity_type": None,
+                "image_name": None,
+                "is_pcap": False,
+                "is_whitelisted": False,
+                "last_modified_ts": 1673775538267,
+                "local_insert_ts": 1673363551091,
+                "mac": None,
+                "matching_service_rule_id": None,
+                "matching_status": "MATCHED",
+                "mitre_tactic_id_and_name": "TA0004 - Privilege Escalation",
+                "mitre_technique_id_and_name": "T1546.012 - Event Triggered Execution: Image File Execution Options Injection",
+                "module_id": None,
+                "name": "Image File Execution Options Registry key injection by scripting engine",
+                "operation_name": None,
+                "original_tags": "DS:PANW/XDR Agent",
+                "os_actor_causality_id": None,
+                "os_actor_effective_username": None,
+                "os_actor_process_causality_id": "AdklBdr5uVIAABZIAAAAAA==",
+                "os_actor_process_command_line": "regedit",
+                "os_actor_process_image_name": "regedit.exe",
+                "os_actor_process_image_path": "C:\\Windows\\regedit.exe",
+                "os_actor_process_image_sha256": "92f24fed2ba2927173aad58981f6e0643c6b89815b117e8a7c4a0988ac918170",
+                "os_actor_process_instance_id": "AdklBdxb0K0AABcwAAAAAA==",
+                "os_actor_process_os_pid": 5936,
+                "os_actor_process_signature_status": "Signed",
+                "os_actor_process_signature_vendor": "Microsoft Corporation",
+                "os_actor_thread_thread_id": 5932,
+                "project": None,
+                "referenced_resource": None,
+                "resolution_comment": None,
+                "resolution_status": "STATUS_010_NEW",
+                "resource_sub_type": None,
+                "resource_type": None,
+                "severity": "medium",
+                "source": "XDR BIOC",
+                "starred": False,
+                "story_id": None,
+                "tags": "DS:PANW/XDR Agent",
+                "user_agent": None,
+                "user_name": "DC1ENV12APC02\\Win10-Regression"
+            }
+        ],
+        "alerts_grouping_status": "Disabled",
+        "assigned_user_mail": None,
+        "assigned_user_pretty_name": None,
+        "creation_time": 1673363555141,
+        "critical_severity_alert_count": 0,
+        "description": "'Image File Execution Options Registry key injection by scripting engine' generated by XDR BIOC detected on host dc1env12apc02 involving user dc1env12apc02\\win10-regression",
+        "detection_time": None,
+        "file_artifacts": [
+            {
+                "alert_count": 1,
+                "file_name": "cmd.exe",
+                "file_sha256": "b99d61d874728edc0918ca0eb10eab93d381e7367e377406e65963366c874450",
+                "file_signature_status": "SIGNATURE_SIGNED",
+                "file_signature_vendor_name": "Microsoft Corporation",
+                "file_wildfire_verdict": "BENIGN",
+                "is_malicious": False,
+                "is_manual": False,
+                "is_process": True,
+                "low_confidence": False,
+                "type": "HASH"
+            },
+            {
+                "alert_count": 1,
+                "file_name": "regedit.exe",
+                "file_sha256": "92f24fed2ba2927173aad58981f6e0643c6b89815b117e8a7c4a0988ac918170",
+                "file_signature_status": "SIGNATURE_SIGNED",
+                "file_signature_vendor_name": "Microsoft Corporation",
+                "file_wildfire_verdict": "BENIGN",
+                "is_malicious": False,
+                "is_manual": False,
+                "is_process": True,
+                "low_confidence": False,
+                "type": "HASH"
+            }
+        ],
+        "high_severity_alert_count": 0,
+        "host_count": 1,
+        "hosts": [
+            "dc1env12apc02:e60d43c1cb1348408f0639bc912235dd"
+        ],
+        "incident_id": "425",
+        "incident_name": None,
+        "incident_sources": [
+            "XDR BIOC"
+        ],
+        "is_blocked": False,
+        "low_severity_alert_count": 0,
+        "manual_description": None,
+        "manual_score": None,
+        "manual_severity": None,
+        "med_severity_alert_count": 1,
+        "mitre_tactics_ids_and_names": [
+            "TA0004 - Privilege Escalation"
+        ],
+        "mitre_techniques_ids_and_names": [
+            "T1546.012 - Event Triggered Execution: Image File Execution Options Injection"
+        ],
+        "modification_time": 1673363555141,
+        "network_artifacts": [],
+        "notes": None,
+        "original_tags": [
+            "DS:PANW/XDR Agent"
+        ],
+        "predicted_score": 14,
+        "resolve_comment": None,
+        "resolved_timestamp": None,
+        "rule_based_score": None,
+        "severity": "medium",
+        "starred": False,
+        "status": "new",
+        "tags": [
+            "DS:PANW/XDR Agent"
+        ],
+        "user_count": 1,
+        "users": [
+            "dc1env12apc02\\win10-regression"
+        ],
+        "wildfire_hits": 0,
+        "xdr_url": "https://mytenanet.xdr.us.paloaltonetworks.com/incident-view?caseId=425"
+    }
 
-            ]
+        ]
         else:
             raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
                                                  sort_by_creation_time='asc', starred=starred,
                                                  starred_incidents_fetch_window=starred_incidents_fetch_window)
             raw_incidents = [
                 {
-                    "alert_categories": [
-                        "Credential Access"
-                    ],
-                    "alert_count": 1,
-                    "alerts": [
-                        {
-                            "description": "DC1ENV12APC05 successfully accessed administrator by systematically guessing the user's password 22 times over an hour with 2 successful logons and 20 failed attempts. The user did not log in successfully from 137.184.208.116 during the last 30 days. Over the past 30 days, DC1ENV12APC05 has had an average of 0 failed login attempts with the user administrator from 137.184.208.116 per day",
-                            "action": "DETECTED",
-                            "action_country": "UNKNOWN",
-                            "action_external_hostname": "kali",
-                            "action_file_macro_sha256": None,
-                            "action_file_md5": None,
-                            "action_file_name": None,
-                            "action_file_path": None,
-                            "action_file_sha256": None,
-                            "action_local_ip": None,
-                            "action_local_ip_v6": None,
-                            "action_local_port": 0,
-                            "action_pretty": "Detected",
-                            "action_process_causality_id": None,
-                            "action_process_image_command_line": None,
-                            "action_process_image_name": None,
-                            "action_process_image_sha256": None,
-                            "action_process_instance_id": None,
-                            "action_process_signature_status": "N/A",
-                            "action_process_signature_vendor": None,
-                            "action_registry_data": None,
-                            "action_registry_full_key": None,
-                            "action_registry_key_name": None,
-                            "action_registry_value_name": None,
-                            "action_remote_ip": "137.184.208.116",
-                            "action_remote_ip_v6": None,
-                            "action_remote_port": 0,
-                            "actor_causality_id": "AdkP08aY7RwAAAL0AAAAAA==",
-                            "actor_process_causality_id": "AdkP08aY7RwAAAL0AAAAAA==",
-                            "actor_process_command_line": "C:\\WINDOWS\\system32\\lsass.exe",
-                            "actor_process_image_md5": "289d6a47b7692510e2fd3b51979a9fed",
-                            "actor_process_image_name": "lsass.exe",
-                            "actor_process_image_path": "C:\\Windows\\System32\\lsass.exe",
-                            "actor_process_image_sha256": "0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650",
-                            "actor_process_instance_id": "AdkP08aY7RwAAAL0AAAAAA==",
-                            "actor_process_os_pid": 756,
-                            "actor_process_signature_status": "Signed",
-                            "actor_process_signature_vendor": "Microsoft Corporation",
-                            "actor_thread_thread_id": 4020,
-                            "agent_data_collection_status": None,
-                            "agent_device_domain": None,
-                            "agent_fqdn": None,
-                            "agent_host_boot_time": 1671032983204,
-                            "agent_install_type": "STANDARD",
-                            "agent_ip_addresses_v6": None,
-                            "agent_is_vdi": None,
-                            "agent_os_sub_type": "Windows 10 [10.0 (Build 19044)]",
-                            "agent_os_type": "Windows",
-                            "agent_version": "7.9.0.18674",
-                            "alert_id": "150807",
-                            "alert_type": "Unclassified",
-                            "association_strength": 50,
-                            "attempt_counter": None,
-                            "bioc_category_enum_key": None,
-                            "bioc_indicator": None,
-                            "case_id": 413,
-                            "category": "Credential Access",
-                            "causality_actor_causality_id": "AdkP08aY7RwAAAL0AAAAAA==",
-                            "causality_actor_process_command_line": "C:\\WINDOWS\\system32\\lsass.exe",
-                            "causality_actor_process_execution_time": 1671033022857,
-                            "causality_actor_process_image_md5": "289d6a47b7692510e2fd3b51979a9fed",
-                            "causality_actor_process_image_name": "lsass.exe",
-                            "causality_actor_process_image_path": "C:\\Windows\\System32\\lsass.exe",
-                            "causality_actor_process_image_sha256": "0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650",
-                            "causality_actor_process_signature_status": "Signed",
-                            "causality_actor_process_signature_vendor": "Microsoft Corporation",
-                            "cloud_provider": None,
-                            "cluster_name": None,
-                            "container_id": None,
-                            "contains_featured_host": "NO",
-                            "contains_featured_ip": "NO",
-                            "contains_featured_user": "NO",
-                            "deduplicate_tokens": None,
-                            "detection_timestamp": 1671730626096,
-                            "dns_query_name": None,
-                            "dst_action_country": "-",
-                            "dst_action_external_hostname": None,
-                            "dst_action_external_port": None,
-                            "dst_agent_id": "",
-                            "dst_association_strength": 0,
-                            "dst_causality_actor_process_execution_time": None,
-                            "dynamic_fields": None,
-                            "end_match_attempt_ts": None,
-                            "endpoint_id": "f6ba1a18c35d416c8e27a319cc2fea09",
-                            "event_id": "ODczNjk1Mzc1MTMwMzI1NjA1Nw==",
-                            "event_sub_type": 1,
-                            "event_timestamp": 1671730625375,
-                            "event_type": "Login",
-                            "events_length": 1,
-                            "external_id": "2a6a3f42-9d2d-4226-922f-28e4c2a3147f",
-                            "filter_rule_id": None,
-                            "fw_app_category": None,
-                            "fw_app_id": "",
-                            "fw_app_subcategory": None,
-                            "fw_app_technology": None,
-                            "fw_device_name": "",
-                            "fw_email_recipient": None,
-                            "fw_email_sender": None,
-                            "fw_email_subject": None,
-                            "fw_interface_from": "",
-                            "fw_interface_to": "",
-                            "fw_is_phishing": "N/A",
-                            "fw_misc": None,
-                            "fw_rule": "",
-                            "fw_rule_id": None,
-                            "fw_serial_number": "",
-                            "fw_url_domain": None,
-                            "fw_vsys": None,
-                            "fw_xff": None,
-                            "host_ip": "172.16.12.40",
-                            "host_ip_list": [
-                                "172.16.12.40"
-                            ],
-                            "host_name": "DC1ENV12APC05",
-                            "identity_sub_type": None,
-                            "identity_type": None,
-                            "image_name": None,
-                            "is_pcap": False,
-                            "is_whitelisted": False,
-                            "last_modified_ts": None,
-                            "local_insert_ts": 1671731192490,
-                            "mac": None,
-                            "matching_service_rule_id": "fd879de7-fb74-44f0-b699-805d0b08b1fd",
-                            "matching_status": "MATCHED",
-                            "mitre_tactic_id_and_name": "TA0006 - Credential Access",
-                            "mitre_technique_id_and_name": "T1110.001 - Brute Force: Password Guessing",
-                            "module_id": None,
-                            "name": "Possible external RDP Brute-Force",
-                            "operation_name": None,
-                            "original_tags": "DS:PANW/XDR Agent",
-                            "os_actor_causality_id": None,
-                            "os_actor_effective_username": None,
-                            "os_actor_process_causality_id": "AdkP08aY7RwAAAL0AAAAAA==",
-                            "os_actor_process_command_line": "C:\\WINDOWS\\system32\\lsass.exe",
-                            "os_actor_process_image_name": "lsass.exe",
-                            "os_actor_process_image_path": "C:\\Windows\\System32\\lsass.exe",
-                            "os_actor_process_image_sha256": "0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650",
-                            "os_actor_process_instance_id": "AdkP08aY7RwAAAL0AAAAAA==",
-                            "os_actor_process_os_pid": 756,
-                            "os_actor_process_signature_status": "Signed",
-                            "os_actor_process_signature_vendor": "Microsoft Corporation",
-                            "os_actor_thread_thread_id": 4020,
-                            "project": None,
-                            "referenced_resource": None,
-                            "resolution_comment": None,
-                            "resolution_status": "STATUS_010_NEW",
-                            "resource_sub_type": None,
-                            "resource_type": None,
-                            "severity": "low",
-                            "source": "XDR Analytics",
-                            "starred": False,
-                            "story_id": "ODczNjk1Mzc1MTMwMzI1NjA1Nw==",
-                            "tags": "DS:PANW/XDR Agent",
-                            "user_agent": None,
-                            "user_name": "administrator"
-                        }
-                    ],
-                    "alerts_grouping_status": "Disabled",
-                    "assigned_user_mail": None,
-                    "assigned_user_pretty_name": None,
-                    "creation_time": 1671731222757,
-                    "critical_severity_alert_count": 0,
-                    "description": "'Possible external RDP Brute-Force' generated by XDR Analytics detected on host dc1env12apc05 involving user env12\\administrator",
-                    "file_artifacts": [
-                        {
-                            "alert_count": 1,
-                            "file_name": "lsass.exe",
-                            "file_sha256": "0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650",
-                            "file_signature_status": "SIGNATURE_SIGNED",
-                            "file_signature_vendor_name": "Microsoft Corporation",
-                            "file_wildfire_verdict": "BENIGN",
-                            "is_malicious": False,
-                            "is_manual": False,
-                            "is_process": True,
-                            "low_confidence": False,
-                            "type": "HASH"
-                        }
-                    ],
-                    "detection_time": None,
-                    "high_severity_alert_count": 0,
-                    "host_count": 1,
-                    "hosts": [
-                        "dc1env12apc05:f6ba1a18c35d416c8e27a319cc2fea09"
-                    ],
-                    "incident_id": "413",
-                    "incident_name": None,
-                    "incident_sources": [
-                        "XDR Analytics"
-                    ],
-                    "is_blocked": False,
-                    "low_severity_alert_count": 1,
-                    "manual_description": None,
-                    "manual_score": None,
-                    "manual_severity": None,
-                    "med_severity_alert_count": 0,
-                    "mitre_tactics_ids_and_names": [
-                        "TA0006 - Credential Access"
-                    ],
-                    "mitre_techniques_ids_and_names": [
-                        "T1110.001 - Brute Force: Password Guessing"
-                    ],
-                    "modification_time": 1675069594952,
-                    "network_artifacts": [
-                        {
-                            "alert_count": 1,
-                            "is_manual": False,
-                            "network_country": "UNKNOWN",
-                            "network_domain": "kali",
-                            "network_remote_ip": None,
-                            "network_remote_port": 0,
-                            "type": "DOMAIN"
-                        }
-                    ],
-                    "original_tags": [
-                        "DS:PANW/XDR Agent"
-                    ],
-                    "notes": None,
-                    "predicted_score": None,
-                    "resolve_comment": None,
-                    "resolved_timestamp": None,
-                    "rule_based_score": None,
-                    "severity": "low",
-                    "starred": False,
-                    "status": "new",
-                    "tags": [
-                        "DS:PANW/XDR Agent"
-                    ],
-                    "user_count": 1,
-                    "users": [
-                        "env12\\administrator"
-                    ],
-                    "wildfire_hits": 0,
-                    "xdr_url": "https://myxdrtenant.donotclick/incident-view?caseId=413",
-                    "aggregated_score": None
-                }
+          "alert_categories": [
+            "Credential Access"
+          ],
+          "alert_count": 1,
+          "alerts": [
+            {
+              "description": "DC1ENV12APC05 successfully accessed administrator by systematically guessing the user's password 22 times over an hour with 2 successful logons and 20 failed attempts. The user did not log in successfully from 137.184.208.116 during the last 30 days. Over the past 30 days, DC1ENV12APC05 has had an average of 0 failed login attempts with the user administrator from 137.184.208.116 per day",
+              "action": "DETECTED",
+              "action_country": "UNKNOWN",
+              "action_external_hostname": "kali",
+              "action_file_macro_sha256": None,
+              "action_file_md5": None,
+              "action_file_name": None,
+              "action_file_path": None,
+              "action_file_sha256": None,
+              "action_local_ip": None,
+              "action_local_ip_v6": None,
+              "action_local_port": 0,
+              "action_pretty": "Detected",
+              "action_process_causality_id": None,
+              "action_process_image_command_line": None,
+              "action_process_image_name": None,
+              "action_process_image_sha256": None,
+              "action_process_instance_id": None,
+              "action_process_signature_status": "N/A",
+              "action_process_signature_vendor": None,
+              "action_registry_data": None,
+              "action_registry_full_key": None,
+              "action_registry_key_name": None,
+              "action_registry_value_name": None,
+              "action_remote_ip": "137.184.208.116",
+              "action_remote_ip_v6": None,
+              "action_remote_port": 0,
+              "actor_causality_id": "AdkP08aY7RwAAAL0AAAAAA==",
+              "actor_process_causality_id": "AdkP08aY7RwAAAL0AAAAAA==",
+              "actor_process_command_line": "C:\\WINDOWS\\system32\\lsass.exe",
+              "actor_process_image_md5": "289d6a47b7692510e2fd3b51979a9fed",
+              "actor_process_image_name": "lsass.exe",
+              "actor_process_image_path": "C:\\Windows\\System32\\lsass.exe",
+              "actor_process_image_sha256": "0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650",
+              "actor_process_instance_id": "AdkP08aY7RwAAAL0AAAAAA==",
+              "actor_process_os_pid": 756,
+              "actor_process_signature_status": "Signed",
+              "actor_process_signature_vendor": "Microsoft Corporation",
+              "actor_thread_thread_id": 4020,
+              "agent_data_collection_status": None,
+              "agent_device_domain": None,
+              "agent_fqdn": None,
+              "agent_host_boot_time": 1671032983204,
+              "agent_install_type": "STANDARD",
+              "agent_ip_addresses_v6": None,
+              "agent_is_vdi": None,
+              "agent_os_sub_type": "Windows 10 [10.0 (Build 19044)]",
+              "agent_os_type": "Windows",
+              "agent_version": "7.9.0.18674",
+              "alert_id": "150807",
+              "alert_type": "Unclassified",
+              "association_strength": 50,
+              "attempt_counter": None,
+              "bioc_category_enum_key": None,
+              "bioc_indicator": None,
+              "case_id": 413,
+              "category": "Credential Access",
+              "causality_actor_causality_id": "AdkP08aY7RwAAAL0AAAAAA==",
+              "causality_actor_process_command_line": "C:\\WINDOWS\\system32\\lsass.exe",
+              "causality_actor_process_execution_time": 1671033022857,
+              "causality_actor_process_image_md5": "289d6a47b7692510e2fd3b51979a9fed",
+              "causality_actor_process_image_name": "lsass.exe",
+              "causality_actor_process_image_path": "C:\\Windows\\System32\\lsass.exe",
+              "causality_actor_process_image_sha256": "0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650",
+              "causality_actor_process_signature_status": "Signed",
+              "causality_actor_process_signature_vendor": "Microsoft Corporation",
+              "cloud_provider": None,
+              "cluster_name": None,
+              "container_id": None,
+              "contains_featured_host": "NO",
+              "contains_featured_ip": "NO",
+              "contains_featured_user": "NO",
+              "deduplicate_tokens": None,
+              "detection_timestamp": 1671730626096,
+              "dns_query_name": None,
+              "dst_action_country": "-",
+              "dst_action_external_hostname": None,
+              "dst_action_external_port": None,
+              "dst_agent_id": "",
+              "dst_association_strength": 0,
+              "dst_causality_actor_process_execution_time": None,
+              "dynamic_fields": None,
+              "end_match_attempt_ts": None,
+              "endpoint_id": "f6ba1a18c35d416c8e27a319cc2fea09",
+              "event_id": "ODczNjk1Mzc1MTMwMzI1NjA1Nw==",
+              "event_sub_type": 1,
+              "event_timestamp": 1671730625375,
+              "event_type": "Login",
+              "events_length": 1,
+              "external_id": "2a6a3f42-9d2d-4226-922f-28e4c2a3147f",
+              "filter_rule_id": None,
+              "fw_app_category": None,
+              "fw_app_id": "",
+              "fw_app_subcategory": None,
+              "fw_app_technology": None,
+              "fw_device_name": "",
+              "fw_email_recipient": None,
+              "fw_email_sender": None,
+              "fw_email_subject": None,
+              "fw_interface_from": "",
+              "fw_interface_to": "",
+              "fw_is_phishing": "N/A",
+              "fw_misc": None,
+              "fw_rule": "",
+              "fw_rule_id": None,
+              "fw_serial_number": "",
+              "fw_url_domain": None,
+              "fw_vsys": None,
+              "fw_xff": None,
+              "host_ip": "172.16.12.40",
+              "host_ip_list": [
+                "172.16.12.40"
+              ],
+              "host_name": "DC1ENV12APC05",
+              "identity_sub_type": None,
+              "identity_type": None,
+              "image_name": None,
+              "is_pcap": False,
+              "is_whitelisted": False,
+              "last_modified_ts": None,
+              "local_insert_ts": 1671731192490,
+              "mac": None,
+              "matching_service_rule_id": "fd879de7-fb74-44f0-b699-805d0b08b1fd",
+              "matching_status": "MATCHED",
+              "mitre_tactic_id_and_name": "TA0006 - Credential Access",
+              "mitre_technique_id_and_name": "T1110.001 - Brute Force: Password Guessing",
+              "module_id": None,
+              "name": "Possible external RDP Brute-Force",
+              "operation_name": None,
+              "original_tags": "DS:PANW/XDR Agent",
+              "os_actor_causality_id": None,
+              "os_actor_effective_username": None,
+              "os_actor_process_causality_id": "AdkP08aY7RwAAAL0AAAAAA==",
+              "os_actor_process_command_line": "C:\\WINDOWS\\system32\\lsass.exe",
+              "os_actor_process_image_name": "lsass.exe",
+              "os_actor_process_image_path": "C:\\Windows\\System32\\lsass.exe",
+              "os_actor_process_image_sha256": "0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650",
+              "os_actor_process_instance_id": "AdkP08aY7RwAAAL0AAAAAA==",
+              "os_actor_process_os_pid": 756,
+              "os_actor_process_signature_status": "Signed",
+              "os_actor_process_signature_vendor": "Microsoft Corporation",
+              "os_actor_thread_thread_id": 4020,
+              "project": None,
+              "referenced_resource": None,
+              "resolution_comment": None,
+              "resolution_status": "STATUS_010_NEW",
+              "resource_sub_type": None,
+              "resource_type": None,
+              "severity": "low",
+              "source": "XDR Analytics",
+              "starred": False,
+              "story_id": "ODczNjk1Mzc1MTMwMzI1NjA1Nw==",
+              "tags": "DS:PANW/XDR Agent",
+              "user_agent": None,
+              "user_name": "administrator"
+            }
+          ],
+          "alerts_grouping_status": "Disabled",
+          "assigned_user_mail": None,
+          "assigned_user_pretty_name": None,
+          "creation_time": 1671731222757,
+          "critical_severity_alert_count": 0,
+          "description": "'Possible external RDP Brute-Force' generated by XDR Analytics detected on host dc1env12apc05 involving user env12\\administrator",
+          "file_artifacts": [
+            {
+              "alert_count": 1,
+              "file_name": "lsass.exe",
+              "file_sha256": "0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650",
+              "file_signature_status": "SIGNATURE_SIGNED",
+              "file_signature_vendor_name": "Microsoft Corporation",
+              "file_wildfire_verdict": "BENIGN",
+              "is_malicious": False,
+              "is_manual": False,
+              "is_process": True,
+              "low_confidence": False,
+              "type": "HASH"
+            }
+          ],
+          "detection_time": None,
+          "high_severity_alert_count": 0,
+          "host_count": 1,
+          "hosts": [
+            "dc1env12apc05:f6ba1a18c35d416c8e27a319cc2fea09"
+          ],
+          "incident_id": "413",
+          "incident_name": None,
+          "incident_sources": [
+            "XDR Analytics"
+          ],
+          "is_blocked": False,
+          "low_severity_alert_count": 1,
+          "manual_description": None,
+          "manual_score": None,
+          "manual_severity": None,
+          "med_severity_alert_count": 0,
+          "mitre_tactics_ids_and_names": [
+            "TA0006 - Credential Access"
+          ],
+          "mitre_techniques_ids_and_names": [
+            "T1110.001 - Brute Force: Password Guessing"
+          ],
+          "modification_time": 1675069594952,
+          "network_artifacts": [
+            {
+              "alert_count": 1,
+              "is_manual": False,
+              "network_country": "UNKNOWN",
+              "network_domain": "kali",
+              "network_remote_ip": None,
+              "network_remote_port": 0,
+              "type": "DOMAIN"
+            }
+          ],
+          "original_tags": [
+            "DS:PANW/XDR Agent"
+          ],
+          "notes": None,
+          "predicted_score": None,
+          "resolve_comment": None,
+          "resolved_timestamp": None,
+          "rule_based_score": None,
+          "severity": "low",
+          "starred": False,
+          "status": "new",
+          "tags": [
+            "DS:PANW/XDR Agent"
+          ],
+          "user_count": 1,
+          "users": [
+            "env12\\administrator"
+          ],
+          "wildfire_hits": 0,
+          "xdr_url": "https://mytenanet.xdr.us.paloaltonetworks.com/incident-view?caseId=413",
+          "aggregated_score": None
+        },{
+        "aggregated_score": 14,
+        "alert_categories": [
+            "Privilege Escalation"
+        ],
+        "alert_count": 1,
+        "alerts": [
+            {
+                "action": "DETECTED",
+                "action_country": "UNKNOWN",
+                "action_external_hostname": None,
+                "action_file_macro_sha256": None,
+                "action_file_md5": None,
+                "action_file_name": None,
+                "action_file_path": None,
+                "action_file_sha256": None,
+                "action_local_ip": None,
+                "action_local_ip_v6": None,
+                "action_local_port": None,
+                "action_pretty": "Detected",
+                "action_process_causality_id": None,
+                "action_process_image_command_line": None,
+                "action_process_image_name": None,
+                "action_process_image_sha256": None,
+                "action_process_instance_id": None,
+                "action_process_signature_status": "N/A",
+                "action_process_signature_vendor": None,
+                "action_registry_data": "C:\\Windows\\regedit.exe",
+                "action_registry_full_key": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\sethc.exe\\Debugger",
+                "action_registry_key_name": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\sethc.exe",
+                "action_registry_value_name": "Debugger",
+                "action_remote_ip": None,
+                "action_remote_ip_v6": None,
+                "action_remote_port": None,
+                "actor_causality_id": "AdklBdr5uVIAABZIAAAAAA==",
+                "actor_process_causality_id": "AdklBdr5uVIAABZIAAAAAA==",
+                "actor_process_command_line": "regedit",
+                "actor_process_image_md5": "999a30979f6195bf562068639ffc4426",
+                "actor_process_image_name": "nothinghere.gpg",
+                "actor_process_image_path": "C:\\Temp\\nothinghere.gpg",
+                "actor_process_image_sha256": "92f24fs2927173aaa1f6e064aaa9815b117e8a7c4a0988ac918170",
+                "actor_process_instance_id": "AdklBdxb0K0AABcwAAAAAA==",
+                "actor_process_os_pid": 5936,
+                "actor_process_signature_status": "Signed",
+                "actor_process_signature_vendor": "Microsoft Corporation",
+                "actor_thread_thread_id": 5932,
+                "agent_data_collection_status": None,
+                "agent_device_domain": None,
+                "agent_fqdn": None,
+                "agent_host_boot_time": 1673363273815,
+                "agent_install_type": "STANDARD",
+                "agent_ip_addresses_v6": None,
+                "agent_is_vdi": None,
+                "agent_os_sub_type": "Windows 10 [10.0 (Build 19044)]",
+                "agent_os_type": "Windows",
+                "agent_version": "7.9.0.18674",
+                "alert_id": "171696",
+                "alert_type": "Unclassified",
+                "association_strength": 50,
+                "attempt_counter": None,
+                "bioc_category_enum_key": "PRIVILEGE_ESCALATION",
+                "bioc_indicator": "[{\"pretty_name\":\"Registry\",\"data_type\":None,\"render_type\":\"entity\",\"entity_map\":None,\"dml_ui\":False},{\"pretty_name\":\"registry data\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"attributes\",\"dml_type\":None},{\"pretty_name\":\"!=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"*:\\\\Users\\\\Public\\\\PSAppDeployToolkit*\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"AND\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"registry key name\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"attributes\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"HKEY_LOCAL_MACHINE\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Image File Execution Options*\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"AND\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"registry value name\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"attributes\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"Debugger\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"AND\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"action type\",\"data_type\":\"ENUM\",\"render_type\":\"attribute\",\"entity_map\":\"action\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"action\"},{\"pretty_name\":\"set_registry_value\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"action\"},{\"pretty_name\":\"Process\",\"data_type\":None,\"render_type\":\"entity\",\"entity_map\":None,\"dml_ui\":False},{\"pretty_name\":\"initiated by\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"xdr_actor\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\"cmd.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"powershell.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"wscript.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"cscript.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"mshta.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"rundll32.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"cgo name\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"xdr_causality_actor\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\"cmd.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"powershell.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"wscript.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"cscript.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"mshta.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"rundll32.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\"Host\",\"data_type\":None,\"render_type\":\"entity\",\"entity_map\":None,\"dml_ui\":False},{\"pretty_name\":\"host os\",\"data_type\":\"ENUM\",\"render_type\":\"attribute\",\"entity_map\":\"xdr_agent\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"xdr_agent\"},{\"pretty_name\":\"windows\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_agent\"}]",
+                "case_id": 425,
+                "category": "Privilege Escalation",
+                "causality_actor_causality_id": "AdklBdr5uVIAABZIAAAAAA==",
+                "causality_actor_process_command_line": "\"C:\\Windows\\system32\\cmd.exe\"",
+                "causality_actor_process_execution_time": 1673363506291,
+                "causality_actor_process_image_md5": "8a2122e8162dbef04694b9c3e0b6cdee",
+                "causality_actor_process_image_name": "cmd.exe",
+                "causality_actor_process_image_path": "C:\\Windows\\System32\\cmd.exe",
+                "causality_actor_process_image_sha256": "b99d61d874728edc0918ca0eb10eab93d381e7367e377406e65963366c874450",
+                "causality_actor_process_signature_status": "Signed",
+                "causality_actor_process_signature_vendor": "Microsoft Corporation",
+                "cloud_provider": None,
+                "cluster_name": None,
+                "container_id": None,
+                "contains_featured_host": "NO",
+                "contains_featured_ip": "NO",
+                "contains_featured_user": "NO",
+                "deduplicate_tokens": None,
+                "description": "Registry registry data != *:\\Users\\Public\\PSAppDeployToolkit* AND registry key name = HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options* AND registry value name = Debugger AND action type = set_registry_value Process initiated by = cmd.exe, powershell.exe, wscript.exe, cscript.exe, mshta.exe, rundll32.exe, cgo name = cmd.exe, powershell.exe, wscript.exe, cscript.exe, mshta.exe, rundll32.exe Host host os = windows",
+                "detection_timestamp": 1673363529207,
+                "dns_query_name": None,
+                "dst_action_country": None,
+                "dst_action_external_hostname": None,
+                "dst_action_external_port": None,
+                "dst_agent_id": None,
+                "dst_association_strength": 0,
+                "dst_causality_actor_process_execution_time": None,
+                "dynamic_fields": None,
+                "end_match_attempt_ts": None,
+                "endpoint_id": "e60d43c1cb1348408f0639bc912235dd",
+                "event_id": "AAABhZw9HXAwPI68AAB/bA==",
+                "event_sub_type": 4,
+                "event_timestamp": 1673363529207,
+                "event_type": "Registry Event",
+                "events_length": 1,
+                "external_id": "9fec9a0d-e2ce-4266-ba53-c9004fad2c03",
+                "filter_rule_id": None,
+                "fw_app_category": None,
+                "fw_app_id": None,
+                "fw_app_subcategory": None,
+                "fw_app_technology": None,
+                "fw_device_name": None,
+                "fw_email_recipient": None,
+                "fw_email_sender": None,
+                "fw_email_subject": None,
+                "fw_interface_from": None,
+                "fw_interface_to": None,
+                "fw_is_phishing": "N/A",
+                "fw_misc": None,
+                "fw_rule": None,
+                "fw_rule_id": None,
+                "fw_serial_number": None,
+                "fw_url_domain": None,
+                "fw_vsys": None,
+                "fw_xff": None,
+                "host_ip": "172.16.121.11",
+                "host_ip_list": [
+                    "172.16.121.11"
+                ],
+                "host_name": "DC1ENV12APC02",
+                "identity_sub_type": None,
+                "identity_type": None,
+                "image_name": None,
+                "is_pcap": False,
+                "is_whitelisted": False,
+                "last_modified_ts": 1673775538267,
+                "local_insert_ts": 1673363551091,
+                "mac": None,
+                "matching_service_rule_id": None,
+                "matching_status": "MATCHED",
+                "mitre_tactic_id_and_name": "TA0004 - Privilege Escalation",
+                "mitre_technique_id_and_name": "T1546.012 - Event Triggered Execution: Image File Execution Options Injection",
+                "module_id": None,
+                "name": "Image File Execution Options Registry key injection by scripting engine",
+                "operation_name": None,
+                "original_tags": "DS:PANW/XDR Agent",
+                "os_actor_causality_id": None,
+                "os_actor_effective_username": None,
+                "os_actor_process_causality_id": "AdklBdr5uVIAABZIAAAAAA==",
+                "os_actor_process_command_line": "regedit",
+                "os_actor_process_image_name": "regedit.exe",
+                "os_actor_process_image_path": "C:\\Windows\\regedit.exe",
+                "os_actor_process_image_sha256": "92f24fed2ba2927173aad58981f6e0643c6b89815b117e8a7c4a0988ac918170",
+                "os_actor_process_instance_id": "AdklBdxb0K0AABcwAAAAAA==",
+                "os_actor_process_os_pid": 5936,
+                "os_actor_process_signature_status": "Signed",
+                "os_actor_process_signature_vendor": "Microsoft Corporation",
+                "os_actor_thread_thread_id": 5932,
+                "project": None,
+                "referenced_resource": None,
+                "resolution_comment": None,
+                "resolution_status": "STATUS_010_NEW",
+                "resource_sub_type": None,
+                "resource_type": None,
+                "severity": "medium",
+                "source": "XDR BIOC",
+                "starred": False,
+                "story_id": None,
+                "tags": "DS:PANW/XDR Agent",
+                "user_agent": None,
+                "user_name": "DC1ENV12APC02\\Win10-Regression"
+            }
+        ],
+        "alerts_grouping_status": "Disabled",
+        "assigned_user_mail": None,
+        "assigned_user_pretty_name": None,
+        "creation_time": 1673363555141,
+        "critical_severity_alert_count": 0,
+        "description": "'Image File Execution Options Registry key injection by scripting engine' generated by XDR BIOC detected on host dc1env12apc02 involving user dc1env12apc02\\win10-regression",
+        "detection_time": None,
+        "file_artifacts": [
+            {
+                "alert_count": 1,
+                "file_name": "cmd.exe",
+                "file_sha256": "b99d61d874728edc0918ca0eb10eab93d381e7367e377406e65963366c874450",
+                "file_signature_status": "SIGNATURE_SIGNED",
+                "file_signature_vendor_name": "Microsoft Corporation",
+                "file_wildfire_verdict": "BENIGN",
+                "is_malicious": False,
+                "is_manual": False,
+                "is_process": True,
+                "low_confidence": False,
+                "type": "HASH"
+            },
+            {
+                "alert_count": 1,
+                "file_name": "regedit.exe",
+                "file_sha256": "92f24fed2ba2927173aad58981f6e0643c6b89815b117e8a7c4a0988ac918170",
+                "file_signature_status": "SIGNATURE_SIGNED",
+                "file_signature_vendor_name": "Microsoft Corporation",
+                "file_wildfire_verdict": "BENIGN",
+                "is_malicious": False,
+                "is_manual": False,
+                "is_process": True,
+                "low_confidence": False,
+                "type": "HASH"
+            }
+        ],
+        "high_severity_alert_count": 0,
+        "host_count": 1,
+        "hosts": [
+            "dc1env12apc02:e60d43c1cb1348408f0639bc912235dd"
+        ],
+        "incident_id": "425",
+        "incident_name": None,
+        "incident_sources": [
+            "XDR BIOC"
+        ],
+        "is_blocked": False,
+        "low_severity_alert_count": 0,
+        "manual_description": None,
+        "manual_score": None,
+        "manual_severity": None,
+        "med_severity_alert_count": 1,
+        "mitre_tactics_ids_and_names": [
+            "TA0004 - Privilege Escalation"
+        ],
+        "mitre_techniques_ids_and_names": [
+            "T1546.012 - Event Triggered Execution: Image File Execution Options Injection"
+        ],
+        "modification_time": 1673363555141,
+        "network_artifacts": [],
+        "notes": None,
+        "original_tags": [
+            "DS:PANW/XDR Agent"
+        ],
+        "predicted_score": 14,
+        "resolve_comment": None,
+        "resolved_timestamp": None,
+        "rule_based_score": None,
+        "severity": "medium",
+        "starred": False,
+        "status": "new",
+        "tags": [
+            "DS:PANW/XDR Agent"
+        ],
+        "user_count": 1,
+        "users": [
+            "dc1env12apc02\\win10-regression"
+        ],
+        "wildfire_hits": 0,
+        "xdr_url": "https://mytenanet.xdr.us.paloaltonetworks.com/incident-view?caseId=425"
+    }
 
-            ]
+        ]
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
@@ -1827,10 +1992,272 @@ def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResult
 
 def file_details_results(client: Client, args: Dict, add_to_context: bool) -> None:
     return_entry, file_results = retrieve_file_details_command(client, args, add_to_context)
+    print(return_entry)
+    print(file_results)
     demisto.results(return_entry)
     if file_results:
         demisto.results(file_results)
 
+def xdr_generate_ctf3_command(client: Client, args: Dict):
+    raw_incident = {
+        "aggregated_score": 14,
+        "alert_categories": [
+            "Privilege Escalation"
+        ],
+        "alert_count": 1,
+        "alerts": [
+            {
+                "action": "DETECTED",
+                "action_country": "UNKNOWN",
+                "action_external_hostname": None,
+                "action_file_macro_sha256": None,
+                "action_file_md5": None,
+                "action_file_name": None,
+                "action_file_path": None,
+                "action_file_sha256": None,
+                "action_local_ip": None,
+                "action_local_ip_v6": None,
+                "action_local_port": None,
+                "action_pretty": "Detected",
+                "action_process_causality_id": None,
+                "action_process_image_command_line": None,
+                "action_process_image_name": None,
+                "action_process_image_sha256": None,
+                "action_process_instance_id": None,
+                "action_process_signature_status": "N/A",
+                "action_process_signature_vendor": None,
+                "action_registry_data": "C:\\Windows\\regedit.exe",
+                "action_registry_full_key": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\sethc.exe\\Debugger",
+                "action_registry_key_name": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\sethc.exe",
+                "action_registry_value_name": "Debugger",
+                "action_remote_ip": None,
+                "action_remote_ip_v6": None,
+                "action_remote_port": None,
+                "actor_causality_id": "AdklBdr5uVIAABZIAAAAAA==",
+                "actor_process_causality_id": "AdklBdr5uVIAABZIAAAAAA==",
+                "actor_process_command_line": "regedit",
+                "actor_process_image_md5": "999a30979f6195bf562068639ffc4426",
+                "actor_process_image_name": "nothinghere.gpg",
+                "actor_process_image_path": "C:\\Temp\\nothinghere.gpg",
+                "actor_process_image_sha256": "92f24fs2927173aaa1f6e064aaa9815b117e8a7c4a0988ac918170",
+                "actor_process_instance_id": "AdklBdxb0K0AABcwAAAAAA==",
+                "actor_process_os_pid": 5936,
+                "actor_process_signature_status": "Signed",
+                "actor_process_signature_vendor": "Microsoft Corporation",
+                "actor_thread_thread_id": 5932,
+                "agent_data_collection_status": None,
+                "agent_device_domain": None,
+                "agent_fqdn": None,
+                "agent_host_boot_time": 1673363273815,
+                "agent_install_type": "STANDARD",
+                "agent_ip_addresses_v6": None,
+                "agent_is_vdi": None,
+                "agent_os_sub_type": "Windows 10 [10.0 (Build 19044)]",
+                "agent_os_type": "Windows",
+                "agent_version": "7.9.0.18674",
+                "alert_id": "171696",
+                "alert_type": "Unclassified",
+                "association_strength": 50,
+                "attempt_counter": None,
+                "bioc_category_enum_key": "PRIVILEGE_ESCALATION",
+                "bioc_indicator": "[{\"pretty_name\":\"Registry\",\"data_type\":None,\"render_type\":\"entity\",\"entity_map\":None,\"dml_ui\":False},{\"pretty_name\":\"registry data\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"attributes\",\"dml_type\":None},{\"pretty_name\":\"!=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"*:\\\\Users\\\\Public\\\\PSAppDeployToolkit*\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"AND\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"registry key name\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"attributes\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"HKEY_LOCAL_MACHINE\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Image File Execution Options*\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"AND\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"registry value name\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"attributes\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"Debugger\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"AND\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"action type\",\"data_type\":\"ENUM\",\"render_type\":\"attribute\",\"entity_map\":\"action\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"action\"},{\"pretty_name\":\"set_registry_value\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"action\"},{\"pretty_name\":\"Process\",\"data_type\":None,\"render_type\":\"entity\",\"entity_map\":None,\"dml_ui\":False},{\"pretty_name\":\"initiated by\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"xdr_actor\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\"cmd.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"powershell.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"wscript.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"cscript.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"mshta.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"rundll32.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"cgo name\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"xdr_causality_actor\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\"cmd.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"powershell.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"wscript.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"cscript.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"mshta.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"rundll32.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\"Host\",\"data_type\":None,\"render_type\":\"entity\",\"entity_map\":None,\"dml_ui\":False},{\"pretty_name\":\"host os\",\"data_type\":\"ENUM\",\"render_type\":\"attribute\",\"entity_map\":\"xdr_agent\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"xdr_agent\"},{\"pretty_name\":\"windows\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_agent\"}]",
+                "case_id": 425,
+                "category": "Privilege Escalation",
+                "causality_actor_causality_id": "AdklBdr5uVIAABZIAAAAAA==",
+                "causality_actor_process_command_line": "\"C:\\Windows\\system32\\cmd.exe\"",
+                "causality_actor_process_execution_time": 1673363506291,
+                "causality_actor_process_image_md5": "8a2122e8162dbef04694b9c3e0b6cdee",
+                "causality_actor_process_image_name": "cmd.exe",
+                "causality_actor_process_image_path": "C:\\Windows\\System32\\cmd.exe",
+                "causality_actor_process_image_sha256": "b99d61d874728edc0918ca0eb10eab93d381e7367e377406e65963366c874450",
+                "causality_actor_process_signature_status": "Signed",
+                "causality_actor_process_signature_vendor": "Microsoft Corporation",
+                "cloud_provider": None,
+                "cluster_name": None,
+                "container_id": None,
+                "contains_featured_host": "NO",
+                "contains_featured_ip": "NO",
+                "contains_featured_user": "NO",
+                "deduplicate_tokens": None,
+                "description": "Registry registry data != *:\\Users\\Public\\PSAppDeployToolkit* AND registry key name = HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options* AND registry value name = Debugger AND action type = set_registry_value Process initiated by = cmd.exe, powershell.exe, wscript.exe, cscript.exe, mshta.exe, rundll32.exe, cgo name = cmd.exe, powershell.exe, wscript.exe, cscript.exe, mshta.exe, rundll32.exe Host host os = windows",
+                "detection_timestamp": 1673363529207,
+                "dns_query_name": None,
+                "dst_action_country": None,
+                "dst_action_external_hostname": None,
+                "dst_action_external_port": None,
+                "dst_agent_id": None,
+                "dst_association_strength": 0,
+                "dst_causality_actor_process_execution_time": None,
+                "dynamic_fields": None,
+                "end_match_attempt_ts": None,
+                "endpoint_id": "e60d43c1cb1348408f0639bc912235dd",
+                "event_id": "AAABhZw9HXAwPI68AAB/bA==",
+                "event_sub_type": 4,
+                "event_timestamp": 1673363529207,
+                "event_type": "Registry Event",
+                "events_length": 1,
+                "external_id": "9fec9a0d-e2ce-4266-ba53-c9004fad2c03",
+                "filter_rule_id": None,
+                "fw_app_category": None,
+                "fw_app_id": None,
+                "fw_app_subcategory": None,
+                "fw_app_technology": None,
+                "fw_device_name": None,
+                "fw_email_recipient": None,
+                "fw_email_sender": None,
+                "fw_email_subject": None,
+                "fw_interface_from": None,
+                "fw_interface_to": None,
+                "fw_is_phishing": "N/A",
+                "fw_misc": None,
+                "fw_rule": None,
+                "fw_rule_id": None,
+                "fw_serial_number": None,
+                "fw_url_domain": None,
+                "fw_vsys": None,
+                "fw_xff": None,
+                "host_ip": "172.16.121.11",
+                "host_ip_list": [
+                    "172.16.121.11"
+                ],
+                "host_name": "DC1ENV12APC02",
+                "identity_sub_type": None,
+                "identity_type": None,
+                "image_name": None,
+                "is_pcap": False,
+                "is_whitelisted": False,
+                "last_modified_ts": 1673775538267,
+                "local_insert_ts": 1673363551091,
+                "mac": None,
+                "matching_service_rule_id": None,
+                "matching_status": "MATCHED",
+                "mitre_tactic_id_and_name": "TA0004 - Privilege Escalation",
+                "mitre_technique_id_and_name": "T1546.012 - Event Triggered Execution: Image File Execution Options Injection",
+                "module_id": None,
+                "name": "Image File Execution Options Registry key injection by scripting engine",
+                "operation_name": None,
+                "original_tags": "DS:PANW/XDR Agent",
+                "os_actor_causality_id": None,
+                "os_actor_effective_username": None,
+                "os_actor_process_causality_id": "AdklBdr5uVIAABZIAAAAAA==",
+                "os_actor_process_command_line": "regedit",
+                "os_actor_process_image_name": "regedit.exe",
+                "os_actor_process_image_path": "C:\\Windows\\regedit.exe",
+                "os_actor_process_image_sha256": "92f24fed2ba2927173aad58981f6e0643c6b89815b117e8a7c4a0988ac918170",
+                "os_actor_process_instance_id": "AdklBdxb0K0AABcwAAAAAA==",
+                "os_actor_process_os_pid": 5936,
+                "os_actor_process_signature_status": "Signed",
+                "os_actor_process_signature_vendor": "Microsoft Corporation",
+                "os_actor_thread_thread_id": 5932,
+                "project": None,
+                "referenced_resource": None,
+                "resolution_comment": None,
+                "resolution_status": "STATUS_010_NEW",
+                "resource_sub_type": None,
+                "resource_type": None,
+                "severity": "medium",
+                "source": "XDR BIOC",
+                "starred": False,
+                "story_id": None,
+                "tags": "DS:PANW/XDR Agent",
+                "user_agent": None,
+                "user_name": "DC1ENV12APC02\\Win10-Regression"
+            }
+        ],
+        "alerts_grouping_status": "Disabled",
+        "assigned_user_mail": None,
+        "assigned_user_pretty_name": None,
+        "creation_time": 1673363555141,
+        "critical_severity_alert_count": 0,
+        "description": "'Image File Execution Options Registry key injection by scripting engine' generated by XDR BIOC detected on host dc1env12apc02 involving user dc1env12apc02\\win10-regression",
+        "detection_time": None,
+        "file_artifacts": [
+            {
+                "alert_count": 1,
+                "file_name": "cmd.exe",
+                "file_sha256": "b99d61d874728edc0918ca0eb10eab93d381e7367e377406e65963366c874450",
+                "file_signature_status": "SIGNATURE_SIGNED",
+                "file_signature_vendor_name": "Microsoft Corporation",
+                "file_wildfire_verdict": "BENIGN",
+                "is_malicious": False,
+                "is_manual": False,
+                "is_process": True,
+                "low_confidence": False,
+                "type": "HASH"
+            },
+            {
+                "alert_count": 1,
+                "file_name": "regedit.exe",
+                "file_sha256": "92f24fed2ba2927173aad58981f6e0643c6b89815b117e8a7c4a0988ac918170",
+                "file_signature_status": "SIGNATURE_SIGNED",
+                "file_signature_vendor_name": "Microsoft Corporation",
+                "file_wildfire_verdict": "BENIGN",
+                "is_malicious": False,
+                "is_manual": False,
+                "is_process": True,
+                "low_confidence": False,
+                "type": "HASH"
+            }
+        ],
+        "high_severity_alert_count": 0,
+        "host_count": 1,
+        "hosts": [
+            "dc1env12apc02:e60d43c1cb1348408f0639bc912235dd"
+        ],
+        "incident_id": "425",
+        "incident_name": None,
+        "incident_sources": [
+            "XDR BIOC"
+        ],
+        "is_blocked": False,
+        "low_severity_alert_count": 0,
+        "manual_description": None,
+        "manual_score": None,
+        "manual_severity": None,
+        "med_severity_alert_count": 1,
+        "mitre_tactics_ids_and_names": [
+            "TA0004 - Privilege Escalation"
+        ],
+        "mitre_techniques_ids_and_names": [
+            "T1546.012 - Event Triggered Execution: Image File Execution Options Injection"
+        ],
+        "modification_time": 1673363555141,
+        "network_artifacts": [],
+        "notes": None,
+        "original_tags": [
+            "DS:PANW/XDR Agent"
+        ],
+        "predicted_score": 14,
+        "resolve_comment": None,
+        "resolved_timestamp": None,
+        "rule_based_score": None,
+        "severity": "medium",
+        "starred": False,
+        "status": "new",
+        "tags": [
+            "DS:PANW/XDR Agent"
+        ],
+        "user_count": 1,
+        "users": [
+            "dc1env12apc02\\win10-regression"
+        ],
+        "wildfire_hits": 0,
+        "xdr_url": "https://mytenanet.xdr.us.paloaltonetworks.com/incident-view?caseId=425"
+    }
+    incident_id = raw_incident.get('incident_id')
+    incident_data = raw_incident
+    sort_all_list_incident_fields(incident_data)
+    description = raw_incident.get('description')
+    occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
+    incident = [{
+        'name': f'Sasha - XDR Incident {incident_id} - {description}',
+        'occurred': occurred,
+        'rawJSON': json.dumps(incident_data),
+    }]
+
+    demisto.results("New Incident Was Created - Go Hunt Them Down!")
+    demisto.incidents(incident)
+    return incident
 
 def get_contributing_event_command(client: Client, args: Dict) -> CommandResults:
 
@@ -1973,6 +2400,10 @@ def main():  # pragma: no cover
             demisto.setLastRun(last_run_obj)
             demisto.incidents(incidents)
 
+        #!!!!!New Command for CTF3!!!!!
+        elif command == 'xdr-generate-ctf3':
+            incident = xdr_generate_ctf3_command(client, args)
+            demisto.createIncidents(incident)
         elif command == 'xdr-get-incidents':
             return_outputs(*get_incidents_command(client, args))
 
@@ -2142,6 +2573,13 @@ def main():  # pragma: no cover
             return_results(retrieve_files_command(client, args))
 
         elif command == 'xdr-file-retrieve':
+
+            file = client.get_file_by_url_suffix(url_suffix='https://raw.githubusercontent.com/demisto/content/7c4eb1780678929fac94695180de3537c0f56f23/Packs/ctf01/doc_files/win_up_to_image.png')
+            res = fileResult(filename=f'omg.png', data=file)
+            return_results(res)
+            return
+
+            #end of customzie
             polling = run_polling_command(client=client,
                                           args=args,
                                           cmd="xdr-file-retrieve",
@@ -2322,3 +2760,4 @@ def main():  # pragma: no cover
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+

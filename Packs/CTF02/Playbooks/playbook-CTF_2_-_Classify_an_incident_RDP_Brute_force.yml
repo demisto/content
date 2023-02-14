@@ -1,6 +1,5 @@
 id: CTF 2 - Classify an incident - RDP Brute force
-version: 15
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: CTF 2 - Classify an incident - RDP Brute force
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -41,15 +41,7 @@ tasks:
       id: 906e556e-c6da-4f0c-8778-a845c37bea90
       version: -1
       name: Find the XDR RDP Brute Force incident
-      description: "Welcome to the second CTF challenge! \nIn this section, we are
-        going to analyze the XDR RDP Brute Force incident from an analyst's perspective.\n\nTo
-        complete the challenge, please complete all the tasks in this playbook.\nIn
-        order to complete the tasks you will need to find the XDR RDP Brute Force
-        incident in your environment.\n*Note*: do not change anything in the incident
-        itself, since multiple students are working on the same one. \n\nOnce you
-        find the relevant incident, complete this task and proceed.\n\nAs it was mentioned
-        before, SLA for the answers will start once you mark this task as completed.\n\n
-        \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/the-office-the.gif)"
+      description: "Welcome to the second CTF challenge! \nIn this section, we are going to analyze the XDR RDP Brute Force incident from an analyst's perspective.\n\nTo complete the challenge, please complete all the tasks in this playbook.\nIn order to complete the tasks you will need to find the XDR RDP Brute Force incident in your environment.\n*Note*: do not change anything in the incident itself, since multiple students are working on the same one. \n\nOnce you find the relevant incident, complete this task and proceed.\n\nAs it was mentioned before, SLA for the answers will start once you mark this task as completed.\n\n \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/the-office-the.gif)"
       type: regular
       iscommand: false
       brand: ""
@@ -115,10 +107,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 63db3a12-71dd-416f-8b61-f89b97f95ac4
+    taskid: ae8381d0-f523-40db-8391-9d9fe0ac710c
     type: collection
     task:
-      id: 63db3a12-71dd-416f-8b61-f89b97f95ac4
+      id: ae8381d0-f523-40db-8391-9d9fe0ac710c
       version: -1
       name: Using the Export Dynamic Lists function.
       type: collection
@@ -140,13 +132,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -172,16 +164,10 @@ tasks:
         - simple: False Positive
         fieldassociated: ""
         placeholder: ""
-        tooltip: 'Once you have ran the command, the output should be displayed immediately
-          . Remember to overwrite all missing data (<your tenant URL> and the <Tag
-          from the previous answer> ) '
+        tooltip: 'Once you have ran the command, the output should be displayed immediately . Remember to overwrite all missing data (<your tenant URL> and the <Tag from the previous answer> ) '
         readonly: false
       title: Using EDLs to export indicators
-      description: "The Export Indicator Generic Service can be very useful but remember
-        you have to configure that in advance (no worries - to save you some time,
-        we have already configured that for you.). \n\n\nCheck the command provided
-        to you in the question. \nRun it from your personal terminal on your machine.\n*Note*:
-        You will need \"Curl\" for running this command\n\n![myfile](https://github.com/demisto/content/blob/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/hacker-meme.gif)"
+      description: "The Export Indicator Generic Service can be very useful but remember you have to configure that in advance (no worries - to save you some time, we have already configured that for you.). \n\n\nCheck the command provided to you in the question. \nRun it from your personal terminal on your machine.\n*Note*: You will need \"Curl\" for running this command\n\n![myfile](https://raw.githubusercontent.com/demisto/content/d5fc1ffdf4d70621570e5a60fabea1047df4a3c0/Packs/ctf01/doc_files/matrix.gif)"
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -241,6 +227,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -270,9 +257,7 @@ tasks:
       id: b7f452b8-b4b1-4560-8224-c6f1a0ede173
       version: -1
       name: Hope you have enjoyed
-      description: "Thank you for participating in our workshop for the XSOAR. Hope
-        that you have enjoyed the challenge and also gained some knowledge. \n\nTill
-        next time :) \n\n \n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/until-next.gif)"
+      description: "Thank you for participating in our workshop for the XSOAR. Hope that you have enjoyed the challenge and also gained some knowledge. \n\nTill next time :) \n\n \n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/until-next.gif)"
       type: regular
       iscommand: false
       brand: ""
@@ -297,10 +282,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: ca7f4d6c-a739-463e-8889-45b85676857c
+    taskid: 49eda76d-b816-4f0c-873f-3c0dfbe81248
     type: collection
     task:
-      id: ca7f4d6c-a739-463e-8889-45b85676857c
+      id: 49eda76d-b816-4f0c-873f-3c0dfbe81248
       version: -1
       name: Are any errors in the playbook?
       type: collection
@@ -315,20 +300,20 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 350
+          "y": 340
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -354,10 +339,7 @@ tasks:
         tooltip: You can check the Work Plan entries or the Incident overview section
         readonly: false
       title: Check if there are any errors in the playbook?
-      description: "Sometimes playbooks are stopped due to an issue whether it's because
-        of the integration or missing information.  No matter what - the playbook
-        should always run without errors so all the reliable information will be populated
-        to the analyst properly. \n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/despicable-me-minion.gif)"
+      description: "Sometimes playbooks are stopped due to an issue whether it's because of the integration or missing information.  No matter what - the playbook should always run without errors so all the reliable information will be populated to the analyst properly. \n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/despicable-me-minion.gif)"
       sender: ""
       expired: false
       totalanswers: 0
@@ -408,10 +390,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 73fe2a07-7b80-4aba-82a9-ec1044a52acb
+    taskid: 5b28b492-d786-4788-8eaa-91e61aa9b023
     type: collection
     task:
-      id: 73fe2a07-7b80-4aba-82a9-ec1044a52acb
+      id: 5b28b492-d786-4788-8eaa-91e61aa9b023
       version: -1
       name: Analyze the Incident Indicators
       type: collection
@@ -434,13 +416,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -477,14 +459,10 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: You can see the relationships numbers in the on the relevant indicator
-          . Remember that existing indicators are highlighted  with link.
+        tooltip: You can see the relationships numbers in the on the relevant indicator . Remember that existing indicators are highlighted  with link.
         readonly: false
       title: Check the various indicators that are extracted from the incident
-      description: "Indicators are our first way to determine if the incident is malicious
-        or not even before we deep dive into the details. \nWe need you to analyze
-        the indicators within the XDR RDP brute force incident and help us to make
-        the right call!\n\n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/hmm-suspect.gif)"
+      description: "Indicators are our first way to determine if the incident is malicious or not even before we deep dive into the details. \nWe need you to analyze the indicators within the XDR RDP brute force incident and help us to make the right call!\n\n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/hmm-suspect.gif)"
       sender: ""
       expired: false
       totalanswers: 0
@@ -602,13 +580,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -620,8 +598,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Based on the Campaign's Report, what was the year when this campaign
-            was first seen?
+          simple: Based on the Campaign's Report, what was the year when this campaign was first seen?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -646,8 +623,7 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: You can do that by searching the campaign name in the Threat Intel
-          Tab and check how many relationships it has.
+        tooltip: You can do that by searching the campaign name in the Threat Intel Tab and check how many relationships it has.
         readonly: false
       title: Threat Campaign
       description: |-
@@ -714,6 +690,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -744,6 +721,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -774,6 +752,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -795,10 +774,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 987c3d31-0766-47a9-8b94-73ce90caffb7
+    taskid: 06b6424a-932d-4103-802e-da444608984d
     type: collection
     task:
-      id: 987c3d31-0766-47a9-8b94-73ce90caffb7
+      id: 06b6424a-932d-4103-802e-da444608984d
       version: -1
       name: Classify this incident!
       type: collection
@@ -820,13 +799,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -852,11 +831,7 @@ tasks:
         tooltip: Look at the RDP Brute Force Tab
         readonly: false
       title: Classification
-      description: "Now, once you covered the incident's details and more - you can
-        classify the incident through this playbook! \nSo what's it going to be? True
-        Or False Positive? \n\nYou can go over the collected data from the playbook
-        and the information provided in the layout, you should have all the information
-        to accomplish this mission. \n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/classified-topgun.gif)"
+      description: "This playbook can classify this incident for you. So what's it going to be? True Or False Positive? \n\nYou can go over the collected data from the playbook and the information provided in the layout, you should have all the information to accomplish this mission.\n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/classified-topgun.gif)"
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -875,6 +850,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "37"
@@ -905,6 +881,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -978,6 +955,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -996,10 +974,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: c0affa00-9f25-47dc-8a6c-8bdd214b3f82
+    taskid: f1962682-823e-4c9c-8de5-9664e9689ac6
     type: collection
     task:
-      id: c0affa00-9f25-47dc-8a6c-8bdd214b3f82
+      id: f1962682-823e-4c9c-8de5-9664e9689ac6
       version: -1
       name: Check the tag associated with the malicious indicator
       type: collection
@@ -1021,13 +999,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1050,8 +1028,7 @@ tasks:
         - simple: "No"
         fieldassociated: ""
         placeholder: ""
-        tooltip: You can check indicators information from the incident's indicator
-          quick view or through the Threat Intel section.
+        tooltip: You can check indicators information from the incident's indicator quick view or through the Threat Intel section.
         readonly: false
       title: Check the tag associated with the malicious indicator
       description: |-
@@ -1061,7 +1038,7 @@ tasks:
 
         The EDL integration utilizes the TIM query to populate indicators to an external dynamic list. For example, a TIM query can use a dedicated tag for blocking (such as "Bad" or "BlockMe").
 
-        ![myfile](https://github.com/demisto/content/blob/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/john-cena-tag-me-in.gif)
+        ![myfile](https://raw.githubusercontent.com/demisto/content/d5fc1ffdf4d70621570e5a60fabea1047df4a3c0/Packs/ctf01/doc_files/did_someone_tag_me.gif)
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -1124,3 +1101,7 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
+description: ''

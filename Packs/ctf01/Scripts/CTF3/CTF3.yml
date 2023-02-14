@@ -1,28 +1,18 @@
 commonfields:
-  id: 3e74501b-4fdc-4d79-8cbb-095703b25f66
-  version: 12
+  id: 11fb0bf4-1b42-47f0-892c-35691306db0e
+  version: 6
 vcShouldKeepItemLegacyProdMachine: false
-name: CTF_2_BF
+name: CTF_3
 script: ''
 type: python
 tags: []
-comment: This should provide answers to the CTF_2 ( RDP BruteForce)
+comment: |-
+  This should provide answers to the CTF_3
+  ONLY 1 option for the flag!!!
 enabled: true
 args:
 - name: secret
   description: Enter the needed secret
-- name: question_ID
-  auto: PREDEFINED
-  predefined:
-  - "01"
-  - "02"
-  - "03"
-  - "04"
-  - "05"
-  - "06"
-  - "07"
-  - "08"
-  isArray: true
 scripttarget: 0
 subtype: python3
 pswd: ""
