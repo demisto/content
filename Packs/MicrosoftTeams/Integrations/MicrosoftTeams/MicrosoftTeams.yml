@@ -6,16 +6,24 @@ commonfields:
   id: Microsoft Teams
   version: -1
 configuration:
+- display: "Bot ID"
+  name: credentials
+  required: false
+  type: 9
+  section: Connect
+  displaypassword: "Bot Password"
 - display: Bot ID
   name: bot_id
-  required: true
+  required: false
   type: 0
   section: Connect
+  hidden: true
 - display: Bot Password
   name: bot_password
-  required: true
+  required: false
   type: 4
   section: Connect
+  hidden: true
 - display: Tenant ID
   name: tenant_id
   required: false
@@ -30,15 +38,19 @@ configuration:
   options:
   - Client Credentials
   - Authorization Code
+  section: Connect
 - display: Application redirect URI (for Authorization Code mode)
   name: redirect_uri
   required: false
   type: 0
-- display: Authorization code
-  name: auth_code
+  section: Connect
+- display: ''
+  name: auth_code_creds
   required: false
-  type: 4
-  additionalinfo: For Authorization Code flow mode. Received from the authorization step. See the Help section.
+  type: 9
+  displaypassword: Authorization code
+  hiddenusername: true
+  section: Connect
 - display: Default team
   name: team
   required: true

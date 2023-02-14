@@ -21,8 +21,8 @@ requests.packages.urllib3.disable_warnings()  # type: ignore
 
 ''' GLOBAL VARIABLES'''
 PARAMS: dict = demisto.params()
-BOT_ID: str = PARAMS.get('bot_id', '')
-BOT_PASSWORD: str = PARAMS.get('bot_password', '')
+BOT_ID: str = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('bot_id', '')
+BOT_PASSWORD: str = PARAMS.get('credentials', {}).get('password') or PARAMS.get('bot_password', '')
 TENANT_ID: str = PARAMS.get('tenant_id', '')
 USE_SSL: bool = not PARAMS.get('insecure', False)
 APP: Flask = Flask('demisto-teams')
@@ -53,7 +53,7 @@ CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
 AUTHORIZATION_CODE_FLOW = 'Authorization Code'
 AUTH_TYPE = PARAMS.get('auth_type', CLIENT_CREDENTIALS_FLOW)
 
-AUTH_CODE: str = PARAMS.get('auth_code', '')
+AUTH_CODE: str = PARAMS.get('auth_code_creds', {}).get('password')
 REDIRECT_URI: str = PARAMS.get('redirect_uri', '')
 SESSION_STATE = 'session_state'
 REFRESH_TOKEN = 'refresh_token'
@@ -2487,6 +2487,8 @@ def test_module():
     :return: 'ok' if test passed.
     :rtype: ``str``
     """
+    if not BOT_ID or not BOT_PASSWORD:
+        raise DemistoException("Bot ID and Bot Password must be provided.")
     if 'Client' not in AUTH_TYPE:
         raise DemistoException(
             "Test module is available for Client Credentials only."
