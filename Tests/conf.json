@@ -5914,5 +5914,18 @@
     },
     "test_marketplacev2": [
         "Sanity Test - Playbook with Unmockable Whois Integration"
+    ],
+    "reputation_tests":[
+        "FormattingPerformance - Test",
+        "reputations.json Test",
+        "Indicators reputation-.json Test",
+        "URL extraction test",
+        "Domain extraction test",
+        "Email extraction test",
+        "File extraction test",
+        "IPv4 extraction test",
+        "IPv4 CIDR extraction test",
+        "IPv6 CIDR extraction test",
+        "IPv6 extraction test"
     ]
 }

@@ -32,11 +32,25 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- display: Messages status. All messages with the status specified will be imported as incidents.
+- display: Message statuses to import
+  additionalinfo: All messages with a status specified here will be imported as incidents.
   name: message_status
   defaultvalue: delivered (retroactive)
-  type: 0
+  type: 16
   required: false
+  options:
+  - accepted
+  - deleted
+  - delivered
+  - delivered (retroactive)
+  - dropped
+  - dropped oob
+  - dropped (oob retroactive)
+  - permanent failure
+  - processing
+  - quarantined
+  - rejected
+  - temporary failure
 script:
   script: '-'
   type: python
@@ -282,7 +296,7 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.39276
+  dockerimage: demisto/python3:3.10.10.47713
 tests:
 - No Test
 
