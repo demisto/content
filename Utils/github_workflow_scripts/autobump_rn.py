@@ -47,6 +47,7 @@ class SkipReason(str, Enum):
     NOT_UPDATE_RN_LABEL_EXIST = 'Label {} exist in this PR. PR labels: {}'
     NO_RELEASE_NOTES_CHANGED = 'No changes were detected on {} directory.'
     CONFLICTING_FILES = 'The PR has conflicts not only at {} and {}. The conflicting files are: {}.'
+    NO_CONFLICTING_FILES = 'No conflicts were detected.'
     NOT_ALLOW_SUPPORTED_TYPE_PACK = 'The pack is not {} supported. Pack {} support type is: {}.'
     DIFFERENT_MAJOR_VERSION = 'Pack: {} major version different in origin {} and at the branch {}.'
     EXCEED_MAX_ALLOWED_VERSION = 'Pack: {} has not allowed version part {}. Versions: origin {}, branch {}.'
@@ -198,7 +199,10 @@ class AddedRNFilesCondition(BaseCondition):
 class HasConflictOnAllowedFilesCondition(BaseCondition):
 
     def generate_skip_reason(self, conflicting_files, **kwargs) -> SkipReason:
-        return SkipReason.CONFLICTING_FILES.format(RELEASE_NOTES_DIR, PACK_METADATA_FILE, conflicting_files)
+        if not conflicting_files:
+            return SkipReason.NO_CONFLICTING_FILES
+        else:
+            return SkipReason.CONFLICTING_FILES.format(RELEASE_NOTES_DIR, PACK_METADATA_FILE, conflicting_files)
 
     def _check(self, previous_result: Optional[ConditionResult] = None) -> ConditionResult:
         pr_files = list(self.pr.get_files())
@@ -471,6 +475,9 @@ def main():
                 c1.set_next_condition(c2)
 
             metadata_cond_result = conditions[0].check()
+            if metadata_cond_result.should_skip:
+                continue
+
             rn_file: Path = metadata_cond_result.pack_new_rn_file
             ut: UpdateType = metadata_cond_result.update_type
 
