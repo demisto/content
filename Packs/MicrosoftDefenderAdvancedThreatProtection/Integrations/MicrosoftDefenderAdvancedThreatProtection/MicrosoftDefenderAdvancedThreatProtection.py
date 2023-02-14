@@ -5408,8 +5408,8 @@ def main():  # pragma: no cover
     params: dict = demisto.params()
     base_url: str = params.get('url', '').rstrip('/') + '/api'
     tenant_id = params.get('tenant_id') or params.get('_tenant_id')
-    auth_id = params.get('auth_id') or params.get('_auth_id')
-    enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
+    auth_id = params.get('_auth_id') or params.get('auth_id')
+    enc_key = (params.get('credentials') or {}).get('password') or params.get('enc_key')
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
@@ -5440,7 +5440,7 @@ def main():  # pragma: no cover
         if auth_code and redirect_uri:
             if not self_deployed:
                 raise Exception('In order to use Authorization Code, set Self Deployed: True.')
-        if (auth_code and not redirect_uri) or (redirect_uri and not auth_code):
+        if auth_code and not redirect_uri:
             raise Exception('In order to use Authorization Code auth flow, you should set: '
                             '"Application redirect URI", "Authorization code" and "Self Deployed=True".')
 
@@ -5655,6 +5655,8 @@ def main():  # pragma: no cover
             return_results(get_machine_alerts_command(client, args))
         elif command == 'microsoft-atp-request-and-download-investigation-package':
             return_results(request_download_investigation_package_command(client, args))
+        elif command == 'microsoft-atp-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
 
     except Exception as err:
         return_error(str(err))
