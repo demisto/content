@@ -297,7 +297,7 @@ def start_scan_command(client: Client, asset_id: str, name: str) -> CommandResul
         )
         return result
     else:
-        return_error(f'no response')
+        return_error('no response')
 
 
 def last_sites_command(client: Client, page: int, size=int) -> CommandResults:
@@ -398,7 +398,7 @@ def stop_scan_command(client: Client, id: str) -> CommandResults:
     try:
         response: Union[Response, Dict] = client.make_request(method=method, url_suffix=endpoint, resp_type="response")
         if isinstance(response, Response) and response.status_code == 202:
-            command_results = CommandResults(readable_output=f'Scan Stop successfully.')
+            command_results = CommandResults(readable_output='Scan Stop successfully.')
             return command_results
         raise DemistoException(f"Scan failed, {response}")
     except Exception as e:
