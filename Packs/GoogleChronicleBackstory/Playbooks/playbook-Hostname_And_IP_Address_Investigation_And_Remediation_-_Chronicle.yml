@@ -3106,22 +3106,29 @@ tasks:
     task:
       id: 69771a03-8f1a-4322-8321-094088a3058c
       version: -1
-      name: Isolate Endpoint - Generic
-      playbookName: Isolate Endpoint - Generic
+      name: Isolate Endpoint - Generic V2
+      description: |-
+        This playbook isolates a given endpoint using various endpoint product integrations.
+        Make sure to provide valid playbook inputs for the integration you are using.
+      playbookName: Isolate Endpoint - Generic V2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "78"
     scriptarguments:
-      EndpointId: {}
-      Hostname:
+      Endpoint_hostname:
         complex:
           root: inputs.chronicleasset_hostname
-      IP: {}
-      xdr_endpoint_id: {}
+      Endpoint_id:
+        complex:
+          root: PaloAltoNetworksXDR.Endpoint
+          accessor: endpoint_id
+      Endpoint_ip:
+        complex:
+          root: IP
+          accessor: Address
     separatecontext: true
     loop:
       iscommand: false
@@ -3221,6 +3228,6 @@ outputs:
 - contextPath: PotentiallyBlockedIPs
   description: List of potentially blocked IP Addresses.
   type: unknown
-fromversion: 5.0.0
+fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
