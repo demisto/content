@@ -1832,7 +1832,7 @@ def endpoint_alias_change_command(client: CoreClient, **args) -> CommandResults:
         last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte, scan_status=scan_status
     )
     if filters is None:
-        raise ValueError('Error: No filters were given')
+        raise DemistoException('No filters were given')
     # importent: the API will return True even if the endpoint does not exist, so its a good idea to check
     # the results by a get_endpoints command
     client.set_endpoints_alias(filters=filters, new_alias_name=new_alias_name)
