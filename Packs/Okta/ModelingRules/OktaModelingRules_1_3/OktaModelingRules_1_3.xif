@@ -4,9 +4,9 @@ filter
 | alter
     outcome_result = json_extract_scalar(outcome, "$.result")
 | alter
-    xdm.target.user.identifier = json_extract_scalar(actor, "$.id"),
-    xdm.target.user.user_type = json_extract_scalar(actor, "$.type"),
-    xdm.target.user.username = json_extract_scalar(actor, "$.alternateId"),
+    xdm.source.user.identifier = json_extract_scalar(actor, "$.id"),
+    xdm.source.user.user_type = json_extract_scalar(actor, "$.type"),
+    xdm.source.user.username = json_extract_scalar(actor, "$.alternateId"),
     xdm.target.cloud.zone = json_extract_scalar(client, "$.zone"),
     xdm.source.ipv4 = json_extract_scalar(client,"$.ipAddress"),
     xdm.target.ipv4="",
@@ -32,8 +32,8 @@ filter
         lastName = arrayindex(regextract(displayName, "\s([\S]*)"),0),
         firstName= arrayindex(regextract(displayName, "([\S]*)\s"),0)
     | alter
-        xdm.target.user.first_name = firstName,
-        xdm.target.user.last_name = lastName;
+        xdm.source.user.first_name = firstName,
+        xdm.source.user.last_name = lastName;
 
 filter
     eventType in ("app.access_request.approver.approve","app.access_request.approver.deny","app.access_request.delete","app.access_request.deny","app.access_request.expire","app.access_request.grant","app.access_request.request","app.kerberos_rich_client.account_not_found","app.kerberos_rich_client.instance_not_found","app.kerberos_rich_client.multiple_accounts_found","app.kerberos_rich_client.user_authentication_successful","app.oauth2.admin.consent.grant","app.oauth2.admin.consent.revoke","app.oauth2.as.authorize","app.oauth2.as.authorize.code","app.oauth2.as.authorize.implicit.access_token","app.oauth2.as.authorize.implicit.id_token","app.oauth2.as.authorize.scope_denied","app.oauth2.as.consent.grant","app.oauth2.as.consent.revoke","app.oauth2.as.consent.revoke.implicit.as","app.oauth2.as.consent.revoke.implicit.client","app.oauth2.as.consent.revoke.implicit.scope","app.oauth2.as.consent.revoke.implicit.user","app.oauth2.as.consent.revoke.user","app.oauth2.as.consent.revoke.user.client","app.oauth2.as.evaluate.claim","app.oauth2.as.interact.interaction_code","app.oauth2.as.interact.interaction_handle","app.oauth2.as.key.rollover","app.oauth2.as.token.detect_reuse","app.oauth2.as.token.grant","app.oauth2.as.token.grant.access_token","app.oauth2.as.token.grant.device_secret","app.oauth2.as.token.grant.id_token","app.oauth2.as.token.grant.refresh_token","app.oauth2.as.token.revoke","app.oauth2.authorize","app.oauth2.authorize.code","app.oauth2.authorize.implicit.access_token","app.oauth2.authorize.implicit.id_token","app.oauth2.client.lifecycle.activate","app.oauth2.client.lifecycle.create","app.oauth2.client.lifecycle.deactivate","app.oauth2.client.lifecycle.delete","app.oauth2.client.lifecycle.update","app.oauth2.client_id_rate_limit_warning","app.oauth2.consent.grant","app.oauth2.interact.interaction_code","app.oauth2.interact.interaction_handle","app.oauth2.invalid_client_credentials","app.oauth2.invalid_client_ids","app.oauth2.key.rollover","app.oauth2.signon","app.oauth2.token.detect_reuse","app.oauth2.token.grant","app.oauth2.token.grant.access_token","app.oauth2.token.grant.id_token","app.oauth2.token.grant.refresh_token","app.oauth2.token.revoke","app.oauth2.token.revoke.implicit.as","app.oauth2.token.revoke.implicit.client","app.oauth2.token.revoke.implicit.user","app.office365.graph.api.error.service.principal.msgraph.authentication.failure","application.integration.authentication_failure","oauth2.as.activated","oauth2.as.created","oauth2.as.deactivated","oauth2.as.deleted","oauth2.as.updated","oauth2.claim.created","oauth2.claim.deleted","oauth2.claim.updated","oauth2.scope.created","oauth2.scope.deleted","oauth2.scope.updated","system.agent.ldap.realtimesync","system.agent.ldap.update_user","system.agent.ldap.update_user_password","system.iwa_agentless.auth","system.iwa_agentless.redirect","system.iwa_agentless.update","system.iwa_agentless.user.not_found","system.iwa_agentless_kerberos.update","user.authentication.auth","user.authentication.auth_via_AD_agent","user.authentication.auth_via_IDP","user.authentication.auth_via_LDAP_agent","user.authentication.auth_via_inbound_SAML","user.authentication.auth_via_inbound_delauth","user.authentication.auth_via_iwa","user.authentication.auth_via_mfa","user.authentication.auth_via_radius","user.authentication.auth_via_richclient","user.authentication.auth_via_social","user.authentication.authenticate","user.authentication.slo","user.authentication.sso","user.authentication.verify","user.import.password")
