@@ -2344,6 +2344,19 @@ class Pack(object):
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                         })
 
+                    elif current_directory == PackFolders.LAYOUT_RULES.value and pack_file_name.startswith(
+                            "external-"):
+                        self.add_pack_type_tags(content_item, 'LayoutRule')
+                        layout_rule_metadata = {
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
+                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
+                        }
+                        layout_rule_description = content_item.get('description')
+                        if layout_rule_description is not None:
+                            layout_rule_metadata['description'] = layout_rule_description
+                        folder_collected_items.append(layout_rule_metadata)
+
                     else:
                         logging.info(f'Failed to collect: {current_directory}')
 
@@ -2679,7 +2692,7 @@ class Pack(object):
         self._all_levels_dependencies = all_levels_dependencies
         self._displayed_images_dependent_on_packs = displayed_images_dependent_on_packs
 
-    def prepare_for_index_upload(self, index_folder_path, diff_files_list, override_all_packs):
+    def prepare_for_index_upload(self):
         """ Removes and leaves only necessary files in pack folder.
 
         Returns:
@@ -2688,9 +2701,6 @@ class Pack(object):
         """
         task_status = False
         files_to_leave = [Pack.METADATA, Pack.CHANGELOG_JSON, Pack.README]
-
-        detect_changes = False if override_all_packs else os.path.exists(os.path.join(index_folder_path, self.name,
-                                                                                      Pack.METADATA)) or self.hidden
 
         try:
             for file_or_folder in os.listdir(self._pack_path):
