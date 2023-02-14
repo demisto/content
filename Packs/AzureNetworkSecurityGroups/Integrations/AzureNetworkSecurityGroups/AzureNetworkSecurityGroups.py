@@ -418,6 +418,8 @@ def main() -> None:
 
         elif command == 'azure-nsg-auth-test':
             return_results(test_connection(client, params))
+        elif command == 'azure-nsg-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
         else:
             return_results(commands[command](client, **args))
 
