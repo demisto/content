@@ -943,7 +943,7 @@ script:
       - description: A comma-separated list of group names to which the agent belongs to use as a filter.
         isArray: true
         name: group_name
-      - description: 'The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". '
+      - description: The endpoint platform to use as a filter.
         isArray: true
         name: platform
         auto: PREDEFINED
@@ -958,7 +958,7 @@ script:
         isArray: true
         name: alias_name
       - auto: PREDEFINED
-        description: Specifies whether the endpoint was isolated or unisolated.
+        description: Specifies whether the endpoint was isolated or unisolated to use as a filter.
         name: isolate
         predefined:
           - isolated
@@ -967,7 +967,7 @@ script:
         isArray: true
         name: hostname
       - description: |-
-          All the agents that were first seen after {first_seen_gte}.
+          All the agents that were first seen after {first_seen_gte} to use as a filter.
           Supported values:
           1579039377301 (time in milliseconds)
           "3 days" (relative date)
@@ -995,13 +995,13 @@ script:
           "2019-10-21T23:45:00" (date)
         name: last_seen_lte
       - name: username
-        description: The usernames to query for to use as a filter. Accepts a single user, or comma-separated list of usernames.
+        description: The usernames to use as a filter. Accepts a single user, or comma-separated list of usernames.
         isArray: true
       - name: new_alias_name
         required: true
         description: The alias name to change to.
       - name: scan_status
-        description: The scan status of the endpoint.
+        description: The scan status of the endpoint to use as a filter.
         auto: PREDEFINED
         predefined:
           - none
