@@ -125,7 +125,7 @@ ALERTS_3 = {'meta': {'fromLastModifiedOn': {'end': ''}},
                                 'alert': {'timestamp': '2023-02-08T19:34:17'}}},
                 {'attributes': {'email': {'status': 'deleted', 'headers': {'subject': ''}},
                                 'alert': {'timestamp': '2023-02-08T19:34:17'}}}
-            ]}
+]}
 EXPECTED_INCIDENTS_3 = [
     '{"email": {"status": "delivered (retroactive)", "headers": {"subject": ""}},'
     ' "alert": {"timestamp": "2023-02-08T19:34:17"}}',
