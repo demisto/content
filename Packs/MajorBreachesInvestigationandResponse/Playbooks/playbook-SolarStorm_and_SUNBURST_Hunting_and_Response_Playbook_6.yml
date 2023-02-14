@@ -3301,12 +3301,6 @@ view: |-
     }
   }
 inputs:
-- key: ThreatIDs
-  value:
-    simple: 86246,86237,34801,39934,58049,38399,55378,37582,36709,37781,38388,56269
-  required: false
-  description: Threat IDs to hunt through NGFW Threat Logs.
-  playbookInputQuery:
 - key: IsolateEndpointAutomatically
   value:
     simple: "False"
