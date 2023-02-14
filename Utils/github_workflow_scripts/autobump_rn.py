@@ -143,26 +143,50 @@ class MetadataCondition(BaseCondition, ABC):
 
     @staticmethod
     def get_metadata_files(pack_id: str, pr: PullRequest, git_repo: Repo):
-        """ TODO docstring """
+        """
+        Args:
+            pack_id:
+            pr:
+            git_repo:
+
+        Returns:
+            origin_base_pack_metadata
+            branch_pack_metadata
+            pr_base_metadata
+        """
         metadata_path = f'{PACKS_DIR}/{pack_id}/{PACK_METADATA_FILE}'
         origin_base_pack_metadata = load_json(metadata_path)
         with checkout(git_repo, pr.head.ref):
             branch_pack_metadata = load_json(metadata_path)
             log = git_repo.git.log()
-        # todo: check if works
-        commits = pr.commits
-        commits = pr.get_commits()
-        branches = git_repo.branches
-        hi = "hi"
-        parent_sha = commits[0].parents[0].sha
-        base_sha = pr.base.sha
-        if pr.base.sha not in log:
-            print("here")
-            parent_sha = commits[0].parents[0].sha
-        hi = "hi"
-        with checkout(git_repo, pr.base.sha):
+        base_sha = MetadataCondition.get_base_commit(branch_git_log=log, pr=pr)
+        with checkout(git_repo, base_sha):
             pr_base_metadata = load_json(metadata_path)
         return origin_base_pack_metadata, branch_pack_metadata, pr_base_metadata
+
+    @staticmethod
+    def get_base_commit(branch_git_log: str, pr: PullRequest):
+        """ Returns the pr's base commit.
+        We are using github's pr.base.sha commit if the branch was rebased. If pr was rebased,
+        base sha will not appear in git log.
+        If pr was never rebased, github's pr.base.sha commit is masters commit in the repo when pr was opened
+        (bad behavior - fake base). Then the parent of the first branch commit is the base commit we should use.
+
+        Args:
+            branch_git_log:
+            pr:
+
+        Returns:
+
+        """
+        base_sha = pr.base.sha
+        if base_sha not in branch_git_log:
+            try:
+                commits = pr.get_commits()
+                base_sha = commits[0].parents[0].sha
+            except Exception:
+                base_sha = pr.base.sha
+        return base_sha
 
 
 class LastModifiedCondition(BaseCondition):
@@ -400,11 +424,10 @@ class checkout:
         """Initializes instance attributes.
         Arguments:
             repo: git repo object
-            branch_to_checkout: The branch to check out.
+            branch_to_checkout: The branch or commit hash to check out.
         """
         self.repo = repo
-        # todo: fetch only branch
-        self.repo.remote().fetch()
+        self.repo.remote().fetch(branch_to_checkout)
         self._original_branch = self.repo.active_branch.name
         self._branch_to_checkout = branch_to_checkout
 
