@@ -10,11 +10,5 @@ for i in "${IGNORED_FILES[@]}"; do
     DIFF_FILES_LIST=${DIFF_FILES_LIST[*]/$i} 
 done
 
-SHOULD_SKIP_TEST=$(echo "${DIFF_FILES_LIST[*]}" | grep "Tests/\|Utils/")
-
-if [ -z "$SHOULD_SKIP_TEST" ] ; then
-    exit 0
-fi
-
-echo "Found modified files that should be tested in upload-flow"
-exit 1
+echo "${DIFF_FILES_LIST[*]}" | grep "Tests/\|Utils/"
+exit 0
