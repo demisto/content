@@ -516,7 +516,11 @@ script:
     description: Tests connectivity to the Azure Web Application Firewall.
     execution: false
     name: azure-waf-auth-test
-  dockerimage: demisto/crypto:1.0.0.47103
+  - description: Generate the login url used for Authorization code flow.
+    execution: false
+    name: azure-waf-generate-login-url
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.47970
   feed: false
   isfetch: false
   longRunning: false
