@@ -4,7 +4,7 @@
     "modified": "2023-01-23T14:32:17.888913987Z",
     "name": "Microsoft Sentinel Alerts",
     "ownerOnly": false,
-    "cliName": "microsoftmicrosoftsentinelalerts",
+    "cliName": "microsoftsentinelalerts",
     "type": "grid",
     "closeForm": false,
     "editForm": true,

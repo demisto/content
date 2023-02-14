@@ -1604,14 +1604,16 @@ def test_update_remote_system_command(mocker):
     assert result == 'incident-1'
 
 
-@pytest.mark.parametrize("incident_status, close_in_ms, expected_update_call", [
-    (IncidentStatus.DONE, True, True),  # incident_status == DONE, close_in_ms == True
-    (IncidentStatus.DONE, False, False),  # incident_status == DONE, close_in_ms == False
-    (IncidentStatus.ACTIVE, True, True),  # incident_status == ACTIVE, close_in_ms == True
-    (IncidentStatus.ACTIVE, False, True),  # incident_status == ACTIVE, close_in_ms == False
-    (IncidentStatus.PENDING, True, False),  # incident_status == PENDING, close_in_ms == True
+@pytest.mark.parametrize("incident_status, close_in_ms, delta, expected_update_call", [
+    (IncidentStatus.DONE, True, {}, True),
+    (IncidentStatus.DONE, False, {}, False),  # delta is empty
+    (IncidentStatus.DONE, False, {'classification': 'FalsePositive'}, False),  # delta have only closing fields
+    (IncidentStatus.DONE, False, {'title': 'Title'}, True),  # delta have fields except closing fields
+    (IncidentStatus.ACTIVE, True, {}, True),
+    (IncidentStatus.ACTIVE, False, {}, True),
+    (IncidentStatus.PENDING, True, {}, False),
 ])
-def test_update_remote_incident(mocker, incident_status, close_in_ms, expected_update_call):
+def test_update_remote_incident(mocker, incident_status, close_in_ms, delta, expected_update_call):
     """
     Given
         - incident status
@@ -1623,7 +1625,7 @@ def test_update_remote_incident(mocker, incident_status, close_in_ms, expected_u
     """
     mocker.patch('AzureSentinel.close_in_ms', return_value=close_in_ms)
     mock_update_status = mocker.patch('AzureSentinel.update_incident_request')
-    update_remote_incident(mock_client(), {}, {}, incident_status, 'incident-1')
+    update_remote_incident(mock_client(), {}, delta, incident_status, 'incident-1')
     assert mock_update_status.called == expected_update_call
 
 
@@ -1646,20 +1648,27 @@ def test_close_in_ms(mocker, delta, close_ticket_param, to_close):
     assert close_in_ms(delta) == to_close
 
 
-@pytest.mark.parametrize("data, delta, mock_response", [
+@pytest.mark.parametrize("data, delta, mock_response, close_ticket", [
     (
         {'title': 'New Title', 'severity': 2, 'status': 1},
         {'title': 'New Title'},
-        {'title': 'New Title', 'severity': 'Medium', 'status': 'Active'}
+        {'title': 'New Title', 'severity': 'Medium', 'status': 'Active'},
+        False
     ),
     (
-        {'title': 'Title', 'severity': 1, 'status': 2},
-        {'classification': 'FalsePositive', 'classificationReason': 'InaccurateData'},
-        {'title': 'Title', 'severity': 'Low', 'status': 'Closed', 'classification': 'FalsePositive',
-         'classificationReason': 'InaccurateData'}
+        {'title': 'New Title', 'severity': 1, 'status': 2, 'classification': 'Undetermined'},
+        {'title': 'New Title', 'classification': 'Undetermined'},
+        {'title': 'New Title', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
+        True
+    ),
+    (
+        {'title': 'New Title', 'severity': 1, 'status': 2, 'classification': 'Undetermined'},
+        {'title': 'New Title', 'classification': 'Undetermined'},
+        {'title': 'New Title', 'severity': 'Low', 'status': 'Active'},
+        False
     )
 ])
-def test_update_incident_request(mocker, data, delta, mock_response):
+def test_update_incident_request(mocker, data, delta, mock_response, close_ticket):
     """
     Given
         - data
@@ -1673,5 +1682,5 @@ def test_update_incident_request(mocker, data, delta, mock_response):
     mock_response = {'etag': None, 'properties': mock_response}
     mocker.patch.object(client, 'http_request', return_value=mock_response)
 
-    update_incident_request(client, 'id-incident-1', data, delta)
+    update_incident_request(client, 'id-incident-1', data, delta, close_ticket)
     assert client.http_request.call_args[1]['data'] == mock_response

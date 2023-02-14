@@ -72,8 +72,7 @@ OUTGOING_MIRRORED_FIELDS = {'etag', 'title', 'description', 'severity', 'status'
                             'lastActivityTimeUtc', 'classification', 'classificationComment', 'classificationReason'}
 OUTGOING_MIRRORED_FIELDS = {filed: pascalToSpace(filed) for filed in OUTGOING_MIRRORED_FIELDS}
 
-STATUS_NUM_TO_STR = {1: 'Active', 2: 'Closed'}
-SEVERITY = {0: 'Informational', 0.5: 'Informational', 1: 'Low', 2: 'Medium', 3: 'High', 4: 'High'}
+LEVEL_TO_SEVERITY = {0: 'Informational', 0.5: 'Informational', 1: 'Low', 2: 'Medium', 3: 'High', 4: 'High'}
 CLASSIFICATION_REASON = {'FalsePositive': 'InaccurateData', 'TruePositive': 'SuspiciousActivity'}
 
 
@@ -655,26 +654,39 @@ def close_in_ms(delta: Dict[str, Any]) -> bool:
     return demisto.params().get('close_ticket') and closing_field in delta
 
 
-def update_incident_request(client: AzureSentinelClient, incident_id: str, data: Dict[str, Any], delta: Dict[str, Any]
-                            ) -> Dict[str, Any]:
+def update_incident_request(client: AzureSentinelClient, incident_id: str, data: Dict[str, Any], delta: Dict[str, Any],
+                            close_ticket: bool = False) -> Dict[str, Any]:
+    """
+    Args:
+        client (AzureSentinelClient)
+        incident_id (str): the incident ID
+        data (Dict[str, Any]): all the data of the incident
+        delta (Dict[str, Any]): the delta of the changes in the incident's data
+        close_ticket (bool, optional): whether to close the ticket or not (defined by the close_in_ms(delta)). Defaults to False.
+
+    Returns:
+        Dict[str, Any]: the response of the update incident request
+    """
     required_fileds = ('severity', 'status', 'title')
     if any(field not in data for field in required_fileds):
-        raise DemistoException(f'Update incident request is missing required fields: {required_fileds}')
+        raise DemistoException(f'Update incident request is missing one of the required fields for the API: {required_fileds}')
 
-    severity = SEVERITY[data.get('severity', '')]
-    status = STATUS_NUM_TO_STR[data.get('status', '')]
     properties = {
-        'title': delta.get('title') or data.get('title'),
+        'title': data.get('title'),
         'description': delta.get('description'),
-        'severity': severity,
-        'status': status,
+        'severity': LEVEL_TO_SEVERITY[data.get('severity', '')],
+        'status': 'Active',
         'labels': [{'labelName': label.get('value'), 'type': label.get('type')} for label in delta.get('labels', [])],
         'firstActivityTimeUtc': delta.get('firstActivityTimeUtc'),
-        'lastActivityTimeUtc': delta.get('lastActivityTimeUtc'),
-        'classification': delta.get('classification'),
-        'classificationComment': delta.get('classificationComment'),
-        'classificationReason': CLASSIFICATION_REASON.get(delta.get('classification', ''))
+        'lastActivityTimeUtc': delta.get('lastActivityTimeUtc')
     }
+    if close_ticket:
+        properties |= {
+            'status': 'Closed',
+            'classification': delta.get('classification'),
+            'classificationComment': delta.get('classificationComment'),
+            'classificationReason': CLASSIFICATION_REASON.get(delta.get('classification', ''))
+        }
     remove_nulls_from_dictionary(properties)
     data = {
         'etag': delta.get('etag') or data.get('etag'),
@@ -686,9 +698,18 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
 
 def update_remote_incident(client: AzureSentinelClient, data: Dict[str, Any], delta: Dict[str, Any],
                            incident_status: IncidentStatus, incident_id: str) -> str:
-    if incident_status == IncidentStatus.DONE and close_in_ms(delta):
-        demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
-        return str(update_incident_request(client, incident_id, data, delta))
+    if incident_status == IncidentStatus.DONE:
+        if close_in_ms(delta):
+            demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
+            return str(update_incident_request(client, incident_id, data, delta, close_ticket=True))
+        elif delta.keys() <= {'classification', 'classificationComment'}:
+            demisto.debug(f'Incident with remote ID {incident_id} is closed in XSOAR, '
+                          'but the closde ticket parameter is not set.')
+            return ''
+        else:  # The delta contains fields that are not related to closing the incident and close_in_ms(delta) is False
+            demisto.debug(f'Updating incident with remote ID {incident_id} in remote system (but not closing it).')
+            return str(update_incident_request(client, incident_id, data, delta))
+
     elif incident_status == IncidentStatus.ACTIVE:
         demisto.debug(f'Updating incident with remote ID {incident_id} in remote system.')
         return str(update_incident_request(client, incident_id, data, delta))
