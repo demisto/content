@@ -553,7 +553,11 @@ script:
       name: azure-data-explorer-auth-test
       arguments: []
       outputs: []
-  dockerimage: demisto/azure-kusto-data:1.0.0.44974
+    - description: Generate the login url used for Authorization code flow.
+      execution: false
+      name: azure-data-explorer-generate-login-url
+      arguments: []
+  dockerimage: demisto/azure-kusto-data:1.0.0.48291
   feed: false
   isfetch: false
   longRunning: false

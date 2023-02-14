@@ -13,7 +13,7 @@ class MicrosoftStorageClient(BaseClient):
 
     def __init__(self, server_url, verify, proxy,
                  account_sas_token, storage_account_name,
-                 api_version, managed_identities_client_id):
+                 api_version, managed_identities_client_id: Optional[str] = None):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy)
         self._account_sas_token = account_sas_token
         self._storage_account_name = storage_account_name
