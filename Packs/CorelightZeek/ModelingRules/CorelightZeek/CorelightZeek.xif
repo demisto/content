@@ -137,6 +137,6 @@ filter _path = "dce_rpc"
     xdm.event.id = uid,
     xdm.event.duration = to_integer(rtt),
     xdm.intermediate.application.name = named_pipe,
-    xdm.source.host.hostname = endpoint,
+    xdm.source.host.device_id = endpoint,
     xdm.event.outcome_reason = operation,
     xdm.observer.version = version;
