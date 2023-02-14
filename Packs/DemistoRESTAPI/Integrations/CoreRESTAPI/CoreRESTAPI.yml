@@ -11,7 +11,7 @@ configuration:
   defaultvalue: https://127.0.0.1
   type: 0
   required: true
-- display: Auth ID
+- display: API Key ID
   displaypassword: API Key
   name: creds_apikey
   type: 9
