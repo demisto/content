@@ -14,6 +14,7 @@ urllib3.disable_warnings()
 OAUTH2_AUTH_NOT_APPLICABLE_ERROR = ('This command is not applicable to run with a Jira On Prem instance since On Prem instances'
                                     ' do not use OAuth2 for authorization.')
 ID_OR_KEY_MISSING_ERROR = 'Please provide either the issue ID or key.'
+EPIC_ID_OR_KEY_MISSING_ERROR = 'Please provide either the epic ID or key.'
 # Scopes
 SCOPES = [
     'write:jira-work',
@@ -226,6 +227,19 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
 
     @ abstractmethod
     def create_issue(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def get_epic_issues(self, epic_id_or_key: str, start_at: int = None, max_results: int = None,
+                        jql_query: str = None) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def get_issue_link_types(self) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def create_issue_link(self, json_data: Dict[str, Any]) -> requests.Response:
         pass
 
     # Attachments Requests
@@ -581,6 +595,33 @@ class JiraCloudClient(JiraBaseClient):
                                                   json_data=json_data,
                                                   params=query_params)
         return res
+
+    def get_epic_issues(self, epic_id_or_key: str, start_at: int = None, max_results: int = None,
+                        jql_query: str = None) -> Dict[str, Any]:
+        query_params = assign_params(
+            jql=jql_query,
+            startAt=start_at,
+            maxResults=max_results
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/agile/1.0/epic/{epic_id_or_key}/issue',
+            params=query_params
+        )
+
+    def get_issue_link_types(self) -> Dict[str, Any]:
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix='rest/api/3/issueLinkType',
+        )
+
+    def create_issue_link(self, json_data: Dict[str, Any]) -> requests.Response:
+        return self.http_request_with_access_token(
+            method='POST',
+            url_suffix='rest/api/3/issueLink',
+            json_data=json_data,
+            resp_type='response'
+        )
 
     # Attachments Requests
     def add_attachment(self, issue_id_or_key: str, files: Dict[str, Any] = None) -> List[Dict[str, Any]]:
@@ -1354,7 +1395,7 @@ def get_id_offset_command(client: JiraBaseClient, args: Dict[str, Any]) -> Comma
             outputs={'IdOffSet': first_issue_id},
         )
         if first_issue_id
-        else CommandResults(readable_output='No ID offset was found')
+        else CommandResults(readable_output='No ID offset was found', raw_response=res)
     )
 
 
@@ -1391,7 +1432,7 @@ def issue_get_attachment_command(client: JiraBaseClient, args: Dict[str, str]) -
     Returns:
         Dict[str, Any]: A dictionary the represents a file entry to be returned to the user
     """
-    attachments_id = argToList(args.get('id', ''))
+    attachments_id = argToList(args.get('attachment_id', ''))
     files_result: List[Dict[str, Any]] = [
         create_file_info_from_attachment(
             client=client, attachment_id=attachment_id
@@ -1503,7 +1544,131 @@ def get_id_by_attribute_command(client: JiraBaseClient, args: Dict[str, str]) ->
     )
 
 
+def sprint_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    board_id = args.get('board_id', '')
+    sprint_id = args.get('sprint_id', '')
+    jql_query = args.get('jql_query', '')
+    pagination_args = prepare_pagination_args(page=arg_to_number(arg=args.get('page', None)),
+                                              page_size=arg_to_number(arg=args.get('page_size', None)),
+                                              limit=arg_to_number(arg=args.get('limit', None)))
+    if board_id:
+        res = client.get_sprint_issues_from_board(sprint_id=sprint_id, board_id=board_id, jql_query=jql_query,
+                                                  **pagination_args)
+    else:
+        res = client.get_issues_from_sprint(
+            sprint_id=sprint_id,
+            jql_query=jql_query,
+            **pagination_args
+        )
+    issues = res.get('issues', [])
+    board_id = issues[0].get('fields', {}).get('sprint', {}).get('originBoardId', '') if (issues and not board_id) else board_id
+    markdown_list = []
+    issues_list = []
+    for issue in issues:
+        markdown_dict, outputs = create_issue_md_and_outputs(client=client, res=issue)
+        markdown_list.append(markdown_dict)
+        issues_list.append(outputs)
+    return CommandResults(
+        outputs_prefix='Jira.SprintIssues',
+        outputs_key_field='id',
+        outputs={'id': board_id, 'Ticket': issues_list},
+        readable_output=tableToMarkdown(name=f'Sprint Issues in board {board_id}', t=markdown_list),
+        raw_response=res
+    )
+
+
+def issues_to_sprint_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    issues = argToList(args.get('issues', ''))
+    sprint_id = args.get('sprint_id', '')
+    rank_before_issue = args.get('rank_before_issue', '')
+    rank_after_issue = args.get('rank_after_issue', '')
+    json_data = assign_params(
+        issues=issues,
+        rankBeforeIssue=rank_before_issue,
+        rankAfterIssue=rank_after_issue
+    )
+    client.issues_to_sprint(sprint_id=sprint_id, json_data=json_data)
+    return CommandResults(readable_output='Issues were moved to the Sprint successfully')
+
+
+def epic_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    epic_id_or_key = args.get('epic_id', args.get('epic_key', ''))
+    if not epic_id_or_key:
+        raise DemistoException(EPIC_ID_OR_KEY_MISSING_ERROR)
+    jql_query = args.get('jql_query', '')
+    pagination_args = prepare_pagination_args(page=arg_to_number(arg=args.get('page', None)),
+                                              page_size=arg_to_number(arg=args.get('page_size', None)),
+                                              limit=arg_to_number(arg=args.get('limit', None)))
+    res = client.get_epic_issues(epic_id_or_key=epic_id_or_key, jql_query=jql_query, **pagination_args)
+    if issues := res.get('issues', []):
+        return create_epic_issues_command_results(
+            issues=issues, client=client, epic_id_or_key=epic_id_or_key, res=res
+        )
+    else:
+        return CommandResults(readable_output=f'No child issues were found for epic {epic_id_or_key}')
+
+
+def create_epic_issues_command_results(issues: List[Dict[str, Any]], client: JiraBaseClient,
+                                       epic_id_or_key: str, res: Dict[str, Any]):
+    markdown_list = []
+    issues_list = []
+    for issue in issues:
+        markdown_dict, outputs_context_data = create_issue_md_and_outputs(client=client, res=issue)
+        markdown_list.append(markdown_dict)
+        issues_list.append(outputs_context_data)
+    is_id = is_issue_id(issue_id_or_key=epic_id_or_key)
+    outputs: Dict[str, Any] = {'Ticket': issues_list}
+    if(is_id):
+        outputs |= {'id': epic_id_or_key}
+    else:
+        extracted_issue_id = str(issues[0].get('fields', {}).get('epic', {}).get('id', ''))
+        outputs |= {'id': extracted_issue_id, 'key': epic_id_or_key}
+    return CommandResults(
+        outputs_prefix='Jira.EpicIssues',
+        outputs_key_field='id',
+        outputs=outputs,
+        readable_output=tableToMarkdown(name=f'Child Issues in epic {epic_id_or_key}', t=markdown_list),
+        raw_response=res
+    )
+
+
+def get_issue_link_types_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    res = client.get_issue_link_types()
+    issue_link_types = res.get('issueLinkTypes', [])
+    md_dict = [
+        {
+            'ID': issue_link_type.get('id', ''),
+            'Name': issue_link_type.get('name', ''),
+            'Inward': issue_link_type.get('inward', ''),
+            'Outward': issue_link_type.get('outward', ''),
+        }
+        for issue_link_type in issue_link_types
+    ]
+    return CommandResults(
+        outputs_prefix='Jira.IssueLinkType',
+        outputs=issue_link_types,
+        readable_output=tableToMarkdown(name='Issue Link Types', t=md_dict),
+        raw_response=res
+    )
+
+
+def link_issue_to_issue_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    outward_issue = args.get('outward_issue', '')
+    inward_issue = args.get('inward_issue', '')
+    link_type = args.get('link_type', '')
+    comment = args.get('comment', '')
+    json_data = assign_params(
+        comment={'body': text_to_adf(text=comment)} if comment else '',
+        inwardIssue={'key': inward_issue},
+        outwardIssue={'key': outward_issue},
+        type={'name': link_type}
+    )
+    client.create_issue_link(json_data=json_data)
+    return CommandResults(readable_output='Issue link created successfully')
+
 # Board Commands
+
+
 def issues_to_backlog_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
     issues = argToList(args.get('issues', ''))
     board_id = args.get('board_id', '')
@@ -1681,52 +1846,6 @@ def board_epic_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> Com
         raw_response=res
     )
 
-
-def sprint_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
-    board_id = args.get('board_id', '')
-    sprint_id = args.get('sprint_id', '')
-    jql_query = args.get('jql_query', '')
-    pagination_args = prepare_pagination_args(page=arg_to_number(arg=args.get('page', None)),
-                                              page_size=arg_to_number(arg=args.get('page_size', None)),
-                                              limit=arg_to_number(arg=args.get('limit', None)))
-    if board_id:
-        res = client.get_sprint_issues_from_board(sprint_id=sprint_id, board_id=board_id, jql_query=jql_query,
-                                                  **pagination_args)
-    else:
-        res = client.get_issues_from_sprint(
-            sprint_id=sprint_id,
-            jql_query=jql_query,
-            **pagination_args
-        )
-    issues = res.get('issues', [])
-    board_id = issues[0].get('fields', {}).get('sprint', {}).get('originBoardId', '') if (issues and not board_id) else board_id
-    markdown_list = []
-    issues_list = []
-    for issue in issues:
-        markdown_dict, outputs = create_issue_md_and_outputs(client=client, res=issue)
-        markdown_list.append(markdown_dict)
-        issues_list.append(outputs)
-    return CommandResults(
-        outputs_prefix='Jira.SprintIssues',
-        outputs_key_field='boardId',
-        outputs={'boardId': board_id, 'Ticket': issues_list},
-        readable_output=tableToMarkdown(name=f'Sprint Issues in board {board_id}', t=markdown_list),
-        raw_response=res
-    )
-
-
-def issues_to_sprint_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
-    issues = argToList(args.get('issues', ''))
-    sprint_id = args.get('sprint_id', '')
-    rank_before_issue = args.get('rank_before_issue', '')
-    rank_after_issue = args.get('rank_after_issue', '')
-    json_data = assign_params(
-        issues=issues,
-        rankBeforeIssue=rank_before_issue,
-        rankAfterIssue=rank_after_issue
-    )
-    client.issues_to_sprint(sprint_id=sprint_id, json_data=json_data)
-    return CommandResults(readable_output='Issues were moved to the Sprint successfully')
 # Fetch
 
 # Polling
@@ -1810,6 +1929,9 @@ def main() -> None:
         'jira-board-epic-list': board_epic_list_command,
         'jira-sprint-issue-list': sprint_issues_list_command,
         'jira-sprint-issue-move': issues_to_sprint_command,
+        'jira-epic-issue-list': epic_issues_list_command,
+        'jira-issue-link-type-get': get_issue_link_types_command,
+        'jira-issue-to-issue-link': link_issue_to_issue_command
     }
     try:
         client: JiraBaseClient
