@@ -16,7 +16,8 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-- display: The raw JSON string to use as the sample data
+- defaultvalue: "{\"name\": \"Moshe test\"}"
+  display: The raw JSON string to use as the sample data
   name: JSON
   required: true
   type: 12
