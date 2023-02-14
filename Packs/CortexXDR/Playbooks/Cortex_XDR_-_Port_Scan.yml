@@ -2449,7 +2449,7 @@ inputs:
   description: Set to true to assign only the users that are currently on shift.
   playbookInputQuery:
 outputs: []
-fromversion: 5.5.0
+fromversion: 6.0.0
 tests:
 - no test
 contentitemexportablefields:
