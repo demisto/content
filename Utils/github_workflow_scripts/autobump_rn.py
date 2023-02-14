@@ -350,10 +350,14 @@ class AllowedBumpCondition(MetadataCondition):
         return SkipReason.ALLOWED_BUMP_CONDITION.format(self.pack, previous_version, new_version)
 
     def _check(self, previous_result: Optional[ConditionResult] = None, **kwargs) -> ConditionResult:
+        # todo: maybe parse diff file (file.patch)
         branch_pack_metadata_version = Version(self.branch_metadata.get(Metadata.CURRENT_VERSION,
                                                                         self.DEFAULT_VERSION))
         base_pack_metadata_version = Version(self.pr_base_metadata.get(Metadata.CURRENT_VERSION,
                                                                        self.DEFAULT_VERSION))
+        pack_new_rn_files = [f for f in self.pr.get_files() if f.status == 'added' and RELEASE_NOTES_DIR
+                             in Path(f.filename).parts and self.pack in Path(f.filename).parts]
+        p = pack_new_rn_files[0].patch
         update_type = self.check_update_type(base_pack_metadata_version, branch_pack_metadata_version)
         if not update_type:
             return ConditionResult(should_skip=True, reason=self.generate_skip_reason(base_pack_metadata_version,
@@ -416,13 +420,14 @@ def arguments_handler():
 
 
 def autobump_release_notes(pack_id, update_type):
-    # todo: 1.
-    #  checkout branch
-    #  2. save previous rn text
+    # todo: 1. checkout branch
+    # for each pack:  save previous rn text
     # 3. merge from master accept master changes
-    # 4. bump metadata file rn
+    # for each pack:
+    # 4. bump version in metadata file rn (bump_version_number func)
     # 5. create rn file
-    # 6. commit changes - commit has build nubmer
+    # 6. paste the saved text
+    # 7. commit changes - commit has build nubmer
 
     pass
 
