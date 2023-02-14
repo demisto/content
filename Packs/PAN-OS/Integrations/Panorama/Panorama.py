@@ -3501,7 +3501,7 @@ def panorama_list_rules(xpath: str, name: str = None, filters: dict = None, quer
 
     if query:
         params["xpath"] = f'{params["xpath"]}[{query}]'
-    elif xpath_filter := build_xpath_filter(name, None ,filters):
+    elif xpath_filter := build_xpath_filter(name_match=name, filters= filters):
         params["xpath"] = f'{params["xpath"]}[{xpath_filter}]'
 
     result = http_request(
@@ -4141,9 +4141,9 @@ def prettify_applications_arr(applications_arr: Union[List[dict], dict]):
     for i in range(len(applications_arr)):
         application = applications_arr[i]
         application_characteristics_list=[]
-        for key,value in application.items():
-            if key in CHARACTERISTICS_LIST and value=='yes':
-                application_characteristics_list.append(str(key))
+        for characteristics_name,value in application.items():
+            if characteristics_name in CHARACTERISTICS_LIST and value=='yes':
+                application_characteristics_list.append(str(characteristics_name))
         pretty_application_arr.append({
             'Category': application.get('category'),
             'SubCategory': application.get('subcategory'),
@@ -4176,7 +4176,7 @@ def panorama_list_applications(args:Dict[str, str], predefined: bool) -> Union[L
     name_match = args.get('name_match')
     name_contain = args.get('name_contain')
     if name_match and name_contain:
-        raise Exception('Please specify name_match or name_contain')
+        raise Exception('Please specify only one of name_match/name_contain')
     xpath_filter = build_xpath_filter(name_match,name_contain,filters)
     demisto.debug("xpath_filter", xpath_filter)
     if predefined:  # if predefined = true, no need for device group.
@@ -4212,11 +4212,11 @@ def panorama_list_applications(args:Dict[str, str], predefined: bool) -> Union[L
     return applications
 
 
-def panorama_list_applications_command(args:Dict[str, str] ,predefined: Optional[str] = None):
+def panorama_list_applications_command(args:Dict[str, str]):
     """
     List all applications
     """
-    predefined = predefined == 'true'
+    predefined = args.get('predefined') == 'true'
     applications_arr = panorama_list_applications(args,predefined)
     applications_arr_output = prettify_applications_arr(applications_arr)
     limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT_PAGE_SIZE
@@ -11755,7 +11755,7 @@ def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] =
 
     if query:
         _xpath = f"{_xpath}/rules/entry[{query}]"
-    elif xpath_filter := build_xpath_filter(name, None ,filters):
+    elif xpath_filter := build_xpath_filter(name_match=name, filters= filters):
         _xpath = f"{_xpath}/rules/entry[{xpath_filter}]"
 
     if element:
@@ -12528,7 +12528,7 @@ def build_pbf_xpath(name, pre_post, element_to_change=None, filters: dict = None
 
     if query:
         _xpath = f"{_xpath}/rules/entry[{query}]"
-    elif xpath_filter := build_xpath_filter(name, None,filters):
+    elif xpath_filter := build_xpath_filter(name_match=name, filters= filters):
         _xpath = f"{_xpath}/rules/entry[{xpath_filter}]"
 
     if element_to_change:
@@ -13587,7 +13587,7 @@ def main(): # pragma: no cover
 
         # Application
         elif command == 'panorama-list-applications' or command == 'pan-os-list-applications':
-            panorama_list_applications_command(args,args.get('predefined'))
+            panorama_list_applications_command(args)
 
         # Test security policy match
         elif command == 'panorama-security-policy-match' or command == 'pan-os-security-policy-match':
