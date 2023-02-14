@@ -1,4 +1,3 @@
-# Final Test: 6.10
 import io
 
 import demistomock as demisto  # noqa: F401
