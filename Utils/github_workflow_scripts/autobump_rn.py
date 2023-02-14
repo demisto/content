@@ -156,7 +156,7 @@ class MetadataCondition(BaseCondition, ABC):
         hi = "hi"
         parent_sha = commits[0].parents[0].sha
         base_sha = pr.base.sha
-        if pr.base.sha not in [c for c in commits]:
+        if pr.base.sha not in log:
             print("here")
             parent_sha = commits[0].parents[0].sha
         hi = "hi"
