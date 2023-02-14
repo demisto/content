@@ -1,3 +1,4 @@
+from time import sleep
 from CommonServerPython import *
 from CommonServerUserPython import *
 import demistomock as demisto
@@ -27,7 +28,7 @@ class BloxOneTDClient(BaseClient):
             _filter = user_filter
         elif target_domain:
             _filter = f'target_domain=="{target_domain}"'
-        else: # detected_at != None
+        else:  # detected_at != None
             _filter = f'detected_at>="{detected_at}"'
 
         filter_params['_filter'] = _filter
@@ -61,10 +62,10 @@ class BloxOneTDClient(BaseClient):
 def dossier_lookup_task_output(task: Dict) -> Dict:
     params = task.get('params', {})
     return {
-        'task_id': task.get('task_id'),
-        'type': params.get('type'),
-        'target': params.get('target'),
-        'source': params.get('source')
+        'Task Id': task.get('task_id'),
+        'Type': params.get('type'),
+        'Target': params.get('target'),
+        'Source': params.get('source')
     }
 
 
@@ -79,11 +80,11 @@ def dossier_source_list_command(client: BloxOneTDClient) -> CommandResults:
 def validate_and_format_lookalike_domain_list_args(args: Dict) -> Dict:
     match len(list(filter(bool, [args.get('filter'), args.get('target_domain'), args.get('detected_at')]))):
         case 0:
-            raise ValueError("You must spesify one of the following arguments 'target_domain', 'detected_at' or 'filter'.")
+            raise ValueError("You must specify one of the following arguments 'target_domain', 'detected_at' or 'filter'.")
         case 1:
             pass
         case _:
-            raise ValueError("You can spesify one of the following arguments 'target_domain', 'detected_at' or 'filter' not more.")
+            raise ValueError("You can specify one of the following arguments 'target_domain', 'detected_at' or 'filter' not more.")
 
     if args.get('detected_at'):
         try:
@@ -110,9 +111,10 @@ def lookalike_domain_list_command(client: BloxOneTDClient, args: Dict) -> Comman
 
 
 def dossier_lookup_get_command_results(data: Dict) -> CommandResults:
-    headers_map = {'task_id': 'Task Id', 'type': 'Type', 'target': 'Target', 'source': 'Source'}
-    outputs = list(map(dossier_lookup_task_output, data.get('results', [])))
-    readable_output = tableToMarkdown(name='Lookalike Domain List', t=outputs, headers=[], headerTransform=lambda x: headers_map[x])
+    headers = ['Task Id', 'Type', 'Target', 'Source']
+    outputs = data.get('results', [])
+    readable_output_data = list(map(dossier_lookup_task_output, outputs))
+    readable_output = tableToMarkdown(name='Lookalike Domain List', t=readable_output_data, headers=headers)
     return CommandResults(
         outputs_prefix='BloxOneTD.DossierLookup',
         outputs=outputs,
@@ -133,19 +135,20 @@ def dossier_lookup_get_schedule_polling_result(args: Dict) -> CommandResults:
     )
 
     return CommandResults(
-        readable_output='Job is still running, it may take a little while...',
+        readable_output=f"Job '{args['job_id']}' is still running, it may take a little while...",
         scheduled_command=scheduled_command
     )
 
 
 def dossier_lookup_get_command(client: BloxOneTDClient, args: Dict) -> CommandResults:
     job_id = args.get('job_id')
-    if job_id is not None:
-        if client.dossier_lookup_get_is_done(job_id):
-            data = client.dossier_lookup_get_results(job_id)
-            return dossier_lookup_get_command_results(data)
-    else:
+    if job_id is None:
         job_id = client.dossier_lookup_get_create(args['indicator_type'], args['value'], sources=argToList(args.get('sources')))
+        sleep(5)
+
+    if client.dossier_lookup_get_is_done(job_id):
+        data = client.dossier_lookup_get_results(job_id)
+        return dossier_lookup_get_command_results(data)
     args['job_id'] = job_id
     return dossier_lookup_get_schedule_polling_result(args)
 
@@ -182,7 +185,11 @@ def main():
         else:
             raise NotImplementedError(f'command {command} is not implemented.')
         return_results(results)
-    except SyntaxError as e:
+    except Exception as e:
+        if hasattr(e, 'res') and e.res.status_code == 401:
+            # TODO: text edit
+            return_error('authentication error')
+
         return_error(f'an error occurred while executing command {command}\nerror: {e}', e)
 
 

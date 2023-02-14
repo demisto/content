@@ -17,14 +17,14 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: 'Infoblox BloxOne Threat Defense'
+description: 'BloxOne Threat Defense is a hybrid cybersecurity solution that leverages DNS as the first line of defense to detect and block cyber threats.'
 display: 'Infoblox BloxOne Threat Defense'
 name: InfobloxBloxOneThreatDefense
 script:
   commands:
   - arguments:
     - default: false
-      description: 'The type of indcator to search by. Available values : host, ip, url, hash, email'
+      description: 'The type of indcator to search by. Available values: host, ip, url, hash, email.'
       isArray: false
       name: indicator_type
       required: true
@@ -43,7 +43,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The sources to query. Multiple sources can be specified, if no source is specified, the call will search on all available sources. (you can see the list of the available sources by runing *bloxone-td-dossier-source-list*)'
+      description: 'The sources to query. Multiple sources can be specified, if no source is specified, the call will search on all available sources. (you can see the list of the available sources by runing **bloxone-td-dossier-source-list**).'
       isArray: true
       name: sources
       required: false
@@ -62,7 +62,7 @@ script:
       required: false
       secret: false
       defaultValue: 600
-    - description: 'used for polling'
+    - description: 'used for polling.'
       name: job_id
     deprecated: false
     description: 'The Dossier Lookup API returns detailed information on the specified indicator from the requested sources.'
@@ -83,10 +83,10 @@ script:
       description: 'The indicator type.'
       type: String
   - name: bloxone-td-dossier-source-list
-    description: 'Get available Dossier sources'
+    description: 'Get available Dossier sources.'
     outputs:
     - contextPath: BloxOneTD.DossierSource
-      description: 'Available Dossier sources'
+      description: 'Available Dossier sources.'
       type: String
   - arguments:
     - default: false
@@ -102,7 +102,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filter by detected at greater then or equal to.'
+      description: Filter by detected at greater then or equal to. you can use ISO format (e.g. '2023-02-14T00:11:22Z') or use a relative time (e.g. "3 days").
       isArray: false
       name: detected_at
       required: false
@@ -121,7 +121,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lookalike Domain Lists.'
+    description: 'Get Lookalike Domain Lists.'
     execution: false
     polling: true
     name: bloxone-td-lookalike-domain-list
