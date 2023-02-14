@@ -96,9 +96,9 @@ class SyslogHandlerTLS(logging.Handler):
             self.socket.connect((self.address, self.port))
         except OSError as exc:
             err = exc
-            if ssl_sock is not None:
+            if ssl_sock:
                 ssl_sock.close()
-            if err is not None:
+            if err:
                 raise err
 
     def emit(self, record):
@@ -116,7 +116,7 @@ class SyslogHandlerTLS(logging.Handler):
 
             # Calculate the priority value
             priority = (self.facility << 3) | self.level
-            # Construct the syslog message.
+            # Construct the syslog message
             syslog_message = f'<{priority}> {msg}\n'.encode('utf-8')
 
             # Connect to the syslog server
@@ -238,7 +238,7 @@ def init_manager(params: dict) -> SyslogManager:
         raise DemistoException(f'Invalid listen port - {port}. Make sure your port is a number')
     if port < 0 or max_port < port:
         raise DemistoException(f'Given port: {port} is not valid and must be between 0-{max_port}')
-    if len(address) > 64:
+    if len(address) >= 64:
         address = base64.b64encode(address.encode()).decode("utf-8")
     if protocol == 'tls' and not certificate:
         raise DemistoException('A certificate must be provided in TLS protocol.')
