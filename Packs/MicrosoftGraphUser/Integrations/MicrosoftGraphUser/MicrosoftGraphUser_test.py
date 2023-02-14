@@ -129,7 +129,7 @@ def test_suppress_errors(mocker):
          'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
          'expected_result': '#### User -> 123456789 does not exist'},
         {'fun': update_user_command, 'mock_fun': 'update_user',
-         'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
+         'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789', 'updated_fields': 'test1=test2'},
          'expected_result': '#### User -> 123456789 does not exist'},
         {'fun': change_password_user_command, 'mock_fun': 'password_change_user',
          'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
