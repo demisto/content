@@ -516,6 +516,7 @@ test-upload-flow:
     -   echo "No upload-flow related files were modified, skipping upload test"
     -   exit 0
     - fi
+    - echo "Found modified files that should be tested in upload-flow"
     - section_end "Checks Whether to Trigger a Test Upload"
 
     - section_start "Create Testing Branch"
