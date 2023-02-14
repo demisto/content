@@ -5,7 +5,7 @@ filter
     outcome_result = json_extract_scalar(outcome, "$.result")
 | alter
     xdm.target.user.identifier = json_extract_scalar(actor, "$.id"),
-    xdm.target.user.groups = arraycreate(coalesce(json_extract_scalar(actor, "$.type"), "")),
+    xdm.target.user.user_type = json_extract_scalar(actor, "$.type"),
     xdm.target.user.username = json_extract_scalar(actor, "$.alternateId"),
     xdm.target.cloud.zone = json_extract_scalar(client, "$.zone"),
     xdm.source.ipv4 = json_extract_scalar(client,"$.ipAddress"),
