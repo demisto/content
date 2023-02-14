@@ -61,7 +61,7 @@ tasks:
             args:
               chars:
                 value:
-                  simple: '["]'
+                  simple: '[\"]'
       sort_by_creation_time:
         simple: desc
     separatecontext: false
@@ -248,7 +248,7 @@ tasks:
                   args:
                     chars:
                       value:
-                        simple: '["]'
+                        simple: '[\"]'
             iscontext: true
           right:
             value:
