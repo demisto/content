@@ -1578,7 +1578,7 @@ def test_get_mapping_fields_command():
     result = get_mapping_fields_command()
     assert result.scheme_types_mappings[0].type_name == 'Microsoft Sentinel Incident'
     assert result.scheme_types_mappings[0].fields.keys() == {'description', 'status', 'lastActivityTimeUtc',
-                                                             'classificationReason', 'labels', 'classificationComment',
+                                                             'classificationReason', 'tags', 'classificationComment',
                                                              'severity', 'firstActivityTimeUtc', 'classification', 'title',
                                                              'etag'}
 
