@@ -148,7 +148,12 @@ class MetadataCondition(BaseCondition, ABC):
         origin_base_pack_metadata = load_json(metadata_path)
         with checkout(git_repo, pr.head.ref):
             branch_pack_metadata = load_json(metadata_path)
+            log = git_repo.git.log()
         # todo: check if works
+        commits = pr.commits
+        commits = pr.get_commits()
+        branches = git_repo.branches
+        hi = "hi"
         with checkout(git_repo, pr.base.sha):
             pr_base_metadata = load_json(metadata_path)
         return origin_base_pack_metadata, branch_pack_metadata, pr_base_metadata
