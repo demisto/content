@@ -627,8 +627,8 @@ tasks:
         readonly: false
       title: Threat Campaign
       description: |-
-        Based on what we have found, this malicious indicator is also associated with a well-known campaign (based on a threat report we got from our amazing Unit42).
-        And now, let's dive into other indicators.
+        Based on what we have found, this malicious indicator is also associated with a well-known campaign as indicated in a threat report from Unit-42.
+        And now, let’s dive into other indicators.
 
         ![myfile](https://raw.githubusercontent.com/demisto/content/e89a247573e2d3927223be2ab2dc143cc1a40469/Packs/ctf01/doc_files/spinning-vortex.gif)
       sender: ""
