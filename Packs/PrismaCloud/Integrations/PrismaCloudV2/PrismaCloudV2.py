@@ -617,6 +617,293 @@ def alert_to_incident_context(alert: Dict[str, Any]):
     return incident_context
 
 
+''' V1 DEPRECATED COMMAND FUNCTIONS to support backwards compatibility '''
+
+
+def get_v1_filters(args):
+    filters = []
+    args_name_to_filter_name = {
+        'alert-status': 'alert.status',
+        'policy-name': 'policy.name',
+        'policy-label': 'policy.label',
+        'policy-compliance-standard': 'policy.complianceStandard',
+        'cloud-account': 'cloud.account',
+        'cloud-account-id': 'cloud.accountId',
+        'cloud-region': 'cloud.region',
+        'alert-rule-name': 'alertRule.name',
+        'resource-id': 'resource.id',
+        'resource-name': 'resource.name',
+        'resource-type': 'resource.type',
+        'alert-id': 'alert.id',
+        'cloud-type': 'cloud.type',
+        'policy-type': 'policy.type',
+        'policy-severity': 'policy.severity',
+    }
+    for arg_name, filter_name in args_name_to_filter_name.items():
+        if arg_value := args.get(arg_name):
+            filters.append(f'{filter_name}={arg_value}')
+
+    return filters
+
+
+# def convert_unix_to_date(timestamp):
+#     """
+#     Convert milliseconds since epoch to date formatted MM/DD/YYYY HH:MI:SS
+#     """
+#     if timestamp:
+#         return timestamp_to_datestring(timestamp, '%m/%d/%Y %H:%M:%S')
+#     return 'N/A'
+
+
+def alert_to_v1_context(alert, args):
+    """
+    Transform a single alert to context struct
+    """
+    ec = {
+        'ID': alert.get('id'),
+        'Status': alert.get('status'),
+        'AlertTime': alert.get('alertTime'),
+        'Policy': {
+            'ID': demisto.get(alert, 'policy.policyId'),
+            'Name': demisto.get(alert, 'policy.name'),
+            'Type': demisto.get(alert, 'policy.policyType'),
+            'Severity': demisto.get(alert, 'policy.severity'),
+            'Remediable': demisto.get(alert, 'policy.remediable')
+        },
+        'Resource': {
+            'ID': demisto.get(alert, 'resource.id'),
+            'Name': demisto.get(alert, 'resource.name'),
+            'Account': demisto.get(alert, 'resource.account'),
+            'AccountID': demisto.get(alert, 'resource.accountId')
+        }
+    }
+    if 'resource_keys' in args:
+        # if resource_keys argument was given, include those items from resource.data
+        extra_keys = demisto.getArg('resource_keys')
+        resource_data = {}
+        keys = extra_keys.split(',')
+        for key in keys:
+            resource_data[key] = demisto.get(alert, f'resource.data.{key}')
+
+        ec['Resource']['Data'] = resource_data
+
+    if alert.get('alertRules'):
+        ec['AlertRules'] = [alert_rule.get('name') for alert_rule in alert.get('alertRules')]
+
+    return ec
+
+
+def format_v1_response(response):
+    if response and isinstance(response, dict):
+        response = {pascalToSpace(key).replace(" ", ""): format_v1_response(value) for key, value in response.items()}
+    elif response and isinstance(response, list):
+        response = [format_v1_response(item) for item in response]
+    return response
+
+
+def alert_search_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
+        Union[CommandResults, List[Union[CommandResults, str]], Dict]:
+    new_args = {
+        'time_range_unit': args.get('time-range-unit'),
+        'time_range_value': args.get('time-range-value'),
+        'time_range_date_from': args.get('time-range-date-from'),
+        'time_range_date_to': args.get('time-range-date-to'),
+        'filters': get_v1_filters(args),
+        'limit': args.get('limit', DEFAULT_LIMIT),
+        'detailed': 'true'
+    }
+
+    command_results = alert_search_command(client, new_args)
+    if return_v1_output:
+        response = command_results.raw_response
+
+        context_path = 'Redlock.Alert(val.ID === obj.ID)'
+        context: dict = {context_path: []}
+        for alert in response:
+            context[context_path].append(alert_to_v1_context(alert, args))
+        context['Redlock.Metadata.CountOfAlerts'] = len(response)
+
+        command_results = command_results.to_context()
+        command_results['EntryContext'].update(context)
+
+    if args.get('risk-grade'):
+        return ['In the new API version of Prisma Cloud, "risk-grade" argument is not supported '
+                'and therefore removed from the available command arguments.', command_results]
+
+    return command_results
+
+
+def alert_get_details_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> Union[CommandResults, Dict]:
+    new_args = {
+        'alert_id': args.get('alert-id')
+    }
+
+    command_results = alert_get_details_command(client, new_args)
+    if return_v1_output:
+        response = command_results.raw_response
+        command_results = command_results.to_context()
+        command_results['EntryContext'].update({'Redlock.Alert(val.ID === obj.ID)': alert_to_v1_context(response, args)})
+    return command_results
+
+
+def alert_dismiss_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
+        Union[CommandResults, List[Union[CommandResults, str]], Dict]:
+    new_args = {
+        'alert_ids': args.get('alert-id'),
+        'policy_ids': args.get('policy-id'),
+        'dismissal_note': args.get('dismissal-note'),
+        'snooze_value': args.get('snooze-value'),
+        'snooze_unit': args.get('snooze-unit'),
+        'time_range_unit': args.get('time-range-unit'),
+        'time_range_value': args.get('time-range-value'),
+        'time_range_date_from': args.get('time-range-date-from'),
+        'time_range_date_to': args.get('time-range-date-to'),
+        'filters': get_v1_filters(args)
+    }
+
+    command_results = alert_dismiss_command(client, new_args)
+    if return_v1_output and args.get('alert-id'):
+        command_results = command_results.to_context()
+        command_results['EntryContext'].update({'Redlock.DismissedAlert.ID': args.get('alert-id')})
+
+    if args.get('risk-grade'):
+        return ['In the new API version of Prisma Cloud, "risk-grade" argument is not supported '
+                'and therefore removed from the available command arguments.', command_results]
+
+    return command_results
+
+
+def alert_reopen_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
+        Union[CommandResults, List[Union[CommandResults, str]], Dict]:
+    new_args = {
+        'alert_ids': args.get('alert-id'),
+        'policy_ids': args.get('policy-id'),
+        'time_range_unit': args.get('time-range-unit'),
+        'time_range_value': args.get('time-range-value'),
+        'time_range_date_from': args.get('time-range-date-from'),
+        'time_range_date_to': args.get('time-range-date-to'),
+        'filters': get_v1_filters(args)
+    }
+
+    command_results = alert_reopen_command(client, new_args)
+    if return_v1_output and args.get('alert-id'):
+        command_results = command_results.to_context()
+        command_results['EntryContext'].update({'Redlock.ReopenedAlert.ID': args.get('alert-id')})
+
+    if args.get('risk-grade'):
+        return ['In the new API version of Prisma Cloud, "risk-grade" argument is not supported '
+                'and therefore removed from the available command arguments.', command_results]
+
+    return command_results
+
+
+def remediation_command_list_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
+        Union[CommandResults, Dict]:
+    new_args = {
+        'alert_ids': args.get('alert-id'),
+        'all_results': 'true'
+    }
+
+    command_results = remediation_command_list_command(client, new_args)
+    if return_v1_output:
+        response = command_results.raw_response
+
+        context = []
+        for alert in response:
+            details = {
+                'ID': alert.get('alertId'),
+                'Remediation': {
+                    'CLI': alert.get('CLIScript'),
+                    'Description': alert.get('description')
+                }
+            }
+            context.append(details)
+
+        command_results = command_results.to_context()
+        command_results['EntryContext'].update({'Redlock.Alert(val.ID == obj.ID)': context})
+    return command_results
+
+
+def rql_config_search_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> Union[CommandResults, Dict]:
+    query = f'{args.get("rql")} limit search records to {args.get("limit", "1")}'
+    new_args = {
+        'query': query,
+        'limit': args.get('limit', '1'),
+    }
+
+    command_results = config_search_command(client, new_args)
+    if return_v1_output:
+        rql_data = {'Query': query, 'Response': format_v1_response(command_results.raw_response)}
+
+        command_results = command_results.to_context()
+        command_results['EntryContext'].update({'Redlock.RQL(val.Query === obj.Query)': rql_data})
+    return command_results
+
+
+def config_search_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> Union[CommandResults, Dict]:
+    new_args = {
+        'query': args.get('query'),
+        'limit': args.get('limit', '100'),
+        'time_range_unit': args.get('time-range-unit'),
+        'time_range_value': args.get('time-range-value'),
+        'time_range_date_from': args.get('time-range-date-from'),
+        'time_range_date_to': args.get('time-range-date-to'),
+    }
+
+    command_results = config_search_command(client, new_args)
+    if return_v1_output:
+        response = command_results.raw_response
+        command_results = command_results.to_context()
+        command_results['EntryContext'].update({'Redlock.Asset(val.id == obj.id)': response})
+    return command_results
+
+
+def event_search_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> Union[CommandResults, Dict]:
+    new_args = {
+        'query': args.get('query'),
+        'limit': args.get('limit', '100'),
+        'time_range_unit': args.get('time-range-unit'),
+        'time_range_value': args.get('time-range-value'),
+        'time_range_date_from': args.get('time-range-date-from'),
+        'time_range_date_to': args.get('time-range-date-to'),
+    }
+
+    command_results = event_search_command(client, new_args)
+    if return_v1_output:
+        response = command_results.raw_response
+        command_results = command_results.to_context()
+        command_results['EntryContext'].update({'Redlock.Event(val.id == obj.id)': response})
+    return command_results
+
+
+def network_search_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> Union[CommandResults, Dict]:
+    new_args = {
+        'query': args.get('query'),
+        'cloud_type': args.get('cloud-type'),
+        'time_range_unit': args.get('time-range-unit'),
+        'time_range_value': args.get('time-range-value'),
+        'time_range_date_from': args.get('time-range-date-from'),
+        'time_range_date_to': args.get('time-range-date-to'),
+    }
+
+    command_results = network_search_command(client, new_args)
+    if return_v1_output:
+        response = command_results.raw_response
+        command_results = command_results.to_context()
+        command_results['EntryContext'].update({
+            'Redlock.Network.Node(val.id == obj.id)': response.get('nodes', []),
+            'Redlock.Network.Connection(val.id == obj.from)': response.get('connections', [])
+        })
+    return command_results
+
+
+def alert_filter_list_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
+        Union[CommandResults, Dict]:
+    command_results = alert_filter_list_command(client)
+
+    return command_results
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -889,7 +1176,7 @@ def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
                'insertTs', 'regionId', 'resourceType', 'rrn']
     command_results = CommandResults(
         outputs_prefix='PrismaCloud.Config',
-        outputs_key_field='id',
+        outputs_key_field='assetId',
         readable_output=f'Showing {len(response_items)} of {response.get("data", {}).get("totalRows")} results:\n'
                         + tableToMarkdown('Configuration Details:',
                                           response_items,
@@ -1292,6 +1579,8 @@ def main() -> None:
     username = params['credentials']['identifier']
     password = params['credentials']['password']
 
+    return_v1_output = params.get('output_old_format', False)
+
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
@@ -1326,10 +1615,25 @@ def main() -> None:
             'prisma-cloud-permission-list': permission_list_command,
         }
 
+        commands_v1 = {
+            'redlock-search-alerts': alert_search_v1_command,
+            'redlock-get-alert-details': alert_get_details_v1_command,
+            'redlock-dismiss-alerts': alert_dismiss_v1_command,
+            'redlock-reopen-alerts': alert_reopen_v1_command,
+            'redlock-get-remediation-details': remediation_command_list_v1_command,
+            'redlock-get-rql-response': rql_config_search_v1_command,
+            'redlock-search-config': config_search_v1_command,
+            'redlock-search-event': event_search_v1_command,
+            'redlock-search-network': network_search_v1_command,
+            'redlock-list-alert-filters': alert_filter_list_v1_command,
+        }
+
         if command in commands_without_args:
             return_results(commands_without_args[command](client))
         elif command in commands_with_args:
             return_results(commands_with_args[command](client, args))
+        elif command in commands_v1:
+            return_results(commands_v1[command](client, args, return_v1_output))
         elif command == 'test-module':
             return_results(test_module(client, params))
         elif command == 'fetch-incidents':
