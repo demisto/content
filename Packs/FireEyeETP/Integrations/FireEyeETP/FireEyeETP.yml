@@ -32,7 +32,8 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- display: Messages status. All messages with the status specified will be imported as incidents.
+- display: Message statuses to import
+  additionalinfo: All messages with a status specified here will be imported as incidents.
   name: message_status
   defaultvalue: delivered (retroactive)
   type: 16
