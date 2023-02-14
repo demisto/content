@@ -45,6 +45,8 @@ Test Collection Unit-Test cases
 - `S` has 2 packs with support level == xsoar, each pack has its own integration and both of these integrations have
       "myOtherTestPlaybook" TPB that is not skipped in conf.json. The conf.json contains 2 records with the same
       playbook ID "myOtherTestPlaybook".
+- `T` Reputation test collection test. one indicator type of reputation, and 3 test playbooks defined in the conf.json file
+      under the "reputation_tests" list. Should collect all 3 tests.
 """
 
 
@@ -104,6 +106,7 @@ class MockerCases:
     Q = CollectTestsMocker(TEST_DATA / 'Q')
     R = CollectTestsMocker(TEST_DATA / 'R')
     S = CollectTestsMocker(TEST_DATA / 'S')
+    T = CollectTestsMocker(TEST_DATA / 'T')
     limited_nightly_packs = CollectTestsMocker(TEST_DATA / 'limited_nightly_packs')
     non_api_test = CollectTestsMocker(TEST_DATA / 'non_api_test')
     script_non_api_test = CollectTestsMocker(TEST_DATA / 'script_non_api_test')
@@ -421,6 +424,11 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
         (MockerCases.S, ('myOtherTestPlaybook',), ('myXSOAROnlyPack', 'myXSOAROnlyPack2',), None, None,
          XSOAR_BRANCH_ARGS, ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',), (),
          ('myXSOAROnlyPack',)),
+
+        # (35) see T definition at the top of this file - reputation indicator type test
+        (MockerCases.T, ("FormattingPerformance - Test", "Email extraction test", "Domain extraction test"),
+         ('Base', 'DeveloperTools', 'CommonTypes'), None, None, XSOAR_BRANCH_ARGS,
+         ('Packs/CommonTypes/IndicatorTypes/reputation-domain.json',), (), ('CommonTypes',)),
     )
 )
 def test_branch(
