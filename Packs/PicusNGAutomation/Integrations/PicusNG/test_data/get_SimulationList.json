@@ -1,0 +1,60 @@
+{
+  "simulations": [
+    {
+      "simulation_id": 8826,
+      "simulation_name": "cortex-test2",
+      "agent": {
+        "name": "test1",
+        "id": 2465,
+        "status": "alive",
+        "type": "Installable Agent",
+        "version": "1"
+      },
+      "template_id": 137,
+      "template_name": "APT Group Evolution Policy",
+      "last_prevention_security_score": 38,
+      "status": "COMPLETED",
+      "has_detection_analysis": false,
+      "has_last_run_detection_analysis": false
+    },
+    {
+      "simulation_id": 8660,
+      "simulation_name": "Untitled Simulation - 7",
+      "agent": {
+        "name": "test1",
+        "id": 2465,
+        "status": "alive",
+        "type": "Installable Agent",
+        "version": "1"
+      },
+      "template_id": 7444,
+      "template_name": "CISA Alert AA22-320A - Iranian APT Actors Targeting US Federal Network",
+      "last_prevention_security_score": 50,
+      "status": "COMPLETED",
+      "has_detection_analysis": false,
+      "has_last_run_detection_analysis": false
+    },
+    {
+      "simulation_id": 8633,
+      "simulation_name": "cortex-mitigation-test",
+      "agent": {
+        "name": "test1",
+        "id": 2465,
+        "status": "alive",
+        "type": "Installable Agent",
+        "version": "1"
+      },
+      "template_id": 7878,
+      "template_name": "test-cortex-mitigation",
+      "last_prevention_security_score": 0,
+      "status": "COMPLETED",
+      "has_detection_analysis": false,
+      "has_last_run_detection_analysis": false
+    }
+  ],
+  "pages": {
+    "total_count": 24,
+    "limit": 25,
+    "offset": 0
+  }
+}
