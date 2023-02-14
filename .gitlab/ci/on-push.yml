@@ -513,6 +513,7 @@ test-upload-flow:
     - section_start "Checks Whether to Trigger a Test Upload"
     - SHOULD_TRIGGER_TEST_UPLOAD=$(./Utils/should_trigger_test_upload.sh)
     - if [ -n "$SHOULD_TRIGGER_TEST_UPLOAD" ]; then
+    -   echo "No upload-flow related files were modified, skipping upload test"
     -   exit 0
     - fi
     - section_end "Checks Whether to Trigger a Test Upload"

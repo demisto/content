@@ -13,7 +13,6 @@ done
 SHOULD_SKIP_TEST=$(echo "${DIFF_FILES_LIST[*]}" | grep "Tests/\|Utils/")
 
 if [ -z "$SHOULD_SKIP_TEST" ] ; then
-    echo "No upload-flow related files were modified, skipping upload test"
     exit 0
 fi
 
