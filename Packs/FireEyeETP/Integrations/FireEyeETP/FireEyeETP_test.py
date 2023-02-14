@@ -1,5 +1,4 @@
 import demistomock as demisto
-import pytest
 import FireEyeETP
 
 
