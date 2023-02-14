@@ -1,3 +1,4 @@
+# pylint: disable=E9010, E9011
 import traceback
 
 import demistomock as demisto
@@ -69,6 +70,7 @@ class MicrosoftClient(BaseClient):
                  token_retrieval_url: str = '{endpoint}/{tenant_id}/oauth2/v2.0/token',
                  app_name: str = '',
                  refresh_token: str = '',
+                 refresh_token_param: Optional[str] = '',
                  auth_code: str = '',
                  scope: str = '{graph_endpoint}/.default',
                  grant_type: str = CLIENT_CREDENTIALS,
@@ -95,6 +97,8 @@ class MicrosoftClient(BaseClient):
             auth_id: If self deployed it's the client id, otherwise (oproxy) it's the auth id and may also
             contain the token url
             enc_key: If self deployed it's the client secret, otherwise (oproxy) it's the encryption key
+            refresh_token: The current used refresh token.
+            refresh_token_param: The refresh token from the integration's parameters (i.e instance configuration).
             scope: The scope of the application (only if self deployed)
             resource: The resource of the application (only if self deployed)
             multi_resource: Where or not module uses a multiple resources (self-deployed, auth_code grant type only)
@@ -126,6 +130,7 @@ class MicrosoftClient(BaseClient):
             self.enc_key = enc_key
             self.tenant_id = tenant_id
             self.refresh_token = refresh_token
+            self.refresh_token_param = refresh_token_param
 
         else:
             self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id,
@@ -329,18 +334,46 @@ class MicrosoftClient(BaseClient):
 
         return access_token
 
-    def _oproxy_authorize(self, resource: str = '', scope: Optional[str] = None) -> Tuple[str, int, str]:
+    def _raise_authentication_error(self, oproxy_response: requests.Response):
         """
-        Gets a token by authorizing with oproxy.
+        Raises an exception for authentication error with the Oproxy server.
         Args:
+            oproxy_response: Raw response from the Oproxy server to parse.
+        """
+        msg = 'Error in authentication. Try checking the credentials you entered.'
+        try:
+            demisto.info('Authentication failure from server: {} {} {}'.format(
+                oproxy_response.status_code, oproxy_response.reason, oproxy_response.text))
+            err_response = oproxy_response.json()
+            server_msg = err_response.get('message')
+            if not server_msg:
+                title = err_response.get('title')
+                detail = err_response.get('detail')
+                if title:
+                    server_msg = f'{title}. {detail}'
+                elif detail:
+                    server_msg = detail
+            if server_msg:
+                msg += ' Server message: {}'.format(server_msg)
+        except Exception as ex:
+            demisto.error('Failed parsing error response - Exception: {}'.format(ex))
+        raise Exception(msg)
+
+    def _oproxy_authorize_build_request(self, headers: Dict[str, str], content: str,
+                                        scope: Optional[str] = None, resource: str = ''
+                                        ) -> requests.Response:
+        """
+        Build the Post request sent to the Oproxy server.
+        Args:
+            headers: The headers of the request.
+            content: The content for the request (usually contains the refresh token).
             scope: A scope to add to the request. Do not use it.
             resource: Resource to get.
-        Returns:
-            tuple: An access token, its expiry and refresh token.
+
+        Returns: The response from the Oproxy server.
+
         """
-        content = self.refresh_token or self.tenant_id
-        headers = self._add_info_headers()
-        oproxy_response = requests.post(
+        return requests.post(
             self.token_retrieval_url,
             headers=headers,
             json={
@@ -353,25 +386,44 @@ class MicrosoftClient(BaseClient):
             verify=self.verify
         )
 
+    def _oproxy_authorize(self, resource: str = '', scope: Optional[str] = None) -> Tuple[str, int, str]:
+        """
+        Gets a token by authorizing with oproxy.
+        Args:
+            scope: A scope to add to the request. Do not use it.
+            resource: Resource to get.
+        Returns:
+            tuple: An access token, its expiry and refresh token.
+        """
+        content = self.refresh_token or self.tenant_id
+        headers = self._add_info_headers()
+        oproxy_response = self._oproxy_authorize_build_request(headers, content, scope, resource)
+
         if not oproxy_response.ok:
-            msg = 'Error in authentication. Try checking the credentials you entered.'
-            try:
-                demisto.info('Authentication failure from server: {} {} {}'.format(
-                    oproxy_response.status_code, oproxy_response.reason, oproxy_response.text))
-                err_response = oproxy_response.json()
-                server_msg = err_response.get('message')
-                if not server_msg:
-                    title = err_response.get('title')
-                    detail = err_response.get('detail')
-                    if title:
-                        server_msg = f'{title}. {detail}'
-                    elif detail:
-                        server_msg = detail
-                if server_msg:
-                    msg += ' Server message: {}'.format(server_msg)
-            except Exception as ex:
-                demisto.error('Failed parsing error response - Exception: {}'.format(ex))
-            raise Exception(msg)
+            # Try to send request to the Oproxy server with the refresh token from the integration parameters
+            # (instance configuration).
+            # Relevant for cases where the user re-generated his credentials therefore the refresh token was updated.
+            if self.refresh_token_param:
+                demisto.error('Error in authentication: Oproxy server returned error, perform a second attempt'
+                              ' authorizing with the Oproxy, this time using the refresh token from the integration'
+                              ' parameters (instance configuration).')
+                content = self.refresh_token_param
+                oproxy_second_try_response = self._oproxy_authorize_build_request(headers, content, scope, resource)
+
+                if not oproxy_second_try_response.ok:
+                    demisto.error('Authentication failure from server (second attempt - using refresh token from the'
+                                  ' integration parameters: {} {} {}'.format(oproxy_second_try_response.status_code,
+                                                                             oproxy_second_try_response.reason,
+                                                                             oproxy_second_try_response.text))
+                    self._raise_authentication_error(oproxy_response)
+
+                else:  # Second try succeeded
+                    oproxy_response = oproxy_second_try_response
+
+            else:  # no refresh token for a second auth try
+                self._raise_authentication_error(oproxy_response)
+
+        # Oproxy authentication succeeded
         try:
             gcloud_function_exec_id = oproxy_response.headers.get('Function-Execution-Id')
             demisto.info(f'Google Cloud Function Execution ID: {gcloud_function_exec_id}')
