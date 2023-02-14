@@ -641,7 +641,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def close_in_ms(delta: Dict[str, Any]) -> bool:
+def close_incident_in_remote(delta: Dict[str, Any]) -> bool:
     """
     Closing in the remote system should happen only when both:
         1. The user asked for it
@@ -662,7 +662,8 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
         incident_id (str): the incident ID
         data (Dict[str, Any]): all the data of the incident
         delta (Dict[str, Any]): the delta of the changes in the incident's data
-        close_ticket (bool, optional): whether to close the ticket or not (defined by the close_in_ms(delta)). Defaults to False.
+        close_ticket (bool, optional): whether to close the ticket or not (defined by the close_incident_in_remote(delta)).
+                                       Defaults to False.
 
     Returns:
         Dict[str, Any]: the response of the update incident request
@@ -699,14 +700,14 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
 def update_remote_incident(client: AzureSentinelClient, data: Dict[str, Any], delta: Dict[str, Any],
                            incident_status: IncidentStatus, incident_id: str) -> str:
     if incident_status == IncidentStatus.DONE:
-        if close_in_ms(delta):
+        if close_incident_in_remote(delta):
             demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
             return str(update_incident_request(client, incident_id, data, delta, close_ticket=True))
         elif delta.keys() <= {'classification', 'classificationComment'}:
             demisto.debug(f'Incident with remote ID {incident_id} is closed in XSOAR, '
                           'but the closde ticket parameter is not set.')
             return ''
-        else:  # The delta contains fields that are not related to closing the incident and close_in_ms(delta) is False
+        else:  # The delta contains fields that are not related to closing the incident and close_incident_in_remote() is False
             demisto.debug(f'Updating incident with remote ID {incident_id} in remote system (but not closing it).')
             return str(update_incident_request(client, incident_id, data, delta))
 
@@ -729,7 +730,7 @@ def update_remote_system_command(client: AzureSentinelClient, args: Dict[str, An
     data = parsed_args.data
     remote_incident_id = parsed_args.remote_incident_id
     demisto.debug(f'Got the following data {data}, and delta {delta}.')
-    if delta:
+    if parsed_args.incident_changed and delta:
         demisto.debug(f'Got the following delta keys {list(delta.keys())}.')
         try:
             if result := update_remote_incident(

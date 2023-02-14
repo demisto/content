@@ -16,8 +16,8 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command, \
     list_threat_indicator_command, NEXTLINK_DESCRIPTION, process_incidents, fetch_incidents, fetch_incidents_additional_info, \
     get_modified_remote_data_command, get_remote_data_command, get_remote_incident_data, get_mapping_fields_command, \
-    update_remote_system_command, update_remote_incident, close_in_ms, update_incident_request, set_xsoar_incident_entries, \
-    build_threat_indicator_data, DEFAULT_SOURCE
+    update_remote_system_command, update_remote_incident, close_incident_in_remote, update_incident_request, \
+    set_xsoar_incident_entries, build_threat_indicator_data, DEFAULT_SOURCE
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -1604,7 +1604,7 @@ def test_update_remote_system_command(mocker):
     assert result == 'incident-1'
 
 
-@pytest.mark.parametrize("incident_status, close_in_ms, delta, expected_update_call", [
+@pytest.mark.parametrize("incident_status, close_incident_in_remote, delta, expected_update_call", [
     (IncidentStatus.DONE, True, {}, True),
     (IncidentStatus.DONE, False, {}, False),  # delta is empty
     (IncidentStatus.DONE, False, {'classification': 'FalsePositive'}, False),  # delta have only closing fields
@@ -1613,17 +1613,17 @@ def test_update_remote_system_command(mocker):
     (IncidentStatus.ACTIVE, False, {}, True),
     (IncidentStatus.PENDING, True, {}, False),
 ])
-def test_update_remote_incident(mocker, incident_status, close_in_ms, delta, expected_update_call):
+def test_update_remote_incident(mocker, incident_status, close_incident_in_remote, delta, expected_update_call):
     """
     Given
         - incident status
     When
         - running update_remote_incident
     Then
-        - ensure the function call only when the incident status is DONE and close_in_ms is True
+        - ensure the function call only when the incident status is DONE and close_incident_in_remote is True
           or when the incident status is ACTIVE
     """
-    mocker.patch('AzureSentinel.close_in_ms', return_value=close_in_ms)
+    mocker.patch('AzureSentinel.close_incident_in_remote', return_value=close_incident_in_remote)
     mock_update_status = mocker.patch('AzureSentinel.update_incident_request')
     update_remote_incident(mock_client(), {}, delta, incident_status, 'incident-1')
     assert mock_update_status.called == expected_update_call
@@ -1635,7 +1635,7 @@ def test_update_remote_incident(mocker, incident_status, close_in_ms, delta, exp
     ({}, True, False),
     ({}, False, False)
 ])
-def test_close_in_ms(mocker, delta, close_ticket_param, to_close):
+def test_close_incident_in_remote(mocker, delta, close_ticket_param, to_close):
     """
     Given
         - one of the close parameters
@@ -1645,7 +1645,7 @@ def test_close_in_ms(mocker, delta, close_ticket_param, to_close):
         - returns true if the incident was closed in XSOAR and the close_ticket parameter was set to true
     """
     mocker.patch.object(demisto, 'params', return_value={'close_ticket': close_ticket_param})
-    assert close_in_ms(delta) == to_close
+    assert close_incident_in_remote(delta) == to_close
 
 
 @pytest.mark.parametrize("data, delta, mock_response, close_ticket", [
