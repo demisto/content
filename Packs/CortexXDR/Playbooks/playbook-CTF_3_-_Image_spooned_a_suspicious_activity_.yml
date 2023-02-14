@@ -1,0 +1,685 @@
+id: cf81ecda-cc4f-4fc9-8e4c-5d9eb982d247
+version: 39
+vcShouldKeepItemLegacyProdMachine: false
+name: 'CTF 3 - Image spooned a suspicious activity '
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 55f2d7f4-a8b2-457e-8bf4-e9256de21a0e
+    type: start
+    task:
+      id: 55f2d7f4-a8b2-457e-8bf4-e9256de21a0e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1f94564f-9374-4d34-8fb5-141f24d2e4e3
+    type: playbook
+    task:
+      id: 1f94564f-9374-4d34-8fb5-141f24d2e4e3
+      version: -1
+      name: Entity Enrichment - Generic v3
+      description: Enrich entities using one or more integrations.
+      playbookName: Entity Enrichment - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      CVE:
+        complex:
+          root: CVE
+          accessor: ID
+      Domain:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "False"
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 333f85e0-ed76-4131-8ec8-ff26551bab91
+    type: playbook
+    task:
+      id: 333f85e0-ed76-4131-8ec8-ff26551bab91
+      version: -1
+      name: Dedup - Generic v4
+      description: "This playbook identifies duplicate incidents using the Cortex
+        XSOAR machine learning method (script).\nIn this playbook, you can choose
+        fields and/or indicators to be compared against other incidents in the Cortex
+        XSOAR database. \n\nNote: To identify similar incidents you must *must* properly
+        define the playbook inputs. "
+      playbookName: Dedup - Generic v4
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      closeReason:
+        simple: Closed by Dedup Playbook within inc ${incident.id}
+      fromDate:
+        simple: 1 months ago
+      handleSimilar:
+        simple: Link
+      limit:
+        simple: "200"
+      method:
+        simple: Fields and Indicators
+      minimunIncidentSimilarity:
+        simple: "0.2"
+      query:
+        simple: -status:closed -category:job
+      showIncidentSimilarityForAllFields:
+        simple: "True"
+      similarTextField:
+        simple: agnetsid,users,agentsid,CMDline,Hostnames,filenames,filepaths
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 8e2ad4b7-9bf2-464d-86d3-12f11b4c74b1
+    type: title
+    task:
+      id: 8e2ad4b7-9bf2-464d-86d3-12f11b4c74b1
+      version: -1
+      name: Dedup
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 64f89a11-fc58-4d2b-89de-ffa7e67df36e
+    type: title
+    task:
+      id: 64f89a11-fc58-4d2b-89de-ffa7e67df36e
+      version: -1
+      name: Enrichmnet
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: a2968bbd-05e9-46f3-85ac-539bf5fa8f0f
+    type: title
+    task:
+      id: a2968bbd-05e9-46f3-85ac-539bf5fa8f0f
+      version: -1
+      name: 'Calculate Severity '
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 6634b11d-6a16-422a-834d-1995e4097958
+    type: playbook
+    task:
+      id: 6634b11d-6a16-422a-834d-1995e4097958
+      version: -1
+      name: Calculate Severity - Generic v2
+      description: |-
+        Calculate and assign the incident severity based on the highest returned severity level from the following calculations:
+
+        - DBotScores of indicators
+        - Critical assets
+        - Email authenticity
+        - Current incident severity
+        - Microsoft Headers
+      playbookName: Calculate Severity - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      Account:
+        complex:
+          root: Account
+          transformers:
+          - operator: uniq
+      CriticalEndpoints:
+        simple: admin
+      CriticalGroups:
+        simple: admins,administrators
+      CriticalUsers:
+        simple: admin,administrator
+      DBotScore:
+        complex:
+          root: DBotScore
+      EmailAuthenticityCheck:
+        complex:
+          root: Email
+          accessor: AuthenticityCheck
+          transformers:
+          - operator: uniq
+      Endpoint:
+        complex:
+          root: Endpoint
+          transformers:
+          - operator: uniq
+      MicrosoftHeadersSeverityCheck:
+        simple: ${Email.MicrosoftHeadersSeverityCheck}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: e72c7841-588e-4bf8-8ea3-457462b666fa
+    type: title
+    task:
+      id: e72c7841-588e-4bf8-8ea3-457462b666fa
+      version: -1
+      name: 'Investigation '
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: d51d1ca8-8cec-4df2-8169-b242c959dcf3
+    type: playbook
+    task:
+      id: d51d1ca8-8cec-4df2-8169-b242c959dcf3
+      version: -1
+      name: Search For Hash In Sandbox - Generic
+      description: 'This playbook searches for a specific hash in the supported sandboxes.
+        If the hash is known, the playbook provides a detailed analysis of the sandbox
+        report. Currently, supported sandboxes are Falcon Intelligence Sandbox, Wildfire
+        and Joe Sandbox. '
+      playbookName: Search For Hash In Sandbox - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      FileSha256:
+        simple: ${incident.filesha256}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: fffa1f2a-559c-4ae9-8ce2-ad5aaf5c5914
+    type: regular
+    task:
+      id: fffa1f2a-559c-4ae9-8ce2-ad5aaf5c5914
+      version: -1
+      name: Oh, snap!!! - where are all the other tasks that we need???
+      description: Seems like SecOps did that again and forgot to add all the required
+        items for us to go and check the image... Maybe running OCR can help us here?
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 2070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 13b79616-e678-4c83-86f2-a8b2296213fc
+    type: regular
+    task:
+      id: 13b79616-e678-4c83-86f2-a8b2296213fc
+      version: -1
+      name: R u Sure?
+      description: "Message from the outside...\n\n\nᗪ闩爪爪爪 セ卄闩〸 山闩丂 ﾁ闩丂七... 廾ㄖ尸\U0001F757 七卄闩〸 丫ㄖㄩ 讠\U0001D4DDᐯ\U0001F757丂セ讠Ꮆ闩セ\U0001F757ᗪ 〸卄\U0001F757 讠\U0001D4DDᗪ讠⼕闩セㄖ尺\n\n\n![my_file](https://raw.githubusercontent.com/demisto/content/7c4eb1780678929fac94695180de3537c0f56f23/Packs/ctf01/doc_files/yoda-8ball.gif)"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 2245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: d8abe179-60e4-4f0e-8c8c-517847d83785
+    type: regular
+    task:
+      id: d8abe179-60e4-4f0e-8c8c-517847d83785
+      version: -1
+      name: Soooooo who is the person behind this attack?
+      description: 'To answer this - please run the CTF #3 automation/script with
+        the provided answer'
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 2420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 22007ab8-216b-4412-803c-ccf30d7a058d
+    type: title
+    task:
+      id: 22007ab8-216b-4412-803c-ccf30d7a058d
+      version: -1
+      name: Finalizing
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 299a7cf3-8125-4780-84b7-7e0d7146e405
+    type: regular
+    task:
+      id: 299a7cf3-8125-4780-84b7-7e0d7146e405
+      version: -1
+      name: Rasterize Image -> PDF
+      description: Converts an image file to a PDF file.
+      script: '|||rasterize-image'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      EntryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 131b98dd-40ee-4390-80c8-ad72fec4d70f
+    type: regular
+    task:
+      id: 131b98dd-40ee-4390-80c8-ad72fec4d70f
+      version: -1
+      name: Cortex XDR - Retrieve File
+      description: Retrieves files from selected endpoints. You can retrieve up to
+        20 files, from no more than 10 endpoints. At least one endpoint ID and one
+        file path are necessary in order to run the command. After running this command,
+        you can use the xdr-action-status-get command with returned action_id, to
+        check the action status.
+      script: '|||xdr-file-retrieve'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 199f0920-51f9-43c1-8ff9-5b6463f3472f
+    type: regular
+    task:
+      id: 199f0920-51f9-43c1-8ff9-5b6463f3472f
+      version: -1
+      name: Rasterize PDF -> Image
+      description: Converts a PDF file to an image file.
+      tags:
+      - endpoint_image
+      script: '|||rasterize-pdf'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: InfoFile
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: InfoFile.Type
+                iscontext: true
+              right:
+                value:
+                  simple: pdf
+              ignorecase: true
+          accessor: EntryID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2465,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

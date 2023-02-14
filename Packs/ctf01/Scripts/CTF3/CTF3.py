@@ -65,14 +65,7 @@ Remember to overwrite the "secret" argument when you are re-running the task. To
 ''' %(bad_images[random.randint(0,len(bad_images)-1)])
 
 answers = {
-    "01" : ["no","no errors","nothing","none"],
-    "02" : ["ip address","ip","address"],
-    "03" : ["12","twelve"],
-    "04" : ["2017","two thousand seventeen"],
-    "05" : ["29","twenty nine"],
-    "06" : ["true","true positive"],
-    "07" : ["blocked"],
-    "08" : ["137.184.208.116"]
+    "01" : ["nikesh arora","nikesh","arora","ceo","papa nikesh"],
 
 }
 
@@ -83,10 +76,10 @@ def main():
     try:
         args = demisto.args()
         #__Error handeling when there is an empty secret or question id__
-        if (args.get("secret") == None or args.get("question_ID") == None):
+        if (args.get("secret") == None:
             return_error(f'Please specify Secret and Question ID to proceed with the challange')
 
-        if (args.get("secret").lower() in answers[args.get("question_ID")]):
+        if (args.get("secret").lower() in answers[args.get("01")]):
             return_results({
                 'ContentsFormat': EntryFormat.HTML,
                 'Type': EntryType.NOTE,
@@ -94,15 +87,11 @@ def main():
                 })
         #General Error handeling
         else:
-            #if (args.get("question_ID") ==  "03"):
-            #    return_error(f'In case the playbook is in "Quite Mode", no output will be displayed in the war-room.\n\nYou can skip this task if you want or re-run it with <none> :). ')
-           # else:
-                #return_error(f'Nope... try again!!!\nRemember to overwrite the "secret" argument when you are re-running the task :)')
-                    demisto.results({
-                        'Type': entryTypes['error'],
-                        'ContentsFormat': formats['html'],
-                        'Contents': HTML_MESSAGE_BAD,
-                    })
+                demisto.results({
+                    'Type': entryTypes['error'],
+                    'ContentsFormat': formats['html'],
+                    'Contents': HTML_MESSAGE_BAD,
+                })
 
     except Exception as exc:  # pylint: disable=W0703
         demisto.error(traceback.format_exc())  # print the traceback
