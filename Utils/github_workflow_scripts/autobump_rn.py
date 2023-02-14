@@ -116,7 +116,7 @@ class BaseCondition(ABC):
             print(f'{t.red} PR: [{self.pr.number}]. {curr_result.reason} {SKIPPING_MESSAGE}')
             return curr_result
         elif self.next_cond:
-            self.next_cond.check(curr_result)
+            return self.next_cond.check(curr_result)
         else:
             return curr_result
 
