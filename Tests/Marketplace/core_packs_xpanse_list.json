@@ -22,7 +22,7 @@
   "GoogleKeyManagementService",
   "Identity",
   "Malware",
-  "MicrosoftGraphIdentityandAccess"
+  "MicrosoftGraphIdentityandAccess",
   "MicrosoftGraphUser",
   "Nmap",
   "Rapid7_Nexpose",
