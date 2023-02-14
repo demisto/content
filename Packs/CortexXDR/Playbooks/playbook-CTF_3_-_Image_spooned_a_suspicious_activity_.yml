@@ -1,7 +1,6 @@
-id: cf81ecda-cc4f-4fc9-8e4c-5d9eb982d247
-version: 39
-vcShouldKeepItemLegacyProdMachine: false
-name: 'CTF 3 - Image spooned a suspicious activity '
+id: 'CTF 3 - Image spooned a suspicious activity'
+version: -1
+name: 'CTF 3 - Image spooned a suspicious activity'
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -139,11 +139,7 @@ tasks:
       id: 333f85e0-ed76-4131-8ec8-ff26551bab91
       version: -1
       name: Dedup - Generic v4
-      description: "This playbook identifies duplicate incidents using the Cortex
-        XSOAR machine learning method (script).\nIn this playbook, you can choose
-        fields and/or indicators to be compared against other incidents in the Cortex
-        XSOAR database. \n\nNote: To identify similar incidents you must *must* properly
-        define the playbook inputs. "
+      description: "This playbook identifies duplicate incidents using the Cortex XSOAR machine learning method (script).\nIn this playbook, you can choose fields and/or indicators to be compared against other incidents in the Cortex XSOAR database. \n\nNote: To identify similar incidents you must *must* properly define the playbook inputs. "
       playbookName: Dedup - Generic v4
       type: playbook
       iscommand: false
@@ -202,6 +198,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -232,6 +229,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -262,6 +260,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -364,6 +363,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -392,10 +392,7 @@ tasks:
       id: d51d1ca8-8cec-4df2-8169-b242c959dcf3
       version: -1
       name: Search For Hash In Sandbox - Generic
-      description: 'This playbook searches for a specific hash in the supported sandboxes.
-        If the hash is known, the playbook provides a detailed analysis of the sandbox
-        report. Currently, supported sandboxes are Falcon Intelligence Sandbox, Wildfire
-        and Joe Sandbox. '
+      description: 'This playbook searches for a specific hash in the supported sandboxes. If the hash is known, the playbook provides a detailed analysis of the sandbox report. Currently, supported sandboxes are Falcon Intelligence Sandbox, Wildfire and Joe Sandbox. '
       playbookName: Search For Hash In Sandbox - Generic
       type: playbook
       iscommand: false
@@ -435,8 +432,7 @@ tasks:
       id: fffa1f2a-559c-4ae9-8ce2-ad5aaf5c5914
       version: -1
       name: Oh, snap!!! - where are all the other tasks that we need???
-      description: Seems like SecOps did that again and forgot to add all the required
-        items for us to go and check the image... Maybe running OCR can help us here?
+      description: Seems like SecOps did that again and forgot to add all the required items for us to go and check the image... Maybe running OCR can help us here?
       type: regular
       iscommand: false
       brand: ""
@@ -498,8 +494,7 @@ tasks:
       id: d8abe179-60e4-4f0e-8c8c-517847d83785
       version: -1
       name: Soooooo who is the person behind this attack?
-      description: 'To answer this - please run the CTF #3 automation/script with
-        the provided answer'
+      description: 'To answer this - please run the CTF #3 automation/script with the provided answer'
       type: regular
       iscommand: false
       brand: ""
@@ -530,6 +525,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -592,11 +588,7 @@ tasks:
       id: 131b98dd-40ee-4390-80c8-ad72fec4d70f
       version: -1
       name: Cortex XDR - Retrieve File
-      description: Retrieves files from selected endpoints. You can retrieve up to
-        20 files, from no more than 10 endpoints. At least one endpoint ID and one
-        file path are necessary in order to run the command. After running this command,
-        you can use the xdr-action-status-get command with returned action_id, to
-        check the action status.
+      description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the xdr-action-status-get command with returned action_id, to check the action status.
       script: '|||xdr-file-retrieve'
       type: regular
       iscommand: true
@@ -683,3 +675,8 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- Test XDR Playbook
+- Test XDR Playbook retrieve file command
+fromversion: 6.8.0
+description: ''

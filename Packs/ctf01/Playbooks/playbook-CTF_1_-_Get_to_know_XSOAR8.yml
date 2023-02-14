@@ -1,6 +1,5 @@
 id: CTF 1 - Get to know XSOAR8
-version: 14
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: CTF 1 - Get to know XSOAR8
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "21"
@@ -60,13 +60,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -90,11 +90,7 @@ tasks:
         tooltip: Try to generate the report to see it's content
         readonly: false
       title: Practicing with Reports
-      description: "XSOAR reporting can be a powerful value proposition. \nReports
-        can contain widgets and be customized. \nThey can be used for a variety of
-        tasks, including things such as measurement of efficiency and teamwork. \n\nThere
-        is a flag hidden in one of the reports. Generate a report and try to find
-        it :sunglasses: . \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/status-report-status-update.gif) "
+      description: "XSOAR reporting can be a powerful value proposition. \nReports can contain widgets and be customized. \nThey can be used for a variety of tasks, including things such as measurement of efficiency and teamwork. \n\nThere is a flag hidden in one of the reports. Generate a report and try to find it :sunglasses: . \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/status-report-status-update.gif) "
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -134,13 +130,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -187,16 +183,6 @@ tasks:
       sender: Your SOC team
       expired: false
       totalanswers: 0
-    formDisplay:
-      headerbackgroundcolor: ""
-      headerfontcolor: ""
-      sender: ""
-      bodybackgroundcolor: ""
-      bodyfontcolor: ""
-      submitbuttonbackgroundcolor: ""
-      submitbuttonfontcolor: ""
-      submittext: ""
-      isexternalrtl: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -228,13 +214,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -255,15 +241,10 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: Try to check the integration's python. Oh and remember that the answer
-          isn't always on the wall.
+        tooltip: Try to check the integration's python. Oh and remember that the answer isn't always on the wall.
         readonly: false
       title: Integration Settings
-      description: "XSOAR8 uses the same ingestion systems as previous versions. Integrations
-        in each of the content packs are still the place to go! \n\nXSOAR (including
-        version 8) can support multiple instances of each integration. We’ve hidden
-        the flag in one of the already-configured integrations for you. \nSadly our
-        attempt to hide it on a deserted island failed, so we put it here instead.\n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/integration-lsf-lsf.gif) "
+      description: "XSOAR8 uses the same ingestion systems as previous versions. Integrations in each of the content packs are still the place to go! \n\nXSOAR (including version 8) can support multiple instances of each integration. We’ve hidden the flag in one of the already-configured integrations for you. \nSadly our attempt to hide it on a deserted island failed, so we put it here instead.\n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/integration-lsf-lsf.gif) "
       sender: ""
       expired: false
       totalanswers: 0
@@ -298,14 +279,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
+      to:
       subject:
         simple: Incident fields
-      body: null
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -336,16 +317,6 @@ tasks:
       sender: Your SOC team
       expired: false
       totalanswers: 0
-    formDisplay:
-      headerbackgroundcolor: ""
-      headerfontcolor: ""
-      sender: ""
-      bodybackgroundcolor: ""
-      bodyfontcolor: ""
-      submitbuttonbackgroundcolor: ""
-      submitbuttonfontcolor: ""
-      submittext: ""
-      isexternalrtl: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -377,13 +348,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -407,8 +378,7 @@ tasks:
         tooltip: You can see that information easily from pack's overview
         readonly: false
       title: Get to know the Marketplace
-      description: "Go to the Marketplace, search, and download the content pack \"CTF
-        2\". \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/new_marketplace.gif)"
+      description: "Go to the Marketplace, search, and download the content pack \"CTF 2\". \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/new_marketplace.gif)"
       sender: ""
       expired: false
       totalanswers: 0
@@ -427,6 +397,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -451,11 +422,7 @@ tasks:
       id: 6fddb177-a562-424d-84a5-b5618e624a35
       version: -1
       name: Create a new incident using the CTF incident type
-      description: "Congrats! You finished with the first CTF! Well Done!!\n<Add gif
-        here>\n\nLet's continue with the next challenge :) \n\nIn order to proceed
-        to the following challenge, please create a new incident with the following
-        parameter:\n1. Incident name should be your\n`<name  / student_id> - CTF02
-        \ `\n2. incident type \"CTF02\"  \n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/where-is-my-ctf.gif) "
+      description: "Congrats! You finished with the first CTF! Well Done!!\n<Add gif here>\n\nLet's continue with the next challenge :) \n\nIn order to proceed to the following challenge, please create a new incident with the following parameter:\n1. Incident name should be your\n`<name  / student_id> - CTF02  `\n2. incident type \"CTF02\"  \n\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/where-is-my-ctf.gif) "
       type: regular
       iscommand: false
       brand: ""
@@ -631,13 +598,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -649,8 +616,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: What is the key on your keyboard that opens the "Download support
-            logs" section?
+          simple: What is the key on your keyboard that opens the "Download support logs" section?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -661,14 +627,10 @@ tasks:
         - simple: Alt/Option
         fieldassociated: ""
         placeholder: ""
-        tooltip: 'If you saw Harry Potter - it''s like the secret chamber but quite
-          not... '
+        tooltip: 'If you saw Harry Potter - it''s like the secret chamber but quite not... '
         readonly: false
       title: View and download logs
-      description: "It's pretty common to view logs and troubleshoot any strange issue
-        that the system produces, but in this version, the way of looking at the support
-        logs entirely changed... can you find a way to generate support logs :black_joker:?
-        \ \n\n \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/discord-logs-logs.gif)"
+      description: "It's pretty common to view logs and troubleshoot any strange issue that the system produces, but in this version, the way of looking at the support logs entirely changed... can you find a way to generate support logs :black_joker:?  \n\n \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/discord-logs-logs.gif)"
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -769,6 +731,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -924,6 +887,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -959,3 +923,7 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
+description: ''
