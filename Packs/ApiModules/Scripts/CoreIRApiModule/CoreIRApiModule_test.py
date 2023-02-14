@@ -3075,3 +3075,20 @@ def test_endpoint_alias_change_command(mocker):
     endpoint_alias_change_command(client=client, status="connected", new_alias_name='test')
     assert mocker_set.call_args[1] == {'filters': [{'field': 'endpoint_status',
                                                    'operator': 'IN', 'value': ['connected']}], 'new_alias_name': 'test'}
+
+
+def test_endpoint_alias_change_command__no_filters(mocker):
+    """
+    Given:
+    - command withot endpoint filters
+    when:
+    - executing the endpoint-alias-change command
+    then:
+    - make sure the correct error message wil raise.
+    """
+    client = CoreClient(base_url=f'{Core_URL}/public_api/v1/', headers={})
+    mocker.patch.object(client, 'set_endpoints_alias')
+    from CoreIRApiModule import endpoint_alias_change_command
+    with pytest.raises(Exception) as e:
+        endpoint_alias_change_command(client=client, new_alias_name='test')
+    assert e.value.message == 'No filters were given'

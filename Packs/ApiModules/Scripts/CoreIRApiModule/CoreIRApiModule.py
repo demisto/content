@@ -1831,7 +1831,7 @@ def endpoint_alias_change_command(client: CoreClient, **args) -> CommandResults:
         hostname=hostname_list, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
         last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte, scan_status=scan_status
     )
-    if filters is None:
+    if not filters:
         raise DemistoException('No filters were given')
     # importent: the API will return True even if the endpoint does not exist, so its a good idea to check
     # the results by a get_endpoints command
