@@ -32,4 +32,4 @@ In Cortex XSOAR 8.0.0 and above
 2. Click the **Copy URL** button in the top right corner.
 </~XSOAR>
 
-Provide Auth ID when using<~XSIAM> Cortex XSIAM </~XSIAM><~XSOAR> Cortex XSOAR 8.0.0 and above. If the version is 6.x.x, you can leave it empty </~XSOAR>.
+Provide API Key ID when using<~XSIAM> Cortex XSIAM </~XSIAM><~XSOAR> Cortex XSOAR 8.0.0 and above. If the version is 6.x.x, you can leave it empty </~XSOAR>.

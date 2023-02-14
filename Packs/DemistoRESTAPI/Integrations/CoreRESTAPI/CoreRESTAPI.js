@@ -132,7 +132,7 @@ var sendRequest = function(method, uri, body, raw) {
     }
     else if (params.auth_method == 'Advanced') {
         if (!auth_id) {
-            throw 'Core REST APIs - please choose "Standard Authentication method" or provide the Auth ID.';
+            throw 'Core REST APIs - please choose "Standard Authentication method" or provide the API Key ID.';
         }
         headers = getAdvancedAuthMethodHeaders(key, auth_id, 'application/json')
     }
