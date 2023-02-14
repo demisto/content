@@ -70,13 +70,15 @@ class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool,
                  proxy: bool, self_deployed, refresh_token: str, auth_and_token_url: str,
                  enc_key: Optional[str], auth_code: str, tenant_id: str, redirect_uri: str, timeout: int,
-                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
+                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None,
+                 managed_identities_client_id: Optional[str] = None, refresh_token_param: Optional[str] = ''):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.tenant_id = tenant_id
         self.suffix_template = '{}/activity/feed/subscriptions/{}'
         self.access_token = None
         self.self_deployed = self_deployed
         self.refresh_token = refresh_token
+        self.refresh_token_param = refresh_token_param
         self.auth_and_token_url = auth_and_token_url
         self.enc_key = enc_key
         self.timeout = timeout
@@ -90,6 +92,7 @@ class Client(BaseClient):
                                          verify=verify,
                                          proxy=proxy,
                                          refresh_token=self.refresh_token,
+                                         refresh_token_param=self.refresh_token_param,
                                          ok_codes=(200, 201, 202, 204),
                                          timeout=self.timeout,
                                          scope='',
@@ -98,7 +101,9 @@ class Client(BaseClient):
                                          token_retrieval_url='https://login.windows.net/common/oauth2/token',
                                          redirect_uri=redirect_uri,
                                          certificate_thumbprint=certificate_thumbprint,
-                                         private_key=private_key
+                                         private_key=private_key,
+                                         managed_identities_client_id=managed_identities_client_id,
+                                         managed_identities_resource_uri=Resources.manage_office
                                          )
 
     def http_request(self, method, url_suffix='', full_url=None, headers=None, params=None, timeout=None, ok_codes=None,
@@ -206,18 +211,23 @@ class Client(BaseClient):
         )
 
 
-def test_module():
+def test_module(client: Client):
     params = demisto.params()
     fetch_delta = params.get('first_fetch_delta', '10 minutes')
     user_input_fetch_start_date, _ = parse_date_range(fetch_delta)
     if datetime.now() - timedelta(days=7) - timedelta(minutes=5) >= user_input_fetch_start_date:
-        return 'Error: first fetch time delta should not be over one week.'
+        raise DemistoException('Error: first fetch time delta should not be over one week.')
+
+    if client.ms_client.managed_identities_client_id:
+        client.get_access_token_data()
+        return 'ok'
+
     if params.get('self_deployed'):
         if not params.get('auth_code') or not params.get('redirect_uri'):
-            return 'Error: in the self_deployed authentication flow the authentication code parameter and ' \
-                   'redirect uri cannot be empty.'
-    return 'The basic parameters are ok, authentication cannot be checked using the test module. ' \
-           'Please run ms-management-activity-list-subscriptions to test your credentials.'
+            raise DemistoException('Error: in the self_deployed authentication flow the authentication code parameter and '
+                                   'redirect uri cannot be empty.')
+    raise DemistoException('The basic parameters are ok, authentication cannot be checked using the test module. '
+                           'Please run ms-management-activity-list-subscriptions to test your credentials.')
 
 
 def get_start_or_stop_subscription_human_readable(content_type, start_or_stop):
@@ -534,25 +544,29 @@ def main():
 
     LOG(f'Command being called is {demisto.command()}')
     try:
-        if demisto.command() == 'test-module':
-            result = test_module()
-            return_error(result)
 
         refresh_token = params.get('refresh_token', '')
-        self_deployed = params.get('self_deployed', False)
+        managed_identities_client_id = get_azure_managed_identities_client_id(params)
+        self_deployed = params.get('self_deployed', False) or managed_identities_client_id is not None
         redirect_uri = params.get('redirect_uri', '')
         tenant_id = refresh_token if self_deployed else ''
-        auth_id = params['auth_id']
+        auth_id = params.get('auth_id')
         enc_key = params.get('enc_key')
         certificate_thumbprint = params.get('certificate_thumbprint')
         private_key = params.get('private_key')
-        if not self_deployed and not enc_key:
-            raise DemistoException('Key must be provided. For further information see https://xsoar.pan.dev/docs'
-                                   '/reference/articles/microsoft-integrations---authentication')
-        elif not enc_key and not (certificate_thumbprint and private_key):
-            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
-        refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
+        if not managed_identities_client_id:
+            if not self_deployed and not enc_key:
+                raise DemistoException('Key must be provided. For further information see https://xsoar.pan.dev/docs'
+                                       '/reference/articles/microsoft-integrations---authentication')
+            elif not enc_key and not (certificate_thumbprint and private_key):
+                raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+
+        # Client gets refresh_token_param as well as refresh_token which is the current refresh token from the
+        # integration context (if exists) so It will be possible to manually update the refresh token param for an
+        # existing integration instance.
+        refresh_token_param = refresh_token
+        refresh_token = get_integration_context().get('current_refresh_token') or refresh_token_param
 
         client = Client(
             base_url=base_url,
@@ -561,14 +575,19 @@ def main():
             proxy=proxy,
             self_deployed=self_deployed,
             refresh_token=refresh_token,
+            refresh_token_param=refresh_token_param,
             auth_and_token_url=auth_id,
             timeout=calculate_timeout_value(params=params, args=args),
             enc_key=enc_key,
             auth_code=params.get('auth_code', ''),
             redirect_uri=redirect_uri,
             certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key
+            private_key=private_key,
+            managed_identities_client_id=managed_identities_client_id
         )
+
+        if demisto.command() == 'test-module':
+            return_results(test_module(client=client))
 
         access_token, token_data = client.get_access_token_data()
         client.access_token = access_token

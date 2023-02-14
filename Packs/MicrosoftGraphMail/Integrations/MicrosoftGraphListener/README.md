@@ -47,6 +47,8 @@ The following permissions are required for all commands:
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
     | Authorization code (required for self-deployed Azure app) |  | False |
     | Application redirect URI (required for self-deployed Azure app) |  | False |
+    | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
     | Fetch incidents |  | False |
     | Email address from which to fetch incidents (e.g., "example@demisto.com") |  | True |
     | Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g., Inbox/Phishing) |  | True |
@@ -261,6 +263,23 @@ Tests connectivity of the email.
 #### Base Command
 
 `msgraph-mail-test`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+
+#### Context Output
+
+There is no context output for this command.
+### msgraph-mail-auth-reset
+***
+Run this command to rerun the authentication process.
+
+
+#### Base Command
+
+`msgraph-mail-auth-reset`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

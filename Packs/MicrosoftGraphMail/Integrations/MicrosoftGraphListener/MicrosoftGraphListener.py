@@ -197,6 +197,27 @@ def build_recipients_human_readable(message_content):
     return to_recipients, cc_recipients, bcc_recipients
 
 
+# -*- coding: utf-8 -*-
+def is_only_ascii(s: str) -> bool:
+    """
+    Check whether the string can be encoded only with ASCII characters
+    (which are Latin alphabet + some other characters).
+    If it can not be encoded, then it has the characters from some other alphabet.
+
+    Args:
+        s: str to check
+
+    Returns: True when s contains only Latin alphabet + some other characters, otherwise False.
+
+    """
+    try:
+        s.encode(encoding='utf-8').decode('ascii')
+        return True
+
+    except UnicodeDecodeError:
+        return False
+
+
 ''' MICROSOFT GRAPH MAIL CLIENT '''
 
 
@@ -217,13 +238,18 @@ class MsGraphClient:
                  private_key: Optional[str] = None,
                  display_full_email_body: bool = False,
                  fetch_mail_body_as_text: bool = True,
-                 mark_fetched_read: bool = False):
+                 refresh_token_param: Optional[str] = '',
+                 mark_fetched_read: bool = False,
+                 managed_identities_client_id: Optional[str] = None):
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
                                          proxy=proxy, ok_codes=ok_codes, refresh_token=refresh_token,
+                                         refresh_token_param=refresh_token_param,
                                          auth_code=auth_code, redirect_uri=redirect_uri,
                                          grant_type=AUTHORIZATION_CODE, certificate_thumbprint=certificate_thumbprint,
-                                         private_key=private_key, retry_on_rate_limit=True)
+                                         private_key=private_key, retry_on_rate_limit=True,
+                                         managed_identities_client_id=managed_identities_client_id,
+                                         managed_identities_resource_uri=Resources.graph)
         self._mailbox_to_fetch = mailbox_to_fetch
         self._folder_to_fetch = folder_to_fetch
         self._first_fetch_interval = first_fetch_interval
@@ -707,12 +733,12 @@ class MsGraphClient:
             attachment_type = attachment.get('@odata.type', '')
             attachment_name = attachment.get('name', 'untitled_attachment')
 
-            try:
-                demisto.debug(f"Trying to decode the attachment file name: {attachment_name}")
-                attachment_name = base64.b64decode(attachment_name)
-            except Exception as e:
-                demisto.debug(f"Could not decode the {attachment_name=}: error: {e}")
-                pass
+            if not is_only_ascii(attachment_name):
+                try:
+                    demisto.debug(f"Trying to decode the attachment file name: {attachment_name}")
+                    attachment_name = base64.b64decode(attachment_name)
+                except Exception as e:
+                    demisto.debug(f"Could not decode the {attachment_name=}: error: {e}")
 
             if attachment_type == self.FILE_ATTACHMENT:
                 try:
@@ -1195,7 +1221,7 @@ class MsGraphClient:
         user_response = self.ms_client.http_request('GET', suffix_endpoint)
 
         if user_response.get('mail') != '' and user_response.get('id') != '':
-            return_outputs('```✅ Success!```')
+            return '```✅ Success!```'
         else:
             raise Exception("Failed validating the user.")
 
@@ -1496,6 +1522,11 @@ def update_email_status_command(client: MsGraphClient, args) -> CommandResults:
     )
 
 
+def reset_auth() -> str:
+    set_integration_context({})
+    return 'Authorization was reset successfully. Run **!msgraph-mail-test** to verify the authentication.'
+
+
 def build_folders_path(folder_string: str) -> Optional[str]:
     """
 
@@ -1620,9 +1651,6 @@ def build_mail_object(raw_response: Union[dict, list], get_body: bool = False, u
 def main():     # pragma: no cover
     """ COMMANDS MANAGER / SWITCH PANEL """
     params = demisto.params()
-
-    self_deployed = params.get('self_deployed', False)
-
     # params related to common instance configuration
     base_url = 'https://graph.microsoft.com/v1.0/'
     use_ssl = not params.get('insecure', False)
@@ -1635,12 +1663,15 @@ def main():     # pragma: no cover
     private_key = replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')) or params.get('private_key')
     auth_code = params.get('creds_auth_code', {}).get('password') or params.get('auth_code', '')
     app_name = 'ms-graph-mail-listener'
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
+    self_deployed = params.get('self_deployed', False) or managed_identities_client_id is not None
 
-    if not self_deployed and not enc_key:
-        raise DemistoException('Key must be provided. For further information see '
-                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
-    elif not enc_key and not (certificate_thumbprint and private_key):
-        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+    if not managed_identities_client_id:
+        if not self_deployed and not enc_key:
+            raise DemistoException('Key must be provided. For further information see '
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+        elif not enc_key and not (certificate_thumbprint and private_key):
+            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
     # params related to mailbox to fetch incidents
     mailbox_to_fetch = params.get('mailbox_to_fetch', '')
@@ -1656,23 +1687,36 @@ def main():     # pragma: no cover
     # params related to oproxy
     # In case the script is running for the first time, refresh token is retrieved from integration parameters,
     # in other case it's retrieved from integration context.
-    refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
+
+    # Client gets refresh_token_param as well as refresh_token which is the current refresh token from the integration
+    # context (if exists) so It will be possible to manually update the refresh token param for an existing integration
+    # instance.
+    refresh_token_param = refresh_token  # Refresh token from the integration parameters (i.e current instance config)
+    refresh_token = get_integration_context().get('current_refresh_token') or refresh_token_param
 
     client = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
-                           ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
-                           emails_fetch_limit, auth_code=auth_code, private_key=private_key,
+                           ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch,
+                           first_fetch_interval, emails_fetch_limit, auth_code=auth_code, private_key=private_key,
                            display_full_email_body=display_full_email_body, mark_fetched_read=mark_fetched_read,
-                           redirect_uri=params.get('redirect_uri', ''), certificate_thumbprint=certificate_thumbprint)
+                           redirect_uri=params.get('redirect_uri', ''), certificate_thumbprint=certificate_thumbprint,
+                           refresh_token_param=refresh_token_param,
+                           managed_identities_client_id=managed_identities_client_id)
     try:
         command = demisto.command()
         args = prepare_args(command, demisto.args())
         LOG(f'Command being called is {command}')
 
         if command == 'test-module':
-            # cannot use test module due to the lack of ability to set refresh token to integration context
-            raise Exception("Please use !msgraph-mail-test instead")
+            if managed_identities_client_id:
+                client.test_connection()
+                return_results('ok')
+            else:
+                # cannot use test module due to the lack of ability to set refresh token to integration context
+                raise Exception("Please use !msgraph-mail-test instead")
         if command == 'msgraph-mail-test':
-            client.test_connection()
+            return_results(client.test_connection())
+        if command == 'msgraph-mail-auth-reset':
+            return_results(reset_auth())
         if command == 'fetch-incidents':
             next_run, incidents = client.fetch_incidents(demisto.getLastRun())
             demisto.setLastRun(next_run)
