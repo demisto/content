@@ -21,6 +21,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Twitter v2",
+            "playbookID": "playbook-Test_Twitter_v2",
+            "instance_names": "Twitter v2"
+        },
+        {
             "playbookID": "IndicatorFormatterFilterTest",
             "timeout": 1200
         },
@@ -1299,7 +1304,12 @@
         },
         {
             "integrations": "Threat Grid",
-            "playbookID": "ThreatGridTest",
+            "playbookID": "ThreatGrid_Test",
+            "timeout": 600
+        },
+        {
+            "integrations": "ThreatGridv2",
+            "playbookID": "ThreatGrid_v2_Test",
             "timeout": 600
         },
         {
@@ -2713,6 +2723,11 @@
             "playbookID": "Zoom_Test"
         },
         {
+            "integrations": "Cisco WebEx Feed",
+            "playbookID": "Test_Cisco_WebEx_Feed",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "IP Enrichment - Generic v2 - Test",
             "integrations": "Threat Crowd",
             "fromversion": "4.1.0"
@@ -2824,7 +2839,6 @@
             "playbookID": "AWS - S3 Test Playbook",
             "memory_threshold": 80,
             "is_mockable": false
-
         },
         {
             "integrations": "AwsSecretsManager",
@@ -3370,6 +3384,13 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Palo Alto Networks - Prisma SASE",
+            "playbookID": "PrismaSASE Test",
+            "fromversion": "6.5.0",
+            "timeout": 3000
+        },
+
+        {
             "integrations": "Prisma Access",
             "playbookID": "Prisma_Access-Test",
             "timeout": 60000,
@@ -3635,7 +3656,7 @@
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
             "fromversion": "6.0.0",
-            "timeout" : 600
+            "timeout": 600
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
@@ -4593,7 +4614,7 @@
             "integrations": [
                 "Feodo Tracker IP Blocklist Feed"
             ],
-             "instance_names": [
+            "instance_names": [
                 "feodo_tracker_ip_currently__active",
                 "feodo_tracker_ip_30_days"
             ]
@@ -5295,16 +5316,20 @@
                 "UnpublishThreatIntelReport"
             ]
         },
-        {            
+        {
             "integrations": "Generic SQL",
             "playbookID": "generic-sql",
             "instance_names": "Microsoft SQL Server - MS ODBC Driver",
             "fromversion": "5.0.0",
             "has_api": false
+        },
+        {
+            "integrations": "Microsoft Teams via Webhook",
+            "playbookID": "Microsoft Teams Webhook - Test"
         }
     ],
     "skipped_tests": {
-        "RegPathReputationBasicLists_test" : "The D2 pack is deprecated",
+        "RegPathReputationBasicLists_test": "The D2 pack is deprecated",
         "CirclIntegrationTest": "No instance",
         "CrowdStrikeMalquery-Test": "Issue CRTX-71397",
         "playbook-CheckPointSandBlast_Test": "Checkpoint playbook no license",
@@ -5417,7 +5442,6 @@
         "LogRhythm REST test": "Issue 40654",
         "Process Email - Generic - Test - Actual Incident": "Issue 45227",
         "Jira-v2-Test": "Issue 33313",
-        "Tanium Threat Response V2 Test": "Issue 44201",
         "Tanium Threat Response Test": "Issue CRTX-58729",
         "Tanium Threat Response - Create Connection v2 - Test": "Issue CRTX-58729",
         "AzureADTest": "Issue 40131",
@@ -5467,12 +5491,15 @@
         "playbook-AzureDevOps-Test": "No Working Instance",
         "test playbook - Google Cloud Functions": "No Working Instance",
         "playbook-GCP-IAM_Test": "No Working Instance",
+        "GoogleCalendar-Test": "No Working Instance",
         "AlexaV2 Test Playbook": "The service is deprecated on Dec 15, 2022",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
         "CortexXpanse_Test": "No instance - issue CRTX-65449",
         "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
         "Archer-Test-Playbook": "the integration is deprecated as we have ArcherV2",
-        "O365-SecurityAndCompliance-Test": "Deprecated, consumes connection quota for V2"
+        "O365-SecurityAndCompliance-Test": "Deprecated, consumes connection quota for V2",
+        "ThreatGrid_v2_Test": "No instance, developed by Qmasters",
+        "Test-Detonate URL - ThreatGrid": "No instance, developed by Qmasters"
     },
     "skipped_integrations": {
         "Lastline v2": "No instance - No license",
@@ -5596,7 +5623,9 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "AttackIQFireDrill": "License issues #29774",
-        "LogRhythm": "The integration is deprecated"
+        "LogRhythm": "The integration is deprecated",
+        "Threat Grid": "No instance & Depreceated, replaced by ThreatGridv2",
+        "ThreatGridv2": "No instance - developed by Qmasters"
     },
     "nightly_integrations": [],
     "nightly_packs": [
@@ -5757,7 +5786,8 @@
         "RSA Archer v2": "cannot connect to proxy",
         "Anomali ThreatStream v3": "recording is not working",
         "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked.",
-        "Cortex XDR - IR": "internal product, no need to mock"
+        "Cortex XDR - IR": "internal product, no need to mock",
+        "Microsoft Teams via Webhook": "message sent contains random hostname of server"
     },
     "parallel_integrations": [
         "AWS - ACM",
@@ -5881,5 +5911,18 @@
     },
     "test_marketplacev2": [
         "Sanity Test - Playbook with Unmockable Whois Integration"
+    ],
+    "reputation_tests":[
+        "FormattingPerformance - Test",
+        "reputations.json Test",
+        "Indicators reputation-.json Test",
+        "URL extraction test",
+        "Domain extraction test",
+        "Email extraction test",
+        "File extraction test",
+        "IPv4 extraction test",
+        "IPv4 CIDR extraction test",
+        "IPv6 CIDR extraction test",
+        "IPv6 extraction test"
     ]
 }
