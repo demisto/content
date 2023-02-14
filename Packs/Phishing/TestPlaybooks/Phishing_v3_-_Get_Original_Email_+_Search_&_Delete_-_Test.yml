@@ -2,7 +2,7 @@ id: Phishing v3 - Get Original Email + Search & Delete - Test
 version: -1
 name: Phishing v3 - Get Original Email + Search & Delete - Test
 description: |-
-  This playbook tes ts the search & delete and get original email functionality.
+  This playbook tests the search & delete and get original email functionality.
   Prerequisites:
   - The phishing playbook is configured with the correct inputs to allow getting the original email and searching & deleting emails
   - A mail sender with sr-test02 is configured. That user will supposedly attack sr-test01.
