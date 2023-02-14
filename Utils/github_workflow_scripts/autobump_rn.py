@@ -17,6 +17,7 @@ from utils import timestamped_print, load_json
 from datetime import datetime, timedelta
 from git import Repo, GitCommandError
 from demisto_sdk.commands.common.tools import get_pack_names_from_files
+from demisto_sdk.commands.update_release_notes.update_rn import UpdateRN
 import os
 
 # bump_version_number
@@ -454,9 +455,17 @@ def arguments_handler():
 
 
 def autobump_release_notes(pack_id, update_type):
+    update_rn_obj = UpdateRN(
+        pack_path=f'Packs/{pack_id}',
+        update_type=update_type.value,
+        modified_files_in_pack=set(),
+        added_files=set(),
+        pack=pack_id,
+        is_force=True,
+    )
     # todo: 1. checkout branch
     # for each pack:  save previous rn text
-    # 3. merge from master accept master changes
+    # 3. merge from master accept master changes https://git-scm.com/docs/git-merge
     # for each pack:
     # 4. bump version in metadata file rn (bump_version_number func)
     # 5. create rn file
