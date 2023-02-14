@@ -45,13 +45,13 @@ class UpdateType(str, Enum):
 class SkipReason(str, Enum):
     LAST_MODIFIED_TIME = 'The PR was not updated in last {} days. PR last update time: {}'
     NOT_UPDATE_RN_LABEL_EXIST = 'Label {} exist in this PR. PR labels: {}'
-    NO_RELEASE_NOTES_CHANGED = 'No changes were detected on {} directory'
+    NO_RELEASE_NOTES_CHANGED = 'No changes were detected on {} directory.'
     CONFLICTING_FILES = 'The PR has conflicts not only at {} and {}. The conflicting files are: {}.'
     NOT_ALLOW_SUPPORTED_TYPE_PACK = 'The pack is not {} supported. Pack {} support type is: {}.'
     DIFFERENT_MAJOR_VERSION = 'Pack: {} major version different in origin {} and at the branch {}.'
     EXCEED_MAX_ALLOWED_VERSION = 'Pack: {} has not allowed version part {}. Versions: origin {}, branch {}.'
     MORE_THAN_ONE_RN = 'Pack: {} has more than one added rn {}.'
-    DIFFERENT_RN_METADATA_VERSIONS = 'Pack: {} has different rn version {}, and metadata version {}'
+    DIFFERENT_RN_METADATA_VERSIONS = 'Pack: {} has different rn version {}, and metadata version {}.'
     ALLOWED_BUMP_CONDITION = 'Pack {} version was updated from {} to {} version. Allowed bump only by + 1.'
 
 
@@ -446,8 +446,10 @@ def main():
             c1.set_next_condition(c2)
 
         base_cond_result = conditions[0].check()
-        conflicting_packs = base_cond_result.conflicting_packs
+        if base_cond_result.should_skip:
+            continue
 
+        conflicting_packs = base_cond_result.conflicting_packs
         for pack in conflicting_packs:
             origin_md, branch_md, pr_base_md = MetadataCondition.get_metadata_files(
                 pack_id=pack,
