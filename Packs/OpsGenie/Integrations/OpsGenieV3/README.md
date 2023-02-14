@@ -1604,9 +1604,9 @@ Invite a user to OpsGenie
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username  | E-mail address of the user. | Required | 
-| fullName | Name of the user | Required | 
-| role | Role of user. It may be one of admin, user or the name of a custom role you've created.| Required | 
+| username  | E-mail address of the user. | True | 
+| fullName | Name of the user | True | 
+| role | Role of user. It may be one of admin, user or the name of a custom role you've created.| True | 
 
 
 #### Context Output

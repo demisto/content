@@ -652,19 +652,19 @@ script:
       description: E-mail address of the user
       isArray: false
       name: username
-      required: false
+      required: true
       secret: false
     - default: false
       description: Name of the user
       isArray: false
       name: fullName
-      required: false
+      required: true
       secret: false
     - default: false
       description: Role of user. It may be one of admin, user or the name of a custom role you've created.
       isArray: false
       name: role
-      required: false
+      required: true
       secret: false
     description: Invite a user to OpsGenie
     name: opsgenie-invite-user
