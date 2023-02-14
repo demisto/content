@@ -3091,4 +3091,4 @@ def test_endpoint_alias_change_command__no_filters(mocker):
     from CoreIRApiModule import endpoint_alias_change_command
     with pytest.raises(Exception) as e:
         endpoint_alias_change_command(client=client, new_alias_name='test')
-    assert e.value.message == 'No filters were given'
+    assert e.value.message == "Please provide at least one filter."
