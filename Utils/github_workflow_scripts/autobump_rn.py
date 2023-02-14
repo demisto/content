@@ -207,7 +207,7 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
         changed_metadata_files = [f.filename for f in pr_files if PACK_METADATA_FILE in Path(f.filename).parts]
         conflict_only_rn_and_metadata, conflict_files = self._has_conflict_on_given_files(
             added_rn_files + changed_metadata_files)
-        if conflict_only_rn_and_metadata:
+        if not conflict_only_rn_and_metadata:
             return ConditionResult(should_skip=True, reason=self.generate_skip_reason(conflicting_files=conflict_files))
         else:
             conflicting_packs = get_pack_names_from_files(conflict_files)
