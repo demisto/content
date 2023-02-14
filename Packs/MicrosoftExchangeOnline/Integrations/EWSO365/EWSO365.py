@@ -1,61 +1,41 @@
+import email
+import hashlib
+import json
+import logging
+import os
 import random
 import string
 import subprocess
-from typing import Dict
-
-import dateparser
-import chardet
-
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
 import sys
 import traceback
-import json
-import os
-import hashlib
-from io import StringIO
-import logging
 import warnings
-import email
-from requests.exceptions import ConnectionError
+from io import StringIO
 from multiprocessing import Process
+from typing import Dict
+
+import chardet
+import dateparser
+import demistomock as demisto  # noqa: F401
 import exchangelib
-from exchangelib.errors import (
-    ErrorItemNotFound,
-    ResponseMessageError,
-    RateLimitError,
-    ErrorInvalidIdMalformed,
-    ErrorFolderNotFound,
-    ErrorMailboxStoreUnavailable,
-    ErrorMailboxMoveInProgress,
-    ErrorNameResolutionNoResults,
-    MalformedResponseError,
-)
-from exchangelib.items import Item, Message, Contact
-from exchangelib.services.common import EWSService, EWSAccountService
-from exchangelib.util import create_element, add_xml_child, MNS, TNS
-from exchangelib import (
-    IMPERSONATION,
-    Account,
-    EWSDateTime,
-    EWSTimeZone,
-    Configuration,
-    FileAttachment,
-    Version,
-    Folder,
-    HTMLBody,
-    Body,
-    ItemAttachment,
-    OAUTH2,
-    OAuth2AuthorizationCodeCredentials,
-    Identity,
-    ExtendedProperty
-)
-from oauthlib.oauth2 import OAuth2Token
-from exchangelib.version import EXCHANGE_O365
+from CommonServerPython import *  # noqa: F401
+from exchangelib import (IMPERSONATION, OAUTH2, Account, Body, Configuration,
+                         EWSDateTime, EWSTimeZone, ExtendedProperty,
+                         FileAttachment, Folder, HTMLBody, Identity,
+                         ItemAttachment, OAuth2AuthorizationCodeCredentials,
+                         Version)
+from exchangelib.errors import (ErrorFolderNotFound, ErrorInvalidIdMalformed,
+                                ErrorItemNotFound, ErrorMailboxMoveInProgress,
+                                ErrorMailboxStoreUnavailable,
+                                ErrorNameResolutionNoResults,
+                                MalformedResponseError, RateLimitError,
+                                ResponseMessageError)
+from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
+from exchangelib.services.common import EWSAccountService, EWSService
+from exchangelib.util import MNS, TNS, add_xml_child, create_element
+from exchangelib.version import EXCHANGE_O365
+from oauthlib.oauth2 import OAuth2Token
+from requests.exceptions import ConnectionError
 
 # Ignore warnings print to stdout
 warnings.filterwarnings("ignore")
@@ -1825,7 +1805,7 @@ def handle_template_params(template_params):      # pragma: no cover
     return actual_params
 
 
-def create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to):
+def create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to, importance):
     """Creates the message object according to the existence of additional custom headers.
     """
     if additional_headers:
@@ -1837,6 +1817,7 @@ def create_message_object(to, cc, bcc, subject, body, additional_headers, from_a
             subject=subject,
             reply_to=reply_to,
             body=body,
+            importance=importance,
             **additional_headers
         )
 
@@ -1847,12 +1828,13 @@ def create_message_object(to, cc, bcc, subject, body, additional_headers, from_a
         bcc_recipients=bcc,
         subject=subject,
         reply_to=reply_to,
-        body=body
+        body=body,
+        importance=importance
     )
 
 
 def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, attachments=None,
-                   additional_headers=None, from_address=None, reply_to=None):     # pragma: no cover
+                   additional_headers=None, from_address=None, reply_to=None, importance=None):     # pragma: no cover
     """Creates the Message object that will be sent.
 
     Args:
@@ -1872,7 +1854,7 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
     """
     if not html_body:
         # This is a simple text message - we cannot have CIDs here
-        message = create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to)
+        message = create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to, importance)
 
         for attachment in attachments:
             if not attachment.get('cid'):
@@ -1884,7 +1866,7 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
         attachments += html_attachments
 
         message = create_message_object(to, cc, bcc, subject, HTMLBody(html_body), additional_headers, from_address,
-                                        reply_to)
+                                        reply_to, importance)
 
         for attachment in attachments:
             if not attachment.get('cid'):
@@ -1929,7 +1911,7 @@ def add_additional_headers(additional_headers):
 def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, htmlBody=None,
                attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
                transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
-               additionalHeader=None, raw_message=None, from_address=None, replyTo=None):     # pragma: no cover
+               additionalHeader=None, raw_message=None, from_address=None, replyTo=None, importance=None):     # pragma: no cover
     to = argToList(to)
     cc = argToList(cc)
     bcc = argToList(bcc)
@@ -1947,7 +1929,8 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
             bcc_recipients=bcc,
             body=raw_message,
             author=from_address,
-            reply_to=reply_to
+            reply_to=reply_to,
+            importance=importance
         )
 
     else:
@@ -1967,7 +1950,7 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
                 htmlBody = htmlBody.format(**template_params)
 
         message = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader, from_address,
-                                 reply_to)
+                                 reply_to, importance)
 
     client.send_email(message)
 
