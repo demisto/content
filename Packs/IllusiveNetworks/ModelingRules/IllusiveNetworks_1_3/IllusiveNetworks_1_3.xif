@@ -33,6 +33,4 @@ filter
     xdm.event.operation_sub_type = cefName,
     xdm.observer.version = cefVersion,
     xdm.alert.severity = cefSeverity,
-    xdm.observer.vendor = cefDeviceVendor,
-    xdm.observer.product = cefDeviceProduct,
     xdm.target.agent.version = cefDeviceVersion;
