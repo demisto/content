@@ -17,3 +17,4 @@ if [ -z "$SHOULD_SKIP_TEST" ] ; then
 fi
 
 echo "Found modified files that should be tested in upload-flow"
+exit 1
