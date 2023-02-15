@@ -25,7 +25,8 @@ Follow the instructions in the [Fetched Incidents Data](#fetched-incidents-data)
   This can be achieved in the following ways:
   - Use the ```ews-search-mailboxes``` command to search for all emails in a specific scope of mailboxes. Use the filter argument to narrow the search for emails sent from a specific account and more.
   - Use the ```ews-search-mailbox``` command to search for all emails in a specific folder within the target mailbox. Use the query argument to narrow the search for emails sent from a specific account and more.
-  - Both of these commands retrieve the *ItemID* field for each email item listed in the results. The```ItemID``` can be used in the ```ews-get-items``` command in order to get more information about the email item itself
+  
+  Both of these commands retrieve the *ItemID* field for each email item listed in the results. The```ItemID``` can be used in the ```ews-get-items``` command in order to get more information about the email item itself.
   - For instance, use the ```ews-search-mailboxes``` command to hunt for emails that were marked as malicious in prior investigations, across organization mailboxes. Focus your hunt on emails sent from a specific mail account, emails with a specific subject and more.
 
 - Get email attachment information. Use the ```ews-get-attachment``` command to retrieve information on one attachment or all attachments of a message at once. It supports both file attachments and item attachments (e.g., email messages).
