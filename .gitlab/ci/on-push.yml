@@ -293,8 +293,7 @@ xsoar_server_6_5:
   #  No need to trigger in case of release branch
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
-#    - if: '$CI_COMMIT_BRANCH =~ /^demisto\/([^n]|n($|[^i]|i($|[^g]|g($|[^h]))))[^\/]*$/'
-#      when: never
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
   variables:
     INSTANCE_ROLE: "Server 6.5"
 
@@ -303,8 +302,7 @@ xsoar_server_6_6:
   #  No need to trigger in case of release branch
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
-#    - if: '$CI_COMMIT_BRANCH =~ /^demisto\/([^n]|n($|[^i]|i($|[^g]|g($|[^h]))))[^\/]*$/'
-#      when: never
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
   variables:
     INSTANCE_ROLE: "Server 6.6"
 
@@ -313,8 +311,7 @@ xsoar_server_6_8:
   #  No need to trigger in case of release branch
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
-#    - if: '$CI_COMMIT_BRANCH =~ /^demisto\/([^n]|n($|[^i]|i($|[^g]|g($|[^h]))))[^\/]*$/'
-#      when: never
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
   variables:
     INSTANCE_ROLE: "Server 6.8"
 
@@ -324,8 +321,7 @@ xsoar_server_master:
   #  No need to trigger in case of release branch
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
-#    - if: '$CI_COMMIT_BRANCH =~ /^demisto\/([^n]|n($|[^i]|i($|[^g]|g($|[^h]))))[^\/]*$/'
-#      when: never
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$NIGHTLY'
       when: always
   variables:
@@ -498,8 +494,7 @@ xsiam_server_ga:
     - .test_content_on_cloud_server_instances_base
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
-#    - if: '$CI_COMMIT_BRANCH =~ /^demisto\/([^n]|n($|[^i]|i($|[^g]|g($|[^h]))))[^\/]*$/'
-#      when: never
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$NIGHTLY'
       when: always
   variables:
@@ -525,8 +520,7 @@ xsoar_ng_server_ga:
   extends:
     - .test_content_on_cloud_server_instances_base
   rules:
-#    - if: '$CI_COMMIT_BRANCH =~ /^demisto\/([^n]|n($|[^i]|i($|[^g]|g($|[^h]))))[^\/]*$/'
-#      when: never
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
       when: always
   variables:
