@@ -12,11 +12,6 @@
       - .npm/
     policy: pull
 
-.filter-non-nightly-docker-updates-rule:
-  rules:
-    - if: '$CI_COMMIT_BRANCH =~ /^(demisto\/[^\/]+)(?!.*-nightly).*$/'
-      when: never
-
 
 .setup-network-certs: &setup-network-certs
   - source .gitlab/helper_functions.sh
@@ -191,7 +186,6 @@
   extends:
     - .default-cache
     - .default-before-script
-    - .filter-non-nightly-docker-updates-rule
 
 
 .trigger-slack-notification:
