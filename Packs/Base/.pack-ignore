@@ -62,3 +62,8 @@ CustomIndicator
 Mutex
 SSLAdapter
 SSL
+
+[tests_require_network]
+CommonServerPython
+SanePdfReports
+CheckDockerImageAvailable

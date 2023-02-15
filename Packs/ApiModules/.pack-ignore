@@ -6,3 +6,6 @@ TLP
 ansii
 pylint
 linter
+
+[tests_require_network]
+NGINXApiModule

@@ -166,3 +166,9 @@ ssh
 ParseYAML
 Parses
 YAML
+
+[tests_require_network]
+Ping
+GetDockerImageLatestTag
+GetDuplicatesMlv2
+DockerHardeningCheck
