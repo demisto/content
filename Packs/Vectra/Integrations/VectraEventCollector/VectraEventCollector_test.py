@@ -11,14 +11,6 @@ BASE_URL = "mock://dev.vectra.ai"
 PASSWORD = "9455w0rd"
 
 
-@pytest.mark.parametrize("url,expected", [(BASE_URL, True), ("dfhabfqh", False)])
-def test_validate_url(url: str, expected: bool):
-
-    client = VectraClient(url=url, api_key=PASSWORD)
-
-    client.validate_url(url)
-
-
 @pytest.mark.parametrize(
     "endpoints,expected",
     [
@@ -46,8 +38,19 @@ def test_auth(mocker, endpoints: Dict[str, str], expected: bool):
     """
 
     client = VectraClient(url=BASE_URL, api_key="9455w0rd")
-
     mocker.patch.object(client, "get_endpoints", return_value=endpoints)
     endpoints = client.get_endpoints()
 
     assert all(ep in endpoints for ep in client.endpoints) == expected
+
+
+def test_create_headers():
+
+    client = VectraClient(url=BASE_URL, api_key=PASSWORD)
+    actual = client.create_headers(PASSWORD)
+    expected = {"Content-Type": "application/json", "Authorization": f"Token {PASSWORD}"}
+
+    assert "Content-Type" in actual.keys()
+    assert "Authorization" in actual.keys()
+
+    assert actual == expected

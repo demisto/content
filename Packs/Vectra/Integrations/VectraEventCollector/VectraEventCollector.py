@@ -41,8 +41,6 @@ class VectraClient(BaseClient):
         proxy: bool = False,
     ):
 
-        # Check provided URL is valid
-        self.validate_url(url)
         self.max_fetch = max_fetch
 
         self.base_url = urljoin(url, f"/api/v{self.api_version}/")
@@ -60,22 +58,6 @@ class VectraClient(BaseClient):
         """
 
         return self._http_request(method="GET")
-
-    def validate_url(self, url: str):
-
-        """
-        Helper function to check whether the supplied URL is valid or not.
-
-        Raises:
-            - `ValueError` when the URL cannot be parsed.
-        """
-
-        try:
-            urlparse(url)
-            # return all([result.scheme, result.netloc])
-        except ValueError:
-            demisto.error(f"URL '{url}' is invalid.")
-            raise
 
     def create_headers(self, api_key: str) -> Dict[str, str]:
         """
