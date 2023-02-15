@@ -2179,7 +2179,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 272.5,
+          "x": 265,
           "y": 195
         }
       }
@@ -2192,12 +2192,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 753cc713-56c2-45ad-8dd2-5a97b031b38b
+    taskid: 39bbe800-dd07-45b6-8c4f-215b301c8118
     type: regular
     task:
-      id: 753cc713-56c2-45ad-8dd2-5a97b031b38b
+      id: 39bbe800-dd07-45b6-8c4f-215b301c8118
       version: -1
-      name: Delete context
+      name: DeleteContext
       description: |-
         Delete field from context.
 
@@ -2219,7 +2219,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
+          "x": 162.5,
           "y": 8915
         }
       }
@@ -2232,10 +2232,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: b8f42973-ad07-4eed-8ef6-348ec18e6019
+    taskid: 9f1a0b3b-eda8-4162-8e88-b9877c8026f5
     type: regular
     task:
-      id: b8f42973-ad07-4eed-8ef6-348ec18e6019
+      id: 9f1a0b3b-eda8-4162-8e88-b9877c8026f5
       version: -1
       name: Change alias name
       description: Gets a list of endpoints according to the passed filters, and changes
@@ -2249,7 +2249,7 @@ tasks:
       '#none#':
       - "65"
     scriptarguments:
-      alias_name:
+      ip_list:
         complex:
           root: PaloAltoNetworksXDR.Endpoint.[0].ip
           accessor: '[0]'
@@ -2260,8 +2260,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 9265
+          "x": 162.5,
+          "y": 9440
         }
       }
     note: false
@@ -2296,8 +2296,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 9615
+          "x": 162.5,
+          "y": 9090
         }
       }
     note: false
@@ -2307,12 +2307,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "69":
-    id: "69"
-    taskid: ac60412f-c39e-468c-8dab-c9a141294dcc
+  "65":
+    id: "65"
+    taskid: 3d9a712a-558f-4989-87b6-f0ebef05f8a8
     type: regular
     task:
-      id: ac60412f-c39e-468c-8dab-c9a141294dcc
+      id: 3d9a712a-558f-4989-87b6-f0ebef05f8a8
       version: -1
       name: Get endpoints
       description: Gets a list of endpoints, according to the passed filters. If there
@@ -2371,8 +2371,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 9090
+          "x": 162.5,
+          "y": 9260
         }
       }
     note: false
@@ -2456,8 +2456,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 9440
+          "x": 170,
+          "y": 9770
         }
       }
     note: false
