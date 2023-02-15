@@ -73,7 +73,7 @@ To use Fetch incidents, configure a new instance and select the ```Fetches incid
 
 You can configure the ``First fetch timestamp`` field to determine how much time back you want to fetch incidents.
 
-Notice that it might required to set the ``Timeout`` field to a higher value.
+Notice that it might require you to set the ``Timeout`` field to a higher value.
 
 Pay special attention to the following fields in the instance settings:
 
