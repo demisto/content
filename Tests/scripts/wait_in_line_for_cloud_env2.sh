@@ -64,7 +64,7 @@ echo -e "We have $NUM_OF_TEST_MACHINES machines for testing and a lot more build
 echo -e "If we want to make sure our product stays amazing, we will have to work together and keep an orderly queue"
 echo -e "May the tests be in our favour. Good luck to us all"
 
-export CLOUD_CHOSEN_MACHINE_ID=$(python3 ./Tests/scripts/utils/lock_cloud_machines.py --service_account $GCS_ARTIFACTS_KEY --gcs_locks_path $GCS_LOCKS_PATH  --ci_job_id $CI_JOB_ID  --test_machines_list "test-machines-ga"  --gitlab_status_token $GITLAB_STATUS_TOKEN)
+export CLOUD_CHOSEN_MACHINE_ID=$(python3 ./Tests/scripts/utils/lock_cloud_machines.py --service_account $GCS_ARTIFACTS_KEY --gcs_locks_path $GCS_LOCKS_PATH  --ci_job_id $CI_JOB_ID  --test_machines_list "test-machines-ga"  --gitlab_status_token $GITLAB_STATUS_TOKEN --response_mashine CloudEnvVariables)
 # export vars to file
 echo -e "export CLOUD_CHOSEN_MACHINE_ID=$CLOUD_CHOSEN_MACHINE_ID" >>  CloudEnvVariables
 

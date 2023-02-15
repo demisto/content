@@ -181,6 +181,7 @@ def options_handler():
     parser.add_argument('--ci_job_id', help='Path to the file with cloud Servers api keys.')
     parser.add_argument('--test_machines_list', help='Path to the file with cloud Servers api keys.')
     parser.add_argument('--gitlab_status_token', help='Path to the file with cloud Servers api keys.')
+    parser.add_argument('--response_mashine', help='Path to the file with cloud Servers api keys.')
 
     options = parser.parse_args()
     return options
@@ -306,8 +307,10 @@ def main():
                 remove_build_from_queue(storage_bucket, lock_repo_name, options.ci_job_id)
                 lock_machine_name = machine
                 break
-    print(lock_machine_name)
-    sys.exit(0)
+    f = open(options.response_mashine, "w")
+    f.write(f"export CLOUD_CHOSEN_MACHINE_ID={lock_machine_name}")
+    f.close()
+
 
 if __name__ == '__main__':
     main()
