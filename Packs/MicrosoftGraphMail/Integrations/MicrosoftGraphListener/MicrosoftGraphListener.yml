@@ -688,6 +688,10 @@ script:
       - Read
       - Unread
     description: Update the status of an email to read / unread.
+  - description: Generate the login url used for Authorization code flow.
+    execution: false
+    name: msgraph-mail-generate-login-url
+    arguments: []
   dockerimage: demisto/crypto:1.0.0.47970
   isfetch: true
   runonce: false
