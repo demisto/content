@@ -1,7 +1,7 @@
 ## Overview
 ---
 
-Use the Syslog Sender integration to send messages and mirror incident War Room entries to Syslog.
+Use the Syslog Sender integration to send messages in RFC 5424 message format and mirror incident War Room entries to Syslog.
 
 
 ## Use Cases
