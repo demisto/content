@@ -1,6 +1,6 @@
 id: Brute Force Investigation - Generic - SANS
 version: -1
-name: Brute Force Investigation - Generic - SANS
+name: Brute Force Investigation - Generic - SANS - Test
 description: "This playbook investigates a \"Brute Force\" incident by gathering user\
   \ and IP information, and calculating the incident severity based on the gathered\
   \ information and information received from the user. It then performs remediation.\n\
