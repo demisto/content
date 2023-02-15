@@ -1,0 +1,119 @@
+id: Show Scheduled Entries Test
+version: 4
+vcShouldKeepItemLegacyProdMachine: false
+name: Show Scheduled Entries Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4aa76e23-f5df-40dc-8bd3-0820540bb80f
+    type: start
+    task:
+      id: 4aa76e23-f5df-40dc-8bd3-0820540bb80f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a8953743-67bb-4c63-8984-f490ed4ef70d
+    type: regular
+    task:
+      id: a8953743-67bb-4c63-8984-f490ed4ef70d
+      version: -1
+      name: ScheduleCommand
+      description: Schedule a command to run inside the war room at a future time
+        (once or reoccurring)
+      scriptName: ScheduleCommand
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      command:
+        simple: '!Print value=555'
+      cron:
+        simple: 19 * * * *
+      times:
+        simple: "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f17c7f1e-6bb4-43ab-8928-31fdacf4166f
+    type: regular
+    task:
+      id: f17c7f1e-6bb4-43ab-8928-31fdacf4166f
+      version: -1
+      name: ShowScheduledEntries
+      description: Show all scheduled entries for specific incident.
+      scriptName: ShowScheduledEntries
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 525,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
