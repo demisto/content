@@ -17,7 +17,6 @@ When fetch incidents is enabled, the pack will pull all open incidents from Resp
 It is worth noting that this pack does not pull in all of the data on each incident in Respond, rather a subset deemed to be most critical and helpful based on customer feedback. There is a link to the Respond incident provided on every corresponding XSOAR incident in case a user needs to retrieve additional information.
 
 Use the Mandiant Automated Defense integration to fetch and update incidents from Mandiant Automated Defense. Mandiant Automated Defense fetches open incidents and updates them every minute. Changes made within XSOAR are reflected in Mandiant Automated Defense platform with bi-directional mirroring capabilities enabled.
-This integration was integrated and tested with version xx of Respond_Analyst
 
 ## Configure Mandiant Automated Defense (Formerly Respond Software) on Cortex XSOAR
 
