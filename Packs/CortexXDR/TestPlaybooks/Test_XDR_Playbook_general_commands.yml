@@ -2364,7 +2364,7 @@ tasks:
         simple: original
       value:
         complex:
-          root: PaloAltoNetworksXDR.Endpoint.[0]
+          root: PaloAltoNetworksXDR.Endpoint.[1]
           accessor: alias
     separatecontext: false
     continueonerrortype: ""
