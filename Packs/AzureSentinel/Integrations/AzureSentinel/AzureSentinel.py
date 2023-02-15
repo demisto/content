@@ -706,7 +706,7 @@ def update_remote_incident(client: AzureSentinelClient, data: Dict[str, Any], de
             return str(update_incident_request(client, incident_id, data, delta, close_ticket=True))
         elif delta.keys() <= {'classification', 'classificationComment'}:
             demisto.debug(f'Incident with remote ID {incident_id} is closed in XSOAR, '
-                          'but the closde ticket parameter is not set.')
+                          'but not in the remote system ("Close Mirrored Microsoft Sentinel Ticket" parameter is not set).')
             return ''
         else:  # The delta contains fields that are not related to closing the incident and close_incident_in_remote() is False
             demisto.debug(f'Updating incident with remote ID {incident_id} in remote system (but not closing it).')
@@ -715,6 +715,8 @@ def update_remote_incident(client: AzureSentinelClient, data: Dict[str, Any], de
     elif incident_status == IncidentStatus.ACTIVE:
         demisto.debug(f'Updating incident with remote ID {incident_id} in remote system.')
         return str(update_incident_request(client, incident_id, data, delta))
+
+    demisto.debug(f'Incident with remote ID {incident_id} is not Active or Closed, not updating. (status: {incident_status})')
     return ''
 
 
