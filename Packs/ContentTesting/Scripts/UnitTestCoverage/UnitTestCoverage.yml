@@ -1,22 +1,24 @@
+args:
+- name: playbook
 comment: |
-  Check Upgrade and Display Changes
+  Assesses the tasks executed in a playbook during the content testing process.
 commonfields:
-  id: ListPlaybookAutomationsCommands
+  id: UnitTestCoverage
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
 dockerimage: demisto/python3:3.10.10.47713
 enabled: true
-name: ListPlaybookAutomationsCommands
+name: UnitTestCoverage
 runas: DBotWeakRole
 runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
 tags: []
+timeout: 600ns
 type: python
-fromversion: 6.0.0
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
-timeout: 600ns

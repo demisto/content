@@ -1,22 +1,21 @@
-comment: |
-  Check Upgrade and Display Changes
 commonfields:
-  id: ListPlaybookAutomationsCommands
+  id: UnitTestPBATaskAvg
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
 dockerimage: demisto/python3:3.10.10.47713
 enabled: true
-name: ListPlaybookAutomationsCommands
+name: UnitTestPBATaskAvg
 runas: DBotWeakRole
 runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
-tags: []
+tags:
+- dynamic-section
+timeout: 300ns
 type: python
-fromversion: 6.0.0
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
-timeout: 600ns
