@@ -41,7 +41,7 @@ def enable_disable_user_account_mock_response(*args, **kwargs):
             "headers": [
                 {
                     "name": "Operation-Location",
-                    "value": "https://api.xdr.trendmicro.com/v3.0/xdr/response/tasks/00000001",
+                    "value": "https://apimock-dev.trendmicro.com/v3.0/xdr/response/tasks/00000001",
                 }
             ],
         }
@@ -97,7 +97,7 @@ def force_signout_mock_response(*args, **kwargs):
             "headers": [
                 {
                     "name": "Operation-Location",
-                    "value": "https://api.xdr.trendmicro.com/v3.0/xdr/response/tasks/00000001",
+                    "value": "https://apimock-dev.trendmicro.com/v3.0/xdr/response/tasks/00000001",
                 }
             ],
         }
@@ -107,9 +107,7 @@ def force_signout_mock_response(*args, **kwargs):
 
 def test_force_signout(mocker):
     """Test to force sign out user account with successful result."""
-    mocker.patch(
-        "TrendMicroVisionOneV3.Client.http_request", force_signout_mock_response
-    )
+    mocker.patch("TrendMicroVisionOneV3.Client.http_request", force_signout_mock_response)
     client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     args = {
         "accountName": "ghost@trendmicro.com",
@@ -130,7 +128,7 @@ def force_password_reset_mock_response(*args, **kwargs):
             "headers": [
                 {
                     "name": "Operation-Location",
-                    "value": "https://api.xdr.trendmicro.com/v3.0/xdr/response/tasks/00000001",
+                    "value": "https://apimock-dev.trendmicro.com/v3.0/xdr/response/tasks/00000001",
                 }
             ],
         }
@@ -140,9 +138,7 @@ def force_password_reset_mock_response(*args, **kwargs):
 
 def test_force_password_reset(mocker):
     """Test to force sign out user account with successful result."""
-    mocker.patch(
-        "TrendMicroVisionOneV3.Client.http_request", force_password_reset_mock_response
-    )
+    mocker.patch("TrendMicroVisionOneV3.Client.http_request", force_password_reset_mock_response)
     client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     args = {
         "accountName": "ghost@trendmicro.com",
@@ -163,7 +159,7 @@ def add_remove_blocklist_mock_response(*args, **kwargs):
             "headers": [
                 {
                     "name": "Operation-Location.",
-                    "value": "https://api.xdr.trendmicro.com/v3.0/xdr/response/tasks/00000001",
+                    "value": "https://apimock-dev.trendmicro.com/v3.0/xdr/response/tasks/00000001",
                 }
             ],
         }
@@ -174,18 +170,14 @@ def add_remove_blocklist_mock_response(*args, **kwargs):
 # Test cases for add to block list
 def test_add_blocklist(mocker):
     """Test add to block list with positive scenario."""
-    mocker.patch(
-        "TrendMicroVisionOneV3.Client.http_request", add_remove_blocklist_mock_response
-    )
+    mocker.patch("TrendMicroVisionOneV3.Client.http_request", add_remove_blocklist_mock_response)
     client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     args = {
         "valueType": "fileSha1",
         "targetValue": "2de5c1125d5f991842727ed8ea8b5fda0ffa249b",
         "description": "block info",
     }
-    result = add_or_remove_from_block_list(
-        client, "trendmicro-visionone-add-to-block-list", args
-    )
+    result = add_or_remove_from_block_list(client, "trendmicro-visionone-add-to-block-list", args)
     assert result.outputs["status"] == 202
     assert result.outputs["taskId"] == "00000001"
     assert result.outputs_prefix == "VisionOne.BlockList"
@@ -195,9 +187,7 @@ def test_add_blocklist(mocker):
 # Test cases for remove from block list
 def test_remove_block_list(mocker):
     """Test remove block list positive scenario."""
-    mocker.patch(
-        "TrendMicroVisionOneV3.Client.http_request", add_remove_blocklist_mock_response
-    )
+    mocker.patch("TrendMicroVisionOneV3.Client.http_request", add_remove_blocklist_mock_response)
     client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     args = {
         "valueType": "fileSha1",
@@ -221,7 +211,7 @@ def quarantine_delete_email_mock_response(*args, **kwargs):
             "headers": [
                 {
                     "name": "Operation-Location",
-                    "value": "https://api.xdr.trendmicro.com/v3.0/xdr/response/tasks/00000001",
+                    "value": "https://apimock-dev.trendmicro.com/v3.0/xdr/response/tasks/00000001",
                 }
             ],
         }
@@ -238,9 +228,7 @@ def test_quarantine_email_message(mocker):
     )
     client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     args = {
-        "messageId": (
-            "<CANUJTKTjto9GAHTr9V=TFqMZhRXqVn=" "MfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com>"
-        ),
+        "messageId": ("<CANUJTKTjto9GAHTr9V=TFqMZhRXqVn=" "MfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com>"),
         "mailBox": "kjshdfjksahd@trendenablement.com",
         "description": "quarantine info",
     }
@@ -262,9 +250,7 @@ def test_delete_email_message(mocker):
     )
     client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     args = {
-        "messageId": (
-            "<CANUJTKTqmuCT12v7mpbxZih_crrP" "MfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com>"
-        ),
+        "messageId": ("<CANUJTKTqmuCT12v7mpbxZih_crrP" "MfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com>"),
         "mailBox": "kjshdfjksahd@trendenablement.com",
         "description": "quarantine info",
     }
@@ -285,7 +271,7 @@ def isolate_restore_mock_response(*args, **kwargs):
             "headers": [
                 {
                     "name": "Operation-Location",
-                    "value": "https://api.xdr.trendmicro.com/v3.0/xdr/response/tasks/00000001",
+                    "value": "https://apimock-dev.trendmicro.com/v3.0/xdr/response/tasks/00000001",
                 }
             ],
             "body": {
@@ -299,17 +285,13 @@ def isolate_restore_mock_response(*args, **kwargs):
 # Test cases for isolate endpoint
 def test_isolate_endpoint(mocker):
     """Test isolate endpoint positive scenario."""
-    mocker.patch(
-        "TrendMicroVisionOneV3.Client.http_request", isolate_restore_mock_response
-    )
+    mocker.patch("TrendMicroVisionOneV3.Client.http_request", isolate_restore_mock_response)
     client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     args = {
         "endpoint": "client1",
         "description": "isolate endpoint info",
     }
-    result = isolate_or_restore_connection(
-        client, "trendmicro-visionone-isolate-endpoint", args
-    )
+    result = isolate_or_restore_connection(client, "trendmicro-visionone-isolate-endpoint", args)
     assert result.outputs["taskStatus"] == 202
     assert isinstance(result.outputs["taskId"], str)
     assert result.outputs_prefix == "VisionOne.Endpoint_Connection"
@@ -319,9 +301,7 @@ def test_isolate_endpoint(mocker):
 # Test cases for restore endpoint
 def test_restore_endpoint(mocker):
     """Test restore endpoint positive scenario."""
-    mocker.patch(
-        "TrendMicroVisionOneV3.Client.http_request", isolate_restore_mock_response
-    )
+    mocker.patch("TrendMicroVisionOneV3.Client.http_request", isolate_restore_mock_response)
     client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     args = {
         "endpoint": "client1",
@@ -344,7 +324,7 @@ def terminate_process_mock_response(*args, **kwargs):
             "headers": [
                 {
                     "name": "Operation-Location",
-                    "value": "https://api.xdr.trendmicro.com/v3.0/xdr/response/tasks/00000001",
+                    "value": "https://apimock-dev.trendmicro.com/v3.0/xdr/response/tasks/00000001",
                 }
             ],
         }
@@ -355,9 +335,7 @@ def terminate_process_mock_response(*args, **kwargs):
 # Test cases for terminate process endpoint
 def test_terminate_process_endpoint(mocker):
     """Test terminate process positive scenario."""
-    mocker.patch(
-        "TrendMicroVisionOneV3.Client.http_request", terminate_process_mock_response
-    )
+    mocker.patch("TrendMicroVisionOneV3.Client.http_request", terminate_process_mock_response)
     client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     args = {
         "endpoint": "035f6286-2414-4cb4-8d05-e67d2d32c944",
@@ -381,9 +359,7 @@ def add_delete_exception_mock_response(*args, **kwargs):
 # Test cases for add exception list endpoint.
 def test_add_object_to_exception_list(mocker):
     """Test add to exception list with positive scenario."""
-    mocker.patch(
-        "TrendMicroVisionOneV3.Client.http_request", add_delete_exception_mock_response
-    )
+    mocker.patch("TrendMicroVisionOneV3.Client.http_request", add_delete_exception_mock_response)
     mocker.patch(
         "TrendMicroVisionOneV3.Client.exception_list_count",
         add_delete_exception_mock_response,
@@ -402,9 +378,7 @@ def test_add_object_to_exception_list(mocker):
 # Test cases for delete exception list.
 def test_delete_object_to_exception_list(mocker):
     """Test delete exception list positive scenario."""
-    mocker.patch(
-        "TrendMicroVisionOneV3.Client.http_request", add_delete_exception_mock_response
-    )
+    mocker.patch("TrendMicroVisionOneV3.Client.http_request", add_delete_exception_mock_response)
     mocker.patch(
         "TrendMicroVisionOneV3.Client.exception_list_count",
         add_delete_exception_mock_response,
@@ -429,9 +403,7 @@ def add_delete_suspicious_mock_response(*args, **kwargs):
 # Test cases for add suspicious object list
 def test_add_object_to_suspicious_list(mocker):
     """Test add to suspicious list with poistive scenario."""
-    mocker.patch(
-        "TrendMicroVisionOneV3.Client.http_request", add_delete_suspicious_mock_response
-    )
+    mocker.patch("TrendMicroVisionOneV3.Client.http_request", add_delete_suspicious_mock_response)
     mocker.patch(
         "TrendMicroVisionOneV3.Client.suspicious_list_count",
         add_delete_suspicious_mock_response,
@@ -455,9 +427,7 @@ def test_add_object_to_suspicious_list(mocker):
 # Test cases for delete suspicious object list
 def test_delete_object_from_suspicious_list(mocker):
     """Test delete object from suspicious list."""
-    mocker.patch(
-        "TrendMicroVisionOneV3.Client.http_request", add_delete_suspicious_mock_response
-    )
+    mocker.patch("TrendMicroVisionOneV3.Client.http_request", add_delete_suspicious_mock_response)
     mocker.patch(
         "TrendMicroVisionOneV3.Client.suspicious_list_count",
         add_delete_suspicious_mock_response,
@@ -481,7 +451,8 @@ def mock_file_status_response(*args, **kwargs):
         "error": {},
         "createdDateTime": "2021-05-07T03:07:40Z",
         "lastActionDateTime": "2021-05-07T03:08:40Z",
-        "resourceLocation": "https://api.xdr.trendmicro.com/v3.0/sandbox/analysisResults/012e4eac-9bd9-4e89-95db-77e02f75a6f3",
+        "resourceLocation": """"https://apimock-dev.trendmicro.com/v3.0/sandbox/analysisResults/
+                                012e4eac-9bd9-4e89-95db-77e02f75a6f3""",
         "isCached": True,
         "digest": {},
         "arguments": "LS10ZXN0IA==",
@@ -572,7 +543,7 @@ def mock_collect_file_response(*args, **kwargs):
             "headers": [
                 {
                     "name": "Operation-Location",
-                    "value": "https://api.xdr.trendmicro.com/v3.0/xdr/response/tasks/00000001",
+                    "value": "https://apimock-dev.trendmicro.com/v3.0/xdr/response/tasks/00000001",
                 }
             ],
         }
@@ -583,9 +554,7 @@ def mock_collect_file_response(*args, **kwargs):
 # Test cases for collect forensic file.
 def test_collect_forensic_file(mocker):
     """Test collect file with positive scenario."""
-    mocker.patch(
-        "TrendMicroVisionOneV3.Client.http_request", mock_collect_file_response
-    )
+    mocker.patch("TrendMicroVisionOneV3.Client.http_request", mock_collect_file_response)
     client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     args = {
         "endpoint": "client1",
@@ -667,7 +636,7 @@ def test_download_analysis_report(mocker):
         mock_download_analysis_report_response,
     )
     args = {"submission_id": "8559a7ce-2b85-451b-8742-4b943ad76a22"}
-    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     result = download_analysis_report(client, args)
     assert isinstance(result[1].outputs["code"], int)
     assert result[1].outputs["message"] == "Please select download to start download"
@@ -698,7 +667,7 @@ def test_download_analysis_package(mocker):
         mock_download_investigation_package_response,
     )
     args = {"submission_id": "8559a7ce-2b85-451b-8742-4b943ad76a22"}
-    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     result = download_investigation_package(client, args)
     assert isinstance(result[1].outputs["code"], int)
     assert result[1].outputs["message"] == "Please select download to start download"
@@ -855,7 +824,8 @@ def mock_sandbox_submission_polling_response(*args, **kwargs):
         "error": {"code": "", "message": ""},
         "createdDateTime": "2021-05-07T03:07:40Z",
         "lastActionDateTime": "2021-05-07T03:08:40Z",
-        "resourceLocation": "https://api.xdr.trendmicro.com/v3.0/sandbox/analysisResults/012e4eac-9bd9-4e89-95db-77e02f75a6f3",
+        "resourceLocation": """https://apimock-dev.trendmicro.com/v3.0/sandbox/analysisResults/
+                               012e4eac-9bd9-4e89-95db-77e02f75a6f3""",
         "isCached": "true",
         "digest": {
             "md5": "4ac174730d4143a119037d9fda81c7a9",
@@ -884,9 +854,7 @@ def test_sandbox_submission_polling(mocker):
         "TrendMicroVisionOneV3.Client.http_request",
         mock_sandbox_submission_polling_response,
     )
-    mocker.patch(
-        "CommonServerPython.ScheduledCommand.raise_error_if_not_supported", lambda: None
-    )
+    mocker.patch("CommonServerPython.ScheduledCommand.raise_error_if_not_supported", lambda: None)
     client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     args = {"task_id": "8559a7ce-2b85-451b-8742-4b943ad76a22"}
     result = get_sandbox_submission_status(args, client)
@@ -918,12 +886,8 @@ def check_task_status_mock_response(*args, **kwargs):
 
 
 def test_check_task_status(mocker):
-    mocker.patch(
-        "TrendMicroVisionOneV3.Client.http_request", check_task_status_mock_response
-    )
-    mocker.patch(
-        "CommonServerPython.ScheduledCommand.raise_error_if_not_supported", lambda: None
-    )
+    mocker.patch("TrendMicroVisionOneV3.Client.http_request", check_task_status_mock_response)
+    mocker.patch("CommonServerPython.ScheduledCommand.raise_error_if_not_supported", lambda: None)
     client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     args = {"task_id": "00001824"}
     result = get_task_status(args, client)
@@ -970,9 +934,7 @@ def mock_get_endpoint_info_response(*args, **kwargs):
 # Test case for get endpoint information.
 def test_get_endpoint_information(mocker):
     """Test get information from endpoint based on endpointName or agentGuid"""
-    mocker.patch(
-        "TrendMicroVisionOneV3.Client.http_request", mock_get_endpoint_info_response
-    )
+    mocker.patch("TrendMicroVisionOneV3.Client.http_request", mock_get_endpoint_info_response)
     args = {"endpoint": "hostname"}
     client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     result = get_endpoint_info(client, args)
@@ -1002,7 +964,7 @@ def add_note_mock_response(*args, **kwargs):
 # Test case for add note
 def test_add_note(mocker):
     mocker.patch("TrendMicroVisionOneV3.requests.post", add_note_mock_response)
-    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     args = {"workbench_id": "WB-14-20190709-00003", "content": "This is a new note."}
     result = add_note(client, args)
     assert result.outputs["message"] == "success"
@@ -1022,9 +984,7 @@ def update_status_mock_response(*args, **kwargs):
 
 # Test case for update alert status
 def test_update_status(mocker):
-    mocker.patch(
-        "TrendMicroVisionOneV3.Client.http_request", update_status_mock_response
-    )
+    mocker.patch("TrendMicroVisionOneV3.Client.http_request", update_status_mock_response)
     client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     args = {"workbench_id": "WB-20837-20220418-00000", "status": "In Progress"}
     result = update_status(client, args)

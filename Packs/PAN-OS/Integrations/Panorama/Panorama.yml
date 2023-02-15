@@ -5186,6 +5186,7 @@ script:
       - profile-setting
       - source-user
       - service
+      - audit-comment
       required: true
     - description: The new value for the parameter.
       name: element_value
@@ -5627,8 +5628,37 @@ script:
       name: device-group
     - description: The tag to filter the rules.
       name: tag
+      deprecated: true
+    - description: A comma-separated list of tags by which to filter the rules.
+      name: tags
+      isArray: true
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
+      required: false
+    - description: The name of the rule to retrieve. If not mentioned, will retrieve all the rules.
+      isArray: false
+      name: rulename
+      required: false
+    - auto: PREDEFINED
+      description: Whether to retrieve the disabled rules or not. If not mentioned, will retrieve all the rules.
+      name: disabled
+      isArray: false
+      required: false
+      predefined:
+      - yes
+      - no
+    - auto: PREDEFINED
+      description: The action of the rules to retrieve. If not mentioned, will retrieve all the rules.
+      name: action
+      isArray: false
+      required: false
+      predefined:
+      - allow
+      - deny
+      - drop
+    - description: Free query to retrieve rules. If not mentioned, will retrieve all the rules.
+      name: query
+      isArray: false
       required: false
     description: Returns a list of predefined Security Rules.
     name: pan-os-list-rules
@@ -5669,6 +5699,9 @@ script:
     - contextPath: Panorama.SecurityRules.Tags
       description: The rule tags.
       type: String
+    - contextPath: Panorama.SecurityRules.Disabled
+      description: Whether the rule is disabled.
+      type: string
   - arguments:
     - description: The log type.
       name: log-type
@@ -8453,6 +8486,31 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: Whether to retrieve the disabled rules. If not mentioned, will retrieve all the NAT rules.
+      isArray: false
+      name: disabled
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+    - description: The type of the NAT rules to retrieve. If not mentioned, will retrieve all the NAT rules.
+      isArray: false
+      name: nat_type
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - ipv4
+      - nat64
+      - nptv6
+    - description: A comma-separated list of tags of the NAT rules to retrieve. If not mentioned, will retrieve all the NAT rules.
+      isArray: true
+      name: tags
+      required: false
+    - description: Free query to retrieve NAT rule. If not mentioned, will retrieve all the NAT rules.
+      name: query
+      isArray: false
+      required: false
     - defaultValue: '50'
       description: The maximum number of rules to retrieve. Will be used by default if page argument was not provided.
       isArray: false
@@ -8509,6 +8567,9 @@ script:
     - contextPath: Panorama.NAT.DynamicDestinationTranslation
       description: The dynamic destination translation of the rule.
       type: Unknown
+    - contextPath: Panorama.NAT.Disabled
+      description: Whether the rule is disabled.
+      type: String
   - arguments:
     - description: The name of the NAT rule to create.
       isArray: false
@@ -8998,6 +9059,31 @@ script:
       - 'false'
       name: show_uncommitted
       required: false
+    - description: Whether to retrieve the disabled rules. If not mentioned, will retrieve all the PBF rules.
+      isArray: false
+      name: disabled
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+    - description: The action of the PBF rules to retrieve. If not mentioned, will retrieve all the PBF rules.
+      isArray: false
+      name: action
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - discard
+      - forward
+      - no-pbf
+    - description: A comma-separated list of tags of the PBF rules to retrieve. If not mentioned, will retrieve all the PBF rules.
+      isArray: true
+      name: tags
+      required: false
+    - description: Free query to retrieve PBF rule. If not mentioned, will retrieve all the PBF rules.
+      name: query
+      isArray: false
+      required: false
     - defaultValue: '50'
       description: The maximum number of rules to retrieve. Will be used by default if page argument was not provided.
       isArray: false
@@ -9051,6 +9137,9 @@ script:
     - contextPath: Panorama.PBF.Service
       description: The services of the PBF rule.
       type: Unknown
+    - contextPath: Panorama.PBF.Disabled
+      description: Whether the rule is disabled.
+      type: String
   - arguments:
     - description: The name of the PBF-rule to create.
       isArray: false
@@ -9199,6 +9288,7 @@ script:
       - action_forward_nexthop_fqdn
       - action_forward_discard
       - action_forward_no_pbf
+      - disabled
     - description: The value of the element to change. Can be a list for some of the elements. When element_to_change == 'action_forward_egress_interface', the action of the rule will be changed to 'forward' automatically.
       isArray: true
       name: element_value
@@ -9346,7 +9436,7 @@ script:
     description: Deletes an application-group
     name: pan-os-delete-application-group
     outputs: []
-  dockerimage: demisto/pan-os-python:1.0.0.45668
+  dockerimage: demisto/pan-os-python:1.0.0.48063
   feed: false
   isfetch: true
   longRunning: false

@@ -2,6 +2,11 @@
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
+.filter-non-nightly-docker-updates-rule:
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^(demisto\/[^\/]+)(?!.*-nightly).*$/'
+      when: never
+
 trigger-private-build:
   tags:
     - gke
@@ -36,6 +41,23 @@ trigger-private-build:
   - ./Documentation/commonServerDocs.sh
   - section_end "Create Release Notes and Common Server Documentation"
 
+stop-running-pipelines:
+  tags:
+    - gke
+  stage: unittests-and-validations
+  needs: []
+  extends:
+    - .default-job-settings
+  variables:
+    master_branch_name: master
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
+  script:
+    - section_start "Stop running piplines on current branch"
+    - Utils/gitlab/stop_running_pipelines.sh $CI_COMMIT_BRANCH $CI_PIPELINE_ID
+    - section_end "Stop running piplines on current branch"
+
+
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
 run-unittests-and-lint:
   extends:
@@ -62,6 +84,7 @@ validate-content-conf:
   extends:
     - .default-job-settings
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
   script:
     - section_start "Validate content-test-conf Branch Merged"
@@ -89,6 +112,7 @@ validate-content-conf:
   extends:
     - .default-job-settings
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule]
     - if: "$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/"
     - if: "$NIGHTLY"
   cache:
@@ -105,7 +129,7 @@ validate-content-conf:
 
     - echo "Updating the content graph"
     - mkdir $ARTIFACTS_FOLDER/content_graph
-    - demisto-sdk create-content-graph --marketplace $MARKETPLACE_VERSION -o $ARTIFACTS_FOLDER/content_graph  # TODO: return to update with -g when fixed issues
+    - demisto-sdk create-content-graph --marketplace $MARKETPLACE_VERSION -o $ARTIFACTS_FOLDER/content_graph
     - echo "Successfully updated content graph"
 
     - section_end "Create or update content graph"
@@ -145,7 +169,7 @@ validate-content-conf:
         echo "Skipping - not running in INSTANCE_TESTS build"
       else
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "$MARKETPLACE_VERSION" --service_account $GCS_MARKET_KEY --graph true
+        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "$MARKETPLACE_VERSION" --service_account $GCS_MARKET_KEY --graph true --override_all_packs $OVERRIDE_ALL_PACKS
       fi
     - section_end "Collect Tests"
 
@@ -257,6 +281,7 @@ xsoar_server_6_5:
   extends: .test_content_on_xsoar_server_instances_base
   #  No need to trigger in case of release branch
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
   variables:
     INSTANCE_ROLE: "Server 6.5"
@@ -265,6 +290,7 @@ xsoar_server_6_6:
   extends: .test_content_on_xsoar_server_instances_base
   #  No need to trigger in case of release branch
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
   variables:
     INSTANCE_ROLE: "Server 6.6"
@@ -273,6 +299,7 @@ xsoar_server_6_8:
   extends: .test_content_on_xsoar_server_instances_base
   #  No need to trigger in case of release branch
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
   variables:
     INSTANCE_ROLE: "Server 6.8"
@@ -282,6 +309,7 @@ xsoar_server_master:
     - .test_content_on_xsoar_server_instances_base
   #  No need to trigger in case of release branch
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
     - if: '$NIGHTLY'
       when: always
@@ -437,6 +465,7 @@ xsiam_server_ga:
   extends:
     - .test_content_on_cloud_server_instances_base
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
     - if: '$NIGHTLY'
       when: always
@@ -460,6 +489,7 @@ xsoar_ng_server_ga:
   extends:
     - .test_content_on_cloud_server_instances_base
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
       when: always
   variables:
@@ -477,3 +507,48 @@ xsoar_ng_server_ga:
     MARKETPLACE_NAME: "xsoar"
   needs: ["xsoar-prepare-testing-bucket"]
   allow_failure: true
+
+
+test-upload-flow:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  variables:
+    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
+  stage: unittests-and-validations
+  allow_failure: true
+  script:
+    - |
+    - section_start "Checks Whether to Trigger a Test Upload"
+    - SHOULD_SKIP_TEST_UPLOAD=$(./Utils/should_trigger_test_upload.sh)
+    - if [ -z "$SHOULD_SKIP_TEST_UPLOAD" ]; then
+    -   echo "No upload-flow related files were modified, skipping upload test"
+    -   exit 0
+    - fi
+    - echo "Found modified files that should be tested in upload-flow"
+    - section_end "Checks Whether to Trigger a Test Upload"
+
+    - section_start "Create Testing Branch"
+    - export BRANCH="${CI_COMMIT_BRANCH}-upload_test_branch-$(date +%s)"
+    - python3 ./Utils/test_upload_flow/create_test_branch.py -tb $BRANCH -a $ARTIFACTS_FOLDER -g $GITLAB_PUSH_TOKEN
+    - echo $BRANCH
+    - section_end "Create Testing Branch"
+
+    - section_start "Trigger Test Upload Flow On Testing Branch"
+    - export pipeline_id=$(./Utils/trigger_test_upload_flow.sh -ct $GITLAB_SVC_USER_TOKEN -g -b $BRANCH | jq .id)
+    - echo "Successful triggered test upload - https://code.pan.run/xsoar/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
+    - section_end "Trigger Test Upload Flow On Testing Branch"
+
+    - section_start "Wait For Upload To Finish"
+    - python3 ./Utils/test_upload_flow/wait_for_upload.py -p $pipeline_id -g $GITLAB_API_TOKEN
+    - section_end "Wait For Upload To Finish"
+
+    - section_start "Verify Created Testing Bucket"
+    - current_storage_base_path="upload-flow/builds/$BRANCH/$pipeline_id/content/packs"
+    - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY -sb $current_storage_base_path -b $ALL_BUCKETS
+    - section_end "Verify Created Testing Bucket"
+
