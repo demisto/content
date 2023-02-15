@@ -12,7 +12,8 @@ configuration:
   type: 0
   section: Connect
   additionalinfo: A Syslog server address must be provided.
-- display: Port
+- defaultvalue: '514'
+  display: Port
   name: port
   required: false
   type: 0
