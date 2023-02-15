@@ -37,4 +37,4 @@ case_only_name_match: tuple = (
     "contains(@name,'name_match')"
 )
 
-get_mock_rules_and_application = [case_with_name, case_without_name, case_empty,case_with_characteristics, case_only_name_match]
+get_mock_rules_and_application = [case_with_name, case_without_name, case_empty, case_with_characteristics, case_only_name_match]
