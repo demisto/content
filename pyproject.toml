@@ -9,12 +9,12 @@ license = "MIT"
 python = "^3.8,<3.11"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev="04cc3ab6eccabf98ef30bc5b5115f35c5ad9aa62"}
+demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev="ds-mypy-1"}
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
 
 [tool.poetry.group.linters.dependencies]
-mypy = "^0.982"
+mypy = "^1.0.0"
 flake8 = "^4.0.1"
 
 [tool.poetry.group.testing.dependencies]
