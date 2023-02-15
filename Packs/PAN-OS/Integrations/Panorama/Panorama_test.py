@@ -12,7 +12,7 @@ from CommonServerPython import DemistoException, CommandResults
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 import dateparser
 import test_data.fetch_incidents_input as fetch_incidents_input
-import test_data.mock_data_build_xpath as mock_data_build_xpath
+import test_data.mock_rules as mock_rules
 from freezegun import freeze_time
 
 integration_firewall_params = {
@@ -6384,7 +6384,7 @@ class TestFetchIncidentsFlows:
 
 
 @pytest.mark.parametrize('name_match, name_contain, filters, expected_result',
-                         mock_data_build_xpath.get_mock_rules_and_application)
+                         mock_rules.get_mock_rules_and_application)
 def test_build_xpath_filter(name_match, name_contain, filters, expected_result):
     from Panorama import build_xpath_filter
     mock_result = build_xpath_filter(name_match, name_contain, filters)
