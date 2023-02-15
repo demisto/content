@@ -117,10 +117,17 @@ class SyslogHandlerTLS(logging.Handler):
             # Calculate the priority value
             priority = (self.facility << 3) | self.level
             # Construct the syslog message
-            syslog_message = f'<{priority}> {msg}\n'.encode('utf-8')
-
+            syslog_message = '<{priority}>1 {timestamp} {hostname} {appname} {procid} {msgid} - {message}'.format(
+                priority=priority,
+                timestamp=datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+                hostname=socket.gethostname(),
+                appname=record.name,
+                procid=os.getpid(),
+                msgid='-',
+                message=self.format(record)
+            )
             # Connect to the syslog server
-            self.socket.send(syslog_message)
+            self.socket.send(syslog_message.encode('utf-8'))
 
         except Exception as e:
             if self.socket:

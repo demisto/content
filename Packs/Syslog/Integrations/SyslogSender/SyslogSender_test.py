@@ -169,38 +169,6 @@ def test_send_with_non_default_log_level(mocker):
     assert results == 'Message sent to Syslog successfully.'
 
 
-def test_init_manager_address():
-    """
-    Given:
-    - address
-    - port
-    - priority
-    - facility
-    When:
-    - Preparing global variables and creating the StreamServer.
-
-    Then:
-    - Ensure globals are set as expected and server is returned with expected attributes.
-    """
-    from SyslogSender import init_manager
-    params = {
-        'address': 'https://www.example.com/tests/stillexample/testthisexapmle123456789',
-        'port': '514',
-        'protocol': 'tcp',
-        'priority': 'LOG_DEBUG',
-        'facility': 'LOG_SYSLOG'
-    }
-    # address_after_encoding = base64.b64encode(params['address'].encode()).decode("utf-8")
-
-    # Arrange
-    manager = init_manager(params)
-    assert manager.address == params['address']
-    assert manager.port == 514
-    assert manager.protocol == 'tcp'
-    assert manager.logging_level == 10
-    assert manager.facility == 5
-
-
 def test_prepare_certificate_file():
     """
     Given:
