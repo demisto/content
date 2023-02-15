@@ -23,6 +23,7 @@ SAVED_SEARCH_HEADERS = [
 
 LOG_ANALYTICS_RESOURCE = 'https://api.loganalytics.io'
 AZURE_MANAGEMENT_RESOURCE = 'https://management.azure.com'
+AUTH_CODE_SCOPE = 'https://api.loganalytics.io/Data.Read%20https://management.azure.com/user_impersonation'
 
 
 class Client:
@@ -31,6 +32,10 @@ class Client:
                  private_key, client_credentials, managed_identities_client_id=None):
 
         tenant_id = refresh_token if self_deployed else ''
+        # MicrosoftClient gets refresh_token_param as well as refresh_token which is the current refresh token from the
+        # integration context (if exists) so It will be possible to manually update the refresh token param for an
+        # existing integration instance.
+        refresh_token_param = refresh_token
         refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
             f'{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/{workspace_name}'
@@ -38,6 +43,7 @@ class Client:
             self_deployed=self_deployed,
             auth_id=auth_and_token_url,  # client_id for client credential
             refresh_token=refresh_token,
+            refresh_token_param=refresh_token_param,
             enc_key=enc_key,  # client_secret for client credential
             redirect_uri=redirect_uri,
             token_retrieval_url='https://login.microsoftonline.com/{tenant_id}/oauth2/token',
@@ -46,7 +52,7 @@ class Client:
             base_url=base_url,
             verify=verify,
             proxy=proxy,
-            scope='',
+            scope='' if client_credentials else AUTH_CODE_SCOPE,
             tenant_id=tenant_id,
             auth_code=auth_code,
             ok_codes=(200, 204, 400, 401, 403, 404, 409),
@@ -373,6 +379,9 @@ def main():
 
             test_connection(client, params)
             return_results('ok')
+
+        elif demisto.command() == 'azure-log-analytics-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
 
         elif demisto.command() == 'azure-log-analytics-test':
             test_connection(client, params)
