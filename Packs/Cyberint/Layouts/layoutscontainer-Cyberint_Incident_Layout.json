@@ -678,15 +678,6 @@
 								"startCol": 0
 							},
 							{
-								"endCol": 2,
-								"fieldId": "csvtest",
-								"height": 22,
-								"id": "bc5fdd60-ad0e-11ed-a6f5-83e59692fed4",
-								"index": 8,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
 								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "severity",
@@ -1083,15 +1074,6 @@
 								"height": 106,
 								"id": "c86fcc60-ad12-11ed-a203-f9de85706091",
 								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "cyberintcsv",
-								"height": 22,
-								"id": "bb57bc30-ad0e-11ed-a6f5-83e59692fed4",
-								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
 							}

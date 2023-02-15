@@ -34,9 +34,6 @@
                         "transformers": []
                     }
                 },
-                "CyberInt CSV": {
-                    "simple": "attachments.content"
-                },
                 "CyberInt Closure reason": {
                     "simple": "closure_reason"
                 },
@@ -214,9 +211,6 @@
                         "root": "attachments",
                         "transformers": []
                     }
-                },
-                "CyberInt CSV": {
-                    "simple": "alert_data.csv.name"
                 },
                 "CyberInt Closure reason": {
                     "simple": "closure_reason"
