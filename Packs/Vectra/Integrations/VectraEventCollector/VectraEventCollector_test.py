@@ -47,7 +47,7 @@ def test_auth(mocker, endpoints: Dict[str, str], expected: bool):
 def test_create_headers():
 
     client = VectraClient(url=BASE_URL, api_key=PASSWORD)
-    actual = client.create_headers(PASSWORD)
+    actual = client.create_headers()
     expected = {"Content-Type": "application/json", "Authorization": f"Token {PASSWORD}"}
 
     assert "Content-Type" in actual.keys()

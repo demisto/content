@@ -41,6 +41,7 @@ class VectraClient(BaseClient):
         proxy: bool = False,
     ):
 
+        self.api_key = api_key
         self.max_fetch = max_fetch
 
         self.base_url = urljoin(url, f"/api/v{self.api_version}/")
@@ -59,7 +60,7 @@ class VectraClient(BaseClient):
 
         return self._http_request(method="GET")
 
-    def create_headers(self, api_key: str) -> Dict[str, str]:
+    def create_headers(self) -> Dict[str, str]:
         """
         Generates the necessary HTTP headers.
 
@@ -72,7 +73,7 @@ class VectraClient(BaseClient):
 
         return {
             "Content-Type": "application/json",
-            "Authorization": f"Token {api_key}",
+            "Authorization": f"Token {self.api_key}",
         }
 
 
