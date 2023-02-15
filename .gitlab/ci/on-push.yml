@@ -1,13 +1,13 @@
 .push-rule:
   rules:
-    - if: '$CI_COMMIT_BRANCH =~ /^demisto\/([^n]|n($|[^i]|i($|[^g]|g($|[^h]))))[^\/]*$/'
-      when: never
+#    - if: '$CI_COMMIT_BRANCH =~ /^demisto\/([^n]|n($|[^i]|i($|[^g]|g($|[^h]))))[^\/]*$/'
+#      when: never
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
-#.filter-non-nightly-docker-updates-rule:
-#  rules:
-#    - if: '$CI_COMMIT_BRANCH =~ /^(demisto\/[^\/]+)(?!.*-nightly).*$/'
-#      when: never
+.filter-non-nightly-docker-updates-rule:
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^demisto\/([^n]|n($|[^i]|i($|[^g]|g($|[^h]))))[^\/]*$/'
+      when: never
 
 trigger-private-build:
   tags:
@@ -17,8 +17,11 @@ trigger-private-build:
   extends:
     - .default-job-settings
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
+#    - if: '$CI_COMMIT_BRANCH =~ /^demisto\/([^n]|n($|[^i]|i($|[^g]|g($|[^h]))))[^\/]*$/'
+#      when: never
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
   script:
