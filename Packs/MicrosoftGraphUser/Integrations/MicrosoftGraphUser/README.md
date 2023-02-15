@@ -2,10 +2,19 @@ Unified gateway to security insights - all from a unified Microsoft Graph User A
 
 
 ## Authentication
+For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).  
+
+Required Permissions:
+- Directory.Read.All - Delegated
+- User.ReadWrite.All - Application
+- User.Read - Delegated
+
+## Authorize Cortex XSOAR for Azure Active Directory Users (Self deployed Azure App)
+
 There are two different authentication methods for a self-deployed configuration:
 
-* [Client Credentials flow](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow)
-* [Authorization Code flow](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
+- [Client Credentials flow](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow)
+- [Authorization Code flow](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
 
 We recommend using the Client Credentials flow.
 In order to use the msgraph-user-change-password command, you must configure with the Authorization Code flow.
