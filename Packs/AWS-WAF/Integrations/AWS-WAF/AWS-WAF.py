@@ -11,24 +11,34 @@ from typing import Dict, Any
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
-''' CLIENT CLASS '''
-
-
-
+SERVICE = 'wafv2'
+OUTPUT_PREFIX = 'AWS.Waf'
 
 ''' HELPER FUNCTIONS '''
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+
+def get_tags_dict_from_args(tag_keys: list, tag_values: list) -> List[dict]:
+    tags: list = []
+    if len(tag_keys) != len(tag_values):
+        raise DemistoException('Tha tags_keys and tag_values arguments must be at the same length.')
+
+    # keys and values are in the same length
+    n = len(tag_keys)
+    for i in range(n):
+        tag = {'Key': tag_keys[i], 'Value': tag_values[i]}
+        tags.append(tag)
+
+    return tags
+
+
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def module(client: boto3.client) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -42,36 +52,31 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
-    try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+    pass
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_ip_set_command(client: boto3.session.Session.client, args) -> CommandResults:
+    tag_keys = argToList(args.get('tag_key')) or []
+    tag_values = args.get('tag_value') or []
+    kwargs = {
+        'Name': args.get('name', ''),
+        'Scope': args.get('scope', ''),
+        'Description': args.get('description'),
+        'IPAddressVersion': args.get('ip_version', ''),
+        'Tags': get_tags_dict_from_args(tag_keys, tag_values),
+    }
+    remove_nulls_from_dictionary(kwargs)
+    kwargs |= {'Addresses': argToList(args.get('addresses')) or []}
+    response = client.create_ip_set(**kwargs)
+    outputs = response.get('Summary', {})
 
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
+    readable_output = f'AWS Waf ip set with id {outputs.get("Id", "")} was created successfully'
 
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
-    )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
+    return CommandResults(readable_output=readable_output,
+                          outputs=outputs,
+                          raw_response=response,
+                          outputs_prefix=f'{OUTPUT_PREFIX}.IpSet',
+                          outputs_key_field='Id')
 
 
 ''' MAIN FUNCTION '''
@@ -84,43 +89,43 @@ def main() -> None:
     :rtype:
     """
 
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
+    params = demisto.params()
+    aws_default_region = params.get('defaultRegion')
+    aws_role_arn = params.get('roleArn')
+    aws_role_session_name = params.get('roleSessionName')
+    aws_role_session_duration = params.get('sessionDuration')
+    aws_role_policy = None
+    aws_access_key_id = params.get('access_key', {}).get('password') or params.get('access_key')
+    aws_secret_access_key = params.get('secret_key', {}).get('password') or params.get('secret_key')
+    verify_certificate = not params.get('insecure', True)
+    timeout = params.get('timeout') or 1
+    retries = params.get('retries') or 5
 
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
-
-    demisto.debug(f'Command being called is {demisto.command()}')
     try:
+        validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
+                        aws_secret_access_key)
 
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
+        aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
+                               aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate,
+                               timeout, retries)
+        args = demisto.args()
 
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+        client = aws_client.aws_session(service=SERVICE)
+        result = ''
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            pass
+            # This is the call made when pressing the integration test button.
+            # result = connection_test(client)
+            result = ''
 
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+        elif demisto.command() == 'aws-waf-ip-set-create':
+            result = create_ip_set_command(client, args)
+
+        else:
+            raise NotImplementedError(f'Command {demisto.command()} is not implemented in AWS WAF integration.')
+
+        return_results(result)
 
     # Log exceptions and return errors
     except Exception as e:
@@ -128,7 +133,6 @@ def main() -> None:
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

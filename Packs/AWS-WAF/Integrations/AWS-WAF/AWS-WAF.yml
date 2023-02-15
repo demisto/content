@@ -73,26 +73,62 @@ name: AWS-WAF
 script:
   commands:
   - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
+    - name: name
+      description: The IP set name.
       required: true
-      secret: false
+    - name: scope
+      description: The IP set scope.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "CLOUDFRONT"
+      - "REGIONAL"
+    - name: addresses
+      description: The IP set addresses.
+      isArray: true
+    - name: description
+      description: The IP set description.
+    - name: ip_version
+      description: The IP set versions.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "IPV4"
+      - "IPV6"
+    - name: region
+      description: The AWS Region. If not specified the default region will be used.
+    - name: tag_key
+      description: A comma separated list of the keys of the tags to associate with the ip set.
+      isArray: true
+    - name: tag_value
+      description: A comma separated list of the values of the tags to associate with the ip set.
+      isArray: true
     deprecated: false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+    description: Create a new ip set.
     execution: false
-    name: baseintegration-dummy
+    name: aws-waf-ip-set-create
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: AWS.Waf.IpSet.Id
+      description: The ip set ID.
+      type: String
+    - contextPath: AWS.Waf.IpSet.Name
+      description: The ip set name.
+      type: String
+    - contextPath: AWS.Waf.IpSet.Description
+      description: The ip set description.
+      type: String
+    - contextPath: AWS.Waf.IpSet.LockToken
+      description: The ip set lock token.
+      type: String
+    - contextPath: AWS.Waf.IpSet.ARN
+      description: The ip set ARN.
       type: String
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.7.35188
+  dockerimage: demisto/boto3py3:1.0.0.43720
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
