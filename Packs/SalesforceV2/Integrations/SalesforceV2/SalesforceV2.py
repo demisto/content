@@ -798,7 +798,7 @@ def get_modified_remote_data_command(client, args, params):
     if last_upadte_parsed:
         last_update = last_upadte_parsed.isoformat().split(".")[0] + "Z"
         demisto.debug(f'SalesforcePy : * START * Performing get-modified-remote-data command. Last update is:'
-                    f' {last_update}')
+                      f' {last_update}')
 
     cases = client.queryObjects(['Id'], 'Case',
                                 f"{params.get('mirroring_condition')}".replace("AND ", "")).get('records')
@@ -919,7 +919,8 @@ def fetchIncident(client, params):
                     "name": f"{item.get('Id')} {item.get('Subject')}",
                     "details": item.get('Description'),
                     "owner": cases[index]['OwnerDetails'].get("Email"),
-                    "occurred": created_dated_parsed.isoformat().split("+")[0].split(".")[0] + "Z",
+                    "occurred": created_dated_parsed.isoformat().split("+")[0].split(".")[0] + "Z"
+                    if created_dated_parsed else '',
                     "rawJSON": json.dumps(item),
                     'mirror_direction': MIRROR_DIRECTION.get(params.get('mirror_direction')),
                     'mirror_tags': [params.get('comment_tag'), params.get('file_tag')],
