@@ -948,7 +948,7 @@ def main():
     command = demisto.command()
     args = demisto.args()
 
-    LOG(f'Command being called is {command}')
+    demisto.info(f'Command being called is {command}')
     try:
         if command == 'test-module':
             return_results(test_module(ocve))
