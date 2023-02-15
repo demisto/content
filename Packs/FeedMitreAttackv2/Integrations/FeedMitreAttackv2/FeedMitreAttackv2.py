@@ -58,9 +58,7 @@ FILTER_OBJS = {
 }
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
-EXTRACT_TIMESTAMP_REGEX = r"(\d{4}),\s?(Jan(uary)?|Feb(ruary)?|Mar(ch)?|Apr(il)?|May|Jun(e)?|" \
-                          r"Jul(y)?|Aug(ust)?|Sep(tember)?|Oct(ober)?|Nov(ember)?|Dec(ember)?)\s?(\d{1,2})"
-ACCEPTABLE_DATE_FORMAT = ["%Y, %B %d", "%Y, %b %d"]
+EXTRACT_TIMESTAMP_REGEX = r"\(([^()]+)\)"
 SERVER_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 # disable warnings coming from taxii2client - https://github.com/OTRF/ATTACK-Python-Client/issues/43#issuecomment-1016581436
 logging.getLogger("taxii2client.v20").setLevel(logging.ERROR)
@@ -328,16 +326,11 @@ def extract_date_time_from_description(description: str) -> str:
     date_time_result = ''
     if not description or 'Citation' in description or 'n.d' in description:
         return date_time_result
-    match = re.search(EXTRACT_TIMESTAMP_REGEX, description)
-    if match:
-        date_time_str = f"{match.group(1)}, {match.group(2)} {match.group(14)}"
-        for date_format in ACCEPTABLE_DATE_FORMAT:
-            try:
-                parsed_date_time = datetime.strptime(date_time_str, date_format)
-                date_time_result = datetime.strftime(parsed_date_time, SERVER_DATE_FORMAT)
-                break
-            except ValueError:
-                continue
+    matches = re.findall(EXTRACT_TIMESTAMP_REGEX, description)
+    for match in matches:
+        if parsed_date_time := dateparser.parse(match):
+            date_time_result = datetime.strftime(parsed_date_time, SERVER_DATE_FORMAT)
+            break
     return date_time_result
 
 
