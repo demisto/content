@@ -1,19 +1,14 @@
 [MODEL: dataset="iis_iis_raw"]
-alter timestamp = arrayindex(regextract(_raw_log,"(\d+\-\d+\-\d+\s\d+\:\d+\:\d+)"), 0)
-| alter c_sitename = arrayindex(regextract(_raw_log,"\d+\:\d+\:\d+\s([A-Za-z0-9-_]{4,})"),0),
+alter c_sitename = arrayindex(regextract(_raw_log,"\d+\:\d+\:\d+\s([A-Za-z0-9-_]{4,})"),0),
     S_computername = arrayindex(regextract(_raw_log,"\d+\:\d+\:\d+\s\w+\s(\S+)"),0),
     Cs_method = arrayindex(regextract(_raw_log,"([A-Z]+)\s\/\S*\s"),0),
     Cs_uri_stem = arrayindex(regextract(_raw_log,"[A-Z]+\s(\/\S*)\s"),0),
-    Cs_uri_query = arrayindex(regextract(_raw_log,"[A-Z]+\s\/\S*\s(\S+)"),0),
     S_port = arrayindex(regextract(_raw_log,"\s\w+\s\/[^\-]+[^\d+]+(\d+)"),0),
     Cs_username = arrayindex(regextract(_raw_log,"\s\w+\s\/[^\-]+[^\d+]+\d+\s([^\s]+)"),0),
-    cs_version = arrayindex(regextract(_raw_log,"(HTTP\/\d+\.\d+)"),0),
     Cs_User_Agent = arrayindex(regextract(_raw_log,"HTTP\/\d+\.\d+\s([^\s]+)"),0),
     Cs_Cookie = arrayindex(regextract(_raw_log,"HTTP\/\d+\.\d+\s[^\s]+\s([^\s]+)"),0),
     CS_reffer = arrayindex(regextract(_raw_log,"\s(http\w?\:\/\/\S+)"),0),
     Sc_status = arrayindex(regextract(_raw_log,"\w+\s(\d+)\s\d+\s\d+"),0),
-    Sc_substatus = arrayindex(regextract(_raw_log,"\w+\s\d+\s(\d+)\s\d+"),0),
-    Sc_win32_status = arrayindex(regextract(_raw_log,"\w+\s\d+\s\d+\s(\d+)"),0),
     sc_bytes = arrayindex(regextract(_raw_log,"\w+\s\d+\s\d+\s\d+\s(\d+)"),0),
     cs_bytes = arrayindex(regextract(_raw_log,"\w+\s\d+\s\d+\s\d+\s\d+\s(\d+)"),0),
     Time_taken = arrayindex(regextract(_raw_log,"\s\d+\s[^\s]+\s\d+\s[^\s]+\s[^\s]+\s([^\s]+)"),0),
@@ -39,7 +34,7 @@ alter timestamp = arrayindex(regextract(_raw_log,"(\d+\-\d+\-\d+\s\d+\:\d+\:\d+)
 alter event_type = arrayindex(regextract(_raw_log, "(\S+\s\d+\s\S+\s\d+)"),0)
 | filter
     event_type not contains "-"
-| alter timestamp = arrayindex(regextract(_raw_log, "(\d+\-\d+\-\d+\s\d+\:\d+\:\d+)"), 0),
+| alter
     c_ip = arrayindex(regextract(_raw_log, "\d+\-\d+\-\d+\s\d+\:\d+\:\d+\s(\d+\.\d+\.\d+\.\d+)"), 0),
     c_port = arrayindex(regextract(_raw_log, "\d+\-\d+\-\d+\s\d+\:\d+\:\d+\s\S+\s(\d+)"), 0),
     s_ip = arrayindex(regextract(_raw_log, "\:\d+\s[^\s]+\s\d+\s([^\s]+)"), 0),
@@ -49,7 +44,6 @@ alter event_type = arrayindex(regextract(_raw_log, "(\S+\s\d+\s\S+\s\d+)"),0)
     streamid_ex = arrayindex(regextract(_raw_log, "\s\d+\s[^\s]+\s\d+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s([^\s]+)"), 0),
     sc_status = arrayindex(regextract(_raw_log, "\s\d+\s[^\s]+\s\d+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s([^\s]+)"), 0),
     s_siteid = arrayindex(regextract(_raw_log, "\s\d+\s[^\s]+\s\d+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s([^\s]+)"), 0),
-    s_queuename = arrayindex(regextract(_raw_log, "\s\d+\s[^\s]+\s\d+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s([A-Z]\w+)"), 0),
     s_reason = arrayindex(regextract(_raw_log, "\s\d+\s[^\s]+\s\d+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[A-Z]\w+\s([^\s]+)"), 0),
     transport = arrayindex(regextract(_raw_log, "\s\d+\s[^\s]+\s\d+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[A-Z]\w+\s[^\s]+\s(\w+)"), 0)
 | alter
