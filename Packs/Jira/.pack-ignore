@@ -21,3 +21,6 @@ Atlassian
 Jira
 JiraEventCollector
 JiraCreateIssue
+JiraCreateIssueExample
+customFields
+SSL

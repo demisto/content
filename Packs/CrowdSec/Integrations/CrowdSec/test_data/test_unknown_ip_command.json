@@ -1,0 +1,16 @@
+{
+    "args": {
+        "ip": "2.2.2.5"
+    },
+    "crowdsec_result": {
+        "message": "IP address information not found"
+    },
+    "mock_response": {
+        "outputs": {
+            "message": "IP address information not found"
+        },
+        "readable_output": "### IP 2.2.2.5 status: Unknown\n### CrowdSec IP Enrichment\n|IP|Confidence|CrowdSec Score|Background Noise Score|CrowdSec Console Link|CrowdSec Taxonomy|\n|---|---|---|---|---|---|\n| 2.2.2.5 | 0/5 | 0/5 | 0/10 | https://app.crowdsec.net/cti/2.2.2.5 | https://docs.crowdsec.net/docs/next/cti_api/taxonomy |\n",
+        "outputs_prefix": "CrowdSec.Info",
+        "outputs_key_field": "ip"
+    }
+}

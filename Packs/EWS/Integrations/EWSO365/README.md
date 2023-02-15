@@ -2,6 +2,8 @@ Exchange Web Services (EWS) provides the functionality to enable client applicat
 
 The EWS O365 integration implants EWS leading services. The integration allows getting information on emails and activities in a target mailbox, and some active operations on the mailbox such as deleting emails and attachments or moving emails from folder to folder.
 
+The integration will use the UPN parameter (if given) as the target mailbox if it's different from the Email Address, otherwise, the Email Address is used.
+
 ## EWS O365 Playbook
 
 *   Get Original Email - EWS
@@ -43,6 +45,7 @@ The EWS integration can be used for the following use cases.
     *   **Name of the folder from which to fetch incidents**: Supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing. Please note, if Exchange is configured with an international flavor `Inbox` will be named according to the configured language.
     *   **Public Folder**
     *   **Access Type**: Run the commands using `Delegate` or `Impersonation` access types.
+    *   **Mark fetched emails as read**: Mark emails as read after fetching them.
     *   **Use system proxy settings**
     *   **Trust any certificate (not secure)**  
     *   **Timeout (in seconds) for HTTP requests to Exchange Server**
@@ -263,6 +266,8 @@ Impersonation rights required. In order to perform actions on the target mailbox
 * * *
 
 Returns a list of searchable mailboxes.
+
+When using UPN parameter, the command ews-get-searchable-mailboxes would work after assigning RBAC roles requested in the management role header as explained [https://learn.microsoft.com/en-us/Exchange/policy-and-compliance/ediscovery/assign-permissions?redirectedfrom=MSDN&view=exchserver-2019].
 
 ##### Required Permissions
 

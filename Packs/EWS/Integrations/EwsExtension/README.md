@@ -365,3 +365,529 @@ This command returns a maximum of 1,000,000 results, and will timeout on very la
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| 1/3/2021 6:14:14 AM | 8.8.8.8 | 0 | xxx | xxxx | microsoft.com | 1/3/2021 4:45:36 AM | xsoar@dev.microsoft.com | xsoar@dev.onmicrosoft.com | 6975 | 1/1/2021 6:14:14 AM | Delivered | Test mail |
 >| 1/3/2021 6:15:14 AM | 8.8.8.8 | 1 | xxx | xxxx | microsoft.com | 1/3/2021 4:46:36 AM | xsoar@dev.microsoft.com | xsoar@dev.onmicrosoft.com | 6975 | 1/1/2021 6:15:14 AM | Delivered | Test mail | 
+
+
+### ews-federation-trust-get
+***
+Displays the federation trust configured for the Exchange organization.
+
+
+#### Base Command
+
+`ews-federation-trust-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_controller | The domain controller identified by its fully qualified domain name (FQDN). For example, dc01.example.com. This argument is available only in on-premises Exchange. | Optional | 
+| identity | The federation trust ID. If not specified, the command returns all federation trusts configured for the Exchange organization. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| EWS.FederationTrust.AdminDisplayName | String | Administrator display name of the federation trust. | 
+| EWS.FederationTrust.ApplicationIdentifier | String | Application identifier of the federation trust. | 
+| EWS.FederationTrust.ApplicationUri | String | Application URI of the federation trust. | 
+| EWS.FederationTrust.DistinguishedName | String | Distinguished name of the federation trust. | 
+| EWS.FederationTrust.ExchangeObjectId | String | Exchange object ID of the federation trust. | 
+| EWS.FederationTrust.ExchangeVersion | String | Exchange version of the federation trust. | 
+| EWS.FederationTrust.Guid | String | GUID of the federation trust. | 
+| EWS.FederationTrust.Id | String | ID of the federation trust. | 
+| EWS.FederationTrust.Identity | String | Identity of the federation trust. | 
+| EWS.FederationTrust.IsValid | Boolean | Whether the federation trust is valid. | 
+| EWS.FederationTrust.MetadataEpr | String | Metadata EPR of the federation trust. | 
+| EWS.FederationTrust.MetadataPollInterval | Date | Metadata poll interval of the federation trust. | 
+| EWS.FederationTrust.MetadataPutEpr | Unknown | Metadata put EPR of the federation trust. | 
+| EWS.FederationTrust.Name | String | Name of the federation trust. | 
+| EWS.FederationTrust.NamespaceProvisioner | String | Namespace provisioner of the federation trust. | 
+| EWS.FederationTrust.ObjectCategory | String | Object category of the federation trust. | 
+| EWS.FederationTrust.ObjectClass | String | Object class of the federation trust. | 
+| EWS.FederationTrust.ObjectState | String | Object state of the federation trust. | 
+| EWS.FederationTrust.OrgCertificate.Archived | Boolean | Whether the organization certificate of the federation trust is archived. | 
+| EWS.FederationTrust.OrgCertificate.Extensions.Critical | Boolean | Whether the extensions of the organization certificate are critical. | 
+| EWS.FederationTrust.OrgCertificate.Extensions.Oid.FriendlyName | String | Friendly name of the OID of the organization certificate extensions. | 
+| EWS.FederationTrust.OrgCertificate.Extensions.Oid.Value | String | Value of the OID of the organization certificate extensions. | 
+| EWS.FederationTrust.OrgCertificate.Extensions.RawData | Number | Raw data of the organization certificate extensions. | 
+| EWS.FederationTrust.OrgCertificate.Extensions.SubjectKeyIdentifier | String | Subject key identifier of the organization certificate extensions. | 
+| EWS.FederationTrust.OrgCertificate.Extensions.KeyUsages | Number | Key usages of the organization certificate extensions. | 
+| EWS.FederationTrust.OrgCertificate.Extensions.EnhancedKeyUsages.FriendlyName | String | Friendly name of the enhanced key usages of the organization certificate extensions. | 
+| EWS.FederationTrust.OrgCertificate.Extensions.EnhancedKeyUsages.Value | String | Value of the enhanced key usages of the organization certificate extensions. | 
+| EWS.FederationTrust.OrgCertificate.Extensions.CertificateAuthority | Boolean | Whether the organization certificate extensions have a certificate authority. | 
+| EWS.FederationTrust.OrgCertificate.Extensions.HasPathLengthConstraint | Boolean | Whether the organization certificate extensions have a path length constraint. | 
+| EWS.FederationTrust.OrgCertificate.Extensions.PathLengthConstraint | Number | Path length constraint of the organization certificate extensions. | 
+| EWS.FederationTrust.OrgCertificate.FriendlyName | String | Friendly name of the organization certificate. | 
+| EWS.FederationTrust.OrgCertificate.Handle.value | Number | The handle value of the organization certificate. | 
+| EWS.FederationTrust.OrgCertificate.HasPrivateKey | Boolean | Whether the organization certificate has a private key. | 
+| EWS.FederationTrust.OrgCertificate.Issuer | String | Issuer of the organization certificate. | 
+| EWS.FederationTrust.OrgCertificate.IssuerName.Name | String | Name of the issuer of the organization certificate. | 
+| EWS.FederationTrust.OrgCertificate.IssuerName.Oid.FriendlyName | Unknown | Friendly Name of the OID of the issuer name of the organization certificate. | 
+| EWS.FederationTrust.OrgCertificate.IssuerName.Oid.Value | Unknown | Value of the OID of the issuer name of the organization certificate. | 
+| EWS.FederationTrust.OrgCertificate.IssuerName.RawData | Number | Raw data of the issuer name of the organization certificate. | 
+| EWS.FederationTrust.OrgCertificate.NotAfter | Date | The date until when the organization certificate is valid. | 
+| EWS.FederationTrust.OrgCertificate.NotBefore | Date | The date the organization certificate became valid. | 
+| EWS.FederationTrust.OrgCertificate.PrivateKey | Unknown | Private key of the organization certificate. | 
+| EWS.FederationTrust.OrgCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName | String | Friendly name of the OID of the encoded key value of the public key. | 
+| EWS.FederationTrust.OrgCertificate.PublicKey.EncodedKeyValue.Oid.Value | String | Value of the OID of the encoded key value of the public key. | 
+| EWS.FederationTrust.OrgCertificate.PublicKey.EncodedKeyValue.RawData | Number | Raw data of the encoded key value of the public key. | 
+| EWS.FederationTrust.OrgCertificate.PublicKey.EncodedParameters.Oid.FriendlyName | String | Friendly name of the OID of the encoded parameters of the public key. | 
+| EWS.FederationTrust.OrgCertificate.PublicKey.EncodedParameters.Oid.Value | String | Value of the OID of the encoded parameters of the public key. | 
+| EWS.FederationTrust.OrgCertificate.PublicKey.EncodedParameters.RawData | Number | Raw data of the encoded parameters of the public key. | 
+| EWS.FederationTrust.OrgCertificate.PublicKey.Key.KeyExchangeAlgorithm | String | Key exchange algorithm of the public key. | 
+| EWS.FederationTrust.OrgCertificate.PublicKey.Key.LegalKeySizes.MaxSize | Number | Maximum size of the public key. | 
+| EWS.FederationTrust.OrgCertificate.PublicKey.Key.LegalKeySizes.MinSize | Number | Minimum size of the public key. | 
+| EWS.FederationTrust.OrgCertificate.PublicKey.Key.LegalKeySizes.SkipSize | Number | SkipSize of the public key. | 
+| EWS.FederationTrust.OrgCertificate.PublicKey.Key.SignatureAlgorithm | String | Signature algorithm of the public key. | 
+| EWS.FederationTrust.OrgCertificate.PublicKey.Oid.FriendlyName | String | Friendly name of the OID of the public key. | 
+| EWS.FederationTrust.OrgCertificate.PublicKey.Oid.Value | String | Value of the OID of the public key. | 
+| EWS.FederationTrust.OrgCertificate.RawData | Number | Raw data of the organization certificate. | 
+| EWS.FederationTrust.OrgCertificate.SerialNumber | String | Serial number of the organization certificate. | 
+| EWS.FederationTrust.OrgCertificate.SignatureAlgorithm.FriendlyName | String | Friendly name of the signature algorithm. | 
+| EWS.FederationTrust.OrgCertificate.SignatureAlgorithm.Value | String | Value of the signature algorithm. | 
+| EWS.FederationTrust.OrgCertificate.Subject | String | Subject of the organization certificate. | 
+| EWS.FederationTrust.OrgCertificate.SubjectName.Name | String | Name of the subject of the organization certificate. | 
+| EWS.FederationTrust.OrgCertificate.SubjectName.Oid.FriendlyName | Unknown | Friendly name of the OID of the subject name. | 
+| EWS.FederationTrust.OrgCertificate.SubjectName.Oid.Value | Unknown | Value of the OID of the subject name. | 
+| EWS.FederationTrust.OrgCertificate.SubjectName.RawData | Number | Raw Data of the subject name. | 
+| EWS.FederationTrust.OrgCertificate.Thumbprint | String | Thumbprint of the organization certificate. | 
+| EWS.FederationTrust.OrgCertificate.Version | Number | Version of the organization certificate. | 
+| EWS.FederationTrust.OrgNextCertificate | Unknown | Next organization certificate. | 
+| EWS.FederationTrust.OrgNextPrivCertificate | String | Next organization private certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.Archived | Boolean | Whether to archive the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.Extensions.Critical | Boolean | Whether the extensions of the previous organization certificate are critical. | 
+| EWS.FederationTrust.OrgPrevCertificate.Extensions.Oid.FriendlyName | String | Friendly name of the OID of the previous organization certificate extensions. | 
+| EWS.FederationTrust.OrgPrevCertificate.Extensions.Oid.Value | String | Value of the OID of the previous organization certificate extensions. | 
+| EWS.FederationTrust.OrgPrevCertificate.Extensions.RawData | Number | Raw data of the previous organization certificate extensions. | 
+| EWS.FederationTrust.OrgPrevCertificate.Extensions.SubjectKeyIdentifier | String | Subject key identifier of the previous organization certificate extensions. | 
+| EWS.FederationTrust.OrgPrevCertificate.Extensions.KeyUsages | Number | Key usages of the previous organization certificate extensions. | 
+| EWS.FederationTrust.OrgPrevCertificate.Extensions.EnhancedKeyUsages.FriendlyName | String | Friendly name of the enhanced key usages of the previous organization certificate extensions. | 
+| EWS.FederationTrust.OrgPrevCertificate.Extensions.EnhancedKeyUsages.Value | String | Value of the enhanced key usages of the previous organization certificate extensions. | 
+| EWS.FederationTrust.OrgPrevCertificate.FriendlyName | String | Friendly name of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.Handle.value | Number | Value of the handle of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.HasPrivateKey | Boolean | Whether the previous organization certificate has a private key. | 
+| EWS.FederationTrust.OrgPrevCertificate.Issuer | String | Issuer of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.IssuerName.Name | String | Name of the issuer of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.IssuerName.Oid.FriendlyName | Unknown | Friendly name of the OID of the issuer of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.IssuerName.Oid.Value | Unknown | Value of the OID of the issuer of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.IssuerName.RawData | Number | Raw data of the issuer of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.NotAfter | Date | The date until when the previous organization certificate is valid. | 
+| EWS.FederationTrust.OrgPrevCertificate.NotBefore | Date | The date the previous organization certificate became valid. | 
+| EWS.FederationTrust.OrgPrevCertificate.PrivateKey | Unknown | Private Key of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName | String | Friendly Name of the OID of the encoded key value of the public key of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedKeyValue.Oid.Value | String | Value of the OID of the encoded key value of the public key of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedKeyValue.RawData | Number | Raw Data of the encoded key value of the public key of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedParameters.Oid.FriendlyName | String | Friendly name of the OID of the encoded parameters of the public key of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedParameters.Oid.Value | String | Value of the OID of the encoded parameters of the public key of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedParameters.RawData | Number | Raw Data of the encoded parameters of the public key of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.KeyExchangeAlgorithm | String | Key exchange algorithm of the public key of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.LegalKeySizes.MaxSize | Number | Maximum size of the public key of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.LegalKeySizes.MinSize | Number | Minimum size of the public key of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.LegalKeySizes.SkipSize | Number | SkiPSize of the public key of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.SignatureAlgorithm | String | Signature algorithm of the public key of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.PublicKey.Oid.FriendlyName | String | Friendly name of the OID of the public key of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.PublicKey.Oid.Value | String | Value of the OID of the public key of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.RawData | Number | Raw Data of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.SerialNumber | String | Serial number of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.SignatureAlgorithm.FriendlyName | String | Friendly name of the signature algorithm of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.SignatureAlgorithm.Value | String | Value of the signature algorithm of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.Subject | String | Subject of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.SubjectName.Name | String | Name of the subject of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.SubjectName.Oid.FriendlyName | Unknown | Friendly name of the OID of the subject of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.SubjectName.Oid.Value | Unknown | Value of the OID of the subject name of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.SubjectName.RawData | Number | Raw Data of the subject name of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.Thumbprint | String | Thumbprint of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevCertificate.Version | Number | Version of the previous organization certificate. | 
+| EWS.FederationTrust.OrgPrevPrivCertificate | String | Organization previous private certificate. | 
+| EWS.FederationTrust.OrgPrivCertificate | String | Organization private certificate. | 
+| EWS.FederationTrust.OrganizationId | String | Organization ID. | 
+| EWS.FederationTrust.OriginatingServer | String | Originating server. | 
+| EWS.FederationTrust.PSComputerName | String | PowerShell computer name. | 
+| EWS.FederationTrust.PSShowComputerName | Boolean | Whether to show the PowerShell computer name. | 
+| EWS.FederationTrust.PolicyReferenceUri | String | Policy Reference URI. | 
+| EWS.FederationTrust.RunspaceId | String | Runspace ID. | 
+| EWS.FederationTrust.TimesOfUnmatchPartner | Number | Times Of unmatch partner. | 
+| EWS.FederationTrust.TokenIssuerCertReference | String | Token issuer certificate reference. | 
+| EWS.FederationTrust.TokenIssuerCertificate.Archived | Boolean | Whether the token issuer certificate is archived. | 
+| EWS.FederationTrust.TokenIssuerCertificate.Extensions.Critical | Boolean | Whether the extensions of the token issuer certificate are critical. | 
+| EWS.FederationTrust.TokenIssuerCertificate.Extensions.Oid.FriendlyName | String | Friendly name of the OID of the extensions of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.Extensions.Oid.Value | String | Value of the OID of the extensions of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.Extensions.RawData | Number | Raw Data of the extensions of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.Extensions.SubjectKeyIdentifier | String | Subject key identifier of the extensions of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.Extensions.KeyUsages | Number | Key usages of the extensions of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.FriendlyName | String | Friendly name of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.Handle.value | Number | Value of the handle of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.HasPrivateKey | Boolean | Whether the token issuer certificate has a private key. | 
+| EWS.FederationTrust.TokenIssuerCertificate.Issuer | String | Issuer of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.IssuerName.Name | String | Name of the issuer of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.IssuerName.Oid.FriendlyName | Unknown | Friendly name of the OID of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.IssuerName.Oid.Value | Unknown | Value of the OID of the issuer of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.IssuerName.RawData | Number | Raw data of the issuer of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.NotAfter | Date | The date until when the token issuer certificate is valid. | 
+| EWS.FederationTrust.TokenIssuerCertificate.NotBefore | Date | The date the token issuer certificate became valid. | 
+| EWS.FederationTrust.TokenIssuerCertificate.PrivateKey | Unknown | Private key of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName | String | Friendly name of the OID of the encoded key value of the public key of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedKeyValue.Oid.Value | String | Value of the OID of the encoded key value of the public key of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedKeyValue.RawData | Number | Raw data of the encoded key value of the public key of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedParameters.Oid.FriendlyName | String | Friendly name of the OID of the encoded parameters of the public key of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedParameters.Oid.Value | String | Value of the OID of the encoded parameters of the public key of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedParameters.RawData | Number | Raw Data of the encoded parameters of the public key of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.KeyExchangeAlgorithm | String | Key exchange algorithm of the public key of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.LegalKeySizes.MaxSize | Number | Maximum size of the public key of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.LegalKeySizes.MinSize | Number | Minimum size of the public key of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.LegalKeySizes.SkipSize | Number | SkiPSize of the public key of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.SignatureAlgorithm | String | Signature algorithm of the public key of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Oid.FriendlyName | String | Friendly name of the OID of the public key of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Oid.Value | String | Value of the OID of the public key of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.RawData | Number | Raw Data of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.SerialNumber | String | Serial number of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.SignatureAlgorithm.FriendlyName | String | Friendly name of the signature algorithm of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.SignatureAlgorithm.Value | String | Value of the signature algorithm of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.Subject | String | Subject of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.SubjectName.Name | String | Name of the subject of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.SubjectName.Oid.FriendlyName | Unknown | Friendly name of the OID of the subject of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.SubjectName.Oid.Value | Unknown | Value of the OID of the subject of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.SubjectName.RawData | Number | Raw data of the subject of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.Thumbprint | String | Thumbprint of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerCertificate.Version | Number | Version of the token issuer certificate. | 
+| EWS.FederationTrust.TokenIssuerEpr | String | Token issuer EPR. | 
+| EWS.FederationTrust.TokenIssuerMetadataEpr | String | Token issuer metadata EPR. | 
+| EWS.FederationTrust.TokenIssuerPrevCertReference | String | Token issuer previous certificate reference. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.Archived | Boolean | Whether the token issuer previous certificate was archived. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.Critical | Boolean | Whether the extensions of the token issuer previous certificate was critical. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.Oid.FriendlyName | String | Friendly name of the OID of the extensions of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.Oid.Value | String | Value of the OID of the extensions of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.RawData | Number | Raw data of the extensions of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.SubjectKeyIdentifier | String | Subject key identifier of the extensions of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.KeyUsages | Number | Key usages of the extensions of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.FriendlyName | String | Friendly name of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.Handle.value | Number | The handle value of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.HasPrivateKey | Boolean | Whether the token issuer previous certificate has a private key. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.Issuer | String | Issuer of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.IssuerName.Name | String | Name of the issuer of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.IssuerName.Oid.FriendlyName | Unknown | Friendly name of the OID of the issuer name of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.IssuerName.Oid.Value | Unknown | Value of the OID of the issuer name of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.IssuerName.RawData | Number | Raw Data of the issuer name of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.NotAfter | Date | The date until when the token issuer previous certificate is valid. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.NotBefore | Date | The date the token issuer previous certificate became valid. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.PrivateKey | Unknown | Private Key of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName | String | Friendly name of the OID of the encoded key value of the public key of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedKeyValue.Oid.Value | String | Value of the OID of the encoded key value of the public key of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedKeyValue.RawData | Number | Raw data of the encoded key value of the public key of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedParameters.Oid.FriendlyName | String | Friendly name of the OID of the encoded parameters of the public key of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedParameters.Oid.Value | String | Value of the OID of the encoded parameters of the public key of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedParameters.RawData | Number | Raw data of the encoded parameters of the public key of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.KeyExchangeAlgorithm | String | Key exchange algorithm of the public key of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.LegalKeySizes.MaxSize | Number | Maximum size of the public key of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.LegalKeySizes.MinSize | Number | Minimum size of the public key of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.LegalKeySizes.SkipSize | Number | SkiPSize of the public key of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.SignatureAlgorithm | String | Signature algorithm of the public key of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Oid.FriendlyName | String | Friendly Name of the OID of the public key of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Oid.Value | String | Value of the OID of teh public key of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.RawData | Number | Raw Data of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.SerialNumber | String | Serial number of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.SignatureAlgorithm.FriendlyName | String | Friendly name of the signature algorithm of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.SignatureAlgorithm.Value | String | Value of the signature algorithm of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.Subject | String | Subject of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.SubjectName.Name | String | Name of the subject of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.SubjectName.Oid.FriendlyName | Unknown | Friendly Name of the OID of the subject of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.SubjectName.Oid.Value | Unknown | Value of the OID of the subject name of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.SubjectName.RawData | Number | Raw data of the subject name of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.Thumbprint | String | Thumbprint of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerPrevCertificate.Version | Number | Version of the token issuer previous certificate. | 
+| EWS.FederationTrust.TokenIssuerType | String | Token issuer type of the federation trust. | 
+| EWS.FederationTrust.TokenIssuerUri | String | Token Issuer UIR of the federation trust. | 
+| EWS.FederationTrust.WebRequestorRedirectEpr | String | Web requestor redirect EPR of the federation trust. | 
+| EWS.FederationTrust.WhenChanged | Date | The date the federation trust was changed. | 
+| EWS.FederationTrust.WhenChangedUTC | Date | The date in UTC format of when the federation trust was changed. | 
+| EWS.FederationTrust.WhenCreated | Date | The date the federation trust was created. | 
+| EWS.FederationTrust.WhenCreatedUTC | Date | The date in UTC format of when the federation trust was created. | 
+
+### ews-federation-configuration-get
+***
+Retrieves the Exchange organization's federated organization identifier and related details, such as federated domains, organization contact, and status.
+
+
+#### Base Command
+
+`ews-federation-configuration-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_controller | The fully qualified domain name (FQDN) of the domain controller. For example, dc01.example.com. This argument is available only in on-premises Exchange. | Optional | 
+| identity | The federation trust ID. If not specified, all federation trusts configured for the Exchange organization are returned. | Optional | 
+| include_extended_domain_info | The IncludeExtendedDomainInfo switch specifies that the command query Microsoft Federation Gateway for the status of each accepted domain that's federated. The status is returned with each domain in the Domains property. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| EWS.FederationConfiguration.AccountNamespace | String | Account namespace of the federation configuration. | 
+| EWS.FederationConfiguration.DefaultDomain | Unknown | Default domain of the federation configuration. | 
+| EWS.FederationConfiguration.DelegationTrustLink | String | Delegation trust link of the federation configuration. | 
+| EWS.FederationConfiguration.DistinguishedName | String | Distinguished name of the federation configuration. | 
+| EWS.FederationConfiguration.Domains | String | Domains of the federation configuration. | 
+| EWS.FederationConfiguration.Enabled | Boolean | Whether the federation configuration is enabled. | 
+| EWS.FederationConfiguration.ExchangeObjectId | String | Exchange object ID of the federation configuration. | 
+| EWS.FederationConfiguration.ExchangeVersion | String | Exchange version of the federation configuration. | 
+| EWS.FederationConfiguration.Guid | String | GUID of the federation configuration. | 
+| EWS.FederationConfiguration.Id | String | ID of the federation configuration. | 
+| EWS.FederationConfiguration.Identity | String | Identity of the federation configuration. | 
+| EWS.FederationConfiguration.IsValid | Boolean | Whether the federation configration is valid. | 
+| EWS.FederationConfiguration.Name | String | Name of the federation configuration. | 
+| EWS.FederationConfiguration.ObjectCategory | String | Object category of the federation configuration. | 
+| EWS.FederationConfiguration.ObjectClass | String | Object class of the federation configuration. | 
+| EWS.FederationConfiguration.ObjectState | String | Object state of the federation configuration. | 
+| EWS.FederationConfiguration.OrganizationContact | String | Organization contact of the federation configuration. | 
+| EWS.FederationConfiguration.OrganizationId | String | Organization ID of the federation configuration. | 
+| EWS.FederationConfiguration.OriginatingServer | String | Originating server of the federation configuration. | 
+| EWS.FederationConfiguration.PSComputerName | String | PowerShell computer name of the federation configuration. | 
+| EWS.FederationConfiguration.PSShowComputerName | Boolean | Whether to show the PowerShell computer name of the federation configuration. | 
+| EWS.FederationConfiguration.RunspaceId | String | Runspace ID of the federation configuration. | 
+| EWS.FederationConfiguration.WhenChanged | Date | The date the federation configuration was changed. | 
+| EWS.FederationConfiguration.WhenChangedUTC | Date | The date in UTC format of when the federation configuration was changed. | 
+| EWS.FederationConfiguration.WhenCreated | Date | The date the federation configuration was created. | 
+| EWS.FederationConfiguration.WhenCreatedUTC | Date | The date in UTC format of when the federation configuration was created. | 
+
+### ews-remote-domain-get
+***
+Gets the configuration information for the remote domains configured in your organization. This command is available only in the Exchange Online PowerShell V2 module.
+
+
+#### Base Command
+
+`ews-remote-domain-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_controller | The fully qualified domain name (FQDN) of the domain controller. For example, dc01.example.com.<br/>This argument is available only in on-premises Exchange. | Optional | 
+| identity | The remote domain that you want to view. You can use the GUID, ID, or any other identifier. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| EWS.RemoteDomain.AdminDisplayName | String | Admin display name of the remote domain. | 
+| EWS.RemoteDomain.AllowedOOFType | String | Allowed OOF type of the remote domain. | 
+| EWS.RemoteDomain.AutoForwardEnabled | Boolean | Whether auto forward is enabled for the remote domain. | 
+| EWS.RemoteDomain.AutoReplyEnabled | Boolean | Whether auto reply is enabled for the remote domain.. | 
+| EWS.RemoteDomain.ByteEncoderTypeFor7BitCharsets | String | Byte encoder type For 7-bit charsets of the remote domain. | 
+| EWS.RemoteDomain.CharacterSet | String | Character set of the remote domain. | 
+| EWS.RemoteDomain.ContentType | String | Content type of the remote domain. | 
+| EWS.RemoteDomain.DeliveryReportEnabled | Boolean | Whether delivery report is enabled for the remote domain. | 
+| EWS.RemoteDomain.DisplaySenderName | Boolean | Whether to display the sender name for the remote domain. | 
+| EWS.RemoteDomain.DistinguishedName | String | Distinguished name of the remote domain. | 
+| EWS.RemoteDomain.DomainName | String | Domain name of the remote domain. | 
+| EWS.RemoteDomain.ExchangeObjectId | String | Exchange object ID of the remote domain. | 
+| EWS.RemoteDomain.ExchangeVersion | String | Exchange version of the remote domain. | 
+| EWS.RemoteDomain.Guid | String | GUID of the remote domain. | 
+| EWS.RemoteDomain.Id | String | ID of the remote domain. | 
+| EWS.RemoteDomain.Identity | String | Identity of the remote domain. | 
+| EWS.RemoteDomain.IsInternal | Boolean | Whether the remote domain is internal. | 
+| EWS.RemoteDomain.IsValid | Boolean | Whether the remote domain is valid. | 
+| EWS.RemoteDomain.LineWrapSize | String | Line wrap size for the remote domain. | 
+| EWS.RemoteDomain.MeetingForwardNotificationEnabled | Boolean | Whether meeting forward notification is enabled for the remote domain. | 
+| EWS.RemoteDomain.MessageCountThreshold | Number | Message count threshold  of the remote domain. | 
+| EWS.RemoteDomain.NDRDiagnosticInfoEnabled | Boolean | Whether NDR diagnostic information is enabled for the remote domain. | 
+| EWS.RemoteDomain.NDREnabled | Boolean | Whether NDR is enabled for the remote domain. | 
+| EWS.RemoteDomain.Name | String | Name of the remote domain. | 
+| EWS.RemoteDomain.NonMimeCharacterSet | String | Non-mime character set of the remote domain. | 
+| EWS.RemoteDomain.ObjectCategory | String | Object category of the remote domain. | 
+| EWS.RemoteDomain.ObjectClass | String | Object class of the remote domain. | 
+| EWS.RemoteDomain.ObjectState | String | Object state of the remote domain. | 
+| EWS.RemoteDomain.OrganizationId | String | Organization ID of the remote domain. | 
+| EWS.RemoteDomain.OriginatingServer | String | Originating server of the remote domain. | 
+| EWS.RemoteDomain.PSComputerName | String | PowerShell computer name of the remote domain. | 
+| EWS.RemoteDomain.PSShowComputerName | Boolean | Whether to show the PowerShell computer name for the remote domain. | 
+| EWS.RemoteDomain.PreferredInternetCodePageForShiftJis | String | Preferred internet code page for shift JIS for the remote domain. | 
+| EWS.RemoteDomain.RequiredCharsetCoverage | Unknown | Required charset coverage for the remote domain. | 
+| EWS.RemoteDomain.RunspaceId | String | Runspace ID for the remote domain. | 
+| EWS.RemoteDomain.TNEFEnabled | Unknown | Whether TNEF is enabled for the remote domain. | 
+| EWS.RemoteDomain.TargetDeliveryDomain | Boolean | Whether the remote domain is used for the target email address of mail users that represent the users in the other forest. | 
+| EWS.RemoteDomain.TrustedMailInboundEnabled | Boolean | Whether inbound trusted mail is enabled. | 
+| EWS.RemoteDomain.TrustedMailOutboundEnabled | Boolean | Whether outbound trusted mail is enabled. | 
+| EWS.RemoteDomain.UseSimpleDisplayName | Boolean | Whether to use the simple display name. | 
+| EWS.RemoteDomain.WhenChanged | Date | The date the remote domain was changed. | 
+| EWS.RemoteDomain.WhenChangedUTC | Date | The date in UTC format of when the remote domain was changed. | 
+| EWS.RemoteDomain.WhenCreated | Date | The date the remote domain was created. | 
+| EWS.RemoteDomain.WhenCreatedUTC | Date | The date in UTC format of when the remote domain was created. | 
+
+### ews-user-list
+***
+Displays the existing user objects in your organization.
+
+
+#### Base Command
+
+`ews-user-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identity | The mailbox you want to view. | Optional | 
+| organizational_unit | The object's location in Active Directory by which to filter the results. | Optional | 
+| limit | Maximum number of users to get. A value of 0 means to get all users. Default is 10. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| EWS.User.AccountDisabled | Boolean | Whether the user account is disabled. | 
+| EWS.User.AllowUMCallsFromNonUsers | Boolean | Whether to allow Unified Messaging calls from non-users. | 
+| EWS.User.ArchiveRelease | String | The archive release of the user object. | 
+| EWS.User.AssistantName | String | The assistant name of the user object. | 
+| EWS.User.AuthenticationPolicy | Unknown | The authentication policy of the user object. | 
+| EWS.User.CanHaveCloudCache | Boolean | Whether the user object can have cloud cache. | 
+| EWS.User.City | String | The city of the user object. | 
+| EWS.User.CloudCacheAccountType | String | Cloud cache account type of the user object. | 
+| EWS.User.CloudCacheProvider | Number | Cloud cache provider of the user object. | 
+| EWS.User.CloudCacheRemoteEmailAddress | String | Cloud cache remote email address of the user object. | 
+| EWS.User.CloudCacheScope | Number | Cloud cache scope of the user object. | 
+| EWS.User.CloudCacheUserName | String | Cloud cache user name of the user object. | 
+| EWS.User.Company | String | Company of the user object. | 
+| EWS.User.ConsumerNetID | Unknown | Consumer net ID of the user object. | 
+| EWS.User.CountryOrRegion | String | Country or region of the . | 
+| EWS.User.DefaultMailboxWorkloadsMask | Unknown | Default mailbox workloads mask of the user object. | 
+| EWS.User.Department | String | Department of the user object. | 
+| EWS.User.DesiredMailboxWorkloads | Unknown | Desired mailbox workloads of the user object. | 
+| EWS.User.DesiredMailboxWorkloadsGracePeriod | Unknown | Desired mailbox workloads grace period of the user object. | 
+| EWS.User.DesiredMailboxWorkloadsModified | Unknown | Modified desired mailbox workloads of the user object. | 
+| EWS.User.DisplayName | String | Display name of the user object. | 
+| EWS.User.DistinguishedName | String | Distinguished name of the user object. | 
+| EWS.User.ExchangeObjectId | String | Exchange object ID of the user object. | 
+| EWS.User.ExchangeVersion | String | Exchange version of the user object. | 
+| EWS.User.ExternalDirectoryObjectId | String | External Directory Object ID of the user object. | 
+| EWS.User.Fax | String | Fax of the user object. | 
+| EWS.User.FirstName | String | First name of the user object. | 
+| EWS.User.GeoCoordinates | Unknown | Geo coordinates of the user object. | 
+| EWS.User.Guid | String | GUID of the user object. | 
+| EWS.User.HomePhone | String | Home phone of the user object. | 
+| EWS.User.Id | String | ID of the user object. | 
+| EWS.User.Identity | String | Identity of the user object. | 
+| EWS.User.Initials | String | Initials of the user object. | 
+| EWS.User.IsCloudCache | Boolean | Whether there is a cloud cache for the user object. | 
+| EWS.User.IsCloudCacheBlocked | Boolean | Whether the cloud cache is blocked. | 
+| EWS.User.IsCloudCacheProvisioningComplete | Boolean | Whether cloud cache provisioning is complete. | 
+| EWS.User.IsDirSynced | Boolean | Whether the directory is synched. | 
+| EWS.User.IsInactiveMailbox | Boolean | Whether the mailbox is inactive. | 
+| EWS.User.IsLinked | Boolean | Whether the user object is linked. | 
+| EWS.User.IsSecurityPrincipal | Boolean | Whether there is a security principal. | 
+| EWS.User.IsSoftDeletedByDisable | Boolean | Whether soft delete is disabled and hard \(permanent\) delete occurs. | 
+| EWS.User.IsSoftDeletedByRemove | Boolean | When the Exchange Online mailbox is deleted \(soft delete\), this property is set to True. | 
+| EWS.User.IsValid | Boolean | Whether the user object is valid. | 
+| EWS.User.LastName | String | Last name of the user object. | 
+| EWS.User.LegacyExchangeDN | String | Legacy exchange distinguished name of the user object. | 
+| EWS.User.LegalAgeGroup | Unknown | Legal age group of the user object. | 
+| EWS.User.LinkedMasterAccount | String | Linked master account of the user object. | 
+| EWS.User.MailboxLocations | String | Mailbox locations of the user object. | 
+| EWS.User.MailboxProvisioningConstraint | Unknown | Mailbox provisioning constraint of the user object. | 
+| EWS.User.MailboxRegion | Unknown | Mailbox region of the user object. | 
+| EWS.User.MailboxRegionLastUpdateTime | Unknown | Last time the mailbox region  of the user object was updated. | 
+| EWS.User.MailboxRegionSuffix | String | Mailbox region suffix of the user object. | 
+| EWS.User.MailboxRelease | String | Mailbox release of the user object. | 
+| EWS.User.MailboxWorkloads | String | Mailbox workloads of the user object. | 
+| EWS.User.Manager | Unknown | Manager of the user object. | 
+| EWS.User.MicrosoftOnlineServicesID | String | Microsoft Online Services ID of the user object. | 
+| EWS.User.MobilePhone | String | Mobile phone of the user object. | 
+| EWS.User.Name | String | Name of the user object. | 
+| EWS.User.NetID | String | Network ID of the user object. | 
+| EWS.User.Notes | String | Notes for the user object. | 
+| EWS.User.ObjectCategory | String | Object category of the user object. | 
+| EWS.User.ObjectClass | String | Object class of the user object. | 
+| EWS.User.ObjectState | String | Object state of the user object. | 
+| EWS.User.Office | String | Office of the user object. | 
+| EWS.User.OrganizationId | String | Organization ID of the user object. | 
+| EWS.User.OrganizationalUnit | String | Organizational unit of the user object. | 
+| EWS.User.OriginatingServer | String | Originating server of the user object. | 
+| EWS.User.PSComputerName | String | PowerShell computer name of the user object. | 
+| EWS.User.PSShowComputerName | Boolean | Whether to show the PowerShell computer name of the user object. | 
+| EWS.User.Pager | String | Pager of the user object. | 
+| EWS.User.Phone | String | Phone of the user object. | 
+| EWS.User.PhoneticDisplayName | String | Phonetic display name of the user object. | 
+| EWS.User.PostalCode | String | Postal Code of the user object. | 
+| EWS.User.PreviousRecipientTypeDetails | String | Details of the previous recipient type of the user object. | 
+| EWS.User.RecipientType | String | Recipient type of the user object. | 
+| EWS.User.RecipientTypeDetails | String | Details of the recipient type of the user object. | 
+| EWS.User.RemotePowerShellEnabled | Boolean | Whether remote PowerShell is enabled for the user object. | 
+| EWS.User.ResetPasswordOnNextLogon | Boolean | Whether to reset the password on next logon. | 
+| EWS.User.RunspaceId | String | Runspace ID of the user object. | 
+| EWS.User.SKUAssigned | Boolean | Whether SKU is assigned. | 
+| EWS.User.SamAccountName | String | sAMAccountName of the user object. | 
+| EWS.User.SeniorityIndex | Unknown | Seniority index of the user object. | 
+| EWS.User.Sid | String | SID of the user object. | 
+| EWS.User.SimpleDisplayName | String | Simple display name of the user object. | 
+| EWS.User.StateOrProvince | String | State or province of the user object. | 
+| EWS.User.StreetAddress | String | Street address of the user object. | 
+| EWS.User.StsRefreshTokensValidFrom | Date | The validation start date for the Security Token Service \(STS\) refresh tokens of the user object. | 
+| EWS.User.TelephoneAssistant | String | Telephone assistant of the user object. | 
+| EWS.User.Title | String | Title of the user object. | 
+| EWS.User.UMDialPlan | Unknown | Unified Messaging \(UM\) dial plan of the user object. | 
+| EWS.User.UMDtmfMap | String | Unified Messaging \(UM\) dual tone multi-frequency \(DTMF\) map of the user object. | 
+| EWS.User.UpgradeDetails | Unknown | Upgrade details of the user object. | 
+| EWS.User.UpgradeMessage | Unknown | Upgrade message of the user object. | 
+| EWS.User.UpgradeRequest | String | Upgrade request of the user object. | 
+| EWS.User.UpgradeStage | Unknown | Upgrade stage of the user object. | 
+| EWS.User.UpgradeStageTimeStamp | Unknown | Upgrade stage time stamp of the user object. | 
+| EWS.User.UpgradeStatus | String | Upgrade status of the user object. | 
+| EWS.User.UserAccountControl | String | User account control of the user object. | 
+| EWS.User.UserPrincipalName | String | User principal name of the user object. | 
+| EWS.User.WebPage | String | Web page of the user object. | 
+| EWS.User.WhenChanged | Date | The date the user object was changed. | 
+| EWS.User.WhenChangedUTC | Date | The date in UTC format of when the user object was changed. | 
+| EWS.User.WhenCreated | Date | The date the user object was created. | 
+| EWS.User.WhenCreatedUTC | Date | The date in UTC format of when the user object was created. | 
+| EWS.User.WhenSoftDeleted | Unknown | When the user object was soft deleted. | 
+| EWS.User.WindowsEmailAddress | String | Windows email address of the user object. | 
+| EWS.User.WindowsLiveID | String | Windows live ID of the user object. | 
+| EWS.User.DirectReports | String | Direct reports of the user object. | 
+
+### ews-mailbox-audit-bypass-association-list
+***
+Retrieves information about the AuditBypassEnabled property value for user accounts (on-premises Exchange and the cloud) and computer accounts (on-premises Exchange only).
+
+
+#### Base Command
+
+`ews-mailbox-audit-bypass-association-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identity | The mailbox you want to view. | Optional | 
+| domain_controller | The domain controller that's used by this cmdlet to read data from or write data to Active Directory. You identify the domain controller by its fully qualified domain name (FQDN). This argument is available only in on-premises Exchange. | Optional | 
+| limit | Maximum number of users to get. A value of 0 means to get all users. Default is 10. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| EWS.MailboxAuditBypassAssociation.AuditBypassEnabled | Boolean | Whether the mailbox audit bypass association is enabled. | 
+| EWS.MailboxAuditBypassAssociation.DistinguishedName | String | Distinguished name of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.ExchangeObjectId | String | Exchange object ID of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.ExchangeVersion | String | The version of the exchanged server. | 
+| EWS.MailboxAuditBypassAssociation.Guid | String | The GUID of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.Id | String | ID of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.Identity | String | The unique identity of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.IsValid | Boolean | Whether the mailbox audit bypass association property is enabled. | 
+| EWS.MailboxAuditBypassAssociation.Name | String | Name of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.ObjectCategory | String | Object category of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.ObjectClass | String | Object class of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.ObjectId | String | Object ID of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.ObjectState | String | Object state of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.OrganizationId | String | Organization ID of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.OriginatingServer | String | Originating server of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.PSComputerName | String | PowerShell computer name of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.PSShowComputerName | Boolean | Whether to show the computer name of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.RunspaceId | String | Runspace ID of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.WhenChanged | unknown | The date the mailbox audit bypass association was changed. | 
+| EWS.MailboxAuditBypassAssociation.WhenChangedUTC | Date | The date in UTC of when the mailbox audit bypass association was changed. | 
+| EWS.MailboxAuditBypassAssociation.WhenCreated | Date | The date the mailbox audit bypass association was created. | 
+| EWS.MailboxAuditBypassAssociation.WhenCreatedUTC | Date | The date in UTC format of when the mailbox audit bypass association was created. | 
+
+

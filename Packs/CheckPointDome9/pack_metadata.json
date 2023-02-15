@@ -2,12 +2,12 @@
     "name": "Check Point Dome9 (CloudGuard)",
     "description": "Dome9 integration allows to easily manage the security and compliance of the public cloud.",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Cloud Security"
+        "Network Security"
     ],
     "tags": [],
     "useCases": [],

@@ -24,7 +24,7 @@ IsIntegrationAvailable
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| File | File object of the file to detonate. The file is taken from the context. | File.None | Optional |
+| File | File object of the file to detonate. The file is taken from the context. | File | Optional |
 | Interval | Duration for executing the pooling \(in minutes\). | 1 | Optional |
 | Timeout | The duration after which to stop pooling and to resume the playbook \(in minutes\). | 1200 | Optional |
 | Systems | Comma-separated list of operating systems to run the analysis on. Supported values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat |  | Optional |

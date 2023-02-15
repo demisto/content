@@ -225,7 +225,14 @@ MESSAGES = [
             datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone.timezone('UTC')),
             datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone.timezone('UTC'))
             ),
-
+    Message(subject='message4',
+            message_id='message4',
+            text_body='Hello World',
+            body='message4',
+            datetime_received=EWSDateTime(2021, 7, 14, 13, 10, 00, tzinfo=EWSTimeZone.timezone('UTC')),
+            datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone.timezone('UTC')),
+            datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone.timezone('UTC'))
+            ),
 ]
 CASE_FIRST_RUN_NO_INCIDENT = (
     {},
@@ -241,22 +248,25 @@ CASE_SECOND_RUN_FOUND_ONE_INCIDENT = (
     {'lastRunTime': '2021-07-14T12:59:17Z', 'folderName': 'Inbox', 'ids': []}, MESSAGES[:1],
     {'lastRunTime': '2021-07-14T13:00:00Z', 'folderName': 'Inbox', 'ids': ['message1'], 'errorCounter': 0})
 CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_FIRST_RUN = (
-    {'lastRunTime': '2021-07-14T13:05:17Z', 'folderName': 'Inbox', 'ids': ['message1']}, MESSAGES,
+    {'lastRunTime': '2021-07-14T13:05:17Z', 'folderName': 'Inbox', 'ids': ['message1']}, MESSAGES[0:3],
     {'lastRunTime': '2021-07-14T13:09:00Z', 'folderName': 'Inbox', 'ids': ['message2'], 'errorCounter': 0})
 CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_NEXT_RUN = (
-    {'lastRunTime': '2021-07-14T13:09:00Z', 'folderName': 'Inbox', 'ids': ['message2']}, MESSAGES[1:],
+    {'lastRunTime': '2021-07-14T13:09:00Z', 'folderName': 'Inbox', 'ids': ['message2']}, MESSAGES[1:3],
     {'lastRunTime': '2021-07-14T13:09:00Z', 'folderName': 'Inbox', 'ids': ['message2', 'message3'], 'errorCounter': 0})
 CASE_SECOND_RUN_NO_INCIDENTS = (
     {'lastRunTime': '2021-07-14T12:59:17Z', 'folderName': 'Inbox', 'ids': ['message1']}, [],
     {'lastRunTime': '2021-07-14T12:59:17Z', 'folderName': 'Inbox', 'ids': ['message1'], 'errorCounter': 0})
-
+CASE_SECOND_RUN_DIFFERENT_CREATED_RECEIVED_TIME = (
+    {'lastRunTime': '2021-07-14T13:09:00Z', 'folderName': 'Inbox', 'ids': []}, MESSAGES[3:],
+    {'lastRunTime': '2021-07-14T13:10:00Z', 'folderName': 'Inbox', 'ids': ['message4'], 'errorCounter': 0})
 CASES = [
     CASE_FIRST_RUN_NO_INCIDENT,
     CASE_FIRST_RUN_FOUND_INCIDENT,
     CASE_SECOND_RUN_FOUND_ONE_INCIDENT,
     CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_FIRST_RUN,
     CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_NEXT_RUN,
-    CASE_SECOND_RUN_NO_INCIDENTS
+    CASE_SECOND_RUN_NO_INCIDENTS,
+    CASE_SECOND_RUN_DIFFERENT_CREATED_RECEIVED_TIME,
 ]
 
 

@@ -3,12 +3,13 @@ import emoji
 import demistomock as demisto
 from CommonServerPython import *
 import traceback
+import urllib3
 
 REPUTATION_COMMANDS = ['ip', 'domain', 'file', 'url', 'threatstream-email-reputation']
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 

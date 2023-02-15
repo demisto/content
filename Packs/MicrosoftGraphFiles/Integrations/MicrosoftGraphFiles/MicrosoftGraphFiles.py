@@ -3,11 +3,10 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 """ IMPORTS """
-
+import urllib3
 from urllib.parse import parse_qs, urlparse
-
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 """ GLOBALS/PARAMS """
 
@@ -106,6 +105,8 @@ class MsGraphClient:
     """
     Microsoft Graph Client enables authorized access to organization's files in OneDrive, SharePoint, and MS Teams.
     """
+    MAX_ATTACHMENT_SIZE = 3145728   # 3mb = 3145728 bytes
+    MAX_ATTACHMENT_UPLOAD = 327680  # 320 KiB = 327680 bytes
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed, ok_codes,
                  certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
@@ -204,6 +205,44 @@ class MsGraphClient:
                 method="PUT", data=file, headers=headers, url_suffix=uri
             )
 
+    def replace_existing_file_with_upload_session(self, object_type: str,
+                                                  object_type_id: str, item_id: str, entry_id: str, file_data: bytes,
+                                                  file_size: int, file_name: str) -> dict:
+        """
+        Replace a file with upload session.
+
+        Args:
+        object_type: ms graph resource.
+        object_type_id: ms graph resource id.
+        item_id: ms graph item_id.
+        entry_id: demisto file entry id
+
+        Returns:
+            MsGraph api raw response.
+        """
+        file_path = demisto.getFilePath(entry_id).get("path", None)
+        if not file_path:
+            raise DemistoException(
+                f"Could not find file path to the next entry id: {entry_id}. \n"
+                f"Please provide another one."
+            )
+        # create suitable upload session
+        if object_type == 'drives':
+            uri = f'/drives/{object_type_id}/items/{item_id}/createUploadSession'
+        elif object_type == 'groups':
+            uri = f'/groups/{object_type_id}/drive/items/{item_id}/createUploadSession'
+        elif object_type == 'sites':
+            uri = f'/sites/{object_type_id}/drive/items/{item_id}/createUploadSession'
+        elif object_type == 'users':
+            uri = f'/users/{object_type_id}/drive/items/{item_id}/createUploadSession'
+        response, upload_url = self.create_an_upload_session(uri)
+        if not upload_url:
+            raise Exception(f'Cannot get upload URL for attachment {file_name}')
+        demisto.debug(f'response of "create_an_upload_session": {response}')
+        response_file_upload = self.upload_file_with_upload_session(upload_url, file_data, file_size)
+        demisto.debug(f'response of "upload_file_with_upload_session": {response_file_upload}')
+        return response_file_upload
+
     def delete_file(self, object_type, object_type_id, item_id):
         """
         Delete a DriveItem by using its ID
@@ -226,15 +265,140 @@ class MsGraphClient:
 
         return "Item was deleted successfully"
 
+    @staticmethod
+    def upload_attachment(
+            upload_url, start_chunk_idx, end_chunk_idx, chunk_data, attachment_size
+    ):
+        """
+        Upload an attachment to the upload URL.
+
+        Args:
+            upload_url (str): upload URL provided when running 'get_upload_session'
+            start_chunk_idx (int): the start of the chunk file data.
+            end_chunk_idx (int): the end of the chunk file data.
+            chunk_data (bytes): the chunk data in bytes from start_chunk_idx to end_chunk_idx
+            attachment_size (int): the entire attachment size in bytes.
+
+        Returns:
+            Response: response indicating whether the operation succeeded. 200 if a chunk was added successfully,
+                201 (created) if the file was uploaded completely. 400 in case of errors.
+        """
+        chunk_size = len(chunk_data)
+        headers = {
+            "Content-Length": f'{chunk_size}',
+            "Content-Range": f"bytes {start_chunk_idx}-{end_chunk_idx - 1}/{attachment_size}",
+            "Content-Type": "application/octet-stream"
+        }
+        try:
+            response = requests.put(url=upload_url, data=chunk_data, headers=headers)
+        except Exception as e:
+            raise(e)
+        return response
+
+    def upload_file_with_upload_session(self, upload_url: str, file_data: bytes, file_size: int) -> dict:
+        """
+        Add an attachment using an upload session by dividing the file bytes into chunks and sent each chunk each time.
+        more info here -
+        https://learn.microsoft.com/en-us/onedrive/developer/rest-api/api/driveitem_createuploadsession?view=odsp-graph-online#upload-bytes-to-the-upload-session
+
+        Args:
+            upload_url (str): url to file upload.
+            file_data (bytes): The file data.
+            file_size (int): The file size in bytes.
+        Returns:
+            Response: response indicating whether the operation succeeded. 200 or
+                      201 (created) if the file was uploaded completely. 400 in case of errors.
+        """
+        start_chunk_index = 0
+        end_chunk_index = self.MAX_ATTACHMENT_UPLOAD
+
+        chunk_data = file_data[start_chunk_index: end_chunk_index]
+
+        response = self.upload_attachment(
+            upload_url=upload_url,
+            start_chunk_idx=start_chunk_index,
+            end_chunk_idx=end_chunk_index,
+            chunk_data=chunk_data,
+            attachment_size=file_size
+        )
+        demisto.debug(f"start_chunk_idx:{start_chunk_index}, end_chunk_idx:{end_chunk_index}")
+        while response.status_code != 201 and response.status_code != 200:  # the api returns 201 when the file is created
+            start_chunk_index = end_chunk_index
+            next_chunk = end_chunk_index + self.MAX_ATTACHMENT_UPLOAD
+            end_chunk_index = next_chunk if next_chunk <= file_size else file_size
+            chunk_data = file_data[start_chunk_index: end_chunk_index]
+            demisto.debug(f"start_chunk_idx:{start_chunk_index}, end_chunk_idx:{end_chunk_index}")
+            response = self.upload_attachment(
+                upload_url=upload_url,
+                start_chunk_idx=start_chunk_index,
+                end_chunk_idx=end_chunk_index,
+                chunk_data=chunk_data,
+                attachment_size=file_size
+            )
+            if response.status_code not in (201, 200, 202):
+                raise Exception(f'{response.json()}')
+        return response
+
+    def create_an_upload_session(self, uri: str) -> tuple:
+        """
+        Creates an upload session to the file.
+
+        Args:
+            uri (str): uri of the request.
+            file_name (str): the name of the file.
+
+        Returns:
+            Response: The response to this request, if successful, will provide the details for where the
+                      remainder of the requests should be sent as an UploadSession resource.
+            Upload_url: A url upload resource.
+        """
+        request_body = {"item": {"@microsoft.graph.conflictBehavior": "replace"}}
+        response = self.ms_client.http_request(method='POST', json_data=request_body, url_suffix=uri)
+        return response, response.get("uploadUrl")
+
+    def upload_file_with_upload_session_flow(self, object_type: str, object_type_id: str, parent_id: str, file_name: str,
+                                             file_data: bytes, file_size: int) -> dict:
+        """
+        Uploads a file with the upload session flow, this is used only when the file is larger
+        than 3 MB.
+
+        Args:
+            object_type (str): drive/ group/ site/ users
+            object_type_id (str): the selected object type id.
+            parent_id (str): an ID of the folder to upload the file to.
+            file_name (str): file name.
+            file_data (bytes): The file data.
+            file_size (int): The file size in bytes.
+        Returns:
+            Response: response indicating whether the operation succeeded. 200 or
+                      201 (created) if the file was uploaded completely. 400 in case of errors.
+        """
+        # create suitable upload session
+        if object_type == 'drives':
+            uri = f'/drives/{object_type_id}/items/{parent_id}:/{file_name}:/createUploadSession'
+        elif object_type == 'groups':
+            uri = f'/groups/{object_type_id}/drive/items/{parent_id}:/{file_name}:/createUploadSession'
+        elif object_type == 'sites':
+            uri = f'/sites/{object_type_id}/drive/items/{parent_id}:/{file_name}:/createUploadSession'
+        elif object_type == 'users':
+            uri = f'/users/{object_type_id}/drive/items/{parent_id}:/{file_name}:/createUploadSession'
+        response, upload_url = self.create_an_upload_session(uri)
+        if not upload_url:
+            raise Exception(f'Cannot get upload URL for attachment {file_name}')
+        demisto.debug(f'Create upload session response": {response}')
+        response_file_upload = self.upload_file_with_upload_session(upload_url, file_data, file_size)
+        demisto.debug(f'response of "upload_file_with_upload_session": {response}')
+        return response_file_upload
+
     def upload_new_file(self, object_type, object_type_id, parent_id, file_name, entry_id):
         """
         this function upload new file to a selected folder(parent_id)
-        :param object_type: drive/ group/ me/ site/ users
+        :param object_type: drive/ group/ site/ users
         :param object_type_id: the selected object type id.
         :param parent_id: an ID of the folder to upload the file to.
         :param file_name: file name
-        :param entry_id: demisto file entry ID
-        :return: graph api raw response
+        :param entry_id: demisto file entry ID.
+        :return: graph api raw response.
         """
         file_path = demisto.getFilePath(entry_id).get("path")
 
@@ -488,10 +652,16 @@ def replace_an_existing_file_command(client: MsGraphClient, args):
     item_id = args.get("item_id")
     entry_id = args.get("entry_id")
     object_type_id = args.get("object_type_id")
-
-    result = client.replace_existing_file(
-        object_type, object_type_id, item_id, entry_id
-    )
+    file_data, file_size, file_name = read_file(entry_id)
+    if file_size < client.MAX_ATTACHMENT_SIZE:
+        result = client.replace_existing_file(
+            object_type, object_type_id, item_id, entry_id)
+    else:
+        result = client.replace_existing_file_with_upload_session(
+            object_type, object_type_id, item_id, entry_id, file_data, file_size, file_name
+        )
+        result = result.json()
+        demisto.debug(f"Response replace large existing file: \n {result} \n")
     context_entry = parse_key_to_context(result)
 
     human_readable_content = {
@@ -503,7 +673,7 @@ def replace_an_existing_file_command(client: MsGraphClient, args):
         "Size": context_entry.get("Size"),
         "WebUrl": context_entry.get("WebUrl"),
     }
-
+    remove_nulls_from_dictionary(human_readable_content)
     title = f"{INTEGRATION_NAME} - File information:"
     # Creating human readable for War room
     human_readable = tableToMarkdown(
@@ -516,6 +686,28 @@ def replace_an_existing_file_command(client: MsGraphClient, args):
     return human_readable, context, result
 
 
+def read_file(attach_id: str) -> tuple[bytes, int, str]:
+    """
+        Reads file that was uploaded to War Room.
+
+        Args:
+            attach_id (str): The id of uploaded file to War Room.
+
+        Returns:
+            file_data (bytes): The file data.
+            file_size (int): The size of the file in bytes.
+            file_name (str): Uploaded file name.
+    """
+    try:
+        file_info = demisto.getFilePath(attach_id)
+        with open(file_info['path'], 'rb') as file_data:
+            file_data_read = file_data.read()
+            file_size = os.path.getsize(file_info['path'])
+            return file_data_read, file_size, file_info['name']
+    except Exception as e:
+        raise Exception(f'Unable to read and decode in base 64 file with id {attach_id}', e)
+
+
 def upload_new_file_command(client: MsGraphClient, args):
     """
     This function uploads new file to graph api
@@ -524,14 +716,20 @@ def upload_new_file_command(client: MsGraphClient, args):
     object_type = args.get("object_type")
     object_type_id = args.get("object_type_id")
     parent_id = args.get("parent_id")
-    file_name = args.get("file_name")
     entry_id = args.get("entry_id")
+    file_data, file_size, file_name = read_file(entry_id)
+    file_name = args.get("file_name", file_name)
 
-    result = client.upload_new_file(
-        object_type, object_type_id, parent_id, file_name, entry_id
-    )
+    if file_size < client.MAX_ATTACHMENT_SIZE:
+        result = client.upload_new_file(
+            object_type, object_type_id, parent_id, file_name, entry_id
+        )
+    else:
+        result = client.upload_file_with_upload_session_flow(object_type, object_type_id,
+                                                             parent_id, file_name, file_data, file_size)
+        result = result.json()
+        demisto.debug(f"Response large file upload: \n {result} \n")
     context_entry = parse_key_to_context(result)
-
     human_readable_content = {
         "ID": context_entry.get("ID"),
         "Name": context_entry.get("Name"),
@@ -541,7 +739,7 @@ def upload_new_file_command(client: MsGraphClient, args):
         "Size": context_entry.get("Size"),
         "WebUrl": context_entry.get("WebUrl"),
     }
-
+    remove_nulls_from_dictionary(human_readable_content)
     title = f"{INTEGRATION_NAME} - File information:"
     # Creating human readable for War room
     human_readable = tableToMarkdown(title, human_readable_content)

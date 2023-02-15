@@ -95,6 +95,8 @@ Queries Jira issues.
 | Ticket.Summary | Unknown | The summary of the ticket. | 
 | Ticket.Status | Unknown | The status of the ticket. | 
 | Ticket.Priority | String | The priority of the ticket. | 
+| Ticket.Description | String | The description of the ticket. | 
+| Ticket.Labels | String | The labels of the ticket. | 
 | Ticket.ProjectName | String | The ticket project name. | 
 | Ticket.DueDate | Date | The due date. | 
 | Ticket.Created | Date | The time the ticket was created. | 

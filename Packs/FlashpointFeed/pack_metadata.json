@@ -10,12 +10,9 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Threat Intelligence",
-        "Relationship",
-        "TIM"
+        "Threat Intelligence Management"
     ],
     "useCases": [
-        "Threat Intelligence Management"
     ],
     "keywords": [
         "Flashpoint",

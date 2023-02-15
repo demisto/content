@@ -17,6 +17,9 @@ This integration was integrated and tested with version "2020-10-02" of Azure St
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+## ## Shared Access Signatures Information (SAS)
+* The required SAS token for this integration should be taken at the **storage account level and not at container level**.
+
 ## Shared Access Signatures (SAS) Permissions
 In order to use the integration use-cases, 
 please make sure your SAS token contains the following permissions:

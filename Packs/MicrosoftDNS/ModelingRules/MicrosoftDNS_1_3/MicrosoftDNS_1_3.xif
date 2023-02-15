@@ -1,0 +1,13 @@
+[MODEL: dataset="msft_dns_raw"]
+alter ResponseRequest=arrayindex(regextract(_raw_log,"(\s|R)\s"),7),
+Context=arrayindex(regextract(_raw_log,"(\w+)\s+"),5)
+|alter xdm.source.port=to_number(sourcePort),
+xdm.source.ipv4=if(sourceIp not contains ":",sourceIp,null),
+xdm.source.ipv6=if(sourceIp  contains ":",sourceIp,null),
+xdm.network.dns.response_code=responseCode,
+xdm.network.dns.dns_question.name=questionName,
+xdm.network.dns.dns_question.type=questionType,
+xdm.target.port=to_number(dstPort),
+xdm.network.dns.is_response=to_boolean(if(ResponseRequest="R",1,0)),
+xdm.network.ip_protocol=protocol,
+xdm.session_context_id=Context;

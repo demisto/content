@@ -8,15 +8,11 @@
     "email": "devrel@paloaltonetworks.com",
     "created": "2021-01-15T21:23:23Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Utilities"
     ],
     "tags": [
-        "Threat Intelligence",
-        "Network"
     ],
     "useCases": [
-        "Hunting",
-        "Network Security"
     ],
     "keywords": [
         "JARM",

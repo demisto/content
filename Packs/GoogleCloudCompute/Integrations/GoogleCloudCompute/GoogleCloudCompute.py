@@ -1,13 +1,13 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 """ IMPORTS """
 
-from googleapiclient import discovery
-from google.oauth2 import service_account
 import json
 import time
+
+from google.oauth2 import service_account
+from googleapiclient import discovery
 
 # disable weak-typing warnings by pylint.
 # See: https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/iam/api-client/quickstart.py#L36
@@ -4357,6 +4357,111 @@ def add_project_info_metadata(metadata):
     )
 
 
+def aggregated_list_instances_ip(args: Dict[str, Any]) -> CommandResults:
+    """
+    gcp-compute-aggregated-list-instances-by-ip: Retrieves instance information based on public IP in your project
+    across all regions and zones.
+
+    Args:
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['ip']`` IP Address to search on.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains instance
+        details.
+    """
+    project = SERVICE_ACT_PROJECT_ID
+    ip = args.get('ip')
+
+    output = []
+    data_res = []
+
+    request = get_compute().instances().aggregatedList(
+        project=project,
+    )
+    while request:
+        response = request.execute()
+        if 'items' in response.keys():
+            for name, instances_scoped_list in response['items'].items():
+                if 'warning' not in instances_scoped_list.keys():
+                    for inst in instances_scoped_list.get('instances', []):
+                        for interface in inst.get('networkInterfaces', []):
+                            for config in interface.get('accessConfigs', []):
+                                # only add if 'natIP' (public IP) matches.
+                                if config.get('natIP') == ip:
+                                    output.append(inst)
+                                    data_res_item = {
+                                        'id': inst.get('id'),
+                                        'name': inst.get('name'),
+                                        'machineType': inst.get('machineType'),
+                                        'zone': inst.get('zone'),
+                                    }
+                                    data_res.append(data_res_item)
+
+        request = get_compute().instances().aggregatedList_next(
+            previous_request=request, previous_response=response
+        )
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Google Cloud Compute Instances', data_res, removeNull=True),
+        raw_response=response,
+        outputs_prefix='GoogleCloudCompute.Instances',
+        outputs_key_field='id',
+        outputs=output
+    )
+
+
+def add_networks_tag(args: Dict[str, Any]) -> CommandResults:
+    """
+    gcp-compute-add-network-tag: Add network tag for the specified instance.
+
+    Args:
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['instance']`` Name of the instance scoping this request.
+            ``args['zone']`` The name of the zone for this request.
+            ``args['tag']`` Network tag to add.  Tag must be unique, 1-63 characters long, and comply with RFC1035.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains Compute
+        action details.
+    """
+    project = SERVICE_ACT_PROJECT_ID
+    instance = args.get('instance')
+    zone = args.get('zone')
+    tag = args.get('tag')
+
+    # first request is to get info on instance (fingerprint and current tags)
+    inst_obj = get_compute().instances().get(project=project, zone=zone, instance=instance)
+    inst_resp = inst_obj.execute()
+    finger = inst_resp.get('tags').get('fingerprint')
+    all_tags = inst_resp.get('tags').get('items', [])
+    all_tags.append(tag)
+
+    if finger:
+        body = {"fingerprint": finger, "items": all_tags}
+        request = get_compute().instances().setTags(project=project, zone=zone, instance=instance, body=body)
+        response = request.execute()
+    else:
+        raise ValueError("Unable to find tag fingerprint")
+
+    data_res = {
+        'status': response.get('status'),
+        'kind': response.get('kind'),
+        'name': response.get('name'),
+        'id': response.get('id'),
+        'progress': response.get('progress'),
+        'operationType': response.get('operationType'),
+    }
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Google Cloud Compute Operations', data_res, removeNull=True),
+        raw_response=response,
+        outputs_prefix='GoogleCloudCompute.Operations',
+        outputs_key_field='id',
+        outputs=response
+    )
+
+
 """
 EXECUTION CODE
 """
@@ -4612,6 +4717,12 @@ def main():
 
         elif command == 'gcp-compute-project-info-add-metadata':
             add_project_info_metadata(**demisto.args())
+
+        elif command == 'gcp-compute-add-network-tag':
+            return_results(add_networks_tag(demisto.args()))
+
+        elif command == 'gcp-compute-aggregated-list-instances-by-ip':
+            return_results(aggregated_list_instances_ip(demisto.args()))
 
     except Exception as e:
         LOG(e)

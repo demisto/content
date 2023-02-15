@@ -1,6 +1,8 @@
 This integration enables you to manage and interact with Microsoft security and compliance content search. You can manage the security of all your organization's emails, SharePoint sites, OneDrives, etc., by searching for text strings or queries based on attributes of a malicious email. However, you can only perform actions (preview and delete) on emails.
 This integration was integrated and tested with [Security & Compliance Center](https://docs.microsoft.com/en-us/powershell/module/exchange/?view=exchange-ps#policy-and-compliance-content-search). 
 
+**Important Note:** Microsoft Office 365 no longer supports Basic Authentication. This version of the Security and Compliance integration will not function correctly beginning January 1st, 2023. Please use O365 Security and Compliance v2 instead. 
+
 ## Use Cases
 
 * Create / Modify / Get / List / Remove / Trigger  a search in the Security & Compliance Center - Content search service.

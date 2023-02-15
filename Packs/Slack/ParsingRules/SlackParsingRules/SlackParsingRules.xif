@@ -1,0 +1,2 @@
+[INGEST:vendor="slack", product="slack", target_dataset="slack_slack_raw"]
+alter _time = parse_timestamp("%s",to_string(date_create));

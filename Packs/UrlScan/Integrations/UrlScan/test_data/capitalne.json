@@ -51,7 +51,21 @@
     ],
     "cookies": [],
     "console": [],
-    "links": [],
+    "links": [
+        {
+            "href": "http://capitalne.com/home",
+            "text": "home"
+        },
+        {
+            "href": "http://capitalne.com/about",
+            "text": "about"
+        },
+        {
+            "href": "https://urlscan.io/",
+            "text": "URLScan"
+
+        }
+    ],
     "timing": {
       "beginNavigation": "2020-07-23T15:21:15.008Z",
       "frameStartedLoading": "2020-07-23T15:21:31.534Z",

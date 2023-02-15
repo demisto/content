@@ -15,8 +15,8 @@ AWS_ROLE_ARN = demisto.params()['roleArn']
 AWS_ROLE_SESSION_NAME = demisto.params()['roleSessionName']
 AWS_ROLE_SESSION_DURATION = demisto.params()['sessionDuration']
 AWS_ROLE_POLICY = None
-AWS_ACCESS_KEY_ID = demisto.params().get('access_key')
-AWS_SECRET_ACCESS_KEY = demisto.params().get('secret_key')
+AWS_ACCESS_KEY_ID = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('access_key')
+AWS_SECRET_ACCESS_KEY = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret_key')
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
 proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
 config = Config(

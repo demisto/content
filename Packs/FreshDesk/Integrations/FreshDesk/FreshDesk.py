@@ -5,9 +5,10 @@ from CommonServerUserPython import *
 
 
 import requests
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 # Remove proxy if not set to true in params
 handle_proxy(proxy_param_name='proxy')
 ''' GLOBALS/PARAMS '''
@@ -79,7 +80,7 @@ def reformat_canned_response_context(context):
     returns:
         The reformatted context
     """
-    for key, val in context.iteritems():
+    for key, val in list(context.items()):
         if 'Id' in key:
             new_key = key.replace('Id', 'ID')
             context[new_key] = val
@@ -130,7 +131,7 @@ def format_contact_context(contact):
     dont_include = ['other_companies', 'other_emails', 'custom_fields', 'avatar']
     # Parse response into context
     context = {}
-    for key, val in contact.iteritems():
+    for key, val in contact.items():
         if key not in dont_include and val:
             new_key = string_to_context_key(key)
             if 'Id' in new_key:
@@ -158,7 +159,7 @@ def reformat_ticket_context(context):
         'UserID', 'BodyText', 'Category', 'Private', 'Incoming'
     ]
 
-    for key, val in context.iteritems():
+    for key, val in list(context.items()):
         if key == 'Tags':
             new_key = key[:-1]
             context[new_key] = val
@@ -195,7 +196,7 @@ def reformat_ticket_context(context):
     new_context = {}
     new_context['AdditionalFields'] = context.get('AdditionalFields') if context.get('AdditionalFields') else {}
     additional_fields = {}
-    for key, val in context.iteritems():
+    for key, val in list(context.items()):
         if key not in standard_context_outputs:
             if not ((isinstance(val, list) or isinstance(val, dict)) and len(val) == 0):
                 additional_fields[key] = val
@@ -285,7 +286,7 @@ def attachments_into_context(api_response, context):
         attachments_context_readable = []
         for attachment in attachments:
             attachment_context = {}
-            for key, val in attachment.iteritems():
+            for key, val in attachment.items():
                 if key in attachment_keys_to_include:
                     if key == 'attachment_url':
                         key = 'AttachmentURL'
@@ -771,7 +772,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             for error in err.get('errors'):
                 err_msg += '\n' + json.dumps(error, indent=2)
         else:
-            for key, value in res.json().iteritems():
+            for key, value in res.json().items():
                 err_msg += '\n{}: {}'.format(key, value)
         return_error(err_msg)
     # Handle response with no content
@@ -898,7 +899,7 @@ def create_ticket_command():
     # Parse response into context
     include_in_context = DEFAULT_TICKET_CONTEXT_FIELDS[:]
 
-    context = {string_to_context_key(key): val for key, val in ticket.iteritems() if val}
+    context = {string_to_context_key(key): val for key, val in ticket.items() if val}
     context = additional_fields_to_context(context, include_in_context, additional_fields, additional_values)
     context, context_readable = attachments_into_context(ticket, context)
     context = reformat_ticket_context(context)
@@ -992,7 +993,7 @@ def update_ticket_command():
     include_in_context = DEFAULT_TICKET_CONTEXT_FIELDS[:]
     include_in_context.append('updated_at')
     # Parse default context fields
-    context = {string_to_context_key(key): val for key, val in ticket.iteritems() if val}
+    context = {string_to_context_key(key): val for key, val in ticket.items() if val}
     # Parse additional fields into context
     context = additional_fields_to_context(context, include_in_context, additional_fields, additional_fields_values)
     # Parse attachments into context
@@ -1058,7 +1059,7 @@ def get_ticket_command():
     # Parse response into context
     context = {
         string_to_context_key(key): val
-        for key, val in ticket.iteritems()
+        for key, val in ticket.items()
         if key not in nonstd_context_fields and val is not None
     }
 
@@ -1068,11 +1069,11 @@ def get_ticket_command():
     context['AdditionalFields'] = {}
     requester = ticket.get('requester')
     if requester:
-        requester_context = {string_to_context_key(key): val for key, val in requester.iteritems() if val}
+        requester_context = {string_to_context_key(key): val for key, val in requester.items() if val}
         context['AdditionalFields']['Requestor'] = requester_context
     stats = ticket.get('stats')
     if stats:
-        stats_context = {string_to_context_key(key): val for key, val in stats.iteritems() if val}
+        stats_context = {string_to_context_key(key): val for key, val in stats.items() if val}
         context['AdditionalFields']['Stats'] = stats_context
 
     if not ticket.get('deleted'):
@@ -1245,22 +1246,22 @@ def search_tickets_command():
     readable_contexts = []
     for ticket in tickets:
         # Parse ticket into the standard outputs
-        context = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in context_outputs}
+        context = {string_to_context_key(key): val for key, val in ticket.items() if key in context_outputs}
 
         # Parse ticket attachments into context
         context, context_readable = attachments_into_context(ticket, context)
 
         # Parse ticket for the additionally requested fields
         context['AdditionalFields'] = {
-            string_to_context_key(key): val for key, val in ticket.iteritems() if key in additional_fields
+            string_to_context_key(key): val for key, val in ticket.items() if key in additional_fields
         }
         requester = ticket.get('requester')
         if requester:
-            requester_context = {string_to_context_key(key): val for key, val in requester.iteritems() if val}
+            requester_context = {string_to_context_key(key): val for key, val in requester.items() if val}
             context['AdditionalFields']['Requestor'] = requester_context
         stats = ticket.get('stats')
         if stats:
-            stats_context = {string_to_context_key(key): val for key, val in stats.iteritems() if val}
+            stats_context = {string_to_context_key(key): val for key, val in stats.items() if val}
             context['AdditionalFields']['Stats'] = stats_context
 
         context_readable = reformat_ticket_context(context_readable)
@@ -1342,7 +1343,7 @@ def ticket_reply_command():
     # Make request and get raw response
     reply = ticket_reply(args)
     # Parse response into context
-    context = {string_to_context_key(key): val for key, val in reply.iteritems() if val}
+    context = {string_to_context_key(key): val for key, val in reply.items() if val}
     context = reformat_conversation_context(context)
     # Parse attachments into context
     context, context_readable = attachments_into_context(reply, context)
@@ -1428,7 +1429,7 @@ def create_ticket_note_command():
     # Make request and get raw response
     note = create_ticket_note(args)
     # Parse response into context
-    context = {string_to_context_key(key): val for key, val in note.iteritems() if val}
+    context = {string_to_context_key(key): val for key, val in note.items() if val}
     context = reformat_conversation_context(context)
     # Parse attachments into context
     context, context_readable = attachments_into_context(note, context)
@@ -1476,7 +1477,7 @@ def get_ticket_conversations_command():
     contexts = []
     readable_contexts = []
     for conversation in conversations:
-        context = {string_to_context_key(key): val for key, val in conversation.iteritems() if val}
+        context = {string_to_context_key(key): val for key, val in conversation.items() if val}
         context = reformat_conversation_context(context)
         # Parse attachments into context
         context, context_readable = attachments_into_context(conversation, context)
@@ -1663,7 +1664,7 @@ def list_canned_response_folders_command():
     contexts = []
     for folder in cr_folders:
         # Parse individual contact response in context
-        context = {string_to_context_key(key): val for key, val in folder.iteritems() if val}
+        context = {string_to_context_key(key): val for key, val in folder.items() if val}
         context = reformat_canned_response_context(context)
         contexts.append(context)
     title = 'All Canned Response Folders'
@@ -1704,7 +1705,7 @@ def get_canned_response_folder_command():
     contexts = []
     readable_contexts = []
     for cr in canned_responses:
-        context = {string_to_context_key(key): val for key, val in cr.iteritems() if val}
+        context = {string_to_context_key(key): val for key, val in cr.items() if val}
         context = reformat_canned_response_context(context)
         context, context_readable = attachments_into_context(cr, context)
         contexts.append(context)
@@ -1746,7 +1747,7 @@ def list_groups_command():
     for group in groups:
         # Parse individual group response in context
         context = {}
-        for key, val in group.iteritems():
+        for key, val in list(group.items()):
             if val:
                 if key == 'agent_ids':
                     key = 'agent_id'
@@ -1803,7 +1804,7 @@ def list_agents_command():
     for agent in agents:
         # Parse the individual agent into context
         context = {}
-        for key, val in agent.iteritems():
+        for key, val in list(agent.items()):
             if val:
                 if key == 'group_ids':
                     key = 'group_id'
@@ -1813,7 +1814,7 @@ def list_agents_command():
                 if 'Id' in new_key:
                     new_key = new_key.replace('Id', 'ID')
                 context[new_key] = val
-        context['Contact'] = {string_to_context_key(key): val for key, val in agent.get('contact').iteritems() if val}
+        context['Contact'] = {string_to_context_key(key): val for key, val in agent.get('contact').items() if val}
         contexts.append(context)
     title = 'All Agents'
     human_readable = tableToMarkdown(title, contexts, removeNull=True)

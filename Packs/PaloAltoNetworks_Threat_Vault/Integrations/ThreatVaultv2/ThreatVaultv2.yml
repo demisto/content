@@ -1,0 +1,1246 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Palo Alto Networks Threat Vault v2
+  version: -1
+configuration:
+- defaultvalue: https://api.threatvault.paloaltonetworks.com/
+  display: URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: API Key
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+- display: Source Reliability
+  name: integrationReliability
+  type: 15
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: D - Not usually reliable
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 14 days
+  additionalinfo: The time unit must be days, months, or years.
+  display: First fetch timestamp (<number> <time unit>, e.g., 3 days)
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: '1440'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: Use the Palo Alto Networks Threat Vault to research the latest threats (vulnerabilities/exploits, viruses, and spyware) that Palo Alto Networks next-generation firewalls can detect and prevent.
+display: Palo Alto Networks Threat Vault v2
+name: Palo Alto Networks Threat Vault v2
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: A comma-separated list of SHA256 or MD5 hashes of the antivirus signature.
+      isArray: true
+      name: file
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks the reputation of an antivirus in Threat Vault.
+    execution: false
+    name: file
+    outputs:
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: ThreatVault.FileInfo.filetype
+      description: The file type of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.sha256
+      description: The SHA256 of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.sha1
+      description: The SHA1 of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.md5
+      description: The MD5 of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.size
+      description: The size of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.type
+      description: The type of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.family
+      description: The family of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.platform
+      description: The platform of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.wildfire_verdict
+      description: The Wildfire verdict.
+      type: String
+    - contextPath: ThreatVault.FileInfo.create_time
+      description: The threat signature creation time.
+      type: String
+    - contextPath: ThreatVault.FileInfo.signatures
+      description: The signatures.
+      type: String
+  - arguments:
+    - default: true
+      description: A comma-separated list of CVE names.
+      isArray: true
+      name: cve
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks the reputation of CVE in Threat Vault.
+    execution: false
+    name: cve
+    outputs:
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: CVE.ID
+      description: The CVE ID.
+      type: String
+    - contextPath: CVE.Description
+      description: A description of the CVE.
+      type: String
+    - contextPath: CVE.CVSS.Score
+      description: The CVSS of the CVE.
+      type: String
+    - contextPath: CVE.Modified
+      description: The timestamp of when the CVE was last modified.
+      type: String
+    - contextPath: CVE.Published
+      description: The timestamp of when the CVE was published.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.category
+      description: The threat category of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.min_version
+      description: The PAN-OS minimum version.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.max_version
+      description: The PAN-OS maximum version.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.severity
+      description: The severity of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.default_action
+      description: The default action when the signature is triggered.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.cve
+      description: The CVE (Common Vulnerabilities and Exposures) of the threat.
+      type: Array
+    - contextPath: ThreatVault.Vulnerability.vendor.
+      description: The vulnerability identifier issued by the vendor on advisories.
+      type: Array
+    - contextPath: ThreatVault.Vulnerability.reference
+      description: The public reference of the threat.
+      type: Array
+    - contextPath: ThreatVault.Vulnerability.status
+      description: The status of the threat (e.g., inactive, active, or released).
+      type: String
+    - contextPath: ThreatVault.Vulnerability.details
+      description: Any additional details of the threat.
+      type: Object
+    - contextPath: ThreatVault.Vulnerability.ori_release_version
+      description: The original release version of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.latest_release_version
+      description: The latest release version of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.ori_release_time
+      description: The original release time of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.latest_release_time
+      description: The latest release time of the threat.
+      type: String
+  - arguments:
+    - default: false
+      description: A comma-separated list of SHA256 hashes of the antivirus signature.
+      isArray: true
+      name: sha256
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of MD5 hash of the antivirus signature.
+      isArray: true
+      name: md5
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the anti-spyware or antivirus signature.
+      isArray: true
+      name: signature_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the antivirus or anti-spyware or files signature.
+    execution: false
+    name: threatvault-threat-signature-get
+    outputs:
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.category
+      description: The threat category of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.min_version
+      description: The PAN-OS minimum version.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.max_version
+      description: The PAN-OS maximum version.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.severity
+      description: The severity of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.default_action
+      description: The default action when the signature is triggered.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.cve
+      description: The CVE (Common Vulnerabilities and Exposures) of the threat.
+      type: Array
+    - contextPath: ThreatVault.Vulnerability.vendor.
+      description: The vulnerability identifier issued by the vendor on advisories.
+      type: Array
+    - contextPath: ThreatVault.Vulnerability.reference
+      description: The public reference of the threat.
+      type: Array
+    - contextPath: ThreatVault.Vulnerability.status
+      description: The status of the threat (e.g., inactive, active, or released).
+      type: String
+    - contextPath: ThreatVault.Vulnerability.details
+      description: Any additional details of the threat.
+      type: Object
+    - contextPath: ThreatVault.Vulnerability.ori_release_version
+      description: The original release version of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.latest_release_version
+      description: The latest release version of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.ori_release_time
+      description: The original release time of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.latest_release_time
+      description: The latest release time of the threat.
+      type: String
+    - contextPath: ThreatVault.Spyware.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.Spyware.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.Spyware.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.Spyware.vendor
+      description: The spyware identifier issued by the vendor on advisories.
+      type: Array
+    - contextPath: ThreatVault.Spyware.severity
+      description: The severity of the threat.
+      type: String
+    - contextPath: ThreatVault.Spyware.default_action
+      description: The default action when the signature is triggered.
+      type: String
+    - contextPath: ThreatVault.Spyware.details
+      description: Any additional details of the threat.
+      type: Object
+    - contextPath: ThreatVault.Spyware.reference
+      description: The public reference of the threat.
+      type: Array
+    - contextPath: ThreatVault.Spyware.status
+      description: The status of the threat (e.g., inactive, active, or released).
+      type: String
+    - contextPath: ThreatVault.Spyware.min_version
+      description: The PAN-OS minimum version.
+      type: String
+    - contextPath: ThreatVault.Spyware.max_version
+      description: The PAN-OS maximum version.
+      type: String
+    - contextPath: ThreatVault.Spyware.cve
+      description: The CVE (Common Vulnerabilities and Exposures) of the threat.
+      type: Array
+    - contextPath: ThreatVault.Antivirus.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.action
+      description: The action of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.subtype
+      description: The subtype of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.type
+      description: The type of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.create_time
+      description: The create time of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.related_sha256_hashes
+      description: The related sha256 hashes of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.release
+      description: Information about the signature release.
+      type: String
+    - contextPath: ThreatVault.Fileformat.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.Fileformat.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.Fileformat.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.Fileformat.category
+      description: The threat category of the threat.
+      type: String
+    - contextPath: ThreatVault.Fileformat.min_version
+      description: The PAN-OS minimum version.
+      type: String
+    - contextPath: ThreatVault.Fileformat.max_version
+      description: The PAN-OS maximum version.
+      type: String
+    - contextPath: ThreatVault.Fileformat.severity
+      description: The severity of the threat.
+      type: String
+    - contextPath: ThreatVault.Fileformat.default_action
+      description: The default action when the signature is triggered.
+      type: String
+    - contextPath: ThreatVault.Fileformat.cve
+      description: The CVE (Common Vulnerabilities and Exposures) of the threat.
+      type: Array
+    - contextPath: ThreatVault.Fileformat.vendor
+      description: The file format identifier issued by vendor on advisories.
+      type: Array
+    - contextPath: ThreatVault.Fileformat.reference
+      description: The public reference of the threat.
+      type: Array
+    - contextPath: ThreatVault.Fileformat.status
+      description: The status of the threat (e.g., inactive, active, or released).
+      type: String
+    - contextPath: ThreatVault.Fileformat.details
+      description: Any additional details of the threat.
+      type: Array
+    - contextPath: ThreatVault.Fileformat.ori_release_version
+      description: The original release version of the threat.
+      type: String
+    - contextPath: ThreatVault.Fileformat.latest_release_version
+      description: The latest release version of the threat.
+      type: String
+    - contextPath: ThreatVault.Fileformat.ori_release_time
+      description: The original release time of the threat.
+      type: String
+    - contextPath: ThreatVault.Fileformat.latest_release_time
+      description: The latest release time of the threat.
+      type: String
+    - contextPath: ThreatVault.FileInfo.filetype
+      description: The file type of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.sha256
+      description: The SHA256 of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.sha1
+      description: The SHA1 of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.md5
+      description: The MD5 of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.size
+      description: The size of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.type
+      description: The type of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.family
+      description: The family of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.platform
+      description: The platform of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.wildfire_verdict
+      description: The Wildfire verdict.
+      type: String
+    - contextPath: ThreatVault.FileInfo.create_time
+      description: The threat signature creation time.
+      type: String
+    - contextPath: ThreatVault.FileInfo.signatures
+      description: The signatures.
+      type: String
+    - contextPath: ThreatVault.DNS.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.type
+      description: The type of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.severity
+      description: The severity of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.subtype
+      description: The subtype of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.action
+      description: The action of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.create_time
+      description: The threat signature creation time.
+      type: String
+    - contextPath: ThreatVault.DNS.release
+      description: Information about the signature release.
+      type: String
+    - contextPath: ThreatVault.DNS.status
+      description: The status of the threat (e.g., inactive, active, or released).
+      type: String
+    - contextPath: ThreatVault.RTDNS.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.type
+      description: The type of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.severity
+      description: The severity of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.subtype
+      description: The subtype of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.action
+      description: The action of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.create_time
+      description: The threat signature creation time.
+      type: String
+    - contextPath: ThreatVault.RTDNS.status
+      description: The status of the threat (e.g., inactive, active, or released).
+      type: String
+    - contextPath: ThreatVault.SpywareC2.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.type
+      description: The type of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.severity
+      description: The severity of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.subtype
+      description: The subtype of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.action
+      description: The action of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.create_time
+      description: The threat signature creation time.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.release
+      description: Information about the signature release.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.status
+      description: The status of the threat (e.g., inactive, active, or released).
+      type: String
+  - arguments:
+    - default: false
+      description: The release version (ex. 8446) or content version (ex. 8446-6886) of the release notes.
+      isArray: false
+      name: version
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve the release notes information by version.
+    execution: false
+    name: threatvault-release-note-get
+    outputs:
+    - contextPath: ThreatVault.ReleaseNote.release_version
+      description: The release version of the update.
+      type: String
+    - contextPath: ThreatVault.ReleaseNote.type
+      description: The type of the release notes.
+      type: String
+    - contextPath: ThreatVault.ReleaseNote.content_version
+      description: The content version of the update.
+      type: String
+    - contextPath: ThreatVault.ReleaseNote.notes
+      description: General notices and reminders.
+      type: Array
+    - contextPath: ThreatVault.ReleaseNote.decoders
+      description: The decoder updates in the release notes.
+      type: Array
+    - contextPath: ThreatVault.ReleaseNote.spyware.new
+      description: List of new entries.
+      type: Array
+    - contextPath: ThreatVault.ReleaseNote.spyware.modified
+      description: List of modified entries.
+      type: Array
+    - contextPath: ThreatVault.ReleaseNote.spyware.disabled
+      description: List of disabled entries.
+      type: Array
+    - contextPath: ThreatVault.ReleaseNote.vulnerability.new
+      description: List of new entries.
+      type: Array
+    - contextPath: ThreatVault.ReleaseNote.vulnerability.modified
+      description: List of modified entries.
+      type: Array
+    - contextPath: ThreatVault.ReleaseNote.vulnerability.disabled
+      description: List of disabled entries.
+      type: Array
+    - contextPath: ThreatVault.ReleaseNote.applications.new
+      description: List of new entries.
+      type: Array
+    - contextPath: ThreatVault.ReleaseNote.applications.modified
+      description: List of modified entries.
+      type: Array
+    - contextPath: ThreatVault.ReleaseNote.applications.obsoleted
+      description: List of obsolete entries.
+      type: Array
+  - arguments:
+    - default: false
+      description: The signature IDs.
+      isArray: true
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: The hash of the sample.
+      isArray: true
+      name: md5
+      required: false
+      secret: false
+    - default: false
+      description: The signature names.
+      isArray: true
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The hash of the sample.
+      isArray: true
+      name: sha256
+      required: false
+      secret: false
+    - default: false
+      description: Use together with the other fields to filter out the results.
+      isArray: false
+      name: type
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - ips
+      - fileformat
+      - spyware
+      - vulnerability
+      - antivirus
+      - dns
+      - rtdns
+      - spywarec2
+    deprecated: false
+    description: Retrieve the threats signature metadata by id, name or sample hash (sha256 or md5) in batch mode. Batch limit is 100 entries.
+    execution: false
+    name: threatvault-threat-batch-search
+    outputs:
+    - contextPath: ThreatVault.Vulnerability.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.category
+      description: The threat category of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.min_version
+      description: The PAN-OS minimum version.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.max_version
+      description: The PAN-OS maximum version.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.severity
+      description: The severity of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.default_action
+      description: The default action when the signature is triggered.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.cve
+      description: The CVE (Common Vulnerabilities and Exposures) of the threat.
+      type: Array
+    - contextPath: ThreatVault.Vulnerability.vendor.
+      description: The vulnerability identifier issued by the vendor on advisories.
+      type: Array
+    - contextPath: ThreatVault.Vulnerability.reference
+      description: The public reference of the threat.
+      type: Array
+    - contextPath: ThreatVault.Vulnerability.status
+      description: The status of the threat (e.g., inactive, active, or released).
+      type: String
+    - contextPath: ThreatVault.Vulnerability.details
+      description: Any additional details of the threat.
+      type: Object
+    - contextPath: ThreatVault.Vulnerability.ori_release_version
+      description: The original release version of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.latest_release_version
+      description: The latest release version of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.ori_release_time
+      description: The original release time of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.latest_release_time
+      description: The latest release time of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.action
+      description: The action of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.subtype
+      description: The subtype of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.type
+      description: The type of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.create_time
+      description: The create time of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.related_sha256_hashes
+      description: The related SHA256 hashes of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.release
+      description: Information about the signature release.
+      type: String
+    - contextPath: ThreatVault.FileInfo.filetype
+      description: The file type of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.sha256
+      description: The SHA256 of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.sha1
+      description: The SHA1 of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.md5
+      description: The MD5 of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.size
+      description: The size of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.type
+      description: The type of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.family
+      description: The family of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.platform
+      description: The platform of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.wildfire_verdict
+      description: The Wildfire verdict.
+      type: String
+    - contextPath: ThreatVault.FileInfo.create_time
+      description: The threat signature creation time.
+      type: String
+    - contextPath: ThreatVault.FileInfo.signatures
+      description: The signatures.
+      type: String
+    - contextPath: ThreatVault.Spyware.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.Spyware.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.Spyware.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.Spyware.vendor
+      description: The spyware identifier issued by the vendor on advisories.
+      type: Array
+    - contextPath: ThreatVault.Spyware.severity
+      description: The severity of the threat.
+      type: String
+    - contextPath: ThreatVault.Spyware.default_action
+      description: The default action when the signature is triggered.
+      type: String
+    - contextPath: ThreatVault.Spyware.details
+      description: Any additional details of the threat.
+      type: Object
+    - contextPath: ThreatVault.Spyware.reference
+      description: The public reference of the threat.
+      type: Array
+    - contextPath: ThreatVault.Spyware.status
+      description: The status of the threat (e.g., inactive, active, or released).
+      type: String
+    - contextPath: ThreatVault.Spyware.min_version
+      description: The PAN-OS minimum version.
+      type: String
+    - contextPath: ThreatVault.Spyware.max_version
+      description: The PAN-OS maximum version.
+      type: String
+    - contextPath: ThreatVault.Spyware.cve
+      description: The CVE (Common Vulnerabilities and Exposures) of the threat.
+      type: Array
+    - contextPath: ThreatVault.DNS.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.type
+      description: The type of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.severity
+      description: The severity of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.subtype
+      description: The subtype of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.action
+      description: The action of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.create_time
+      description: The threat signature creation time.
+      type: String
+    - contextPath: ThreatVault.DNS.release
+      description: Information about the signature release.
+      type: String
+    - contextPath: ThreatVault.DNS.status
+      description: The status of the threat (e.g., inactive, active, or released).
+      type: String
+    - contextPath: ThreatVault.RTDNS.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.type
+      description: The type of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.severity
+      description: The severity of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.subtype
+      description: The subtype of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.action
+      description: The action of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.create_time
+      description: The threat signature creation time.
+      type: String
+    - contextPath: ThreatVault.RTDNS.status
+      description: The status of the threat (e.g., inactive, active, or released).
+      type: String
+    - contextPath: ThreatVault.SpywareC2.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.type
+      description: The type of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.severity
+      description: The severity of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.subtype
+      description: The subtype of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.action
+      description: The action of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.create_time
+      description: The threat signature creation time.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.release
+      description: Information about the signature release.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.status
+      description: The status of the threat (e.g., inactive, active, or released).
+      type: String
+  - arguments:
+    - default: false
+      description: The CVE tied to the signature.
+      isArray: false
+      name: cve
+      required: false
+      secret: false
+    - default: false
+      description: The vendor ID tied to the signatures.
+      isArray: false
+      name: vendor
+      required: false
+      secret: false
+    - default: false
+      description: The signature name.
+      isArray: false
+      name: signature-name
+      required: false
+      secret: false
+    - default: false
+      description: "The release dates range (used with the to-release-date argument),
+        Format: YYYY-MM-DD or timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)."
+      isArray: false
+      name: from-release-date
+      required: false
+      secret: false
+    - default: false
+      description: "The right boundary of date range query (used with the from-release-date argument),
+        Format: YYYY-MM-DD or timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)."
+      isArray: false
+      name: to-release-date
+      required: false
+      secret: false
+    - default: false
+      description: The release versions range (used with the to-release-version argument).
+      isArray: false
+      name: from-release-version
+      required: false
+      secret: false
+    - default: false
+      description: The right boundary of version range query (used with the from-release-version argument).
+      isArray: false
+      name: to-release-version
+      required: false
+      secret: false
+    - default: false
+      description: "The release date, Format: YYYY-MM-DD or timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)."
+      isArray: false
+      name: release-date
+      required: false
+      secret: false
+    - default: false
+      description: The release version.
+      isArray: false
+      name: release-version
+      required: false
+      secret: false
+    - default: false
+      description: The threat type. Use together with the other fields to filter out the results.
+      isArray: false
+      name: type
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - ips
+      - fileformat
+      - spyware
+      - vulnerability
+      - antivirus
+      - dns
+      - rtdns
+      - spywarec2
+    - default: false
+      description: Page number to get result from. Needs to be used with the page_size argument.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The page size of the returned results. Needs to be used with the page argument.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of results to return (default is 50).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves threat metadata. The nature of the query is determined by the query parameter that you provide.
+    execution: false
+    name: threatvault-threat-search
+    outputs:
+    - contextPath: ThreatVault.Vulnerability.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.category
+      description: The threat category of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.min_version
+      description: The PAN-OS minimum version.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.max_version
+      description: The PAN-OS maximum version.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.severity
+      description: The severity of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.default_action
+      description: The default action when the signature is triggered.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.cve
+      description: The CVE (Common Vulnerabilities and Exposures) of the threat.
+      type: Array
+    - contextPath: ThreatVault.Vulnerability.vendor.
+      description: The vulnerability identifier issued by the vendor on advisories.
+      type: Array
+    - contextPath: ThreatVault.Vulnerability.reference
+      description: The public reference of the threat.
+      type: Array
+    - contextPath: ThreatVault.Vulnerability.status
+      description: The status of the threat (e.g., inactive, active, or released).
+      type: String
+    - contextPath: ThreatVault.Vulnerability.details
+      description: Any additional details of the threat.
+      type: Object
+    - contextPath: ThreatVault.Vulnerability.ori_release_version
+      description: The original release version of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.latest_release_version
+      description: The latest release version of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.ori_release_time
+      description: The original release time of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.latest_release_time
+      description: The latest release time of the threat.
+      type: String
+    - contextPath: ThreatVault.Spyware.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.Spyware.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.Spyware.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.Spyware.vendor
+      description: The spyware identifier issued by the vendor on advisories.
+      type: Array
+    - contextPath: ThreatVault.Spyware.severity
+      description: The severity of the threat.
+      type: String
+    - contextPath: ThreatVault.Spyware.default_action
+      description: The default action when the signature is triggered.
+      type: String
+    - contextPath: ThreatVault.Spyware.details
+      description: Any additional details of the threat.
+      type: Object
+    - contextPath: ThreatVault.Spyware.reference
+      description: The public reference of the threat.
+      type: Array
+    - contextPath: ThreatVault.Spyware.status
+      description: The status of the threat (e.g., inactive, active, or released).
+      type: String
+    - contextPath: ThreatVault.Spyware.min_version
+      description: The PAN-OS minimum version.
+      type: String
+    - contextPath: ThreatVault.Spyware.max_version
+      description: The PAN-OS maximum version.
+      type: String
+    - contextPath: ThreatVault.Spyware.cve
+      description: The CVE (Common Vulnerabilities and Exposures) of the threat.
+      type: Array
+    - contextPath: ThreatVault.Antivirus.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.action
+      description: The action of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.subtype
+      description: The subtype of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.type
+      description: The type of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.create_time
+      description: The create time of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.related_sha256_hashes
+      description: The related SHA256 hashes of the threat.
+      type: String
+    - contextPath: ThreatVault.Antivirus.release
+      description: Information about the signature release.
+      type: String
+    - contextPath: ThreatVault.Fileformat.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.Fileformat.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.Fileformat.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.Fileformat.category
+      description: The threat category of the threat.
+      type: String
+    - contextPath: ThreatVault.Fileformat.min_version
+      description: The PAN-OS minimum version.
+      type: String
+    - contextPath: ThreatVault.Fileformat.max_version
+      description: The PAN-OS maximum version.
+      type: String
+    - contextPath: ThreatVault.Fileformat.severity
+      description: The severity of the threat.
+      type: String
+    - contextPath: ThreatVault.Fileformat.default_action
+      description: The default action when the signature is triggered.
+      type: String
+    - contextPath: ThreatVault.Fileformat.cve
+      description: The CVE (Common Vulnerabilities and Exposures) of the threat.
+      type: Array
+    - contextPath: ThreatVault.Fileformat.vendor
+      description: The file format identifier issued by the vendor on advisories.
+      type: Array
+    - contextPath: ThreatVault.Fileformat.reference
+      description: The public reference of the threat.
+      type: Array
+    - contextPath: ThreatVault.Fileformat.status
+      description: The status of the threat (e.g., inactive, active, or released).
+      type: String
+    - contextPath: ThreatVault.Fileformat.details
+      description: Any additional details of the threat.
+      type: Array
+    - contextPath: ThreatVault.Fileformat.ori_release_version
+      description: The original release version of the threat.
+      type: String
+    - contextPath: ThreatVault.Fileformat.latest_release_version
+      description: The latest release version of the threat.
+      type: String
+    - contextPath: ThreatVault.Fileformat.ori_release_time
+      description: The original release time of the threat.
+      type: String
+    - contextPath: ThreatVault.Fileformat.latest_release_time
+      description: The latest release time of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.type
+      description: The type of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.severity
+      description: The severity of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.subtype
+      description: The subtype of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.action
+      description: The action of the threat.
+      type: String
+    - contextPath: ThreatVault.DNS.create_time
+      description: The threat signature creation time.
+      type: String
+    - contextPath: ThreatVault.DNS.release
+      description: Information about the signature release.
+      type: String
+    - contextPath: ThreatVault.DNS.status
+      description: The status of the threat (e.g., inactive, active, or released).
+      type: String
+    - contextPath: ThreatVault.RTDNS.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.type
+      description: The type of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.severity
+      description: The severity of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.subtype
+      description: The subtype of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.action
+      description: The action of the threat.
+      type: String
+    - contextPath: ThreatVault.RTDNS.create_time
+      description: The threat signature creation time.
+      type: String
+    - contextPath: ThreatVault.RTDNS.status
+      description: The status of the threat (e.g., inactive, active, or released).
+      type: String
+    - contextPath: ThreatVault.SpywareC2.id
+      description: The unique ID of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.name
+      description: The name of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.description
+      description: The description of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.type
+      description: The type of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.severity
+      description: The severity of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.subtype
+      description: The subtype of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.action
+      description: The action of the threat.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.create_time
+      description: The threat signature creation time.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.release
+      description: Information about the signature release.
+      type: String
+    - contextPath: ThreatVault.SpywareC2.status
+      description: The status of the threat (e.g., inactive, active, or released).
+      type: String
+  dockerimage: demisto/crypto:1.0.0.42817
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- PANW Threat Vault v2 - Test
+fromversion: 6.5.0
+deprecated: false

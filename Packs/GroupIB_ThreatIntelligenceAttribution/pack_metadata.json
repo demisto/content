@@ -12,22 +12,8 @@
     "itemPrefix": [
         "GIB"
     ],
-    "tags": [
-        "Alerts",
-        "Attack",
-        "Dark Web",
-        "Email",
-        "Malware",
-        "Threat Intelligence",
-        "Security"
-    ],
-    "useCases": [
-        "Hunting",
-        "Lost or Stolen Device",
-        "Phishing",
-        "Threat Intelligence Management",
-        "Malware"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "Threat intelligence"
     ],

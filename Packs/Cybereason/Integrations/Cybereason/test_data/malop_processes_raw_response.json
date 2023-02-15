@@ -1,0 +1,340 @@
+{
+  "data": {
+    "resultIdToElementDataMap": {
+      "1589170329.-285868401975015536": {
+        "simpleValues": {
+          "elementDisplayName": {
+            "totalValues": 1,
+            "values": [
+              "bdata.bin"
+            ]
+          },
+          "imageFile.signatureVerified": {
+            "totalValues": 1,
+            "values": [
+              "false"
+            ]
+          },
+          "calculatedName": {
+            "totalValues": 1,
+            "values": [
+              "bdata.bin"
+            ]
+          },
+          "endTime": {
+            "totalValues": 1,
+            "values": []
+          },
+          "imageFile.md5String": {
+            "totalValues": 1,
+            "values": []
+          },
+          "imageFile.isSigned": {
+            "totalValues": 1,
+            "values": [
+              "false"
+            ]
+          },
+          "markedForPrevention": {
+            "totalValues": 1,
+            "values": [
+              "false"
+            ]
+          },
+          "commandLine": {
+            "totalValues": 1,
+            "values": []
+          },
+          "isLiveProcess": {
+            "totalValues": 1,
+            "values": [
+              "false"
+            ]
+          },
+          "creationTime": {
+            "totalValues": 1,
+            "values": []
+          },
+          "pid": {
+            "totalValues": 1,
+            "values": [
+              "5180"
+            ]
+          },
+          "executionPrevented": {
+            "totalValues": 1,
+            "values": [
+              "false"
+            ]
+          },
+          "isChainOfInjections": {
+            "totalValues": 1,
+            "values": [
+              "false"
+            ]
+          },
+          "imageFile.maliciousClassificationType": {
+            "totalValues": 1,
+            "values": [
+              "av_detected"
+            ]
+          },
+          "imageFile.correctedPath": {
+            "totalValues": 1,
+            "values": []
+          },
+          "imageFile.productType": {
+            "totalValues": 1,
+            "values": [
+              "NONE"
+            ]
+          },
+          "imageFile.sha1String": {
+            "totalValues": 1,
+            "values": [
+              "f56238da9fbfa3864d443a85bb80743bd2415682"
+            ]
+          },
+          "nonExecutableExtensionEvidence": {
+            "totalValues": 1,
+            "values": [
+              "APPLICATION_DATA"
+            ]
+          }
+        },
+        "elementValues": {
+          "imageFileUnsignedEvidence": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "File",
+                "guid": "",
+                "name": "bdata.bin",
+                "hasSuspicions": true,
+                "hasMalops": false
+              }
+            ],
+            "totalSuspicious": 1,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          },
+          "calculatedUser": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "User",
+                "guid": "",
+                "name": "",
+                "hasSuspicions": false,
+                "hasMalops": false
+              }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          },
+          "malwareModuleEvidence": {
+            "totalValues": 1,
+            "elementValues": null,
+            "totalSuspicious": 1,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          },
+          "parentProcess": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "Process",
+                "guid": "",
+                "name": "",
+                "hasSuspicions": true,
+                "hasMalops": false
+              }
+            ],
+            "totalSuspicious": 1,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          },
+          "malwareByHashReputation": {
+            "totalValues": 1,
+            "elementValues": null,
+            "totalSuspicious": 1,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          },
+          "loadedModules": {
+            "totalValues": 2,
+            "elementValues": null,
+            "totalSuspicious": 1,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          },
+          "imageFileUnsignedHasSignedVersionEvidence": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "File",
+                "guid": "",
+                "name": "bdata.bin",
+                "hasSuspicions": true,
+                "hasMalops": false
+              }
+            ],
+            "totalSuspicious": 1,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          },
+          "self": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "Process",
+                "guid": "",
+                "name": "bdata.bin",
+                "hasSuspicions": true,
+                "hasMalops": true
+              }
+            ],
+            "totalSuspicious": 1,
+            "totalMalicious": 1,
+            "guessedTotal": 0
+          },
+          "ownerMachine": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "Machine",
+                "guid": "123456",
+                "name": "desktop",
+                "hasSuspicions": false,
+                "hasMalops": false
+              }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          },
+          "imageFile": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "File",
+                "guid": "",
+                "name": "bdata.bin",
+                "hasSuspicions": true,
+                "hasMalops": false
+              }
+            ],
+            "totalSuspicious": 1,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          },
+          "systemUserEvidence": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "User",
+                "guid": "",
+                "name": "",
+                "hasSuspicions": false,
+                "hasMalops": false
+              }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          },
+          "malwareEvidence": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "File",
+                "guid": "",
+                "name": "bdata.bin",
+                "hasSuspicions": true,
+                "hasMalops": false
+              }
+            ],
+            "totalSuspicious": 1,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          }
+        },
+        "suspicions": {
+          "knownMalwareSuspicion": 4798274876499,
+          "malwareModuleSuspicion": 1301477329815
+        },
+        "filterData": {
+          "sortInGroupValue": "",
+          "groupByValue": "bdata.bin"
+        },
+        "isMalicious": true,
+        "suspicionCount": 2,
+        "guidString": "",
+        "labelsIds": null,
+        "malopPriority": null,
+        "malicious": true,
+        "suspect": true
+      }
+    },
+    "suspicionsMap": {
+      "knownMalwareSuspicion": {
+        "potentialEvidence": [
+          "malwareEvidence"
+        ],
+        "firstTimestamp": 1598888976499,
+        "totalSuspicions": 1
+      },
+      "malwareModuleSuspicion": {
+        "potentialEvidence": [
+          "malwareModuleEvidence"
+        ],
+        "firstTimestamp": 1601434569815,
+        "totalSuspicions": 1
+      }
+    },
+    "evidenceMap": {
+      "nonExecutableExtensionEvidence": 1,
+      "imageFileUnsignedEvidence": 1,
+      "malwareEvidence": 1,
+      "malwareModuleEvidence": 1,
+      "imageFileUnsignedHasSignedVersionEvidence": 1,
+      "systemUserEvidence": 1
+    },
+    "totalPossibleResults": 1,
+    "guessedPossibleResults": 0,
+    "queryLimits": {
+      "totalResultLimit": 1000,
+      "perGroupLimit": 1200,
+      "perFeatureLimit": 1200,
+      "groupingFeature": {
+        "elementInstanceType": "Process",
+        "featureName": "imageFileHash"
+      },
+      "sortInGroupFeature": null
+    },
+    "queryTerminated": false,
+    "pathResultCounts": [
+      {
+        "featureDescriptor": {
+          "elementInstanceType": "MalopProcess",
+          "featureName": null
+        },
+        "count": 1
+      },
+      {
+        "featureDescriptor": {
+          "elementInstanceType": "MalopProcess",
+          "featureName": "suspects"
+        },
+        "count": 1
+      }
+    ],
+    "guids": []
+  },
+  "status": "SUCCESS",
+  "hidePartialSuccess": false,
+  "message": "",
+  "expectedResults": 1,
+  "failures": 0
+}

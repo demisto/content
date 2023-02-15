@@ -1,7 +1,8 @@
+import urllib3
 from CommonServerPython import *
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CLIENT CLASS '''
 
@@ -93,7 +94,7 @@ def main():
         base_url = base_url[:-1]
     if base_url and not base_url.endswith('/publicapi'):
         base_url += '/publicapi'
-    token = params.get('token')
+    token = params.get('credentials', {}).get('password') or params.get('token')
     if not token:
         token = demisto.getLicenseCustomField("WildFire-Reports.token")
     if not token:

@@ -1,0 +1,66 @@
+{
+    "account_id": null,
+    "assigned_by": {
+        "id": 142,
+        "username": "SAML:dummy-user@example.com"
+    },
+    "assigned_to": {
+        "id": 142,
+        "username": "SAML:dummy-user@example.com"
+    },
+    "date_assigned": "2022-10-01T12:34:56Z",
+    "date_resolved": "2022-10-10T12:34:56Z",
+    "events": [
+        {
+            "actor": 142,
+            "assignment_id": 25,
+            "context": {
+                "created_rule_ids": [
+                    5901,
+                    5902,
+                    5903
+                ],
+                "entity_c_score": 13,
+                "entity_t_score": 63,
+                "fixed_detection_ids": null,
+                "triage_as": "Test-Triage",
+                "triaged_detection_ids": [
+                    2201,
+                    2202,
+                    2203
+                ]
+            },
+            "datetime": "22022-10-10T12:34:56Z",
+            "event_type": "resolved"
+        },
+        {
+            "actor": 142,
+            "assignment_id": 25,
+            "context": {
+                "entity_c_score": 13,
+                "entity_t_score": 63,
+                "to": 142
+            },
+            "datetime": "2022-10-01T12:34:56Z",
+            "event_type": "created"
+        }
+    ],
+    "host_id": 1234,
+    "id": 25,
+    "outcome": {
+        "builtin": false,
+        "category": "benign_true_positive",
+        "id": 4,
+        "title": "Vectra Outcome Test True Positive",
+        "user_selectable": true
+    },
+    "resolved_by": {
+        "id": 142,
+        "username": "dummy@example.com"
+    },
+    "triaged_detections": [
+        2201,
+        2202,
+        2203
+    ]
+}

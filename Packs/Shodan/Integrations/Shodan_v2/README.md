@@ -168,6 +168,7 @@ Returns all services that have been found on the IP address of the searched host
 | IP.Geo.Description | Unknown | The description of the location. |
 | IP.Geo.Location | Unknown | The latitude and longitude of an IP address. |
 | IP.Hostname | Unknown | The hostname of the IP address. |
+| IP.Relationships | Unknown | The relationships between the ip and it's CVEs. |
 | Shodan.IP.Tags | String | The tags associated with the IP address. |
 | Shodan.IP.Latitude | Number | The latitude of the geolocation of the searched device. |
 | Shodan.IP.Org | String | The name of the organization to which the IP space for the searched device is assigned. |
@@ -179,6 +180,7 @@ Returns all services that have been found on the IP address of the searched host
 | Shodan.IP.OS | String | The operating system on which the searched device is running. |
 | Shodan.IP.Port | Number | The port number on which the service is operating. |
 | Shodan.IP.Address | String | The IP address of the host as a string. |
+| Shodan.IP.Vulnerabilities | Unknown | A list of Vulnerabilities. |
 | DBotScore.Indicator | String | The indicator value. |
 | DBotScore.Score | Number | The indicator score according to the vendor. |
 | DBotScore.Type | String | The indicator type. |
@@ -197,7 +199,16 @@ Returns all services that have been found on the IP address of the searched host
             "Country": "United States",
             "Location": "37.406,-122.078"
         },
-        "Hostname": "dns.google"
+        "Hostname": "dns.google",
+        "Relationships": [
+          {
+            "EntityA": "8.8.8.8",
+            "EntityAType": "IP",
+            "EntityB": "CVE-2016-11111",
+            "EntityBType": "CVE",
+            "Relationship": "related-to"
+          }
+        ]
     },
     "Shodan": {
         "IP": {
@@ -213,7 +224,8 @@ Returns all services that have been found on the IP address of the searched host
             "Port": [
                 53
             ],
-            "Tag": []
+            "Tag": [],
+            "Vulnerabilities": ["CVE-2016-11111"]
         }
     },
     "DBotScore": {

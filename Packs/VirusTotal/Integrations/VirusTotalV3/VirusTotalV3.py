@@ -1033,8 +1033,8 @@ class ScoreCalculator:
             base_score,
             [
                 client.get_domain_communicating_files,
-                client.get_url_downloaded_files,
-                client.get_url_referrer_files
+                client.get_domain_downloaded_files,
+                client.get_domain_referrer_files
             ]
         )
 
@@ -1638,10 +1638,7 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
     execution_metrics = ExecutionMetrics()
     for url in urls:
         try:
-            raw_response = client.url(
-                url, relationships
-            )
-            demisto.results(raw_response)
+            raw_response = client.url(url, relationships)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
                 result = CommandResults(readable_output=f'Quota exceeded for url: {url}')
@@ -1912,7 +1909,7 @@ def get_comments_command(client: Client, args: dict) -> CommandResults:
         raw_response = client.get_ip_comments(resource, limit)
     elif resource_type == 'url':
         raw_response = client.get_url_comments(resource, limit)
-    elif resource_type == 'hash':
+    elif resource_type in ('hash', 'file'):
         raise_if_hash_not_valid(resource)
         raw_response = client.get_hash_comments(resource, limit)
     elif resource_type == 'domain':

@@ -8,33 +8,10 @@
     "email": "support@ipqualityscore.com",
     "created": "2021-03-31T00:00:00Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence",
-        "Forensics & Malware Analysis",
-        "Network Security"
+        "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Attack",
-        "Dark Web",
-        "Email",
-        "Malware",
-        "Network",
-        "Scam",
-        "Security",
-        "Security Analytics",
-        "Spam",
-        "VPN",
-        "Threat Intelligence"
-    ],
-    "useCases": [
-        "Brute Force",
-        "Hunting",
-        "Malware",
-        "Phishing",
-        "SANS",
-        "Threat Intelligence Management",
-        "Network Security",
-        "Compliance"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "risk score",
         "threat score",

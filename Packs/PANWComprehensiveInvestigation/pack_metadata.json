@@ -8,12 +8,11 @@
     "email": "",
     "created": "2020-06-01T15:28:12Z",
     "categories": [
-        "Forensics & Malware Analysis"
+        "Network Security"
     ],
-    "tags": [],
+    "tags": ["Use Case"],
     "useCases": [
-        "Malware",
-        "Hunting"
+        "Malware"
     ],
     "keywords": [],
     "dependencies": {

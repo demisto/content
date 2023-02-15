@@ -4,7 +4,7 @@ commonfields:
 fromversion: 6.0.0
 name: GreatHorn
 display: GreatHorn
-category: Email Gateway
+category: Network Security
 description: The only cloud-native security platform that stops targeted social engineering and phishing attacks on cloud email platforms like Office 365 and G Suite.
 configuration:
 - display: Base URL
@@ -489,6 +489,6 @@ script:
     - contextPath: GreatHorn.Policy.id
       description: The ID of the policy.
       type: Number
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.8.37233
   runonce: false
   subtype: python3

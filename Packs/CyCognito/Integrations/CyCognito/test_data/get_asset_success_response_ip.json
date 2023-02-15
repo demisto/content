@@ -1,0 +1,28 @@
+{
+  "severe_issues": 1,
+  "from_rotating": "no",
+  "organizations": [
+    "Unattributed"
+  ],
+  "first_seen": "2022-01-25T16:00:26.613Z",
+  "open_ports": [
+    {
+      "status": "open",
+      "port": 22,
+      "protocol": "tcp"
+    }
+  ],
+  "security_grade": "F",
+  "locations": [
+    "USA"
+  ],
+  "asset_type": "ip",
+  "ip": "dummy",
+  "id": "ip/0.0.0.0",
+  "last_seen": "2022-03-10T04:07:50.154Z",
+  "type": "ip",
+  "hosting_type": "cloud",
+  "status": "new",
+  "alive": true,
+  "issues_count": 1
+}

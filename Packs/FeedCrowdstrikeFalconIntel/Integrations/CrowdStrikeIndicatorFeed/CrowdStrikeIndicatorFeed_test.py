@@ -91,3 +91,36 @@ def test_empty_first_fetch(mocker, requests_mock):
     from CrowdStrikeIndicatorFeed import main
     main()
     assert True
+
+
+def test_create_relationships_unknown_key():
+    """
+        Given
+            - Field type, indicator and a resource with an unknown relation type.
+        When
+            - Calling `create_relationships` command.
+        Then
+            - validate that no Key Error exception was thrown, and that only 1 relationship was created.
+    """
+    from CrowdStrikeIndicatorFeed import create_relationships
+    rs_ls = create_relationships('relations', {"type": "hash_md5", "value": "1234567890"},
+                                 {"relations": [{"type": "password"}, {"type": 'username', 'indicator': 'abc'}]})
+    assert rs_ls == [{'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator', 'entityA': '1234567890',
+                      'entityAFamily': 'Indicator', 'entityAType': 'hash_md5', 'entityB': 'abc', 'entityBFamily': 'Indicator',
+                      'entityBType': 'Account', 'fields': {}}]
+    assert len(rs_ls) == 1
+
+
+def test_reset_last_run(mocker):
+    """
+        Given
+            - No inputs.
+        When
+            - Calling `reset_last_run` command.
+        Then
+            - Ensure that the integration context dict was cleared.
+    """
+    from CrowdStrikeIndicatorFeed import reset_last_run
+    demisto_set_context_mocker = mocker.patch.object(demisto, 'setIntegrationContext')
+    reset_last_run()
+    assert demisto_set_context_mocker.call_args.args == ({},)

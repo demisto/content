@@ -1,5 +1,3 @@
-Note: This is a beta pack, which lets you implement and test pre-release software. Since the pack is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
-
 Vectra® is the leading AI-driven threat detection and response platform for the enterprise.
 Only Vectra optimizes AI to detect advanced attacker behaviors across hybrid and multi-cloud environments.
 The resulting high-fidelity signal and rich context enables security teams to prioritize, investigate and respond to threats in real-time.
@@ -13,6 +11,7 @@ This pack is designed to quickly integrate with Vectra Detect platform to detect
 * Enriches incidents
 * Download detection PCAP
 * Push tags to Vectra Detect platform
+* Create/Update/Resolve Vectra assignments
 
 ## Before you start
 

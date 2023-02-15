@@ -9,15 +9,8 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Breach",
-        "Dark Web",
-        "Threat Intelligence"
-    ],
+    "tags": [],
     "useCases": [
-        "Breach Notification",
-        "Vulnerability Management",
-        "Phishing"
     ],
     "keywords": [
         "Darknet",

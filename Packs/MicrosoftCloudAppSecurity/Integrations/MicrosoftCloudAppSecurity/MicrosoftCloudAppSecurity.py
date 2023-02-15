@@ -443,7 +443,7 @@ def create_ip_command_results(activities: List[dict]):
             readable_output=human_readable,
             outputs_prefix='MicrosoftCloudAppSecurity.Activities',
             outputs_key_field='_id',
-            outputs=activities,
+            outputs=activity,
             indicator=indicator
         ))
     return command_results

@@ -99,7 +99,7 @@ script:
     - contextPath: SMIME.SignedAndEncrypted.Message
       description: The raw message to send.
       type: String
-  dockerimage: demisto/m2crypto:1.0.0.23290
+  dockerimage: demisto/m2crypto:1.0.0.43208
   isfetch: false
   longRunning: false
   longRunningPort: false
@@ -108,5 +108,5 @@ script:
   type: python
   subtype: python3
 tests:
-- No tests - added unitest
+- EWS Mail Sender Test 3
 fromversion: 5.0.0

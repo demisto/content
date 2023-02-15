@@ -1,0 +1,21 @@
+name: Check Devcontainer
+on:
+  pull_request:
+    paths:
+      - .devcontainer/**
+  push:
+    branches:
+      - master
+    paths:
+      - .devcontainer/**
+jobs:
+  Build-Devcontainer:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Run demisto-sdk in devcontainer
+      uses: devcontainers/ci@v0.2
+      with:    
+        push: never
+        runCmd: demisto-sdk --version

@@ -1,0 +1,228 @@
+{
+    "meta": {
+      "num_bad_records": 0,
+      "totalCount": 4
+    },
+    "data": [
+      {
+        "attributes": {
+          "hostName": "esa2.test.eu.iphmx.com",
+          "friendly_from": [
+            "no-reply@test.com"
+          ],
+          "isCompleteData": "N/A",
+          "messageStatus": {
+            "315": "Delivered"
+          },
+          "recipientMap": {
+            "315": [
+              "test@test.com"
+            ]
+          },
+          "senderIp": "1.1.1.1",
+          "mailPolicy": [
+            "DEFAULT"
+          ],
+          "senderGroup": "ACCEPTLIST",
+          "subject": "TEST TEST",
+          "dcid": [
+            4364
+          ],
+          "mid": [
+            315
+          ],
+          "senderDomain": "amazonses.com",
+          "finalSubject": {
+            "315": "test test"
+          },
+          "direction": "incoming",
+          "icid": 10767,
+          "morDetails": {
+            
+          },
+          "replyTo": "N/A",
+          "timestamp": "07 Sep 2022 08:10:33 (GMT)",
+          "messageID": {
+            "315": "<testtest@email.amazonses.com>"
+          },
+          "verdictChart": {
+            "315": "11131210"
+          },
+          "recipient": [
+            "test@test.com"
+          ],
+          "sender": "test@test.com",
+          "serialNumber": "TESTSERIALNUMBER",
+          "allIcid": [
+            10767
+          ],
+          "sbrs": "2.7"
+        }
+      },
+      {
+        "attributes": {
+          "hostName": "esa2.test.eu.iphmx.com",
+          "friendly_from": [
+            "no-reply@test.com"
+          ],
+          "isCompleteData": "N/A",
+          "messageStatus": {
+            "316": "Delivered"
+          },
+          "recipientMap": {
+            "316": [
+              "test@test.com"
+            ]
+          },
+          "senderIp": "2.2.2.2",
+          "mailPolicy": [
+            "DEFAULT"
+          ],
+          "senderGroup": "ACCEPTLIST",
+          "subject": "TEST TEST",
+          "dcid": [
+            4355
+          ],
+          "mid": [
+            316
+          ],
+          "senderDomain": "amazonses.com",
+          "finalSubject": {
+            "316": "test test"
+          },
+          "direction": "incoming",
+          "icid": 16516,
+          "morDetails": {
+            
+          },
+          "replyTo": "N/A",
+          "timestamp": "07 Sep 2022 08:10:33 (GMT)",
+          "messageID": {
+            "316": "<testtest@email.amazonses.com>"
+          },
+          "verdictChart": {
+            "316": "11131210"
+          },
+          "recipient": [
+            "test@test.com"
+          ],
+          "sender": "test@test.com",
+          "serialNumber": "TESTSERIALNUMBER",
+          "allIcid": [
+            16516
+          ],
+          "sbrs": "2.7"
+        }
+      },
+      {
+        "attributes": {
+          "hostName": "esa2.test.eu.iphmx.com",
+          "friendly_from": [
+            "no-reply@test.com"
+          ],
+          "isCompleteData": "N/A",
+          "messageStatus": {
+            "317": "Delivered"
+          },
+          "recipientMap": {
+            "317": [
+              "test@test.com"
+            ]
+          },
+          "senderIp": "3.3.3.3",
+          "mailPolicy": [
+            "DEFAULT"
+          ],
+          "senderGroup": "ACCEPTLIST",
+          "subject": "TEST TEST",
+          "dcid": [
+            4541
+          ],
+          "mid": [
+            317
+          ],
+          "senderDomain": "amazonses.com",
+          "finalSubject": {
+            "317": "test test"
+          },
+          "direction": "incoming",
+          "icid": 10053,
+          "morDetails": {
+            
+          },
+          "replyTo": "N/A",
+          "timestamp": "07 Sep 2022 08:10:33 (GMT)",
+          "messageID": {
+            "317": "<testtest@email.amazonses.com>"
+          },
+          "verdictChart": {
+            "317": "11131210"
+          },
+          "recipient": [
+            "test@test.com"
+          ],
+          "sender": "test@test.com",
+          "serialNumber": "TESTSERIALNUMBER",
+          "allIcid": [
+            10053
+          ],
+          "sbrs": "2.7"
+        }
+      },
+      {
+        "attributes": {
+          "hostName": "esa1.test.eu.iphmx.com",
+          "friendly_from": [
+            "no-reply@test.com"
+          ],
+          "isCompleteData": "N/A",
+          "messageStatus": {
+            "318": "Delivered"
+          },
+          "recipientMap": {
+            "318": [
+              "test@test.com"
+            ]
+          },
+          "senderIp": "4.4.4.4",
+          "mailPolicy": [
+            "DEFAULT"
+          ],
+          "senderGroup": "ACCEPTLIST",
+          "subject": "TEST TEST",
+          "dcid": [
+            4886
+          ],
+          "mid": [
+            318
+          ],
+          "senderDomain": "amazonses.com",
+          "finalSubject": {
+            "318": "test test"
+          },
+          "direction": "incoming",
+          "icid": 15331,
+          "morDetails": {
+            
+          },
+          "replyTo": "N/A",
+          "timestamp": "07 Sep 2022 08:10:33 (GMT)",
+          "messageID": {
+            "318": "<testtest@email.amazonses.com>"
+          },
+          "verdictChart": {
+            "318": "11131210"
+          },
+          "recipient": [
+            "test@test.com"
+          ],
+          "sender": "test@test.com",
+          "serialNumber": "TESTSERIALNUMBER",
+          "allIcid": [
+            15331
+          ],
+          "sbrs": "2.7"
+        }
+      }
+    ]
+}

@@ -2,7 +2,7 @@ Security Command Center is a security and risk management platform for Google Cl
 This integration was integrated and tested with version v1 of GoogleCloudSCC.
 
 ## Detailed Description
-This integration uses Pub/Sub to fetch the incidents. To set up the initial parameters of Google SCC in Cortex XSOAR, please follow the below instructions -
+This integration uses Pub/Sub to fetch the incidents. This integration supports multiple organizations. In order to fetch data from multiple organizations, configure multiple instances for different organizations. To set up the initial parameters of Google SCC in Cortex XSOAR, please follow the below instructions. For more information, refer to this [guide](https://cloud.google.com/security-command-center/docs/how-to-configure-scc-cortex-xsoar) by Google SCC for configuring Cortex XSOAR Integration.
 
 ### Scope
 We need to provide the below mentioned OAuth scope to execute the commands: https://www.googleapis.com/auth/cloud-platform.
@@ -77,7 +77,7 @@ To fetch incidents using Google Pub/Sub, we need to configure Pub/Sub first. Thi
     | Service Account Configuration | If the application runs on cloud provider (AWS, Azure) use workload identity federation configuration setup file otherwise use service account credential file. | True |
     | Organization ID | Organization ID defines from which organization incidents need to be fetched. | True |
     | Fetch incidents | Enables fetch incident. | False |
-    | Project ID | ID of the project to use for fetching incidents. If ID is not provided it will be taken from the provided service account JSON. | False |
+    | Project ID | ID of the project to use for fetching incidents. If ID is not provided it will be taken from the provided service account JSON. <br>Only required if the XSOAR instance is running on AWS or Azure cloud solutions. | False |
     | Subscription ID | ID of subscription from which to fetch incidents. | False |
     | Max Incidents | The maximum number of incidents to fetch every time. | False |
     | Incident type | Type of incident. | False |
@@ -256,11 +256,12 @@ Lists an organization's assets.
 #### Human Readable Output
 
 >### Total retrieved asset(s): 3
->|Name|Project|Resource Name|Resource Type|Resource Owners|Security Marks|
->|---|---|---|---|---|---|
->| [organizations/595779152576/assets/7180457033309348544](https://console.cloud.google.com/security/command-center/assets?organizationId=595779152576&resourceId=organizations/595779152576/assets/7180457033309348544) | organizations/595779152576 | //cloudresourcemanager.googleapis.com/organizations/595779152576 | google.cloud.resourcemanager.Organization |  | compressed: SSH<br/>LastSeen: Yesterday |
->| [organizations/595779152576/assets/2994068353411300094](https://console.cloud.google.com/security/command-center/assets?organizationId=595779152576&resourceId=organizations/595779152576/assets/2994068353411300094) | Calender | //cloudresourcemanager.googleapis.com/projects/455757558851 | google.cloud.resourcemanager.Project | user:milankumar.thummar@test.com | compressed: SSH<br/>LastSeen: Yesterday |
->| [organizations/595779152576/assets/14656821127596596302](https://console.cloud.google.com/security/command-center/assets?organizationId=595779152576&resourceId=organizations/595779152576/assets/14656821127596596302) | Test Proj | //cloudresourcemanager.googleapis.com/projects/265894444436 | google.cloud.resourcemanager.Project | user:heena.vaghela@test.com |  |
+>| Organization ID |Name|Project|Resource Name|Resource Type|Resource Owners|Security Marks|
+>|---|---|---|---|---|---|---|
+>| 595779152576 | [organizations/595779152576/assets/7180457033309348544](https://console.cloud.google.com/security/command-center/assets?organizationId=595779152576&resourceId=organizations/595779152576/assets/7180457033309348544) | organizations/595779152576 | //cloudresourcemanager.googleapis.com/organizations/595779152576 | google.cloud.resourcemanager.Organization |  | compressed: SSH<br/>LastSeen: Yesterday |
+>| 595779152576 | [organizations/595779152576/assets/2994068353411300094](https://console.cloud.google.com/security/command-center/assets?organizationId=595779152576&resourceId=organizations/595779152576/assets/2994068353411300094) | Calender | //cloudresourcemanager.googleapis.com/projects/455757558851 | google.cloud.resourcemanager.Project | user:milankumar.thummar@test.com | compressed: SSH<br/>LastSeen: Yesterday |
+>| 595779152576 | [organizations/595779152576/assets/14656821127596596302](https://console.cloud.google.com/security/command-center/assets?organizationId=595779152576&resourceId=organizations/595779152576/assets/14656821127596596302) | Test Proj | //cloudresourcemanager.googleapis.com/projects/265894444436 | google.cloud.resourcemanager.Project | user:heena.vaghela@test.com |  |
+>To fetch the next batch of results, execute the command with the page token as next-page-token
 
 
 
@@ -489,11 +490,12 @@ Lists an organization or source's findings.
 #### Human Readable Output
 
 >### Total retrieved finding(s): 3
->|Name|Category|Resource Name|Finding Class|Event Time|Create Time|Security Marks|
->|---|---|---|---|---|---|---|
->| [organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d) | page | //cloudresourcemanager.googleapis.com/projects/339295427573 | THREAT | February 11, 2021 at 09:33:30 AM | May 15, 2020 at 05:57:46 AM | { "name": "wrench", "count": "3" } |
->| [organizations/595779152576/sources/10134421585261057824/findings/00002ccaa28911ea9d221217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/00002ccaa28911ea9d221217baf6db4d) | page | //cloudresourcemanager.googleapis.com/projects/339295427573 | THREAT | February 11, 2021 at 07:21:45 AM | May 30, 2020 at 03:19:49 PM | { "name": "wrench", "count": "3" } |
->| [organizations/595779152576/sources/10134421585261057824/findings/000031c6a21f11ea9d221217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/000031c6a21f11ea9d221217baf6db4d) | page | //cloudresourcemanager.googleapis.com/projects/339295427573 | THREAT | March 16, 2020 at 01:38:52 AM | May 30, 2020 at 02:41:01 AM | { "name": "wrench", "count": "3" } |
+>| Organization ID |Name|Category|Resource Name|Finding Class|Event Time|Create Time|Security Marks|
+>|---|---|---|---|---|---|---|---|
+>| 595779152576 | [organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d) | page | //cloudresourcemanager.googleapis.com/projects/339295427573 | THREAT | February 11, 2021 at 09:33:30 AM | May 15, 2020 at 05:57:46 AM | { "name": "wrench", "count": "3" } |
+>| 595779152576 | [organizations/595779152576/sources/10134421585261057824/findings/00002ccaa28911ea9d221217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/00002ccaa28911ea9d221217baf6db4d) | page | //cloudresourcemanager.googleapis.com/projects/339295427573 | THREAT | February 11, 2021 at 07:21:45 AM | May 30, 2020 at 03:19:49 PM | { "name": "wrench", "count": "3" } |
+>| 595779152576 | [organizations/595779152576/sources/10134421585261057824/findings/000031c6a21f11ea9d221217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/000031c6a21f11ea9d221217baf6db4d) | page | //cloudresourcemanager.googleapis.com/projects/339295427573 | THREAT | March 16, 2020 at 01:38:52 AM | May 30, 2020 at 02:41:01 AM | { "name": "wrench", "count": "3" } |
+>To fetch the next batch of results, execute the command with the page token as next-page-token
 
 
 
@@ -605,9 +607,9 @@ Update an organization's or source's finding.
 #### Human Readable Output
 
 >### The finding has been updated successfully.
->|Name|State|Category|Event Time|Create Time|External Uri|Resource Name|
->|---|---|---|---|---|---|---|
->| [organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d) | ACTIVE | page | February 11, 2021 at 01:52:25 PM | May 15, 2020 at 05:57:46 AM | [http://www.fake-url.com](http://www.fake-url.com) | //cloudresourcemanager.googleapis.com/projects/339295427573 |
+>| Organization ID |Name|State|Category|Event Time|Create Time|External Uri|Resource Name|
+>|---|---|---|---|---|---|---|---|
+>| 595779152576 | [organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d) | ACTIVE | page | February 11, 2021 at 01:52:25 PM | May 15, 2020 at 05:57:46 AM | [http://www.fake-url.com](http://www.fake-url.com) | //cloudresourcemanager.googleapis.com/projects/339295427573 |
 
 
 ### google-cloud-scc-asset-resource-list
@@ -700,7 +702,7 @@ Lists cloud asset's resources.
         },
         "Token": {
             "name": "google-cloud-scc-asset-resource-list",
-            "nextPageToken": "dummy"
+            "nextPageToken": "next-page-token"
         }
     }
 }
@@ -708,10 +710,11 @@ Lists cloud asset's resources.
 
 #### Human Readable Output
 
->|Asset Name|Asset Type|Discovery Name|Ancestors|Update Time (In UTC)|
->|---|---|---|---|---|
->| //cloudbilling.googleapis.com/billingAccounts/12345-6789 | cloudbilling.googleapis.com/BillingAccount | BillingAccount | organizations/123456789 | August 21, 2020 at 09:05:39 AM |
->| //cloudbilling.googleapis.com/billingAccounts/23456-7890 | cloudbilling.googleapis.com/BillingAccount | BillingAccount | organizations/123456789 | April 01, 2021 at 07:38:12 PM |
+>| Organization ID |Asset Name|Asset Type|Discovery Name|Ancestors|Update Time (In UTC)|
+>|---|---|---|---|---|---|
+>| 595779152576 | //cloudbilling.googleapis.com/billingAccounts/12345-6789 | cloudbilling.googleapis.com/BillingAccount | BillingAccount | organizations/123456789 | August 21, 2020 at 09:05:39 AM |
+>| 595779152576 | //cloudbilling.googleapis.com/billingAccounts/23456-7890 | cloudbilling.googleapis.com/BillingAccount | BillingAccount | organizations/123456789 | April 01, 2021 at 07:38:12 PM |
+>To fetch the next batch of results, execute the command with the page token as next-page-token
 
 
 ### google-cloud-scc-asset-owner-get
@@ -792,9 +795,9 @@ Gets the owner information for the provided projects.
 
 #### Human Readable Output
 
->|Project Name|Project Owner|Ancestors|Update Time (In UTC)|
->|---|---|---|---|
->| //cloudresourcemanager.googleapis.com/projects/123456789 | serviceAccount:dummmyaccount@dummycom,<br/>user:dummmyuser1@dummycom | projects/123456789,<br/>organizations/123456789 | December 24, 2018 at 10:00:00 AM |
+>| Organization ID |Project Name|Project Owner|Ancestors|Update Time (In UTC)|
+>|---|---|---|---|---|
+>| 595779152576 | //cloudresourcemanager.googleapis.com/projects/123456789 | serviceAccount:dummmyaccount@dummycom,<br/>user:dummmyuser1@dummycom | projects/123456789,<br/>organizations/123456789 | December 24, 2018 at 10:00:00 AM |
 
 
 ### google-cloud-scc-finding-state-update
@@ -901,9 +904,9 @@ Update the state of organization's or source's finding.
 #### Human Readable Output
 
 >### The finding has been updated successfully.
->|Name|State|Severity|Category|Event Time|Create Time|External Uri|Resource Name|
->|---|---|---|---|---|---|---|---|
->| [organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d) | ACTIVE | High | page | February 11, 2021 at 01:52:25 PM | May 15, 2020 at 05:57:46 AM | [http://www.fake-url.com](http://www.fake-url.com) | //cloudresourcemanager.googleapis.com/projects/339295427573 |
+>| Organization ID |Name|State|Severity|Category|Event Time|Create Time|External Uri|Resource Name|
+>|---|---|---|---|---|---|---|---|---|
+>| 595779152576 | [organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d) | ACTIVE | High | page | February 11, 2021 at 01:52:25 PM | May 15, 2020 at 05:57:46 AM | [http://www.fake-url.com](http://www.fake-url.com) | //cloudresourcemanager.googleapis.com/projects/339295427573 |
 
 
 ## Known Limitations

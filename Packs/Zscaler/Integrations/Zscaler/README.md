@@ -76,8 +76,8 @@ Looks up the classification for the each of the specified URLs.
 | --- | --- | --- |
 | URL.Data | string | The URL that was searched. | 
 | URL.Address | string | The URL that was searched. | 
-| URL.urlClassifications | string | The classification of the URL. For example, MUSIC or WEB_SEARCH. | 
-| URL.urlClassificationsWithSecurityAlert | string | The classifications of the URLs that have security alerts. | 
+| Zscaler.URL.urlClassifications | string | The classification of the URL. For example, MUSIC or WEB_SEARCH. | 
+| Zscaler.URL.urlClassificationsWithSecurityAlert | string | The classifications of the URLs that have security alerts. | 
 | URL.Malicious.Vendor | string | For malicious URLs, the vendor that tagged the URL as malicious. | 
 | URL.Malicious.Description | string | For malicious URLs, the reason the vendor tagged the URL as malicious. | 
 | DBotScore.Indicator | string | The indicator that was tested. | 
@@ -136,8 +136,8 @@ Looks up the classification for each of the specified IP addresses.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | IP.Address | string | The IP address that was searched. | 
-| IP.ipClassifications | string | The classification of the IP address. For example, MUSIC or WEB_SEARCH. | 
-| IP.iplClassificationsWithSecurityAlert | string | Classifications that have a security alert for the IP address. | 
+| Zscaler.IP.ipClassifications | string | The classification of the IP address. For example, MUSIC or WEB_SEARCH. | 
+| Zscaler.IP.iplClassificationsWithSecurityAlert | string | Classifications that have a security alert for the IP address. | 
 | IP.Malicious.Vendor | string | For malicious IP addresses, the vendor that tagged the IP address as malicious. | 
 | IP.Malicious.Description | string | For malicious IP addresses, the reason the vendor tagged the IP address as malicious. | 
 | DBotScore.Indicator | string | The indicator that was tested. | 

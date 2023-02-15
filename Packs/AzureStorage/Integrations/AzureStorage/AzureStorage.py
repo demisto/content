@@ -359,10 +359,10 @@ def storage_account_list(client: ASClient, args: Dict) -> CommandResults:
     for account in accounts:
 
         if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', account.get('id', '')):
-            subscription_id = subscription_id.group(1)
+            subscription_id = subscription_id.group(1)  # type: ignore
 
         if resource_group := re.search('resourceGroups/(.+?)/providers', account.get('id', '')):
-            resource_group = resource_group.group(1)
+            resource_group = resource_group.group(1)  # type: ignore
 
         readable_output.append({
             'Account Name': account.get('name'),
@@ -406,10 +406,10 @@ def storage_account_create_update(client: ASClient, args: Dict) -> Union[Command
 
     response = response.json()
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
-        subscription_id = subscription_id.group(1)
+        subscription_id = subscription_id.group(1)  # type: ignore
 
     if resource_group := re.search('resourceGroups/(.+?)/providers', response.get('id', '')):
-        resource_group = resource_group.group(1)
+        resource_group = resource_group.group(1)  # type: ignore
 
     readable_output = {
         'Account Name': response.get('name'),
@@ -453,13 +453,13 @@ def storage_blob_service_properties_get(client: ASClient, args: Dict) -> Command
     response = client.storage_blob_service_properties_get_request(account_name)
 
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
-        subscription_id = subscription_id.group(1)
+        subscription_id = subscription_id.group(1)  # type: ignore
 
     if resource_group := re.search('resourceGroups/(.+?)/providers', response.get('id', '')):
-        resource_group = resource_group.group(1)
+        resource_group = resource_group.group(1)  # type: ignore
 
     if account_name := re.search('storageAccounts/(.+?)/blobServices', response.get('id', '')):
-        account_name = account_name.group(1)
+        account_name = account_name.group(1)  # type: ignore
 
     readable_output = {
         'Name': response.get('name'),
@@ -501,13 +501,13 @@ def storage_blob_service_properties_set(client: ASClient, args: Dict):
     response = client.storage_blob_service_properties_set_request(args)
 
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
-        subscription_id = subscription_id.group(1)
+        subscription_id = subscription_id.group(1)  # type: ignore
 
     if resource_group := re.search('resourceGroups/(.+?)/providers', response.get('id', '')):
-        resource_group = resource_group.group(1)
+        resource_group = resource_group.group(1)  # type: ignore
 
     if account_name := re.search('storageAccounts/(.+?)/blobServices', response.get('id', '')):
-        account_name = account_name.group(1)
+        account_name = account_name.group(1)  # type: ignore
 
     readable_output = {
         'Name': response.get('name'),
@@ -552,13 +552,13 @@ def storage_blob_containers_create(client, args):
     response = client.storage_blob_containers_create_update_request(args, 'PUT')
 
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
-        subscription_id = subscription_id.group(1)
+        subscription_id = subscription_id.group(1)  # type: ignore
 
     if resource_group := re.search('resourceGroups/(.+?)/providers', response.get('id', '')):
-        resource_group = resource_group.group(1)
+        resource_group = resource_group.group(1)  # type: ignore
 
     if account_name := re.search('storageAccounts/(.+?)/blobServices', response.get('id', '')):
-        account_name = account_name.group(1)
+        account_name = account_name.group(1)  # type: ignore
 
     readable_output = {
         'Name': response.get('name'),
@@ -594,13 +594,13 @@ def storage_blob_containers_update(client, args):
     response = client.storage_blob_containers_create_update_request(args, 'PATCH')
 
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
-        subscription_id = subscription_id.group(1)
+        subscription_id = subscription_id.group(1)  # type: ignore
 
     if resource_group := re.search('resourceGroups/(.+?)/providers', response.get('id', '')):
-        resource_group = resource_group.group(1)
+        resource_group = resource_group.group(1)  # type: ignore
 
     if account_name := re.search('storageAccounts/(.+?)/blobServices', response.get('id', '')):
-        account_name = account_name.group(1)
+        account_name = account_name.group(1)  # type: ignore
 
     readable_output = {
         'Name': response.get('name'),
@@ -641,13 +641,13 @@ def storage_blob_containers_list(client, args):
     for container in containers:
 
         if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', container.get('id', '')):
-            subscription_id = subscription_id.group(1)
+            subscription_id = subscription_id.group(1)  # type: ignore
 
         if resource_group := re.search('resourceGroups/(.+?)/providers', container.get('id', '')):
-            resource_group = resource_group.group(1)
+            resource_group = resource_group.group(1)  # type: ignore
 
         if account_name := re.search('storageAccounts/(.+?)/blobServices', container.get('id', '')):
-            account_name = account_name.group(1)
+            account_name = account_name.group(1)  # type: ignore
 
         readable_output.append({
             'Container Name': container.get('name'),

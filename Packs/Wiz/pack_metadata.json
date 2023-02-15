@@ -2,7 +2,7 @@
     "name": "Wiz",
     "description": "Integrate with Wiz for bidirectional Issue management and fetching of resource information. \n",
     "support": "partner",
-    "currentVersion": "1.2.0",
+    "currentVersion": "1.2.1",
     "author": "Wiz Inc.",
     "url": "https://wiz.io/",
     "email": "support@wiz.io",
@@ -23,5 +23,5 @@
             "name": "Generic Webhook"
         }
     },
-    "githubUser": "solalraveh"
+    "githubUser": "ariel-wiz"
 }

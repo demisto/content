@@ -7,21 +7,10 @@
     "url": "https://www.cyren.com/products/cyren-inbox-security",
     "email": "paltoalto-cortex-xsoar@cyren.com",
     "categories": [
-        "Utilities",
         "Forensics & Malware Analysis"
     ],
-    "tags": [
-        "Alerts",
-        "Email",
-        "Incident Response",
-        "Incident Handling",
-        "Security"
-    ],
-    "useCases": [
-        "Phishing",
-        "Malware",
-        "Incident Response"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "cyren",
         "phishing",

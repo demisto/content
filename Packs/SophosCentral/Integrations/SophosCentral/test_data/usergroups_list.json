@@ -1,0 +1,62 @@
+{
+    "items": [
+        {
+            "id": "1cce37cb-99c0-4ab1-be75-60c4331ffb4c",
+            "name": "Sophos Central Group - 2 updated",
+            "displayName": "Sophos Central Group - 2 updated",
+            "description": "Security group for Sophos Central admins - updated",
+            "groups": {
+                "total": 0,
+                "itemsCount": 0,
+                "items": []
+            },
+            "source": {
+                "type": "custom"
+            },
+            "users": {
+                "total": 1,
+                "itemsCount": 1,
+                "items": [
+                    {
+                        "id": "4d3174a8-bad6-47d0-9662-d32255603169",
+                        "name": "John Doe"
+                    }
+                ]
+            },
+            "tenant": {
+                "id": "fb66cdd2-55ea-4927-ba59-529309e264f6"
+            },
+            "createdAt": "2022-09-19T05:50:11.908Z",
+            "updatedAt": "2022-09-19T10:24:35.814Z"
+        },
+        {
+            "id": "04824701-52cc-4c1b-b7e2-445fad9bdd42",
+            "name": "test name",
+            "displayName": "test name",
+            "description": "sagasg",
+            "groups": {
+                "total": 0,
+                "itemsCount": 0,
+                "items": []
+            },
+            "source": {
+                "type": "custom"
+            },
+            "users": {
+                "total": 0,
+                "itemsCount": 0,
+                "items": []
+            },
+            "tenant": {
+                "id": "fb66cdd2-55ea-4927-ba59-529309e264f6"
+            },
+            "createdAt": "2022-09-19T06:46:45.616Z",
+            "updatedAt": "2022-09-19T06:46:45.616Z"
+        }
+    ],
+    "pages": {
+        "current": 1,
+        "size": 50,
+        "maxSize": 100
+    }
+}

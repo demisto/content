@@ -1518,7 +1518,66 @@ script:
     - contextPath: CofenseIntelligence.Domain.Threats.threatType
       description: If malware, will have value 'malware', otherwise it is empty.
       type: String
-  dockerimage: demisto/python3:3.10.7.33922
+  - arguments:
+    - default: false
+      description: Unique id to download the specified threat report.
+      isArray: false
+      name: report_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: html
+      description: |-
+        Report format to download.
+        Allowed types are html and pdf.
+      isArray: false
+      name: report_format
+      predefined:
+      - html
+      - pdf
+      required: false
+      secret: false
+    deprecated: false
+    description: Downloads threat report provided by cofense intelligence of an indicator
+      for the given unique report id.
+    execution: false
+    name: cofense-threat-report-get
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+  dockerimage: demisto/python3:3.10.8.39276
   feed: false
   isfetch: false
   longRunning: false

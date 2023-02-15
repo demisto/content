@@ -22,7 +22,7 @@ class ObjectMocker(dict):
     __delattr__ = dict.__delitem__
 
 
-def run_command_test(command_func, args, response_path, expected_result_path, mocker):
+def run_command_test(command_func, args, response_path, expected_result_path, mocker, result_validator=None):
     with open(response_path, 'r') as response_f:
         response = ResponseMock(json.load(response_f))
     mocker.patch('Zscaler.http_request', return_value=response)
@@ -31,9 +31,13 @@ def run_command_test(command_func, args, response_path, expected_result_path, mo
         res = command_func(args)
     else:
         res = command_func(**args)
-    with open(expected_result_path, 'r') as ex_f:
-        expected_result = json.load(ex_f)
-        assert expected_result == res
+
+    if result_validator:
+        assert result_validator(res)
+    else:
+        with open(expected_result_path, 'r') as ex_f:
+            expected_result = json.load(ex_f)
+            assert expected_result == res
 
 
 @pytest.fixture(autouse=True)
@@ -60,11 +64,23 @@ def test_validate_urls_invalid(mocker):
 def test_url_command(mocker):
     """url"""
     import Zscaler
+
+    def validator(res):
+        assert res
+        assert len(res) == 2
+        for command_res in res:
+            assert command_res.indicator.url
+            assert command_res.indicator.dbot_score
+            assert command_res.outputs['urlClassifications']
+            assert command_res.outputs_prefix == 'Zscaler.URL'
+
+        return True
+
     run_command_test(command_func=Zscaler.url_lookup,
                      args={'url': 'https://www.demisto-news.com,https://www.demisto-search.com'},
                      response_path='test_data/responses/url.json',
                      expected_result_path='test_data/results/url.json',
-                     mocker=mocker)
+                     mocker=mocker, result_validator=validator)
 
 
 def test_url_fails_unknown_error_code(mocker, requests_mock):
@@ -84,21 +100,41 @@ def test_url_fails_unknown_error_code(mocker, requests_mock):
 def test_url_command_with_urlClassificationsWithSecurityAlert(mocker):
     """url"""
     import Zscaler
+
+    def validator(res):
+        assert res
+        assert len(res) == 1
+        assert res[0].outputs['urlClassifications'] == 'MISCELLANEOUS_OR_UNKNOWN'
+        assert res[0].outputs['urlClassificationsWithSecurityAlert'] == 'MALWARE_SITE'
+        return True
+
     run_command_test(command_func=Zscaler.url_lookup,
                      args={'url': 'www.demisto22.com'},
                      response_path='test_data/responses/url_with_urlClassificationsWithSecurityAlert.json',
                      expected_result_path='test_data/results/url_with_urlClassificationsWithSecurityAlert.json',
-                     mocker=mocker)
+                     mocker=mocker, result_validator=validator)
 
 
 def test_ip_command(mocker):
     """ip"""
     import Zscaler
+
+    def validator(res):
+        assert res
+        assert len(res) == 2
+        for command_res in res:
+            assert command_res.indicator.ip
+            assert command_res.indicator.dbot_score
+            assert command_res.outputs['ipClassifications']
+            assert not command_res.outputs.get('urlClassifications')
+            assert command_res.outputs_prefix == 'Zscaler.IP'
+        return True
+
     run_command_test(command_func=Zscaler.ip_lookup,
                      args={'ip': '1.22.33.4'},
                      response_path='test_data/responses/ip.json',
                      expected_result_path='test_data/results/ip.json',
-                     mocker=mocker)
+                     mocker=mocker, result_validator=validator)
 
 
 def test_undo_blacklist_url_command(mocker):

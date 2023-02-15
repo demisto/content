@@ -18,7 +18,7 @@
     "name": "My Incidents by Type",
     "params": {
         "groupBy": [
-            "type"
+            "rawType"
         ],
         "tableColumns": [
             {

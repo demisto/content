@@ -3,7 +3,6 @@ import re
 import sys
 import requests
 import urllib3
-from blessings import Terminal
 
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -27,7 +26,8 @@ def arguments_handler():
     parser.add_argument('-n', '--pr_num', help='The PR number.')
     parser.add_argument('-t', '--pr_title', help='The PR Title.')
     parser.add_argument('-b', '--pr_body', help='The content of the PR description.')
-    parser.add_argument('-m', '--is_merged', help='Boolean. Whether the PR was merged or not.')
+    parser.add_argument('-m', '--is_merged', help='Boolean. Whether the PR was merged or not.',
+                        action=argparse.BooleanOptionalAction)
     parser.add_argument('-u', '--username', help='The instance username.')
     parser.add_argument('-s', '--password', help='The instance password.')
     parser.add_argument('-url', '--url', help='The instance url.')
@@ -42,14 +42,18 @@ def find_fixed_issue_in_body(body_text, is_merged):
     """
     fixed_jira_issues = re.findall(JIRA_FIXED_ISSUE_REGEX, body_text)
     related_jira_issue = re.findall(JIRA_RELATED_ISSUE_REGEX, body_text)
+    print(f'Detected {related_jira_issue=}')
 
     # If a PR is not merged, we just add the pr link to all the linked issues using Gold.
     # If the PR is merged, we only send issues that should be closed by it.
     # Assuming If the PR was merged, all the related links were fetched when the PR last edited.
     fixed_issue = [{"link": link, "id": issue_id} for link, issue_id in fixed_jira_issues]
     related_issue = []
+
     if not is_merged:
+        print("Not merging, getting related issues.")
         related_issue = [{"link": link, "id": issue_id} for link, issue_id in related_jira_issue]
+
     return fixed_issue + related_issue
 
 
@@ -65,11 +69,18 @@ def trigger_generic_webhook(options):
 
     print(f"Detected Pr: {pr_title=}, {pr_link=}, {pr_body=}")
 
+    # Handle cases where the PR did not intend to add links:
+    if ("fixes:" not in pr_body.lower()
+            and "relates:" not in pr_body.lower()
+            and "fixed:" not in pr_body.lower()
+            and "related:" not in pr_body.lower()):
+        print("Did not detect Jira linking pattern.")
+        return
+
     issues_in_pr = find_fixed_issue_in_body(pr_body, is_merged)
 
     if not issues_in_pr:
-        t = Terminal()
-        print(f"{t.red}ERROR: No linked issues were found in PR. Make sure you correctly linked issues.{t.normal}")
+        print("ERROR: No linked issues were found in PR. Make sure you correctly linked issues.")
 
         sys.exit(1)
 
@@ -79,7 +90,7 @@ def trigger_generic_webhook(options):
         "name": GENERIC_WEBHOOK_NAME,
         "raw_json": {
             "PullRequestNum": pr_num,
-            "closeIssue": is_merged,  # whether to close the fixed issue in Jira
+            "closeIssue": "true" if is_merged else "false",  # whether to close the fixed issue in Jira
             "PullRequestLink": pr_link,  # will be used to add to jira issue's fields
             "PullRequestTitle": f"{pr_title} ({pr_link})",  # will be used in comment of attaching jira issue.
             "JiraIssues": issues_in_pr

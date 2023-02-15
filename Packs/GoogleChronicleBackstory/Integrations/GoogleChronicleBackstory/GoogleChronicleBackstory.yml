@@ -3963,7 +3963,184 @@ script:
     - contextPath: GoogleChronicleBackstory.ReferenceList.createTime
       description: Time when the list was created.
       type: Date
-  dockerimage: demisto/googleapi-python3:1.0.0.33018
+  - arguments:
+    - default: false
+      description: Rule text in YARA-L 2.0 format for the rule to stream.
+      isArray: false
+      name: rule_text
+      required: true
+      secret: false
+    - default: false
+      description: "Start time for the time range of the rule being tested. The format\
+        \ of Date should comply with RFC 3339 (e.g. 2022-10-02T15:00:00Z) or relative\
+        \ time. \n\nFormats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.\n\
+        Example: 2022-05-01T00:00:00Z, 2022-05-01, 2 days, 5 hours, 01 Mar 2022, 01\
+        \ Feb 2022 04:45:33, 15 Jun.\n\n\nNote: The time window between start_time\
+        \ and end_time cannot be greater than 2 weeks."
+      isArray: false
+      name: start_time
+      required: true
+      secret: false
+    - default: false
+      description: "End time for the time range of the rule being tested. The format\
+        \ of Date should comply with RFC 3339 (e.g. 2022-10-02T15:00:00Z) or relative\
+        \ time. \n\nFormats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.\n\
+        Example: 2022-05-01T00:00:00Z, 2022-05-01, 2 days, 5 hours, 01 Mar 2022, 01\
+        \ Feb 2022 04:45:33, 15 Jun.\n\nNote: The time window between start_time and\
+        \ end_time cannot be greater than 2 weeks."
+      isArray: false
+      name: end_time
+      required: true
+      secret: false
+    - default: true
+      defaultValue: '1000'
+      description: 'Maximum number of results to return. Specify a value between 1
+        and 10,000. '
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    deprecated: false
+    description: Test a rule over a specified time range. Return any errors and any
+      detections up to the specified maximum.
+    execution: false
+    name: gcb-test-rule-stream
+    outputs:
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.type
+      description: Type of detection.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.detection.ruleName
+      description: Name of the rule generating the detection, as parsed from ruleText.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.detection.ruleType
+      description: Whether the rule generating this detection is a single event or
+        multi-event rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.detection.ruleLabels
+      description: Information about the rule
+      type: Unknown
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.id
+      description: Identifier for the detection.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.timeWindow.startTime
+      description: The start time of the window the detection was found in.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.timeWindow.endTime
+      description: The end time of the window the detection was found in.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.metadata.productLogId
+      description: A vendor-specific event identifier to uniquely identify the event
+        (a GUID). Users might use this identifier to search the vendor's proprietary
+        console for the event in question.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.metadata.eventTimestamp
+      description: The GMT timestamp when the event was generated.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.metadata.eventType
+      description: Specifies the type of the event.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.metadata.vendorName
+      description: Specifies the product vendor's name.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.metadata.productName
+      description: Specifies the name of the product.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.metadata.productEventType
+      description: Short, descriptive, human-readable, and product-specific event
+        name or type.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.metadata.ingestedTimestamp
+      description: The GMT timestamp when the event was ingested in the vendor's instance.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.metadata.id
+      description: Stores the ID of metadata.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.hostname
+      description: Client hostname or domain name field.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.userid
+      description: Stores the user ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.userDisplayName
+      description: Stores the display name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.windowsSid
+      description: Stores the Microsoft Windows security identifier (SID) associated
+        with a user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.emailAddresses
+      description: Stores the email addresses for the user.
+      type: Unknown
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.productObjectId
+      description: Stores the products object ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.attribute.labels
+      description: Stores users session metrics
+      type: Unknown
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.firstName
+      description: Stores the first name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.lastName
+      description: Stores the last name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.phoneNumbers
+      description: Stores the phone numbers for the user.
+      type: Unknown
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.personalAddress.city
+      description: Stores city of user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.personalAddress.state
+      description: Stores state of user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.personalAddress.name
+      description: Stores address name of user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.title
+      description: Stores the job title for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.companyName
+      description: Stores users company name.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.department
+      description: Stores users departments
+      type: Unknown
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.officeAddress.name
+      description: Stores company official address name.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.process.pid
+      description: Stores the process ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.process.file.fullPath
+      description: Full path identifying the location of the file on the system.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.process.productSpecificProcessId
+      description: Stores the product specific process ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.administrativeDomain
+      description: Domain which the device belongs to (for example, the Windows domain).
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.about
+      description: Stores event labels.
+      type: Unknown
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.securityResult
+      description: Provide a description of the security result.
+      type: Unknown
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.network.applicationProtocol
+      description: Indicates the network application protocol.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.network.dns.questions
+      description: Stores the domain name.
+      type: Unknown
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.network.dns.answers
+      description: Stores dns associated data.
+      type: Unknown
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.label
+      description: The variable a given set of UDM events belongs to.
+      type: String
+    - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.detectionTime
+      description: The time period the detection was found in.
+      type: Date
+  dockerimage: demisto/googleapi-python3:1.0.0.41311
   feed: false
   isfetch: true
   longRunning: false
@@ -3980,4 +4157,5 @@ tests:
 - Google Chronicle Backstory List Events - Test
 - Google Chronicle Backstory List Detections - Test
 - Google Chronicle Backstory Reputation - Test
+- Google Chronicle Backstory Stream Test Rule
 fromversion: 5.0.0

@@ -1,4 +1,4 @@
-Creates indicators from the submitted STIX file. Supports STIX 1.0 and STIX 2.0.
+Creates indicators from the submitted STIX file. Supports STIX 1.0 and STIX 2.x.
 Wrapper for the **StixParser** automation. This automation creates indicators and adds an indicator's relationships if available. 
 
 ## Script Data

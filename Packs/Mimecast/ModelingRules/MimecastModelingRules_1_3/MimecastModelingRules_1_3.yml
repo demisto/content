@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: Mimecast_modeling_rule
+name: Mimecast Modeling Rule
+rules: ''
+schema: ''
+tags: mimecast

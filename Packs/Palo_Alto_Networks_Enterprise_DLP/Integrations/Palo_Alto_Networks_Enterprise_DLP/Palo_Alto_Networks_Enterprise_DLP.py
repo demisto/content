@@ -155,7 +155,8 @@ class Client(BaseClient):
         if res.status_code != 204:
             try:
                 result_json = res.json()
-            except json.decoder.JSONDecodeError:
+            # when installing simplejson the type of exception is requests.exceptions.JSONDecodeError
+            except (json.decoder.JSONDecodeError, requests.exceptions.JSONDecodeError):
                 result_json = {}
 
         return result_json, res.status_code
@@ -188,7 +189,8 @@ class Client(BaseClient):
         if res.status_code != 204:
             try:
                 result_json = res.json()
-            except json.decoder.JSONDecodeError:
+            # when installing simplejson the type of exception is requests.exceptions.JSONDecodeError
+            except (json.decoder.JSONDecodeError, requests.exceptions.JSONDecodeError):
                 result_json = {}
 
         return result_json, res.status_code

@@ -6,7 +6,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-import requests
+import urllib3
 import copy
 import json
 import base64
@@ -24,7 +24,7 @@ from collections import defaultdict
 import ipaddress
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 """ CONSTANTS """
 
@@ -394,7 +394,8 @@ class Client(BaseClient):
         return self._http_request(
             method='POST',
             url_suffix=f'/v2/{endpoint_base}/tag-assignments/bulk',
-            json_data=data
+            json_data=data,
+            retries=3
         )
 
     def manage_asset_pocs(self, asset_type: str, operation_type: str, asset_id: str, poc_ids: List[str]) -> Dict[str, Any]:

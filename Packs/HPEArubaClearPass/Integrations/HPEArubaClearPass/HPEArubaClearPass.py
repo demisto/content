@@ -2,11 +2,11 @@ import json
 from datetime import datetime, timedelta
 from CommonServerPython import *
 
-import requests
+import urllib3
 from typing import Dict, Any
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR"
 

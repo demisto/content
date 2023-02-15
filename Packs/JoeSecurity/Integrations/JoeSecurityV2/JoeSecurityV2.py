@@ -17,9 +17,12 @@ API_ERRORS = {1: 'Quota', 2: 'MissingParameterError', 3: 'InvalidParameterError'
 class Client(jbxapi.JoeSandbox):
     def __init__(self, apikey: str = '', base_url: str = '', accept_tac: bool = True, verify_ssl: bool = True,
                  proxy: bool = False, create_relationships: bool = False, reliability: str = DBotScoreReliability.C):
+        proxies = {}
         self.reliability = reliability
         self.create_relationships = create_relationships
-        super().__init__(apikey=apikey, apiurl=base_url, accept_tac=accept_tac, verify_ssl=verify_ssl, proxies=proxy)
+        if proxy:
+            proxies = handle_proxy()
+        super().__init__(apikey=apikey, apiurl=base_url, accept_tac=accept_tac, verify_ssl=verify_ssl, proxies=proxies)
 
     def analysis_info_list(self, web_ids: List[str]) -> List[Dict[str, Any]]:
         """

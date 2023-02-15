@@ -1,3 +1,4 @@
+import json
 from contextlib import nullcontext as does_not_raise
 import demistomock as demisto  # noqa: F401
 
@@ -10,11 +11,11 @@ from test_data.api_responses_for_test import GET_MEMBERS_RESPONSE, FINDING, LIST
     THREAT_INTEL_SET_RESPONSE, IP_SET_RESPONSE, DETECTOR_RESPONSE, RESPONSE_METADATA
 
 import pytest
-from datetime import date
 
 
 class MockedBoto3Client:
     """Mocked AWSClient session for easier expectation settings."""
+
     def list_detectors(self, **kwargs):
         pass
 
@@ -165,12 +166,14 @@ def test_list_members(mocker):
         assert api calls are called exactly once.
     """
     mocked_client = MockedBoto3Client()
-    list_members_mock = mocker.patch.object(MockedBoto3Client, 'list_members', side_effect=[LIST_MEMBERS_RESPONSE])
+    get_paginator_mock = mocker.patch.object(MockedBoto3Client, 'get_paginator', side_effect=[MockedPaginator()])
+    paginate_mock = mocker.patch.object(MockedPaginator, 'paginate', side_effect=[[LIST_MEMBERS_RESPONSE]])
 
     command_results = list_members(mocked_client, {'detectorId': 'some_id'})
 
-    assert list_members_mock.is_called_once_with({'DetectorId': 'some_id'})
-    assert command_results.outputs == LIST_MEMBERS_RESPONSE.get('Members')
+    get_paginator_mock.assert_called_with('list_members')
+    paginate_mock.assert_called_with(DetectorId='some_id', PaginationConfig={'MaxItems': 50, 'PageSize': 50})
+    assert command_results.outputs == [{'Member': LIST_MEMBERS_RESPONSE.get('Members')[0]}]
 
 
 @pytest.mark.parametrize('response, raises', [pytest.param({}, does_not_raise(),
@@ -193,7 +196,8 @@ def test_update_findings_feedback(mocker, response, raises):
         assert api calls are called exactly once.
     """
     mocked_client = MockedBoto3Client()
-    update_findings_feedback_mock = mocker.patch.object(MockedBoto3Client, 'update_findings_feedback', side_effect=[response])
+    update_findings_feedback_mock = mocker.patch.object(MockedBoto3Client, 'update_findings_feedback',
+                                                        side_effect=[response])
 
     with raises:
         update_findings_feedback(mocked_client, {'detectorId': 'some_id',
@@ -201,10 +205,10 @@ def test_update_findings_feedback(mocker, response, raises):
                                                  'comments': 'some_comment1, some_comment2',
                                                  'feedback': 'some_feedback1, some_feedback2'})
 
-    assert update_findings_feedback_mock.is_called_once_with({'DetectorId': 'some_id',
-                                                              'FindingIds': ['finding_id1', 'finding_id2'],
-                                                              'Comments': ['some_comment1', 'some_comment2'],
-                                                              'Feedback': ['some_feedback1', 'some_feedback2']})
+    update_findings_feedback_mock.assert_called_with(DetectorId='some_id',
+                                                     FindingIds=['finding_id1', 'finding_id2'],
+                                                     Comments=['some_comment1', 'some_comment2'],
+                                                     Feedback=['some_feedback1', 'some_feedback2'])
 
 
 @pytest.mark.parametrize('response, raises', [pytest.param({}, does_not_raise(),
@@ -234,8 +238,8 @@ def test_archive_findings(mocker, response, raises):
         archive_findings(mocked_client, {'detectorId': 'some_id',
                                          'findingIds': 'finding_id1, finding_id2'})
 
-    assert archive_findings_mock.is_called_once_with({'DetectorId': 'some_id',
-                                                      'FindingIds': ['finding_id1', 'finding_id2']})
+    archive_findings_mock.assert_called_with(DetectorId='some_id',
+                                             FindingIds=['finding_id1', 'finding_id2'])
 
 
 @pytest.mark.parametrize('response, raises', [pytest.param({}, does_not_raise(),
@@ -265,8 +269,7 @@ def test_unarchive_findings(mocker, response, raises):
         unarchive_findings(mocked_client, {'detectorId': 'some_id',
                                            'findingIds': 'finding_id1, finding_id2'})
 
-    assert unarchive_findings_mock.is_called_once_with({'DetectorId': 'some_id',
-                                                        'FindingIds': ['finding_id1', 'finding_id2']})
+    unarchive_findings_mock.assert_called_with(DetectorId='some_id', FindingIds=['finding_id1', 'finding_id2'])
 
 
 @pytest.mark.parametrize('response, raises', [pytest.param({}, does_not_raise(),
@@ -296,8 +299,8 @@ def test_create_sample_findings(mocker, response, raises):
         create_sample_findings(mocked_client, {'detectorId': 'some_id',
                                                'findingTypes': 'finding_type1, finding_type2'})
 
-    assert create_sample_findings_mock.is_called_once_with({'DetectorId': 'some_id',
-                                                            'FindingTypes': ['finding_type1', 'finding_type2']})
+    create_sample_findings_mock.assert_called_with(DetectorId='some_id',
+                                                   FindingTypes=['finding_type1', 'finding_type2'])
 
 
 EXPECTED_FINDING_RESULT = {'AccountId': 'string',
@@ -322,20 +325,20 @@ def test_get_findings(mocker):
     Then:
         assert api calls are called exactly once and as expected.
     """
+    from test_data.get_findings_expected_outputs import EXPECTED_FINDING_OUTPUTS
     mocked_client = MockedBoto3Client()
     get_findings_mock = mocker.patch.object(MockedBoto3Client, 'get_findings',
                                             side_effect=[{'Findings': [FINDING,
                                                                        update_finding_id(FINDING.copy(),
                                                                                          'finding2',
-                                                                                         date(2015, 1, 1))]}])
+                                                                                         '2022-09-07T13:48:00.814Z')]}])
 
     command_results = get_findings(mocked_client, {'detectorId': 'some_id',
                                                    'findingIds': 'finding_id1, finding_id2'})
 
-    assert get_findings_mock.is_called_once_with({'DetectorId': 'some_id',
-                                                  'FindingIds': ['finding_id1', 'finding_id2']})
-    assert command_results.outputs == [EXPECTED_FINDING_RESULT,
-                                       update_finding_id(EXPECTED_FINDING_RESULT.copy(), 'finding2')]
+    get_findings_mock.assert_called_with(DetectorId='some_id',
+                                         FindingIds=['finding_id1', 'finding_id2'])
+    assert command_results.get('EntryContext') == EXPECTED_FINDING_OUTPUTS
 
 
 class MockedPaginator:
@@ -362,8 +365,9 @@ def test_list_findings(mocker):
 
     command_results = list_findings(mocked_client, {'detectorId': 'some_id'})
 
-    assert get_paginator_mock.is_called_once_with('list_findings')
-    assert paginate_mock.is_called_once_with({'DetectorId': 'some_id'})
+    get_paginator_mock.assert_called_with('list_findings')
+    paginate_mock.assert_called_with(DetectorId='some_id', PaginationConfig={'MaxItems': 50, 'PageSize': 50})
+
     assert command_results.outputs == [{'FindingId': 'finding1'},
                                        {'FindingId': 'finding2'},
                                        {'FindingId': 'finding3'},
@@ -400,11 +404,11 @@ def test_update_threat_intel_set(mocker, response, raises):
                                                 'location': 'here',
                                                 'name': 'some_name'})
 
-    assert update_threat_intel_set_mock.is_called_once_with({'DetectorId': 'some_id',
-                                                             'ThreatIntelSetId': 'ThreatIntelSetId1',
-                                                             'Activate': True,
-                                                             'Location': 'here',
-                                                             'Name': 'some_name'})
+    update_threat_intel_set_mock.assert_called_with(DetectorId='some_id',
+                                                    ThreatIntelSetId='ThreatIntelSetId1',
+                                                    Activate=True,
+                                                    Location='here',
+                                                    Name='some_name')
 
 
 EXPECTED_THREAT_INTEL_RESULT = {'DetectorId': 'some_id',
@@ -433,7 +437,7 @@ def test_get_threat_intel_set(mocker):
 
     command_results = get_threat_intel_set(mocked_client, {'detectorId': 'some_id', 'threatIntelSetId': 'threat_id1'})
 
-    assert get_threat_intel_set_mock.is_called_once_with({'DetectorId': 'some_id', 'ThreatIntelSetId': 'threat_id1'})
+    get_threat_intel_set_mock.assert_called_with(DetectorId='some_id', ThreatIntelSetId='threat_id1')
     assert command_results.outputs == EXPECTED_THREAT_INTEL_RESULT
 
 
@@ -450,12 +454,14 @@ def test_list_threat_intel_sets(mocker):
         assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
-    list_threat_intel_sets_mock = mocker.patch.object(MockedBoto3Client, 'list_threat_intel_sets',
-                                                      side_effect=[{'ThreatIntelSetIds': ['threat1', 'threat2']}])
+    get_paginator_mock = mocker.patch.object(MockedBoto3Client, 'get_paginator', side_effect=[MockedPaginator()])
+    paginate_mock = mocker.patch.object(MockedPaginator, 'paginate',
+                                        side_effect=[[{'ThreatIntelSetIds': ['threat1', 'threat2']}]])
 
     command_results = list_threat_intel_sets(mocked_client, {'detectorId': 'some_id'})
 
-    assert list_threat_intel_sets_mock.is_called_once_with({'DetectorId': 'some_id'})
+    get_paginator_mock.assert_called_with('list_threat_intel_sets')
+    paginate_mock.assert_called_with(DetectorId='some_id', PaginationConfig={'MaxItems': 50, 'PageSize': 50})
     assert command_results.outputs == [{'DetectorId': 'some_id'},
                                        {'ThreatIntelSetId': 'threat1'},
                                        {'ThreatIntelSetId': 'threat2'}]
@@ -488,8 +494,8 @@ def test_delete_threat_intel_set(mocker, response, raises):
         delete_threat_intel_set(mocked_client, {'detectorId': 'some_id',
                                                 'threatIntelSetId': 'ThreatIntelSetId1'})
 
-    assert delete_threat_intel_set_mock.is_called_once_with({'DetectorId': 'some_id',
-                                                             'ThreatIntelSetId': 'ThreatIntelSetId1'})
+    delete_threat_intel_set_mock.assert_called_with(DetectorId='some_id',
+                                                    ThreatIntelSetId='ThreatIntelSetId1')
 
 
 def test_create_threat_intel_set(mocker):
@@ -514,11 +520,11 @@ def test_create_threat_intel_set(mocker):
                                                               'location': 'some_location',
                                                               'name': 'some_name'})
 
-    assert create_threat_intel_set_mock.is_called_once_with({'DetectorId': 'some_id',
-                                                             'Activate': 'True',
-                                                             'Format': 'some_format',
-                                                             'Location': 'some_location',
-                                                             'Name': 'some_name'})
+    create_threat_intel_set_mock.assert_called_with(DetectorId='some_id',
+                                                    Activate=True,
+                                                    Format='some_format',
+                                                    Location='some_location',
+                                                    Name='some_name')
     assert command_results.outputs == {'DetectorId': 'some_id',
                                        'ThreatIntelSetId': 'threat1'}
 
@@ -551,7 +557,7 @@ def test_get_ip_set(mocker):
 
     command_results = get_ip_set(mocked_client, {'detectorId': 'some_id', 'ipSetId': 'ipset1'})
 
-    assert get_ip_set_mock.is_called_once_with({'DetectorId': 'some_id', 'IpSetId': 'ipset1'})
+    get_ip_set_mock.assert_called_with(DetectorId='some_id', IpSetId='ipset1')
     assert command_results.outputs == EXPECTED_IP_SET_RESULT
 
 
@@ -568,12 +574,14 @@ def test_list_ip_sets(mocker):
         assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
-    list_ip_sets_mock = mocker.patch.object(MockedBoto3Client, 'list_ip_sets',
-                                            side_effect=[{'IpSetIds': ['ipset1', 'ipset2']}])
+    get_paginator_mock = mocker.patch.object(MockedBoto3Client, 'get_paginator', side_effect=[MockedPaginator()])
+    paginate_mock = mocker.patch.object(MockedPaginator, 'paginate', side_effect=[[{'IpSetIds': ['ipset1', 'ipset2']}]])
 
     command_results = list_ip_sets(mocked_client, {'detectorId': 'some_id'})
 
-    assert list_ip_sets_mock.is_called_once_with({'DetectorId': 'some_id'})
+    get_paginator_mock.assert_called_with('list_ip_sets')
+    paginate_mock.assert_called_with(DetectorId='some_id', PaginationConfig={'MaxItems': 50, 'PageSize': 50})
+
     assert command_results.outputs == [{'DetectorId': 'some_id'},
                                        {'IpSetId': 'ipset1'},
                                        {'IpSetId': 'ipset2'}]
@@ -601,11 +609,11 @@ def test_create_ip_set(mocker):
                                                     'location': 'some_location',
                                                     'name': 'some_name'})
 
-    assert create_ip_set_mock.is_called_once_with({'DetectorId': 'some_id',
-                                                   'Activate': 'True',
-                                                   'Format': 'some_format',
-                                                   'Location': 'some_location',
-                                                   'Name': 'some_name'})
+    create_ip_set_mock.assert_called_with(DetectorId='some_id',
+                                          Activate=True,
+                                          Format='some_format',
+                                          Location='some_location',
+                                          Name='some_name')
     assert command_results.outputs == {'DetectorId': 'some_id',
                                        'IpSetId': 'ipset1'}
 
@@ -639,11 +647,11 @@ def test_update_ip_set(mocker, response, raises):
                                       'location': 'here',
                                       'name': 'some_name'})
 
-    assert update_ip_set_mock.is_called_once_with({'DetectorId': 'some_id',
-                                                   'IpSetId': 'ipSetId1',
-                                                   'Activate': True,
-                                                   'Location': 'here',
-                                                   'Name': 'some_name'})
+    update_ip_set_mock.assert_called_with(DetectorId='some_id',
+                                          IpSetId='ipSetId1',
+                                          Activate=True,
+                                          Location='here',
+                                          Name='some_name')
 
 
 @pytest.mark.parametrize('response, raises', [pytest.param({}, does_not_raise(),
@@ -672,30 +680,37 @@ def test_delete_ip_set(mocker, response, raises):
         delete_ip_set(mocked_client, {'detectorId': 'some_id',
                                       'ipSetId': 'IpSetId1'})
 
-    assert delete_ip_set_mock.is_called_once_with({'DetectorId': 'some_id',
-                                                   'IpSetId': 'IpSetId1'})
+    delete_ip_set_mock.assert_called_with(DetectorId='some_id',
+                                          IpSetId='IpSetId1')
 
 
-def test_list_detectors(mocker):
+@pytest.mark.parametrize('args, response_iterator, expected_pagination_config, expected_results', [
+    ({'limit': '1'}, [{'DetectorIds': ['detector1']}],
+     {'MaxItems': 1, 'PageSize': 50}, [{'DetectorId': 'detector1'}]),
+    ({'page_size': '2', 'page': '2'}, [{'DetectorIds': ['detector1', 'detector2']},
+                                       {'DetectorIds': ['detector3', 'detector4']}],
+     {'MaxItems': 4, 'PageSize': 2}, [{'DetectorId': 'detector3'}, {'DetectorId': 'detector4'}])])
+def test_list_detectors(mocker, args, response_iterator, expected_pagination_config, expected_results):
     """
     Given:
         AWSClient session
         list_detectors valid response
 
     When:
-        Running list_detectors command
-
+        Running list_detectors command with: 1. limit = 1 (Automatic Pagination)
+                                             2. page_size = 2, page = 2 (Manual Pagination)
     Then:
         assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
-    list_detectors_mock = mocker.patch.object(MockedBoto3Client, 'list_detectors',
-                                              side_effect=[{'DetectorIds': ['some_id']}])
+    get_paginator_mock = mocker.patch.object(MockedBoto3Client, 'get_paginator', side_effect=[MockedPaginator()])
+    paginate_mock = mocker.patch.object(MockedPaginator, 'paginate', side_effect=[response_iterator])
 
-    command_results = list_detectors(mocked_client, {})
+    command_results = list_detectors(mocked_client, args)
 
-    assert list_detectors_mock.is_called_once_with({})
-    assert command_results.outputs == {'DetectorId': 'some_id'}
+    get_paginator_mock.assert_called_with('list_detectors')
+    paginate_mock.assert_called_with(PaginationConfig=expected_pagination_config)
+    assert command_results.outputs == expected_results
 
 
 @pytest.mark.parametrize('response, raises', [pytest.param({}, does_not_raise(),
@@ -721,11 +736,17 @@ def test_update_detector(mocker, response, raises):
     update_detector_mock = mocker.patch.object(MockedBoto3Client, 'update_detector', side_effect=[response])
 
     with raises:
-        update_detector(mocked_client, {'detectorId': 'some_id',
-                                        'enable': 'true'})
-
-    assert update_detector_mock.is_called_once_with({'DetectorId': 'some_id',
-                                                     'Enable': True})
+        update_detector(mocked_client, {'enable': 'True', 'detectorId': "some_id", 'findingFrequency': 'One Hour',
+                                        'enableKubernetesLogs': 'True',
+                                        'ebsVolumesMalwareProtection': 'True',
+                                        'enableS3Logs': 'True'})
+    assert update_detector_mock.call_args_list[0][1] == {'Enable': True, 'DetectorId': 'some_id',
+                                                         'FindingPublishingFrequency': 'ONE_HOUR',
+                                                         'DataSources': {'S3Logs': {'Enable': True},
+                                                                         'Kubernetes': {'AuditLogs': {'Enable': True}},
+                                                                         'MalwareProtection':
+                                                                             {'ScanEc2InstanceWithFindings': {
+                                                                                 'EbsVolumes': True}}}}
 
 
 @pytest.mark.parametrize('response, raises', [pytest.param({}, does_not_raise(),
@@ -753,15 +774,23 @@ def test_delete_detector(mocker, response, raises):
     with raises:
         delete_detector(mocked_client, {'detectorId': 'some_id', 'ipSetId': 'IpSetId1'})
 
-    assert delete_detector_mock.is_called_once_with({'DetectorId': 'some_id'})
+    delete_detector_mock.assert_called_with(DetectorId='some_id')
 
 
 EXPECTED_DETECTOR_RESPONSE = {
+    'CloudTrailStatus': 'ENABLED',
     'CreatedAt': 'string',
+    'DNSLogsStatus': 'ENABLED',
     'DetectorId': 'some_id',
+    'FlowLogsStatus': 'ENABLED',
+    'KubernetesAuditLogsStatus': 'ENABLED',
+    'MalwareProtectionReason': None,
+    'MalwareProtectionStatus': 'ENABLED',
+    'S3LogsStatus': 'ENABLED',
     'ServiceRole': 'string',
     'Status': 'ENABLED',
-    'UpdatedAt': 'string',
+    'Tags': {'string': 'string'},
+    'UpdatedAt': 'string'
 }
 
 
@@ -783,7 +812,7 @@ def test_get_detector(mocker):
 
     command_results = get_detector(mocked_client, {'detectorId': 'some_id'})
 
-    assert get_detector_mock.is_called_once_with({'DetectorId': 'some_id'})
+    get_detector_mock.assert_called_with(DetectorId='some_id')
     assert command_results.outputs == EXPECTED_DETECTOR_RESPONSE
 
 
@@ -800,12 +829,19 @@ def test_create_detector(mocker):
         assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
-    create_ip_set_mock = mocker.patch.object(MockedBoto3Client, 'create_detector',
-                                             side_effect=[{'DetectorId': 'some_id'}])
+    create_detector_mock = mocker.patch.object(MockedBoto3Client, 'create_detector',
+                                               side_effect=[{'DetectorId': 'some_id'}])
 
-    command_results = create_detector(mocked_client, {'enable': 'True'})
-
-    assert create_ip_set_mock.is_called_once_with({'Enable': True})
+    command_results = create_detector(mocked_client, {'enabled': 'True', 'findingFrequency': 'One Hour',
+                                                      'enableKubernetesLogs': 'True',
+                                                      'ebsVolumesMalwareProtection': 'True',
+                                                      'enableS3Logs': 'True'})
+    assert create_detector_mock.call_args_list[0][1] == {'Enable': True, 'FindingPublishingFrequency': 'ONE_HOUR',
+                                                         'DataSources': {'S3Logs': {'Enable': True},
+                                                                         'Kubernetes': {'AuditLogs': {'Enable': True}},
+                                                                         'MalwareProtection':
+                                                                             {'ScanEc2InstanceWithFindings': {
+                                                                                 'EbsVolumes': True}}}}
     assert command_results.outputs == {'DetectorId': 'some_id'}
 
 
@@ -817,13 +853,93 @@ def update_finding_id(finding, new_id, updated_at=None):
     return finding
 
 
-@pytest.mark.parametrize('xsoar_severity, gd_severity', [('Low', 1), ('Medium', 4), ('High', 7), ('Unknown', 1)])
-def test_fetch_events(mocker, xsoar_severity, gd_severity):
+''' FETCH CONSTANTS '''
+FINDING_1 = update_finding_id(FINDING.copy(), "finding_id1")
+FINDING_2 = update_finding_id(FINDING.copy(), "finding_id2")
+INCIDENT_1 = {'name': 'title', 'details': 'desc', 'occurred': '2022-11-08T14:24:52.908Z', 'severity': 0,
+              'rawJSON': json.dumps(FINDING_1, default=str)}
+INCIDENT_2 = {'name': 'title', 'details': 'desc', 'occurred': '2022-11-08T14:24:52.908Z', 'severity': 0,
+              'rawJSON': json.dumps(FINDING_2, default=str)}
+INCIDENTS_NEXT_RUN = {'latest_created_time': '2022-11-08T14:24:52.908000Z',
+                      'latest_updated_time': '2022-11-08T14:24:52.908000Z',
+                      'last_incidents_ids': ['finding_id1', 'finding_id2'],
+                      'last_next_token': ""}
+
+
+@pytest.mark.parametrize('gd_severity, '
+                         'last_run, fetch_limit, first_fetch_time,'
+                         'expected_incidents, expected_next_run, '
+                         'expected_criterion_conditions,'
+                         'mock_list_finding_res, mock_get_finding_res, is_archive',
+                         [
+                             # case - 1: First run (no Last Run) should get all incident from 'First fetch timestamp'
+                             # field to current time.
+                             # is_archive = True, should archive the findings and to get only unarchived findings.
+                             (["Medium"],
+                              {}, 2, '2022-11-08T14:24:52.908Z',
+                              [INCIDENT_1, INCIDENT_2], INCIDENTS_NEXT_RUN,
+                              {'severity': {'Gte': 4}, 'service.archived': {'Eq': ['false']}},
+                              {"FindingIds": ["finding_id1", "finding_id2"], "NextToken": ""}, [FINDING_1, FINDING_2],
+                              True),
+
+                             # case - 2: Second run should get all incidents from last run time to current time
+                             # without duplicates
+                             ([],
+                              {'last_incidents_ids': ["finding_id1"],
+                               'last_next_token': "",
+                               'latest_created_time': '2022-11-08T14:24:52.908000Z',
+                               'latest_updated_time': '2022-11-08T14:24:52.908000Z'}, 2, '3 days',
+                              [INCIDENT_2], INCIDENTS_NEXT_RUN,
+                              {'id': {'Neq': ['finding_id1']},
+                               'severity': {'Gte': 1},
+                               'updatedAt': {'Gte': 1667917492908}},
+                              {"FindingIds": ["finding_id2"], "NextToken": ""}, [FINDING_2], False),
+
+                             # case - 3: A run without new finding since last run, should not change the Last Run
+                             ([],
+                              INCIDENTS_NEXT_RUN, 2, '3 years',
+                              [], INCIDENTS_NEXT_RUN,
+                              {'severity': {'Gte': 1},
+                               'updatedAt': {'Gte': 1667917492908},
+                               'id': {'Neq': ['finding_id1', 'finding_id2']}},
+                              {"FindingIds": [], 'NextToken': ""}, [], False),
+
+                             # case - 4: A run without incidents (all incidents has earlier time then the last run)
+                             # should get 0 incidents and should not change the Last Run
+                             # [incidents created time is 08.11 but latest created time is 16.11]
+                             ([],
+                              {'latest_created_time': '2022-11-16T14:24:52.908000Z',
+                               'latest_updated_time': '2022-11-06T14:24:52.908000Z'}, 2, '3 days',
+                              [], {'last_incidents_ids': [],
+                                   'last_next_token': "",
+                                   'latest_created_time': '2022-11-16T14:24:52.908000Z',
+                                   'latest_updated_time': '2022-11-08T14:24:52.908000Z'},
+                              {'severity': {'Gte': 1}, 'updatedAt': {'Gte': 1667744692908}},
+                              {"FindingIds": ["finding_id1", "finding_id2"], 'NextToken': ""}, [FINDING_1, FINDING_2],
+                              False),
+
+                             # case - 5: A run given last_next_token and latest_updated_time,
+                             # validate the latest_updated_time is not used
+                             ([],
+                              {'last_incidents_ids': [],
+                               'last_next_token': "test",
+                               'latest_created_time': '2022-11-08T14:24:52.908000Z',
+                               'latest_updated_time': '2022-11-11T14:24:52.908000Z'}, 2, '3 days',
+                              [INCIDENT_1, INCIDENT_2], {'last_incidents_ids': ['finding_id1', 'finding_id2'],
+                                                         'last_next_token': "",
+                                                         'latest_created_time': '2022-11-08T14:24:52.908000Z',
+                                                         'latest_updated_time': '2022-11-11T14:24:52.908000Z'},
+                              {'severity': {'Gte': 1}},
+                              {"FindingIds": ["finding_id1", "finding_id2"], 'NextToken': ""}, [FINDING_1, FINDING_2],
+                              False)
+                         ], ids=['case - 1', 'case - 2', 'case - 3', 'case - 4', 'case - 5'])
+def test_fetch_incidents(mocker, gd_severity, last_run, fetch_limit, first_fetch_time,
+                         expected_incidents, expected_next_run, expected_criterion_conditions,
+                         mock_list_finding_res, mock_get_finding_res, is_archive):
     """
     Given:
         AWSClient session
         list_detectors, list_finding_ids, get_finding_ids valid responses.
-        various sevirity levels of findings to get.
 
     When:
         Running fetch-incidents.
@@ -836,22 +952,41 @@ def test_fetch_events(mocker, xsoar_severity, gd_severity):
     list_detectors_mock = mocker.patch.object(MockedBoto3Client, 'list_detectors',
                                               side_effect=[{"DetectorIds": ["detector_id1"]}])
     list_findings_mock = mocker.patch.object(MockedBoto3Client, 'list_findings',
-                                             side_effect=[{"FindingIds": ["finding_id1", "finding_id2"]}])
+                                             return_value=mock_list_finding_res)
     get_findings_mock = mocker.patch.object(MockedBoto3Client, 'get_findings',
-                                            side_effect=[{'Findings': [update_finding_id(FINDING.copy(), "finding_id1"),
-                                                                       update_finding_id(FINDING.copy(), "finding_id2")]}])
+                                            return_value={'Findings': mock_get_finding_res})
     archive_findings_mock = mocker.patch.object(MockedBoto3Client, 'archive_findings', side_effect=[{}])
-    incidents_mock = mocker.patch.object(demisto, 'incidents', side_effect=[{}])
 
-    fetch_incidents(client=mocked_client, aws_gd_severity=xsoar_severity)
+    next_run, incidents = fetch_incidents(client=mocked_client, aws_gd_severity=gd_severity, last_run=last_run,
+                                          fetch_limit=fetch_limit, first_fetch_time=first_fetch_time,
+                                          is_archive=is_archive)
 
-    list_detectors_mock.is_called_once_with({})
-    list_findings_mock.is_called_once_with({'DetectorId': 'detector_id1',
-                                            'FindingCriteria': {
-                                                'Criterion': {
-                                                    'service.archived': {'Eq': ['false', 'false']},
-                                                    'severity': {'Gt': gd_severity}}}})
-    get_findings_mock.is_called_once_with({'DetectorId': 'detector_id1', 'FindingIds': ["finding_id1", "finding_id2"]})
-    archive_findings_mock.is_called_once_with({'DetectorId': 'detector_id1',
-                                               'FindingIds': ["finding_id1", "finding_id2"]})
-    incidents_mock.is_called_once_with([])
+    assert list_detectors_mock.is_called_once
+    assert list_findings_mock.call_count == 1
+    assert get_findings_mock.call_count == 1
+    assert list_findings_mock.call_args[1]['FindingCriteria']['Criterion'] == expected_criterion_conditions
+    if is_archive:
+        assert archive_findings_mock.call_count == 1
+        assert archive_findings_mock.call_args[1]['FindingIds'] == mock_list_finding_res['FindingIds']
+    assert next_run == expected_next_run
+    assert incidents == expected_incidents
+
+
+@pytest.mark.parametrize('args, expected_results', [
+    ({}, (50, 50, None)),  # no pagination arguments
+    ({'limit': "3"}, (3, 50, None)),  # given limit argument
+    ({'page_size': "5", "page": "2"}, (10, 5, 2))])  # given page_size and page arguments
+def test_get_pagination_args(args, expected_results):
+    """
+       Given:
+           - pagination arguments.
+
+       When:
+           - Running a list command.
+
+       Then:
+           - Make sure that the correct amount of results to display is returned.
+            expected_results = (limit, page_size, page) == get_pagination_args(args)
+   """
+    from AWSGuardDuty import get_pagination_args
+    assert expected_results == get_pagination_args(args)

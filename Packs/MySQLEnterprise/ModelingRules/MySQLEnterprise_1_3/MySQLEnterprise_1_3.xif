@@ -1,0 +1,17 @@
+[MODEL: dataset = mysql_enterprise_raw]
+alter
+    //_time = parse_timestamp("%Y-%m-%d %H:%M:%S", json_extract_scalar(_raw_log, "$.timestamp")),
+    xdm.target.resource.id = json_extract_scalar(_raw_log, "$.startup_data.server_id"),
+    xdm.target.resource.type = json_extract_scalar(_raw_log, "$.startup_data.os_version"),
+    xdm.target.resource.sub_type = json_extract_scalar(_raw_log, "$.startup_data.mysql_version"),
+    xdm.event.type = json_extract_scalar(_raw_log, "$.class"),
+    xdm.source.user.username = json_extract_scalar(_raw_log, "$.account.user"),
+    xdm.source.host.hostname = json_extract_scalar(_raw_log, "$.account.host"),
+    xdm.target.user.username = json_extract_scalar(_raw_log, "$.login.user"),
+    xdm.target.host.os = json_extract_scalar(_raw_log, "$.login.os"),
+    xdm.target.ipv4 = json_extract_scalar(_raw_log, "$.login.ip"),
+    xdm.database.name = json_extract_scalar(_raw_log, "$.table_access_data.db"),
+    xdm.database.tables = split(json_extract_scalar(_raw_log, "$.table_access_data.table")),
+    xdm.database.operation = json_extract_scalar(_raw_log, "$.table_access_data.query"),
+    xdm.target.process.command_line = json_extract_scalar(_raw_log, "$.table_access_data.sql_command"),
+    xdm.database.connection_id = json_extract_scalar(_raw_log, "$.connection_id");

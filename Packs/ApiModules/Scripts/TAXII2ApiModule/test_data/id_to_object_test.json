@@ -201,23 +201,5 @@
       "modified":"2016-05-07T11:22:30.000Z",
       "name":"Poison Ivy C2",
       "infrastructure_types": ["command-and-control"]
-    },
-  "relationship--01a5a209-b94c-450b-b7f9-946497d91055": {
-      "created": "2018-08-03T21:03:51.484Z",
-      "id": "relationship--01a5a209-b94c-450b-b7f9-946497d91055",
-      "modified": "2018-08-03T21:03:51.484Z",
-      "relationship_type": "uses",
-      "source_ref": "campaign--6320584e-3ef0-4a72-aaf8-0a49fa1d477c",
-      "target_ref": "attack-pattern--4e6620ac-c30c-4f6d-918e-fa20cae7c1ce",
-      "type": "relationship"
-    },
-  "relationship--abc475d9-199c-4623-9e9a-02adf340a415": {
-      "created": "2018-08-03T20:31:03.780Z",
-      "id": "relationship--abc475d9-199c-4623-9e9a-02adf340a415",
-      "modified": "2018-08-22T12:36:32.248Z",
-      "relationship_type": "indicates",
-      "source_ref": "indicator--545928d9-bfe8-4320-bb98-751f38139892",
-      "target_ref": "campaign--6320584e-3ef0-4a72-aaf8-0a49fa1d477c",
-      "type": "relationship"
     }
 }

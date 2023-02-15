@@ -39,11 +39,10 @@ configuration:
   - suppressed
   required: false
   type: 16
-- display: Label names to filter by in fetch incidents command. Empty list won't filter the incidents by label name.
+- display: Label name to filter by in fetch incidents command. Leave empty to not filter the incidents by label name.
   name: filter_by_label_name
   required: false
   type: 0
-  additionalinfo: A comma-separated list of label names
   defaultvalue: ''
 - display: Trust any certificate (not secure)
   name: insecure
@@ -1799,7 +1798,7 @@ script:
       description: The ID of the quick scan question
       type: Number
     description: Scan a computer group for hashes in intel document. Computer groups can be viewed by navigating to `Administration -> Computer Groups` in the Threat-Response product console. Computer group names and IDs can also be retrieved by using the `tn-list-groups` command in the `Tanium` integration.
-  dockerimage: demisto/lxml:1.0.0.34090
+  dockerimage: demisto/lxml:1.0.0.42217
   isfetch: true
   runonce: false
   script: ''

@@ -15,7 +15,8 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, \
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
-    get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, converts_state_close_reason
+    get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, converts_state_close_reason, \
+    get_timezone_offset, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -28,7 +29,7 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     RESPONSE_ASSIGNMENT_GROUP, RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR, MIRROR_COMMENTS_RESPONSE_FROM_XSOAR, \
     MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR, RESPONSE_TICKET_ASSIGNED, OAUTH_PARAMS, \
     RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, MIRROR_ENTRIES_WITH_EMPTY_USERNAME, USER_RESPONSE, \
-    RESPONSE_GENERIC_TICKET
+    RESPONSE_GENERIC_TICKET, RESPONSE_COMMENTS_DISPLAY_VALUE, RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_CREATE_TICKET_WITH_OUT_JSON, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, \
@@ -38,7 +39,7 @@ from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPL
     EXPECTED_QUERY_TABLE_SYS_PARAMS, EXPECTED_ADD_TAG, EXPECTED_QUERY_ITEMS, EXPECTED_ITEM_DETAILS, \
     EXPECTED_CREATE_ITEM_ORDER, EXPECTED_DOCUMENT_ROUTE, EXPECTED_MAPPING, \
     EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS, EXPECTED_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, \
-    EXPECTED_TICKET_CONTEXT_WITH_NESTED_ADDITIONAL_FIELDS
+    EXPECTED_TICKET_CONTEXT_WITH_NESTED_ADDITIONAL_FIELDS, EXPECTED_GET_TICKET_NOTES_DISPLAY_VALUE
 from test_data.created_ticket_context import CREATED_TICKET_CONTEXT_CREATE_CO_FROM_TEMPLATE_COMMAND, \
     CREATED_TICKET_CONTEXT_GET_TASKS_FOR_CO_COMMAND
 
@@ -152,6 +153,136 @@ def test_split_fields_with_special_delimiter():
     assert False
 
 
+def test_convert_to_notes_result():
+    """
+    Given:
+        - The full response for a ticket from SNOW.
+    When:
+        - Converting the comments and work notes to the format used in the integration.
+    Then:
+        - Verify that the expected notes are returned in the correct format.
+    """
+    # Note: the 'display_value' time is the local time of the SNOW instance, and the 'value' is in UTC.
+    # The results returned for notes are expected to be in UTC time.
+
+    expected_result = {'result': [{'sys_created_on': '2022-11-21 21:50:34',
+                                   'value': 'Second comment\n\n Mirrored from Cortex XSOAR',
+                                   'sys_created_by': 'System Administrator',
+                                   'element': 'comments'
+                                   },
+                                  {'sys_created_on': '2022-11-21 20:45:37',
+                                   'value': 'First comment',
+                                   'sys_created_by': 'Test User',
+                                   'element': 'comments'
+                                   }]}
+    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE,
+                                   time_info={'display_date_format': DATE_FORMAT}) == expected_result
+
+    # Filter comments by creation time (filter is given in UTC):
+    expected_result = {'result': [{'sys_created_on': '2022-11-21 21:50:34',
+                                   'value': 'Second comment\n\n Mirrored from Cortex XSOAR',
+                                   'sys_created_by': 'System Administrator',
+                                   'element': 'comments'
+                                   }]}
+    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE,
+                                   time_info={'display_date_format': DATE_FORMAT,
+                                              'filter': datetime.strptime('2022-11-21 21:44:37',
+                                                                          DATE_FORMAT)}) == expected_result
+
+    ticket_response = {'result': []}
+    assert convert_to_notes_result(ticket_response, time_info={'display_date_format': DATE_FORMAT}) == []
+
+    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS,
+                                   time_info={'display_date_format': DATE_FORMAT}) == {'result': []}
+
+
+def test_split_notes():
+    """
+    Given:
+        - Notes response from SNOW.
+        - The type of the note (comment or work_note).
+        - The UTC timezone offset and (optionally) a time filter.
+    When:
+        - Converting the given notes to the note format used in the integration with different time filters.
+    Then:
+        - Verify that the expected notes are returned in the correct format.
+    """
+    # Note: the timezone in the raw_notes should mimic the local time of the SNOW instance,
+    # the time in the filter is in UTC (to mimic the behaviour of fetching).
+    # timezone_offset is the difference between UTC and local time, e.g. offset = -60, means that local time is UTC+1.
+    # The 'sys_created_on' time, returned by the command is normalized to UTC timezone.
+
+    raw_notes = '2022-11-21 22:50:34 - System Administrator (Additional comments)\nSecond comment\n\n Mirrored from ' \
+                'Cortex XSOAR\n\n2022-11-21 21:45:37 - Test User (Additional comments)\nFirst comment\n\n'
+
+    time_info = {'timezone_offset': timedelta(minutes=0),
+                 'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT),
+                 'display_date_format': DATE_FORMAT}
+    notes = split_notes(raw_notes, 'comments', time_info)
+    expected_notes = [{'sys_created_on': '2022-11-21 22:50:34',
+                       'value': 'Second comment\n\n Mirrored from Cortex XSOAR',
+                       'sys_created_by': 'System Administrator',
+                       'element': 'comments'
+                       },
+                      {'sys_created_on': '2022-11-21 21:45:37',
+                       'value': 'First comment',
+                       'sys_created_by': 'Test User',
+                       'element': 'comments'
+                       }]
+    assert notes == expected_notes
+
+    raw_notes = '21/11/2022 22:50:34 - System Administrator (Additional comments)\nSecond comment\n\n Mirrored from ' \
+                'Cortex XSOAR\n\n21/11/2022 21:45:37 - Test User (Additional comments)\nFirst comment\n\n'
+    time_info = {'timezone_offset': timedelta(minutes=-60),
+                 'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT),
+                 'display_date_format': DATE_FORMAT_OPTIONS.get('dd/MM/yyyy')}
+    notes = split_notes(raw_notes, 'comments', time_info)
+    expected_notes = [{'sys_created_on': '2022-11-21 21:50:34',
+                       'value': 'Second comment\n\n Mirrored from Cortex XSOAR',
+                       'sys_created_by': 'System Administrator',
+                       'element': 'comments'
+                       }]
+    assert notes == expected_notes
+
+    raw_notes = '11-21-2022 22:50:34 - System Administrator (Additional comments)\nSecond comment\n\n Mirrored from ' \
+                'Cortex XSOAR\n\n11-21-2022 21:45:37 - Test User (Additional comments)\nFirst comment\n\n'
+    time_info = {'timezone_offset': timedelta(minutes=-120),
+                 'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT),
+                 'display_date_format': DATE_FORMAT_OPTIONS.get('MM-dd-yyyy')}
+    notes = split_notes(raw_notes, 'comments', time_info)
+    assert len(notes) == 0
+
+
+def test_get_timezone_offset():
+    """
+    Given:
+        - A response from a SNOW ticket created with 'sysparm_display_value=all'.
+    When:
+        - Testing different instance and UTC times.
+    Then:
+        - Assert the offset between the UTC and the instance times are correct.
+    """
+    full_response = {
+        'result': {'sys_created_on': {'display_value': '2022-12-07 05:38:52', 'value': '2022-12-07 13:38:52'}}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT)
+    assert offset == timedelta(minutes=480)
+
+    full_response = {
+        'result': {'sys_created_on': {'display_value': '12-07-2022 15:47:34', 'value': '2022-12-07 13:47:34'}}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('MM-dd-yyyy'))
+    assert offset == timedelta(minutes=-120)
+
+    full_response = {
+        'result': {'sys_created_on': {'display_value': '06/12/2022 23:38:52', 'value': '2022-12-07 09:38:52'}}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('dd/MM/yyyy'))
+    assert offset == timedelta(minutes=600)
+
+    full_response = {
+        'result': {'sys_created_on': {'display_value': '07.12.2022 0:38:52', 'value': '2022-12-06 19:38:52'}}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('dd.MM.yyyy'))
+    assert offset == timedelta(minutes=-300)
+
+
 @pytest.mark.parametrize('command, args, response, expected_result, expected_auto_extract', [
     (update_ticket_command, {'id': '1234', 'impact': '2'}, RESPONSE_UPDATE_TICKET, EXPECTED_UPDATE_TICKET, True),
     (update_ticket_command, {'id': '1234', 'ticket_type': 'sc_req_item', 'approval': 'requested'},
@@ -171,6 +302,10 @@ def test_split_fields_with_special_delimiter():
     (upload_file_command, {'id': "sys_id", 'file_id': "entry_id", 'file_name': 'test_file'}, RESPONSE_UPLOAD_FILE,
      EXPECTED_UPLOAD_FILE, True),
     (get_ticket_notes_command, {'id': "sys_id"}, RESPONSE_GET_TICKET_NOTES, EXPECTED_GET_TICKET_NOTES, True),
+    (get_ticket_notes_command, {'id': 'sys_id', 'use_display_value': 'true', 'display_date_format': DATE_FORMAT},
+     RESPONSE_COMMENTS_DISPLAY_VALUE, EXPECTED_GET_TICKET_NOTES_DISPLAY_VALUE, True),
+    (get_ticket_notes_command, {'id': 'sys_id', 'use_display_value': 'true', 'display_date_format': DATE_FORMAT},
+     RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS, {}, True),
     (get_record_command, {'table_name': "alm_asset", 'id': "sys_id", 'fields': "asset_tag,display_name"},
      RESPONSE_GET_RECORD, EXPECTED_GET_RECORD, True),
     (update_record_command, {'name': "alm_asset", 'id': "1234", 'custom_fields': "display_name=test4"},
@@ -213,7 +348,7 @@ def test_commands(command, args, response, expected_result, expected_auto_extrac
     """
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
                     'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
-                    'ticket_type', 'get_attachments', 'incident_name')
+                    'ticket_type', 'get_attachments', 'incident_name', display_date_format='yyyy-MM-dd')
     mocker.patch.object(client, 'send_request', return_value=response)
     result = command(client, args)
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
@@ -277,6 +412,37 @@ def test_fetch_incidents(mocker):
     incidents = fetch_incidents(client)
     assert len(incidents) == 2
     assert incidents[0].get('name') == 'ServiceNow Incident INC0000040'
+
+
+@freeze_time('2022-05-01 12:52:29')
+def test_fetch_incidents_with_changed_fetch_limit(mocker):
+    """Unit test
+    Given
+    - fetch incidents command
+    - command args
+    - command raw response
+    When
+    - mock the parse_date_range.
+    - mock the Client's send_request.
+    Then
+    - run the fetch incidents command using the Client
+    Validate The number of fetch_limit in the last_run
+    """
+    RESPONSE_FETCH['result'][0]['opened_at'] = (datetime.utcnow() - timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S')
+    RESPONSE_FETCH['result'][1]['opened_at'] = (datetime.utcnow() - timedelta(minutes=8)).strftime('%Y-%m-%d %H:%M:%S')
+    mocker.patch(
+        'CommonServerPython.get_fetch_run_time_range', return_value=('2022-05-01 01:05:07', '2022-05-01 12:08:29')
+    )
+    mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', '2 days', 'sysparm_query', sysparm_limit=20,
+                    timestamp_field='opened_at', ticket_type='incident', get_attachments=False, incident_name='number')
+    mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
+    mocker.patch.object(demisto, 'getLastRun', return_value={'limit': 10})
+    set_last_run = mocker.patch.object(demisto, 'setLastRun')
+    fetch_incidents(client)
+
+    assert set_last_run.call_args[0][0].get('limit') == 20
 
 
 @freeze_time('2022-05-01 12:52:29')
@@ -1654,3 +1820,67 @@ def test_converts_state_close_reason(ticket_state, expected_res):
         - return the matching XSOAR incident state.
     """
     assert converts_state_close_reason(ticket_state) == expected_res
+
+
+def ticket_fields_mocker(*args, **kwargs):
+    state = '88' if kwargs.get('ticket_type') == 'incident' else '90'
+    fields = {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+              'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
+              'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': state,
+              'work_start': '0001-01-01T00:00:00Z'}
+    assert fields == args[0]
+    return fields
+
+
+@pytest.mark.parametrize('ticket_type, ticket_state, close_custom_state, result_close_state, update_call_count',
+                         [
+                             # case 1 - SIR ticket closed by custom state
+                             ('sn_si_incident', '16', '90', '90', 1),
+                             # case 2 - custom state doesn't exist, closed by default state code - '3'
+                             ('sn_si_incident', '16', '90', '3', 2),
+                             # case 3 - ticket closed by custom state
+                             ('incident', '1', '88', '88', 1),
+                             # case 4 - custom state doesn't exist, closed by default state code - '7'
+                             ('incident', '1', '88', '7', 2),
+                         ], ids=['case - 1', 'case - 2', 'case - 3', 'case - 4'])
+def test_update_remote_data_custom_state(mocker, ticket_type, ticket_state, close_custom_state, result_close_state,
+                                         update_call_count):
+    """
+    Given:
+    -  ServiceNow client
+    -  ServiceNow ticket of type sn_si_incident
+    -  ServiceNow ticket of type incident
+    -  close_custom_state exist/not exist in ServiceNow
+    When
+        - running update_remote_system_command.
+    Then
+        - The state is changed accordingly
+    """
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type=ticket_type, get_attachments=False, incident_name='description')
+    params = {'ticket_type': ticket_type, 'close_ticket_multiple_options': 'None', 'close_ticket': True,
+              'close_custom_state': close_custom_state}
+
+    TICKET_FIELDS['state'] = ticket_state
+    args = {'remoteId': '1234', 'data': TICKET_FIELDS, 'entries': [], 'incidentChanged': True, 'delta': {},
+            'status': 2}
+
+    def update_ticket_mocker(*args):
+        # Represents only the response of the last call to client.update
+        # In case the custom state doesn't exist -
+        # in the first call will return the ticket's state as before (in case2 - '16', case4 - '1')
+        return {'result': {'short_description': 'Post parcel', 'close_notes': 'This is closed',
+                           'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3', 'priority': '4',
+                           'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - High - Low',
+                           'sla_due': '0001-01-01T00:00:00Z', 'state': result_close_state, 'urgency': '3',
+                           'work_start': '0001-01-01T00:00:00Z'}}
+
+    mocker.patch('ServiceNowv2.get_ticket_fields', side_effect=ticket_fields_mocker)
+    mocker_update = mocker.patch.object(client, 'update', side_effect=update_ticket_mocker)
+    update_remote_system_command(client, args, params)
+    # assert the state argument in the last call to client.update
+    assert mocker_update.call_args[0][2]['state'] == result_close_state
+    assert mocker_update.call_count == update_call_count

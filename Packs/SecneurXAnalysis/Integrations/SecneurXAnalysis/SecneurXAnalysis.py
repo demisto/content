@@ -3,13 +3,11 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from collections import OrderedDict # noqa
 
 import json ## noqa
-import requests ## noqa
 import traceback ## noqa
 from typing import Dict, Any  ## noqa
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
 SNX_IOC_TYPES_TO_DEMISTO_TYPES = {
@@ -711,6 +709,9 @@ def get_report_cmd(client: Client, args: Dict[str, str]):
                 title = (f"SecneurX Analysis - Detailed Report of the Analyzed Sample: {taskUuid}")
                 readableContents = format_report_contents(contents)
                 readableOutputs = tableToMarkdown(title, readableContents, headers=headerList, headerTransform=pascalToSpace)
+                reportFileName = taskUuid + reportExtn
+                fileContent = fileResult(reportFileName, response)
+                return_results(fileContent)
                 return CommandResults(
                     readable_output=readableOutputs,
                     indicator=indicator,
@@ -731,6 +732,32 @@ def get_report_cmd(client: Client, args: Dict[str, str]):
                 outputs_prefix="SecneurXAnalysis.Report",
                 outputs=result
             )
+
+
+def get_quota_cmd(client: Client) -> CommandResults:
+    urlSuffix = "/get_quota"
+    response, err_msg = client.get_response(urlSuffix, {})
+    if response:
+        if response.get(SNXResponse.SNX_SUCCESS_KEY) == SNXResponse.SUCCESS:
+            quotaData = response[SNXResponse.SNX_RESULT_KEY]
+            readableOutput = tableToMarkdown("SecneurX Analysis - API Key Quota Usage:", t=quotaData)
+            return CommandResults(
+                readable_output=readableOutput,
+                outputs=quotaData,
+                outputs_prefix="SecneurXAnalysis.Quota",
+                raw_response=response
+            )
+        else:
+            readableOutput = tableToMarkdown("SecneurX Analysis - API Key Quota Usage:", t=response)
+            return CommandResults(
+                readable_output=readableOutput,
+                outputs=response,
+                outputs_prefix="SecneurXAnalysis.Quota",
+                raw_response=response
+            )
+    else:
+        msg = error_response(err_msg)
+        raise DemistoException(msg)
 
 
 def main():
@@ -772,6 +799,9 @@ def main():
 
         elif cmdAction == "snx-analysis-get-report":
             return_results(get_report_cmd(client, demisto.args()))
+
+        elif cmdAction == "snx-analysis-get-quota":
+            return_results(get_quota_cmd(client))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

@@ -5,9 +5,10 @@ import requests
 import dateparser
 from datetime import timedelta
 from typing import Any, Dict, Tuple, List, Optional, Set
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
@@ -349,7 +350,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
             latest_created_time = incident_created_time
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_fetch': (latest_created_time + timedelta(microseconds=1))  # type: ignore[operator]
+    next_run = {'last_fetch': (latest_created_time + timedelta(milliseconds=1))  # type: ignore[operator]
                 .strftime(XSOAR_DATE_FORMAT)}  # type: ignore[union-attr,operator]
 
     return next_run, incidents_result
@@ -703,6 +704,8 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
             old_incident = client.get_incident(incident_id=parsed_args.remote_incident_id)
             for changed_key in parsed_args.delta.keys():
                 old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
+                if changed_key in old_incident.get('CustomFields', {}).keys():
+                    old_incident['CustomFields'][changed_key] = parsed_args.delta[changed_key]
 
             parsed_args.data = old_incident
 
@@ -748,8 +751,8 @@ def main() -> None:
     verify_certificate = not demisto.params().get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
-    first_fetch_time = dateparser.parse(demisto.params().get('first_fetch', '3 days')) \
-        .strftime(XSOAR_DATE_FORMAT)  # type: ignore[union-attr]
+    first_fetch_time = arg_to_datetime(demisto.params().get('first_fetch', '3 days')).strftime(XSOAR_DATE_FORMAT)  # type: ignore
+
     proxy = demisto.params().get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     mirror_tags = set(demisto.params().get('mirror_tag', '').split(',')) \

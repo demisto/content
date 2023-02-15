@@ -7,12 +7,83 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: In order to authenticate with a Cluster Authentication Token, insert
-    `__token` in the "Username" textbox, and the token itself in the "Password" textbox.
+- additionalinfo: In order to authenticate with a Cluster Authentication Token, insert `__token` in the "Username" textbox, and the token itself in the "Password" textbox.
   display: Username
   name: credentials
   required: true
   type: 9
+- defaultvalue: "generic,abnormalAuth,accountManipulation,accountTampering,ueba,bruteForce,compromisedCredentials,
+    cryptomining,dataAccessAbuse,dataExfiltration,dlp,departedEmployee,dataDestruction,evasion,lateralMovement,alertTriage,
+    malware,phishing,privilegeAbuse,physicalSecurity,privilegeEscalation,privilegedActivity,ransomware,workforceProtection"
+  display: Exabeam Incident Type
+  name: incident_type
+  options:
+  - generic
+  - abnormalAuth
+  - accountManipulation
+  - accountTampering
+  - ueba
+  - bruteForce
+  - compromisedCredentials
+  - cryptomining
+  - dataAccessAbuse
+  - dataExfiltration
+  - dlp
+  - departedEmployee
+  - dataDestruction
+  - evasion
+  - lateralMovement
+  - alertTriage
+  - malware
+  - phishing
+  - privilegeAbuse
+  - physicalSecurity
+  - privilegeEscalation
+  - privilegedActivity
+  - ransomware
+  - workforceProtection
+  required: false
+  type: 16
+- defaultvalue: low,medium,high,critical
+  display: Priority
+  name: priority
+  options:
+  - low
+  - medium
+  - high
+  - critical
+  required: false
+  type: 16
+- defaultvalue: closed,closedFalsePositive,inprogress,new,pending,resolved
+  display: Status
+  name: status
+  options:
+  - closed
+  - closedFalsePositive
+  - inprogress
+  - new
+  - pending
+  - resolved
+  required: false
+  type: 16
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: '50'
+  display: Max incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -21,16 +92,14 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The Exabeam Security Management Platform provides end-to-end detection,
-  User Event Behavioral Analytics, and SOAR.
+description: The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.
 display: Exabeam
 name: Exabeam
 script:
   commands:
   - arguments:
     - default: false
-      description: The time period for which to fetch notable users, such as 3 months,
-        2 days, 4 hours, 1 year, and so on.
+      description: The time period for which to fetch notable users, such as 3 months, 2 days, 4 hours, 1 year, and so on.
       isArray: true
       name: time_period
       required: true
@@ -85,8 +154,7 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: The time period for which to fetch notable users, such as 3 months,
-        2 days, 4 hours, 1 year, and so on.
+      description: The time period for which to fetch notable users, such as 3 months, 2 days, 4 hours, 1 year, and so on.
       isArray: true
       name: time_period
       required: true
@@ -357,15 +425,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The Start time of the time range. For example, 2018-08-01T11:50:16
-        or "30 days ago".
+      description: The start time of the time range. For example, 2018-08-01T11:50:16 or "30 days ago".
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: The end time of the time range. For example, 2018-08-01T11:50:16
-        or "1 week ago".
+      description: The end time of the time range. For example, 2018-08-01T11:50:16 or "1 week ago".
       isArray: false
       name: end_time
       required: false
@@ -1000,8 +1066,7 @@ script:
       description: State of the rule (DefaultExabeam, ModifiedExabeam or CustomerCreated).
       type: String
     - contextPath: Exabeam.Rule.canSimpleEdit
-      description: Whether or not it is possible to use the simple editor on this
-        rule.
+      description: Whether or not it is possible to use the simple editor on this rule.
       type: Boolean
   - arguments:
     - default: false
@@ -1099,12 +1164,10 @@ script:
       description: Score of the rule.
       type: Number
     - contextPath: Exabeam.Rule.ruleDef.percentileThreshold
-      description: Indicates which observations are considered anomalous based on
-        the histogram.
+      description: Indicates which observations are considered anomalous based on the histogram.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.ruleExpression
-      description: A boolean expression that the rule engine uses to determine if
-        a particular rule will trigger.
+      description: A boolean expression that the rule engine uses to determine if a particular rule will trigger.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.dependencyExpression
       description: The rule dependency expression.
@@ -1122,8 +1185,7 @@ script:
       description: State of the rule (DefaultExabeam, ModifiedExabeam or CustomerCreated).
       type: String
     - contextPath: Exabeam.Rule.canSimpleEdit
-      description: Whether or not it is possible to use the simple editor on this
-        rule.
+      description: Whether or not it is possible to use the simple editor on this rule.
       type: Boolean
   - arguments:
     - default: false
@@ -1393,10 +1455,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A comma-separated list of records to add, for example: k1,k2.
-        If context_table_type argument is set to key_value, every record should be
-        in "key:values" format, where "values" is a semi-colon separated list of values.
-        For example: k1:v1;v2,k2:v3,k3:,k4:v4.'
+      description: 'A comma-separated list of records to add, for example: k1,k2. If context_table_type argument is set to key_value, every record should be in "key:values" format, where "values" is a semi-colon separated list of values. For example: k1:v1;v2,k2:v3,k3:,k4:v4.'
       isArray: false
       name: records
       required: true
@@ -1454,10 +1513,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of records to update. If context_table_type
-        argument is set to key_only, each record should be in the following format:
-        id:key. Otherwise it''s a key_value type and then the format of a record is
-        id:key:values, where the values are separated by semi-colons.'
+      description: 'A comma-separated list of records to update. If context_table_type argument is set to key_only, each record should be in the following format: id:key. Otherwise it''s a key_value type and then the format of a record is id:key:values, where the values are separated by semi-colons.'
       isArray: false
       name: records
       required: true
@@ -1514,8 +1570,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of context table session. If not specified, a new session
-        is created
+      description: The ID of the context table session. If not specified, a new session is created.
       isArray: false
       name: session_id
       required: false
@@ -1548,8 +1603,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add context table records from CSV file in a specific modification
-      session.
+    description: Add context table records from CSV file in a specific modification session.
     execution: false
     name: exabeam-add-context-table-records-from-csv
   - arguments:
@@ -1602,8 +1656,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The time period for which to fetch notable users, such as 3 months,
-        2 days, 4 hours, 1 year, and so on.
+      description: The time period for which to fetch notable users, such as 3 months, 2 days, 4 hours, 1 year, and so on.
       isArray: true
       name: time_period
       required: true
@@ -1885,8 +1938,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns sequence event types for the given asset sequence ID and
-      time range.
+    description: Returns sequence event types for the given asset sequence ID and time range.
     execution: false
     name: exabeam-get-sequence-eventtypes
     outputs:
@@ -1902,9 +1954,149 @@ script:
     - contextPath: Exabeam.SequenceEventTypes.sequenceId
       description: The sequence ID.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
-  feed: false
-  isfetch: false
+  - arguments:
+    - default: false
+      description: The incident ID.
+      isArray: True
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: |
+        The query string that will be used to filter incidents in Exabeam
+        For example:
+        - simple query: incidentType:generic,
+        - OR query: "status:new OR status:closedFalsePositive",
+        - AND query:  "status:new AND priority:high".
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      auto: PREDEFINED
+      description: Incident type to filter in Exabeam.
+      isArray: false
+      predefined:
+        - "generic"
+        - "abnormalAuth"
+        - "accountManipulation"
+        - "accountTampering"
+        - "ueba"
+        - "bruteForce"
+        - "compromisedCredentials"
+        - "cryptomining"
+        - "dataAccessAbuse"
+        - "dataExfiltration"
+        - "dlp"
+        - "departedEmployee"
+        - "dataDestruction"
+        - "evasion"
+        - "lateralMovement"
+        - "alertTriage"
+        - "malware"
+        - "phishing"
+        - "privilegeAbuse"
+        - "physicalSecurity"
+        - "privilegeEscalation"
+        - "privilegedActivity"
+        - "ransomware"
+        - "workforceProtection"
+      name: incident_type
+      required: false
+      secret: false
+    - default: false
+      auto: PREDEFINED
+      description: Incident priority to filter in Exabeam.
+      isArray: false
+      predefined:
+        - "low"
+        - "medium"
+        - "high"
+        - "critical"
+      name: priority
+      required: false
+      secret: false
+    - default: false
+      auto: PREDEFINED
+      description: Incident status to filter in Exabeam.
+      isArray: false
+      predefined:
+        - "closed"
+        - "closedFalsePositive"
+        - "inprogress"
+        - "new"
+        - "pending"
+        - "resolved"
+      name: status
+      required: false
+      secret: false
+    - default: false
+      description: Number of total results to query. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Specific page to query.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      description: Number of total results in each page. Default is 25.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: When the instance is configure by an API key, it must be used with the username argument.
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns incidents from Exabeam.
+    execution: false
+    name: exabeam-list-incident
+    outputs:
+    - contextPath: Exabeam.incidents.incidentId
+      description: The incident ID.
+      type: String
+    - contextPath: Exabeam.incidents.name
+      description: The incident name.
+      type: String
+    - contextPath: Exabeam.incidents.fields.startedDate
+      description: The starting date of the incident.
+      type: String
+    - contextPath: Exabeam.incidents.fields.closedDate
+      description: The closing date of the incident.
+      type: String
+    - contextPath: Exabeam.incidents.fields.createdAt
+      description: The creation date of the incident.
+      type: String
+    - contextPath: Exabeam.incidents.fields.owner
+      description: The incident owner.
+      type: String
+    - contextPath: Exabeam.incidents.fields.status
+      description: The incident status.
+      type: String
+    - contextPath: Exabeam.incidents.fields.incidentType
+      description: The incident type.
+      type: String
+    - contextPath: Exabeam.incidents.fields.source
+      description: The incident source.
+      type: String
+    - contextPath: Exabeam.incidents.fields.priority
+      description: The incident priority.
+      type: String
+    - contextPath: Exabeam.incidents.fields.queue
+      description: The queue of the incident.
+      type: String
+    - contextPath: Exabeam.incidents.fields.description
+      description: The incident description.
+      type: String
+  dockerimage: demisto/python3:3.10.9.42008
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false

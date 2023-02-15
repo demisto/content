@@ -20,8 +20,6 @@ Both vulnerabilities are “triggered through X.509 certificate verification, sp
 
 More information:
 
-[MALWARETECH - Everything you need to know about the OpenSSL 3.0.7 Patch - CVE-2022-3602 & CVE-2022-3786](https://www.malwaretech.com/2022/11/everything-you-need-to-know-about-the-openssl-3-0-7-patch.html)
-
-[Randori - OpenSSL 3.x Vulnerabilities: What You Need To Know](https://www.randori.com/blog/openssl-vulnerability-what-you-need-to-know/)
+[Unit42 Threat Brief: CVE-2022-3786 and CVE-2022-3602: OpenSSL X.509 Buffer Overflows](https://unit42.paloaltonetworks.com/openssl-vulnerabilities/)
 
 [NCSC-NL - OpenSSL overview Scanning software](https://github.com/NCSC-NL/OpenSSL-2022/tree/main/scanning)

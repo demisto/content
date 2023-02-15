@@ -81,12 +81,6 @@ DOMAIN_RESPONSE = {
     'entropy': 2.6464393446710157,
     'hostname': 'google.com',
     'modification_time': '2020-04-03 10:41:04',
-    'resolved_ip': [
-        {
-            'ip_addr': '172.217.7.174',
-            'timestamp': '2019-03-17 12:57:27'
-        }
-    ],
     'tag': ['phishing'],
     'tld': 'com',
     'type': 'hostname'

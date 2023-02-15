@@ -1517,7 +1517,11 @@ function Main {
         }
 
         # Refreshing tokens if expired
-        $oauth2_client.RefreshTokenIfExpired()
+        if ($command -ne "$script:COMMAND_PREFIX-auth-start")
+        {
+            $oauth2_client.RefreshTokenIfExpired()
+        }
+
         # Creating Compliance and search client
         $cs_client = [SecurityAndComplianceClient]::new($integration_params.url, $integration_params.credentials.identifier,
                                                         $integration_params.credentials.password, $oauth2_client.access_token, $insecure, $no_proxy)

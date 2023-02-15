@@ -1,0 +1,11 @@
+{
+  "status": "new",
+  "organizations": [
+    "Unattributed"
+  ],
+  "asset_type": "iprange",
+  "alive": true,
+  "type": "iprange",
+  "hosting_type": "cloud",
+  "id": "iprange/0.0.0.1-1.0.0.0"
+}

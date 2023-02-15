@@ -1,0 +1,12 @@
+{
+  "proofpoint_trap_raw": {
+    "id": {
+      "type": "string",
+      "is_array": false
+    },
+    "events": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

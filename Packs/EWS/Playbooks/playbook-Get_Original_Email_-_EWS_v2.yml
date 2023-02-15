@@ -24,6 +24,7 @@ tasks:
       '#none#':
       - "8"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -62,6 +63,7 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -89,6 +91,7 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -111,8 +114,7 @@ tasks:
       id: 15ad973f-06c8-417d-8f63-9fcb9dfc7bef
       version: -1
       name: Verify required inputs
-      description: Verifies the required input values exist for retrieving the
-        original email.
+      description: Verifies the required input values exist for retrieving the original email.
       type: condition
       iscommand: false
       brand: ""
@@ -137,6 +139,7 @@ tasks:
               complex:
                 root: inputs.MessageID
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -159,9 +162,7 @@ tasks:
       id: b069057c-c912-4f3c-874f-8427e1a5a131
       version: -1
       name: Search for messages by MessageID
-      description: Searches for items in the specified mailbox. Specific permissions
-        are needed to search in a target mailbox other than the
-        default.
+      description: Searches for items in the specified mailbox. Specific permissions are needed to search in a target mailbox other than the default.
       script: '|||ews-search-mailbox'
       type: regular
       iscommand: true
@@ -173,12 +174,11 @@ tasks:
       message-id:
         complex:
           root: inputs.MessageID
-      selected-fields:
-        simple: message_id
       target-mailbox:
         complex:
           root: inputs.TargetMailbox
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -195,14 +195,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 2c433705-840b-4ad0-8214-ed8db8588d35
+    taskid: 7a0d7b60-0b5b-4cc1-8ef3-95a769dcdbb0
     type: condition
     task:
-      id: 2c433705-840b-4ad0-8214-ed8db8588d35
+      id: 7a0d7b60-0b5b-4cc1-8ef3-95a769dcdbb0
       version: -1
       name: Was a matching email found?
-      description: Verifies that an email object with a message ID matching the
-        InReplyTo ID of the forwarded email was found.
+      description: Verifies that an email object with a message ID matching the InReplyTo ID of the forwarded email was found.
       type: condition
       iscommand: false
       brand: ""
@@ -220,8 +219,30 @@ tasks:
             value:
               complex:
                 root: EWS.Items
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: EWS.Items.messageId
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.MessageID
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: EWS.Items.receivedBy
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.TargetMailbox
+                      iscontext: true
                 accessor: itemId
             iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -238,10 +259,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: eaaa6c31-f4f3-4c0e-8b72-e5bb226c3c5b
+    taskid: 141999a9-21f8-4f70-81f2-8ee680dd17a6
     type: regular
     task:
-      id: eaaa6c31-f4f3-4c0e-8b72-e5bb226c3c5b
+      id: 141999a9-21f8-4f70-81f2-8ee680dd17a6
       version: -1
       name: Get original email as eml
       description: Retrieves an item by item ID and uploads its content as an EML file.
@@ -256,11 +277,31 @@ tasks:
       item-id:
         complex:
           root: EWS.Items
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: EWS.Items.messageId
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.MessageID
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: EWS.Items.receivedBy
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.TargetMailbox
+                iscontext: true
           accessor: itemId
       target-mailbox:
         complex:
           root: inputs.TargetMailbox
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -292,6 +333,7 @@ tasks:
       - "1"
       - "9"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -314,7 +356,7 @@ tasks:
       id: b3af9bc1-18c4-4022-8ac7-4f41e030b055
       version: -1
       name: Is EWSO365 enabled?
-      description: Returns 'yes' if an integration brand is available. 
+      description: Returns 'yes' if an integration brand is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -330,6 +372,7 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {

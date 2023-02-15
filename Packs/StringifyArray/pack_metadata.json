@@ -1,8 +1,8 @@
 {
-    "name": "StringifyArray",
-    "description": "A transformer to encode an array in JSON",
+    "name": "StringifyArray (Deprecated)",
+    "description": "Deprecated. Use Filters And Transformers instead.",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Masahiko Inoue",
     "url": "",
     "email": "",

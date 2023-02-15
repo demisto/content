@@ -700,7 +700,7 @@ def main():  # pragma: no cover
     """
     params = demisto.params()
     args = demisto.args()
-    api_key = str(params.get('api_key', ''))
+    api_key = params.get('credentials', {}).get('password') or str(params.get('api_key', ''))
     verify = not params.get('insecure', False)
     feed_tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color')

@@ -8,9 +8,10 @@ from elasticsearch_dsl import Search
 from elasticsearch_dsl.query import QueryString
 import requests
 import warnings
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 warnings.filterwarnings(action="ignore", message='.*using SSL with verify_certs=False is insecure.')
 
 HTTP_ERRORS = {

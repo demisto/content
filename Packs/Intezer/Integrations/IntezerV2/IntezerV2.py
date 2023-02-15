@@ -17,12 +17,13 @@ from intezer_sdk.errors import ServerError
 from intezer_sdk.family import Family
 from intezer_sdk.sub_analysis import SubAnalysis
 from requests import HTTPError
+import urllib3
 
 from CommonServerPython import *
 
 ''' CONSTS '''
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 IS_AVAILABLE_URL = 'is-available'
 REQUESTER = 'xsoar'

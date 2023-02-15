@@ -1,11 +1,11 @@
 commonfields:
   id: Cisco Email Security Appliance (IronPort)
   version: -1
+deprecated: true
 name: Cisco Email Security Appliance (IronPort)
-display: Cisco Email Security Appliance (IronPort)
+display: Cisco Email Security Appliance (IronPort) (Deprecated)
 category: Network Security
-description: Cisco Email Security protects against ransomware, business email compromise,
-  spoofing, and phishing
+description: Deprecated. Use Cisco Email Security Appliance (IronPort) V2 instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
