@@ -18,7 +18,7 @@ or O365 Outlook Mail Single User (Using Graph API) (see https://xsoar.pan.dev/do
 - Process Email - EWS
 
 ## Use Cases
-- The EWS integration can be used for the following use cases.
+The EWS integration can be used for the following use cases:
 - Monitor a specific email account and create incidents from incoming emails to the defined folder.
 Follow the instructions in the Fetched Incidents Data section.
 - Search for an email message across mailboxes and folders.
