@@ -2174,6 +2174,33 @@ script:
     name: get-mapping-fields
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
+  - arguments:
+    - default: false
+      description: The rule id, if not given will return all rules.
+      isArray: false
+      name: rule_id
+      required: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of rules to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
+    description: Gets a list of all alert rules.
+    name: azure-sentinel-list-alert-rule
   dockerimage: demisto/crypto:1.0.0.47970
   feed: false
   isfetch: true

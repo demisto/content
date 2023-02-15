@@ -45,6 +45,8 @@ DEFAULT_SOURCE = 'Microsoft Sentinel'
 
 THREAT_INDICATORS_HEADERS = ['Name', 'DisplayName', 'Values', 'Types', 'Source', 'Confidence', 'Tags']
 
+ALERT_RULES_HEADERS = ['Id', 'Kind', 'Severity', 'Display Name', 'Description', 'Enabled']
+
 # =========== Mirroring Mechanism Globals ===========
 
 MIRROR_DIRECTION_DICT = {
@@ -1695,6 +1697,47 @@ def replace_tags_threat_indicator_command(client, args):
     )
 
 
+def list_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any]) -> CommandResults:
+    limit = int(args.get('limit', 50))
+    rule_id = args.get('rule_id')
+
+    url_suffix = 'alertRules' + (f'/{rule_id}' if rule_id else '')
+
+    raw_results = []
+    next_link = True
+    while next_link:
+        full_url = next_link if isinstance(next_link, str) else None
+
+        response = client.http_request('GET', url_suffix, full_url=full_url)
+
+        raw_results += [response] if rule_id else response.get('value', [])
+
+        next_link = response.get('nextLink')
+        if len(raw_results) >= limit:
+            next_link = False
+
+    raw_results = raw_results[:limit]
+
+    readable_result = [
+        {
+            'Id': rule.get('name'),
+            'Kind': rule.get('kind'),
+            'Severity': rule.get('properties', {}).get('severity'),
+            'Display Name': rule.get('properties', {}).get('displayName'),
+            'Description': rule.get('properties', {}).get('description'),
+            'Enabled': rule.get('properties', {}).get('enabled')
+        } for rule in raw_results]
+    readable_output = tableToMarkdown('Azure Sentinel Alert Rules', readable_result, headers=ALERT_RULES_HEADERS)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureSentinel.AlertRule',
+        outputs=raw_results,
+        outputs_key_field='name',
+        raw_response=raw_results
+    )
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1762,6 +1805,7 @@ def main():
             'azure-sentinel-threat-indicator-delete': delete_threat_indicator_command,
             'azure-sentinel-threat-indicator-tags-append': append_tags_threat_indicator_command,
             'azure-sentinel-threat-indicator-tags-replace': replace_tags_threat_indicator_command,
+            'azure-sentinel-list-alert-rule': list_alert_rule_command,
         }
 
         if demisto.command() == 'test-module':
