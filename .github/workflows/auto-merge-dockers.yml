@@ -1,7 +1,7 @@
 name: Docker Update Auto Merge
 on:
   pull_request:
-    types: [opened, reopened, labeled, edited, synchronize, assigned]
+    types: [opened, edited, synchronize, assigned]
 
 
 permissions:
@@ -26,7 +26,7 @@ jobs:
           echo "Approving the pull request"
           gh pr review --approve "$PR_URL"
           echo "Waiting tii all the checks are done"
-          gh pr checks --watch "$PR_URL"
+          gh pr checks --required --interval 60 --watch "$PR_URL"
           echo "Merging the pull request"
           gh pr merge --squash "$PR_URL"
       - name: Post to a Slack channel

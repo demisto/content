@@ -15,9 +15,9 @@ Follow these steps for a User-Authentication configuration:
 4. Enter your Client Secret in the *Client Secret* parameter.
 5. Enter your Tenant ID in the *Tenant ID* parameter.
 6. Enter your Application redirect URI in the *Application redirect URI* parameter.
-7. Enter your Authorization code in the *Authorization code* parameter.
 8. Save the instance.
-9. Run the ***!azure-sql-auth-test*** command - a 'Success' message should be printed to the War Room.
+9. Run the ***!azure-sql-generate-login-url*** command in the War Room and follow the instruction.
+10. Run the **!azure-sql-auth-test*** command - a 'Success' message should be printed to the War Room.
 
 #### Cortex XSOAR Azure App
 

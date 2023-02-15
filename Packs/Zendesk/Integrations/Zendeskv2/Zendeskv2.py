@@ -305,7 +305,7 @@ class CreatedTickets(TicketEvents):
 
         params = super(CreatedTickets, self).query_params()
         if not params:
-            params['start_time'] = int(dateparser.parse(
+            params['start_time'] = int(dateparser.parse(        # type: ignore
                 self._demisto_params.get('first_fetch', '3d')
             ).timestamp())
 
@@ -856,10 +856,16 @@ class ZendeskClient(BaseClient):
     # ---- demisto releated functions ---- #
 
     def test_module(self):  # pragma: no cover
+        exception: Exception
+        # If one of the endpoints work we will pass the test_module check.
         for data_type in ['tickets', 'users', 'organizations']:
-            self._paged_request(url_suffix=data_type, data_field_name=data_type, limit=1)
-        UpdatedTickets(self, 0).tickets().__next__()
-        return 'ok'
+            try:
+                self._paged_request(url_suffix=data_type, data_field_name=data_type, limit=1)
+                return 'ok'
+            except Exception as e:
+                exception = e
+
+        raise exception from None
 
     @staticmethod
     def _ticket_to_incident(ticket: Dict):
@@ -924,7 +930,7 @@ class ZendeskClient(BaseClient):
     def get_remote_data(self, **kwargs):
         try:
             parsed_args = GetRemoteDataArgs(kwargs)
-            last_update = datetime_to_iso(dateparser.parse(parsed_args.last_update, settings={'TIMEZONE': 'UTC'}))
+            last_update = datetime_to_iso(dateparser.parse(parsed_args.last_update, settings={'TIMEZONE': 'UTC'}))  # type: ignore
             try:
                 ticket_data = self._get_ticket_by_id(parsed_args.remote_incident_id)
             except HTTPError as e:
