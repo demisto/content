@@ -60,6 +60,8 @@ RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
 EXTRACT_TIMESTAMP_REGEX = r"\(([^()]+)\)"
 SERVER_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
+DEFAULT_YEAR = datetime(1970, 1, 1)
+
 # disable warnings coming from taxii2client - https://github.com/OTRF/ATTACK-Python-Client/issues/43#issuecomment-1016581436
 logging.getLogger("taxii2client.v20").setLevel(logging.ERROR)
 
@@ -328,7 +330,7 @@ def extract_date_time_from_description(description: str) -> str:
         return date_time_result
     matches = re.findall(EXTRACT_TIMESTAMP_REGEX, description)
     for match in matches:
-        if parsed_date_time := dateparser.parse(match):
+        if parsed_date_time := dateparser.parse(match, settings={'RELATIVE_BASE': DEFAULT_YEAR}):
             date_time_result = datetime.strftime(parsed_date_time, SERVER_DATE_FORMAT)
             break
     return date_time_result

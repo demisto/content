@@ -223,8 +223,9 @@ def test_filter_attack_pattern_object_by_attack_id(attack_id, attack_pattern_obj
 
 
 @pytest.mark.parametrize('description, expected_result', [
-    ('Test (2020, Mar)', '2020-03'),
-    ('Test (Test) (2020, Mar)', '2020-03'),
+    ('Test (23)', '1970-01-23T00:00:00'),
+    ('Test (2020, Mar)', '2020-03-01T00:00:00'),
+    ('Test (Test) (2020, Mar)', '2020-03-01T00:00:00'),
     ('Test 2033)', ''),
     ('Test ()', ''),
     ('Test (Test)', ''),
@@ -245,8 +246,7 @@ def test_filter_attack_pattern_object_by_attack_id(attack_id, attack_pattern_obj
 def test_extract_date_time_from_description(description, expected_result):
     from FeedMitreAttackv2 import extract_date_time_from_description
     output = extract_date_time_from_description(description)
-    if expected_result:
-        assert output.startswith(expected_result)
+    assert output == expected_result
 
 
 def test_attack_pattern_reputation_command(mocker):
