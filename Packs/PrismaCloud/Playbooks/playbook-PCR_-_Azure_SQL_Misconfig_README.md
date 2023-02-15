@@ -14,7 +14,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Prisma Cloud Remediation - Azure SQL Database Misconfiguration
 
 ### Integrations
-* RedLock
+* PrismaCloud v2
 
 ### Scripts
 * IsIntegrationAvailable

@@ -1759,9 +1759,82 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Search alerts on the Prisma Cloud (RedLock) platform. If no time-range arguments are given, the search will filter only alerts from the last 7 days.
+    description: Search alerts on the Prisma Cloud platform. If no time-range arguments are given, the search will filter only alerts from the last 7 days.
     execution: false
     name: redlock-search-alerts
+    outputs:
+    - contextPath: PrismaCloud.AlertPageToken.nextPageToken
+      description: Next page token
+      type: String
+    - contextPath: PrismaCloud.Alert.id
+      description: The ID of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.status
+      description: The status of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.reason
+      description: The reason of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.lastSeen
+      description: The time the returned alert was last seen.
+      type: String
+    - contextPath: PrismaCloud.Alert.firstSeen
+      description: The time the returned alert was first seen.
+      type: String
+    - contextPath: PrismaCloud.Alert.lastUpdated
+      description: The time the returned was last updated.
+      type: String
+    - contextPath: PrismaCloud.Alert.alertTime
+      description: The time of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.policyId
+      description: The policy ID of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.name
+      description: The policy name of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.policyType
+      description: The policy type of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.severity
+      description: The policy severity of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.remediable
+      description: Whether the policy is remediable.
+      type: Boolean
+    - contextPath: PrismaCloud.Alert.policy.description
+      description: The policy description of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.recommendation
+      description: The policy recommendation of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.remediation.description
+      description: The policy remediation description of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.remediation.cliScriptTemplate
+      description: The policy cli script template description of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.systemDefault
+      description: Whether the policy is system default.
+      type: Boolean
+    - contextPath: PrismaCloud.Alert.policy.deleted
+      description: Whether the policy is deleted.
+      type: Boolean
+    - contextPath: PrismaCloud.Alert.resource.resourceType
+      description: The resource type of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.name
+      description: The resource name of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.account
+      description: The resource account of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.cloudType
+      description: The resource cloud type of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.rrn
+      description: The resource rrn of the returned alert.
+      type: String
   - arguments:
     - default: true
       description: The alert ID
@@ -2246,9 +2319,73 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL language.
+    description: Search configuration inventory on the Prisma Cloud platform using RQL language.
     execution: false
     name: redlock-search-config
+    outputs:
+    - contextPath: PrismaCloud.Config.accountId
+      description: Cloud Account ID
+      type: String
+    - contextPath: PrismaCloud.Config.accountName
+      description: Cloud Account Name
+      type: String
+    - contextPath: PrismaCloud.Config.allowDrillDown
+      description: Whether to allow drill down.
+      type: Boolean
+    - contextPath: PrismaCloud.Config.cloudType
+      description: Cloud Type
+      type: String
+    - contextPath: PrismaCloud.Config.deleted
+      description: Whether asset was deleted.
+      type: Boolean
+    - contextPath: PrismaCloud.Config.hasExtFindingRiskFactors
+      description: Whether configuration has external finding risk factors
+      type: Boolean
+    - contextPath: PrismaCloud.Config.hasExternalFinding
+      description: Whether configuration has external finding
+      type: Boolean
+    - contextPath: PrismaCloud.Config.hasExternalIntegration
+      description: Whether configuration has axternal integration
+      type: Boolean
+    - contextPath: PrismaCloud.Config.hasNetwork
+      description: Whether configuration has network?
+      type: Boolean
+    - contextPath: PrismaCloud.Config.id
+      description: Prisma Cloud config ID
+      type: String
+    - contextPath: PrismaCloud.Config.assetId
+      description: Prisma Cloud Asset ID
+      type: String
+    - contextPath: PrismaCloud.Config.data
+      description: Prisma Cloud Asset specific data
+      type: Unknown
+    - contextPath: PrismaCloud.Config.insertTs
+      description: Insert Ts
+      type: Date
+    - contextPath: PrismaCloud.Config.createdTs
+      description: Insert Ts
+      type: Date
+    - contextPath: PrismaCloud.Config.name
+      description: Asset Name
+      type: String
+    - contextPath: PrismaCloud.Config.regionId
+      description: Cloud Region ID
+      type: String
+    - contextPath: PrismaCloud.Config.regionName
+      description: Cloud Region Name
+      type: String
+    - contextPath: PrismaCloud.Config.resourceType
+      description: Cloud Resource type
+      type: String
+    - contextPath: PrismaCloud.Config.rrn
+      description: Cloud RRN
+      type: String
+    - contextPath: PrismaCloud.Config.service
+      description: Cloud service
+      type: String
+    - contextPath: PrismaCloud.Config.stateId
+      description: State ID
+      type: String
   - arguments:
     - default: false
       description: The maximum number of records to return. '; limit search records to {}' is appended to every query where {} is the maximum number of records to return. If no value is provided, only 1 record is returned.
@@ -2316,7 +2453,7 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Search events on the Prisma Cloud (RedLock) platform using RQL language.
+    description: Search events on the Prisma Cloud platform using RQL language.
     execution: false
     name: redlock-search-event
   - arguments:
@@ -2375,11 +2512,11 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Search networks on the Prisma Cloud (RedLock) platform using RQL language.
+    description: Search networks on the Prisma Cloud platform using RQL language.
     execution: false
     name: redlock-search-network
 tests:
 - No tests
 defaultmapperin: RedLock-mapper
 defaultclassifier: RedLock
-fromversion: 6.9.0
+fromversion: 6.8.0
