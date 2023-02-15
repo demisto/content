@@ -25,7 +25,6 @@ def create_dependencies(content_dto: ContentDTO, is_bucket_upload: bool, output:
         first_level_dependencies = {}
         all_level_dependencies = {}
         for dependency in dependencies:
-            logger.info(f"Found dependency for {pack} which is {dependency.content_item_to.object_id}")
             if is_bucket_upload and dependency.is_test:
                 continue
             if dependency.mandatorily:
@@ -65,13 +64,12 @@ def main():
 
     with Neo4jContentGraphInterface() as interface:
         content_dto: ContentDTO = interface.marshal_graph(args.marketplace, all_level_dependencies=True)
-        
+   
         logger.info("Creating pack dependencies mapping")
         create_dependencies(content_dto, args.bucket_upload, Path(args.dependencies_output))
 
         logger.info("Creating content artifacts zips")
         create_zips(content_dto, Path(args.artifacts_output), args.marketplace, args.zip)
-
 
 
 if __name__ == "__main__":
