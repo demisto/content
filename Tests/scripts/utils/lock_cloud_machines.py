@@ -199,14 +199,15 @@ def get_files_in_gcp_folder(storage_client, bucket_name, prefix):
     return files
 
 
-def get_machines_locks_details(storage_client, bucket_name, prefix):
+def get_machines_locks_details(storage_client, bucket_name, repo, prefix):
     blobs = storage_client.list_blobs(bucket_name)
     files = []
     found = False
     for blob in blobs:
-        if blob.name.startswith(prefix):
+        if blob.name.startswith(repo):
             found = True
-            files.append({'machine_name': f'qa2-test-{(blob.name.strip(prefix)).strip("-")[0]}', 'job_id': (blob.name.strip(prefix)).strip("-")[3]})
+            if blob.name.startswith(prefix):
+                files.append({'machine_name': f'qa2-test-{(blob.name.strip(prefix)).strip("-")[0]}', 'job_id': (blob.name.strip(prefix)).strip("-")[3]})
         elif found:
             break
     return files
@@ -277,7 +278,7 @@ def main():
     list_machines = test_machines_list.download_as_string().decode("utf-8").split()
     s = logger.download_as_string()
     logger.upload_from_string(f'{s}\nlist_machines are: {list_machines}')
-    machines_locks = (get_files_in_gcp_folder(storage_client, 'xsoar-ci-artifacts', f'{lock_repo_name}/queue-qa2-test-'))
+    machines_locks = (get_machines_locks_details(storage_client, 'xsoar-ci-artifacts', f'{lock_repo_name}/' f'{lock_repo_name}/qa2-test-'))
     s = logger.download_as_string()
     logger.upload_from_string(f'{s}\nmachines_locks are: {machines_locks}')
     lock_machine_name = None
