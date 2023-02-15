@@ -1099,7 +1099,7 @@ class Client(BaseClient):
 
         alarm_summary = response.get('alarmSummaryDetails')
         return alarm_summary, response
-    
+
     def get_alarm_details_request(self, alarm_id):  # pragma: no cover
         response = self._http_request('GET', f'lr-alarm-api/alarms/{alarm_id}')
 
