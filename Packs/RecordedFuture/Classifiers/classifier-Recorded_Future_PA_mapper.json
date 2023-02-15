@@ -1,9 +1,9 @@
 {
     "description": "",
     "feed": false,
-    "id": "Dev_PlaybookAlert_Mapper",
+    "id": "Recorded Future Playbook Alert Mapper",
     "mapping": {
-        "Dev_Cyber_Vuln": {
+        "Recorded Future Vulnerability": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Alert Category": {
@@ -79,7 +79,7 @@
                 }
             }
         },
-        "Dev_Domain_Abuse": {
+        "Recorded Future Domain Abuse": {
             "dontMapEventToLabels": true,
             "internalMapping": {
                 "Alert Category": {
@@ -215,14 +215,10 @@
                     }
                 }
             }
-        },
-        "cyber vuln": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {}
         }
     },
-    "name": "Dev_PlaybookAlert_Mapper",
+    "name": "Recorded Future Playbook Alert Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.8.0"
+    "fromVersion": "6.0.0"
 }

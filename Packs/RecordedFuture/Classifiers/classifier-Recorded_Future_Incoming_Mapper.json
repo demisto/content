@@ -147,5 +147,5 @@
     "name": "Recorded Future - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.5.0"
+    "fromVersion": "6.0.0"
 }

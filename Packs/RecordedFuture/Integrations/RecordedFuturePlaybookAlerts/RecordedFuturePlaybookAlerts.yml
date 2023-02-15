@@ -604,6 +604,6 @@ script:
       type: String
   isfetch: true
   runonce: false
-fromversion: 6.8.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
