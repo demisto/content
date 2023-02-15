@@ -208,7 +208,7 @@ def get_machines_locks_details(storage_client, bucket_name, repo, prefix):
         if blob.name.startswith(repo):
             found = True
             if blob.name.startswith(prefix):
-                files.append({'machine_name': f'qa2-test-{(blob.name.strip(prefix)).split("-")[0]}', 'job_id': (blob.name.strip(prefix)).split("-")[3]})
+                files.append({'machine_name': f'qa2-test-{(blob.name.strip(prefix)).split("-")[0]}', 'job_id': (blob.name.strip(prefix)).split("-")[2]})
         elif found:
             break
     return files
