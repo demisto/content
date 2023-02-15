@@ -259,7 +259,9 @@ def main():
     first_in_the_queue = False
     while not first_in_the_queue:
         builds_in_queue = (get_files_in_gcp_folder(storage_client, 'xsoar-ci-artifacts', f'{lock_repo_name}/queue-ga-lock-'))
-        sorted_builds_in_queue = sorted(builds_in_queue, key=lambda d: d['time_created'], reverse=True)
+        sorted_builds_in_queue = sorted(builds_in_queue, key=lambda d: d['time_created'], reverse=False)
+        s = logger.download_as_string()
+        logger.upload_from_string(f'{s}\nsorted_builds_in_queue are: {sorted_builds_in_queue}')
         my_place_in_the_queue = next((index for (index, d) in enumerate(sorted_builds_in_queue) if d["name"] == options.ci_job_id), None)
         s = logger.download_as_string()
         logger.upload_from_string(f'{s}\nmy place in the queue is: {my_place_in_the_queue}')
