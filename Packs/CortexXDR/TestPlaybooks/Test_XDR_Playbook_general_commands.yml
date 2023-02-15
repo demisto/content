@@ -2251,8 +2251,8 @@ tasks:
     scriptarguments:
       alias_name:
         complex:
-          root: PaloAltoNetworksXDR.Endpoint
-          accessor: alias
+          root: PaloAltoNetworksXDR.Endpoint.[0].ip
+          accessor: '[0]'
       new_alias_name:
         simple: Test
     separatecontext: false
@@ -2271,34 +2271,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "63":
-    id: "63"
-    taskid: c3e487be-5e0d-45ed-8764-a3f571f86540
-    type: condition
+  "64":
+    id: "64"
+    taskid: ffa9bf6d-0fb2-4c17-81d0-5a8feb9d602a
+    type: regular
     task:
-      id: c3e487be-5e0d-45ed-8764-a3f571f86540
+      id: ffa9bf6d-0fb2-4c17-81d0-5a8feb9d602a
       version: -1
-      name: Was the alias changed?
-      type: condition
-      iscommand: false
+      name: Get endpoints
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
+      script: '|||xdr-get-endpoints'
+      type: regular
+      iscommand: true
       brand: ""
     nexttasks:
-      "yes":
-      - "24"
+      '#none#':
+      - "66"
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: PaloAltoNetworksXDR.Endpoint
-                accessor: alias
-            iscontext: true
-          right:
-            value:
-              simple: Test
     continueonerrortype: ""
     view: |-
       {
@@ -2333,7 +2326,46 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
+      - "68"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: d8e50451-e59e-4c79-8c82-b865181181be
+    type: regular
+    task:
+      id: d8e50451-e59e-4c79-8c82-b865181181be
+      version: -1
+      name: Save the original alias in context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
       - "61"
+    scriptarguments:
+      key:
+        simple: original
+      value:
+        complex:
+          root: PaloAltoNetworksXDR.Endpoint.[0]
+          accessor: alias
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2350,27 +2382,76 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "65":
-    id: "65"
-    taskid: 451d7cf7-94df-4710-8c14-8259c7a35147
+  "67":
+    id: "67"
+    taskid: 283eed04-8ea4-42b1-8aaa-b53fa0b2e193
     type: regular
     task:
-      id: 451d7cf7-94df-4710-8c14-8259c7a35147
+      id: 283eed04-8ea4-42b1-8aaa-b53fa0b2e193
       version: -1
-      name: Get endpoints
-      description: Gets a list of endpoints, according to the passed filters. If there
-        are no filters, all endpoints are returned. Filtering by multiple fields will
-        be concatenated using AND condition (OR is not supported). Maximum result
-        set size is 100. Offset is the zero-based number of endpoint from the start
-        of the result set (start by counting from 0).
-      script: '|||xdr-get-endpoints'
+      name: Return the name to original alias name
+      description: Gets a list of endpoints according to the passed filters, and changes
+        their alias name. Filtering by multiple fields will be concatenated using
+        the AND condition (OR is not supported).
+      script: '|||xdr-endpoint-alias-change'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "63"
+      - "24"
+    scriptarguments:
+      alias_name:
+        complex:
+          root: PaloAltoNetworksXDR.Endpoint.[0]
+          accessor: alias
+      new_alias_name:
+        complex:
+          root: original
     separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 1d433af5-d81f-4ab7-8a6b-914b13d0ab98
+    type: condition
+    task:
+      id: 1d433af5-d81f-4ab7-8a6b-914b13d0ab98
+      version: -1
+      name: Was the alias changed?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Endpoint.[0]
+                accessor: alias
+            iscontext: true
+          right:
+            value:
+              simple: Test
     continueonerrortype: ""
     view: |-
       {
