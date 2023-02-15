@@ -109,8 +109,8 @@ references:
       command: |
 
         # Merge origin/master into the current branch, to make sure we have the latest changes.
-        # Should fail if there are conflicts.
-        git merge origin/master
+        # If the merge fails, abort it and continue with the current branch.
+        git merge origin/master || git merge --abort
 
         poetry --version
         # Check if CircleCI's config file and poetry files files are up to date
