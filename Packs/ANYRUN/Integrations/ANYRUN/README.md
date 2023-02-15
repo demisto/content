@@ -345,6 +345,7 @@ Submit a file or url for analysis.
 | opt_network_connect | Network connection state. Possible values are: true, false. Default is true. | Optional | 
 | opt_kernel_heavyevasion | Heavy evasion option. Possible values are: true, false. Default is false. | Optional | 
 | opt_privacy_type | Privacy settings for generated task. Possible values are: owner, bylink, public. Default is owner. | Optional | 
+| obj_ext_browser | Browser name, used only for "url" type. Possible values are: Internet Explorer, Google Chrome, Mozilla Firefox, Opera, Microsoft Edge. | Optional |
 
 
 #### Context Output

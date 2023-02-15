@@ -1743,6 +1743,8 @@ def main():     # pragma: no cover
             return_results(get_email_as_eml_command(client, args))
         elif command == 'msgraph-update-email-status':
             return_results(update_email_status_command(client, args))
+        elif command == 'msgraph-mail-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
     except Exception as e:
         return_error(str(e))
 
