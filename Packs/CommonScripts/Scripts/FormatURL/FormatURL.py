@@ -417,7 +417,6 @@ class URLCheck(object):
                 raise URLError(f"Invalid character {char} at position {index}")
 
             else:
-                # self.output += char
                 part += char
                 index += 1
 
@@ -431,7 +430,6 @@ class URLCheck(object):
             elif self.inside_brackets and char == self.bracket_pairs[self.opening_bracket]:
                 # If the char is a closing bracket check that it matches the opening one.
                 self.inside_brackets = False
-                # self.output += char
                 part += char
                 index += 1
 
@@ -439,7 +437,6 @@ class URLCheck(object):
                 # If the char is an opening bracket set `inside_brackets` flag to True
                 self.inside_brackets = True
                 self.opening_bracket = char
-                # self.output += char
                 part += char
                 index += 1
 
@@ -527,7 +524,6 @@ class URLCheck(object):
             return True
 
         elif self.modified_url[index] == "/":
-            #
             self.output += self.modified_url[index]
             index += 1
 
@@ -572,7 +568,8 @@ class URLFormatter(object):
     # URL Security Wrappers
     ATP_regex = re.compile('https://.*?\.safelinks\.protection\.outlook\.com/\?url=(.*?)&', re.I)
     fireeye_regex = re.compile('.*?fireeye[.]com.*?&u=(.*)', re.I)
-    proofpoint_regex = re.compile('(?i)(?:proofpoint.com/v[1-2]/(?:url\?u=)?(.+?)(?:&amp|&d|$)|https?(?::|%3A)//urldefense[.]\w{2,3}/v3/__(.+?)(?:__;|$))')
+    proofpoint_regex = re.compile('(?i)(?:proofpoint.com/v[1-2]/(?:url\?u=)?(.+?)(?:&amp|&d|$)|'
+                                  'https?(?::|%3A)//urldefense[.]\w{2,3}/v3/__(.+?)(?:__;|$))')
     trendmicro_regex = re.compile('https://.*?trendmicro\.com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&', re.I)
 
     # Scheme slash fixer
@@ -623,11 +620,11 @@ class URLFormatter(object):
 
         while wrapper:
             # Will strip multiple wrapped URLs, wrappers are finite the loop will stop once all wrappers were removed
-    
+
             if "%3A" in url[:8].upper():
                 # If scheme has %3A URL is probably quoted and should be unquoted
                 url = urllib.parse.unquote(url)
-        
+
             if URLFormatter.fireeye_regex.match(url):
                 url = URLFormatter.fireeye_regex.findall(url)[0]
 
@@ -642,7 +639,7 @@ class URLFormatter(object):
 
             else:
                 wrapper = False
-        
+
         else:
             return url
 
