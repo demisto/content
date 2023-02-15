@@ -157,7 +157,7 @@ tasks:
             curl  -u admin:admin <your tenant URL>/xsoar/instance/execute/edl1\?q\=type:ip%20and%20verdict:malicious%20and%20tags:<Tag from the previous answer>
 
             Windows users (Powershell):
-            (iwr -Uri '<your tenant URL>/xsoar/instance/execute/edl1/?q=type:ip and verdict:malicious and tags:blockit' -Headers @{ Authorization = "Basic "+ [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("admin:admin")) }).Content
+            (iwr -Uri '<your tenant URL>/xsoar/instance/execute/edl1/?q=type:ip and verdict:malicious and tags:<Tag from the previous answer>' -Headers @{ Authorization = "Basic "+ [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("admin:admin")) }).Content
         required: false
         gridcolumns: []
         defaultrows: []
