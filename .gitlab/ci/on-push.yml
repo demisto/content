@@ -1,11 +1,13 @@
 .push-rule:
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-
-.filter-non-nightly-docker-updates-rule:
-  rules:
     - if: '$CI_COMMIT_BRANCH =~ /^demisto\/([^n]|n($|[^i]|i($|[^g]|g($|[^h]))))[^\/]*$/'
       when: never
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+
+#.filter-non-nightly-docker-updates-rule:
+#  rules:
+#    - if: '$CI_COMMIT_BRANCH =~ /^(demisto\/[^\/]+)(?!.*-nightly).*$/'
+#      when: never
 
 trigger-private-build:
   tags:
@@ -84,6 +86,8 @@ validate-content-conf:
   extends:
     - .default-job-settings
   rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^demisto\/([^n]|n($|[^i]|i($|[^g]|g($|[^h]))))[^\/]*$/'
+      when: never
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
   script:
     - section_start "Validate content-test-conf Branch Merged"
@@ -111,7 +115,8 @@ validate-content-conf:
   extends:
     - .default-job-settings
   rules:
-    - !reference [.filter-non-nightly-docker-updates-rule]
+    - if: '$CI_COMMIT_BRANCH =~ /^demisto\/([^n]|n($|[^i]|i($|[^g]|g($|[^h]))))[^\/]*$/'
+      when: never
     - if: "$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/"
     - if: "$NIGHTLY"
   cache:
@@ -280,7 +285,6 @@ xsoar_server_6_5:
   extends: .test_content_on_xsoar_server_instances_base
   #  No need to trigger in case of release branch
   rules:
-    - !reference [.filter-non-nightly-docker-updates-rule]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
   variables:
     INSTANCE_ROLE: "Server 6.5"
@@ -289,7 +293,6 @@ xsoar_server_6_6:
   extends: .test_content_on_xsoar_server_instances_base
   #  No need to trigger in case of release branch
   rules:
-    - !reference [.filter-non-nightly-docker-updates-rule]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
   variables:
     INSTANCE_ROLE: "Server 6.6"
@@ -298,7 +301,6 @@ xsoar_server_6_8:
   extends: .test_content_on_xsoar_server_instances_base
   #  No need to trigger in case of release branch
   rules:
-    - !reference [.filter-non-nightly-docker-updates-rule]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
   variables:
     INSTANCE_ROLE: "Server 6.8"
@@ -308,7 +310,6 @@ xsoar_server_master:
     - .test_content_on_xsoar_server_instances_base
   #  No need to trigger in case of release branch
   rules:
-    - !reference [.filter-non-nightly-docker-updates-rule]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
     - if: '$NIGHTLY'
       when: always
@@ -464,7 +465,6 @@ xsiam_server_ga:
   extends:
     - .test_content_on_cloud_server_instances_base
   rules:
-    - !reference [.filter-non-nightly-docker-updates-rule]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
     - if: '$NIGHTLY'
       when: always
@@ -488,7 +488,6 @@ xsoar_ng_server_ga:
   extends:
     - .test_content_on_cloud_server_instances_base
   rules:
-    - !reference [.filter-non-nightly-docker-updates-rule]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
       when: always
   variables:
@@ -514,7 +513,6 @@ test-upload-flow:
   extends:
     - .default-job-settings
   rules:
-    - !reference [.filter-non-nightly-docker-updates-rule]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   variables:
     ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
