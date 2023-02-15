@@ -21,8 +21,6 @@ trigger-private-build:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
-#    - if: '$CI_COMMIT_BRANCH =~ /^demisto\/([^n]|n($|[^i]|i($|[^g]|g($|[^h]))))[^\/]*$/'
-#      when: never
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
   script:
@@ -120,8 +118,6 @@ validate-content-conf:
     - .default-job-settings
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
-#    - if: '$CI_COMMIT_BRANCH =~ /^demisto\/([^n]|n($|[^i]|i($|[^g]|g($|[^h]))))[^\/]*$/'
-#      when: never
     - if: "$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/"
     - if: "$NIGHTLY"
   cache:
@@ -235,6 +231,7 @@ mpv2-prepare-testing-bucket:
   extends:
     - .default-job-settings
     - .push-rule
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
