@@ -376,6 +376,18 @@ script:
       - informational
     - description: Notable event status. 0 - Unassigned, 1 - Assigned, 2 - In Progress, 3 - Pending, 4 - Resolved, 5 - Closed.
       name: status
+    - name: disposition
+      auto: PREDEFINED
+      predefined:
+      - True Positive - Suspicious Activity
+      - Benign Positive - Suspicious But Expected
+      - False Positive - Incorrect Analytic Logic
+      - False Positive - Inaccurate Data
+      - Other
+      - Undetermined
+      description: Disposition of the notable. If the more options exist on the server,
+        specifying the disposition as `disposition:#` will work in place of choosing
+        one of the default values from the list.
     description: Updates existing notable events in Splunk ES.
     execution: true
     name: splunk-notable-event-edit
@@ -610,7 +622,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.46376
+  dockerimage: demisto/splunksdk-py3:1.0.0.48191
   isfetch: true
   ismappable: true
   isremotesyncin: true
