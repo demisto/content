@@ -65,11 +65,13 @@ def main():
 
     with Neo4jContentGraphInterface() as interface:
         content_dto: ContentDTO = interface.marshal_graph(args.marketplace, all_level_dependencies=True)
+        
+        logger.info("Creating pack dependencies mapping")
+        create_dependencies(content_dto, args.bucket_upload, Path(args.dependencies_output))
+
         logger.info("Creating content artifacts zips")
         create_zips(content_dto, Path(args.artifacts_output), args.marketplace, args.zip)
 
-        logger.info("Creating pack dependencies mapping")
-        create_dependencies(content_dto, args.bucket_upload, Path(args.dependencies_output))
 
 
 if __name__ == "__main__":
