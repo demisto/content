@@ -119,8 +119,9 @@ validate-content-conf:
   extends:
     - .default-job-settings
   rules:
-    - if: '$CI_COMMIT_BRANCH =~ /^demisto\/([^n]|n($|[^i]|i($|[^g]|g($|[^h]))))[^\/]*$/'
-      when: never
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+#    - if: '$CI_COMMIT_BRANCH =~ /^demisto\/([^n]|n($|[^i]|i($|[^g]|g($|[^h]))))[^\/]*$/'
+#      when: never
     - if: "$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/"
     - if: "$NIGHTLY"
   cache:
