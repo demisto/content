@@ -1,11 +1,8 @@
 from ipaddress import IPv4Address, IPv4Network
-from time import sleep
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
-DELIMETER = ","
 
 def is_ip_internal(ip: str, ranges: list[str]) -> bool:
     try:
