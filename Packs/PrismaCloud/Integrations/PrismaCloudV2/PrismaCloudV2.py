@@ -620,7 +620,7 @@ def alert_to_incident_context(alert: Dict[str, Any]):
 ''' V1 DEPRECATED COMMAND FUNCTIONS to support backwards compatibility '''
 
 
-def get_v1_filters(args):
+def get_v1_filters(args: Dict[str, Any]):
     filters = []
     args_name_to_filter_name = {
         'alert-status': 'alert.status',
@@ -646,16 +646,7 @@ def get_v1_filters(args):
     return filters
 
 
-# def convert_unix_to_date(timestamp):
-#     """
-#     Convert milliseconds since epoch to date formatted MM/DD/YYYY HH:MI:SS
-#     """
-#     if timestamp:
-#         return timestamp_to_datestring(timestamp, '%m/%d/%Y %H:%M:%S')
-#     return 'N/A'
-
-
-def alert_to_v1_context(alert, args):
+def alert_to_v1_context(alert: Any, args: Dict[str, Any]):
     """
     Transform a single alert to context struct
     """
@@ -693,7 +684,7 @@ def alert_to_v1_context(alert, args):
     return ec
 
 
-def format_v1_response(response):
+def format_v1_response(response: Any):
     if response and isinstance(response, dict):
         response = {pascalToSpace(key).replace(" ", ""): format_v1_response(value) for key, value in response.items()}
     elif response and isinstance(response, list):
@@ -719,12 +710,12 @@ def alert_search_v1_command(client: Client, args: Dict[str, Any], return_v1_outp
 
         context_path = 'Redlock.Alert(val.ID === obj.ID)'
         context: dict = {context_path: []}
-        for alert in response:
+        for alert in response:  # type: ignore[attr-defined]
             context[context_path].append(alert_to_v1_context(alert, args))
-        context['Redlock.Metadata.CountOfAlerts'] = len(response)
+        context['Redlock.Metadata.CountOfAlerts'] = len(response)  # type: ignore[arg-type]
 
         command_results = command_results.to_context()
-        command_results['EntryContext'].update(context)
+        command_results['EntryContext'].update(context)  # type: ignore[index]
 
     if args.get('risk-grade'):
         return ['In the new API version of Prisma Cloud, "risk-grade" argument is not supported '
@@ -742,7 +733,8 @@ def alert_get_details_v1_command(client: Client, args: Dict[str, Any], return_v1
     if return_v1_output:
         response = command_results.raw_response
         command_results = command_results.to_context()
-        command_results['EntryContext'].update({'Redlock.Alert(val.ID === obj.ID)': alert_to_v1_context(response, args)})
+        command_results['EntryContext'].update(  # type: ignore[index]
+            {'Redlock.Alert(val.ID === obj.ID)': alert_to_v1_context(response, args)})
     return command_results
 
 
@@ -764,7 +756,7 @@ def alert_dismiss_v1_command(client: Client, args: Dict[str, Any], return_v1_out
     command_results = alert_dismiss_command(client, new_args)
     if return_v1_output and args.get('alert-id'):
         command_results = command_results.to_context()
-        command_results['EntryContext'].update({'Redlock.DismissedAlert.ID': args.get('alert-id')})
+        command_results['EntryContext'].update({'Redlock.DismissedAlert.ID': args.get('alert-id')})  # type: ignore[index]
 
     if args.get('risk-grade'):
         return ['In the new API version of Prisma Cloud, "risk-grade" argument is not supported '
@@ -788,7 +780,7 @@ def alert_reopen_v1_command(client: Client, args: Dict[str, Any], return_v1_outp
     command_results = alert_reopen_command(client, new_args)
     if return_v1_output and args.get('alert-id'):
         command_results = command_results.to_context()
-        command_results['EntryContext'].update({'Redlock.ReopenedAlert.ID': args.get('alert-id')})
+        command_results['EntryContext'].update({'Redlock.ReopenedAlert.ID': args.get('alert-id')})  # type: ignore[index]
 
     if args.get('risk-grade'):
         return ['In the new API version of Prisma Cloud, "risk-grade" argument is not supported '
@@ -809,7 +801,7 @@ def remediation_command_list_v1_command(client: Client, args: Dict[str, Any], re
         response = command_results.raw_response
 
         context = []
-        for alert in response:
+        for alert in response:  # type: ignore[attr-defined]
             details = {
                 'ID': alert.get('alertId'),
                 'Remediation': {
@@ -820,7 +812,7 @@ def remediation_command_list_v1_command(client: Client, args: Dict[str, Any], re
             context.append(details)
 
         command_results = command_results.to_context()
-        command_results['EntryContext'].update({'Redlock.Alert(val.ID == obj.ID)': context})
+        command_results['EntryContext'].update({'Redlock.Alert(val.ID == obj.ID)': context})  # type: ignore[index]
     return command_results
 
 
@@ -836,7 +828,7 @@ def rql_config_search_v1_command(client: Client, args: Dict[str, Any], return_v1
         rql_data = {'Query': query, 'Response': format_v1_response(command_results.raw_response)}
 
         command_results = command_results.to_context()
-        command_results['EntryContext'].update({'Redlock.RQL(val.Query === obj.Query)': rql_data})
+        command_results['EntryContext'].update({'Redlock.RQL(val.Query === obj.Query)': rql_data})  # type: ignore[index]
     return command_results
 
 
@@ -854,7 +846,7 @@ def config_search_v1_command(client: Client, args: Dict[str, Any], return_v1_out
     if return_v1_output:
         response = command_results.raw_response
         command_results = command_results.to_context()
-        command_results['EntryContext'].update({'Redlock.Asset(val.id == obj.id)': response})
+        command_results['EntryContext'].update({'Redlock.Asset(val.id == obj.id)': response})  # type: ignore[index]
     return command_results
 
 
@@ -872,7 +864,7 @@ def event_search_v1_command(client: Client, args: Dict[str, Any], return_v1_outp
     if return_v1_output:
         response = command_results.raw_response
         command_results = command_results.to_context()
-        command_results['EntryContext'].update({'Redlock.Event(val.id == obj.id)': response})
+        command_results['EntryContext'].update({'Redlock.Event(val.id == obj.id)': response})  # type: ignore[index]
     return command_results
 
 
@@ -890,9 +882,9 @@ def network_search_v1_command(client: Client, args: Dict[str, Any], return_v1_ou
     if return_v1_output:
         response = command_results.raw_response
         command_results = command_results.to_context()
-        command_results['EntryContext'].update({
-            'Redlock.Network.Node(val.id == obj.id)': response.get('nodes', []),
-            'Redlock.Network.Connection(val.id == obj.from)': response.get('connections', [])
+        command_results['EntryContext'].update({  # type: ignore[index]
+            'Redlock.Network.Node(val.id == obj.id)': response.get('nodes', []),  # type: ignore[attr-defined]
+            'Redlock.Network.Connection(val.id == obj.from)': response.get('connections', [])  # type: ignore[attr-defined]
         })
     return command_results
 
