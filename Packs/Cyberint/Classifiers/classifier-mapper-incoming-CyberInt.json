@@ -13,7 +13,7 @@
     "itemVersion": "1.0.14",
     "keyTypeMap": {},
     "locked": false,
-    "logicalVersion": 11,
+    "logicalVersion": 14,
     "mapping": {
         "Cyberint Incident": {
             "dontMapEventToLabels": false,
@@ -23,6 +23,9 @@
                 },
                 "Alert Name": {
                     "simple": "title"
+                },
+                "CSV test": {
+                    "simple": "attachments.content"
                 },
                 "CyberInt Alert ID": {
                     "simple": "ref_id"
@@ -48,6 +51,14 @@
                 },
                 "CyberInt Created date": {
                     "simple": "created_date"
+                },
+                "CyberInt Credentials Exposed CSV": {
+                    "complex": {
+                        "accessor": "content",
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": []
+                    }
                 },
                 "CyberInt Description": {
                     "complex": {
@@ -83,6 +94,9 @@
                             }
                         ]
                     }
+                },
+                "CyberInt Payment Card Exposed CSV": {
+                    "simple": "attachments.content"
                 },
                 "CyberInt Recommendation": {
                     "complex": {
