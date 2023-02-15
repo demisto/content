@@ -135,7 +135,7 @@ class MsGraphClient:
 
     #  If successful, this method returns 204 No Content response code.
     #  Using resp_type=text to avoid parsing error.
-    def update_user(self, user: str, updated_fields: str, delimiter: str):
+    def update_user(self, user: str, updated_fields: str, delimiter: str = ','):
         body = {}
         for key_value in updated_fields.split(delimiter):
             field, value = key_value.split('=', 2)
