@@ -269,7 +269,7 @@ def main():
             first_in_the_queue = True
         else:
             previous_build = sorted_builds_in_queue[my_place_in_the_queue-1].get('name')
-            previous_build_status = check_job_status(storage_client, previous_build)
+            previous_build_status = check_job_status(options, previous_build)
             if previous_build_status != 'running':
                 remove_build_from_queue(storage_bucket, lock_repo_name, previous_build)
             else:
@@ -290,7 +290,7 @@ def main():
             if job_id_of_the_existing_lock:
                 s = logger.download_as_string()
                 logger.upload_from_string(f'{s}\nThere is a lock file for job id: {job_id_of_the_existing_lock}')
-                job_id_of_the_existing_lock_status = check_job_status(storage_client, job_id_of_the_existing_lock)
+                job_id_of_the_existing_lock_status = check_job_status(options, job_id_of_the_existing_lock)
                 s = logger.download_as_string()
                 logger.upload_from_string(f'{s}\nthe status of job id: {job_id_of_the_existing_lock} is: {job_id_of_the_existing_lock_status}')
                 if job_id_of_the_existing_lock_status != 'running':
