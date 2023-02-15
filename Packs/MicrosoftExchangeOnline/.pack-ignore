@@ -30,6 +30,3 @@ ignore=BA114
 
 [playbook-O365-SecurityAndCompliance-SearchAndDelete.yml]
 ignore=PB118
-
-[file:EwsExtension.yml]
-ignore=CJ105
