@@ -8,13 +8,6 @@ import requests
 from CommonServerPython import *  # noqa: F401
 
 
-def debug(msg, url='https://demo.xsoar.engineer/nodered', endpoint='test'):
-    url = f'{url}/{endpoint}'
-    if type(msg) in [dict, list]:
-        return requests.post(url, json=msg)
-    return requests.post(url, data=f'{msg}')
-
-
 class OpenCVE():
     '''
     This is a Class for the OpenCVE APIs.
@@ -293,7 +286,7 @@ def largest(*vals: Union[int, float]):
     '''
     largest = None
     for val in vals:
-        if type(val) == int or type(val) == float:
+        if type(val) in [int, float]:
             if largest is None or val > largest:
                 largest = val
 
