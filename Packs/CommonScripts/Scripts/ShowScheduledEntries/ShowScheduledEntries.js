@@ -15,7 +15,6 @@ md += '-|-\n';
 var scheduledEntries = [];
 entries.forEach(function (entry) {
     if (entry.Metadata !== null && entry.Metadata.Recurrent && entry.Metadata.Schedule.Scheduled) {
-        logDebug(entry);
         md += '['+ entry.ID + '](' + warRoomUrl + '/' + entry.ID + ')' + '|' + entry.Contents + '\n';
         scheduledEntries.push({
             id: entry.ID,
@@ -29,6 +28,8 @@ entries.forEach(function (entry) {
             investigationID: entry.Metadata.InvestigationID,
             schedule: entry.Metadata.Schedule
         });
+    } else {
+        logDebug(entry);
     }
 });
 
