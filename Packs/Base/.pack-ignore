@@ -62,6 +62,7 @@ CustomIndicator
 Mutex
 SSLAdapter
 SSL
+appendContext
 
 [tests_require_network]
 CommonServerPython

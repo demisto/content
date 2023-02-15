@@ -309,6 +309,10 @@ script:
     - contextPath: MicrosoftManagement.ContentRecord.UserID
       description: The ID of the record's user.
       type: string
+  - description: Generate the login url used for Authorization code flow.
+    execution: false
+    name: ms-management-activity-generate-login-url
+    arguments: []
   dockerimage: demisto/pyjwt3:1.0.0.48124
   feed: false
   isfetch: true
