@@ -8,9 +8,15 @@ from typing import Dict
 
 # Constants
 BASE_URL = "mock://dev.vectra.ai"
+PASSWORD = "9455w0rd"
 
 
-client = VectraClient(url=BASE_URL, api_key="9455w0rd")
+@pytest.mark.parametrize("url,expected", [(BASE_URL, True), ("dfhabfqh", False)])
+def test_validate_url(url: str, expected: bool):
+
+    client = VectraClient(url=url, api_key=PASSWORD)
+
+    client.validate_url(url)
 
 
 @pytest.mark.parametrize(
@@ -22,7 +28,7 @@ client = VectraClient(url=BASE_URL, api_key="9455w0rd")
         ({}, False),
     ],
 )
-def test_auth(mocker, endpoints: Dict[str, str], expected):
+def test_auth(mocker, endpoints: Dict[str, str], expected: bool):
 
     """
     Given:
@@ -38,6 +44,8 @@ def test_auth(mocker, endpoints: Dict[str, str], expected):
         - Case C: The authentication should fail
         - Case D: The authentication should fail
     """
+
+    client = VectraClient(url=BASE_URL, api_key="9455w0rd")
 
     mocker.patch.object(client, "get_endpoints", return_value=endpoints)
     endpoints = client.get_endpoints()

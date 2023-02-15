@@ -71,8 +71,8 @@ class VectraClient(BaseClient):
         """
 
         try:
-            result = urlparse(url)
-            return all([result.scheme, result.netloc])
+            urlparse(url)
+            # return all([result.scheme, result.netloc])
         except ValueError:
             demisto.error(f"URL '{url}' is invalid.")
             raise
@@ -197,7 +197,6 @@ def main() -> None:
         else:
             raise NotImplementedError(f"command '{cmd}' is not implemented.")
 
-    # Log exceptions and return errors
     except Exception as e:
         return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
