@@ -15,9 +15,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from typing import Dict, Any, Tuple
 
-# import json
-from urllib.parse import urlparse
-
 
 """ CONSTANTS """
 
@@ -28,7 +25,6 @@ VENDOR = "Vectra"
 
 
 class VectraClient(BaseClient):
-
     api_version = "2.2"
     endpoints = ("detections", "audits")
 
@@ -36,13 +32,13 @@ class VectraClient(BaseClient):
         self,
         url: str,
         api_key: str,
-        max_fetch: int = 100,
+        fetch_limit: int = 100,
         insecure: bool = False,
         proxy: bool = False,
     ):
 
         self.api_key = api_key
-        self.max_fetch = max_fetch
+        self.max_fetch = fetch_limit
 
         self.base_url = urljoin(url, f"/api/v{self.api_version}/")
         super().__init__(
@@ -75,6 +71,37 @@ class VectraClient(BaseClient):
             "Content-Type": "application/json",
             "Authorization": f"Token {self.api_key}",
         }
+
+    def get_detections(self, min_id: int = 1) -> Dict[str, Any]:
+        """
+        Retrieve detections. Detection objects contain all the information related to security events detected on the network.
+
+        Arguments:
+            - `min_id` (``int``): The detection ID used as an filter index to only pull new detections.
+
+        Returns:
+            - `Dict[str, Any]` of detection objects.
+        """
+
+        return self._http_request(
+            method="GET",
+            url_suffix="detections",
+            params={"page_size": self.max_fetch, "ordering": "id", "min_id": min_id},
+        )
+
+
+""" HELPER FUNCTIONS """
+
+
+def get_detection_id(detections: List[Dict[str, Any]]) -> int:
+    """
+    Retrieves the detection ID of the last detection in the list.
+
+    We increment the `detection_id` since the detections API
+    is inclusive when filtering for detections based on `min_id`.
+    """
+
+    return detections[-1].get("id") + 1
 
 
 """ COMMAND FUNCTIONS """
@@ -116,14 +143,61 @@ def test_module(client: VectraClient) -> str:
         return f"Error authenticating: {str(e)}"
 
 
-def get_events(client: VectraClient, last_run: Dict[str, str] = demisto.getLastRun()):
-    pass
+def get_events(client: VectraClient) -> CommandResults:
+
+    # TODO docstring
+
+    detections: List[Dict[str, Any]] = client.get_detections().get("results")
+
+    md = tableToMarkdown(
+        "Detections",
+        detections,
+        headers=["id", "url", "detection", "src_ip", "state", "t_score", "certainty"],
+    )
+
+    results = CommandResults(
+        outputs_prefix=f"{VENDOR}.Detections",
+        outputs_key_field="id",
+        outputs=detections,
+        readable_output=md,
+    )
+
+    return results
 
 
 def fetch_events(
-    client: VectraClient, first_fetch_ts: int
+    client: VectraClient, first_fetch_ts: int = None, min_id: int = None
 ) -> Tuple[Dict[str, str], Dict[str, Any]]:
-    pass
+
+    """
+    Fetch detections based on whether it's the first fetch or not.
+
+    Arguments:
+        - `first_fetch_ts` (``int``): The timestamp of the first fetch. Only used in the first fetch.
+        - `min_id` (``int``): The minimum detection ID to filter by. We use `min_id` as an index to know which events to request.
+
+        The arguments default is set to `None` to enable a method overloading for this function.
+
+    Returns:
+        - `Tuple[Dict[str, str], Dict[str, Any]]` of the largest detection ID and detections.
+    """
+
+    # TODO paging in case it's needed
+    # use "next": "https://apitest.vectracloudlab.com/api/v2.2/detections?min_id=7234&ordering=id&page=2&page_size=10",
+
+    detections: List[Dict[str, Any]]
+
+    # First fetch
+    if first_fetch_ts:
+        detections = client.get_detections().get("results")
+
+    elif min_id:
+        detections = client.get_detections(min_id=min_id).get("results")
+
+    else:
+        raise TypeError("Neither 'first_fetch_ts' nor 'min_id' provided to fetch_events")
+
+    return {"min_id": get_detection_id(detections)}, detections
 
 
 """ MAIN FUNCTION """
@@ -146,7 +220,7 @@ def main() -> None:
         client = VectraClient(
             url=config.get("url"),
             api_key=config.get("credentials", {}).get("password"),
-            fetch_limit=arg_to_number("fetch_limit"),
+            fetch_limit=arg_to_number(arg=config.get("fetch_limit")),
             insecure=config.get("insecure"),
             proxy=config.get("proxy"),
         )
@@ -158,8 +232,7 @@ def main() -> None:
         elif cmd in ("vectra-get-events", "fetch-events"):
             if cmd == "vectra-get-events":
                 should_push_events = argToBoolean(args.pop("should_push_events"))
-                events, results = get_events(client)
-                return_results(results)
+                return_results(get_events(client))
 
             else:
                 should_push_events = True
@@ -169,8 +242,20 @@ def main() -> None:
                     required=True,
                 )
                 first_fetch_ts = int(first_fetch_time.timestamp()) if first_fetch_time else None
-                next_run, events = fetch_events(client=client, first_fetch_time=first_fetch_ts)
-                demisto.setLastRun(next_run)
+
+                # Not the first fetch
+                if demisto.getLastRun():
+
+                    min_id, events = fetch_events(
+                        client=client, min_id=demisto.getLastRun().get("min_id")
+                    )
+                else:
+                    demisto.debug(
+                        f"Running fetch_events for the first time from ts {first_fetch_ts}..."
+                    )
+                    min_id, events = fetch_events(client=client, first_fetch_time=first_fetch_ts)
+
+                demisto.setLastRun(min_id)
 
             if should_push_events:
                 demisto.debug(f"Sending events {len(events)} to XSIAM...")

@@ -1,0 +1,3110 @@
+{
+	"count": 5307,
+	"next": "https://apitest.vectracloudlab.com/api/v2.2/detections?min_id=7234&ordering=id&page=2&page_size=10",
+	"previous": null,
+	"results": [
+		{
+			"id": 7234,
+			"url": "https://apitest.vectracloudlab.com/api/v2.2/detections/7234",
+			"detection_url": "https://apitest.vectracloudlab.com/api/v2.2/detections/7234",
+			"category": "RECONNAISSANCE",
+			"detection": "RPC Recon",
+			"detection_category": "RECONNAISSANCE",
+			"detection_type": "RPC Recon",
+			"custom_detection": null,
+			"description": null,
+			"src_ip": "10.250.50.101",
+			"state": "inactive",
+			"t_score": 0,
+			"c_score": 0,
+			"certainty": 0,
+			"threat": 0,
+			"created_timestamp": "2022-07-11T06:47:50Z",
+			"first_timestamp": "2022-06-28T21:02:30Z",
+			"last_timestamp": "2022-08-21T09:20:07Z",
+			"targets_key_asset": false,
+			"is_targeting_key_asset": false,
+			"src_account": null,
+			"src_host": {
+				"id": 1006,
+				"ip": "10.250.50.101",
+				"name": "Lab #2_partnervlab - 10.250.50.101 (dnatale101)",
+				"url": "https://apitest.vectracloudlab.com/api/v2.2/hosts/1006",
+				"is_key_asset": false,
+				"groups": [
+					{
+						"id": 144,
+						"name": "Partner VLAB - User Devices",
+						"description": "",
+						"last_modified": "2022-01-27T12:05:24Z",
+						"last_modified_by": "user (Removed)",
+						"type": "ip"
+					}
+				],
+				"threat": 0,
+				"certainty": 0
+			},
+			"note": null,
+			"notes": [],
+			"note_modified_by": null,
+			"note_modified_timestamp": null,
+			"sensor": "eti2pc2s",
+			"sensor_name": "Vec2c610896a947c5b5102c466a28f49a",
+			"tags": [],
+			"triage_rule_id": null,
+			"assigned_to": null,
+			"assigned_date": null,
+			"groups": [
+				{
+					"id": 144,
+					"name": "Partner VLAB - User Devices",
+					"description": "",
+					"type": "ip",
+					"last_modified": "2022-01-27T12:05:24Z",
+					"last_modified_by": "user"
+				}
+			],
+			"is_marked_custom": false,
+			"is_custom_model": false,
+			"filtered_by_ai": false,
+			"filtered_by_user": false,
+			"filtered_by_rule": false,
+			"grouped_details": [
+				{
+					"grouping_field": "uuid",
+					"first_timestamp": "2022-06-28T21:02:30Z",
+					"last_timestamp": "2022-08-21T09:20:07Z",
+					"uuid": "netlogon",
+					"dst_hosts": [
+						{
+							"dst_host": {
+								"id": 817,
+								"name": "VMAL #2 - DC01",
+								"ip": "10.250.100.32"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.32"
+						}
+					]
+				},
+				{
+					"grouping_field": "uuid",
+					"first_timestamp": "2022-06-28T21:02:30Z",
+					"last_timestamp": "2022-08-21T09:20:07Z",
+					"uuid": "BackupKey",
+					"dst_hosts": [
+						{
+							"dst_host": {
+								"id": 817,
+								"name": "VMAL #2 - DC01",
+								"ip": "10.250.100.32"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.32"
+						}
+					]
+				},
+				{
+					"grouping_field": "uuid",
+					"first_timestamp": "2022-06-28T21:02:30Z",
+					"last_timestamp": "2022-08-21T09:20:07Z",
+					"uuid": "lsarpc",
+					"dst_hosts": [
+						{
+							"dst_host": {
+								"id": 817,
+								"name": "VMAL #2 - DC01",
+								"ip": "10.250.100.32"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.32"
+						}
+					]
+				},
+				{
+					"grouping_field": "uuid",
+					"first_timestamp": "2022-06-28T21:02:30Z",
+					"last_timestamp": "2022-08-21T09:20:07Z",
+					"uuid": "samr",
+					"dst_hosts": [
+						{
+							"dst_host": {
+								"id": 817,
+								"name": "VMAL #2 - DC01",
+								"ip": "10.250.100.32"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.32"
+						},
+						{
+							"dst_host": {
+								"id": 819,
+								"name": "VMAL #2 - Windows 10 pc-sarcher",
+								"ip": "10.250.50.39"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.39"
+						},
+						{
+							"dst_host": {
+								"id": 811,
+								"name": "VMAL #2 - Windows 10 pc-rgillette",
+								"ip": "10.250.50.38"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.38"
+						},
+						{
+							"dst_host": {
+								"id": 816,
+								"name": "VMAL #2 - Windows 10 pc-ppoovey",
+								"ip": "10.250.50.40"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.40"
+						},
+						{
+							"dst_host": {
+								"id": 822,
+								"name": "VMAL #2 - Windows 10 pc-ltroy",
+								"ip": "10.250.50.44"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.44"
+						},
+						{
+							"dst_host": {
+								"id": 812,
+								"name": "VMAL #2 - Windows 10 pc-rripley",
+								"ip": "10.250.50.43"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.43"
+						},
+						{
+							"dst_host": {
+								"id": 825,
+								"name": "VMAL #2 - Windows 10 pc-lkane",
+								"ip": "10.250.50.42"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.42"
+						},
+						{
+							"dst_host": {
+								"id": 818,
+								"name": "VMAL #2 - Windows 10 pc-woodhouse",
+								"ip": "10.250.50.41"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.41"
+						},
+						{
+							"dst_host": {
+								"id": 820,
+								"name": "VMAL2-Windows10pc-cherylt",
+								"ip": "10.250.50.35"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.35"
+						},
+						{
+							"dst_host": {
+								"id": 322,
+								"name": "VMAL #2 - Windows 10 pc-cfiggis",
+								"ip": "10.250.50.34"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.34"
+						},
+						{
+							"dst_host": {
+								"id": 815,
+								"name": "VMAL #2 - Windows 10 pc-kbilko",
+								"ip": "10.250.50.36"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.36"
+						},
+						{
+							"dst_host": {
+								"id": 814,
+								"name": "VMAL #2 - Windows 10 pc-marcher",
+								"ip": "10.250.50.37"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.37"
+						},
+						{
+							"dst_host": {
+								"id": 319,
+								"name": "VMAL #2 - AS01",
+								"ip": "10.250.100.62"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.62"
+						},
+						{
+							"dst_host": {
+								"id": 369,
+								"name": "VMAL #2 - Jump station ICS",
+								"ip": "10.250.100.150"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.150"
+						},
+						{
+							"dst_host": {
+								"id": 325,
+								"name": "VMAL #2 - FS01",
+								"ip": "10.250.100.99"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.99"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.100"
+						},
+						{
+							"dst_host": {
+								"id": 868,
+								"name": "VMAL #2 windows 10.250.50.118 (danielweinho18)",
+								"ip": "10.250.50.118"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.118"
+						},
+						{
+							"dst_host": {
+								"id": 869,
+								"name": "VMAL #2 windows 10.250.50.119 (orkunoenen19)",
+								"ip": "10.250.50.119"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.119"
+						},
+						{
+							"dst_host": {
+								"id": 870,
+								"name": "VMAL #2 windows 10.250.50.120 (andreaswagne20)",
+								"ip": "10.250.50.120"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.120"
+						},
+						{
+							"dst_host": {
+								"id": 494,
+								"name": "VMAL #2 windows 10.250.50.122 (jscatalfamo22)",
+								"ip": "10.250.50.122"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.122"
+						},
+						{
+							"dst_host": {
+								"id": 871,
+								"name": "VMAL #2 windows 10.250.50.121 (nataliyamart21)",
+								"ip": "10.250.50.121"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.121"
+						},
+						{
+							"dst_host": {
+								"id": 872,
+								"name": "VMAL #2 windows 10.250.50.111 (higaki-ha11)",
+								"ip": "10.250.50.111"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.111"
+						},
+						{
+							"dst_host": {
+								"id": 873,
+								"name": "VMAL #2 windows 10.250.50.112 (endo-kao12)",
+								"ip": "10.250.50.112"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.112"
+						},
+						{
+							"dst_host": {
+								"id": 495,
+								"name": "cwscalise23",
+								"ip": "10.250.50.123"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.123"
+						},
+						{
+							"dst_host": {
+								"id": 874,
+								"name": "VMAL #2 windows 10.250.50.113 (basaroezpula13)",
+								"ip": "10.250.50.113"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.113"
+						},
+						{
+							"dst_host": {
+								"id": 898,
+								"name": "VMAL #2 windows 10.250.50.125 (BobbyManojlo25)",
+								"ip": "10.250.50.125"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.125"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.126"
+						},
+						{
+							"dst_host": {
+								"id": 926,
+								"name": "VMAL #2 windows 10.250.50.115 (dadanatz15)",
+								"ip": "10.250.50.115"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.115"
+						},
+						{
+							"dst_host": {
+								"id": 927,
+								"name": "VMAL #2 windows 10.250.50.116 (gblanken16)",
+								"ip": "10.250.50.116"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.116"
+						},
+						{
+							"dst_host": {
+								"id": 928,
+								"name": "VMAL #2 windows 10.250.50.117 (khshah17)",
+								"ip": "10.250.50.117"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.117"
+						},
+						{
+							"dst_host": {
+								"id": 929,
+								"name": "VMAL #2 windows 10.250.50.124 (cstillin24)",
+								"ip": "10.250.50.124"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.124"
+						},
+						{
+							"dst_host": {
+								"id": 953,
+								"name": "VMAL #2 windows 10.250.50.133 (ccostanzo33)",
+								"ip": "10.250.50.133"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.133"
+						},
+						{
+							"dst_host": {
+								"id": 954,
+								"name": "VMAL #2 windows 10.250.50.134 (dkofflin34)",
+								"ip": "10.250.50.134"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.134"
+						},
+						{
+							"dst_host": {
+								"id": 976,
+								"name": "VMAL #2 windows 10.250.50.127 (AndrePascalS27)",
+								"ip": "10.250.50.127"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.127"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.128"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.130"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.131"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.132"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.135"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.129"
+						}
+					]
+				},
+				{
+					"grouping_field": "uuid",
+					"first_timestamp": "2022-06-28T21:02:30Z",
+					"last_timestamp": "2022-08-21T09:20:07Z",
+					"uuid": "srvsvc",
+					"dst_hosts": [
+						{
+							"dst_host": {
+								"id": 822,
+								"name": "VMAL #2 - Windows 10 pc-ltroy",
+								"ip": "10.250.50.44"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.44"
+						},
+						{
+							"dst_host": {
+								"id": 815,
+								"name": "VMAL #2 - Windows 10 pc-kbilko",
+								"ip": "10.250.50.36"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.36"
+						},
+						{
+							"dst_host": {
+								"id": 818,
+								"name": "VMAL #2 - Windows 10 pc-woodhouse",
+								"ip": "10.250.50.41"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.41"
+						},
+						{
+							"dst_host": {
+								"id": 814,
+								"name": "VMAL #2 - Windows 10 pc-marcher",
+								"ip": "10.250.50.37"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.37"
+						},
+						{
+							"dst_host": {
+								"id": 812,
+								"name": "VMAL #2 - Windows 10 pc-rripley",
+								"ip": "10.250.50.43"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.43"
+						},
+						{
+							"dst_host": {
+								"id": 825,
+								"name": "VMAL #2 - Windows 10 pc-lkane",
+								"ip": "10.250.50.42"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.42"
+						},
+						{
+							"dst_host": {
+								"id": 820,
+								"name": "VMAL2-Windows10pc-cherylt",
+								"ip": "10.250.50.35"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.35"
+						},
+						{
+							"dst_host": {
+								"id": 811,
+								"name": "VMAL #2 - Windows 10 pc-rgillette",
+								"ip": "10.250.50.38"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.38"
+						},
+						{
+							"dst_host": {
+								"id": 322,
+								"name": "VMAL #2 - Windows 10 pc-cfiggis",
+								"ip": "10.250.50.34"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.34"
+						},
+						{
+							"dst_host": {
+								"id": 816,
+								"name": "VMAL #2 - Windows 10 pc-ppoovey",
+								"ip": "10.250.50.40"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.40"
+						},
+						{
+							"dst_host": {
+								"id": 819,
+								"name": "VMAL #2 - Windows 10 pc-sarcher",
+								"ip": "10.250.50.39"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.39"
+						},
+						{
+							"dst_host": {
+								"id": 325,
+								"name": "VMAL #2 - FS01",
+								"ip": "10.250.100.99"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.99"
+						},
+						{
+							"dst_host": {
+								"id": 319,
+								"name": "VMAL #2 - AS01",
+								"ip": "10.250.100.62"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.62"
+						},
+						{
+							"dst_host": {
+								"id": 369,
+								"name": "VMAL #2 - Jump station ICS",
+								"ip": "10.250.100.150"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.150"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.100"
+						},
+						{
+							"dst_host": {
+								"id": 868,
+								"name": "VMAL #2 windows 10.250.50.118 (danielweinho18)",
+								"ip": "10.250.50.118"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.118"
+						},
+						{
+							"dst_host": {
+								"id": 494,
+								"name": "VMAL #2 windows 10.250.50.122 (jscatalfamo22)",
+								"ip": "10.250.50.122"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.122"
+						},
+						{
+							"dst_host": {
+								"id": 871,
+								"name": "VMAL #2 windows 10.250.50.121 (nataliyamart21)",
+								"ip": "10.250.50.121"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.121"
+						},
+						{
+							"dst_host": {
+								"id": 870,
+								"name": "VMAL #2 windows 10.250.50.120 (andreaswagne20)",
+								"ip": "10.250.50.120"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.120"
+						},
+						{
+							"dst_host": {
+								"id": 869,
+								"name": "VMAL #2 windows 10.250.50.119 (orkunoenen19)",
+								"ip": "10.250.50.119"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.119"
+						},
+						{
+							"dst_host": {
+								"id": 873,
+								"name": "VMAL #2 windows 10.250.50.112 (endo-kao12)",
+								"ip": "10.250.50.112"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.112"
+						},
+						{
+							"dst_host": {
+								"id": 495,
+								"name": "cwscalise23",
+								"ip": "10.250.50.123"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.123"
+						},
+						{
+							"dst_host": {
+								"id": 872,
+								"name": "VMAL #2 windows 10.250.50.111 (higaki-ha11)",
+								"ip": "10.250.50.111"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.111"
+						},
+						{
+							"dst_host": {
+								"id": 874,
+								"name": "VMAL #2 windows 10.250.50.113 (basaroezpula13)",
+								"ip": "10.250.50.113"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.113"
+						},
+						{
+							"dst_host": {
+								"id": 898,
+								"name": "VMAL #2 windows 10.250.50.125 (BobbyManojlo25)",
+								"ip": "10.250.50.125"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.125"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.126"
+						},
+						{
+							"dst_host": {
+								"id": 926,
+								"name": "VMAL #2 windows 10.250.50.115 (dadanatz15)",
+								"ip": "10.250.50.115"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.115"
+						},
+						{
+							"dst_host": {
+								"id": 927,
+								"name": "VMAL #2 windows 10.250.50.116 (gblanken16)",
+								"ip": "10.250.50.116"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.116"
+						},
+						{
+							"dst_host": {
+								"id": 928,
+								"name": "VMAL #2 windows 10.250.50.117 (khshah17)",
+								"ip": "10.250.50.117"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.117"
+						},
+						{
+							"dst_host": {
+								"id": 929,
+								"name": "VMAL #2 windows 10.250.50.124 (cstillin24)",
+								"ip": "10.250.50.124"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.124"
+						},
+						{
+							"dst_host": {
+								"id": 953,
+								"name": "VMAL #2 windows 10.250.50.133 (ccostanzo33)",
+								"ip": "10.250.50.133"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.133"
+						},
+						{
+							"dst_host": {
+								"id": 954,
+								"name": "VMAL #2 windows 10.250.50.134 (dkofflin34)",
+								"ip": "10.250.50.134"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.134"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.128"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.130"
+						},
+						{
+							"dst_host": {
+								"id": 976,
+								"name": "VMAL #2 windows 10.250.50.127 (AndrePascalS27)",
+								"ip": "10.250.50.127"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.127"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.131"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.132"
+						},
+						{
+							"dst_host": {
+								"id": 817,
+								"name": "VMAL #2 - DC01",
+								"ip": "10.250.100.32"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.32"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.135"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.129"
+						}
+					]
+				},
+				{
+					"grouping_field": "uuid",
+					"first_timestamp": "2022-06-28T21:02:30Z",
+					"last_timestamp": "2022-08-21T09:20:07Z",
+					"uuid": "wkssvc",
+					"dst_hosts": [
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.100"
+						},
+						{
+							"dst_host": {
+								"id": 929,
+								"name": "VMAL #2 windows 10.250.50.124 (cstillin24)",
+								"ip": "10.250.50.124"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.124"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.130"
+						},
+						{
+							"dst_host": {
+								"id": 819,
+								"name": "VMAL #2 - Windows 10 pc-sarcher",
+								"ip": "10.250.50.39"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.39"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.131"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.132"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.126"
+						},
+						{
+							"dst_host": {
+								"id": 814,
+								"name": "VMAL #2 - Windows 10 pc-marcher",
+								"ip": "10.250.50.37"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.37"
+						},
+						{
+							"dst_host": {
+								"id": 874,
+								"name": "VMAL #2 windows 10.250.50.113 (basaroezpula13)",
+								"ip": "10.250.50.113"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.113"
+						},
+						{
+							"dst_host": {
+								"id": 868,
+								"name": "VMAL #2 windows 10.250.50.118 (danielweinho18)",
+								"ip": "10.250.50.118"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.118"
+						},
+						{
+							"dst_host": {
+								"id": 818,
+								"name": "VMAL #2 - Windows 10 pc-woodhouse",
+								"ip": "10.250.50.41"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.41"
+						},
+						{
+							"dst_host": {
+								"id": 927,
+								"name": "VMAL #2 windows 10.250.50.116 (gblanken16)",
+								"ip": "10.250.50.116"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.116"
+						},
+						{
+							"dst_host": {
+								"id": 816,
+								"name": "VMAL #2 - Windows 10 pc-ppoovey",
+								"ip": "10.250.50.40"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.40"
+						},
+						{
+							"dst_host": {
+								"id": 976,
+								"name": "VMAL #2 windows 10.250.50.127 (AndrePascalS27)",
+								"ip": "10.250.50.127"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.127"
+						},
+						{
+							"dst_host": {
+								"id": 869,
+								"name": "VMAL #2 windows 10.250.50.119 (orkunoenen19)",
+								"ip": "10.250.50.119"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.119"
+						},
+						{
+							"dst_host": {
+								"id": 811,
+								"name": "VMAL #2 - Windows 10 pc-rgillette",
+								"ip": "10.250.50.38"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.38"
+						},
+						{
+							"dst_host": {
+								"id": 898,
+								"name": "VMAL #2 windows 10.250.50.125 (BobbyManojlo25)",
+								"ip": "10.250.50.125"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.125"
+						},
+						{
+							"dst_host": {
+								"id": 322,
+								"name": "VMAL #2 - Windows 10 pc-cfiggis",
+								"ip": "10.250.50.34"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.34"
+						},
+						{
+							"dst_host": {
+								"id": 872,
+								"name": "VMAL #2 windows 10.250.50.111 (higaki-ha11)",
+								"ip": "10.250.50.111"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.111"
+						},
+						{
+							"dst_host": {
+								"id": 494,
+								"name": "VMAL #2 windows 10.250.50.122 (jscatalfamo22)",
+								"ip": "10.250.50.122"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.122"
+						},
+						{
+							"dst_host": {
+								"id": 871,
+								"name": "VMAL #2 windows 10.250.50.121 (nataliyamart21)",
+								"ip": "10.250.50.121"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.121"
+						},
+						{
+							"dst_host": {
+								"id": 954,
+								"name": "VMAL #2 windows 10.250.50.134 (dkofflin34)",
+								"ip": "10.250.50.134"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.134"
+						},
+						{
+							"dst_host": {
+								"id": 820,
+								"name": "VMAL2-Windows10pc-cherylt",
+								"ip": "10.250.50.35"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.35"
+						},
+						{
+							"dst_host": {
+								"id": 926,
+								"name": "VMAL #2 windows 10.250.50.115 (dadanatz15)",
+								"ip": "10.250.50.115"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.115"
+						},
+						{
+							"dst_host": {
+								"id": 825,
+								"name": "VMAL #2 - Windows 10 pc-lkane",
+								"ip": "10.250.50.42"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.42"
+						},
+						{
+							"dst_host": {
+								"id": 815,
+								"name": "VMAL #2 - Windows 10 pc-kbilko",
+								"ip": "10.250.50.36"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.36"
+						},
+						{
+							"dst_host": {
+								"id": 953,
+								"name": "VMAL #2 windows 10.250.50.133 (ccostanzo33)",
+								"ip": "10.250.50.133"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.133"
+						},
+						{
+							"dst_host": {
+								"id": 822,
+								"name": "VMAL #2 - Windows 10 pc-ltroy",
+								"ip": "10.250.50.44"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.44"
+						},
+						{
+							"dst_host": {
+								"id": 495,
+								"name": "cwscalise23",
+								"ip": "10.250.50.123"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.123"
+						},
+						{
+							"dst_host": {
+								"id": 812,
+								"name": "VMAL #2 - Windows 10 pc-rripley",
+								"ip": "10.250.50.43"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.43"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.135"
+						},
+						{
+							"dst_host": {
+								"id": 870,
+								"name": "VMAL #2 windows 10.250.50.120 (andreaswagne20)",
+								"ip": "10.250.50.120"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.120"
+						},
+						{
+							"dst_host": {
+								"id": 928,
+								"name": "VMAL #2 windows 10.250.50.117 (khshah17)",
+								"ip": "10.250.50.117"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.117"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.128"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.129"
+						},
+						{
+							"dst_host": {
+								"id": 873,
+								"name": "VMAL #2 windows 10.250.50.112 (endo-kao12)",
+								"ip": "10.250.50.112"
+							},
+							"last_timestamp": "2022-08-21T09:20:07Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.112"
+						}
+					]
+				}
+			],
+			"summary": {
+				"uuids": [
+					"netlogon",
+					"lsarpc",
+					"BackupKey",
+					"srvsvc",
+					"samr",
+					"wkssvc"
+				],
+				"num_attempts": 11839
+			}
+		},
+		{
+			"id": 7370,
+			"url": "https://apitest.vectracloudlab.com/api/v2.2/detections/7370",
+			"detection_url": "https://apitest.vectracloudlab.com/api/v2.2/detections/7370",
+			"category": "RECONNAISSANCE",
+			"detection": "RPC Recon",
+			"detection_category": "RECONNAISSANCE",
+			"detection_type": "RPC Recon",
+			"custom_detection": null,
+			"description": null,
+			"src_ip": "10.250.50.139",
+			"state": "fixed",
+			"t_score": 70,
+			"c_score": 94,
+			"certainty": 94,
+			"threat": 70,
+			"created_timestamp": "2022-08-22T10:02:45Z",
+			"first_timestamp": "2022-08-02T19:29:28Z",
+			"last_timestamp": "2022-08-21T16:47:52Z",
+			"targets_key_asset": false,
+			"is_targeting_key_asset": false,
+			"src_account": null,
+			"src_host": {
+				"id": 1073,
+				"ip": "10.250.50.139",
+				"name": "VMAL #2 windows 10.250.50.139 (wakesetter39)",
+				"url": "https://apitest.vectracloudlab.com/api/v2.2/hosts/1073",
+				"is_key_asset": false,
+				"groups": [
+					{
+						"id": 144,
+						"name": "Partner VLAB - User Devices",
+						"description": "",
+						"last_modified": "2022-01-27T12:05:24Z",
+						"last_modified_by": "user (Removed)",
+						"type": "ip"
+					}
+				],
+				"threat": 0,
+				"certainty": 0
+			},
+			"note": "2022-12-02 04:22:14 - System Administrator (Notes)\nThis note is added from ServiceNow\n\n",
+			"notes": [
+				{
+					"id": 324,
+					"date_created": "2022-12-02T12:22:17Z",
+					"date_modified": null,
+					"created_by": "crest",
+					"modified_by": "crest",
+					"note": "2022-12-02 04:22:14 - System Administrator (Notes)\nThis note is added from ServiceNow\n\n"
+				}
+			],
+			"note_modified_by": "crest",
+			"note_modified_timestamp": "2022-12-02T12:22:17Z",
+			"sensor": "eti2pc2s",
+			"sensor_name": "Vec2c610896a947c5b5102c466a28f49a",
+			"tags": [],
+			"triage_rule_id": null,
+			"assigned_to": null,
+			"assigned_date": null,
+			"groups": [
+				{
+					"id": 144,
+					"name": "Partner VLAB - User Devices",
+					"description": "",
+					"type": "ip",
+					"last_modified": "2022-01-27T12:05:24Z",
+					"last_modified_by": "user"
+				}
+			],
+			"is_marked_custom": false,
+			"is_custom_model": false,
+			"filtered_by_ai": false,
+			"filtered_by_user": false,
+			"filtered_by_rule": false,
+			"grouped_details": [
+				{
+					"grouping_field": "uuid",
+					"first_timestamp": "2022-08-02T19:29:28Z",
+					"last_timestamp": "2022-08-21T16:47:52Z",
+					"uuid": "srvsvc",
+					"dst_hosts": [
+						{
+							"dst_host": {
+								"id": 825,
+								"name": "VMAL #2 - Windows 10 pc-lkane",
+								"ip": "10.250.50.42"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.42"
+						},
+						{
+							"dst_host": {
+								"id": 325,
+								"name": "VMAL #2 - FS01",
+								"ip": "10.250.100.99"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.99"
+						},
+						{
+							"dst_host": {
+								"id": 817,
+								"name": "VMAL #2 - DC01",
+								"ip": "10.250.100.32"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.32"
+						},
+						{
+							"dst_host": {
+								"id": 820,
+								"name": "VMAL2-Windows10pc-cherylt",
+								"ip": "10.250.50.35"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.35"
+						},
+						{
+							"dst_host": {
+								"id": 369,
+								"name": "VMAL #2 - Jump station ICS",
+								"ip": "10.250.100.150"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.150"
+						},
+						{
+							"dst_host": {
+								"id": 819,
+								"name": "VMAL #2 - Windows 10 pc-sarcher",
+								"ip": "10.250.50.39"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.39"
+						},
+						{
+							"dst_host": {
+								"id": 322,
+								"name": "VMAL #2 - Windows 10 pc-cfiggis",
+								"ip": "10.250.50.34"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.34"
+						},
+						{
+							"dst_host": {
+								"id": 319,
+								"name": "VMAL #2 - AS01",
+								"ip": "10.250.100.62"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.62"
+						},
+						{
+							"dst_host": {
+								"id": 816,
+								"name": "VMAL #2 - Windows 10 pc-ppoovey",
+								"ip": "10.250.50.40"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.40"
+						},
+						{
+							"dst_host": {
+								"id": 814,
+								"name": "VMAL #2 - Windows 10 pc-marcher",
+								"ip": "10.250.50.37"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.37"
+						},
+						{
+							"dst_host": {
+								"id": 815,
+								"name": "VMAL #2 - Windows 10 pc-kbilko",
+								"ip": "10.250.50.36"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.36"
+						},
+						{
+							"dst_host": {
+								"id": 811,
+								"name": "VMAL #2 - Windows 10 pc-rgillette",
+								"ip": "10.250.50.38"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.38"
+						},
+						{
+							"dst_host": {
+								"id": 812,
+								"name": "VMAL #2 - Windows 10 pc-rripley",
+								"ip": "10.250.50.43"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.43"
+						},
+						{
+							"dst_host": {
+								"id": 818,
+								"name": "VMAL #2 - Windows 10 pc-woodhouse",
+								"ip": "10.250.50.41"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.41"
+						},
+						{
+							"dst_host": {
+								"id": 822,
+								"name": "VMAL #2 - Windows 10 pc-ltroy",
+								"ip": "10.250.50.44"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.44"
+						},
+						{
+							"dst_host": {
+								"id": 869,
+								"name": "VMAL #2 windows 10.250.50.119 (orkunoenen19)",
+								"ip": "10.250.50.119"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.119"
+						},
+						{
+							"dst_host": {
+								"id": 868,
+								"name": "VMAL #2 windows 10.250.50.118 (danielweinho18)",
+								"ip": "10.250.50.118"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.118"
+						},
+						{
+							"dst_host": {
+								"id": 870,
+								"name": "VMAL #2 windows 10.250.50.120 (andreaswagne20)",
+								"ip": "10.250.50.120"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.120"
+						},
+						{
+							"dst_host": {
+								"id": 871,
+								"name": "VMAL #2 windows 10.250.50.121 (nataliyamart21)",
+								"ip": "10.250.50.121"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.121"
+						},
+						{
+							"dst_host": {
+								"id": 494,
+								"name": "VMAL #2 windows 10.250.50.122 (jscatalfamo22)",
+								"ip": "10.250.50.122"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.122"
+						},
+						{
+							"dst_host": {
+								"id": 873,
+								"name": "VMAL #2 windows 10.250.50.112 (endo-kao12)",
+								"ip": "10.250.50.112"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.112"
+						},
+						{
+							"dst_host": {
+								"id": 495,
+								"name": "cwscalise23",
+								"ip": "10.250.50.123"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.123"
+						},
+						{
+							"dst_host": {
+								"id": 872,
+								"name": "VMAL #2 windows 10.250.50.111 (higaki-ha11)",
+								"ip": "10.250.50.111"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.111"
+						},
+						{
+							"dst_host": {
+								"id": 874,
+								"name": "VMAL #2 windows 10.250.50.113 (basaroezpula13)",
+								"ip": "10.250.50.113"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.113"
+						},
+						{
+							"dst_host": {
+								"id": 898,
+								"name": "VMAL #2 windows 10.250.50.125 (BobbyManojlo25)",
+								"ip": "10.250.50.125"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.125"
+						},
+						{
+							"dst_host": {
+								"id": 928,
+								"name": "VMAL #2 windows 10.250.50.117 (khshah17)",
+								"ip": "10.250.50.117"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.117"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.126"
+						},
+						{
+							"dst_host": {
+								"id": 954,
+								"name": "VMAL #2 windows 10.250.50.134 (dkofflin34)",
+								"ip": "10.250.50.134"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.134"
+						},
+						{
+							"dst_host": {
+								"id": 926,
+								"name": "VMAL #2 windows 10.250.50.115 (dadanatz15)",
+								"ip": "10.250.50.115"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.115"
+						},
+						{
+							"dst_host": {
+								"id": 927,
+								"name": "VMAL #2 windows 10.250.50.116 (gblanken16)",
+								"ip": "10.250.50.116"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.116"
+						},
+						{
+							"dst_host": {
+								"id": 976,
+								"name": "VMAL #2 windows 10.250.50.127 (AndrePascalS27)",
+								"ip": "10.250.50.127"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.127"
+						},
+						{
+							"dst_host": {
+								"id": 1006,
+								"name": "Lab #2_partnervlab - 10.250.50.101 (dnatale101)",
+								"ip": "10.250.50.101"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.101"
+						},
+						{
+							"dst_host": {
+								"id": 929,
+								"name": "VMAL #2 windows 10.250.50.124 (cstillin24)",
+								"ip": "10.250.50.124"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.124"
+						},
+						{
+							"dst_host": {
+								"id": 953,
+								"name": "VMAL #2 windows 10.250.50.133 (ccostanzo33)",
+								"ip": "10.250.50.133"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.133"
+						},
+						{
+							"dst_host": {
+								"id": 1011,
+								"name": "VMAL #2 - 10.250.50.102 (atovmasyan102)",
+								"ip": "10.250.50.102"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.102"
+						},
+						{
+							"dst_host": {
+								"id": 1053,
+								"name": "VMAL #2 - 10.250.50.129 (tombrady129)",
+								"ip": "10.250.50.129"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.129"
+						},
+						{
+							"dst_host": {
+								"id": 1062,
+								"name": "VMAL #2 - 10.250.50.137 (shaunyeoh137)",
+								"ip": "10.250.50.137"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.137"
+						},
+						{
+							"dst_host": {
+								"id": 1061,
+								"name": "VMAL #2 - 10.250.50.136 (kimathigithi136)",
+								"ip": "10.250.50.136"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.136"
+						},
+						{
+							"dst_host": {
+								"id": 1059,
+								"name": "VMAL #2 - 10.250.50.135 (michaeldongw135)",
+								"ip": "10.250.50.135"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.135"
+						},
+						{
+							"dst_host": {
+								"id": 1058,
+								"name": "VMAL #2 - 10.250.50.132 (tombrady132)",
+								"ip": "10.250.50.132"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.132"
+						},
+						{
+							"dst_host": {
+								"id": 1056,
+								"name": "VMAL #2 - 10.250.50.131 (kristykoch131)",
+								"ip": "10.250.50.131"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.131"
+						},
+						{
+							"dst_host": {
+								"id": 1069,
+								"name": "VMAL #2 windows 10.250.50.138 (qolagne38)",
+								"ip": "10.250.50.138"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.138"
+						}
+					]
+				},
+				{
+					"grouping_field": "uuid",
+					"first_timestamp": "2022-08-02T19:29:28Z",
+					"last_timestamp": "2022-08-21T16:47:52Z",
+					"uuid": "wkssvc",
+					"dst_hosts": [
+						{
+							"dst_host": {
+								"id": 1058,
+								"name": "VMAL #2 - 10.250.50.132 (tombrady132)",
+								"ip": "10.250.50.132"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.132"
+						},
+						{
+							"dst_host": {
+								"id": 869,
+								"name": "VMAL #2 windows 10.250.50.119 (orkunoenen19)",
+								"ip": "10.250.50.119"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.119"
+						},
+						{
+							"dst_host": {
+								"id": 814,
+								"name": "VMAL #2 - Windows 10 pc-marcher",
+								"ip": "10.250.50.37"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.37"
+						},
+						{
+							"dst_host": {
+								"id": 811,
+								"name": "VMAL #2 - Windows 10 pc-rgillette",
+								"ip": "10.250.50.38"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.38"
+						},
+						{
+							"dst_host": {
+								"id": 873,
+								"name": "VMAL #2 windows 10.250.50.112 (endo-kao12)",
+								"ip": "10.250.50.112"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.112"
+						},
+						{
+							"dst_host": {
+								"id": 820,
+								"name": "VMAL2-Windows10pc-cherylt",
+								"ip": "10.250.50.35"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.35"
+						},
+						{
+							"dst_host": {
+								"id": 928,
+								"name": "VMAL #2 windows 10.250.50.117 (khshah17)",
+								"ip": "10.250.50.117"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.117"
+						},
+						{
+							"dst_host": {
+								"id": 825,
+								"name": "VMAL #2 - Windows 10 pc-lkane",
+								"ip": "10.250.50.42"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.42"
+						},
+						{
+							"dst_host": {
+								"id": 494,
+								"name": "VMAL #2 windows 10.250.50.122 (jscatalfamo22)",
+								"ip": "10.250.50.122"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.122"
+						},
+						{
+							"dst_host": {
+								"id": 927,
+								"name": "VMAL #2 windows 10.250.50.116 (gblanken16)",
+								"ip": "10.250.50.116"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.116"
+						},
+						{
+							"dst_host": {
+								"id": 322,
+								"name": "VMAL #2 - Windows 10 pc-cfiggis",
+								"ip": "10.250.50.34"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.34"
+						},
+						{
+							"dst_host": {
+								"id": 1006,
+								"name": "Lab #2_partnervlab - 10.250.50.101 (dnatale101)",
+								"ip": "10.250.50.101"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.101"
+						},
+						{
+							"dst_host": {
+								"id": 926,
+								"name": "VMAL #2 windows 10.250.50.115 (dadanatz15)",
+								"ip": "10.250.50.115"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.115"
+						},
+						{
+							"dst_host": {
+								"id": 976,
+								"name": "VMAL #2 windows 10.250.50.127 (AndrePascalS27)",
+								"ip": "10.250.50.127"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.127"
+						},
+						{
+							"dst_host": {
+								"id": 954,
+								"name": "VMAL #2 windows 10.250.50.134 (dkofflin34)",
+								"ip": "10.250.50.134"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.134"
+						},
+						{
+							"dst_host": {
+								"id": 822,
+								"name": "VMAL #2 - Windows 10 pc-ltroy",
+								"ip": "10.250.50.44"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.44"
+						},
+						{
+							"dst_host": {
+								"id": 874,
+								"name": "VMAL #2 windows 10.250.50.113 (basaroezpula13)",
+								"ip": "10.250.50.113"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.113"
+						},
+						{
+							"dst_host": {
+								"id": 816,
+								"name": "VMAL #2 - Windows 10 pc-ppoovey",
+								"ip": "10.250.50.40"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.40"
+						},
+						{
+							"dst_host": {
+								"id": 495,
+								"name": "cwscalise23",
+								"ip": "10.250.50.123"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.123"
+						},
+						{
+							"dst_host": {
+								"id": 815,
+								"name": "VMAL #2 - Windows 10 pc-kbilko",
+								"ip": "10.250.50.36"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.36"
+						},
+						{
+							"dst_host": {
+								"id": 871,
+								"name": "VMAL #2 windows 10.250.50.121 (nataliyamart21)",
+								"ip": "10.250.50.121"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.121"
+						},
+						{
+							"dst_host": {
+								"id": 870,
+								"name": "VMAL #2 windows 10.250.50.120 (andreaswagne20)",
+								"ip": "10.250.50.120"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.120"
+						},
+						{
+							"dst_host": {
+								"id": 1011,
+								"name": "VMAL #2 - 10.250.50.102 (atovmasyan102)",
+								"ip": "10.250.50.102"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.102"
+						},
+						{
+							"dst_host": {
+								"id": 1062,
+								"name": "VMAL #2 - 10.250.50.137 (shaunyeoh137)",
+								"ip": "10.250.50.137"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.137"
+						},
+						{
+							"dst_host": {
+								"id": 872,
+								"name": "VMAL #2 windows 10.250.50.111 (higaki-ha11)",
+								"ip": "10.250.50.111"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.111"
+						},
+						{
+							"dst_host": {
+								"id": 1059,
+								"name": "VMAL #2 - 10.250.50.135 (michaeldongw135)",
+								"ip": "10.250.50.135"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.135"
+						},
+						{
+							"dst_host": {
+								"id": 819,
+								"name": "VMAL #2 - Windows 10 pc-sarcher",
+								"ip": "10.250.50.39"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.39"
+						},
+						{
+							"dst_host": {
+								"id": 1061,
+								"name": "VMAL #2 - 10.250.50.136 (kimathigithi136)",
+								"ip": "10.250.50.136"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.136"
+						},
+						{
+							"dst_host": {
+								"id": 1069,
+								"name": "VMAL #2 windows 10.250.50.138 (qolagne38)",
+								"ip": "10.250.50.138"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.138"
+						},
+						{
+							"dst_host": {
+								"id": 868,
+								"name": "VMAL #2 windows 10.250.50.118 (danielweinho18)",
+								"ip": "10.250.50.118"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.118"
+						},
+						{
+							"dst_host": {
+								"id": 953,
+								"name": "VMAL #2 windows 10.250.50.133 (ccostanzo33)",
+								"ip": "10.250.50.133"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.133"
+						},
+						{
+							"dst_host": {
+								"id": 898,
+								"name": "VMAL #2 windows 10.250.50.125 (BobbyManojlo25)",
+								"ip": "10.250.50.125"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.125"
+						},
+						{
+							"dst_host": {
+								"id": 929,
+								"name": "VMAL #2 windows 10.250.50.124 (cstillin24)",
+								"ip": "10.250.50.124"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.124"
+						},
+						{
+							"dst_host": {
+								"id": 818,
+								"name": "VMAL #2 - Windows 10 pc-woodhouse",
+								"ip": "10.250.50.41"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.41"
+						},
+						{
+							"dst_host": {
+								"id": 812,
+								"name": "VMAL #2 - Windows 10 pc-rripley",
+								"ip": "10.250.50.43"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.43"
+						},
+						{
+							"dst_host": {
+								"id": 1056,
+								"name": "VMAL #2 - 10.250.50.131 (kristykoch131)",
+								"ip": "10.250.50.131"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.131"
+						}
+					]
+				},
+				{
+					"grouping_field": "uuid",
+					"first_timestamp": "2022-08-02T19:29:28Z",
+					"last_timestamp": "2022-08-21T16:47:52Z",
+					"uuid": "netlogon",
+					"dst_hosts": [
+						{
+							"dst_host": {
+								"id": 817,
+								"name": "VMAL #2 - DC01",
+								"ip": "10.250.100.32"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.32"
+						}
+					]
+				},
+				{
+					"grouping_field": "uuid",
+					"first_timestamp": "2022-08-02T19:29:28Z",
+					"last_timestamp": "2022-08-21T16:47:52Z",
+					"uuid": "BackupKey",
+					"dst_hosts": [
+						{
+							"dst_host": {
+								"id": 817,
+								"name": "VMAL #2 - DC01",
+								"ip": "10.250.100.32"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.32"
+						}
+					]
+				},
+				{
+					"grouping_field": "uuid",
+					"first_timestamp": "2022-08-02T19:29:28Z",
+					"last_timestamp": "2022-08-21T16:47:52Z",
+					"uuid": "lsarpc",
+					"dst_hosts": [
+						{
+							"dst_host": {
+								"id": 817,
+								"name": "VMAL #2 - DC01",
+								"ip": "10.250.100.32"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.32"
+						}
+					]
+				},
+				{
+					"grouping_field": "uuid",
+					"first_timestamp": "2022-08-02T19:29:28Z",
+					"last_timestamp": "2022-08-21T16:47:52Z",
+					"uuid": "samr",
+					"dst_hosts": [
+						{
+							"dst_host": {
+								"id": 817,
+								"name": "VMAL #2 - DC01",
+								"ip": "10.250.100.32"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.32"
+						},
+						{
+							"dst_host": {
+								"id": 825,
+								"name": "VMAL #2 - Windows 10 pc-lkane",
+								"ip": "10.250.50.42"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.42"
+						},
+						{
+							"dst_host": {
+								"id": 822,
+								"name": "VMAL #2 - Windows 10 pc-ltroy",
+								"ip": "10.250.50.44"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.44"
+						},
+						{
+							"dst_host": {
+								"id": 322,
+								"name": "VMAL #2 - Windows 10 pc-cfiggis",
+								"ip": "10.250.50.34"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.34"
+						},
+						{
+							"dst_host": {
+								"id": 818,
+								"name": "VMAL #2 - Windows 10 pc-woodhouse",
+								"ip": "10.250.50.41"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.41"
+						},
+						{
+							"dst_host": {
+								"id": 811,
+								"name": "VMAL #2 - Windows 10 pc-rgillette",
+								"ip": "10.250.50.38"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.38"
+						},
+						{
+							"dst_host": {
+								"id": 814,
+								"name": "VMAL #2 - Windows 10 pc-marcher",
+								"ip": "10.250.50.37"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.37"
+						},
+						{
+							"dst_host": {
+								"id": 816,
+								"name": "VMAL #2 - Windows 10 pc-ppoovey",
+								"ip": "10.250.50.40"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.40"
+						},
+						{
+							"dst_host": {
+								"id": 820,
+								"name": "VMAL2-Windows10pc-cherylt",
+								"ip": "10.250.50.35"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.35"
+						},
+						{
+							"dst_host": {
+								"id": 812,
+								"name": "VMAL #2 - Windows 10 pc-rripley",
+								"ip": "10.250.50.43"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.43"
+						},
+						{
+							"dst_host": {
+								"id": 819,
+								"name": "VMAL #2 - Windows 10 pc-sarcher",
+								"ip": "10.250.50.39"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.39"
+						},
+						{
+							"dst_host": {
+								"id": 815,
+								"name": "VMAL #2 - Windows 10 pc-kbilko",
+								"ip": "10.250.50.36"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.36"
+						},
+						{
+							"dst_host": {
+								"id": 325,
+								"name": "VMAL #2 - FS01",
+								"ip": "10.250.100.99"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.99"
+						},
+						{
+							"dst_host": {
+								"id": 369,
+								"name": "VMAL #2 - Jump station ICS",
+								"ip": "10.250.100.150"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.150"
+						},
+						{
+							"dst_host": {
+								"id": 319,
+								"name": "VMAL #2 - AS01",
+								"ip": "10.250.100.62"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.62"
+						},
+						{
+							"dst_host": {
+								"id": 868,
+								"name": "VMAL #2 windows 10.250.50.118 (danielweinho18)",
+								"ip": "10.250.50.118"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.118"
+						},
+						{
+							"dst_host": {
+								"id": 869,
+								"name": "VMAL #2 windows 10.250.50.119 (orkunoenen19)",
+								"ip": "10.250.50.119"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.119"
+						},
+						{
+							"dst_host": {
+								"id": 870,
+								"name": "VMAL #2 windows 10.250.50.120 (andreaswagne20)",
+								"ip": "10.250.50.120"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.120"
+						},
+						{
+							"dst_host": {
+								"id": 871,
+								"name": "VMAL #2 windows 10.250.50.121 (nataliyamart21)",
+								"ip": "10.250.50.121"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.121"
+						},
+						{
+							"dst_host": {
+								"id": 494,
+								"name": "VMAL #2 windows 10.250.50.122 (jscatalfamo22)",
+								"ip": "10.250.50.122"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.122"
+						},
+						{
+							"dst_host": {
+								"id": 873,
+								"name": "VMAL #2 windows 10.250.50.112 (endo-kao12)",
+								"ip": "10.250.50.112"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.112"
+						},
+						{
+							"dst_host": {
+								"id": 872,
+								"name": "VMAL #2 windows 10.250.50.111 (higaki-ha11)",
+								"ip": "10.250.50.111"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.111"
+						},
+						{
+							"dst_host": {
+								"id": 495,
+								"name": "cwscalise23",
+								"ip": "10.250.50.123"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.123"
+						},
+						{
+							"dst_host": {
+								"id": 874,
+								"name": "VMAL #2 windows 10.250.50.113 (basaroezpula13)",
+								"ip": "10.250.50.113"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.113"
+						},
+						{
+							"dst_host": {
+								"id": 898,
+								"name": "VMAL #2 windows 10.250.50.125 (BobbyManojlo25)",
+								"ip": "10.250.50.125"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.125"
+						},
+						{
+							"dst_host": {
+								"id": null,
+								"name": null,
+								"ip": null
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.126"
+						},
+						{
+							"dst_host": {
+								"id": 926,
+								"name": "VMAL #2 windows 10.250.50.115 (dadanatz15)",
+								"ip": "10.250.50.115"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.115"
+						},
+						{
+							"dst_host": {
+								"id": 927,
+								"name": "VMAL #2 windows 10.250.50.116 (gblanken16)",
+								"ip": "10.250.50.116"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.116"
+						},
+						{
+							"dst_host": {
+								"id": 928,
+								"name": "VMAL #2 windows 10.250.50.117 (khshah17)",
+								"ip": "10.250.50.117"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.117"
+						},
+						{
+							"dst_host": {
+								"id": 929,
+								"name": "VMAL #2 windows 10.250.50.124 (cstillin24)",
+								"ip": "10.250.50.124"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.124"
+						},
+						{
+							"dst_host": {
+								"id": 953,
+								"name": "VMAL #2 windows 10.250.50.133 (ccostanzo33)",
+								"ip": "10.250.50.133"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.133"
+						},
+						{
+							"dst_host": {
+								"id": 954,
+								"name": "VMAL #2 windows 10.250.50.134 (dkofflin34)",
+								"ip": "10.250.50.134"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.134"
+						},
+						{
+							"dst_host": {
+								"id": 976,
+								"name": "VMAL #2 windows 10.250.50.127 (AndrePascalS27)",
+								"ip": "10.250.50.127"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.127"
+						},
+						{
+							"dst_host": {
+								"id": 1006,
+								"name": "Lab #2_partnervlab - 10.250.50.101 (dnatale101)",
+								"ip": "10.250.50.101"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.101"
+						},
+						{
+							"dst_host": {
+								"id": 1011,
+								"name": "VMAL #2 - 10.250.50.102 (atovmasyan102)",
+								"ip": "10.250.50.102"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.102"
+						},
+						{
+							"dst_host": {
+								"id": 1053,
+								"name": "VMAL #2 - 10.250.50.129 (tombrady129)",
+								"ip": "10.250.50.129"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.129"
+						},
+						{
+							"dst_host": {
+								"id": 1056,
+								"name": "VMAL #2 - 10.250.50.131 (kristykoch131)",
+								"ip": "10.250.50.131"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.131"
+						},
+						{
+							"dst_host": {
+								"id": 1058,
+								"name": "VMAL #2 - 10.250.50.132 (tombrady132)",
+								"ip": "10.250.50.132"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.132"
+						},
+						{
+							"dst_host": {
+								"id": 1059,
+								"name": "VMAL #2 - 10.250.50.135 (michaeldongw135)",
+								"ip": "10.250.50.135"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.135"
+						},
+						{
+							"dst_host": {
+								"id": 1062,
+								"name": "VMAL #2 - 10.250.50.137 (shaunyeoh137)",
+								"ip": "10.250.50.137"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.137"
+						},
+						{
+							"dst_host": {
+								"id": 1061,
+								"name": "VMAL #2 - 10.250.50.136 (kimathigithi136)",
+								"ip": "10.250.50.136"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.136"
+						},
+						{
+							"dst_host": {
+								"id": 1069,
+								"name": "VMAL #2 windows 10.250.50.138 (qolagne38)",
+								"ip": "10.250.50.138"
+							},
+							"last_timestamp": "2022-08-21T16:47:52Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.138"
+						}
+					]
+				}
+			],
+			"summary": {
+				"uuids": [
+					"netlogon",
+					"lsarpc",
+					"BackupKey",
+					"srvsvc",
+					"samr",
+					"wkssvc"
+				],
+				"num_attempts": 11873
+			}
+		},
+		{
+			"id": 7371,
+			"url": "https://apitest.vectracloudlab.com/api/v2.2/detections/7371",
+			"detection_url": "https://apitest.vectracloudlab.com/api/v2.2/detections/7371",
+			"category": "RECONNAISSANCE",
+			"detection": "RPC Recon",
+			"detection_category": "RECONNAISSANCE",
+			"detection_type": "RPC Recon",
+			"custom_detection": null,
+			"description": null,
+			"src_ip": "10.250.50.111",
+			"state": "fixed",
+			"t_score": 70,
+			"c_score": 94,
+			"certainty": 94,
+			"threat": 70,
+			"created_timestamp": "2022-08-22T10:02:45Z",
+			"first_timestamp": "2022-06-25T14:06:47Z",
+			"last_timestamp": "2022-09-14T02:46:00Z",
+			"targets_key_asset": false,
+			"is_targeting_key_asset": false,
+			"src_account": null,
+			"src_host": {
+				"id": 872,
+				"ip": "10.250.50.111",
+				"name": "VMAL #2 windows 10.250.50.111 (higaki-ha11)",
+				"url": "https://apitest.vectracloudlab.com/api/v2.2/hosts/872",
+				"is_key_asset": false,
+				"groups": [
+					{
+						"id": 145,
+						"name": "Super Test domain group",
+						"description": "created during API testing",
+						"last_modified": "2022-08-03T15:33:04Z",
+						"last_modified_by": "reliaquest",
+						"type": "host"
+					},
+					{
+						"id": 144,
+						"name": "Partner VLAB - User Devices",
+						"description": "",
+						"last_modified": "2022-01-27T12:05:24Z",
+						"last_modified_by": "user (Removed)",
+						"type": "ip"
+					}
+				],
+				"threat": 75,
+				"certainty": 62
+			},
+			"note": null,
+			"notes": [],
+			"note_modified_by": null,
+			"note_modified_timestamp": null,
+			"sensor": "eti2pc2s",
+			"sensor_name": "Vec2c610896a947c5b5102c466a28f49a",
+			"tags": [],
+			"triage_rule_id": null,
+			"assigned_to": "crest",
+			"assigned_date": "2022-12-14T06:59:22Z",
+			"groups": [
+				{
+					"id": 144,
+					"name": "Partner VLAB - User Devices",
+					"description": "",
+					"type": "ip",
+					"last_modified": "2022-01-27T12:05:24Z",
+					"last_modified_by": "user"
+				}
+			],
+			"is_marked_custom": false,
+			"is_custom_model": false,
+			"filtered_by_ai": false,
+			"filtered_by_user": false,
+			"filtered_by_rule": false,
+			"grouped_details": [
+				{
+					"grouping_field": "uuid",
+					"first_timestamp": "2022-09-01T06:40:07Z",
+					"last_timestamp": "2022-09-14T02:46:00Z",
+					"uuid": "lsarpc",
+					"dst_hosts": [
+						{
+							"dst_host": {
+								"id": 817,
+								"name": "VMAL #2 - DC01",
+								"ip": "10.250.100.32"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.32"
+						}
+					]
+				},
+				{
+					"grouping_field": "uuid",
+					"first_timestamp": "2022-09-01T06:40:07Z",
+					"last_timestamp": "2022-09-14T02:46:00Z",
+					"uuid": "samr",
+					"dst_hosts": [
+						{
+							"dst_host": {
+								"id": 817,
+								"name": "VMAL #2 - DC01",
+								"ip": "10.250.100.32"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.100.32"
+						},
+						{
+							"dst_host": {
+								"id": 322,
+								"name": "VMAL #2 - Windows 10 pc-cfiggis",
+								"ip": "10.250.50.34"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.34"
+						},
+						{
+							"dst_host": {
+								"id": 820,
+								"name": "VMAL2-Windows10pc-cherylt",
+								"ip": "10.250.50.35"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.35"
+						},
+						{
+							"dst_host": {
+								"id": 815,
+								"name": "VMAL #2 - Windows 10 pc-kbilko",
+								"ip": "10.250.50.36"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.36"
+						},
+						{
+							"dst_host": {
+								"id": 814,
+								"name": "VMAL #2 - Windows 10 pc-marcher",
+								"ip": "10.250.50.37"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.37"
+						},
+						{
+							"dst_host": {
+								"id": 811,
+								"name": "VMAL #2 - Windows 10 pc-rgillette",
+								"ip": "10.250.50.38"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.38"
+						},
+						{
+							"dst_host": {
+								"id": 819,
+								"name": "VMAL #2 - Windows 10 pc-sarcher",
+								"ip": "10.250.50.39"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.39"
+						},
+						{
+							"dst_host": {
+								"id": 816,
+								"name": "VMAL #2 - Windows 10 pc-ppoovey",
+								"ip": "10.250.50.40"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.40"
+						},
+						{
+							"dst_host": {
+								"id": 818,
+								"name": "VMAL #2 - Windows 10 pc-woodhouse",
+								"ip": "10.250.50.41"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.41"
+						},
+						{
+							"dst_host": {
+								"id": 825,
+								"name": "VMAL #2 - Windows 10 pc-lkane",
+								"ip": "10.250.50.42"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.42"
+						},
+						{
+							"dst_host": {
+								"id": 812,
+								"name": "VMAL #2 - Windows 10 pc-rripley",
+								"ip": "10.250.50.43"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.43"
+						},
+						{
+							"dst_host": {
+								"id": 822,
+								"name": "VMAL #2 - Windows 10 pc-ltroy",
+								"ip": "10.250.50.44"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.44"
+						}
+					]
+				},
+				{
+					"grouping_field": "uuid",
+					"first_timestamp": "2022-09-01T06:40:07Z",
+					"last_timestamp": "2022-09-14T02:46:00Z",
+					"uuid": "wkssvc",
+					"dst_hosts": [
+						{
+							"dst_host": {
+								"id": 322,
+								"name": "VMAL #2 - Windows 10 pc-cfiggis",
+								"ip": "10.250.50.34"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.34"
+						},
+						{
+							"dst_host": {
+								"id": 820,
+								"name": "VMAL2-Windows10pc-cherylt",
+								"ip": "10.250.50.35"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.35"
+						},
+						{
+							"dst_host": {
+								"id": 815,
+								"name": "VMAL #2 - Windows 10 pc-kbilko",
+								"ip": "10.250.50.36"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.36"
+						},
+						{
+							"dst_host": {
+								"id": 814,
+								"name": "VMAL #2 - Windows 10 pc-marcher",
+								"ip": "10.250.50.37"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.37"
+						},
+						{
+							"dst_host": {
+								"id": 811,
+								"name": "VMAL #2 - Windows 10 pc-rgillette",
+								"ip": "10.250.50.38"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.38"
+						},
+						{
+							"dst_host": {
+								"id": 819,
+								"name": "VMAL #2 - Windows 10 pc-sarcher",
+								"ip": "10.250.50.39"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.39"
+						},
+						{
+							"dst_host": {
+								"id": 816,
+								"name": "VMAL #2 - Windows 10 pc-ppoovey",
+								"ip": "10.250.50.40"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.40"
+						},
+						{
+							"dst_host": {
+								"id": 818,
+								"name": "VMAL #2 - Windows 10 pc-woodhouse",
+								"ip": "10.250.50.41"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.41"
+						},
+						{
+							"dst_host": {
+								"id": 825,
+								"name": "VMAL #2 - Windows 10 pc-lkane",
+								"ip": "10.250.50.42"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.42"
+						},
+						{
+							"dst_host": {
+								"id": 812,
+								"name": "VMAL #2 - Windows 10 pc-rripley",
+								"ip": "10.250.50.43"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.43"
+						},
+						{
+							"dst_host": {
+								"id": 822,
+								"name": "VMAL #2 - Windows 10 pc-ltroy",
+								"ip": "10.250.50.44"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.44"
+						}
+					]
+				},
+				{
+					"grouping_field": "uuid",
+					"first_timestamp": "2022-09-01T06:40:07Z",
+					"last_timestamp": "2022-09-14T02:46:00Z",
+					"uuid": "srvsvc",
+					"dst_hosts": [
+						{
+							"dst_host": {
+								"id": 322,
+								"name": "VMAL #2 - Windows 10 pc-cfiggis",
+								"ip": "10.250.50.34"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.34"
+						},
+						{
+							"dst_host": {
+								"id": 820,
+								"name": "VMAL2-Windows10pc-cherylt",
+								"ip": "10.250.50.35"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.35"
+						},
+						{
+							"dst_host": {
+								"id": 815,
+								"name": "VMAL #2 - Windows 10 pc-kbilko",
+								"ip": "10.250.50.36"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.36"
+						},
+						{
+							"dst_host": {
+								"id": 814,
+								"name": "VMAL #2 - Windows 10 pc-marcher",
+								"ip": "10.250.50.37"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.37"
+						},
+						{
+							"dst_host": {
+								"id": 811,
+								"name": "VMAL #2 - Windows 10 pc-rgillette",
+								"ip": "10.250.50.38"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.38"
+						},
+						{
+							"dst_host": {
+								"id": 819,
+								"name": "VMAL #2 - Windows 10 pc-sarcher",
+								"ip": "10.250.50.39"
+							},
+							"last_timestamp": "2022-09-14T02:46:00Z",
+							"dst_port": 445,
+							"dst_ip": "10.250.50.39"
+						}
+					]
+				}
+			],
+			"summary": {
+				"uuids": [
+					"wkssvc",
+					"srvsvc",
+					"samr",
+					"lsarpc"
+				],
+				"num_attempts": 2650
+			}
+		}
+	]
+}
