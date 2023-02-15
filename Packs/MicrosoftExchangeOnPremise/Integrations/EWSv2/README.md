@@ -77,7 +77,7 @@ Notice that it might require you to set the ``Timeout`` field to a higher value.
 
 Pay special attention to the following fields in the instance settings:
 
-```Email address from which to fetch incidents``` – mailbox to fetch incidents from.
+- ```Email address from which to fetch incidents``` – mailbox to fetch incidents from.
 
 ```Name of the folder from which to fetch incidents``` – use this field to configure the destination folder from where emails should be fetched. The default is Inbox folder. Please note, if Exchange is configured with an international flavor `Inbox` will be named according to the configured language.
 
