@@ -2791,3 +2791,4 @@ Run a remote script that was uploaded to the SentinelOne Script Library.
 | SentinelOne.RunRemoteScript.parentTaskId | String | The parent task id of the script execution task, null in case of pending execution.|
 #### Command Example
 ```!sentinelone-run-remote-script account_ids="1431991147831493698" output_destination="None" task_description="a test" script_id="1235462642391383844" output_directory="file" agent_ids="1508658407921320788"```
+
