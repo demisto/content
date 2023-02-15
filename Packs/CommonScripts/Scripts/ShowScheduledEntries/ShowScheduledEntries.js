@@ -29,6 +29,7 @@ entries.forEach(function (entry) {
             schedule: entry.Metadata.Schedule
         });
     } else {
+        logDebug("unexpected entry structure:");
         logDebug(entry);
     }
 });
