@@ -1,6 +1,6 @@
 .push-rule:
   rules:
-    - if: '$CI_COMMIT_BRANCH =~ /^(demisto\/[a-zA-Z0-9-_]+$)/'
+    - if: '$CI_COMMIT_BRANCH =~ /^demisto\/(?!.*-nightly$)[^\/]+$/'
       when: never
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
