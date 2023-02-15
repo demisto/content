@@ -14,6 +14,7 @@ md += '-|-\n';
 
 var scheduledEntries = [];
 entries.forEach(function (entry) {
+    logDebug(entry);
     if (entry.Metadata != null && entry.Metadata.Recurrent && entry.Metadata.Schedule.Scheduled) {
         md += '['+ entry.ID + '](' + warRoomUrl + '/' + entry.ID + ')' + '|' + entry.Contents + '\n';
         scheduledEntries.push({
