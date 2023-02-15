@@ -18,6 +18,5 @@ alter
     xdm.alert.category = attackType,
     xdm.alert.name = attackStrategy,
     xdm.alert.description = summaryInsights,
-    xdm.observer.product = abxPortalUrl,
     xdm.observer.unique_identifier = to_string(abxMessageId),
     xdm.target.host.ipv4_addresses = senderIpAddress;

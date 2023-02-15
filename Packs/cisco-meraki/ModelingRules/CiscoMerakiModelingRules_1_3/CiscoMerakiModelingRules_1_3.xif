@@ -81,6 +81,7 @@ filter
     protocl = arrayindex(regextract(_raw_log,"protocol\=(\w+)"),0),
     protocl_type = arrayindex(regextract(_raw_log,"type\=(\d+)"),0)
 | alter
+    xdm.observer.name = appliance_name,
     xdm.source.ipv4 = source_ip,
     xdm.source.port = to_number(source_port),
     xdm.target.ipv4 = destination_ip,

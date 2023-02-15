@@ -1,8 +1,6 @@
 [MODEL: dataset = microsoft_windows_raw]
-alter raw_data = to_string(json_extract_scalar(event_data , "$.param2"))
 // xml part
-| alter audit_type = arrayindex(regextract(event_data , "<AuditType>([^<]+)"),0),
-    audit_result = arrayindex(regextract(event_data ,"<AuditResult>([^<]+)"),0),
+alter audit_type = arrayindex(regextract(event_data , "<AuditType>([^<]+)"),0),
     user_id = arrayindex(regextract(event_data ,"\<UserId\>([^\<]*)"),0),
     mfa_method = arrayindex(regextract(event_data ,"\<MfaMethod\>([^\<]*)"),0),
     device_id = arrayindex(regextract(event_data ,"\<DeviceId\>([^\<]*)"),0),
