@@ -859,7 +859,7 @@ def kmsat_phishing_campaign_security_tests_list_command(client: Client, args) ->
             "duration",
             "categories",
             "template",
-            "landing-page",
+            "landing_page",
             "scheduled_count",
             "delivered_count",
             "opened_count",

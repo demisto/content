@@ -313,10 +313,10 @@ script:
         - contextPath: KMSAT.PhishingSecurity.template.name
           description: Phishing Security Template Name
           type: String
-        - contextPath: KMSAT.PhishingSecurity.landing-page.id
+        - contextPath: KMSAT.PhishingSecurity.landing_page.id
           description: Phishing Security Landing Page ID
           type: Number
-        - contextPath: KMSAT.PhishingSecurity.landing-page.name
+        - contextPath: KMSAT.PhishingSecurity.landing_page.name
           description: Phishing Security Landing Page Name
           type: String
         - contextPath: KMSAT.PhishingSecurity.scheduled_count
@@ -553,10 +553,10 @@ script:
         - contextPath: KMSAT.CampaignPST.template.name
           description: Campaign Phishing Security Template Name
           type: String
-        - contextPath: KMSAT.CampaignPST.landing-page.id
+        - contextPath: KMSAT.CampaignPST.landing_page.id
           description: Campaign Phishing Security Landing Page ID
           type: Number
-        - contextPath: KMSAT.CampaignPST.landing-page.name
+        - contextPath: KMSAT.CampaignPST.landing_page.name
           description: Campaign Phishing Security Landing Page Name
           type: String
         - contextPath: KMSAT.CampaignPST.scheduled_count

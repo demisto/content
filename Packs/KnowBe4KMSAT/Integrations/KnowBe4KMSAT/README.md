@@ -335,8 +335,8 @@
 | KMSAT.PhishingSecurity.categories.name        | String   | PST category name                           |
 | KMSAT.PhishingSecurity.template.id            | Number   | PST template ID                             |
 | KMSAT.PhishingSecurity.template.name          | String   | PST template Name                           |
-| KMSAT.PhishingSecurity.lading-page.id         | Number   | PST landing page ID                         |
-| KMSAT.PhishingSecurity.landing-page.name      | String   | PST landing page name                       |
+| KMSAT.PhishingSecurity.lading_page.id         | Number   | PST landing page ID                         |
+| KMSAT.PhishingSecurity.landing_page.name      | String   | PST landing page name                       |
 | KMSAT.PhishingSecurity.scheduled_count        | Number   | PST scheduled count                         |
 | KMSAT.PhishingSecurity.delivered_count        | Number   | PST delivered count                         |
 | KMSAT.PhishingSecurity.opened_count           | Number   | PST opened count                            |
@@ -381,7 +381,7 @@
       "id": 11428,
       "name": "CNN Breaking News"
     },
-    "landing-page": {
+    "landing_page": {
       "id": 1842,
       "name": "SEI Landing Page"
     },
@@ -574,8 +574,8 @@
 | KMSAT.CampaignPST.categories.name        | String   | PST category name               |
 | KMSAT.CampaignPST.template.id            | Number   | PST template ID                 |
 | KMSAT.CampaignPST.template.name          | String   | PST template name               |
-| KMSAT.CampaignPST.landing-page.id        | Number   | PST landing page ID             |
-| KMSAT.CampaignPST.landing-page-name      | String   | PST landing page name           |
+| KMSAT.CampaignPST.landing_page.id        | Number   | PST landing page ID             |
+| KMSAT.CampaignPST.landing_page.name      | String   | PST landing page name           |
 | KMSAT.CampaignPST.scheduled_count        | Number   | PST scheduled count             |
 | KMSAT.CampaignPST.delivered_count        | Number   | PST delivered count             |
 | KMSAT.CampaignPST.opened_count           | Number   | PST opened count                |
@@ -621,7 +621,7 @@
       "id": 11428,
       "name": "CNN Breaking News"
     },
-    "landing-page": {
+    "landing_page": {
       "id": 1842,
       "name": "SEI Landing Page"
     },
