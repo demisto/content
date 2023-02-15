@@ -101,7 +101,7 @@ def test_module(client: Client, first_fetch_time: int) -> str:
     Raises exceptions if something goes wrong.
 
     Args:
-        client (Client): HelloWorld client to use.
+        client (Client): RunZeroEventCollector client to use.
         first_fetch_time (int): The first fetch time as configured in the integration params.
 
     Returns:
