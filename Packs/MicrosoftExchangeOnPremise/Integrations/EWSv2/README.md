@@ -82,7 +82,7 @@ Pay special attention to the following fields in the instance settings:
 - ```Name of the folder from which to fetch incidents``` – use this field to configure the destination folder from where emails should be fetched. The default is Inbox folder. Please note, if Exchange is configured with an international flavor, `Inbox` will be named according to the configured language.
 
 - ```Has impersonation rights``` – mark this option if you set the target mailbox to an account different than your personal account. Otherwise Delegation access will be used instead of Impersonation.
-Find more information on impersonation or delegation rights at ‘Additional Info’ section below.
+Find more information on impersonation or delegation rights in the  [Additional Information](#additional-information) section.
 
 
 ## Commands
