@@ -169,4 +169,5 @@ dest_port3 = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,
     xdm.source.user.username = user_name,
     xdm.event.outcome_reason = action,
     xdm.event.duration = to_number(duration),
-    xdm.observer.name = hostname;
+    xdm.observer.name = hostname,
+    xdm.event.is_completed = if(action contains "Teardown",true, false);
