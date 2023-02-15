@@ -306,7 +306,8 @@ def main():
                 remove_build_from_queue(storage_bucket, lock_repo_name, options.ci_job_id)
                 lock_machine_name = machine
                 break
-    return lock_machine_name
+    print(lock_machine_name)
+    sys.exit(0)
 
 if __name__ == '__main__':
     main()
