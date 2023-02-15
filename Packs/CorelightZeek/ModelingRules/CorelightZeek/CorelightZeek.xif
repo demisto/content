@@ -1,6 +1,6 @@
 [MODEL: dataset=corelight_zeek_raw]
 // DNS Logs
-filter _path = "dns"
+filter _path ~= "dns"
 | alter 
     xdm.source.ipv4 = if(id_orig_h ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", id_orig_h, null),
     xdm.source.ipv6 = if(id_orig_h ~= ":", id_orig_h, null),
@@ -19,10 +19,10 @@ filter _path = "dns"
     xdm.network.dns.dns_question.type = if(qtype_name="A",XDM_CONST.DNS_RECORD_TYPE_A, qtype_name="AAAA",XDM_CONST.DNS_RECORD_TYPE_AAAA, qtype_name="AFSDB",XDM_CONST.DNS_RECORD_TYPE_AFSDB, qtype_name="APL",XDM_CONST.DNS_RECORD_TYPE_APL, qtype_name="CAA",XDM_CONST.DNS_RECORD_TYPE_CAA, qtype_name="CDNSKEY",XDM_CONST.DNS_RECORD_TYPE_CDNSKEY, qtype_name="CDS",XDM_CONST.DNS_RECORD_TYPE_CDS, qtype_name="CERT",XDM_CONST.DNS_RECORD_TYPE_CERT, qtype_name="CNAME",XDM_CONST.DNS_RECORD_TYPE_CNAME, qtype_name="CSYNC",XDM_CONST.DNS_RECORD_TYPE_CSYNC, qtype_name="DHCID",XDM_CONST.DNS_RECORD_TYPE_DHCID, qtype_name="DLV",XDM_CONST.DNS_RECORD_TYPE_DLV, qtype_name="DNAME",XDM_CONST.DNS_RECORD_TYPE_DNAME, qtype_name="DNSKEY",XDM_CONST.DNS_RECORD_TYPE_DNSKEY, qtype_name="DS",XDM_CONST.DNS_RECORD_TYPE_DS, qtype_name="EUI48",XDM_CONST.DNS_RECORD_TYPE_EUI48, qtype_name="EUI64",XDM_CONST.DNS_RECORD_TYPE_EUI64, qtype_name="HINFO",XDM_CONST.DNS_RECORD_TYPE_HINFO, qtype_name="HIP",XDM_CONST.DNS_RECORD_TYPE_HIP, qtype_name="HTTPS",XDM_CONST.DNS_RECORD_TYPE_HTTPS, qtype_name="IPSECKEY",XDM_CONST.DNS_RECORD_TYPE_IPSECKEY, qtype_name="KEY",XDM_CONST.DNS_RECORD_TYPE_KEY, qtype_name="KX",XDM_CONST.DNS_RECORD_TYPE_KX, qtype_name="LOC",XDM_CONST.DNS_RECORD_TYPE_LOC, qtype_name="MX",XDM_CONST.DNS_RECORD_TYPE_MX, qtype_name="NAPTR",XDM_CONST.DNS_RECORD_TYPE_NAPTR, qtype_name="NS",XDM_CONST.DNS_RECORD_TYPE_NS, qtype_name="NSEC",XDM_CONST.DNS_RECORD_TYPE_NSEC, qtype_name="NSEC3",XDM_CONST.DNS_RECORD_TYPE_NSEC3, qtype_name="NSEC3PARAM",XDM_CONST.DNS_RECORD_TYPE_NSEC3PARAM, qtype_name="OPENPGPKEY",XDM_CONST.DNS_RECORD_TYPE_OPENPGPKEY, qtype_name="PTR",XDM_CONST.DNS_RECORD_TYPE_PTR, qtype_name="RRSIG",XDM_CONST.DNS_RECORD_TYPE_RRSIG, qtype_name="RP",XDM_CONST.DNS_RECORD_TYPE_RP, qtype_name="SIG",XDM_CONST.DNS_RECORD_TYPE_SIG, qtype_name="SMIMEA",XDM_CONST.DNS_RECORD_TYPE_SMIMEA, qtype_name="SOA",XDM_CONST.DNS_RECORD_TYPE_SOA, qtype_name="SRV",XDM_CONST.DNS_RECORD_TYPE_SRV, qtype_name="SSHFP",XDM_CONST.DNS_RECORD_TYPE_SSHFP, qtype_name="SVCB",XDM_CONST.DNS_RECORD_TYPE_SVCB, qtype_name="TA",XDM_CONST.DNS_RECORD_TYPE_TA, qtype_name="TKEY",XDM_CONST.DNS_RECORD_TYPE_TKEY, qtype_name="TLSA",XDM_CONST.DNS_RECORD_TYPE_TLSA, qtype_name="TSIG",XDM_CONST.DNS_RECORD_TYPE_TSIG, qtype_name="TXT",XDM_CONST.DNS_RECORD_TYPE_TXT, qtype_name="URI",XDM_CONST.DNS_RECORD_TYPE_URI, qtype_name="ZONEMD",XDM_CONST.DNS_RECORD_TYPE_ZONEMD, to_string(qtype_name)),
     xdm.network.dns.dns_resource_record.name = rcode,
     xdm.network.dns.dns_resource_record.type = if(rcode_name="A",XDM_CONST.DNS_RECORD_TYPE_A, rcode_name="AAAA",XDM_CONST.DNS_RECORD_TYPE_AAAA, rcode_name="AFSDB",XDM_CONST.DNS_RECORD_TYPE_AFSDB, rcode_name="APL",XDM_CONST.DNS_RECORD_TYPE_APL, rcode_name="CAA",XDM_CONST.DNS_RECORD_TYPE_CAA, rcode_name="CDNSKEY",XDM_CONST.DNS_RECORD_TYPE_CDNSKEY, rcode_name="CDS",XDM_CONST.DNS_RECORD_TYPE_CDS, rcode_name="CERT",XDM_CONST.DNS_RECORD_TYPE_CERT, rcode_name="CNAME",XDM_CONST.DNS_RECORD_TYPE_CNAME, rcode_name="CSYNC",XDM_CONST.DNS_RECORD_TYPE_CSYNC, rcode_name="DHCID",XDM_CONST.DNS_RECORD_TYPE_DHCID, rcode_name="DLV",XDM_CONST.DNS_RECORD_TYPE_DLV, rcode_name="DNAME",XDM_CONST.DNS_RECORD_TYPE_DNAME, rcode_name="DNSKEY",XDM_CONST.DNS_RECORD_TYPE_DNSKEY, rcode_name="DS",XDM_CONST.DNS_RECORD_TYPE_DS, rcode_name="EUI48",XDM_CONST.DNS_RECORD_TYPE_EUI48, rcode_name="EUI64",XDM_CONST.DNS_RECORD_TYPE_EUI64, rcode_name="HINFO",XDM_CONST.DNS_RECORD_TYPE_HINFO, rcode_name="HIP",XDM_CONST.DNS_RECORD_TYPE_HIP, rcode_name="HTTPS",XDM_CONST.DNS_RECORD_TYPE_HTTPS, rcode_name="IPSECKEY",XDM_CONST.DNS_RECORD_TYPE_IPSECKEY, rcode_name="KEY",XDM_CONST.DNS_RECORD_TYPE_KEY, rcode_name="KX",XDM_CONST.DNS_RECORD_TYPE_KX, rcode_name="LOC",XDM_CONST.DNS_RECORD_TYPE_LOC, rcode_name="MX",XDM_CONST.DNS_RECORD_TYPE_MX, rcode_name="NAPTR",XDM_CONST.DNS_RECORD_TYPE_NAPTR, rcode_name="NS",XDM_CONST.DNS_RECORD_TYPE_NS, rcode_name="NSEC",XDM_CONST.DNS_RECORD_TYPE_NSEC, rcode_name="NSEC3",XDM_CONST.DNS_RECORD_TYPE_NSEC3, rcode_name="NSEC3PARAM",XDM_CONST.DNS_RECORD_TYPE_NSEC3PARAM, rcode_name="OPENPGPKEY",XDM_CONST.DNS_RECORD_TYPE_OPENPGPKEY, rcode_name="PTR",XDM_CONST.DNS_RECORD_TYPE_PTR, rcode_name="RRSIG",XDM_CONST.DNS_RECORD_TYPE_RRSIG, rcode_name="RP",XDM_CONST.DNS_RECORD_TYPE_RP, rcode_name="SIG",XDM_CONST.DNS_RECORD_TYPE_SIG, rcode_name="SMIMEA",XDM_CONST.DNS_RECORD_TYPE_SMIMEA, rcode_name="SOA",XDM_CONST.DNS_RECORD_TYPE_SOA, rcode_name="SRV",XDM_CONST.DNS_RECORD_TYPE_SRV, rcode_name="SSHFP",XDM_CONST.DNS_RECORD_TYPE_SSHFP, rcode_name="SVCB",XDM_CONST.DNS_RECORD_TYPE_SVCB, rcode_name="TA",XDM_CONST.DNS_RECORD_TYPE_TA, rcode_name="TKEY",XDM_CONST.DNS_RECORD_TYPE_TKEY, rcode_name="TLSA",XDM_CONST.DNS_RECORD_TYPE_TLSA, rcode_name="TSIG",XDM_CONST.DNS_RECORD_TYPE_TSIG, rcode_name="TXT",XDM_CONST.DNS_RECORD_TYPE_TXT, rcode_name="URI",XDM_CONST.DNS_RECORD_TYPE_URI, rcode_name="ZONEMD",XDM_CONST.DNS_RECORD_TYPE_ZONEMD, to_string(rcode_name)),
-    xdm.network.dns.dns_resource_record.value = answers,
-    xdm.target.agent.identifier = trans_id;
+    //xdm.source.agent.identifier = trans_id,
+    xdm.network.dns.dns_resource_record.value = answers;
 // HTTP Logs
-filter _path = "http"
+filter _path ~= "http"
 | alter 
     xdm.source.ipv4 = if(id_orig_h ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", id_orig_h, null),
     xdm.source.ipv6 = if(id_orig_h ~= ":", id_orig_h, null),
@@ -45,7 +45,7 @@ filter _path = "http"
     xdm.target.host.hostname = host,
     xdm.target.sent_bytes = to_integer(response_body_len);
 // NTLM Logs
-filter _path = "ntlm"
+filter _path ~= "ntlm"
 | alter 
     xdm.source.ipv4 = if(id_orig_h ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", id_orig_h, null),
     xdm.source.ipv6 = if(id_orig_h ~= ":", id_orig_h, null),
@@ -64,7 +64,7 @@ filter _path = "ntlm"
     xdm.auth.ntlm.dns_three = server_tree_name,
     xdm.event.outcome = if(success = "true", "SUCCESS", success = "false", "FAILED", success = null, null, "UNKNOWN");
 // Syslogs 
-filter _path = "syslog"
+filter _path ~= "syslog"
 | alter 
     xdm.source.ipv4 = if(id_orig_h ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", id_orig_h, null),
     xdm.source.ipv6 = if(id_orig_h ~= ":", id_orig_h, null),
@@ -81,7 +81,7 @@ filter _path = "syslog"
     xdm.alert.severity = severity,
     xdm.intermediate.process.name = facility;
 // Conn Logs
-filter _path = "conn"
+filter _path ~= "conn"
 | alter 
     xdm.source.ipv4 = if(id_orig_h ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", id_orig_h, null),
     xdm.source.ipv6 = if(id_orig_h ~= ":", id_orig_h, null),
@@ -104,7 +104,7 @@ filter _path = "conn"
 | alter
     xdm.event.outcome = if(proto = "tcp" and to_integer(resp_pkts) > 0, XDM_CONST.OUTCOME_SUCCESS, proto = "tcp" and to_integer(resp_pkts) = 0, XDM_CONST.OUTCOME_FAILED, proto = "icmp" and to_integer(resp_pkts) > 0 and to_integer(orig_bytes) > 0, XDM_CONST.OUTCOME_SUCCESS, proto = "icmp" and to_integer(resp_pkts) = 0 and to_integer(orig_bytes) > 0, XDM_CONST.OUTCOME_FAILED, to_integer(resp_pkts) > 0 and to_integer(orig_bytes) > 0 and to_integer(resp_bytes) > 0 and to_integer(orig_pkts) > 0, XDM_CONST.OUTCOME_SUCCESS, null);
 // Kerberos
-filter _path = "kerberos"
+filter _path ~= "kerberos"
 | alter
    lower_c_cipher = lowercase(cipher) 
 | alter 
@@ -124,7 +124,7 @@ filter _path = "kerberos"
     xdm.auth.kerberos_tgt.cname_values = arraycreate(client),
     xdm.auth.kerberos_tgt.encryption_type = if(lower_c_cipher ~= "des[\-|\_]cbc[\-|\_]crc", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DES_CBC_CRC, lower_c_cipher ~= "aes128[\_|\-]cts[\_|\-]hmac[\_|\-]sha1[\_|\-]96", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_AES128_CTS_HMAC_SHA1_96, lower_c_cipher ~= "aes128[\_|\-]cts[\_|\-]hmac[\_|\-]sha256[\_|\-]128", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_AES128_CTS_HMAC_SHA1_96, lower_c_cipher ~= "aes256[\_|\-]cts[\_|\-]hmac[\_|\-]sha1[\_|\-]96", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_AES256_CTS_HMAC_SHA1_96, lower_c_cipher ~= "aes256[\_|\-]cts[\_|\-]hmac[\_|\-]sha384[\_|\-]192", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_AES256_CTS_HMAC_SHA384_192, lower_c_cipher ~= "camellia128[\_|\-]cts[\_|\-]cmac", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_CAMELLIA128_CTS_CMAC, lower_c_cipher ~= "camellia256[\_|\-]cts[\_|\-]cmac", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_CAMELLIA256_CTS_CMAC, lower_c_cipher ~= "des3[\_|\-]cbc[\_|\-]md5", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DES3_CBC_MD5, lower_c_cipher ~= "des3[\_|\-]cbc[\_|\-]raw", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DES3_CBC_RAW, lower_c_cipher ~= "des3[\_|\-]cbc[\_|\-]sha1[\_|\-]kd", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DES3_CBC_SHA1_KD, lower_c_cipher ~= "des3[\_|\-]cbc[\_|\-]sha1", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DES3_CBC_SHA1, lower_c_cipher ~= "des[\_|\-]cbc[\_|\-]md4", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DES_CBC_MD4, lower_c_cipher ~= "des[\_|\-]cbc[\_|\-]md5", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DES_CBC_MD5, lower_c_cipher ~= "des[\_|\-]cbc[\_|\-]raw", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DES_CBC_RAW, lower_c_cipher ~= "des[\_|\-]ede3[\_|\-]cbc[\_|\-]env[\_|\-]oid", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DES_EDE3_CBC_ENV_OID, lower_c_cipher ~= "des[\_|\-]hmac[\_|\-]sha1", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DES_HMAC_SHA1, lower_c_cipher ~= "dsawithsha1[\_|\-]cmsoid", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_DSAWITHSHA1_CMSOID, lower_c_cipher ~= "md5withrsaencryption[\_|\-]cmsoid", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_MD5WITHRSAENCRYPTION_CMSOID, lower_c_cipher ~= "rc2cbc[\_|\-]envoid", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_RC2CBC_ENVOID, lower_c_cipher ~= "rc4[\_|\-]hmac[\_|\-]exp", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_RC4_HMAC_EXP, lower_c_cipher ~= "rc4[\_|\-]hmac", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_RC4_HMAC, lower_c_cipher ~= "rsaencryption[\_|\-]envoid", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_RSAENCRYPTION_ENVOID, lower_c_cipher ~= "rsaes[\_|\-]oaep[\_|\-]env[\_|\-]oid", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_RSAES_OAEP_ENV_OID, lower_c_cipher ~= "sha1withrsaencryption[\_|\-]cmsoid", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_SHA1WITHRSAENCRYPTION_CMSOID, lower_c_cipher ~= "subkey[\_|\-]keymaterial", XDM_CONST.KERBEROS_ENCRYPTION_TYPE_SUBKEY_KEYMATERIAL, to_string(lower_c_cipher));
 // DCE_RPC
-filter _path = "dce_rpc"
+filter _path ~= "dce_rpc"
 | alter
     xdm.source.ipv4 = if(id_orig_h ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", id_orig_h, null),
     xdm.source.ipv6 = if(id_orig_h ~= ":", id_orig_h, null),
@@ -137,6 +137,6 @@ filter _path = "dce_rpc"
     xdm.event.id = uid,
     xdm.event.duration = to_integer(rtt),
     xdm.intermediate.application.name = named_pipe,
-    xdm.source.host.device_id = endpoint,
+    xdm.source.user.identifier = endpoint,
     xdm.event.outcome_reason = operation,
     xdm.observer.version = version;
