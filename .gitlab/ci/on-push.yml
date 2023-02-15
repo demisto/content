@@ -37,21 +37,21 @@ trigger-private-build:
   - ./Documentation/commonServerDocs.sh
   - section_end "Create Release Notes and Common Server Documentation"
 
-stop-running-pipelines:
-  tags:
-    - gke
-  stage: unittests-and-validations
-  needs: []
-  extends:
-    - .default-job-settings
-  variables:
-    master_branch_name: master
-  rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
-  script:
-    - section_start "Stop running piplines on current branch"
-    - Utils/gitlab/stop_running_pipelines.sh $CI_COMMIT_BRANCH $CI_PIPELINE_ID
-    - section_end "Stop running piplines on current branch"
+#stop-running-pipelines:
+#  tags:
+#    - gke
+#  stage: unittests-and-validations
+#  needs: []
+#  extends:
+#    - .default-job-settings
+#  variables:
+#    master_branch_name: master
+#  rules:
+#    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
+#  script:
+#    - section_start "Stop running piplines on current branch"
+#    - Utils/gitlab/stop_running_pipelines.sh $CI_COMMIT_BRANCH $CI_PIPELINE_ID
+#    - section_end "Stop running piplines on current branch"
 
 
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
@@ -365,15 +365,6 @@ slack-notify-nightly-build:
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
-    - section_start "Are there tests to run?" --collapsed
-    - |
-      if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
-        # The files are empty.
-        echo "Not running the instance flow, no tests to run were found."
-        job-done
-        exit $EXIT_CODE
-      fi
-    - section_end "Are there tests to run?"
 
     - section_start "Lock Machine" --collapsed
     - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
@@ -493,7 +484,7 @@ xsoar_ng_server_ga:
     GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "xsoar"
-  needs: ["xsoar-prepare-testing-bucket"]
+  needs: []
   allow_failure: true
 
 
