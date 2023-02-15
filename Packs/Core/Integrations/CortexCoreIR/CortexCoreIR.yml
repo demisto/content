@@ -3627,7 +3627,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.9.46807
+  dockerimage: demisto/python3:3.10.10.47713
 tests:
 - No tests
 fromversion: 6.2.0

@@ -212,7 +212,7 @@ class CoreClient(BaseClient):
         endpoints = reply.get('reply').get('endpoints', [])
         return endpoints
 
-    def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str) -> dict:      # pragma: no cover
+    def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str | None) -> dict:      # pragma: no cover
         """
         This func is used to set the alias name of an endpoint.
 
@@ -1802,7 +1802,7 @@ def endpoint_alias_change_command(client: CoreClient, **args) -> CommandResults:
     status = args.get('status')
     scan_status = args.get('scan_status')
     username_list = argToList(args.get('username'))
-    new_alias_name = str(args.get('new_alias_name'))
+    new_alias_name = args.get('new_alias_name')
 
     first_seen_gte = arg_to_timestamp(
         arg=args.get('first_seen_gte'),
