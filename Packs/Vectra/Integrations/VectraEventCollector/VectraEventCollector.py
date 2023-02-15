@@ -49,7 +49,7 @@ class VectraClient(BaseClient):
             base_url=self.base_url,
             verify=not insecure,
             proxy=proxy,
-            headers=self.create_headers(api_key),
+            headers=self.create_headers(),
         )
 
     def get_endpoints(self) -> Dict[str, str]:

@@ -44,7 +44,7 @@ def test_auth(mocker, endpoints: Dict[str, str], expected: bool):
     assert all(ep in endpoints for ep in client.endpoints) == expected
 
 
-def test_create_headers():
+def test_create_headers(mocker):
 
     client = VectraClient(url=BASE_URL, api_key=PASSWORD)
     actual = client.create_headers()
