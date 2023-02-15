@@ -1,0 +1,23 @@
+{
+    "api_version": "api_version",
+    "id": "id",
+    "request_id": "request_id",
+    "data": {
+        "tags": [],
+        "md5": "data_md5",
+        "private": "data_private",
+        "started_at": "data_started_at",
+        "completed_at": "data_completed_at",
+        "vm": "data_vm",
+        "submission_id": "data_submission_id",
+        "state": "data_state",
+        "login": "data_login",
+        "sha1": "data_sha1",
+        "filename": "data_filename",
+        "status": "data_status",
+        "submitted_at": "data_submitted_at",
+        "id": "data_id",
+        "sha256": "data_sha256",
+        "os": "data_os"
+    }
+}
