@@ -494,10 +494,10 @@ tasks:
       description: Searches for items in the specified mailbox. Specific permissions
         are needed for this operation to search in a target mailbox other than the
         default.
-      script: EWS v2 test|||ews-search-mailbox
+      script: EWS v2|||ews-search-mailbox
       type: regular
       iscommand: true
-      brand: EWS v2 test
+      brand: EWS v2
     nexttasks:
       '#none#':
       - "18"
@@ -533,10 +533,10 @@ tasks:
       version: -1
       name: Move (ews v2)
       description: Move an item to different folder in the mailbox.
-      script: EWS v2 test|||ews-move-item
+      script: EWS v2|||ews-move-item
       type: regular
       iscommand: true
-      brand: EWS v2 test
+      brand: EWS v2
     nexttasks:
       '#none#':
       - "12"
