@@ -2,8 +2,7 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: Playbook used to retrieve job id for submissions of fortisandbox using
-  the submission id.
+description: Playbook used to retrieve job id for submissions of fortisandbox using the submission id.
 id: FortiSandbox - Loop for Job Submissions
 inputs:
 - description: ""
@@ -42,6 +41,9 @@ tasks:
           "y": 50
         }
       }
+    continueonerrortype: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "1":
     id: "1"
     ignoreworker: false
@@ -71,6 +73,9 @@ tasks:
           "y": 220
         }
       }
+    continueonerrortype: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
 version: -1
 view: |-
   {
@@ -87,5 +92,3 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
-marketplaces:
-  - xsoar

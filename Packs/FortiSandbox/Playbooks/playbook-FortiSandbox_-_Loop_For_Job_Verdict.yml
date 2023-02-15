@@ -2,8 +2,7 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: Playbook used to retrieve the verdict for a specific job id for a sample
-  submitted to FortiSandbox
+description: Playbook used to retrieve the verdict for a specific job id for a sample submitted to FortiSandbox
 id: FortiSandbox - Loop For Job Verdict
 inputs:
 - description: Job ID to get verdicts on
@@ -42,6 +41,9 @@ tasks:
           "y": 50
         }
       }
+    continueonerrortype: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "1":
     id: "1"
     ignoreworker: false
@@ -71,6 +73,9 @@ tasks:
           "y": 230
         }
       }
+    continueonerrortype: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
 version: -1
 view: |-
   {
@@ -87,5 +92,3 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
-marketplaces:
-  - xsoar

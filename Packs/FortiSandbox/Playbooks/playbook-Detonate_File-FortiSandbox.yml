@@ -2,8 +2,7 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: Main playbook to upload submissions to FortiSandbox, poll for verdict
-  and retrieve report
+description: Main playbook to upload submissions to FortiSandbox, poll for verdict and retrieve report
 id: Detonate File - FortiSandbox
 inputs:
 - description: |
@@ -51,6 +50,9 @@ tasks:
           "y": 50
         }
       }
+    continueonerrortype: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "3":
     id: "3"
     ignoreworker: false
@@ -61,12 +63,10 @@ tasks:
       wait: 1
     nexttasks:
       '#none#':
-      - "12"
+      - '16'
     note: false
     quietmode: 0
     scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
       Ids:
         simple: ${FortiSandbox.Upload(val.Status == "In-Progress").JobIds}
       Interval:
@@ -107,6 +107,9 @@ tasks:
           "y": 925
         }
       }
+    continueonerrortype: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "4":
     conditions:
     - condition:
@@ -132,7 +135,6 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: ""
       id: 2af03c55-367c-4bca-8816-0f1997c70ebc
       iscommand: false
       name: Check if PDF Report Needed
@@ -148,6 +150,9 @@ tasks:
           "y": 1275
         }
       }
+    continueonerrortype: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "5":
     id: "5"
     ignoreworker: false
@@ -182,6 +187,9 @@ tasks:
           "y": 1450
         }
       }
+    continueonerrortype: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "6":
     id: "6"
     ignoreworker: false
@@ -207,6 +215,9 @@ tasks:
           "y": 1625
         }
       }
+    continueonerrortype: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "8":
     id: "8"
     ignoreworker: false
@@ -217,15 +228,12 @@ tasks:
       wait: 1
     nexttasks:
       '#none#':
-      - "11"
+      - '15'
     note: false
     quietmode: 0
     scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
       Ids:
-        simple: ${FortiSandbox.Upload(val.Status == "Starting").SubmissionId(val.toLowerCase().indexOf(",")
-          === -1)}
+        simple: ${FortiSandbox.Upload(val.Status == "Starting").SubmissionId(val.toLowerCase().indexOf(",") === -1)}
       Interval:
         simple: "1"
       PollingCommandArgName:
@@ -235,8 +243,7 @@ tasks:
       Timeout:
         simple: "6"
       dt:
-        simple: FortiSandbox.Upload(val.Status != "In-Progress").SubmissionId(val.toLowerCase().indexOf(",")
-          === -1)
+        simple: FortiSandbox.Upload(val.Status != "In-Progress").SubmissionId(val.toLowerCase().indexOf(",") === -1)
     separatecontext: true
     skipunavailable: false
     task:
@@ -265,132 +272,15 @@ tasks:
           "y": 575
         }
       }
-  "10":
-    id: "10"
-    ignoreworker: false
-    loop:
-      exitCondition: ""
-      forEach: true
-      iscommand: false
-      max: 100
-      wait: 3
-    nexttasks:
-      '#none#':
-      - "8"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      ArchivePassword: {}
-      FileEntryID:
-        simple: ${File.EntryID}
-      FileSHA256:
-        simple: ${File.SHA256}
-      MalkPkg: {}
-      SkipSteps: {}
-      VM-CSV-List: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 60f6cb08-ffd5-4b2f-8f9e-0fd3a9ed6b59
-      iscommand: false
-      name: acad01ad-5822-4f4b-874a-1072e1e31521
-      playbookId: acad01ad-5822-4f4b-874a-1072e1e31521
-      type: playbook
-      version: -1
-      description: ''
-    taskid: 60f6cb08-ffd5-4b2f-8f9e-0fd3a9ed6b59
-    timertriggers: []
-    type: playbook
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 400
-        }
-      }
-  "11":
-    id: "11"
-    ignoreworker: false
-    loop:
-      exitCondition: ""
-      forEach: true
-      iscommand: false
-      max: 100
-      wait: 3
-    nexttasks:
-      '#none#':
-      - "3"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      SubmissionIDs:
-        simple: ${FortiSandbox.Upload(val.Status == "Starting").SubmissionId}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 16def09f-2896-4a24-8c45-079f64ace095
-      iscommand: false
-      name: 6d811ef8-bbdf-45c7-8ceb-b21da95a3d36
-      playbookId: 6d811ef8-bbdf-45c7-8ceb-b21da95a3d36
-      type: playbook
-      version: -1
-      description: ''
-    taskid: 16def09f-2896-4a24-8c45-079f64ace095
-    timertriggers: []
-    type: playbook
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 750
-        }
-      }
-  "12":
-    id: "12"
-    ignoreworker: false
-    loop:
-      exitCondition: ""
-      forEach: true
-      iscommand: false
-      max: 100
-      wait: 3
-    nexttasks:
-      '#none#':
-      - "4"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      JobIds:
-        simple: ${FortiSandbox.Upload(val.Status == "In-Progress").JobIds}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: ca70dbd1-7e3d-4614-8667-fcdb83e5b418
-      iscommand: false
-      name: b4900d98-bec2-48d5-80e0-c7c02974d5f1
-      playbookId: b4900d98-bec2-48d5-80e0-c7c02974d5f1
-      type: playbook
-      version: -1
-      description: ''
-    taskid: ca70dbd1-7e3d-4614-8667-fcdb83e5b418
-    timertriggers: []
-    type: playbook
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1100
-        }
-      }
+    continueonerrortype: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "13":
     id: "13"
     ignoreworker: true
     nexttasks:
       '#none#':
-      - "10"
+      - '14'
     note: false
     quietmode: 0
     scriptarguments:
@@ -404,9 +294,9 @@ tasks:
       id: c28462c9-5eb9-4c19-846f-40e9168c8b79
       iscommand: false
       name: Sleep 5 seconds without worker to populate files
-      script: Sleep
       type: regular
       version: -1
+      scriptName: Sleep
     taskid: c28462c9-5eb9-4c19-846f-40e9168c8b79
     timertriggers: []
     type: regular
@@ -415,6 +305,134 @@ tasks:
         "position": {
           "x": 50,
           "y": 225
+        }
+      }
+    continueonerrortype: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
+  '14':
+    continueonerrortype: ''
+    id: '14'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      FileEntryID:
+        simple: ${inputs.File}
+      FileSHA256:
+        simple: ${inputs.File.SHA256}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 15dbcf98-9ada-4308-8cc1-056872d6cac6
+      iscommand: false
+      name: FortiSandbox - Upload Multiple Files
+      playbookId: FortiSandbox - Upload Multiple Files
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 15dbcf98-9ada-4308-8cc1-056872d6cac6
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 405
+        }
+      }
+  '15':
+    continueonerrortype: ''
+    id: '15'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      forEach: true
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      SubmissionIDs:
+        simple: ${FortiSandbox.Upload.SubmissionId}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 24f3b556-368f-4f95-8873-463fc5ce6773
+      iscommand: false
+      name: FortiSandbox - Loop for Job Submissions
+      playbookId: FortiSandbox - Loop for Job Submissions
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 24f3b556-368f-4f95-8873-463fc5ce6773
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+  '16':
+    continueonerrortype: ''
+    id: '16'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      forEach: true
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      JobIds:
+        simple: ${FortiSandbox.Upload.JobIds}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: de4a637e-6f6d-4dd9-8c46-7ace224863c6
+      iscommand: false
+      name: FortiSandbox - Loop For Job Verdict
+      playbookId: FortiSandbox - Loop For Job Verdict
+      type: playbook
+      version: -1
+      description: ''
+    taskid: de4a637e-6f6d-4dd9-8c46-7ace224863c6
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1105
         }
       }
 version: -1

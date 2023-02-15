@@ -66,6 +66,9 @@ tasks:
           "y": 50
         }
       }
+    continueonerrortype: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "1":
     id: "1"
     ignoreworker: false
@@ -105,6 +108,9 @@ tasks:
           "y": 230
         }
       }
+    continueonerrortype: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
 version: -1
 view: |-
   {

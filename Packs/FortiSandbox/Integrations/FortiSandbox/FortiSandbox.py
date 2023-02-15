@@ -7,6 +7,7 @@ import base64
 import hashlib
 import json
 import os
+import shutil
 
 import requests
 
@@ -173,8 +174,8 @@ def upload_file_on_demand(session, base_url):
         file_size = file_handler.tell()
         file_handler.close()
 
-    except Exception:
-        raise Exception('Failed to prepare file for upload.')
+    except:
+        return_error("Unable to open file.")
 
     if int(file_size) >= 200000000:
         # Max File Size is 20M, hence the check.
