@@ -701,19 +701,7 @@ tasks:
                 iscontext: true
           accessor: endpoint_id
       ExternalIP:
-        complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.alert_id
-                iscontext: true
-          accessor: action_local_ip
+        simple: 137.184.208.116
       Final_Threshold:
         simple: "3"
       Hostname:
@@ -735,19 +723,7 @@ tasks:
       UserEngagementThreshold:
         simple: "2"
       Username:
-        complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.alert_id
-                iscontext: true
-          accessor: user_name
+        simple: administrator
     separatecontext: true
     continueonerrortype: ""
     loop:
