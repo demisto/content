@@ -8,16 +8,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* ProofpointTAP_v2
 * Proofpoint TAP v2
+* ProofpointTAP_v2
 
 ### Scripts
-* SetAndHandleEmpty
 * Print
+* SetAndHandleEmpty
+* PrintErrorEntry
 
 ### Commands
-* proofpoint-get-forensics
 * proofpoint-get-campaign
+* proofpoint-get-forensics
 
 ## Playbook Inputs
 ---

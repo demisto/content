@@ -50,6 +50,8 @@ tasks:
       - "26"
       Message:
       - "25"
+      '#default#':
+      - "28"
     separatecontext: false
     conditions:
     - label: Message
@@ -862,6 +864,40 @@ tasks:
         "position": {
           "x": 540,
           "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 90d452b9-2684-42b9-8cc1-d69c5e092053
+    type: regular
+    task:
+      id: 90d452b9-2684-42b9-8cc1-d69c5e092053
+      version: -1
+      name: Irrelevant Event Type
+      description: Prints an error entry with a given message
+      tags:
+      - ProofPoint Event Enrichment
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: The detected event type cannot be enriched with forensic evidence.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1250,
+          "y": 70
         }
       }
     note: false
