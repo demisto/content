@@ -337,7 +337,6 @@ def main() -> None:
         elif demisto.command() == 'gra-cases-anomaly':
             caseId = arguments.get('caseId')
             anomaliesUrl = '/anomalies/' + caseId
-            # print(base_url)
             fetch_records(client, anomaliesUrl, 'Gra.Cases.anomalies', 'caseId', params)
 
     # Log exceptions and return errors

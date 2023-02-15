@@ -1095,9 +1095,15 @@ Retrieve anomalies for specified case id from GRA and update in XSOAR.
 
 #### Context Output
 
-| **Path** | **Type** | **Description**    |
-| --- |----------|--------------------|
-|Gra.Cases.anomalies | Grid     | GRA Case Anomalies | 
+| **Path**                             | **Type** | **Description**    |
+|--------------------------------------|----------|--------------------|
+| Gra.Cases.anomalies.anomalyName      | String   | Cases Anomaly name | 
+| Gra.Cases.anomalies.riskAcceptedDate | date     |Risk accepted date of anomaly|
+| Gra.Cases.anomalies.resourceName     | String   |Resource Name|
+|Gra.Cases.anomalies.riskScore| String|Risk score for anomaly|
+|Gra.Cases.anomalies.assignee| String |Assignee name|
+|Gra.Cases.anomalies.assigneeType| String |Assignee type (User/Role)|
+|Gra.Cases.anomalies.status| String |Current status of anomaly|
 
 
 #### Command Example

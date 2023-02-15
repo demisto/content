@@ -2,12 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 
 
-def _get_incident():
-    return demisto.incident()
-
-
 def getAnomaliesByCaseId():
-    incident = _get_incident()
+    incident = demisto.incident()
 
     graCaseId = incident['CustomFields']['gracase']
     oldAnomalies = incident['CustomFields']['gracaseanomalydetails']

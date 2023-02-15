@@ -954,10 +954,29 @@ script:
     arguments:
     - name: caseId
       description: GRA Case Id
+      required: true
     outputs:
-    - contextPath: Gra.Cases.anomalies
-      description: Cases Anomalies
-      type: Unknown
+    - contextPath: Gra.Cases.anomalies.anomalyName
+      description: Cases Anomaly name
+      type: String
+    - contextPath: Gra.Cases.anomalies.riskAcceptedDate
+      description: Risk accepted date of anomaly
+      type: date
+    - contextPath: Gra.Cases.anomalies.resourceName
+      description: Resource Name
+      type: String
+    - contextPath: Gra.Cases.anomalies.riskScore
+      description: Risk score for anomaly
+      type: String
+    - contextPath: Gra.Cases.anomalies.assignee
+      description: Assignee name
+      type: String
+    - contextPath: Gra.Cases.anomalies.assigneeType
+      description: Assignee type (User/Role)
+      type: String
+    - contextPath: Gra.Cases.anomalies.status
+      description: Current status of anomaly
+      type: String
     description: Retrieve anomalies for specified case id.
   dockerimage: demisto/python3:3.10.10.47713
   isfetch: true

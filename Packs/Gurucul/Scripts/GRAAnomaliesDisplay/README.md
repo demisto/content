@@ -4,10 +4,10 @@ Retrieve anomalies for specified case id from GRA and update in XSOAR
 ---
 
 | **Name** | **Description** |
-| --- | --- |
-| Script Type | python3 |
+| --- |-----------------|
+| Script Type | python3         |
 | Tags | dynamic-section |
-| Cortex XSOAR Version | 6.5.0 |
+| Cortex XSOAR Version | 6.0.0           |
 
 ## Inputs
 ---
