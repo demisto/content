@@ -153,7 +153,11 @@ tasks:
           simple: |-
             Run the following command from your endpoint and enter the received indicator from your command.
 
+            MacOS users:
             curl  -u admin:admin <your tenant URL>/xsoar/instance/execute/edl1\?q\=type:ip%20and%20verdict:malicious%20and%20tags:<Tag from the previous answer>
+
+            Windows users (Powershell):
+            (iwr -Uri '<your tenant URL>/xsoar/instance/execute/edl1/?q=type:ip and verdict:malicious and tags:blockit' -Headers @{ Authorization = "Basic "+ [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("admin:admin")) }).Content
         required: false
         gridcolumns: []
         defaultrows: []
@@ -167,7 +171,7 @@ tasks:
         tooltip: 'Once you have ran the command, the output should be displayed immediately . Remember to overwrite all missing data (<your tenant URL> and the <Tag from the previous answer> ) '
         readonly: false
       title: Using EDLs to export indicators
-      description: "The Export Indicator Generic Service can be very useful but remember you have to configure that in advance (no worries - to save you some time, we have already configured that for you.). \n\n\nCheck the command provided to you in the question. \nRun it from your personal terminal on your machine.\n*Note*: You will need \"Curl\" for running this command\n\n![myfile](https://raw.githubusercontent.com/demisto/content/d5fc1ffdf4d70621570e5a60fabea1047df4a3c0/Packs/ctf01/doc_files/matrix.gif)"
+      description: "The Export Indicator Generic Service can be very useful but that integration needs setup and is not enabled by default. To save time, this has been done for you in advance.\nCheck the command provided to you in the question. \nRun it from your personal terminal on your machine.\n\n![myfile](https://raw.githubusercontent.com/demisto/content/d5fc1ffdf4d70621570e5a60fabea1047df4a3c0/Packs/ctf01/doc_files/matrix.gif)"
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -1034,7 +1038,7 @@ tasks:
       description: |-
         Great!
 
-        Now, we have classified the incident as true positive, we would like to verify that we blocked the malicious indicator, therefore, we will use our EDL (Export dynamic lists) integration.
+        Now, we have classified the incident as true positive, we would like to verify that we blocked the malicious indicator. Let’s export this indicator to an External Dynamic List (EDL) using the Export Dynamic Lists integration.
 
         The EDL integration utilizes the TIM query to populate indicators to an external dynamic list. For example, a TIM query can use a dedicated tag for blocking (such as "Bad" or "BlockMe").
 
