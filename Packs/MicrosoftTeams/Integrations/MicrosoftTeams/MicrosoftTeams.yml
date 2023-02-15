@@ -725,6 +725,10 @@ script:
       required: true
     description: Updates the chat name. It can only be set for group chats.
     name: microsoft-teams-chat-update
+  - description: Generate the login url used for Authorization code flow.
+    execution: false
+    name: microsoft-teams-generate-login-url
+    arguments: []
   dockerimage: demisto/teams:1.0.0.48135
   feed: false
   isfetch: false
