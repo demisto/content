@@ -273,15 +273,22 @@ def main():
                 sleep(random.randint(8, 13))
     s = logger.download_as_string()
     logger.upload_from_string(f'{s}\nstart searching for an empty machine')
-    blob = storage_bucket.blob(f'{lock_repo_name}/{options.test_machines_list}')
-    list_machines = blob.download_as_string().decode("utf-8").split()
+    list_machines = options.test_machines_list.decode("utf-8").split()
+    s = logger.download_as_string()
+    logger.upload_from_string(f'{s}\nlist_machines are: {list_machines}')
     machines_locks = (get_files_in_gcp_folder(storage_client, 'xsoar-ci-artifacts', f'{lock_repo_name}/qa2-test-'))
+    s = logger.download_as_string()
+    logger.upload_from_string(f'{s}\nmachines_locks are: {machines_locks}')
     lock_machine_name = None
     while not lock_machine_name:
         for machine in list_machines:
             job_id_of_the_existing_lock = next((d['job_id'] for d in machines_locks if d["machine_name"] == machine), None)
             if job_id_of_the_existing_lock:
+                s = logger.download_as_string()
+                logger.upload_from_string(f'{s}\nThere is a lock file for job id: {job_id_of_the_existing_lock}')
                 job_id_of_the_existing_lock_status = check_job_status(storage_client, job_id_of_the_existing_lock)
+                s = logger.download_as_string()
+                logger.upload_from_string(f'{s}\nthe status of job id: {job_id_of_the_existing_lock} is: {job_id_of_the_existing_lock_status}')
                 if job_id_of_the_existing_lock_status != 'running':
                     remove_machine_lock_file(storage_bucket, lock_repo_name, machine, job_id_of_the_existing_lock)
                     lock_machine(storage_bucket, lock_repo_name, machine, options.ci_job_id)
@@ -289,6 +296,8 @@ def main():
                     lock_machine_name = machine
                     break
             else:
+                s = logger.download_as_string()
+                logger.upload_from_string(f'{s}\nThere is no a lock file')
                 lock_machine(storage_bucket, lock_repo_name, machine, options.ci_job_id)
                 remove_build_from_queue(storage_bucket, lock_repo_name, options.ci_job_id)
                 lock_machine_name = machine
