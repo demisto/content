@@ -634,7 +634,7 @@ Get Audit Events
             "status_id": "Success",
             "timezone": 0,
             "type_id": 21,
-            "user_agent_ip": "172.16.11.157",
+            "user_agent_ip": "127.0.0.1",
             "user_name": "SEDR API",
             "user_uid": "O2ID.atp-customer.atp-domain.dbq9fmcjk132kmha7f9584qvr7",
             "uuid": "b36e1f80-ad24-11ed-e0f5-00000001b4f0"
@@ -646,9 +646,9 @@ Get Audit Events
 #### Human Readable Output
 
 >### Audit Event List
->|Time|TypeId|FeatureName|Message|UserAgentIp|UserName|Severity|DeviceName|DeviceIp|Uuid|StatusId|
->|---|---|---|---|---|---|---|---|---|---|---|
->| 2023-02-15T11:34:25.912Z | 21 | Incident | Incident Closed Successfully. | 172.16.11.157 | SEDR API | Info | localhost.localdomain | 192.168.20.8 | b36e1f80-ad24-11ed-e0f5-00000001b4f0 | Success |
+>|Time|TypeId|FeatureName|Message| UserAgentIp |UserName|Severity|DeviceName|DeviceIp|Uuid|StatusId|
+>|---|---|---|-------------|---|---|---|---|---|---|---|
+>| 2023-02-15T11:34:25.912Z | 21 | Incident | Incident Closed Successfully. | 127.0.0.1 | SEDR API | Info | localhost.localdomain | 192.168.20.8 | b36e1f80-ad24-11ed-e0f5-00000001b4f0 | Success |
 
 
 ### symantec-edr-event-list

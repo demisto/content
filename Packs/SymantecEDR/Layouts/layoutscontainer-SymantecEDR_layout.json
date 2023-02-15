@@ -135,7 +135,6 @@
                         "name": "Team Members",
                         "readOnly": true,
                         "static": false,
-                        "type": "team",
                         "w": 1,
                         "x": 2,
                         "y": 7
@@ -661,21 +660,6 @@
                 "id": "workPlan",
                 "name": "Work Plan",
                 "type": "workPlan"
-            },
-            {
-                "id": "evidenceBoard",
-                "name": "Evidence Board",
-                "type": "evidenceBoard"
-            },
-            {
-                "id": "relatedIncidents",
-                "name": "Related Incidents",
-                "type": "relatedIncidents"
-            },
-            {
-                "id": "canvas",
-                "name": "Canvas",
-                "type": "canvas"
             }
         ]
     },
