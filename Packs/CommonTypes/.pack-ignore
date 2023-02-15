@@ -309,6 +309,18 @@ ignore=IF115
 [file:incidentfield-SSDeep.json]
 ignore=IF115
 
+[file:incidentfield-Original_Alert_ID.json]
+ignore=IF100
+
+[file:incidentfield-Original-Alert_Source.json]
+ignore=IF100
+
+[file:incidentfield-Original_Alert_Name.json]
+ignore=IF100
+
+[file:incidentfield-Original_Events.json]
+ignore=IF100
+
 [known_words]
 SysAid
 longText
