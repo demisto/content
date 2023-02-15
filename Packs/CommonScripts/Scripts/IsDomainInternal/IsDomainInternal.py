@@ -1,7 +1,3 @@
-from time import sleep
-
-POLLING_TIME = 2  # Interval to wait in seconds when polling to check if indicator was created
-
 
 def is_domain_internal(domain: str, internal_domains: List[str]) -> bool:
     parts = domain.split(".")
