@@ -10,117 +10,29 @@ from botocore.config import Config
 
 
 """GLOBAL VARIABLES"""
-AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
-AWS_ROLE_ARN = demisto.params().get('roleArn')
-AWS_ROLE_SESSION_NAME = demisto.params().get('roleSessionName')
-AWS_ROLE_SESSION_DURATION = demisto.params().get('sessionDuration')
+params = demisto.params()
+AWS_DEFAULT_REGION = params.get('defaultRegion')
+AWS_ROLE_ARN = params.get('role_arn')
+AWS_ROLE_SESSION_NAME = params.get('role_session_name')
+AWS_ROLE_SESSION_DURATION = params.get('sessionDuration')
 AWS_ROLE_POLICY = None
-AWS_ACCESS_KEY_ID = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('access_key')
-AWS_SECRET_ACCESS_KEY = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret_key')
+AWS_ACCESS_KEY_ID = params.get('credentials', {}).get('identifier') or params.get('access_key')
+AWS_SECRET_ACCESS_KEY = params.get('credentials', {}).get('password') or params.get('secret_key')
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
-TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
-proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
-config = Config(
-    connect_timeout=1,
-    retries=dict(
-        max_attempts=5
-    ),
-    proxies=proxies
-)
+# TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+# proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
+# config = Config(
+#     connect_timeout=1,
+#     retries=dict(
+#         max_attempts=5
+#     ),
+#     proxies=proxies
+# )
 
 
-def aws_session(service='accessanalyzer', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None,
-                rolePolicy=None):
-    kwargs = {}
-    if roleArn and roleSessionName is not None:
-        kwargs.update({
-            'RoleArn': roleArn,
-            'RoleSessionName': roleSessionName,
-        })
-    elif AWS_ROLE_ARN and AWS_ROLE_SESSION_NAME is not None:
-        kwargs.update({
-            'RoleArn': AWS_ROLE_ARN,
-            'RoleSessionName': AWS_ROLE_SESSION_NAME,
-        })
+def get_session(aws_client: AWSClient, **kwargs):
 
-    if roleSessionDuration is not None:
-        kwargs.update({'DurationSeconds': int(roleSessionDuration)})
-    elif AWS_ROLE_SESSION_DURATION is not None:
-        kwargs.update({'DurationSeconds': int(AWS_ROLE_SESSION_DURATION)})
-
-    if rolePolicy is not None:
-        kwargs.update({'Policy': rolePolicy})
-    elif AWS_ROLE_POLICY is not None:
-        kwargs.update({'Policy': AWS_ROLE_POLICY})
-    if kwargs and not AWS_ACCESS_KEY_ID:
-
-        if not AWS_ACCESS_KEY_ID:
-            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE,
-                                      region_name=AWS_DEFAULT_REGION)
-            sts_response = sts_client.assume_role(**kwargs)
-            if region is not None:
-                client = boto3.client(
-                    service_name=service,
-                    region_name=region,
-                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                    aws_session_token=sts_response['Credentials']['SessionToken'],
-                    verify=VERIFY_CERTIFICATE,
-                    config=config
-                )
-            else:
-                client = boto3.client(
-                    service_name=service,
-                    region_name=AWS_DEFAULT_REGION,
-                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                    aws_session_token=sts_response['Credentials']['SessionToken'],
-                    verify=VERIFY_CERTIFICATE,
-                    config=config
-                )
-    elif AWS_ACCESS_KEY_ID and AWS_ROLE_ARN:
-        sts_client = boto3.client(
-            service_name='sts',
-            aws_access_key_id=AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-            verify=VERIFY_CERTIFICATE,
-            config=config
-        )
-        kwargs.update({
-            'RoleArn': AWS_ROLE_ARN,
-            'RoleSessionName': AWS_ROLE_SESSION_NAME,
-        })
-        sts_response = sts_client.assume_role(**kwargs)
-        client = boto3.client(
-            service_name=service,
-            region_name=AWS_DEFAULT_REGION,
-            aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-            aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-            aws_session_token=sts_response['Credentials']['SessionToken'],
-            verify=VERIFY_CERTIFICATE,
-            config=config
-        )
-    else:
-        if region is not None:
-            client = boto3.client(
-                service_name=service,
-                region_name=region,
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                verify=VERIFY_CERTIFICATE,
-                config=config
-            )
-        else:
-            client = boto3.client(
-                service_name=service,
-                region_name=AWS_DEFAULT_REGION,
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                verify=VERIFY_CERTIFICATE,
-                config=config
-            )
-
-    return client
+    return aws_client.aws_session(service='accessanalyzer', **kwargs)
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -134,17 +46,10 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def list_analyzers_command(args):
-    client = aws_session(
-        region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration')
-    )
-
+def list_analyzers_command(aws_session):
     data = []
 
-    response = client.list_analyzers()
+    response = aws_session.list_analyzers()
     for analyzer in response['analyzers']:
         data.append(analyzer)
     data = json.loads(json.dumps(data, cls=DatetimeEncoder))
@@ -154,14 +59,8 @@ def list_analyzers_command(args):
     return_outputs(human_readable, ec)
 
 
-def list_analyzed_resource_command(args):
-    client = aws_session(
-        region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
-    )
-
+def list_analyzed_resource_command(aws_session):
+    
     kwargs = {
         'analyzerArn': args.get('analyzerArn')
     }
@@ -171,7 +70,7 @@ def list_analyzed_resource_command(args):
     if args.get('resourceType'):
         kwargs['resourceType'] = args.get('resourceType')
 
-    response = client.list_analyzed_resources(**kwargs)
+    response = aws_session.list_analyzed_resources(**kwargs)
     data = []
     for resource in response['analyzedResources']:
         resource['analyzerArn'] = args.get('analyzerArn')
@@ -182,13 +81,8 @@ def list_analyzed_resource_command(args):
     return_outputs(human_readable, ec)
 
 
-def get_findings_command(args):
-    client = aws_session(
-        region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
-    )
+def get_findings_command(aws_session):
+    
 
     kwargs = {
         'analyzerArn': args.get('analyzerArn')
@@ -215,19 +109,14 @@ def get_findings_command(args):
     if len(filters) > 0:
         kwargs['filter'] = filters
 
-    response = client.list_findings(**kwargs)
+    response = aws_session.list_findings(**kwargs)
     data = json.loads(json.dumps(response, cls=DatetimeEncoder))
 
     return [data] if isinstance(data, dict) else data
 
 
-def list_findings_command(args):
-    client = aws_session(
-        region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
-    )
+def list_findings_command(aws_session):
+    
 
     kwargs = {
         'analyzerArn': args.get('analyzerArn')
@@ -246,7 +135,7 @@ def list_findings_command(args):
     if len(filters) > 0:
         kwargs['filter'] = filters
 
-    response = client.list_findings(**kwargs)
+    response = aws_session.list_findings(**kwargs)
     data = json.loads(json.dumps(response['findings'], cls=DatetimeEncoder))
 
     ec = {'AWS.AccessAnalyzer.Findings(val.id === obj.id)': data}
@@ -254,20 +143,15 @@ def list_findings_command(args):
     return_outputs(human_readable, ec)
 
 
-def get_analyzed_resource_command(args):
-    client = aws_session(
-        region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
-    )
+def get_analyzed_resource_command(aws_session):
+    
 
     kwargs = {
         'analyzerArn': args.get('analyzerArn'),
         'resourceArn': args.get('resourceArn')
     }
 
-    response = client.get_analyzed_resource(**kwargs)
+    response = aws_session.get_analyzed_resource(**kwargs)
     data = json.loads(json.dumps(response['resource'], cls=DatetimeEncoder))
     data['analyzerArn'] = args.get('analyzerArn')
 
@@ -276,20 +160,15 @@ def get_analyzed_resource_command(args):
     return_outputs(human_readable, ec)
 
 
-def get_finding_command(args):
-    client = aws_session(
-        region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
-    )
+def get_finding_command(aws_session):
+    
 
     kwargs = {
         'analyzerArn': args.get('analyzerArn'),
         'id': args.get('findingId')
     }
 
-    response = client.get_finding(**kwargs)
+    response = aws_session.get_finding(**kwargs)
     data = json.loads(json.dumps(response['finding'], cls=DatetimeEncoder))
     data['analyzerArn'] = args.get('analyzerArn')
 
@@ -298,31 +177,21 @@ def get_finding_command(args):
     return_outputs(human_readable, ec)
 
 
-def start_resource_scan_command(args):
-    client = aws_session(
-        region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
-    )
+def start_resource_scan_command(aws_session):
+    
 
     kwargs = {
         'analyzerArn': args.get('analyzerArn'),
         'resourceArn': args.get('resourceArn')
     }
 
-    response = client.start_resource_scan(**kwargs)
+    response = aws_session.start_resource_scan(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results("Resource scan request sent.")
 
 
-def update_findings_command(args):
-    client = aws_session(
-        region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
-    )
+def update_findings_command(aws_session):
+    
 
     ids = args.get('findingIds').split(',')
 
@@ -332,26 +201,27 @@ def update_findings_command(args):
         'status': args.get('status')
     }
 
-    response = client.update_findings(**kwargs)
+    response = aws_session.update_findings(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results("Findings updated")
 
 
-def test_function():
+def test_function() -> str:
+    err_msg = ''
     try:
-        client = aws_session()
-        response = client.list_analyzers()
+        client = get_session()
+        response = aws_session.list_analyzers()
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            demisto.results('ok')
-        else:
-            return_error(str(response))
+            return 'ok'
 
+        err_msg = str(response)
     except Exception as e:
-        return return_error(str(e))
-
+        err_msg = str(e)
+    
+    raise DemistoException(f'Failed to run test-module: {err_msg}')
 
 def fetch_incidents(last_run: dict = None):
-    dParams = demisto.params()
+    params = demisto.params()
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
 
@@ -362,13 +232,13 @@ def fetch_incidents(last_run: dict = None):
         last_fetch = date_to_timestamp(delta)
 
     incidents: list = []
-    dArgs = {}
-    dArgs['roleArn'] = dParams.get('roleArn')
-    dArgs['region'] = dParams.get('region')
-    dArgs['roleSessionName'] = dParams.get('roleSessionName')
-    dArgs['roleSessionDuration'] = dParams.get('roleSessionDuration')
-    dArgs['analyzerArn'] = dParams.get('analyzerArn')
-    dArgs['maxResults'] = 25
+    findings_args = {}
+    findings_args['role_arn'] = params.get('role_arn')
+    findings_args['region'] = params.get('region')
+    findings_args['role_session_name'] = params.get('role_session_name')
+    findings_args['role_session_duration'] = params.get('role_session_duration')
+    findings_args['analyzerArn'] = params.get('analyzerArn')
+    findings_args['maxResults'] = 25
 
     nextToken = None
     incidents = []
@@ -377,8 +247,8 @@ def fetch_incidents(last_run: dict = None):
     while True:
 
         if nextToken:
-            dArgs['nextToken'] = nextToken
-        raw_incidents = get_findings_command(dArgs)
+            findings_args['nextToken'] = nextToken
+        raw_incidents = get_findings_command(findings_args)
 
         for raw_incident in raw_incidents[0]['findings']:
             incident = {
@@ -401,31 +271,67 @@ def fetch_incidents(last_run: dict = None):
         else:
             break
 
-    demisto.setLastRun({"time": tmp_last_fetch if tmp_last_fetch else last_fetch})
-    return incidents
+    demisto.setLastRun({"time": tmp_last_fetch or last_fetch})
+    demisto.incidents(incidents)
 
 
-"""EXECUTION BLOCK"""
-try:
-    if demisto.command() == 'test-module':
-        result = test_function()
-    elif demisto.command() == 'fetch-incidents':
-        incidents = fetch_incidents(demisto.getLastRun())
-        demisto.incidents(incidents)
-    elif demisto.command() == 'aws-access-analyzer-list-analyzers':
-        list_analyzers_command(demisto.args())
-    elif demisto.command() == 'aws-access-analyzer-list-analyzed-resource':
-        list_analyzed_resource_command(demisto.args())
-    elif demisto.command() == 'aws-access-analyzer-list-findings':
-        list_findings_command(demisto.args())
-    elif demisto.command() == 'aws-access-analyzer-get-analyzed-resource':
-        get_analyzed_resource_command(demisto.args())
-    elif demisto.command() == 'aws-access-analyzer-get-finding':
-        get_finding_command(demisto.args())
-    elif demisto.command() == 'aws-access-analyzer-start-resource-scan':
-        start_resource_scan_command(demisto.args())
-    elif demisto.command() == 'aws-access-analyzer-update-findings':
-        update_findings_command(demisto.args())
+def main():
+    params = demisto.params()
+    aws_default_region = params.get('defaultRegion')
+    aws_role_arn = params.get('role_arn')
+    aws_role_session_name = params.get('role_session_name')
+    aws_role_session_duration = params.get('sessionDuration')
+    aws_role_policy = None
+    aws_access_key_id = params.get('credentials', {}).get('identifier') or params.get('access_key')
+    aws_secret_access_key = params.get('credentials', {}).get('password') or params.get('secret_key')
+    verify_certificate = not params.get('insecure', True)
+    timeout = demisto.params().get('timeout')
+    retries = demisto.params().get('retries', 5)
+    validate_params(aws_default_region, aws_role_arn,
+                    aws_role_session_name, aws_access_key_id,
+                    aws_secret_access_key)
 
-except Exception as e:
-    return_error(f"Error has occured in AWS Access Analyzer Integration: {str(e)}")
+    aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
+                           aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
+                           retries)
+    command = demisto.command()
+    args = demisto.args()
+    commands = {
+        'aws-access-analyzer-list-analyzers': list_analyzers_command,
+        'aws-access-analyzer-list-analyzed-resource': list_analyzed_resource_command,
+        'aws-access-analyzer-list-findings': list_findings_command,
+        'aws-access-analyzer-get-analyzed-resource': get_analyzed_resource_command,
+        'aws-access-analyzer-get-finding': get_finding_command,
+        'aws-access-analyzer-start-resource-scan': start_resource_scan_command,
+        'aws-access-analyzer-update-findings': update_findings_command,
+    }
+    try:
+        if command == 'test-module':
+            return_results(test_function())
+        elif command == 'fetch-incidents':
+            fetch_incidents(demisto.getLastRun())
+        else:
+            return_results(commands[command](aws_session))
+        # elif command == 'aws-access-analyzer-list-analyzers':
+        #     list_analyzers_command(aws_session)
+        # elif command == 'aws-access-analyzer-list-analyzed-resource':
+        #     list_analyzed_resource_command(aws_session)
+        # elif command == 'aws-access-analyzer-list-findings':
+        #     list_findings_command(aws_session)
+        # elif command == 'aws-access-analyzer-get-analyzed-resource':
+        #     get_analyzed_resource_command(aws_session)
+        # elif command == 'aws-access-analyzer-get-finding':
+        #     get_finding_command(aws_session)
+        # elif command == 'aws-access-analyzer-start-resource-scan':
+        #     start_resource_scan_command(aws_session)
+        # elif command == 'aws-access-analyzer-update-findings':
+        #     update_findings_command(aws_session)
+    except Exception as e:
+        return_error(f"Error has occurred in AWS Access Analyzer Integration: {str(e)}")
+
+
+from AWSApiModule import *  # noqa: E402
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
