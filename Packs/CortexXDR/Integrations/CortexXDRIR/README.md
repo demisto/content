@@ -154,8 +154,8 @@ If you pass multiple filtering arguments, they will be concatenated using the AN
 
 ##### Required Permissions
 Required Permissions For API call:
-'Alerts And Incidents' --> 'View'
-Builtin Roles with this permission includes: `Investigator`, `Responder`, `Privileged Investigator`, `Privileged Responder`, `Viewer`, and `Instance Admin`.
+`Alerts And Incidents` --> `View`
+Builtin Roles with this permission includes: "Investigator", "Responder", "Privileged Investigator", "Privileged Responder", "Viewer", and "Instance Admin".
 
 #### Base Command
 
@@ -304,9 +304,9 @@ Returns additional data for the specified incident, for example, related alerts,
 
 ##### Required Permissions
 Required Permissions For API call:
-‘Alerts And Incidents’ --> ‘View’
+`Alerts And Incidents` --> `View`
 
-Builtin Roles with this permission includes: `Investigator`, `Responder`, `Privileged Investigator`, `Privileged Responder`, `Viewer`, and `Instance Admin`.
+Builtin Roles with this permission includes: "Investigator", "Responder", "Privileged Investigator", "Privileged Responder", "Viewer", and "Instance Admin".
 
 #### Base Command
 
@@ -429,9 +429,9 @@ Updates one or more fields of a specified incident. Missing fields will be ignor
 
 ##### Required Permissions
 Required Permissions For API call:
-‘Alerts And Incidents’ --> ‘View / Edit’
+`Alerts And Incidents` --> `View / Edit`
 
-Builtin Roles with this permission includes: `Investigator`, `Privileged Investigator`, `Privileged Responder`, and `Instance Admin`.
+Builtin Roles with this permission includes: "Investigator", "Privileged Investigator", "Privileged Responder", and "Instance Admin".
 
 ##### Command Example
 ```!xdr-get-incident-extra-data incident_id=4 alerts_limit=10```
@@ -784,9 +784,9 @@ maximum of 60 alerts.
 
 ##### Required Permissions
 Required Permissions For API call:
-‘External Alerts Mapping’ --> ‘View’
+`External Alerts Mapping`--> `View`
 
-Builtin Roles with this permission includes: `Instance Admin`.
+Builtin Roles with this permission includes: "Instance Admin".
 #### Base Command
 
 `xdr-insert-parsed-alert`
@@ -815,9 +815,9 @@ Upload alerts in CEF format from external alert sources. After you map CEF alert
 
 ##### Required Permissions
 Required Permissions For API call:
-‘External Alerts Mapping’ --> ‘View’
+`External Alerts Mapping`--> `View`
 
-Builtin Roles with this permission includes: `Instance Admin`.
+Builtin Roles with this permission includes: "Instance Admin".
 
 #### Base Command
 
@@ -841,7 +841,7 @@ Required Permissions For API call:
 `Action Center` --> `View/ Edit`
 `Action Center` --> `Isolate`
 
-Builtin Roles with this permission includes: `Privileged Responder` and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Responder" and "Instance Admin".
 
 
 #### Base Command
@@ -875,7 +875,7 @@ Required Permissions For API call:
 `Action Center` --> `View/ Edit`
 `Action Center` --> `Isolate`
 
-Builtin Roles with this permission includes: `Privileged Responder` and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Responder" and "Instance Admin".
 
 #### Base Command
 
@@ -906,7 +906,7 @@ Gets a list of endpoints, according to the passed filters. If there are no filte
 Required Permissions For API call:
 `Endpoint Administrations` --> `View`
 
-Builtin Roles with this permission includes: `Privileged Responder`, `Viewer` and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Responder", "Viewer" and "Instance Admin".
 
 #### Base Command
 
@@ -1071,7 +1071,7 @@ Gets a list of all the agent versions to use for creating a distribution list.
 Required Permissions For API call:
 `Endpoint Installations` --> `View`
 
-Builtin Roles with this permission includes: `Viewer` and `Instance Admin`.
+Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
 
 #### Base Command
 
@@ -1146,7 +1146,7 @@ Creates an installation package. This is an asynchronous call that returns the d
 Required Permissions For API call:
 `Endpoint Installations` --> `View/ Edit`
 
-Builtin Roles with this permission includes: `Instance Admin`.
+Builtin Roles with this permission includes: "Instance Admin".
 
 #### Base Command
 
@@ -1201,7 +1201,7 @@ Gets the distribution URL for downloading the installation package.
 Required Permissions For API call:
 `Endpoint Installations` --> `View`
 
-Builtin Roles with this permission includes: `Viewer` and `Instance Admin`.
+Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
 #### Base Command
 
 `xdr-get-distribution-url`
@@ -1232,7 +1232,7 @@ Gets the status of the installation package.
 Required Permissions For API call:
 `Endpoint Installations` --> `View`
 
-Builtin Roles with this permission includes: `Viewer` and `Instance Admin`.
+Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
 #### Base Command
 
 `xdr-get-create-distribution-status`
@@ -1261,7 +1261,7 @@ Gets management logs. You can filter by multiple fields, which will be concatena
 Required Permissions For API call:
 `Auditing` --> `View`
 
-Builtin Roles with this permission includes: `Viewer` and `Instance Admin`.
+Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
 ##### Context Example
 ```
 {
@@ -1325,7 +1325,7 @@ Gets agent event reports. You can filter by multiple fields, which will be conca
 Required Permissions For API call:
 `Auditing` --> `View`
 
-Builtin Roles with this permission includes: `Viewer` and `Instance Admin`.
+Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
 
 #### Base Command
 
@@ -1376,7 +1376,7 @@ Required Permissions For API call:
 `Action Center` --> `View/ Edit`
 `Action Center` --> `Allow List/Block List`
 
-Builtin Roles with this permission includes: `Responder`, `Privileged Responder` and `Instance Admin`.
+Builtin Roles with this permission includes: "Responder", "Privileged Responder" and "Instance Admin".
 
 #### Base Command
 
@@ -1407,7 +1407,7 @@ Required Permissions For API call:
 `Action Center` --> `View/ Edit`
 `Action Center` --> `Allow List/Block List`
 
-Builtin Roles with this permission includes: `Responder`, `Privileged Responder` and `Instance Admin`.
+Builtin Roles with this permission includes: "Responder", "Privileged Responder" and "Instance Admin".
 
 #### Base Command
 
@@ -1438,7 +1438,7 @@ Required Permissions For API call:
 `Action Center` --> `View/ Edit`
 `Action Center` --> `Quarantine`
 
-Builtin Roles with this permission includes: `Responder`, `Privileged Responder` and `Instance Admin`.
+Builtin Roles with this permission includes: "Responder", "Privileged Responder" and "Instance Admin".
 
 #### Base Command
 
@@ -1469,7 +1469,7 @@ Required Permissions For API call:
 `Action Center` --> `View/ Edit`
 `Action Center` --> `Quarantine`
 
-Builtin Roles with this permission includes: `Responder`, `Privileged Responder` and `Instance Admin`.
+Builtin Roles with this permission includes: "Responder", "Privileged Responder" and "Instance Admin".
 #### Base Command
 
 `xdr-get-quarantine-status`
@@ -1494,7 +1494,7 @@ Required Permissions For API call:
 `Action Center` --> `View/ Edit`
 `Action Center` --> `Quarantine`
 
-Builtin Roles with this permission includes: `Responder`, `Privileged Responder` and `Instance Admin`.
+Builtin Roles with this permission includes: "Responder", "Privileged Responder" and "Instance Admin".
 
 #### Base Command
 
@@ -1525,7 +1525,7 @@ Required Permissions For API call:
 `Endpoint Administrations` --> `View/ Edit`
 `Endpoint Administrations` --> `Endpoint Scan`
 
-Builtin Roles with this permission includes: `Privileged Responder` and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Responder" and "Instance Admin".
 
 #### Base Command
 
@@ -1569,7 +1569,7 @@ Required Permissions For API call:
 `Endpoint Administrations` --> `View/ Edit`
 `Endpoint Administrations` --> `Endpoint Scan`
 
-Builtin Roles with this permission includes: `Privileged Responder` and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Responder" and "Instance Admin".
 
 #### Base Command
 
@@ -1663,7 +1663,7 @@ Gets the policy name for a specific endpoint.
 Required Permissions For API call:
 `Endpoint Prevention Policies` --> `View`
 
-Builtin Roles with this permission includes: `Privileged Investigator`, `Privileged Responder`, `Viewer`, and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Investigator", "Privileged Responder", "Viewer", and "Instance Admin".
 
 #### Base Command
 
@@ -1693,7 +1693,7 @@ Required Permissions For API call:
 `Endpoint Administrations` --> `View/ Edit`
 `Endpoint Administrations` --> `Endpoint Scan`
 
-Builtin Roles with this permission includes: `Privileged Responder`, `Viewer` and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Responder", "Viewer" and "Instance Admin".
 
 #### Base Command
 
@@ -1737,7 +1737,7 @@ Deletes selected endpoints in the Cortex XDR app. You can delete up to 1000 endp
 Required Permissions For API call:
 `Endpoint Administrations` --> `View/ Edit`
 
-Builtin Roles with this permission includes: `Privileged Responder` and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Responder" and "Instance Admin".
 
 #### Base Command
 
@@ -1760,7 +1760,7 @@ Gets a list of device control violations filtered by selected fields. You can re
 Required Permissions For API call:
 `Device Control` --> `View`
 
-Builtin Roles with this permission includes: `Privileged Investigator`, `Privileged Responder`, `Viewer`, and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Investigator", "Privileged Responder", "Viewer", and "Instance Admin".
 
 #### Base Command
 
@@ -1813,7 +1813,7 @@ Required Permissions For API call:
 `Action Center` --> `View/ Edit`
 `Action Center` --> `File Retrieval`
 
-Builtin Roles with this permission includes: `Privileged Responder` and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Responder" and "Instance Admin".
 
 #### Base Command
 
@@ -1851,7 +1851,7 @@ Required Permissions For API call:
 `Action Center` --> `View/ Edit`
 `Action Center` --> `File Retrieval`
 
-Builtin Roles with this permission includes: `Privileged Responder` and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Responder" and "Instance Admin".
 #### Base Command
 
 `xdr-retrieve-file-details`
@@ -1885,7 +1885,7 @@ Gets the full definition of a specific script in the scripts library.
 Required Permissions For API call:
 `Agent Scripts library` --> `View`
 
-Builtin Roles with this permission includes: `Privileged Responder`, `Viewer` and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Responder", "Viewer" and "Instance Admin".
 #### Base Command
 
 `xdr-get-script-metadata`
@@ -1923,7 +1923,7 @@ Gets the code of a specific script in the script library.
 Required Permissions For API call:
 `Agent Scripts library` --> `View`
 
-Builtin Roles with this permission includes: `Privileged Responder`, `Viewer` and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Responder", "Viewer" and "Instance Admin".
 #### Base Command
 
 `xdr-get-script-code`
@@ -1950,7 +1950,7 @@ Retrieves the status of the requested actions according to the action ID.
 Required Permissions For API call:
 `Action Center` --> `View`
 
-Builtin Roles with this permission includes: `Responder`, `Privileged Investigator`, `Privileged Responder`, `Viewer`, and `Instance Admin`.
+Builtin Roles with this permission includes: "Responder", "Privileged Investigator", "Privileged Responder", "Viewer", and "Instance Admin".
 #### Base Command
 
 `xdr-action-status-get`
@@ -2004,7 +2004,7 @@ Initiates a new endpoint script execution action using the provided snippet code
 Required Permissions For API call:
 `Action Center` --> `View`
 
-Builtin Roles with this permission includes: `Responder`, `Privileged Investigator`, `Privileged Responder`, `Viewer`, and `Instance Admin`.
+Builtin Roles with this permission includes: "Responder", "Privileged Investigator", "Privileged Responder", "Viewer", and "Instance Admin".
 #### Base Command
 
 `xdr-snippet-code-script-execute`
@@ -2035,7 +2035,7 @@ Retrieves the status of a script execution action.
 Required Permissions For API call:
 `Agent Scripts library` --> `View`
 
-Builtin Roles with this permission includes: `Privileged Responder`, `Viewer` and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Responder", "Viewer" and "Instance Admin".
 
 #### Base Command
 
@@ -2072,7 +2072,7 @@ Retrieve the results of a script execution action.
 Required Permissions For API call:
 `Agent Scripts library` --> `View`
 
-Builtin Roles with this permission includes: `Privileged Responder`, `Viewer` and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Responder", "Viewer" and "Instance Admin".
 
 #### Base Command
 
@@ -2109,7 +2109,7 @@ Gets the files retrieved from a specific endpoint during a script execution.
 Required Permissions For API call:
 `Agent Scripts library` --> `View`
 
-Builtin Roles with this permission includes: `Privileged Responder`, `Viewer` and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Responder", "Viewer" and "Instance Admin".
 
 #### Base Command
 
@@ -2258,7 +2258,7 @@ Returns information about an endpoint.
 Required Permissions For API call:
 `Endpoint Administrations` --> `View`
 
-Builtin Roles with this permission includes: `Privileged Responder`, `Viewer` and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Responder", "Viewer" and "Instance Admin".
 
 #### Base Command
 
@@ -2293,7 +2293,7 @@ Returns the number of the connected\disconnected endpoints.
 Required Permissions For API call:
 `Endpoint Administrations` --> `View`
 
-Builtin Roles with this permission includes: `Privileged Responder`, `Viewer` and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Responder", "Viewer" and "Instance Admin".
 
 #### Base Command
 
@@ -2322,7 +2322,7 @@ Returns information about each alert ID.
 Required Permissions For API call:
 `Alerts & Incidents` --> `View`
 
-Builtin Roles with this permission includes: `Investigator`, `Responder`, `Privileged Investigator`, `Privileged Responder`, `Viewer`, and `Instance Admin`.
+Builtin Roles with this permission includes: "Investigator", "Responder", "Privileged Investigator", "Privileged Responder", "Viewer", and "Instance Admin".
 #### Base Command
 
 `xdr-get-cloud-original-alerts`
@@ -2388,7 +2388,7 @@ Required Permissions For API call:
 `Action Center` --> `View/ Edit`
 `Action Center` --> `Allow List/Block List`
 
-Builtin Roles with this permission includes: `Responder`, `Privileged Responder` and `Instance Admin`.
+Builtin Roles with this permission includes: "Responder", "Privileged Responder" and "Instance Admin".
 
 #### Base Command
 
@@ -2417,7 +2417,7 @@ Required Permissions For API call:
 `Action Center` --> `View/ Edit`
 `Action Center` --> `Allow List/Block List`
 
-Builtin Roles with this permission includes: `Responder`, `Privileged Responder` and `Instance Admin`.
+Builtin Roles with this permission includes: "Responder", "Privileged Responder" and "Instance Admin".
 
 #### Base Command
 
@@ -2449,7 +2449,7 @@ Multiple filter arguments will be concatenated using the AND operator, while arg
 Required Permissions For API call:
 `Alerts & Incidents` --> `View`
 
-Builtin Roles with this permission includes: `Investigator`, `Responder`, `Privileged Investigator`, `Privileged Responder`, `Viewer`, and `Instance Admin`.
+Builtin Roles with this permission includes: "Investigator", "Responder", "Privileged Investigator", "Privileged Responder", "Viewer", and "Instance Admin".
 #### Base Command
 
 `xdr-get-alerts`
@@ -3013,7 +3013,7 @@ Known limitation: the command is compatible **only** with correlation alerts, ot
 Required Permissions For API call:
 `Alerts & Incidents` --> `View`
 
-Builtin Roles with this permission includes: `Investigator`, `Responder`, `Privileged Investigator`, `Privileged Responder`, `Viewer`, and `Instance Admin`.
+Builtin Roles with this permission includes: "Investigator", "Responder", "Privileged Investigator", "Privileged Responder", "Viewer", and "Instance Admin".
 #### Base Command
 
 `xdr-get-contributing-event`
@@ -3112,7 +3112,7 @@ Replace the featured hosts\users\IP addresses\active directory groups listed in 
 Required Permissions For API call:
 `Alerts & Incidents` --> `View/ Edit`
 
-Builtin Roles with this permission includes: `Investigator`, `Privileged Investigator`, `Privileged Responder` and `Instance Admin`.
+Builtin Roles with this permission includes: "Investigator", "Privileged Investigator", "Privileged Responder" and "Instance Admin".
 #### Base Command
 
 `xdr-replace-featured-field`
@@ -3168,7 +3168,7 @@ Initiates a new endpoint script execution action using a script from the script 
 Required Permissions For API call:
 `Agent Scripts library` --> `View`
 
-Builtin Roles with this permission includes: `Privileged Responder`, `Viewer` and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Responder", "Viewer" and "Instance Admin".
 
 
 #### Base Command
@@ -3292,7 +3292,7 @@ Adds a tag to specified endpoint_ids
 Required Permissions For API call:
 `Endpoint Administrations` --> `View/ Edit`
 
-Builtin Roles with this permission includes: `Privileged Responder` and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Responder" and "Instance Admin".
 #### Base Command
 
 `xdr-endpoint-tag-add`
@@ -3315,7 +3315,7 @@ Removes a tag from specified endpoint_ids.
 Required Permissions For API call:
 `Endpoint Administrations` --> `View/ Edit`
 
-Builtin Roles with this permission includes: `Privileged Responder` and `Instance Admin`.
+Builtin Roles with this permission includes: "Privileged Responder" and "Instance Admin".
 
 #### Base Command
 
