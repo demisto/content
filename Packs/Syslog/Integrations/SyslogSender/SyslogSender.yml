@@ -17,7 +17,7 @@ configuration:
   required: false
   type: 0
   section: Connect
-  additionalinfo: When using UDP or TCP, port 514 is the default. Else,when using TLS, port 6514 is the default.
+  additionalinfo: When using UDP or TCP, port 514 is the default. When using TLS, port 6514 is the default.
 - defaultvalue: UDP
   display: Protocol
   name: protocol
@@ -183,7 +183,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The protocol to use. Can be "TCP" or "UDP" or "TLS".
+      description: The protocol to use. Can be "TCP", "UDP", or "TLS".
       isArray: false
       name: protocol
       predefined:

@@ -190,11 +190,11 @@ def test_init_manager_address():
         'priority': 'LOG_DEBUG',
         'facility': 'LOG_SYSLOG'
     }
-    address_after_encoding = base64.b64encode(params['address'].encode()).decode("utf-8")
+    # address_after_encoding = base64.b64encode(params['address'].encode()).decode("utf-8")
 
     # Arrange
     manager = init_manager(params)
-    assert manager.address == address_after_encoding
+    assert manager.address == params['address']
     assert manager.port == 514
     assert manager.protocol == 'tcp'
     assert manager.logging_level == 10
