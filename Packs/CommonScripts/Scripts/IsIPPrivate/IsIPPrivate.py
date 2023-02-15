@@ -113,4 +113,4 @@ for ip in ip_list:
     demisto.executeCommand("appendIndicatorField", args_append_tag)
 
 # Return results
-demisto.results(entry_to_return)
+return_results(entry_to_return)
