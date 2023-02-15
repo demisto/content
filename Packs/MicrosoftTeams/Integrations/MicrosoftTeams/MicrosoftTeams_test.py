@@ -2238,8 +2238,9 @@ def test_generate_login_url(mocker):
         'BOT_ID': client_id
     }
     mocker.patch.dict(MicrosoftTeams.__dict__, MicrosoftTeams.__dict__ | mocked_params)
-    mocker.patch.object(demisto, 'command', return_value='microsoft-teams-generate-login-url')
     mocker.patch.object(MicrosoftTeams, 'return_results')
+    mocker.patch.object(MicrosoftTeams, 'support_multithreading')
+    mocker.patch.object(demisto, 'command', return_value='microsoft-teams-generate-login-url')
 
     # call
     main()
