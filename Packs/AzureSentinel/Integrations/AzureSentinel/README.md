@@ -1770,3 +1770,144 @@ Replaces the tags of a given indicator.
 
 Tags were replaced to 1286115b-3b65-5537-e831-969045792910 Threat Indicator.
 
+### azure-sentinel-list-alert-rule
+***
+Gets a list of all alert rules.
+
+
+#### Base Command
+
+`azure-sentinel-list-alert-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | The rule id, if not given will return all rules. | Optional | 
+| limit | The maximum number of rules to return. Default is 50. | Optional | 
+| subscription_id | The subscription ID. | Optional | 
+| resource_group_name | The resource group name. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.AlertRule.id | String | Fully qualified resource ID for the resource. | 
+| AzureSentinel.AlertRule.name | String | The name of the resource. | 
+| AzureSentinel.AlertRule.type | String | The type of the resource. | 
+| AzureSentinel.AlertRule.kind | String | The alert rule kind. | 
+| AzureSentinel.AlertRule.etag | String | Etag of the azure resource. | 
+| AzureSentinel.AlertRule.properties.alertRuleTemplateName | Unknown | The Name of the alert rule template used to create this rule. | 
+| AzureSentinel.AlertRule.properties.displayName | String | The display name for alerts created by this alert rule. | 
+| AzureSentinel.AlertRule.properties.description | String | The description of the alert rule. | 
+| AzureSentinel.AlertRule.properties.severity | String | The severity for alerts created by this alert rule. | 
+| AzureSentinel.AlertRule.properties.enabled | Boolean | Determines whether this alert rule is enabled or disabled. | 
+| AzureSentinel.AlertRule.properties.tactics | String | The tactics of the alert rule. | 
+| AzureSentinel.AlertRule.properties.query | String | The query that creates alerts for this rule. | 
+| AzureSentinel.AlertRule.properties.queryFrequency | String | The frequency \(in ISO 8601 duration format\) for this alert rule to run. | 
+| AzureSentinel.AlertRule.properties.queryPeriod | String | The period \(in ISO 8601 duration format\) that this alert rule looks at. | 
+| AzureSentinel.AlertRule.properties.triggerOperator | String | The operation against the threshold that triggers alert rule. | 
+| AzureSentinel.AlertRule.properties.triggerThreshold | Number | The threshold triggers this alert rule. | 
+| AzureSentinel.AlertRule.properties.suppressionDuration | String | The suppression \(in ISO 8601 duration format\) to wait since last time this alert rule been triggered. | 
+| AzureSentinel.AlertRule.properties.suppressionEnabled | Boolean | Determines whether the suppression for this alert rule is enabled or disabled. | 
+| AzureSentinel.AlertRule.properties.lastModifiedUtc | Date | The last time that this alert rule has been modified. | 
+| AzureSentinel.AlertRule.properties.eventGroupingSettings.aggregationKind | String | The event grouping aggregation kinds. | 
+| AzureSentinel.AlertRule.properties.entityMappings.entityType | String | The V3 type of the mapped entity. | 
+| AzureSentinel.AlertRule.properties.entityMappings.fieldMappings.identifier | String | the V3 identifier of the entity. | 
+| AzureSentinel.AlertRule.properties.entityMappings.fieldMappings.columnName | String | the column name to be mapped to the identifier. | 
+| AzureSentinel.AlertRule.properties.alertDetailsOverride.alertDisplayNameFormat | String | the format containing columns name\(s\) to override the alert name. | 
+| AzureSentinel.AlertRule.properties.alertDetailsOverride.alertDescriptionFormat | String | the format containing columns name\(s\) to override the alert description. | 
+| AzureSentinel.AlertRule.properties.alertDetailsOverride.alertTacticsColumnName | Unknown | the column name to take the alert tactics from. | 
+| AzureSentinel.AlertRule.properties.alertDetailsOverride.alertSeverityColumnName | Unknown | the column name to take the alert severity from. | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration.createIncident | Boolean | Create incidents from alerts triggered by this analytics rule. | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.enabled | Boolean | Grouping enabled. | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.reopenClosedIncident | Boolean | Re-open closed matching incidents. | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.lookbackDuration | String | Limit the group to alerts created within the lookback duration \(in ISO 8601 duration format\). | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.matchingMethod | String | Grouping matching method. When method is Selected at least one of groupByEntities, groupByAlertDetails, groupByCustomDetails must be provided and not empty. | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.groupByEntities | String | A list of entity types to group by \(when matchingMethod is Selected\). Only entities defined in the current alert rule may be used. | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.groupByAlertDetails | String | A list of alert details to group by \(when matchingMethod is Selected\). | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.groupByCustomDetails | String | A list of custom details keys to group by \(when matchingMethod is Selected\). Only keys defined in the current alert rule may be used. | 
+| AzureSentinel.AlertRule.properties.productFilter | String | The alerts' productName on which the cases will be generated. | 
+| AzureSentinel.AlertRule.properties.severitiesFilter | Unknown | the alerts' severities on which the cases will be generated. | 
+| AzureSentinel.AlertRule.properties.displayNamesFilter | Unknown | the alerts' displayNames on which the cases will be generated | 
+
+#### Command example
+```!azure-sentinel-list-alert-rule limit=1```
+#### Context Example
+```json
+{
+    "AzureSentinel": {
+        "AlertRule": {
+            "etag": "\"0000-0100-0000\"",
+            "id": "/subscriptions/{subscription_id}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/providers/Microsoft.SecurityInsights/alertRules/test-rule-id",
+            "kind": "Scheduled",
+            "name": "test-rule-id",
+            "properties": {
+                "alertRuleTemplateName": null,
+                "description": null,
+                "displayName": "testing displayname",
+                "enabled": true,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "columnName": "Account",
+                                "identifier": "FullName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "columnName": "Computer",
+                                "identifier": "FullName"
+                            }
+                        ]
+                    }
+                ],
+                "eventGroupingSettings": {
+                    "aggregationKind": "AlertPerResult"
+                },
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "groupByAlertDetails": null,
+                        "groupByCustomDetails": null,
+                        "groupByEntities": [],
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "reopenClosedIncident": false
+                    }
+                },
+                "lastModifiedUtc": "2020-03-28T16:07:49.1905911Z",
+                "query": "Heartbeat",
+                "queryFrequency": "PT1M",
+                "queryPeriod": "P2DT1H30M",
+                "severity": "Low",
+                "suppressionDuration": "PT1H",
+                "suppressionEnabled": false,
+                "tactics": [
+                    "Persistence"
+                ],
+                "techniques": [
+                    "T11"
+                ],
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0
+            },
+            "type": "Microsoft.SecurityInsights/alertRules"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Azure Sentinel Alert Rules
+>|Id|Kind|Severity|Display Name|Description|Enabled|
+>|---|---|---|---|---|---|
+>| test-rule-id | Scheduled | Low | testing displayname |  | true |
+

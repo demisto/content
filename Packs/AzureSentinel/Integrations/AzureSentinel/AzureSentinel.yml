@@ -2201,6 +2201,121 @@ script:
       secret: false
     description: Gets a list of all alert rules.
     name: azure-sentinel-list-alert-rule
+    outputs:
+    - contextPath: AzureSentinel.AlertRule.id
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.name
+      description: The name of the resource.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.type
+      description: The type of the resource.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.kind
+      description: The alert rule kind.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.etag
+      description: Etag of the azure resource.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.alertRuleTemplateName
+      description: The Name of the alert rule template used to create this rule.
+      type: Unknown
+    - contextPath: AzureSentinel.AlertRule.properties.displayName
+      description: The display name for alerts created by this alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.description
+      description: The description of the alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.severity
+      description: The severity for alerts created by this alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.enabled
+      description: Determines whether this alert rule is enabled or disabled.
+      type: Boolean
+    - contextPath: AzureSentinel.AlertRule.properties.tactics
+      description: The tactics of the alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.query
+      description: The query that creates alerts for this rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.queryFrequency
+      description: The frequency (in ISO 8601 duration format) for this alert rule to run.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.queryPeriod
+      description: The period (in ISO 8601 duration format) that this alert rule looks at.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.triggerOperator
+      description: The operation against the threshold that triggers alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.triggerThreshold
+      description: The threshold triggers this alert rule.
+      type: Number
+    - contextPath: AzureSentinel.AlertRule.properties.suppressionDuration
+      description: The suppression (in ISO 8601 duration format) to wait since last time this alert rule been triggered.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.suppressionEnabled
+      description: Determines whether the suppression for this alert rule is enabled or disabled.
+      type: Boolean
+    - contextPath: AzureSentinel.AlertRule.properties.lastModifiedUtc
+      description: The last time that this alert rule has been modified.
+      type: Date
+    - contextPath: AzureSentinel.AlertRule.properties.eventGroupingSettings.aggregationKind
+      description: The event grouping aggregation kinds.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.entityMappings.entityType
+      description: The V3 type of the mapped entity.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.entityMappings.fieldMappings.identifier
+      description: the V3 identifier of the entity.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.entityMappings.fieldMappings.columnName
+      description: the column name to be mapped to the identifier.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.alertDetailsOverride.alertDisplayNameFormat
+      description: the format containing columns name(s) to override the alert name.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.alertDetailsOverride.alertDescriptionFormat
+      description: the format containing columns name(s) to override the alert description.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.alertDetailsOverride.alertTacticsColumnName
+      description: the column name to take the alert tactics from.
+      type: Unknown
+    - contextPath: AzureSentinel.AlertRule.properties.alertDetailsOverride.alertSeverityColumnName
+      description: the column name to take the alert severity from.
+      type: Unknown
+    - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration.createIncident
+      description: Create incidents from alerts triggered by this analytics rule.
+      type: Boolean
+    - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.enabled
+      description: Grouping enabled.
+      type: Boolean
+    - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.reopenClosedIncident
+      description: Re-open closed matching incidents.
+      type: Boolean
+    - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.lookbackDuration
+      description: Limit the group to alerts created within the lookback duration (in ISO 8601 duration format).
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.matchingMethod
+      description: Grouping matching method. When method is Selected at least one of groupByEntities, groupByAlertDetails, groupByCustomDetails must be provided and not empty.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.groupByEntities
+      description: A list of entity types to group by (when matchingMethod is Selected). Only entities defined in the current alert rule may be used.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.groupByAlertDetails
+      description: A list of alert details to group by (when matchingMethod is Selected).
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.groupByCustomDetails
+      description: A list of custom details keys to group by (when matchingMethod is Selected). Only keys defined in the current alert rule may be used.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.productFilter
+      description: The alerts' productName on which the cases will be generated.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.severitiesFilter
+      description: the alerts' severities on which the cases will be generated.
+      type: Unknown
+    - contextPath: AzureSentinel.AlertRule.properties.displayNamesFilter
+      description: the alerts' displayNames on which the cases will be generated
+      type: Unknown
   dockerimage: demisto/crypto:1.0.0.47970
   feed: false
   isfetch: true
