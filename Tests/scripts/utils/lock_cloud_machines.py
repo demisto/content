@@ -275,24 +275,24 @@ def main():
             else:
                 sleep(random.randint(8, 13))
     s = logger.download_as_string()
-    logger.upload_from_string(f'{s}\nstart searching for an empty machine')
+    logger.upload_from_string(f'{s}\n start searching for an empty machine')
     test_machines_list = storage_bucket.blob(f'{lock_repo_name}/{options.test_machines_list}')
     list_machines = test_machines_list.download_as_string().decode("utf-8").split()
     s = logger.download_as_string()
-    logger.upload_from_string(f'{s}\nlist_machines are: {list_machines}')
-    machines_locks = (get_machines_locks_details(storage_client, 'xsoar-ci-artifacts', f'{lock_repo_name}/' f'{lock_repo_name}/qa2-test-'))
+    logger.upload_from_string(f'{s}\n list_machines are: {list_machines}')
+    machines_locks = (get_machines_locks_details(storage_client, 'xsoar-ci-artifacts', f'{lock_repo_name}/', f'{lock_repo_name}/qa2-test-'))
     s = logger.download_as_string()
-    logger.upload_from_string(f'{s}\nmachines_locks are: {machines_locks}')
+    logger.upload_from_string(f'{s}\n machines_locks are: {machines_locks}')
     lock_machine_name = None
     while not lock_machine_name:
         for machine in list_machines:
             job_id_of_the_existing_lock = next((d['job_id'] for d in machines_locks if d["machine_name"] == machine), None)
             if job_id_of_the_existing_lock:
                 s = logger.download_as_string()
-                logger.upload_from_string(f'{s}\nThere is a lock file for job id: {job_id_of_the_existing_lock}')
+                logger.upload_from_string(f'{s}\n There is a lock file for job id: {job_id_of_the_existing_lock}')
                 job_id_of_the_existing_lock_status = check_job_status(options, job_id_of_the_existing_lock)
                 s = logger.download_as_string()
-                logger.upload_from_string(f'{s}\nthe status of job id: {job_id_of_the_existing_lock} is: {job_id_of_the_existing_lock_status}')
+                logger.upload_from_string(f'{s}\n the status of job id: {job_id_of_the_existing_lock} is: {job_id_of_the_existing_lock_status}')
                 if job_id_of_the_existing_lock_status != 'running':
                     remove_machine_lock_file(storage_bucket, lock_repo_name, machine, job_id_of_the_existing_lock)
                     lock_machine(storage_bucket, lock_repo_name, machine, options.ci_job_id)
