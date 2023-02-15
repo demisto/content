@@ -11,7 +11,7 @@ or if you have Graph Outlook use O365 Outlook Mail (Using Graph API) (see https:
 
 or O365 Outlook Mail Single User (Using Graph API) (see https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-mail-single-user).
 
-## EWS v2 Playbook
+## EWS v2 Playbooks
 - Office 365 Search and Delete
 - Search And Delete Emails - EWS
 - Get Original Email - EWS
