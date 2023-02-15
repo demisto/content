@@ -277,7 +277,7 @@ def main():
     list_machines = test_machines_list.download_as_string().decode("utf-8").split()
     s = logger.download_as_string()
     logger.upload_from_string(f'{s}\nlist_machines are: {list_machines}')
-    machines_locks = (get_files_in_gcp_folder(storage_client, 'xsoar-ci-artifacts', f'{lock_repo_name}/qa2-test-'))
+    machines_locks = (get_files_in_gcp_folder(storage_client, 'xsoar-ci-artifacts', f'{lock_repo_name}/queue-qa2-test-'))
     s = logger.download_as_string()
     logger.upload_from_string(f'{s}\nmachines_locks are: {machines_locks}')
     lock_machine_name = None
