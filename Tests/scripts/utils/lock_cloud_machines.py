@@ -220,7 +220,7 @@ def check_job_status(options, job_id):
 
 
 def remove_build_from_queue(storage_bucket, lock_repo_name, job_id):
-    blob = storage_bucket.blob(f'{lock_repo_name}/queue-ga-locks-{job_id}')
+    blob = storage_bucket.blob(f'{lock_repo_name}/queue-ga-lock-{job_id}')
     try:
         blob.delete()
     except Exception as err:
@@ -236,7 +236,7 @@ def remove_machine_lock_file(storage_bucket, lock_repo_name, machine_name, job_i
 
 
 def lock_machine(storage_bucket, lock_repo_name, machine_name, job_id):
-    blob = storage_bucket.blob(f'{lock_repo_name}/{machine_name}-locks-{job_id}')
+    blob = storage_bucket.blob(f'{lock_repo_name}/{machine_name}-lock-{job_id}')
     blob.upload_from_string('')
 
 
@@ -250,7 +250,7 @@ def main():
     storage_client = storage.Client.from_service_account_json(options.service_account)
     storage_bucket = storage_client.bucket('xsoar-ci-artifacts')
     lock_repo_name = f'{options.gcs_locks_path.split("/")[-1]}'
-    blob = storage_bucket.blob(f'{lock_repo_name}/queue-ga-locks-{options.ci_job_id}')
+    blob = storage_bucket.blob(f'{lock_repo_name}/queue-ga-lock-{options.ci_job_id}')
     blob.upload_from_string('')
 
     logging.info(f'get all builds in the queue')

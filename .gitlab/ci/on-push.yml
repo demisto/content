@@ -474,7 +474,7 @@ xsoar_ng_server_ga:
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     TEST_MACHINES_LIST: "test-machines-ga"
-    GCS_LOCKS_PATH: "gs://xsoar-ci-artifacts/test-content-locks-xsoar-ng"
+    GCS_LOCKS_PATH: "gs://xsoar-ci-artifacts/content-locks-xsoar-ng-test"
     CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
     CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
     GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_BUCKET}"
