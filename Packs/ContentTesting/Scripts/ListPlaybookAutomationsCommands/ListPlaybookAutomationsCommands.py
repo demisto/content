@@ -9,7 +9,7 @@ from CommonServerPython import *  # noqa: F401
 def GetAutomationName(id):
     results = demisto.executeCommand("demisto-api-post", {
         "uri": f"/automation/load/{id}"
-    })[0]['Contents']  # ['response']
+    })[0]['Contents']
     if 'response' in results:
         if 'name' in results['response']:
             return results['response']['name']

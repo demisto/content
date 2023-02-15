@@ -1,7 +1,7 @@
 args:
 - name: playbook
-comment: |2+
-
+comment: |
+  Assesses the tasks executed in a playbook during the content testing process.
 commonfields:
   id: UnitTestCoverage
   version: -1

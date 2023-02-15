@@ -66,7 +66,6 @@ def main():
         markdown += TaskCoverageMarkdown(tasks)
         demisto.executeCommand("setIncident", {'customFields': json.dumps({"contenttestingcoverage": markdown})})
     except Exception as ex:
-        print(traceback.format_exc())
         demisto.error(traceback.format_exc())
         return_error(f"UnitTestCoverage: Exception failed to execute. Error: {str(ex)}")
 
