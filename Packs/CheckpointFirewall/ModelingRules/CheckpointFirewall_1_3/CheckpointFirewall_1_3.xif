@@ -30,7 +30,8 @@ alter application = if(app = null or app="Unknown Protocol", service_id, app)
     xdm.target.ipv4 = ipv4dest,
     xdm.target.ipv6 = ipv6dest,
     xdm.target.port = dpt,
-    xdm.target.zone = outzone;
+    xdm.target.zone = outzone,
+    xdm.observer.version = cefDeviceVersion;
 
 [MODEL: dataset ="check_point_url_filtering_raw"]
 alter application = if(app = null or app="Unknown Protocol", service_id, app)

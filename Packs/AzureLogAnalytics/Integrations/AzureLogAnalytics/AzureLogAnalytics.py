@@ -23,6 +23,7 @@ SAVED_SEARCH_HEADERS = [
 
 LOG_ANALYTICS_RESOURCE = 'https://api.loganalytics.io'
 AZURE_MANAGEMENT_RESOURCE = 'https://management.azure.com'
+AUTH_CODE_SCOPE = 'https://api.loganalytics.io/Data.Read%20https://management.azure.com/user_impersonation'
 
 
 class Client:
@@ -51,7 +52,7 @@ class Client:
             base_url=base_url,
             verify=verify,
             proxy=proxy,
-            scope='',
+            scope='' if client_credentials else AUTH_CODE_SCOPE,
             tenant_id=tenant_id,
             auth_code=auth_code,
             ok_codes=(200, 204, 400, 401, 403, 404, 409),
@@ -378,6 +379,9 @@ def main():
 
             test_connection(client, params)
             return_results('ok')
+
+        elif demisto.command() == 'azure-log-analytics-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
 
         elif demisto.command() == 'azure-log-analytics-test':
             test_connection(client, params)
