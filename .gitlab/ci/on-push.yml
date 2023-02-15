@@ -356,7 +356,24 @@ jobs-done-check-on-push:
   extends:
     - .jobs-done-check
     - .push-rule
-  needs: ['run-unittests-and-lint', 'trigger-private-build', 'validate-content-conf', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_6_5', 'xsoar_server_6_6', 'xsoar_server_6_8', 'xsoar_server_master']
+#  needs: ['run-unittests-and-lint', 'trigger-private-build', 'validate-content-conf', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_6_5', 'xsoar_server_6_6', 'xsoar_server_6_8', 'xsoar_server_master']
+  needs:
+    - job: run-unittests-and-lint
+    - job: trigger-private-build
+      optional: true
+    - job: validate-content-conf
+      optional: true
+    - job: mpv2-prepare-testing-bucket
+      optional: true
+    - job: xpanse-prepare-testing-bucket
+      optional: true
+    - job: xsoar-prepare-testing-bucket
+      optional: true
+    - job: xsiam_server_ga
+    - job: xsoar_server_6_5
+    - job: xsoar_server_6_6
+    - job: xsoar_server_6_8
+    - job: xsoar_server_master
   tags:
     - gke
 
