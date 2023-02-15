@@ -559,7 +559,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/ippysocks-py3:1.0.0.45502
+  dockerimage: demisto/ippysocks-py3:1.0.0.47029
   feed: false
   isfetch: false
   longRunning: false
