@@ -7,7 +7,7 @@ import dateparser
 import pytest
 from exchangelib import Message
 from EWSv2 import fetch_last_emails
-
+from exchangelib.errors import UnauthorizedError
 from exchangelib import EWSDateTime, EWSTimeZone
 
 
@@ -307,3 +307,60 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
     fetch_emails_as_incidents(client, 'Inbox')
     assert last_run.call_args[0][0].get('lastRunTime') == expected_last_run.get('lastRunTime')
     assert set(last_run.call_args[0][0].get('ids')) == set(expected_last_run.get('ids'))
+
+
+class MockAccount:
+    def __init__(self, primary_smtp_address="", error=401):
+        self.primary_smtp_address = primary_smtp_address
+        self.error = error
+
+    @property
+    def root(self):
+        if self.error == 401:
+            raise UnauthorizedError('Wrong username or password')
+        if self.error == 404:
+            raise Exception('Page not found')
+
+
+def test_send_mail(mocker):
+    """
+    Given -
+        to, subject and replyTo arguments to send an email.
+
+    When -
+        trying to send an email
+
+    Then -
+        verify the context output is returned correctly and that the 'to' and 'replyTo' arguments were sent
+        as a list of strings.
+    """
+    from EWSv2 import send_email
+    mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
+    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
+    result = send_email(to="test@gmail.com", subject="test", reply_to="test1@gmail.com")
+    assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
+    assert send_email_mocker.call_args.kwargs.get('reply_to') == 'test1@gmail.com'
+    assert result.get('Contents') == {
+        'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
+    }
+
+
+def test_send_mail_with_trailing_comma(mocker):
+    """
+    Given -
+        a 'subject' which is 'test' and 'to' which is 'test@gmail.com,' (ending with a comma),
+
+    When -
+        trying to send an email
+
+    Then -
+        verify that the 'to' field was extracted correctly and that the trailing comma was handled.
+    """
+    from EWSv2 import send_email
+    mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
+    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
+    result = send_email(to="test@gmail.com,", subject="test")
+    assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
+    assert result.get('Contents') == {
+        'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
+    }
