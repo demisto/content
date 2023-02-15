@@ -490,7 +490,7 @@ tasks:
     task:
       id: a6b685f9-671b-4db0-826c-2f4deb148ba8
       version: -1
-      name: Search Item In Inbox (ews v2)
+      name: Search Item In Mailbox (ews v2)
       description: Searches for items in the specified mailbox. Specific permissions
         are needed for this operation to search in a target mailbox other than the
         default.
@@ -502,8 +502,6 @@ tasks:
       '#none#':
       - "18"
     scriptarguments:
-      folder-path:
-        simple: Inbox
       limit:
         simple: "1"
       query:
