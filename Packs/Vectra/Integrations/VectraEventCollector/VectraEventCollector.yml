@@ -19,9 +19,9 @@ configuration:
   display: First fetch time
   required: false
   type: 0
-- defaultvalue: '100'
+- name: fetch_limit
+  defaultvalue: '100'
   display: Fetch Limit
-  name: fetch_limit
   required: false
   type: 0
 - name: insecure

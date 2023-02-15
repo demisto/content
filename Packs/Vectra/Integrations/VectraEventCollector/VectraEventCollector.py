@@ -22,11 +22,6 @@ from urllib.parse import urlparse
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-INTEGRATION_CONFIG_KEY_URL = "url"
-INTEGRATION_CONFIG_KEY_FIRST_FETCH = "first_fetch"
-INTEGRATION_CONFIG_VALUE_FIRST_FETCH_DEFAULT = "3 days"
-INTEGRATION_CONFIG_KEY_MAX_FETCH = "fetch_limit"
-INTEGRATION_CONFIG_VALUE_MAX_FETCH = 100
 VENDOR = "Vectra"
 
 """ CLIENT CLASS """
@@ -37,25 +32,25 @@ class VectraClient(BaseClient):
     api_version = "2.2"
     endpoints = ("detections", "audits")
 
-    def __init__(self, config: Dict[str, Any] = demisto.params()):
+    def __init__(
+        self,
+        url: str,
+        api_key: str,
+        max_fetch: int = 100,
+        insecure: bool = False,
+        proxy: bool = False,
+    ):
 
-        # Check the integration config is valid
-        url = config.get(INTEGRATION_CONFIG_KEY_URL)
+        # Check provided URL is valid
         self.validate_url(url)
-
-        self.api_key = config.get("credentials", {}).get("password")
-        self.verify_certificate = not config.get("insecure", False)
-        self.proxy = config.get("proxy", False)
-        self.max_fetch = config.get(
-            INTEGRATION_CONFIG_KEY_MAX_FETCH, INTEGRATION_CONFIG_VALUE_MAX_FETCH
-        )
+        self.max_fetch = max_fetch
 
         self.base_url = urljoin(url, f"/api/v{self.api_version}/")
         super().__init__(
-            self.base_url,
-            verify=self.verify_certificate,
-            proxy=self.proxy,
-            headers=self.create_headers(),
+            base_url=self.base_url,
+            verify=not insecure,
+            proxy=proxy,
+            headers=self.create_headers(api_key),
         )
 
     def get_endpoints(self) -> Dict[str, str]:
@@ -82,13 +77,20 @@ class VectraClient(BaseClient):
             demisto.error(f"URL '{url}' is invalid.")
             raise
 
-    def create_headers(self) -> Dict[str, str]:
-        # TODO
-        """ """
+    def create_headers(self, api_key: str) -> Dict[str, str]:
+        """
+        Generates the necessary HTTP headers.
+
+        Arguments:
+            - `api_key` (``str``): The API token.
+
+        Returns:
+            `Dict[str, str]` of the HTTP headers.
+        """
 
         return {
             "Content-Type": "application/json",
-            "Authorization": f"Token {self.api_key}",
+            "Authorization": f"Token {api_key}",
         }
 
 
@@ -153,11 +155,18 @@ def main() -> None:
 
     cmd = demisto.command()
     args = demisto.args()
+    config = demisto.params()
 
     demisto.debug(f"Command being called is '{cmd}'")
     try:
 
-        client = VectraClient()
+        client = VectraClient(
+            url=config.get("url"),
+            api_key=config.get("credentials", {}).get("password"),
+            fetch_limit=arg_to_number("fetch_limit"),
+            insecure=config.get("insecure"),
+            proxy=config.get("proxy"),
+        )
 
         if cmd == "test-module":
             result = test_module(client)
@@ -172,7 +181,7 @@ def main() -> None:
             else:
                 should_push_events = True
                 first_fetch_time = arg_to_datetime(
-                    arg=demisto.params().get("first_fetch", "3 days"),
+                    arg=config.get("first_fetch", "3 days"),
                     arg_name="First fetch time",
                     required=True,
                 )
