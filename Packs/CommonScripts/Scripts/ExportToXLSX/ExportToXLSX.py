@@ -64,6 +64,8 @@ def main():
         args = demisto.args()
         data = args.get("data")
         file_name = args.get("file_name")
+        if not is_filename_valid(file_name):  # pragma: no cover
+            raise DemistoException('The file name contains invalid characters')
         sheet_name = args.get("sheet_name")
         headers = args.get("headers")
         is_bold = argToBoolean(args.get("bold", "true"))

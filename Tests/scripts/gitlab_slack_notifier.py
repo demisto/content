@@ -255,7 +255,7 @@ def main():
     slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
     slack_client = WebClient(token=slack_token)
     slack_client.chat_postMessage(
-        channel=slack_channel, as_user=False, attachments=slack_msg_data, username=SLACK_USERNAME
+        channel=slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME
     )
 
 

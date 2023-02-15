@@ -12,7 +12,7 @@ configuration:
   name: port
   required: false
   type: 0
-- display: SSH credentials to server (username and certificate)
+- display: SSH credentials to server (username and certificate, see in the credential manager)
   name: Authentication
   required: true
   type: 9

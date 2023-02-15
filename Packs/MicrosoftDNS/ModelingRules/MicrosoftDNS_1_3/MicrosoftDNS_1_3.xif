@@ -1,13 +1,14 @@
-[MODEL: dataset="msft_dns_raw"]
+[MODEL: dataset="microsoft_dns_raw"]
 alter ResponseRequest=arrayindex(regextract(_raw_log,"(\s|R)\s"),7),
 Context=arrayindex(regextract(_raw_log,"(\w+)\s+"),5)
-|alter xdm.source.port=to_number(sourcePort),
-xdm.source.ipv4=if(sourceIp not contains ":",sourceIp,null),
-xdm.source.ipv6=if(sourceIp  contains ":",sourceIp,null),
+|alter xdm.source.port=coalesce(to_integer(sourcePort),to_integer(0)),
+xdm.source.ipv4=if(sourceIp not contains ":",coalesce(sourceIp,"")),
+xdm.source.ipv6=if(sourceIp  contains ":",coalesce(sourceIp,"")),
 xdm.network.dns.response_code=responseCode,
 xdm.network.dns.dns_question.name=questionName,
 xdm.network.dns.dns_question.type=questionType,
-xdm.target.port=to_number(dstPort),
+xdm.target.port=to_integer(dstPort),
 xdm.network.dns.is_response=to_boolean(if(ResponseRequest="R",1,0)),
-xdm.network.ip_protocol=protocol,
-xdm.session_context_id=Context;
+xdm.network.ip_protocol= if(protocol="ICMP", XDM_CONST.IP_PROTOCOL_ICMP, protocol="TCP", XDM_CONST.IP_PROTOCOL_TCP, protocol="UDP", XDM_CONST.IP_PROTOCOL_UDP, to_string(protocol)),
+xdm.session_context_id=Context,
+xdm.target.ipv4="";

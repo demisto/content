@@ -1,5 +1,5 @@
 from rasterize import (rasterize, find_zombie_processes, merge_options, DEFAULT_CHROME_OPTIONS, rasterize_image_command,
-                       RasterizeMode, RasterizeType, init_driver)
+                       RasterizeMode, RasterizeType, init_driver, rasterize_html_command)
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
@@ -38,7 +38,8 @@ def test_rasterize_email_pdf(r_mode, caplog):
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
-        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PDF, offline_mode=False, r_mode=r_mode)
+        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PDF, offline_mode=False,
+                  r_mode=r_mode)
         caplog.clear()
 
 
@@ -116,6 +117,17 @@ def test_rasterize_large_html(r_mode):
     assert res
 
 
+def test_rasterize_html(mocker):
+    path = os.path.realpath('test_data/file.html')
+    mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
+    mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
+    mocker.patch.object(os, 'rename')
+    mocker.patch.object(os.path, 'realpath', return_value=f'{os.getcwd()}/test_data/file.html')
+    mocker_output = mocker.patch('rasterize.return_results')
+    rasterize_html_command()
+    assert mocker_output.call_args.args[0]['File'] == 'email.png'
+
+
 @pytest.fixture
 def http_wait_server():
     # Simple http handler which waits 10 seconds before responding
@@ -161,7 +173,8 @@ def http_wait_server():
 def test_rasterize_url_long_load(r_mode, mocker, http_wait_server):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     time.sleep(1)  # give time to the servrer to start
-    rasterize('http://localhost:10888', width=250, height=250, r_type=RasterizeType.PNG, max_page_load_time=5, r_mode=r_mode)
+    rasterize('http://localhost:10888', width=250, height=250, r_type=RasterizeType.PNG, max_page_load_time=5,
+              r_mode=r_mode)
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
@@ -250,7 +263,6 @@ def test_check_width_and_height(width, height, expected_width, expected_height):
 
 
 class TestRasterizeIncludeUrl:
-
     class MockChromeOptions:
 
         def __init__(self) -> None:
@@ -324,6 +336,7 @@ class TestRasterizeIncludeUrl:
         mocker.patch('builtins.open', mock_open(read_data='image_sha'))
         mocker.patch('os.remove')
 
-        image = rasterize(path='path', width=250, height=250, r_type=RasterizeType.PNG, r_mode=RasterizeMode.WEBDRIVER_ONLY,
+        image = rasterize(path='path', width=250, height=250, r_type=RasterizeType.PNG,
+                          r_mode=RasterizeMode.WEBDRIVER_ONLY,
                           include_url=include_url)
         assert image

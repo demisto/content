@@ -2,7 +2,7 @@
     "name": "CyCognito",
     "description": "Fetches the issues associated with a particular asset from the CyCognito platform.",
     "support": "partner",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.4",
     "author": "CyCognito",
     "url": "",
     "email": "support@cycognito.com",
@@ -10,18 +10,10 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Best Practices",
-        "Courses of Action",
-        "Incident Mirroring",
-        "Security"
+        "Threat Intelligence Management"
     ],
-    "useCases": [
-        "Asset Management",
-        "Threat Intelligence Management",
-        "Vulnerability Management"
-    ],
+    "useCases": [],
     "keywords": [
-        "CyCognito",
         "Issue",
         "Asset",
         "Vulnerability",

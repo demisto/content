@@ -1,5 +1,4 @@
 {
-  "description": "",
   "details": {
     "sections": [
       {
@@ -1039,5 +1038,6 @@
   "name": "Cyberint Incident Layout",
   "version": -1,
   "fromVersion": "6.0.0",
-  "description": "Cyberint incident layout"
+  "description": "Cyberint incident layout",
+  "marketplaces": ["xsoar"]
 }

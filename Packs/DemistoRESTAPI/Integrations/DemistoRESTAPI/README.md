@@ -1,4 +1,4 @@
-Use Demisto REST APIs
+Deprecated. Use Core REST API instead.
 
 ## Configure Demisto REST API on Cortex XSOAR
 
@@ -26,7 +26,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### demisto-api-post
 ***
 send HTTP POST request
-
 
 #### Base Command
 

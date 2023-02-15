@@ -46,13 +46,13 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Time in seconds to wait before taking a screenshot
+      description: Time in seconds to wait before taking a screenshot.
       isArray: false
       name: wait_time
       required: false
       secret: false
     - default: false
-      description: Maximum time to wait for a page to load (in seconds)
+      description: Maximum time to wait for a page to load (in seconds).
       isArray: false
       name: max_page_load_time
       required: false
@@ -132,24 +132,24 @@ script:
     execution: false
     name: rasterize
     outputs:
-      - contextPath: InfoFile.EntryID
-        description: The EntryID of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Extension
-        description: The extension of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Name
-        description: The name of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Info
-        description: The info of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Size
-        description: The size of the image/pdf file
-        type: number
-      - contextPath: InfoFile.Type
-        description: The type of the image/pdf file
-        type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the image/pdf file
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the image/pdf file
+      type: string
   - arguments:
     - default: true
       description: The HTML body of the email.
@@ -165,16 +165,14 @@ script:
       secret: false
     - default: false
       defaultValue: 1000px
-      description: The html page width, for example, 1000px. Specify with or without
-        the px suffix.
+      description: The html page width, for example, 1000px. Specify with or without the px suffix.
       isArray: false
       name: width
       required: false
       secret: false
     - default: false
       defaultValue: 1500px
-      description: The html page height, for example, 1500px. Specify with or without
-        the px suffix.
+      description: The html page height, for example, 1500px. Specify with or without the px suffix.
       isArray: false
       name: height
       required: false
@@ -233,24 +231,24 @@ script:
     execution: false
     name: rasterize-email
     outputs:
-      - contextPath: InfoFile.EntryID
-        description: The EntryID of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Extension
-        description: The extension of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Name
-        description: The name of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Info
-        description: The info of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Size
-        description: The size of the image/pdf file
-        type: number
-      - contextPath: InfoFile.Type
-        description: The type of the image/pdf file
-        type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the image/pdf file
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the image/pdf file
+      type: string
   - arguments:
     - default: true
       description: The entry ID of the image file.
@@ -305,24 +303,24 @@ script:
     execution: false
     name: rasterize-image
     outputs:
-      - contextPath: InfoFile.EntryID
-        description: The EntryID of the pdf file
-        type: string
-      - contextPath: InfoFile.Extension
-        description: The extension of the pdf file
-        type: string
-      - contextPath: InfoFile.Name
-        description: The name of the pdf file
-        type: string
-      - contextPath: InfoFile.Info
-        description: The info of the pdf file
-        type: string
-      - contextPath: InfoFile.Size
-        description: The size of the pdf file
-        type: number
-      - contextPath: InfoFile.Type
-        description: The type of the pdf file
-        type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the pdf file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the pdf file
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the pdf file
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the pdf file
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the pdf file
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the pdf file
+      type: string
   - arguments:
     - default: true
       description: The entry ID of PDF file.
@@ -366,24 +364,24 @@ script:
     execution: false
     name: rasterize-pdf
     outputs:
-      - contextPath: InfoFile.EntryID
-        description: The EntryID of the image file
-        type: string
-      - contextPath: InfoFile.Extension
-        description: The extension of the image file
-        type: string
-      - contextPath: InfoFile.Name
-        description: The name of the image file
-        type: string
-      - contextPath: InfoFile.Info
-        description: The info of the image file
-        type: string
-      - contextPath: InfoFile.Size
-        description: The size of the image file
-        type: number
-      - contextPath: InfoFile.Type
-        description: The type of the image file
-        type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the image file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the image file
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the image file
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the image file
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the image file
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the image file
+      type: string
   - arguments:
     - default: true
       description: The entry ID of the html file.
@@ -393,23 +391,20 @@ script:
       secret: false
     - default: false
       defaultValue: 600px
-      description: The html page width, for example, 600px. Specify with or without
-        the px suffix.
+      description: The html page width, for example, 600px. Specify with or without the px suffix.
       isArray: false
       name: width
       required: false
       secret: false
     - default: false
       defaultValue: 800px
-      description: The html page height, for example, 800px. Specify with or without
-        the px suffix.
+      description: The html page height, for example, 800px. Specify with or without the px suffix.
       isArray: false
       name: height
       required: false
       secret: false
     - default: false
-      description: The file type to which to convert the email body. Can be "pdf"
-        or "png". Default is "png".
+      description: The file type to which to convert the email body. Can be "pdf" or "png". Default is "png".
       isArray: false
       name: type
       required: false
@@ -427,8 +422,14 @@ script:
       isArray: false
       name: full_screen
       predefined:
-        - 'True'
-        - 'False'
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: Time in seconds to wait before taking a screenshot.
+      isArray: false
+      name: wait_time
       required: false
       secret: false
     deprecated: false
@@ -436,25 +437,25 @@ script:
     execution: false
     name: rasterize-html
     outputs:
-      - contextPath: InfoFile.EntryID
-        description: The EntryID of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Extension
-        description: The extension of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Name
-        description: The name of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Info
-        description: The info of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Size
-        description: The size of the image/pdf file
-        type: number
-      - contextPath: InfoFile.Type
-        description: The type of the image/pdf file
-        type: string
-  dockerimage: demisto/chromium:1.0.0.42726
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the image/pdf file
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the image/pdf file
+      type: string
+  dockerimage: demisto/chromium:1.0.0.46364
   feed: false
   isfetch: false
   longRunning: false

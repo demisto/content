@@ -1,4 +1,7 @@
 category: IT Services
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: CheckPointFirewall_v2
   version: -1
@@ -7,27 +10,36 @@ configuration:
   name: server
   required: true
   type: 0
+  section: Connect
 - defaultvalue: '4434'
   display: Server Port (e.g. 4434)
   name: port
   required: true
   type: 0
+  section: Connect
 - display: Domain (used in Multi Domain Server)
   name: domain
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Username
   name: username
   required: true
   type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Use this integration to read information and send commands to the Check Point Firewall server.
 display: CheckPoint Firewall v2
 name: CheckPointFirewall_v2
@@ -1820,7 +1832,7 @@ script:
     outputs:
     - contextPath: CheckPoint.DeletedThreatProtections
       description: ''
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.9.45313
   runonce: false
   script: ''
   subtype: python3

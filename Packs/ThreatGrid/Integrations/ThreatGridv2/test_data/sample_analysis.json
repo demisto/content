@@ -1,0 +1,26 @@
+{
+    "api_version": "api_version",
+    "id": "id",
+    "request_id": "request_id",
+    "data": {
+        "items": {
+            "network": {
+                "ip1": {
+                    "ts": "data_items_network_ip1_ts"
+                },
+                "ip2": {
+                    "ts": "data_items_network_ip2_ts"
+                },
+                "ip3": {
+                    "ts": "data_items_network_ip3_ts"
+                },
+                "ip4": {
+                    "ts": "data_items_network_ip4_ts"
+                },
+                "ip5": {
+                    "ts": "data_items_network_ip5_ts"
+                }
+            }
+        }
+    }
+}
