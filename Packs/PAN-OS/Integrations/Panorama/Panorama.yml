@@ -5284,9 +5284,73 @@ script:
     - description: The device group for which to return applications.
       name: device-group
       required: false
+    - description: When specified, the results returned in the list are limited to applications whose names match the specified string.
+      name: name_match
+      required: false
+      isArray: false
+    - description: When specified, the results returned in the list are limited to applications whose names contain the specified string.
+      name: name_contain
+      required: false
+      isArray: false
+    - description:  The application risk (1 to 5).
+      auto: PREDEFINED
+      name: risk
+      required: false
+      isArray: false
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+    - description: The application category.
+      auto: PREDEFINED
+      name: category
+      required: false
+      isArray: false
+      predefined:
+      - 'collaboration'
+      - 'business-systems'
+      - 'networking'
+      - 'media'
+    - description: The application sub-category.
+      name: sub_category
+      required: false
+      isArray: false
+    - description: The application technology.
+      auto: PREDEFINED
+      name: technology
+      required: false
+      isArray: false
+      predefined:
+      - 'browser-based'
+      - 'client-server'
+      - 'network-protocol'
+      - 'peer-to-peer'
+    - description: "A comma-separated list of characteristics. Possible values are: 'virus-ident', 'evasive-behavior', 'file-type-ident', 'consume-big-bandwidth', 'used-by-malware', 'able-to-transfer-file', 'has-known-vulnerability', 'tunnel-other-application', 'prone-to-misuse', 'pervasive-use', 'file-forward', 'is-saas'."
+      name: characteristics
+      required: false
+      isArray: false
+    - defaultValue: '50'
+      description: The maximum number of rules to retrieve. Will be used by default if page argument was not provided.
+      isArray: false
+      name: limit
+      required: false
+    - defaultValue: '50'
+      description: The page size of the applications to return.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The page at which to start listing applications. Must be a positive number.
+      isArray: false
+      name: page
+      required: false
     description: Returns a list of applications.
     name: pan-os-list-applications
     outputs:
+    - contextPath: Panorama.Applications.Characteristics
+      description: The application characteristics.
+      type: string
     - contextPath: Panorama.Applications.Name
       description: The application name.
       type: string
