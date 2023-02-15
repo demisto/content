@@ -3,25 +3,25 @@ commonfields:
   id: JSONSampleIncidentGenerator
   version: -1
 configuration:
-- display: Fetch incidents
+- display: Fetch incidents -custom
   name: isFetch
   required: false
   type: 8
-- display: Incident type
+- display: Incident type -custom
   name: incidentType
   required: false
   type: 13
 - defaultvalue: "1"
-  display: Incidents Fetch Interval
+  display: Incidents Fetch Interval -custom
   name: incidentFetchInterval
   required: false
   type: 19
 - defaultvalue: "{\"name\": \"Moshe test\"}"
-  display: The raw JSON string to use as the sample data
+  display: The raw JSON string to use as the sample data -custom
   name: JSON
   required: true
   type: 12
-- display: The incident name to give to the created incident
+- display: The incident name to give to the created incident -custom
   name: name
   required: false
   type: 0
