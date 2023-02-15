@@ -69,7 +69,7 @@ The integration imports email messages from the destination folder in the target
 
 To use Fetch incidents, configure a new instance and select the ```Fetches incidents``` option in the instance settings.
 
-IMPORTANT: The initial fetch interval is the previous 10 minutes. If no emails were fetched before from the destination folder- all emails from 10 minutes prior to the instance configuration and up to the current time will be fetched. Additionally moving messages manually to the destination folder will not trigger fetch incident. Define rules on phishing/target mailbox instead of moving messages manually.
+**IMPORTANT:** The initial fetch interval is the previous 10 minutes. If no emails were fetched before from the destination folder, all emails from 10 minutes prior to the instance configuration and up to the current time will be fetched. Additionally, moving messages manually to the destination folder will not trigger a fetch incident. Define rules on phishing/target mailbox instead of moving messages manually.
 
 You can configure the ``First fetch timestamp`` field to determine how much time back you want to fetch incidents.
 
