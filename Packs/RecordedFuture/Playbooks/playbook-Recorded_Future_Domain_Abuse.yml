@@ -1,7 +1,7 @@
 id: Recorded Future Domain Abuse Playbook
 version: 26
 vcShouldKeepItemLegacyProdMachine: false
-name: Recorded Future Domain Abuse
+name: Recorded Future Domain Abuse Playbook
 description: This playbook was developed as a template to handle the ingestion of
   Recorded Future Domain Abuse playbook alerts.
 starttaskid: "0"
