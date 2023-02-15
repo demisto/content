@@ -6,9 +6,10 @@
         "Malware": "Malware Investigation and Response",
         "PortScan": "Cortex XDR Port Scan",
         "RDPBruteForce": "Cortex XDR Incident",
-        "XDR Incident": "Cortex XDR Incident"
+        "XDR Incident": "Cortex XDR Incident",
+        "Image": "Cortex XDR - CTF - Image Spooned Suspicious Activity"
     },
-    "name": "Cortex XDR Incident Handler - Classifier",
+    "name": "Cortex XDR Incident Handler - Classifier_(CTF)",
     "propagationLabels": [
         "all"
     ],
@@ -21,7 +22,7 @@
                     "args": {
                         "dt": {
                             "value": {
-                                "simple": ".=val \u0026\u0026 val.description.toLowerCase().indexOf(\"port scan\") \u003e -1 ? \"PortScan\" : (val.description.toLowerCase().indexOf(\"rdp brute-force\") \u003e -1 ? \"RDPBruteForce\" : (val.file_artifacts != null ? \"Malware\" : \"XDR Incident\"))"
+                                "simple": ".=val \u0026\u0026 val.description.toLowerCase().indexOf(\"port scan\") \u003e -1 ? \"PortScan\" : (val.description.toLowerCase().indexOf(\"image\") \u003e -1? \"Image\": (val.description.toLowerCase().indexOf(\"rdp brute-force\") \u003e -1 ? \"RDPBruteForce\" : (val.file_artifacts != null ? \"Malware\" : \"XDR Incident\")))"
                             }
                         }
                     },
