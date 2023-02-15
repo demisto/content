@@ -24,9 +24,6 @@
                 "Alert Name": {
                     "simple": "title"
                 },
-                "CSV test": {
-                    "simple": "attachments.content"
-                },
                 "CyberInt Alert ID": {
                     "simple": "ref_id"
                 },
