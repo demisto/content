@@ -4,6 +4,7 @@ Symantec EDR (On-prem) Integration - Unit Tests file
 # type: ignore
 import pytest
 import json
+import time
 from datetime import datetime, timedelta
 import dateparser
 import os
@@ -16,7 +17,8 @@ from SymantecEDR import Client, get_file_instance_command, get_domain_instance_c
     compile_command_title_string, check_valid_indicator_value,\
     get_endpoint_status_command, get_endpoint_command, get_incident_uuid, convert_to_iso8601, \
     extract_headers_for_readable_output, get_data_of_current_page, parse_event_object_data, issue_sandbox_command, \
-    check_sandbox_status, get_sandbox_verdict, get_association_filter_query, convert_list_to_str, get_query_limit
+    check_sandbox_status, get_sandbox_verdict, get_association_filter_query, convert_list_to_str, get_query_limit, \
+    get_incident_comments_command
 
 
 def util_load_json(path):
@@ -383,14 +385,57 @@ def test_get_incident_list_command(mocker, raw_response, expected):
 
 @pytest.mark.parametrize('raw_response, expected', [(INCIDENT_LIST_RESPONSE, '9d6f2100-7158-11ed-da26-000000000001')])
 def test_get_incident_uuid(mocker, raw_response, expected):
+    """
+    Tests get_incident_uuid function.
+
+        Given:
+            - mocker object.
+            - raw_response test data.
+            - expected output.
+
+        When:
+            - Running the 'get_incident_uuid'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+    """
     args = {
         "incident_id": 100010
     }
-    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
+    mocker.patch.object(client, 'get_incident', side_effect=[raw_response])
     uuid = get_incident_uuid(client, args)
 
     # results is CommandResults list
     assert uuid == expected
+
+
+@pytest.mark.parametrize('raw_incident, uuid_result', [(INCIDENT_LIST_RESPONSE, '9d6f2100-7158-11ed-da26-000000000001')])
+@pytest.mark.parametrize('raw_response, expected', [(INCIDENT_COMMENT_RESPONSE, INCIDENT_COMMENT_RESPONSE)])
+def test_get_incident_comments_command(mocker, raw_incident, uuid_result, raw_response, expected):
+    """
+    Tests get_incident_comments_command function.
+
+        Given:
+            - mocker object.
+            - raw_response test data.
+            - expected output.
+
+        When:
+            - Running the 'get_incident_comments_command'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+    """
+    args = {
+        "incident_id": 100010
+    }
+    mocker.patch.object(client, 'get_incident', side_effect=[raw_incident])
+    mocker.patch.object(client, 'get_incident_comment', side_effect=[raw_response])
+    command_results = get_incident_comments_command(client, args)
+
+    # results is CommandResults list
+    context_detail = command_results.to_context()['Contents']["result"]
+    assert context_detail == expected.get("result")
 
 
 @pytest.mark.parametrize('raw_response, expected', [(INCIDENT_EVENT_FOR_INCIDENT, INCIDENT_EVENT_FOR_INCIDENT)])
@@ -440,7 +485,7 @@ def test_get_endpoint_status_command(mocker, raw_response, expected):
             "command_readable_output/endpoint_command_status_readable_output.md"
     ), 'r') as f:
         readable_output = f.read()
-    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
+    mocker.patch.object(client, 'get_status_endpoint', side_effect=[raw_response])
     command_results = get_endpoint_status_command(client, args)
 
     # results is CommandResults list
@@ -607,15 +652,15 @@ def test_compile_command_title_string(sub_context, params, total_record, expecte
     assert actual_title == expected_title
 
 
-# @pytest.mark.parametrize('context_dict, expected_result', [
-#     ({'access_token_timestamp': int(time.time()), 'access_token': '12345'}, '12345'),
-#     ({'access_token_timestamp': int(time.time() - 300), 'access_token': '12345'}, '12345'),
-#     ({'access_token_timestamp': int(time.time() - 3660), 'access_token': '12345'}, None),
-#     ({}, None),
-# ])
-# def test_get_access_token_from_context(context_dict, expected_result):
-#     actual_result = get_access_token_from_context(context_dict)
-#     assert actual_result == expected_result
+@pytest.mark.parametrize('context_dict, expected_result', [
+    ({'access_token_timestamp': int(time.time()), 'access_token': '12345'}, '12345'),
+    ({'access_token_timestamp': int(time.time() - 300), 'access_token': '12345'}, '12345'),
+    ({'access_token_timestamp': int(time.time() - 3660), 'access_token': '12345'}, None),
+    ({}, None),
+])
+def test_get_access_token_from_context(context_dict, expected_result):
+    actual_result = client.get_access_token_from_context(context_dict)
+    assert actual_result == expected_result
 
 
 @pytest.mark.parametrize('indicator_type, indicator_value, expected_result', [
@@ -678,7 +723,7 @@ def test_get_access_token_or_login(requests_mock):
             Then:
                 -  Checks the output of the command function with the expected output.
     """
-    post_req_url = client._base_url + '/atpapi/oauth2/tokens'
+    post_req_url = f'{client._base_url}/atpapi/oauth2/tokens'
     # before login, access_token is not present
     requests_mock.post(post_req_url, json={'access_token': '12345'})
     assert client.headers == {'Content-Type': 'application/json'}
@@ -719,17 +764,17 @@ def test_test_module__invalid(requests_mock, response_code):
     """
     from SymantecEDR import test_module
     with pytest.raises(DemistoException) as e:
-        post_req_url = client._base_url + '/atpapi/v2/incidents'
+        post_req_url = f'{client._base_url}/atpapi/v2/incidents'
         requests_mock.get(post_req_url, headers=client.headers)
         test_module(client)
         assert e.value.res.status_code == response_code
 
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 now = str(datetime.today())
-now_iso = dateparser.parse(now, settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)[:23] + "Z"
+now_iso = dateparser.parse(now, settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)[:23] + 'Z'
 week_before = str(datetime.today() - timedelta(days=7))
-iso_datatime_week_before = dateparser.parse(week_before, settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)[:23] + "Z"
+iso_datatime_week_before = dateparser.parse(week_before, settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)[:23] + 'Z'
 
 
 @pytest.mark.parametrize('date_string, expected_result', [
@@ -825,7 +870,7 @@ def test_issue_sandbox_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected output.
     """
     args = {"file": '1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164'}
-    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
+    mocker.patch.object(client, 'submit_file_to_sandbox_analyze', side_effect=[raw_response])
     command_results = issue_sandbox_command(client, args,)
 
     # results is CommandResults list
@@ -850,7 +895,7 @@ def test_check_sandbox_status(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected output.
     """
     args = {"command_id": 'a4277ce5ebd84fe18c30fa67a05b42c9-2023-02-06'}
-    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
+    mocker.patch.object(client, 'get_sandbox_status', side_effect=[raw_response])
     command_results = check_sandbox_status(client, args,)
 
     # results is CommandResults list
@@ -871,8 +916,9 @@ def test_get_sandbox_verdict(mocker, raw_response, expected):
         Then:
             -  Checks the output of the command function with the expected output.
     """
-    args = {"file": '1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164'}
-    mocker.patch.object(client, 'http_request', side_effect=[raw_response] * 5)
+    args = {"sha2": '1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164'}
+    mocker.patch.object(client, 'get_sandbox_verdict_for_file', side_effect=[raw_response])
+    mocker.patch.object(client, 'get_file_entity', side_effect=[raw_response])
     command_results = get_sandbox_verdict(client, args)
 
     # results is CommandResults list

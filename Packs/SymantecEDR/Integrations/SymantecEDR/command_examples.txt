@@ -13,10 +13,12 @@
 !symantec-edr-endpoint-domain-association-list limit=1
 !symantec-edr-endpoint-file-association-list limit=1
 !symantec-edr-incident-list limit=1
-!symantec-edr-incident-comment-get incident_id=100015 limit=1
-!symantec-edr-incident-update action_type=add_comment incident_id=100015 value="added as part of testing xsoar command examples"
-!symantec-edr-incident-update action_type=update_resolution incident_id=100015 value=3
+!symantec-edr-incident-update action_type=add_comment incident_id=100022 value="added as part of testing xsoar command examples"
+!symantec-edr-incident-update action_type=update_resolution incident_id=100021 value=3
+!symantec-edr-incident-comment-get incident_id=100022 limit=1
+!symantec-edr-incident-update action_type=close_incident incident_id=100022
 !symantec-edr-incident-event-list limit=1
 !symantec-edr-event-list limit=1
 !symantec-edr-audit-event-list limit=1
 !symantec-edr-system-activity-list limit=1
+!file file=1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164 using-brand=SymantecEDR
