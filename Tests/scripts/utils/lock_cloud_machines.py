@@ -253,13 +253,15 @@ def main():
     blob = storage_bucket.blob(f'{lock_repo_name}/queue-ga-lock-{options.ci_job_id}')
     blob.upload_from_string('')
 
-    logging.info(f'get all builds in the queue')
+    logger = storage_bucket.blob(f'{lock_repo_name}/loger')
+    logger.upload_from_string(f'get all builds in the queue')
     first_in_the_queue = False
     while not first_in_the_queue:
         builds_in_queue = (get_files_in_gcp_folder(storage_client, 'xsoar-ci-artifacts', f'{lock_repo_name}/queue-ga-lock-'))
         sorted_builds_in_queue = sorted(builds_in_queue, key=lambda d: d['time_created'], reverse=True)
         my_place_in_the_queue = next((index for (index, d) in enumerate(sorted_builds_in_queue) if d["name"] == options.ci_job_id), None)
-        logging.info(f'my place in the queue is: {my_place_in_the_queue}')
+        s = logger.download_as_string()
+        logger.upload_from_string(f'{s}\nmy place in the queue is: {my_place_in_the_queue}')
         if my_place_in_the_queue == 0:
             first_in_the_queue = True
         else:
@@ -268,8 +270,9 @@ def main():
             if previous_build_status != 'running':
                 remove_build_from_queue(storage_bucket, lock_repo_name, previous_build)
             else:
-                sleep(random.randint(8,13))
-    logging.info('start searching for an empty machine')
+                sleep(random.randint(8, 13))
+    s = logger.download_as_string()
+    logger.upload_from_string(f'{s}\nstart searching for an empty machine')
     blob = storage_bucket.blob(f'{lock_repo_name}/{options.test_machines_list}')
     list_machines = blob.download_as_string().decode("utf-8").split()
     machines_locks = (get_files_in_gcp_folder(storage_client, 'xsoar-ci-artifacts', f'{lock_repo_name}/qa2-test-'))
