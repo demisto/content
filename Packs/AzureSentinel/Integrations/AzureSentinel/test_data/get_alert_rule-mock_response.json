@@ -1,0 +1,10 @@
+{
+    "name": "rule1",
+    "kind": "Scheduled",
+    "properties": {
+        "severity": "High",
+        "displayName": "Rule 1",
+        "description": "Description of Rule 1",
+        "enabled": true
+    }
+}

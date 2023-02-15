@@ -17,7 +17,8 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     list_threat_indicator_command, NEXTLINK_DESCRIPTION, process_incidents, fetch_incidents, fetch_incidents_additional_info, \
     get_modified_remote_data_command, get_remote_data_command, get_remote_incident_data, get_mapping_fields_command, \
     update_remote_system_command, update_remote_incident, close_incident_in_remote, update_incident_request, \
-    set_xsoar_incident_entries, build_threat_indicator_data, DEFAULT_SOURCE
+    set_xsoar_incident_entries, build_threat_indicator_data, DEFAULT_SOURCE, \
+    list_alert_rule_command
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -726,7 +727,7 @@ class TestHappyPath:
         client = mock_client()
         args = {'incident_id': TEST_INCIDENT_ID}
         mocker.patch.object(client, 'http_request', return_value=MOCKED_INCIDENT_ENTITIES)
-        with open('TestData/expected_entities.json', 'r') as file:
+        with open('test_data/expected_entities.json', 'r') as file:
             expected_entities = json.load(file)
 
         # run
@@ -753,7 +754,7 @@ class TestHappyPath:
         # prepare
         client = mock_client()
         mocker.patch.object(client, 'http_request', return_value=MOCKED_INCIDENT_ALERTS)
-        with open('TestData/expected_alerts.json', 'r') as file:
+        with open('test_data/expected_alerts.json', 'r') as file:
             expected_alerts = json.load(file)
 
         # run
@@ -779,7 +780,7 @@ class TestHappyPath:
         # prepare
         client = mock_client()
         mocker.patch.object(client, 'http_request', return_value=MOCKED_WATCHLISTS)
-        with open('TestData/expected_watchlists.json', 'r') as file:
+        with open('test_data/expected_watchlists.json', 'r') as file:
             expected_watchlists = json.load(file)
 
         # run
@@ -807,7 +808,7 @@ class TestHappyPath:
         client = mock_client()
         args = {'watchlist_alias': TEST_WATCHLIST_ALIAS}
         mocker.patch.object(client, 'http_request', return_value=MOCKED_WATCHLISTS['value'][0])
-        with open('TestData/expected_watchlists.json', 'r') as file:
+        with open('test_data/expected_watchlists.json', 'r') as file:
             expected_watchlist = json.load(file)[0]
 
         # run
@@ -865,7 +866,7 @@ class TestHappyPath:
         client = mock_client()
         args = {'watchlist_alias': TEST_WATCHLIST_ALIAS}
         mocker.patch.object(client, 'http_request', return_value=MOCKED_WATCHLIST_ITEMS)
-        with open('TestData/expected_watchlist_items.json', 'r') as file:
+        with open('test_data/expected_watchlist_items.json', 'r') as file:
             expected_items = json.load(file)
 
         # run
@@ -893,7 +894,7 @@ class TestHappyPath:
         args = {'watchlist_alias': TEST_WATCHLIST_ALIAS, 'watchlist_item_id': TEST_ITEM_ID}
         mocked_item = MOCKED_WATCHLIST_ITEMS['value'][0]
         mocker.patch.object(client, 'http_request', return_value=mocked_item)
-        with open('TestData/expected_watchlist_items.json', 'r') as file:
+        with open('test_data/expected_watchlist_items.json', 'r') as file:
             expected_item = json.load(file)[0]
 
         # run
@@ -933,7 +934,7 @@ class TestHappyPath:
             'content_type': demisto.get(mocked_watchlist, 'properties.contentType')
         }
         mocker.patch.object(client, 'http_request', return_value=mocked_watchlist)
-        with open('TestData/expected_watchlists.json', 'r') as file:
+        with open('test_data/expected_watchlists.json', 'r') as file:
             expected_watchlist = json.load(file)[0]
 
         # run
@@ -965,7 +966,7 @@ class TestHappyPath:
         }
 
         mocker.patch.object(client, 'http_request', return_value=mocked_item)
-        with open('TestData/expected_watchlist_items.json', 'r') as file:
+        with open('test_data/expected_watchlist_items.json', 'r') as file:
             expected_item = json.load(file)[0]
 
         # run
@@ -1684,3 +1685,31 @@ def test_update_incident_request(mocker, data, delta, mock_response, close_ticke
 
     update_incident_request(client, 'id-incident-1', data, delta, close_ticket)
     assert client.http_request.call_args[1]['data'] == mock_response
+
+
+@pytest.mark.parametrize("args", [
+    ({}),
+    ({"limit": 1}),
+    ({"limit": 2}),
+    ({'rule_id': 'rule1'})
+])
+def test_list_alert_rule_command(mocker, args):
+    prefix_file = 'get' if args.get('rule_id') else 'list'
+    with open(f'test_data/{prefix_file}_alert_rule-mock_response.json', 'r') as file:
+        mock_response = json.load(file)
+
+    client = mock_client()
+    mocker.patch.object(client, 'http_request', return_value=mock_response)
+    command_results = list_alert_rule_command(client, args)
+
+    if limit := args.get("limit"):
+        assert len(command_results.outputs) == limit
+        assert command_results.outputs == mock_response.get("value", [])[:limit]
+
+    elif rule_id := args.get("rule_id"):
+        assert command_results.outputs == [mock_response]
+        assert command_results.outputs[0].get("name") == rule_id
+
+    else:
+        assert command_results.outputs == mock_response.get("value", [])
+        assert len(command_results.outputs) == len(mock_response.get("value", []))
