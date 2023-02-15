@@ -355,10 +355,7 @@ def test_retrieve_incidents_command(mock_retrieve_incidents_request):
 
     assert response.outputs_prefix == 'Lumu.RetrieveIncidents'
     assert response.outputs_key_field == 'id'
-    assert 'items' in response.outputs
-    assert 'timestamp' in response.outputs
-    assert 'paginationInfo' in response.outputs
-    assert response.outputs == official_response_retrieve_incidents_request
+    assert response.outputs == official_response_retrieve_incidents_request['items']
 
 
 @patch.object(Client, 'retrieve_a_specific_incident_details_request', return_value=dummy_response_retrieve_a_specific_incident_details_request)  # noqa: E501
@@ -415,10 +412,7 @@ def test_retrieve_open_incidents_command(mock_retrieve_open_incidents_request):
 
     assert response.outputs_prefix == 'Lumu.RetrieveOpenIncidents'
     assert response.outputs_key_field == 'id'
-    assert 'items' in response.outputs
-    assert 'timestamp' in response.outputs
-    assert 'paginationInfo' in response.outputs
-    assert response.outputs == official_response_retrieve_open_incidents_request
+    assert response.outputs == official_response_retrieve_open_incidents_request['items']
 
 
 @patch.object(Client, 'retrieve_muted_incidents_request', return_value=official_response_retrieve_muted_incidents_request)
@@ -430,10 +424,7 @@ def test_retrieve_muted_incidents_command(mock_retrieve_muted_incidents_request)
 
     assert response.outputs_prefix == 'Lumu.RetrieveMutedIncidents'
     assert response.outputs_key_field == 'id'
-    assert 'items' in response.outputs
-    assert 'timestamp' in response.outputs
-    assert 'paginationInfo' in response.outputs
-    assert response.outputs == official_response_retrieve_muted_incidents_request
+    assert response.outputs == official_response_retrieve_muted_incidents_request['items']
 
 
 @patch.object(Client, 'retrieve_closed_incidents_request', return_value=official_response_retrieve_closed_incidents_request)
@@ -445,10 +436,7 @@ def test_retrieve_closed_incidents_command(mock_retrieve_closed_incidents_reques
 
     assert response.outputs_prefix == 'Lumu.RetrieveClosedIncidents'
     assert response.outputs_key_field == 'id'
-    assert 'items' in response.outputs
-    assert 'timestamp' in response.outputs
-    assert 'paginationInfo' in response.outputs
-    assert response.outputs == official_response_retrieve_closed_incidents_request
+    assert response.outputs == official_response_retrieve_closed_incidents_request['items']
 
 
 @patch.object(Client, 'retrieve_endpoints_by_incident_request', return_value=official_response_retrieve_endpoints_by_incident_request)  # noqa: E501
@@ -461,10 +449,8 @@ def test_retrieve_endpoints_by_incident_command(mock_retrieve_endpoints_by_incid
 
     assert response.outputs_prefix == 'Lumu.RetrieveEndpointsByIncident'
     assert response.outputs_key_field == 'label'
-    assert 'items' in response.outputs
-    assert 'paginationInfo' in response.outputs
-    assert response.outputs == official_response_retrieve_endpoints_by_incident_request
-    assert response.outputs['items'][0]['label'] == 1791
+    assert response.outputs == official_response_retrieve_endpoints_by_incident_request['items']
+    assert response.outputs[0]['label'] == 1791
 
 
 @patch.object(Client, 'mark_incident_as_read_request', return_value={'statusCode': 200})

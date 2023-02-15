@@ -58,6 +58,7 @@ configuration:
   type: 8
   required: false
 - display: Incident type
+  defaultvalue: Lumu
   name: incidentType
   type: 13
   required: false
@@ -91,8 +92,9 @@ script:
     arguments:
     - name: page
       description: "page requested"
-    - name: items
-      description: "items requested"
+    - name: limit
+      defaultValue: 10
+      description: "items limit requested"
     outputs:
     - contextPath: Lumu.RetrieveLabels.labels.id
       description: "label id"
@@ -140,18 +142,32 @@ script:
     arguments:
     - name: page
       description: "page requested"
-    - name: items
-      description: "items requested"
+    - name: limit
+      defaultValue: 10
+      description: "items limit requested"
     - name: fromdate
-      description: "from date in ISO string format"
+      description: "from date in ISO string format \n e.g. 2023 january 1st, 14:40:14 - 2023-01-01T14:40:14.000Z \n e.g. 2023 july 4th, 05:10 - 2023-07-04T05:10:00.000Z"
     - name: todate
-      description: "to date in ISO string format"
+      description: "from date in ISO string format \n e.g. 2023 january 1st, 14:40:14 - 2023-01-01T14:40:14.000Z \n e.g. 2023 july 4th, 05:10 - 2023-07-04T05:10:00.000Z"
     - name: status
       isArray: true
       description: "choose status: open,muted,closed"
+      auto: PREDEFINED
+      predefined:
+      - open
+      - muted
+      - closed
     - name: adversary_types
       isArray: true
-      description: "choose types: c2c,malware,dga,mining,spam,phishing"
+      description: "choose types: C2C,Malware,DGA,Mining,Spam,Phishing"
+      auto: PREDEFINED
+      predefined:
+      - C2C
+      - Malware
+      - DGA
+      - Mining
+      - Spam
+      - Phishing
     - name: labels
       isArray: true
       description: "choose labels"
@@ -488,11 +504,20 @@ script:
     arguments:
     - name: page
       description: "page requested "
-    - name: items
-      description: "item requested "
+    - name: limit
+      defaultValue: 10
+      description: "item limit requested "
     - name: adversary_types
       isArray: true
-      description: "Lumu adversary-types requested"
+      description: "choose types: C2C,Malware,DGA,Mining,Spam,Phishing"
+      auto: PREDEFINED
+      predefined:
+      - C2C
+      - Malware
+      - DGA
+      - Mining
+      - Spam
+      - Phishing
     - name: labels
       isArray: true
       description: "Lumu labels requested"
@@ -547,11 +572,20 @@ script:
     arguments:
     - name: page
       description: "page requested "
-    - name: items
-      description: "items requested "
+    - name: limit
+      defaultValue: 10
+      description: "items limit requested "
     - name: adversary_types
       isArray: true
-      description: "Lumu adversary-types requested "
+      description: "choose types: C2C,Malware,DGA,Mining,Spam,Phishing"
+      auto: PREDEFINED
+      predefined:
+      - C2C
+      - Malware
+      - DGA
+      - Mining
+      - Spam
+      - Phishing
     - name: labels
       isArray: true
       description: "Lumu labels requested "
@@ -606,11 +640,20 @@ script:
     arguments:
     - name: page
       description: "page requested "
-    - name: items
-      description: "items requested "
+    - name: limit
+      defaultValue: 10
+      description: "items limit requested "
     - name: adversary_types
       isArray: true
-      description: "Lumu adversary-types requested"
+      description: "choose types: C2C,Malware,DGA,Mining,Spam,Phishing"
+      auto: PREDEFINED
+      predefined:
+      - C2C
+      - Malware
+      - DGA
+      - Mining
+      - Spam
+      - Phishing
     - name: labels
       isArray: true
       description: "Lumu labels requested"
@@ -671,8 +714,9 @@ script:
       description: "Lumu incident id requested"
     - name: page
       description: "page requested "
-    - name: items
-      description: "items requested "
+    - name: limit
+      defaultValue: 10
+      description: "items limit requested "
     outputs:
     - contextPath: Lumu.RetrieveEndpointsByIncident.items.label
       description: "Lumu label"
@@ -749,8 +793,9 @@ script:
     arguments:
     - name: offset
       description: "Lumu offset requested"
-    - name: items
-      description: "items requested "
+    - name: limit
+      defaultValue: 10
+      description: "items limit requested "
     - name: time
       description: "time requested "
     outputs:

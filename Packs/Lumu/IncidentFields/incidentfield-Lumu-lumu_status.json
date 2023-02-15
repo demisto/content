@@ -3,7 +3,11 @@
     "name": "lumu_status",
     "ownerOnly": false,
     "cliName": "lumustatus",
-    "type": "shortText",
+    "type": "singleSelect",
+    "selectValues": [
+        "mute",
+        "unmute"
+    ],
     "closeForm": true,
     "editForm": true,
     "required": false,

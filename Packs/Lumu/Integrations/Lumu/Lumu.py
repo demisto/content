@@ -274,7 +274,7 @@ def add_prefix_to_comment(commnet: Optional[str]) -> str:
 
 def retrieve_labels_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     page = args.get("page")
-    items = args.get("items")
+    items = args.get("limit")
 
     response = client.retrieve_labels_request(page, items)
     command_results = CommandResults(
@@ -283,6 +283,8 @@ def retrieve_labels_command(client: Client, args: Dict[str, Any]) -> CommandResu
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown('Labels', response.get('labels', []), headerTransform=pascalToSpace, removeNull=True)
+        + '\n'
+        + tableToMarkdown('paginationInfo', response.get('paginationInfo', []), headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -308,7 +310,7 @@ def retrieve_a_specific_label_command(
 
 def retrieve_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     page = args.get("page")
-    items = args.get("items")
+    items = args.get("limit")
     fromdate = args.get("fromdate")
     todate = args.get("todate")
     status = args.get("status")
@@ -326,11 +328,12 @@ def retrieve_incidents_command(client: Client, args: Dict[str, Any]) -> CommandR
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveIncidents",
         outputs_key_field="id",
-        outputs=response,
+        outputs=response.get("items"),
         raw_response=response,
         readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
+        + '\n'
+        + tableToMarkdown('paginationInfo', response.get('paginationInfo', []), headerTransform=pascalToSpace, removeNull=True)
     )
-
     return command_results
 
 
@@ -340,12 +343,16 @@ def retrieve_a_specific_incident_details_command(
     lumu_incident_id = args.get("lumu_incident_id")
 
     response = client.retrieve_a_specific_incident_details_request(lumu_incident_id)
+    human_response = response.copy()
+    actions = human_response.pop("actions", [])
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveASpecificIncidentDetails",
         outputs_key_field="id",
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Incident', response, headerTransform=pascalToSpace, removeNull=True)
+        readable_output=tableToMarkdown('Incident', human_response, headerTransform=pascalToSpace, removeNull=True)
+        + '\n'
+        + tableToMarkdown('Actions', actions, headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -396,7 +403,7 @@ def retrieve_open_incidents_command(
     client: Client, args: Dict[str, Any]
 ) -> CommandResults:
     page = args.get("page")
-    items = args.get("items")
+    items = args.get("limit")
     adversary_types = args.get("adversary_types")
     labels = args.get("labels")
 
@@ -410,9 +417,11 @@ def retrieve_open_incidents_command(
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveOpenIncidents",
         outputs_key_field="id",
-        outputs=response,
+        outputs=response.get("items"),
         raw_response=response,
         readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
+        + '\n'
+        + tableToMarkdown('paginationInfo', response.get('paginationInfo', []), headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -422,7 +431,7 @@ def retrieve_muted_incidents_command(
     client: Client, args: Dict[str, Any]
 ) -> CommandResults:
     page = args.get("page")
-    items = args.get("items")
+    items = args.get("limit")
     adversary_types = args.get("adversary_types")
     labels = args.get("labels")
 
@@ -436,9 +445,11 @@ def retrieve_muted_incidents_command(
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveMutedIncidents",
         outputs_key_field="id",
-        outputs=response,
+        outputs=response.get("items"),
         raw_response=response,
         readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
+        + '\n'
+        + tableToMarkdown('paginationInfo', response.get('paginationInfo', []), headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -448,7 +459,7 @@ def retrieve_closed_incidents_command(
     client: Client, args: Dict[str, Any]
 ) -> CommandResults:
     page = args.get("page")
-    items = args.get("items")
+    items = args.get("limit")
     adversary_types = args.get("adversary_types")
     labels = args.get("labels")
 
@@ -462,9 +473,11 @@ def retrieve_closed_incidents_command(
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveClosedIncidents",
         outputs_key_field="id",
-        outputs=response,
+        outputs=response.get("items"),
         raw_response=response,
         readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
+        + '\n'
+        + tableToMarkdown('paginationInfo', response.get('paginationInfo', []), headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -475,7 +488,7 @@ def retrieve_endpoints_by_incident_command(
 ) -> CommandResults:
     lumu_incident_id = args.get("lumu_incident_id")
     page = args.get("page")
-    items = args.get("items")
+    items = args.get("limit")
 
     response = client.retrieve_endpoints_by_incident_request(
         lumu_incident_id, page, items
@@ -483,10 +496,12 @@ def retrieve_endpoints_by_incident_command(
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveEndpointsByIncident",
         outputs_key_field="label",
-        outputs=response,
+        outputs=response.get("items"),
         raw_response=response,
         readable_output=tableToMarkdown('Incident endpoints', response.get('items', []),
                                         headerTransform=pascalToSpace, removeNull=True)
+        + '\n'
+        + tableToMarkdown('paginationInfo', response.get('paginationInfo', []), headerTransform=pascalToSpace, removeNull=True)
     )
 
     return command_results
@@ -573,7 +588,7 @@ def consult_incidents_updates_through_rest_command(
     client: Client, args: Dict[str, Any]
 ) -> CommandResults:
     offset = args.get("offset")
-    items = args.get("items")
+    items = args.get("limit")
     time = args.get("time")
 
     response = client.consult_incidents_updates_through_rest_request(
@@ -935,7 +950,7 @@ def test_module(client: Client, args: Dict[str, Any]) -> None:
     # Test functions here
     try:
         page = args.get("page")
-        items = args.get("items")
+        items = args.get("limit")
         client.retrieve_labels_request(page, items)
         return_results("ok")
     except Exception as e:
