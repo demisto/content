@@ -2317,7 +2317,7 @@ Gets a list of endpoints according to the passed filters, and changes their alia
 | last_seen_gte | All the agents that were last seen after {last_seen_gte} to use as a filter.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
 | last_seen_lte | All the agents that were last seen before {last_seen_lte} to use as a filter.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
 | username | The usernames to query for to use as a filter. Accepts a single user, or comma-separated list of usernames. | Optional | 
-| new_alias_name | The requested alias name to change to. | Required | 
+| new_alias_name | The alias name to change to. Note: If you send an empty field, (e.g new_alias_name=\"\") the current alias name is deleted.| Required | 
 | scan_status | The scan status of the endpoint to use as a filter. Possible values are: none, pending, in_progress, canceled, aborted, pending_cancellation, success, error. | Optional | 
 
 

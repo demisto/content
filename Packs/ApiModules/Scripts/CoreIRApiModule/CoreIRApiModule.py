@@ -1804,6 +1804,11 @@ def endpoint_alias_change_command(client: CoreClient, **args) -> CommandResults:
     username_list = argToList(args.get('username'))
     new_alias_name = args.get('new_alias_name')
 
+    # This is a workaround that is needed because of a specific behaviour of the system
+    # that converts an empty string to a string with double quotes.
+    if new_alias_name == '""':
+        new_alias_name = ""
+
     first_seen_gte = arg_to_timestamp(
         arg=args.get('first_seen_gte'),
         arg_name='first_seen_gte'

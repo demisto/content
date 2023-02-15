@@ -999,7 +999,9 @@ script:
         isArray: true
       - name: new_alias_name
         required: true
-        description: The alias name to change to.
+        description: |-
+          The alias name to change to.
+          Note: If you send an empty field, (e.g new_alias_name=\"\") the current alias name is deleted.
       - name: scan_status
         description: The scan status of the endpoint to use as a filter.
         auto: PREDEFINED
