@@ -667,6 +667,13 @@ script:
       type: String
   - arguments:
     - default: false
+      description: "A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will
+        return all the issue fields (which will include nested values)"
+      isArray: false
+      name:  fields
+      required: false
+      secret: false
+    - default: false
       description: The issue ID (Issue ID or key is required).
       isArray: false
       name: issue_id
@@ -687,7 +694,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: If "true", retrieves the issue attachments.
+      description: If "true", retrieves the issue attachments and downloads the file to the War Room.
       isArray: false
       name: get_attachments
       predefined:
@@ -718,7 +725,7 @@ script:
       description: The ticket key.
       type: Unknown
     - contextPath: Ticket.Assignee
-      description: The user assigned to the ticket.
+      description: The user assigned to the ticket, in the form `Username(User email address)`.
       type: Unknown
     - contextPath: Ticket.Creator
       description: The user who created the ticket.
