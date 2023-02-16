@@ -40,6 +40,7 @@ tasks:
       brand: ""
       id: ae2d9752-51e7-4a2d-88fc-cda80722473f
       iscommand: false
+      description: start playbook
       name: ""
       version: -1
     taskid: ae2d9752-51e7-4a2d-88fc-cda80722473f
@@ -236,6 +237,7 @@ tasks:
       id: 8a21b457-4b98-402a-832c-06c3cef8e7be
       iscommand: false
       name: Case Details
+      description: Case Details
       type: title
       version: -1
     taskid: 8a21b457-4b98-402a-832c-06c3cef8e7be
@@ -267,6 +269,7 @@ tasks:
       iscommand: false
       name: Vulnerability
       type: title
+      description: Vulnerability
       version: -1
     taskid: f40cc4bc-b7c7-452e-8293-17019719b9b6
     timertriggers: []
@@ -296,6 +299,7 @@ tasks:
       id: 9e33d83c-e454-4e76-88ff-a996e76c78a9
       iscommand: false
       name: Compliance
+      description: Compliance
       type: title
       version: -1
     taskid: 9e33d83c-e454-4e76-88ff-a996e76c78a9
@@ -395,6 +399,7 @@ tasks:
       iscommand: false
       name: Remediation
       type: title
+      description: Remediation
       version: -1
     taskid: a4378aa2-9e36-47bb-845b-c61aa8589229
     timertriggers: []
@@ -453,6 +458,7 @@ tasks:
       id: 7fcef967-1407-4abc-8da4-1b8509b7a489
       iscommand: false
       name: Fin
+      description: Fin
       type: title
       version: -1
     taskid: 7fcef967-1407-4abc-8da4-1b8509b7a489
@@ -483,6 +489,7 @@ tasks:
       id: 7a9924d9-9595-4d81-8243-db63106526d6
       iscommand: false
       name: Forensics
+      description: Forensics
       type: title
       version: -1
     taskid: 7a9924d9-9595-4d81-8243-db63106526d6
@@ -911,6 +918,7 @@ tasks:
       id: 799d7dec-7bfd-42ad-8cf6-9c8f85049299
       iscommand: false
       name: Manually Remediate
+      description: Perform the manual remediation
       type: regular
       version: -1
     taskid: 799d7dec-7bfd-42ad-8cf6-9c8f85049299
@@ -986,6 +994,7 @@ tasks:
       id: 69a6d29a-a700-4b45-8336-2bbfb6bab7a0
       iscommand: false
       name: Create Link Back
+      description: Create a link back to the Prisma Cloud Compute instance.
       script: 1c969de3-c684-4977-872b-295ad7be3f0b
       type: regular
       version: -1
@@ -1067,6 +1076,7 @@ tasks:
       id: c7f64513-864b-4cfb-8f79-308b70c27914
       iscommand: false
       name: Check if Alert has Vulnerabilities
+      description: Check for vulnerabilites listed in the alert.
       type: condition
       version: -1
     taskid: c7f64513-864b-4cfb-8f79-308b70c27914
