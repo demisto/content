@@ -26,7 +26,7 @@ HTTP_HEADERS = {
     'Content-Type': 'application/json'
 }
 USE_SSL = not demisto.params().get('unsecure')
-MESSAGE_STATUS = demisto.params().get('message_status')
+MESSAGE_STATUS = argToList(demisto.params().get('message_status'))
 
 '''
 SEARCH ATTRIBUTES VALID VALUES
@@ -582,7 +582,7 @@ def fetch_incidents():
 
     for alert in alerts:
         # filter by message status if specified
-        if MESSAGE_STATUS and alert['attributes']['email']['status'] != MESSAGE_STATUS:
+        if MESSAGE_STATUS and alert['attributes']['email']['status'] not in MESSAGE_STATUS:
             continue
         # filter alerts created before 'last_created'
         current_alert_created = parse_string_in_iso_format_to_datetime(alert['attributes']['alert']['timestamp'])

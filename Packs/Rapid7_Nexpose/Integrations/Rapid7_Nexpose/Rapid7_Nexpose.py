@@ -923,6 +923,24 @@ class Client(BaseClient):
             resp_type="json",
         )
 
+    def get_asset_tags(self, asset_id: str) -> dict:
+        """
+        | Retrieve tags about a specific asset.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getAssetTags
+
+        Args:
+            asset_id (str): ID of the asset to retrieve information about.
+
+        Returns:
+            dict: API response with list of tags about a specific asset.
+        """
+        return self._http_request(
+            url_suffix=f"/assets/{asset_id}/tags",
+            method="GET",
+            resp_type="json",
+        )
+
     def get_asset_vulnerability_solution(self, asset_id: str, vulnerability_id: str) -> dict:
         """
         | Retrieve information about solutions that can be used to remediate a vulnerability on an asset.
@@ -3411,6 +3429,52 @@ def download_report_command(client: Client, report_id: str, instance_id: str, na
     )
 
 
+def get_asset_tags_command(client: Client, asset_id: str) -> CommandResults | list[CommandResults]:
+    """
+    Retrieve tags associated to an asset.
+
+    Args:
+        client (Client): Client to use for API requests.
+        asset_id (str): ID of the asset to retrieve information about.
+    """
+    tags = []
+
+    try:
+        tag_raw_data = client.get_asset_tags(asset_id)
+
+    except DemistoException as e:
+        if e.res is not None and e.res.status_code is not None and e.res.status_code == 404:
+            return CommandResults(readable_output="Asset not found.")
+    for tag in tag_raw_data.get("resources", []):
+        tag_output = generate_new_dict(
+            data=tag,
+            name_mapping={
+                "type": "Type",
+                "riskModifier": "RiskModifier",
+                "name": "Name",
+                "created": "CreatedTime",
+            },
+            include_none=True,
+        )
+        tags.append(tag_output)
+
+    readable_output = tableToMarkdown(
+        name=f"Nexpose Asset Tags for Asset {asset_id}",
+        t=tags,
+        headers=["Type", "Name", "Risk Modifier", "Created Time"],
+    )
+
+    result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Nexpose.AssetTag",
+        outputs=tags,
+        outputs_key_field="type",
+        raw_response=tag_raw_data,
+    )
+
+    return result
+
+
 def get_asset_command(client: Client, asset_id: str) -> CommandResults | list[CommandResults]:
     """
     Retrieve information about an asset.
@@ -5349,6 +5413,8 @@ def main():  # pragma: no cover
             results = set_assigned_shared_credential_status_command(client=client, enabled=True, **args)
         elif command == "nexpose-get-asset":
             results = get_asset_command(client=client, asset_id=args.pop("id"))
+        elif command == "nexpose-get-asset-tags":
+            results = get_asset_tags_command(client=client, asset_id=args.pop("asset_id"))
         elif command == "nexpose-get-asset-vulnerability":
             results = get_asset_vulnerability_command(client=client, asset_id=args.pop("id"),
                                                       vulnerability_id=args.pop("vulnerabilityId"))

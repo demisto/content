@@ -17,9 +17,9 @@ Follow these steps for User - Authentication configuration:
 4. Enter your Client Secret in the ***Client Secret*** parameter.
 5. Enter your Tenant ID in the ***Tenant ID*** parameter.
 6. Enter your Application redirect URI in the ***Application redirect URI*** parameter.
-7. Enter your Authorization code in the ***Authorization code*** parameter.
 7. Save the instance.
-8. Run the ***!azure-ks-auth-test*** command - a 'Success' message should be printed to the War Room.
+8. Run the `!azure-ks-generate-login-url` command in the War Room and follow the instruction.
+9. Run the ***!azure-ks-auth-test*** command - a 'Success' message should be printed to the War Room.
 
 #### Cortex XSOAR Azure App
 
@@ -35,3 +35,17 @@ Follow these steps for a self-deployed configuration:
 5. Run the ***!azure-ks-auth-complete*** command.
 
 At end of the process you'll see a message that you've logged in successfully.
+
+### Azure Managed Identities Authentication
+##### Note: This option is relevant only if the integration is running on Azure VM.
+Follow one of these steps for authentication based on Azure Managed Identities:
+
+- ##### To use System Assigned Managed Identity
+   - In the **Authentication Type** drop-down list, select **Azure Managed Identities** and leave the **Azure Managed Identities Client ID** field empty.
+
+- ##### To use User Assigned Managed Identity
+   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**.
+   2. Select your User Assigned Managed Identity -> copy the Client ID -> paste it in the **Azure Managed Identities client ID** field in the instance configuration.
+   3. In the **Authentication Type** drop-down list, select **Azure Managed Identities**.
+
+For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).

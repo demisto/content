@@ -1,0 +1,39 @@
+{
+    "data": [
+        {
+            "end_ts": "2022-07-21 17:40:57",
+            "id": "2",
+            "job_result": "2",
+            "job_status": "2",
+            "job_type": "22",
+            "parent_id": "1",
+            "percent": "100",
+            "result_str": "OK",
+            "start_ts": "2022-07-21 17:14:38",
+            "status_str": "FIN",
+            "summary": "Configuration push finished",
+            "type_str": "CommitAll",
+            "uname": "Some User",
+            "description": "Remote Networks configuration pushed to cloud"
+        },
+        {
+            "end_ts": "2022-07-21 17:14:35",
+            "id": "3",
+            "job_result": "2",
+            "job_status": "2",
+            "job_type": "53",
+            "parent_id": "1",
+            "percent": "100",
+            "result_str": "OK",
+            "start_ts": "2022-07-21 17:13:48",
+            "status_str": "FIN",
+            "summary": "",
+            "type_str": "CommitAndPush",
+            "uname": "Some User",
+            "description": ""
+        }
+    ],
+    "total": 300,
+    "limit": 2,
+    "offset": 0
+}
