@@ -629,6 +629,27 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!msgraph-user-test```
+#### Human Readable Output
+
+>ok
+
+### msgraph-user-session-revoke
+***
+Revoke a user session- Invalidates all the refresh tokens issued to applications for a user.
+Permission: Directory.AccessAsUser.All(Delegated)
+
+
+#### Base Command
+
+`msgraph-user-session-revoke`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required | 
+
 
 ### msgraph-user-generate-login-url
 ***
