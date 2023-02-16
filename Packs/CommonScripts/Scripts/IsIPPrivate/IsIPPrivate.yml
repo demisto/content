@@ -15,7 +15,7 @@ comment: |-
 enabled: true
 args:
 - name: PrivateIPsListName
-  description: The name of the XSOAR list that holds the private IP ranges or specific IPs in the organization. If no list is specified, the script will use the ranges defined by the IANA, which are 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16.
+  description: The name of the Cortex XSOAR list that holds the private IP ranges or specific IPs in the organization. If no list is specified, the script will use the ranges defined by the IANA, which are 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16.
   defaultValue: PrivateIPs
 - name: IPAddresses
   required: true
