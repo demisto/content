@@ -1,6 +1,6 @@
 .filter-non-nightly-docker-updates-rule:
   rules:
-    - if: '$CI_COMMIT_BRANCH =~ /^demisto\/([^n]|n($|[^i]|i($|[^g]|g($|[^h]))))[^\/]*$/'
+    - if: '$CI_COMMIT_BRANCH =~ /^demisto\/([^n]|n($|[^i]|i($|[^g]|g($|[^h]|h($|[^t]|t($|[^l]|l($|[^y]|$)))))))[^\/]*$/'
       when: never
 
 .push-rule:
