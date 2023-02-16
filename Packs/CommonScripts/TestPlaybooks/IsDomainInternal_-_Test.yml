@@ -383,4 +383,6 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: 1530d17c-adcc-4bc2-8289-b0472464386b
+marketplaces:
+  - xsoar
 fromversion: 6.5.0
