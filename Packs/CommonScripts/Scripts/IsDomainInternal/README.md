@@ -16,7 +16,7 @@ The results of the script are tagged with the "Internal_Domain_Check_Results" ta
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| InternalDomainsListName | The name of the XSOAR list that holds the internal domains in the organization. If no list is specified, the script will use InternalDomains list by default. |
+| InternalDomainsListName | The name of the Cortex XSOAR list that holds the internal domains in the organization. If no list is specified, the script will use the InternalDomains list by default. |
 | Domains | A domain name or a list of domain names to check for being internal or external, against the specified list of internal domains. |
 
 ## Outputs
