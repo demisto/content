@@ -6,6 +6,7 @@ import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+# Doing some tests
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR_NAME = 'CrowdStrikeMalquery'
