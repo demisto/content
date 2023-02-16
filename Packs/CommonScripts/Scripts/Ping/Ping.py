@@ -12,6 +12,7 @@ def main():
         )
         s = re.search(r"PING.*?\((.+?)\)", ping_out)
         res = {}
+        demisto.debug('test')
         if s:
             res['destination_ip'] = s.group(1)
         s = re.search(r"rtt min/avg/max/mdev = (.+)/(.+)/(.+)/(.+)\s+ms", ping_out)
