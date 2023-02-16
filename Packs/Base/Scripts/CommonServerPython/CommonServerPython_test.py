@@ -887,6 +887,40 @@ class TestTableToMarkdown:
 """
         assert expected_table == table
 
+    @staticmethod
+    def test_no_given_headers_and_sorting():
+        """
+        Given:
+            - A list of dictionaries.
+        When:
+            - Calling tableToMarkdown with no given headers and sorting=True by default.
+        Then:
+            - Create a markdown table with the given data and sorting by keys.
+        """
+        data = [{'c': 1, 'b': 2, 'a': 3}, {'c': 4, 'b': 5, 'a': 6}]
+        table = tableToMarkdown("tableToMarkdown test", data)
+        assert table == '### tableToMarkdown test\n' \
+                        '|a|b|c|\n|---|---|---|\n' \
+                        '| 3 | 2 | 1 |\n' \
+                        '| 6 | 5 | 4 |\n'
+
+    @staticmethod
+    def test_no_given_headers_and_no_sorting():
+        """
+        Given:
+            - A list of dictionaries.
+        When:
+            - Calling tableToMarkdown with no given headers and sorting=False.
+        Then:
+            - Create a markdown table with the given data and no sorting.
+        """
+        data = [{'c': 1, 'b': 2, 'a': 3}, {'c': 4, 'b': 5, 'a': 6}]
+        table = tableToMarkdown("tableToMarkdown test", data, sorting=False)
+        assert table == '### tableToMarkdown test\n' \
+                        '|c|b|a|\n|---|---|---|\n' \
+                        '| 1 | 2 | 3 |\n' \
+                        '| 4 | 5 | 6 |\n'
+
 
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
 def test_url_to_clickable_markdown(data, expected_data):
