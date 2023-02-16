@@ -13,7 +13,7 @@ comment: |-
 enabled: true
 args:
 - name: InternalDomainsListName
-  description: The name of the XSOAR list that holds the internal domains in the organization. If no list is specified, the script will use InternalDomains list by default.
+  description: The name of the Cortex XSOAR list that holds the internal domains in the organization. If no list is specified, the script will use the InternalDomains list by default.
   defaultValue: InternalDomains
 - name: Domains
   required: true
