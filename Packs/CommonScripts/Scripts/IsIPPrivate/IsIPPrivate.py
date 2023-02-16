@@ -3,13 +3,15 @@ from ipaddress import IPv4Address, IPv4Network
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+DELIMETER = ","
 
 def is_ip_internal(ip: str, ranges: list[str]) -> bool:
     try:
         return any((IPv4Address(ip) in IPv4Network(cidr.split(DELIMETER)[0] if DELIMETER in cidr else cidr) for cidr in ranges))
     except ValueError:
-        demisto.log("One or more IP ranges or IPs are invalid. Please make sure the list is in the correct structure.")
+        demisto.info("One or more IP ranges or IPs are invalid. Please make sure the list is in the correct structure.")
         return True
+
 
 def get_ip_tag(ip: str, ranges: list[str]) -> str:
     for cidr in ranges:
@@ -23,6 +25,7 @@ def get_ip_tag(ip: str, ranges: list[str]) -> str:
             if ip == cidr:
                 return tag
     return None
+
 
 def main():
     args = demisto.args()
@@ -38,12 +41,13 @@ def main():
     if private_ranges:
         try:
             private_ranges = private_ranges.split("\n")
-        except Exception as ex:
+        except Exception:
             return_error(
-                "Could not parse the private ranges list. Please make sure that the list contains ranges written in CIDR notation, separated by new lines.")
+                "Could not parse the private ranges list. "
+                "Please make sure that the list contains ranges written in CIDR notation, separated by new lines.")
     else:
         private_ranges = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]  # No ranges in list, use default ranges
-        demisto.log(f"The list {ranges_list_name} was empty. Using the default private ranges as fall-back.")
+        demisto.info(f"The list {ranges_list_name} was empty. Using the default private ranges as fall-back.")
 
     # Create list of IPs with private property and tag
     ip_list = [{"Address": ip, "Private": is_ip_internal(ip, private_ranges), "Tag": get_ip_tag(ip, private_ranges)} for
@@ -72,7 +76,7 @@ def main():
             "internal": ip.get("Private"),
             "customFields": {
                 "tags:": [ip.get("Tag", "")],
-                }
+            }
         }
         args_set_existing_indicator = {
             "value": address,
@@ -100,6 +104,7 @@ def main():
 
     # Return results
     return_results(entry_to_return)
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
