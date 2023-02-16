@@ -62,13 +62,13 @@ configuration:
   type: 0
   defaultvalue: General
   section: Connect
-- name: creds_certificate
-  display: Certificate (Required for HTTPS)
+- display: Certificate (Required for HTTPS)
+  name: creds_certificate
   required: false
   type: 9
-  displaypassword: Private Key (Required for HTTPS)
   section: Connect
   advanced: true
+  displaypassword: Private Key (Required for HTTPS)
 - display: Certificate (Required for HTTPS)
   name: certificate
   required: false
@@ -738,7 +738,7 @@ script:
     execution: false
     name: microsoft-teams-generate-login-url
     arguments: []
-  dockerimage: demisto/teams:1.0.0.48135
+  dockerimage: demisto/teams:1.0.0.48817
   feed: false
   isfetch: false
   longRunning: true
