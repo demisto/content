@@ -32,7 +32,7 @@
                     "xdm.target.resource.id": "4",
                     "xdm.target.resource.type": "dcim.device",
                     "xdm.target.resource.name": "test3",
-                    "xdm.event.outcome": "info"
+                    "xdm.alert.subcategory": "info"
             }
         },
         {
