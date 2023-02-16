@@ -1606,7 +1606,7 @@ class Pack(object):
         pack_versions_to_keep: List[str] = []
 
         try:
-            version_to_prs = self.get_version_to_pr_numbers(release_notes_dir)
+            version_to_prs = {}  # self.get_version_to_pr_numbers(release_notes_dir)
             logging.debug(f"found the following versions to PRs: {version_to_prs}")
             # load changelog from downloaded index
             logging.info(f"Loading changelog for {self._pack_name} pack")
@@ -1636,7 +1636,7 @@ class Pack(object):
                         task_status = False
                         return task_status, not_updated_build, pack_versions_to_keep
                     else:
-                        prs_for_version = version_to_prs[latest_release_notes]
+                        prs_for_version = version_to_prs.get(latest_release_notes, [])
                         logging.info(f"found prs for version {latest_release_notes} : {prs_for_version}")
                         if latest_release_notes in changelog:
                             logging.debug(f"Found existing release notes for version: {latest_release_notes}")
@@ -1671,7 +1671,7 @@ class Pack(object):
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
                                 versions, _ = self.get_same_block_versions(release_notes_dir, version, changelog)
                                 all_relevant_pr_nums_for_unified = list({pr_num for version in versions.keys()
-                                                                        for pr_num in version_to_prs[version]})
+                                                                        for pr_num in version_to_prs.get(version, [])})
                                 logging.debug(f"{all_relevant_pr_nums_for_unified=}")
                                 updated_entry = self._get_updated_changelog_entry(
                                     changelog=changelog,
