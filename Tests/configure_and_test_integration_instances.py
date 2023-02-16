@@ -1791,8 +1791,15 @@ def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tu
                                                 that new to current marketplace)
     """
     non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
+    from Tests.private_build.upload_packs_private import extract_packs_artifacts
+    from tempfile import mkdtemp
+    extract_destination_path = mkdtemp()
+    packs_artifacts_path = f'{os.getenv("ARTIFACTS_FOLDER")}/xsoar/content_packs.zip'
+    extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
+    content_packs_path = f"{extract_destination_path}/content_packs"
+
     packs_with_higher_min_version = get_packs_with_higher_min_version(modified_packs_names - non_hidden_packs,
-                                                                      build.content_path, build.server_numeric_version)
+                                                                      content_packs_path, build.server_numeric_version)
     # packs to install used in post update
     build.pack_ids_to_install = list(set(build.pack_ids_to_install) - packs_with_higher_min_version)
 
@@ -1805,13 +1812,13 @@ def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tu
     return packs_not_to_install_in_pre_update, non_hidden_packs
 
 
-def get_packs_with_higher_min_version(packs_names: Set[str], content_path: str, server_numeric_version: str) -> Set[str]:
+def get_packs_with_higher_min_version(packs_names: Set[str], content_packs: str, server_numeric_version: str) -> Set[str]:
     """
     Return a set of packs that have higher min version than the server version.
 
     Args:
         packs_names (Set[str]): A set of packs to install.
-        content_path (str): The content root path.
+        content_packs (str): The content_packs root path.
         server_numeric_version (str): The server version.
 
     Returns:
@@ -1821,7 +1828,7 @@ def get_packs_with_higher_min_version(packs_names: Set[str], content_path: str, 
     packs_with_higher_version = set()
     for pack_name in packs_names:
 
-        pack_metadata = get_json_file(f"{content_path}/Packs/{pack_name}/pack_metadata.json")
+        pack_metadata = get_json_file(f"{content_packs}/{pack_name}/metadata.json")
         server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION, Metadata.SERVER_DEFAULT_MIN_VERSION)
 
         if 'Master' not in server_numeric_version and Version(server_numeric_version) < Version(server_min_version):
