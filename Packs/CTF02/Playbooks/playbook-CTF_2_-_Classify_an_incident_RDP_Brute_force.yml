@@ -158,6 +158,8 @@ tasks:
 
             Windows users (Powershell):
             (iwr -Uri '<your tenant URL>/xsoar/instance/execute/edl1/?q=type:ip and verdict:malicious and tags:<Tag from the previous answer>' -Headers @{ Authorization = "Basic "+ [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("admin:admin")) }).Content
+
+            Note: *if you are on Windows 10, and see THIS error, start Internet Explorer once, then re-run command*
         required: false
         gridcolumns: []
         defaultrows: []
