@@ -5,8 +5,8 @@
 
 .push-rule:
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
 trigger-private-build:
   tags:
@@ -343,9 +343,8 @@ jobs-done-check-nightly:
 
 jobs-done-check-on-push:
   extends:
-    - .jobs-done-check
     - .push-rule
-#  needs: ['run-unittests-and-lint', 'trigger-private-build', 'validate-content-conf', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_6_5', 'xsoar_server_6_6', 'xsoar_server_6_8', 'xsoar_server_master']
+    - .jobs-done-check
   needs:
     - job: run-unittests-and-lint
       optional: true
