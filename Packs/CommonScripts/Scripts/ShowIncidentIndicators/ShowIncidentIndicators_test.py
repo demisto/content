@@ -1,4 +1,5 @@
 import pytest
+import demistomock as demisto
 from ShowIncidentIndicators import group_by_type, get_indicators_from_incident
 
 

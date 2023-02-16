@@ -1,3 +1,4 @@
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -17,9 +18,9 @@ def group_by_type(indicators):
         else:
             grouped[indicator['indicator_type']].append(indicator['value'])
     result = []
-    for key, values in grouped.items():
-        result.append("--- " + key + " ---")
-        result.extend(values)
+    for indicator_header, indicator_values in grouped.items():
+        result.append("--- " + indicator_header + " ---")
+        result.extend(indicator_values)
         result.append('')
     return result
 
@@ -39,4 +40,9 @@ def get_indicators_from_incident():
     return {"hidden": False, "options": group_by_type(all_indicator_data)}
 
 
-demisto.results(get_indicators_from_incident())
+def main():
+    return_results(get_indicators_from_incident())
+
+
+if __name__ in ("__main__", "__builtin__", "builtins"):
+    main()
