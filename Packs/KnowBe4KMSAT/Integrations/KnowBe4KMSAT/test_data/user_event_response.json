@@ -1,0 +1,26 @@
+{
+    "data": {
+        "id": "513f46ac-c3d7-4682-ad0d-0c149c0728a2",
+        "account_id": 585832,
+        "user": {
+            "email": "don.juan@example.com",
+            "id": 79233950,
+            "archived": false
+        },
+        "external_id": null,
+        "source": "test",
+        "description": null,
+        "occurred_date": "2023-01-13T13:52:04.529Z",
+        "risk": {
+            "level": null,
+            "decay_mode": null,
+            "expire_date": null
+        },
+        "metadata": null,
+        "event_type": {
+            "id": 2372290413,
+            "name": "test",
+            "description": null
+        }
+    }
+}
