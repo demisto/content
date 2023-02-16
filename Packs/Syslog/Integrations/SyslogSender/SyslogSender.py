@@ -95,11 +95,9 @@ class SyslogHandlerTLS(logging.Handler):
         try:
             self.socket.connect((self.address, self.port))
         except OSError as exc:
-            err = exc
             if ssl_sock:
                 ssl_sock.close()
-            if err:
-                raise err
+            raise DemistoException(str(exc))
 
     def emit(self, record):
         """
@@ -116,8 +114,8 @@ class SyslogHandlerTLS(logging.Handler):
 
             # Calculate the priority value
             priority = (self.facility << 3) | self.level
-            # Construct the syslog message
-            syslog_message = '<{priority}>1 {timestamp} {hostname} {appname} {procid} {msgid} - {message}'.format(
+            # Construct the syslog message in RFC 5424 format
+            syslog_message = '<{priority}>1 {timestamp} {hostname} {appname} {procid} {msgid} - {message}\n'.format(
                 priority=priority,
                 timestamp=datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
                 hostname=socket.gethostname(),
@@ -180,7 +178,8 @@ class SyslogManager:
         return Rfc5424SysLogHandler(address=(self.address, self.port),
                                     facility=self.facility,
                                     socktype=sock_kind,
-                                    timeout=10)
+                                    timeout=10,
+                                    utc_timestamp=True)
 
     def init_handler_tls(self, certfile: str):
         return SyslogHandlerTLS(address=self.address,
@@ -367,7 +366,7 @@ def main():
         if demisto.command() == 'test-module':
             syslog_manager = init_manager(demisto.params())
             with syslog_manager.get_logger() as syslog_logger:  # type: Logger
-                syslog_logger.info('This is a test')
+                syslog_logger.info('The connection was successfully established')
             demisto.results('ok')
         elif demisto.command() == 'mirror-investigation':
             mirror_investigation()
@@ -383,7 +382,17 @@ def main():
             syslog_manager = init_manager(demisto.params())
             syslog_send_notification(syslog_manager, min_severity)
     except Exception as e:
-        return_error(str(e))
+        exception_msg = str(e)
+        error_message = f"The following error was thrown: {exception_msg} "
+        if 'PEM lib (_ssl.c:4123)' in exception_msg:
+            error_message += 'Potential causes could include: ' \
+                'That the certificate is not in the correct format (e.g. it\'s not in PEM format)- '\
+                'Make sure to insert the Certificate was insert correctly. ' \
+                'or, The certificate is expired or otherwise invalid'
+        elif 'CERTIFICATE_VERIFY_FAILED' in exception_msg:
+            error_message += 'If the certificate is self sign, make sure to check the Self Signed Certificate button.' \
+                'Otherwise, The certificate is not trusted by the system or by the client trying to establish the connection'
+        raise DemistoException(error_message)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
