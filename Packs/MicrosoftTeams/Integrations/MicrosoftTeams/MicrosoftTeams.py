@@ -2498,6 +2498,21 @@ def test_module():
     return_results('ok')
 
 
+def generate_login_url_command():
+    login_url = f'https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/authorize?' \
+                f'response_type=code&scope=offline_access%20https://graph.microsoft.com/.default' \
+                f'&client_id={BOT_ID}&redirect_uri={REDIRECT_URI}'
+
+    result_msg = f"""### Authorization instructions
+1. Click on the [login URL]({login_url}) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.
+    """
+    return_results(CommandResults(readable_output=result_msg))
+
+
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
     demisto.debug("Main started...")
@@ -2517,7 +2532,8 @@ def main():
         'microsoft-teams-add-user-to-channel': add_user_to_channel_command,
         'microsoft-teams-create-meeting': create_meeting_command,
         'microsoft-teams-channel-user-list': channel_user_list_command,
-        'microsoft-teams-user-remove-from-channel': user_remove_from_channel_command
+        'microsoft-teams-user-remove-from-channel': user_remove_from_channel_command,
+        'microsoft-teams-generate-login-url': generate_login_url_command
 
     }
 
