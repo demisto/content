@@ -1,6 +1,6 @@
 The script takes one or more domain names and checks whether they're in the Cortex XSOAR list defined in the *InternalDomainsListName* argument. By default, the *InternalDomainsListName* argument will use the Cortex XSOAR list called "InternalDomains".
 The list can be customized by the user. It should contain the organization's internal domain names, separated by new lines. Subdomains are also supported in the list.
-The results of the script are tagged with the "Internal_Domain_Check_Results" tag, so they can be displayed in war-room entry sections in incident layouts.
+The results of the script are tagged with the "Internal_Domain_Check_Results" tag, so they can be displayed in the War Room entry sections in incident layouts.
 
 ## Script Data
 ---
