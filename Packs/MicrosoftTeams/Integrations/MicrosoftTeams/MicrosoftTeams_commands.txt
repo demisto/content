@@ -14,3 +14,4 @@
 !microsoft-teams-chat-list filter="topic eq 'testing'"
 !microsoft-teams-chat-message-list chat="example chat" order_by=createdDateTime
 !microsoft-teams-chat-update chat="example chat" chat_name="update chat_name"
+!microsoft-teams-generate-login-url
