@@ -28,7 +28,8 @@ def main():
             internal_domains = internal_domains.split("\n")
         except Exception as ex:
             return_error(
-                f"Could not parse the internal domains list. Please make sure that the list contains domain names, separated by new lines.\nThe exact error is: {ex}")
+                f"Could not parse the internal domains list. Please make sure that the list contains domain names,"
+                f" separated by new lines.\nThe exact error is: {ex}")
     else:
         return_results(f"No internal domains were found under {internal_domains_list_name}.")
         return
@@ -56,9 +57,11 @@ def main():
         # If indicator doesn't exist, create it and continuously poll for its creation (which happens asynchronously):
         if indicator_exists:
             # If indicator exists, update it with the correct Internal property:
-            # Note: theoretically the custom field mapping of the Domain indicator should already map Domain.Internal context to the "Internal" indicator field.
-            # However, the mapping occurs only AFTER the indicator reputation script, which DOES NOT run before this script completes, so in order to
-            # successfully set the Internal property of the domain name, we need to ensure creation and then edit the indicator ourselves.
+            # Note: theoretically the custom field mapping of the Domain indicator should already map Domain.Internal
+            # context to the "Internal" indicator field.
+            # However, the mapping occurs only AFTER the indicator reputation script, which DOES NOT run before this
+            # script completes, so in order to successfully set the Internal property of the domain name,
+            # we need to ensure creation and then edit the indicator ourselves.
             demisto.executeCommand("setIndicator", args_create_or_set_indicator)
         else:
             demisto.executeCommand("createNewIndicator", args_create_or_set_indicator)
