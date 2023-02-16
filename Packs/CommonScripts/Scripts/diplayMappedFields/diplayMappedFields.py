@@ -40,9 +40,13 @@ def convert_to_html(markdown):
         for i, column in enumerate(columns):
             if column.strip():
                 if i != 1:
-                    html += f"<td style='font-family: Lato, Assistant, sans-serif; font-weight: 600; font-size: 12px; text-align: left; color: #404142; padding: 1px 0px 0px; margin: 0px 5px 0px 0px; contrast: 4.95;'>{column.strip()}</td>"
+                    html += f"<td style='font-family: Lato, Assistant, sans-serif; font-weight: 600; \
+                    font-size: 12px; text-align: left; color: #404142; \
+                    padding: 1px 0px 0px; margin: 0px 5px 0px 0px; contrast: 4.95;'>{column.strip()}</td>"
                 else:
-                    html += f"<td style='font-family: Lato, Assistant, sans-serif; font-weight: 600; font-size: 12px; text-align: left; color: #707070; padding: 1px 0px 0px; margin: 0px 5px 0px 0px; contrast: 4.95;'>{column.strip()}</td>"
+                    html += f"<td style='font-family: Lato, Assistant, sans-serif; font-weight: 600; \
+                    font-size: 12px; text-align: left; color: #707070; \
+                    padding: 1px 0px 0px; margin: 0px 5px 0px 0px; contrast: 4.95;'>{column.strip()}</td>"
         html += "</tr>"
     html += "</table>"
     return html
@@ -54,7 +58,8 @@ def remove_empty_rows(table):
 
     # Filter out the rows that contain empty dictionaries
     filtered_rows = [row for row in rows if not (
-        "{}" in row or "[{}]" in row or "[{}, {}]" in row or "[{}, {}, {}]" in row or "0001-01-01T00:00:00Z" in row or "containmentsla" in row or "remediationsla" in row or "detectionsla" in row or "triagesla" in row)]
+        "{}" in row or "[{}]" in row or "[{}, {}]" in row or "[{}, {}, {}]" in row or "0001-01-01T00:00:00Z" in row or " \
+        containmentsla" in row or "remediationsla" in row or "detectionsla" in row or "triagesla" in row)]
 
     # Join the filtered rows back into a table
     filtered_table = "\n".join(filtered_rows)
