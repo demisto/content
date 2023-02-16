@@ -731,7 +731,6 @@ def main():
     transport: Transport = Transport(session=session, cache=cache)
     settings: Settings = Settings(strict=False, xsd_ignore_sequence_order=True)
     client: Client = Client(wsdl=wsdl, transport=transport, settings=settings)
-    demisto.debug('test')
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')

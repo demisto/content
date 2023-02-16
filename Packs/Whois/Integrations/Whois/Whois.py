@@ -8584,8 +8584,6 @@ def main():
     else:
         raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
-    demisto.debug('test')
-    
     try:
         if command == 'ip':
             return_results(ip_command(demisto.args().get('ip'), reliability))
