@@ -849,6 +849,55 @@ script:
           description: "Event Type Name"
           type: String
       description: Returns KMSAT User Events.
+    - name: kmsat-user-event-list
+      arguments:
+        - name: id
+          required: true
+          description: event ID
+      outputs:
+        - contextPath: KMSAT.UserEvent.id
+          description: "Unique ID of the event"
+          type: Number
+        - contextPath: KMSAT.UserEvent.user.email
+          description: "User email address"
+          type: String
+        - contextPath: KMSAT.UserEvent.user.id
+          description: "User ID"
+          type: Number
+        - contextPath: KMSAT.UserEvent.user.archived
+          description: "User Archived flag"
+          type: Boolean
+        - contextPath: KMSAT.UserEvent.external_id
+          description: "External ID of the event"
+          type: String
+        - contextPath: KMSAT.UserEvent.source
+          description: "Source of the event"
+          type: String
+        - contextPath: KMSAT.UserEvent.description
+          description: "Description of the event"
+          type: String
+        - contextPath: KMSAT.UserEvent.occurred_date
+          description: "When the event occurred"
+          type: Date
+        - contextPath: KMSAT.UserEvent.risk.level
+          description: "Risk Level of the event"
+          type: Number
+        - contextPath: KMSAT.UserEvent.risk.factor
+          description: "Risk Factor of the event"
+          type: Number
+        - contextPath: KMSAT.UserEvent.risk.decay_mode
+          description: "The Risk Level Decay Mode"
+          type: String
+        - contextPath: KMSAT.UserEvent.risk.expire_date
+          description: "Risk Expire Date"
+          type: String
+        - contextPath: KMSAT.UserEvent.event_type.id
+          description: "Event Type ID"
+          type: Number
+        - contextPath: KMSAT.UserEvent.event_type.name
+          description: "Event Type Name"
+          type: String
+      description: Returns a KMSAT User Event.    
     - name: kmsat-user-event-types-list
       arguments:
         - name: name
@@ -930,6 +979,62 @@ script:
           isArray: false
           secret: false
       description: Deletes User Event by Event ID
+    - name: kmsat-user-event-status-list
+      arguments:
+        - name: id
+          description: Request Event ID from kmsat-user-event-create
+          required: true
+          default: false
+          isArray: false
+          secret: false
+      outputs:
+        - contextPath: KMSAT.UserEventStatus.id
+          description: "ID of the Event Type"
+          type: Number
+        - contextPath: KMSAT.UserEventTypes.details
+          description: "Details of event request including event id and any failures"
+          type: Object
+        - contextPath: KMSAT.UserEventTypes.details.events
+          description: "list of event ids"
+          type: Array
+        - contextPath: KMSAT.UserEventTypes.details.failures
+          description: "list of failures"
+          type: Array
+        - contextPath: KMSAT.UserEventTypes.processed
+          description: "date the event was processed"
+          type: Date
+        - contextPath: KMSAT.UserEventTypes.api_key
+          description: "api key name of the request"
+          type: String
+      description: returns the status of the User Event request    
+    - name: kmsat-user-event-statuses-list
+      arguments:
+        - name: processed
+          description: The date and time the API request was processed.
+        - name: page
+          description: Page Number
+        - name: per_page
+          description: Per Page Amount
+      Outputs:
+        - contextPath: KMSAT.UserEventStatus.id
+          description: "ID of the Event Type"
+          type: Number
+        - contextPath: KMSAT.UserEventTypes.details
+          description: "Details of event request including event id and any failures"
+          type: Object
+        - contextPath: KMSAT.UserEventTypes.details.events
+          description: "list of event ids"
+          type: Array
+        - contextPath: KMSAT.UserEventTypes.details.events
+          description: "list of failures"
+          type: Array
+        - contextPath: KMSAT.UserEventTypes.processed
+          description: "date the event was processed"
+          type: Date
+        - contextPath: KMSAT.UserEventTypes.api_key
+          description: "api key name of the request"
+          type: String        
+      description: returns the status of the User Event request    
   isfetch: false
   runonce: false
   script: "-"

@@ -553,6 +553,44 @@ def test_get_user_events(requests_mock):
     assert result.outputs == mock_response_data["data"]
 
 
+def test_get_user_events(requests_mock):
+    """
+    Given
+            no params
+    When
+            Calling https://api.events.knowbe4.com/events/{id}
+    Then
+            Make sure the data contains the user events
+    """
+
+    id: str = "513f46ac-c3d7-4682-ad0d-0c149c0728a2"
+
+    mock_response_data = util_load_json("test_data/user_event_response.json")
+    from KnowBe4KMSAT import kmsat_user_event_list_command
+
+    requests_mock.get(
+        f"{USER_EVENT_BASE_URL}/events/{id}", json=mock_response_data, status_code=200
+    )
+
+    userEventClient = UserEventClient(
+        USER_EVENT_BASE_URL,
+        verify=False,
+        proxy=False,
+        headers={
+            "Authorization": "Bearer abc123xyz",
+            "Content-Type": "application/json",
+        },
+    )
+   
+    args: dict = {"id": id}
+    result = kmsat_user_event_list_command(userEventClient, args)
+
+    assert requests_mock.last_request.headers['X-KB4-Integration'] == "Cortex XSOAR KMSAT"
+    assert result.outputs_prefix == "KMSAT.UserEvent"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response_data["data"]
+
+
 def test_delete_user_event(requests_mock):
     """
     Given
@@ -581,6 +619,81 @@ def test_delete_user_event(requests_mock):
     result = kmsat_user_event_delete_command(userEventClient, args)
 
     assert result.readable_output == f"Successfully deleted event: {id}"
+
+def test_get_user_event_status(requests_mock):
+    """
+    Given
+            no params
+    When
+            Calling https://api.events.knowbe4.com/statuses/{id}
+    Then
+            Make sure the data contains the user events
+    """
+
+    id: str = "abcdefgh-843c-4fc8-bb2f-decf89876f7b"
+
+    mock_response_data = util_load_json("test_data/user_event_status_response.json")
+    from KnowBe4KMSAT import kmsat_user_event_status_list_command
+
+    requests_mock.get(
+        f"{USER_EVENT_BASE_URL}/statuses/{id}", json=mock_response_data, status_code=200
+    )
+
+    userEventClient = UserEventClient(
+        USER_EVENT_BASE_URL,
+        verify=False,
+        proxy=False,
+        headers={
+            "Authorization": "Bearer abc123xyz",
+            "Content-Type": "application/json",
+        },
+    )
+
+    args: dict = {"id": id}
+    result = kmsat_user_event_status_list_command(userEventClient, args)
+
+    assert requests_mock.last_request.headers['X-KB4-Integration'] == "Cortex XSOAR KMSAT"
+    assert result.outputs_prefix == "KMSAT.UserEventStatus"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response_data["data"]
+
+
+def test_get_user_event_statuses(requests_mock):
+    """
+    Given
+            no params
+    When
+            Calling https://api.events.knowbe4.com/statuses
+    Then
+            Make sure the data contains the list of user event requests
+    """
+
+    id: str = "513f46ac-c3d7-4682-ad0d-0c149c0728a2"
+
+    mock_response_data = util_load_json("test_data/user_event_statuses_response.json")
+    from KnowBe4KMSAT import kmsat_user_event_statuses_list_command
+
+    requests_mock.get(
+        f"{USER_EVENT_BASE_URL}/statuses", json=mock_response_data, status_code=200
+    )
+
+    userEventClient = UserEventClient(
+        USER_EVENT_BASE_URL,
+        verify=False,
+        proxy=False,
+        headers={
+            "Authorization": "Bearer abc123xyz",
+            "Content-Type": "application/json",
+        },
+    )
+
+    args: dict = {}
+    result = kmsat_user_event_statuses_list_command(userEventClient, args)
+
+    assert requests_mock.last_request.headers['X-KB4-Integration'] == "Cortex XSOAR KMSAT"
+    assert result.outputs_prefix == "KMSAT.UserEventStatuses"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response_data["data"]
 
 
 def test_get_pagination():

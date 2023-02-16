@@ -343,6 +343,61 @@ class UserEventClient(BaseClient):
             raise_on_status=True,
             ok_codes=(204,),
         )
+    
+    def user_event(self, event_id: str):
+        """ Deletes a user event
+
+        Args:
+            args (dict): Params for API call
+
+        Returns:
+            dict: HTTP Response
+        """
+
+        return self._http_request(
+            method="GET",
+            url_suffix=f"/events/{event_id}",
+            resp_type="json",
+            raise_on_status=True,
+            ok_codes=(200,),
+        )
+        
+    def user_event_status(self, request_id: str):
+        """ gets a specific user event create request status
+
+        Args:
+            args (dict): Params for API call
+
+        Returns:
+            dict: HTTP Response
+        """
+
+        return self._http_request(
+            method="GET",
+            url_suffix=f"/statuses/{request_id}",
+            resp_type="json",
+            raise_on_status=True,
+            ok_codes=(200,),
+        )
+
+    def user_event_statuses(self, params: dict):
+        """ gets a list of user event request statuses
+
+        Args:
+            args (dict): Params for API call
+
+        Returns:
+            dict: HTTP Response
+        """
+
+        return self._http_request(
+            method="GET",
+            url_suffix="/statuses",
+            resp_type="json",
+            raise_on_status=True,
+            ok_codes=(200,),
+            params=params,
+        )
 
 
 """ HELPER FUNCTIONS """
@@ -1107,7 +1162,7 @@ def kmsat_user_event_create_command(
         outputs_prefix="KMSAT.UserEventCreate",
         outputs_key_field="id",
         raw_response=response,
-        outputs=response,
+        outputs=data,
         readable_output=tableToMarkdown(name="KMSAT Create User Event", t=data),
     )
 
@@ -1128,6 +1183,109 @@ def kmsat_user_event_delete_command(
     client.delete_user_event(event_id)
     return CommandResults(
         readable_output=f"Successfully deleted event: {event_id}")
+
+
+def kmsat_user_event_list_command(
+    client: UserEventClient, args: dict
+) -> CommandResults:
+    """ list details for a user event
+
+    Args:
+        client (UserEventClient): UserEventClient
+        args (dict): Params for user even create
+
+    Raises:
+        DemistoException: Raises Demisto Exception
+
+    Returns:
+        CommandResults: Returns context data user create event
+    """
+    event_id = args.get("id")
+    response = client.user_event(event_id)
+    if not response:
+        raise DemistoException(
+            "Translation failed: the response from server did not include user event `data`.",
+            res=response,
+        )
+    data: List[Dict] = response.get("data") or []
+    return CommandResults(
+        outputs_prefix="KMSAT.UserEvent",
+        outputs_key_field="id",
+        raw_response=response,
+        outputs=data,
+        readable_output=tableToMarkdown(name="KMSAT User Event", t=data),
+    )
+
+
+def kmsat_user_event_status_list_command(
+    client: UserEventClient, args: dict
+) -> CommandResults:
+    """ returns the status of a requested user event
+
+    Args:
+        client (UserEventClient): UserEventClient
+        args (dict): Params for user events status
+
+    Returns:
+        CommandResults: Returns event status
+    """
+    request_id: str = str(args.get("id"))
+    response = client.user_event_status(request_id)    
+    data: List[Dict] = response.get("data") or []
+    markdown = tableToMarkdown(
+        "KMSAT User Event Status",
+        data,
+        [
+            "id",
+            "details",
+            "processed",
+        ],
+    )
+
+    return CommandResults(
+        outputs_prefix="KMSAT.UserEventStatus",
+        outputs_key_field="id",
+        raw_response=response,
+        outputs=data,
+        readable_output=markdown,
+    )
+
+
+def kmsat_user_event_statuses_list_command(
+    client: UserEventClient, args: dict
+) -> CommandResults:
+    """ List the status of User Events
+
+    Args:
+        client (UserEventClient): UserEventClient
+        args (dict): Params for user event status list
+
+    Returns:
+        CommandResults: Returns list of event statuses
+    """
+    params = get_pagination(args)
+    params["processed"] = args.get("processed")
+    params = remove_empty_elements(params)
+
+    response = client.user_event_statuses(params)
+    data: List[Dict] = response.get("data") or []
+    markdown = tableToMarkdown(
+        "KMSAT User Event Statuses",
+        data,
+        [
+            "id",
+            "details",
+            "processed",
+        ],
+    )
+
+    return CommandResults(
+        outputs_prefix="KMSAT.UserEventStatuses",
+        outputs_key_field="id",
+        raw_response=response,
+        outputs=data,
+        readable_output=markdown,
+    )
 
 
 def test_module(client: Client, userEventClient: UserEventClient) -> str:
@@ -1260,9 +1418,12 @@ def main() -> None:
 
         userEventCommands = {
             "kmsat-user-events-list": kmsat_user_events_list_command,
+            "kmsat-user-event-list": kmsat_user_event_list_command,
             "kmsat-user-event-types-list": kmsat_user_event_types_list_command,
             "kmsat-user-event-create": kmsat_user_event_create_command,
             "kmsat-user-event-delete": kmsat_user_event_delete_command,
+            "kmsat-user-event-status-list": kmsat_user_event_status_list_command,
+            "kmsat-user-event-statuses-list": kmsat_user_event_statuses_list_command,
         }
 
         if command == "test-module":

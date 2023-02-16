@@ -39,10 +39,13 @@
 | kmsat-phishing-campaign-security-tests-list          | Displays PSTs for a phishing campaign                                  |
 | kmsat-training-campaigns-list                        | Displays all training campaigns                                        |
 | kmsat-training-enrollments-list                      | Displays all training enrollments                                      |
+| kmsat-user-event-list                                | Displays a user event by id
 | kmsat-user-events-list                               | Displays user events                                                   |
 | kmsat-user-event-types-list                          | Displays types of user events                                          |
 | kmsat-user-event-create                              | Creates an event on the User Timeline                                  |
-| kmsat-user-event-delete                              | Deletes an event from the User Timeline                                |
+| kmsat-user-event-delete                              | Deletes an event from the User Timeline                                
+| kmsat-user-event-status-list                         | Lists the status of user event request by request id
+| kmsat-user-event-statuses-list                       | Lists the statuses of user event requests
 
 
 ### kmsat-account-info-list
@@ -790,7 +793,44 @@
 }
 
 ```
+### kmsat-user-event-list
 
+
+| **Argument Name** | **Type**        | **Requirement** |
+| ----------------- | --------------- | --------------- |
+| event_type        | String          | Optional        |
+| target_user       | String          | Optional        |
+| external_id       | String          | Optional        |
+| source            | string          | Optional        |
+| occurred_date     | String          | Optional        |
+| risk_level        | Number          | Optional        |
+| risk_decay_mode   | Number          | Optional        |
+| risk_expired_date | String          | Optional        |
+| page              | Number          | Optional        |
+| per_page          | Number          | Optional        |
+| order_by          | String          | Optional        |
+| order_direction   | String          | Optional        |
+
+#### Context Output
+
+| **Path**                          | **Type** | **Description**              |
+| --------------------------------- | -------- | ---------------------------- |
+| KMSAT.UserEvents.id               | Number   | Event ID                     |
+| KMSAT.UserEvents.user.email       | String   | User email address           |
+| KMSAT.UserEvents.user.id          | Number   | User ID                      |
+| KMSAT.UserEvents.user.archived    | Boolean  | User archived                |
+| KMSAT.UserEvents.external_id      | String   | External ID of the event     |
+| KMSAT.UserEvents.source           | String   | Source of the event          |
+| KMSAT.UserEvents.description      | String   | Description of the event     |
+| KMSAT.UserEvents.occurred_date    | Date     | Date the event occurred      |
+| KMSAT.UserEvents.risk.level       | Number   | Risk level of the event      |
+| KMSAT.UserEvents.risk.factor      | Number   | Risk factor of the event     |
+| KMSAT.UserEvents.risk.decay_mode  | String   | Decay Mode of the risk level |
+| KMSAT.UserEvents.risk.expire_date | String   | Risk expiration date         |
+| KMSAT.UserEvents.event_type.id    | Number   | ID of event type             |
+| KMSAT.UserEvents.event_type.name  | String   | Name of event type           |
+#### Command Example
+```!kmsat-user-event-list id=xyz```
 ### kmsat-user-events-list
 
 
@@ -938,3 +978,91 @@
 
 #### Command Example
 ```!kmsat-user-event-delete id=1```
+
+### kmsat-user-event-status-list
+
+| **Argument Name** | **Description**                  | **Requirement** |
+| ----------------- | -------------------------------- | --------------- |
+| id              | request id from kmsat- | Required        |
+
+#### Context Output
+
+| **Path**                         | **Type** | **Description**           |
+| -------------------------------- | -------- | ------------------------- |
+| KMSAT.UserEventStatus.id    | Number   | ID of the Event Type      |
+| KMSAT.UserEventTypes.details   | Object   | Details of event request including event id and any failures      |
+| KMSAT.UserEventTypes.details.events   | Array   | list of event ids   |
+| KMSAT.UserEventTypes.details.failures    | Array   | reasons for failure |
+| KMSAT.UserEventTypes.processed   | Date   | Date and time event was processed      |
+| KMSAT.UserEventTypes.api_key   | String   | Name of api key used |
+
+#### Command Example
+```!kmsat-user-event-status-list id=xyz```
+
+#### Context Example
+```json
+{
+    "data": {
+          "id": "abcdefgh-843c-4fc8-bb2f-decf89876f7b",
+          "details": {
+              "events": [
+                  "123456-a083-42b9-b50a-fb69b8e2b185"
+              ],
+              "failures": []
+          },
+          "processed": "2023-04-1T14:39:40.132Z",
+          "api_key": "Test integration"
+      }
+}
+```
+
+### kmsat-user-event-statuses-list
+| **Argument Name** | **Description**                  | **Requirement** |
+| ----------------- | -------------------------------- | --------------- |
+| processed         | date item was processed | No        |
+| page              | Page Number     | No           |
+| per_page          | Per Page Amount | No           |
+
+#### Context Output
+
+| **Path**                         | **Type** | **Description**           |
+| -------------------------------- | -------- | ------------------------- |
+| KMSAT.UserEventStatus.id    | Number   | ID of the Event Type      |
+| KMSAT.UserEventTypes.details   | Object   | Details of event request including event id and any failures      |
+| KMSAT.UserEventTypes.details.events   | Array   | list of event ids   |
+| KMSAT.UserEventTypes.details.failures    | Array   | reasons for failure |
+| KMSAT.UserEventTypes.processed   | Date   | Date and time event was processed      |
+| KMSAT.UserEventTypes.api_key   | String   | Name of api key used |
+
+#### Command Example
+```!kmsat-user-event-status-list id=xyz```
+
+#### Context Example
+```json
+{
+    "data": [
+        {
+            "id": "abcdefgh-843c-4fc8-bb2f-decf89876f7b",
+            "details": {
+                "events": [
+                    "123456-a083-42b9-b50a-fb69b8e2b185"
+                ],
+                "failures": []
+            },
+            "processed": "2023-04-1T14:39:40.132Z",
+            "api_key": "Test integration"
+        },
+        {
+            "id": "qrstevei-843c-4fc8-bb2f-decf89876f7b",
+            "details": {
+                "events": [
+                    "9876543-a083-42b9-b50a-fb69b8e2b185"
+                ],
+                "failures": []
+            },
+            "processed": "2023-04-1T00:39:40.132Z",
+            "api_key": "Test integration"
+        }        
+    ]
+}
+```
