@@ -53,6 +53,7 @@ stop-running-pipelines:
   variables:
     master_branch_name: master
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   script:
     - section_start "Stop running piplines on current branch"
@@ -550,6 +551,7 @@ test-upload-flow:
   extends:
     - .default-job-settings
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   variables:
     ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
