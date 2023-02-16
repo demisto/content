@@ -22,6 +22,7 @@ contentitemexportablefields:
 dockerimage: demisto/python3:3.10.10.48392
 enabled: true
 name: UnitTest
+comment: ""
 runas: DBotWeakRole
 runonce: false
 script: ''

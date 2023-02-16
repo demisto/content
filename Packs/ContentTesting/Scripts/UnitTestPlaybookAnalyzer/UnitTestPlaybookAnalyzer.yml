@@ -4,8 +4,7 @@ args:
 - description: Limit incidents to the most recent since "N days ago" to match playbook implementation
   name: occurred
   required: true
-comment: |2+
-
+comment: ""
 commonfields:
   id: UnitTestPlaybookAnalyzer
   version: -1
