@@ -1,7 +1,7 @@
-from time import sleep
 from CommonServerPython import *
 from CommonServerUserPython import *
 import demistomock as demisto
+from time import sleep
 
 
 class BloxOneTDClient(BaseClient):
@@ -18,12 +18,16 @@ class BloxOneTDClient(BaseClient):
         res = self._http_request('GET', url_suffix=url_suffix)
         return [source for source, enabled in res.items() if enabled]
 
-    def lookalike_domain_list(self, *, user_filter: Optional[str] = None,
+    def lookalike_domain_list(self, user_filter: Optional[str] = None,
                               target_domain: Optional[str] = None, detected_at: Optional[str] = None,
                               limit: int = 50, offset: Optional[int] = None) -> List[Dict]:
         url_suffix = '/api/tdlad/v1/lookalike_domains'
-        filter_params = {key: val for key, val in [('_limit', limit), ('_offset', offset)] if val}
-
+        filter_params: Dict[str, Any] = {key: val for key, val in [('_limit', limit), ('_offset', offset)] if val}
+        
+        # i couldn't find a reference in the docs but it seems that one of the following is correct 
+        # - the filters combination is OR
+        # - we can't filter by more than filter
+        # as a result we decided to allow just one filter at a time
         if user_filter:
             _filter = user_filter
         elif target_domain:
@@ -35,9 +39,9 @@ class BloxOneTDClient(BaseClient):
 
         return self._http_request('GET', url_suffix=url_suffix, params=filter_params).get('results', [])
 
-    def dossier_lookup_get_create(self, indicator_type: str, value: str, *, sources: Optional[List[str]] = None) -> str:
+    def dossier_lookup_get_create(self, indicator_type: str, value: str, sources: Optional[List[str]] = None) -> str:
         url_suffix = f'/tide/api/services/intel/lookup/indicator/{indicator_type}'
-        params = {'value': value}
+        params: Dict[str, Any] = {'value': value}
         if sources:
             params['source'] = sources
 
@@ -78,19 +82,17 @@ def dossier_source_list_command(client: BloxOneTDClient) -> CommandResults:
 
 
 def validate_and_format_lookalike_domain_list_args(args: Dict) -> Dict:
-    match len(list(filter(bool, [args.get('filter'), args.get('target_domain'), args.get('detected_at')]))):
-        case 0:
-            raise ValueError("You must specify one of the following arguments 'target_domain', 'detected_at' or 'filter'.")
-        case 1:
-            pass
-        case _:
-            raise ValueError("You can specify one of the following arguments 'target_domain', 'detected_at' or 'filter' not more.")
+    if 1 == len(list(filter(bool, [args.get('filter'), args.get('target_domain'), args.get('detected_at')]))):
+        raise ValueError(
+            "Please provide one of the following arguments 'target_domain', 'detected_at' or 'filter'"
+            " (Exactly one of them, more than one is argument is not accepted)."
+        )
 
     if args.get('detected_at'):
-        try:
-            args['detected_at'] = dateparser.parse(args['detected_at']).isoformat()
-        except AttributeError:
+        detected_at = dateparser.parse(args['detected_at'])
+        if detected_at is None:
             raise DemistoException(f"could not parse {args['detected_at']} as a time value.")
+        args['detected_at'] = detected_at.isoformat()
     return args
 
 
@@ -153,7 +155,7 @@ def dossier_lookup_get_command(client: BloxOneTDClient, args: Dict) -> CommandRe
     return dossier_lookup_get_schedule_polling_result(args)
 
 
-def test_module_command(client: BloxOneTDClient) -> str:
+def command_test_module(client: BloxOneTDClient) -> str:
     client.dossier_source_list()
     return 'ok'
 
@@ -171,26 +173,28 @@ def main():
     }
 
     commands_without_args = {
-        'test-module': test_module_command,
+        'test-module': command_test_module,
         'bloxone-td-dossier-source-list': dossier_source_list_command,
 
     }
 
     command = demisto.command()
     try:
-        if command in commands_with_args:
-            results = commands_with_args[command](client, demisto.args())
-        elif command in commands_without_args:
+        if command in commands_without_args:
             results = commands_without_args[command](client)
+        elif command in commands_with_args:
+            results = commands_with_args[command](client, demisto.args())
         else:
             raise NotImplementedError(f'command {command} is not implemented.')
         return_results(results)
     except Exception as e:
-        if hasattr(e, 'res') and e.res.status_code == 401:
-            # TODO: text edit
-            return_error('authentication error')
 
-        return_error(f'an error occurred while executing command {command}\nerror: {e}', e)
+        if isinstance(e, DemistoException) and hasattr(e, 'res') and e.res.status_code == 401:  # pylint: disable=E1101
+            error_msg = 'authentication error'
+        else:
+            error_msg = f'an error occurred while executing command {command}\nerror: {e}'
+
+        return_error(error_msg, e)
 
 
 if __name__ in ('__main__', 'builtins'):

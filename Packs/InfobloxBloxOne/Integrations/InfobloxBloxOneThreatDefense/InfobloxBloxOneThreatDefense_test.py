@@ -13,7 +13,6 @@ class E2ETest:
 
 
 class TestBloxOneTDClient:
-    
     pass
 
 
