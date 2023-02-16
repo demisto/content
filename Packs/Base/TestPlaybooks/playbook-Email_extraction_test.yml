@@ -1,6 +1,5 @@
 id: Email extraction test
-version: 2
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Email extraction test
 description: Test extraction flow of email indicator in XSOAR
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -206,8 +206,7 @@ tasks:
       key:
         simple: invalid_emails
       value:
-        simple: "\"invalid_ending_char_@test.com\", \n\"@nouser.com\", \n\".startingdot@test.com\",
-          \n\"お@example.com\",\n\"invalid__consecutive__chars@test.com\", \n\"quoted\\\"not\\\"dotted@test.com\""
+        simple: "\"invalid_ending_char_@test.com\", \n\"@nouser.com\", \n\".startingdot@test.com\", \n\"お@example.com\",\n\"invalid__consecutive__chars@test.com\", \n\"quoted\\\"not\\\"dotted@test.com\""
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -312,6 +311,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -703,3 +703,4 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: Indicators reputation-.json Test
+fromversion: 6.5.0
