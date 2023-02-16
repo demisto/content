@@ -1,5 +1,6 @@
-from datetime import datetime
 # Final Test: 6.10
+import uuid
+from datetime import datetime
 from typing import Dict, TypedDict
 
 import demistomock as demisto  # noqa: F401
@@ -34,7 +35,7 @@ class Entity(TypedDict):
     name: str
     called: list[str]
     calls: list[str]
-    taskstats: list[TaskStat]
+    taskstats: dict[TaskStat]
 
 
 def GetTasks(incid: str) -> list[Task]:
@@ -74,31 +75,31 @@ def GetTasks(incid: str) -> list[Task]:
     return tasks
 
 
-def TaskStats(task: list[Task], taskstat: TaskStat) -> TaskStat:
+def TaskStats(task: list[Task], taskstat: dict[TaskStat]) -> dict[TaskStat]:
     for t in task:
         tid = t['tid']
         dur = t['duration']
         if tid not in taskstat:
-            taskstat[tid] = {'tid': tid, 'name': t['name'], 'mindur': None, 'maxdur': 0, 'avgdur': 0,
-                             'totdur': 0, 'count': 0, 'completed': 0, 'started': 0, 'notexecuted': 0, 'error': 0, 'waiting': 0}
+            taskstat[tid] = {'tid': tid, 'name': t['name'], 'mindur': None, 'maxdur': 0, 'avgdur': 0, 'totdur': 0,
+                             'count': 0, 'completed': 0, 'started': 0, 'notexecuted': 0, 'error': 0, 'waiting': 0}  # type: ignore
         if t['state'] == "Completed":
-            if dur > taskstat[tid]['maxdur']:
-                taskstat[tid]['maxdur'] = dur
-            if taskstat[tid]['mindur'] != None:
-                if dur < taskstat[tid]['mindur']:
-                    taskstat[tid]['mindur'] = dur
+            if dur > taskstat[tid]['maxdur']:  # type: ignore
+                taskstat[tid]['maxdur'] = dur  # type: ignore
+            if taskstat[tid]['mindur'] != None:  # type: ignore
+                if dur < taskstat[tid]['mindur']:  # type: ignore
+                    taskstat[tid]['mindur'] = dur  # type: ignore
             else:
-                taskstat[tid]['mindur'] = dur
-            taskstat[tid]['totdur'] += dur
-            taskstat[tid]['completed'] += 1
+                taskstat[tid]['mindur'] = dur  # type: ignore
+            taskstat[tid]['totdur'] += dur  # type: ignore
+            taskstat[tid]['completed'] += 1  # type: ignore
         elif t['state'] == "Error":
-            taskstat[tid]['error'] += 1
+            taskstat[tid]['error'] += 1  # type: ignore
         elif t['state'] == "Waiting":
-            taskstat[tid]['waiting'] += 1
+            taskstat[tid]['waiting'] += 1  # type: ignore
         else:
-            taskstat[tid]['started'] += t['started']
-            taskstat[tid]['notexecuted'] += t['notexecuted']
-        taskstat[tid]['count'] += 1
+            taskstat[tid]['started'] += t['started']  # type: ignore
+            taskstat[tid]['notexecuted'] += t['notexecuted']  # type: ignore
+        taskstat[tid]['count'] += 1  # type: ignore
 
     for key, ts in taskstat.items():
         ts['avgdur'] = int(ts['totdur'] / ts['count'])
@@ -106,13 +107,11 @@ def TaskStats(task: list[Task], taskstat: TaskStat) -> TaskStat:
     return taskstat
 
 
-def GetTaskStats(playbookname: str, occurred: str) -> TaskStat:
-    #argument['fromdate'] = min_date.isoformat()
-    #argument['todate'] = max_date.isoformat()
-    argument = {'query': f'playbook:"{playbookname}" occurred:>="{occurred}"', 'size': 1000}  # , 'sort': '%s.desc' % time_field}
+def GetTaskStats(playbookname: str, occurred: str) -> (dict[TaskStat], int):
+    argument = {'query': f'playbook:"{playbookname}" occurred:>="{occurred}"', 'size': 1000}
     response = execute_command("getIncidents", argument)
-    taskstat: TaskStat = {}
-    taskstats: TaskStat = {}
+    taskstat: TaskStat = {}  # type: ignore
+    taskstats: dict[TaskStat] = {}  # type: ignore
     count = 0
     if response['data'] != None:
         for inc in response['data']:
@@ -145,12 +144,13 @@ def GetPlaybooks():
     return playbooks
 
 
-def GetEntities(playbooks: str) -> Dict[str, Entity]:
+def GetEntities(playbooks: list) -> Dict[str, Entity]:
     entities: Dict[str, Entity] = {}
 
     for p in playbooks:
-        entname = f"p.{p['name']}"
-        entities[entname] = {'name': p['name'], 'called': [], 'calls': [], 'taskstats': []}
+        rawname = p['name']
+        entname = f"p.{rawname}"
+        entities[entname] = {'name': rawname, 'called': [], 'calls': [], 'taskstats': []}
         for key, t in p['tasks'].items():
             if t['type'] == "playbook":
                 taskname = t['task']['name']
@@ -168,7 +168,7 @@ def GetEntities(playbooks: str) -> Dict[str, Entity]:
                     pass
                 autoname = f"a.{scrname}"
                 if autoname not in entities:
-                    entities[autoname] = {'name': scrname, 'called': [], 'calls': []}
+                    entities[autoname] = {'name': scrname, 'called': [], 'calls': [], 'taskstats': []}
                 entities[entname]['calls'].append(autoname)
                 entities[autoname]['called'].append(entname)
 
@@ -180,8 +180,8 @@ def PlaybookEntity(entities: Dict[str, Entity], playbook: str) -> Entity:
         if key.startswith("p."):
             if ent['name'] == playbook:
                 return ent
-
-    return {}
+    emptyent: Entity = {}  # type: ignore
+    return emptyent
 
 
 def EntityMarkdown(ent: Entity, count: int) -> str:
@@ -205,7 +205,7 @@ def EntityMarkdown(ent: Entity, count: int) -> str:
     return(output)
 
 
-def StatsInfoMarkdown(stats: TaskStat) -> str:
+def StatsInfoMarkdown(stats: dict[TaskStat]) -> str:
     markdown = "<br/>\n"
     markdown += "|Task Name|Minimum Duration(ms)|Average Duration(ms)|Maximum Duration(ms)|\n"
     markdown += "|---|:---:|:---:|:---:|\n"
