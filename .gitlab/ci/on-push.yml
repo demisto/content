@@ -12,7 +12,6 @@ trigger-private-build:
     - .default-job-settings
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
-      when: never
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
   script:
