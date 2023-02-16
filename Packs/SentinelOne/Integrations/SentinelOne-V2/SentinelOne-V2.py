@@ -3043,7 +3043,7 @@ def main():
 
     fetch_type = params.get('fetch_type')
     first_fetch_time = params.get('fetch_time', '3 days')
-    fetch_severity = params.get('fetch_severity', 'High')
+    fetch_severity = params.get('fetch_severity', [])
     fetch_incidentStatus = params.get('fetch_incidentStatus', [])
     fetch_threat_rank = int(params.get('fetch_threat_rank', 0))
     fetch_limit = int(params.get('fetch_limit', 10))
