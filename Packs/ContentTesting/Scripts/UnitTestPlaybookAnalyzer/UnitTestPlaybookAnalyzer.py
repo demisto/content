@@ -47,19 +47,25 @@ def GetTasks(incid: str) -> list[Task]:
             duration = -1.0
             state = "Unknown"
             started = 0
+            error = 0
+            waiting = 0
             notexecuted = 0
 
             if 'state' in t:
                 state = t['state']
                 if state == "Completed":
-                    length = len(t['startDate']) - 9
-                    start = date_to_timestamp(t['startDate'][:length], date_format='%Y-%m-%dT%H:%M:%S.%f')
-                    end = date_to_timestamp(t['completedDate'][:length], date_format='%Y-%m-%dT%H:%M:%S.%f')
+                    l = len(t['startDate']) - 9
+                    start = date_to_timestamp(t['startDate'][:l], date_format='%Y-%m-%dT%H:%M:%S.%f')
+                    end = date_to_timestamp(t['completedDate'][:l], date_format='%Y-%m-%dT%H:%M:%S.%f')
                     duration = end - start
                 elif state == "inprogress":
                     started = 1
                 elif state == "WillNotBeExecuted":
                     notexecuted = 1
+                elif state == "Error":
+                    error = 1
+                elif state == "Waiting":
+                    waiting = 1
 
             newtask: Task = {'name': t['task']['name'], 'duration': duration, 'state': state,
                              'tid': t['id'], 'started': started, 'notexecuted': notexecuted}
@@ -78,7 +84,7 @@ def TaskStats(task: list[Task], taskstat: TaskStat) -> TaskStat:
         if t['state'] == "Completed":
             if dur > taskstat[tid]['maxdur']:
                 taskstat[tid]['maxdur'] = dur
-            if taskstat[tid]['mindur'] is not None:
+            if taskstat[tid]['mindur'] != None:
                 if dur < taskstat[tid]['mindur']:
                     taskstat[tid]['mindur'] = dur
             else:
@@ -101,12 +107,14 @@ def TaskStats(task: list[Task], taskstat: TaskStat) -> TaskStat:
 
 
 def GetTaskStats(playbookname: str, occurred: str) -> TaskStat:
+    #argument['fromdate'] = min_date.isoformat()
+    #argument['todate'] = max_date.isoformat()
     argument = {'query': f'playbook:"{playbookname}" occurred:>="{occurred}"', 'size': 1000}  # , 'sort': '%s.desc' % time_field}
     response = execute_command("getIncidents", argument)
     taskstat: TaskStat = {}
     taskstats: TaskStat = {}
     count = 0
-    if response['data'] is not None:
+    if response['data'] != None:
         for inc in response['data']:
             tasks = GetTasks(inc['id'])
             taskstats = TaskStats(tasks, taskstat)
@@ -180,8 +188,8 @@ def EntityMarkdown(ent: Entity, count: int) -> str:
     output = f"### Playbook: {ent['name']}\n"
     output += f"#### Analysis Date: {datetime_to_string(datetime.now())}\n"
     output += f"#### Incidents Analyzed: {count}\n"
-    pboutput = "#### Sub-playbooks Called\n"
-    cmdoutput = "#### Automations Called\n"
+    pboutput = f"#### Sub-playbooks Called\n"
+    cmdoutput = f"#### Automations Called\n"
     for val in ent['calls']:
         if val[:2] == "p.":
             pboutput += f"- {val[2:]}\n"
@@ -190,7 +198,7 @@ def EntityMarkdown(ent: Entity, count: int) -> str:
 
     output += pboutput
     output += cmdoutput
-    output += "\n#### Called by Parent Playbooks\n"
+    output += f"\n#### Called by Parent Playbooks\n"
     for val in ent['called']:
         output += f"- {val[2:]}\n"
 
@@ -203,7 +211,7 @@ def StatsInfoMarkdown(stats: TaskStat) -> str:
     markdown += "|---|:---:|:---:|:---:|\n"
 
     for key, val in stats.items():
-        if val['mindur'] is None:
+        if val['mindur'] == None:
             val['mindur'] = 0
         markdown += f"|{val['name']}|{val['mindur']}|{val['avgdur']}|{val['maxdur']}|\n"
 
