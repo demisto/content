@@ -367,7 +367,7 @@ script:
       description: Authentication lease duration in seconds, 0 if indefinitely.
       type: number
     description: Creates a new authentication token.
-  dockerimage: demisto/hashicorp:1.0.0.46420
+  dockerimage: demisto/hashicorp:1.0.0.47303
   runonce: false
 tests:
 - hashicorp_test
