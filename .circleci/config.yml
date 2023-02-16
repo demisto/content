@@ -185,7 +185,8 @@ references:
   validate_files_and_yaml: &validate_files_and_yaml
     run:
       name: Validate Files and Yaml
-      when: always
+      when:
+        condition: << pipeline.parameters.contrib_branch >>
       no_output_timeout: 1h
       command: |
         if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
@@ -334,8 +335,6 @@ jobs:
       - *store_artifacts
 
   Run Validations:
-    when:
-      condition: << pipeline.parameters.contrib_branch >>
     <<: *container_config
     resource_class: large
     <<: *environment
