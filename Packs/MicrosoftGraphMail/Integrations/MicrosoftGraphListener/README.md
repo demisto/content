@@ -338,38 +338,6 @@ Gets the properties of returned emails. Typically shows partial results. Use the
 | MSGraphMail.Recipients.Address | String | The email address of the user in the 'toRecipients' field of the email. | 
 | MSGraphMail.NextPage | String | A token to pass to the next list command to retrieve additional results. | 
 
-### msgraph-mail-get-attachment
-***
-Get email attachment
-
-
-#### Base Command
-
-`msgraph-mail-get-attachment`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| message_id | The email message ID. | Required | 
-| attachment_id | The ID of the attachment. | Required | 
-| folder_id | The ID of the folder. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| File.Size | Number | The size of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Name | String | The name of the file. | 
-| File.SSDeep | String | The SSDeep hash of the file. | 
-| File.EntryID | String | The entry ID of the file. | 
-| File.Info | String | File information. | 
-| File.Type | String | The file type. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.Extension | String | The file extension. | 
-
 ### msgraph-mail-list-attachments
 ***
 Lists all of the attachments of given email
