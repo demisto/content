@@ -1,5 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 args = demisto.args()
-res = demisto.executeCommand("setIndicators", {"indicatorsValues": args.get("Indicators"), args.get("Tags")})
+res = demisto.executeCommand("setIndicators", {"indicatorsValues": args.get("Indicators"), "tags": args.get("Tags")})
 demisto.results(res)

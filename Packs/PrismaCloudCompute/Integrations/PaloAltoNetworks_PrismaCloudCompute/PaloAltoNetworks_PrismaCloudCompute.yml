@@ -1,7 +1,4 @@
 category: Network Security
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: PaloAltoNetworks_PrismaCloudCompute
   version: -1
@@ -12,7 +9,8 @@ configuration:
   type: 8
   section: Collect
 - name: address
-  display: Prisma Cloud Compute Console URL and Port
+  display: |-
+    Prisma Cloud Compute Console URL and Port
   required: true
   type: 0
   additionalinfo: URL address and port of your Prisma Cloud Compute console. Copy the address from the alert profile created in Prisma Cloud Compute, for example https://example.net:1234
@@ -63,7 +61,7 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.10.9.46032
+  dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -839,6 +837,12 @@ script:
       required: true
       isArray: true
       defaultValue: ""
+    - default: true
+      description: ''
+      isArray: true
+      name: cve
+      required: true
+      secret: false
     outputs:
     - contextPath: CVE.ID
       description: "The ID of the CVE, for example: CVE-2015-1653."
@@ -1641,3 +1645,6 @@ script:
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0
+sectionOrder:
+- Connect
+- Collect
