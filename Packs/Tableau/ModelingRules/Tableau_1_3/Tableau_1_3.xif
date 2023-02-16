@@ -19,7 +19,7 @@ alter tokenPayload = arrayindex(regextract(_raw_log, "\(([^\)]*)\)"),0),
 | alter
     xdm.alert.severity = logLevel,
     xdm.event.description = message,
-    xdm.event.outcome = requestStatus,
+    xdm.event.outcome = if(requestStatus ~= "fail", XDM_CONST.OUTCOME_FAILED, requestStatus = "Request completed", XDM_CONST.OUTCOME_SUCCESS, requestStatus ~= "success", XDM_CONST.OUTCOME_SUCCESS, requestStatus = null, null, to_string(requestStatus)),
     xdm.event.operation_sub_type = requestType,
     xdm.session_context_id = coalesce(sessionID,requestPayload),
     xdm.target.resource.name = serviceName,
