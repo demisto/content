@@ -24,7 +24,7 @@ outputs:
   description: The domain name that was checked for being internal/external.
   type: string
 - contextPath: Domain.Internal
-  description: Whether the domain name is internal or external, according to the domain names defined in the XSOAR list, which is provided in the InternalDomains argument.
+  description: Whether the domain name is internal or external, according to the domain names defined in the Cortex XSOAR list, which is provided in the *InternalDomains* argument.
   type: boolean
 scripttarget: 0
 subtype: python3
