@@ -1,9 +1,9 @@
 {
   "trigger_id": "437fc412eafbec9c69d8af8322895b69",
-  "playbook_id": "T1486 - Data Encrypted for Impact",
+  "playbook_id": "Ransomware Response",
   "suggestion_reason": "Recommended for Alerts with evidence of MITRE technique “Impact”",
-  "description": "This trigger is responsible for handling T1486 - Data Encrypted for Impact",
-  "trigger_name": "T1486 - Data Encrypted for Impact",
+  "description": "This trigger is responsible for handling ransomware alerts",
+  "trigger_name": "Ransomware Response",
   "alerts_filter": {
     "filter": {
       "OR": [
