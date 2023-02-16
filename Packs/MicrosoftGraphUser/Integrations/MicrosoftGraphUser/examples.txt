@@ -1,0 +1,8 @@
+!msgraph-user-unblock user=1875cf87-ebf9-4a29-b5e2-74e36591296e
+!msgraph-user-update user=1875cf87-ebf9-4a29-b5e2-74e36591296e updated_fields="MobilePhone=050123456"
+!msgraph-user-get user=1875cf87-ebf9-4a29-b5e2-74e36591296e
+!msgraph-user-list
+!msgraph-direct-reports user=259d2a3c-167b-411c-b2ee-88646ce6e054
+!msgraph-user-get-manager user=1875cf87-ebf9-4a29-b5e2-74e36591296e
+!msgraph-user-assign-manager user=1875cf87-ebf9-4a29-b5e2-74e36591296e manager=259d2a3c-167b-411c-b2ee-88646ce6e054
+!msgraph-user-test

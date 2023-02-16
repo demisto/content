@@ -20,8 +20,8 @@ Follow these steps for a self-deployed configuration:
 4. Enter your Client Secret in the ***Client Secret*** parameter.
 5. Enter your Tenant ID in the ***Tenant ID*** parameter.
 6. Enter your Application redirect URI in the ***Application redirect URI*** parameter.
-7. Enter your Authorization code in the ***Authorization code*** parameter.
-8. Save the instance.
+7. Save the instance.
+8. Run the `!azure-waf-generate-login-url` command in the War Room and follow the instruction.
 9. Run the ***!azure-waf-auth-test*** command - a 'Success' message should be printed to the War Room.
 
 #### Cortex XSOAR Azure app
@@ -504,3 +504,30 @@ There is no context output for this command.
 #### Human Readable Output
 
 >✅ Great Success!
+
+### azure-waf-generate-login-url
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`azure-waf-generate-login-url`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```azure-waf-generate-login-url```
+
+#### Human Readable Output
+
+>### Authorization instructions
+>1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+>2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.

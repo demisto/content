@@ -411,6 +411,8 @@ def main() -> None:
             return_results(test_module(client, params))
         elif command == 'azure-waf-auth-test':
             return_results(test_connection(client, params))
+        elif command == 'azure-waf-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
         else:
             return_results(demisto_commands[command](client, **args))
 
