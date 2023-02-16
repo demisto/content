@@ -32,7 +32,7 @@ ERR_NO_COLL = "No collection is available for this user, please make sure you en
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
-# Pattern Regexes - used to extract indicator type and value
+# Pattern Regexes - used to extract indicator type and value, spaces are removed before matching the following regexes
 INDICATOR_OPERATOR_VAL_FORMAT_PATTERN = r"(\w.*?{value}{operator})'(.*?)'"
 INDICATOR_IN_VAL_PATTERN = r"(\w.*?valueIN)\(+('.*?')\)"
 INDICATOR_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(
