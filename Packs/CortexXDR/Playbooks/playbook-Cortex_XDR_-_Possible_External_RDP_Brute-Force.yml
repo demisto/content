@@ -2906,7 +2906,7 @@ inputs:
   playbookInputQuery:
 - key: UserEngagementThreshold
   value:
-    simple: "2"
+    simple: "false"
   required: false
   description: |-
     The threshold number of suspicious elements that will trigger a user engagement. Set to "false" to disable user engagement.
