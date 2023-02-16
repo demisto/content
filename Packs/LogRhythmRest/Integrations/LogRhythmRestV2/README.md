@@ -783,6 +783,94 @@ Get the alarm summary by the specified alarm ID.
 >| -1100003 | LogRhythm Agent Heartbeat Missed | EchoTestEntity | 3 |  |  |  | 3200 | Error | EchoTestEntity | 3 |  |  |  |
 
 
+### lr-alarm-drilldown
+***
+Gets the drill-down logs per rule block for a specific alarm Id that fired associated with an AIE alarm.
+
+
+#### Base Command
+
+`lr-alarm-drilldown`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alarm_id | Numeric ID of the alarm to get. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| LogRhythm.AlarmDrilldown.AlarmID | Number | The alarm ID. | 
+| LogRhythm.AlarmDrilldown.AIERuleID | Number | The alarm AIE rule ID. | 
+| LogRhythm.AlarmDrilldown.Status.value | Number | The value of the drilldown request. | 
+| LogRhythm.AlarmDrilldown.Status.name | String | The name of the drilldown request. | 
+| LogRhythm.AlarmDrilldown.Status.description | String | The description of the drilldown request. | 
+| LogRhythm.AlarmDrilldown.RetryCount | Number | The number of times the Data Indexer is queried for the drill-down results. | 
+| LogRhythm.AlarmDrilldown.LastDxTimestamp | Date | The timestamp, in UTC, at which the Data Indexer was queried to obtain the drill-down results. | 
+| LogRhythm.AlarmDrilldown.DateInserted | Date | The timestamp, in UTC, when the Alarm was added to the cache. | 
+| LogRhythm.AlarmDrilldown.AlarmGuid | String | The unique identification of the Alarm GUID. | 
+| LogRhythm.AlarmDrilldown.WebConsoleId | String | The unique identification of the Web Console ID. | 
+| LogRhythm.AlarmDrilldown.NotificationSent | Boolean | The unique identification of the Alarm GUID. | 
+| LogRhythm.AlarmDrilldown.AIEMsgXml | String | The message XML associated with the event that triggered by the AI Engine. | 
+| LogRhythm.AlarmDrilldown.EventID | Number | The event ID associated with the AI Engine alarm. | 
+| LogRhythm.AlarmDrilldown.NormalMessageDate | Date | The date, in UTC, that specifies the time of occurrence of the log. | 
+| LogRhythm.AlarmDrilldown.RuleBlocks.RuleBlockID | Number | The Rule Block Id associated with the AI Engine rule that triggered the alarm. | 
+| LogRhythm.AlarmDrilldown.RuleBlocks.RuleBlockTypeID | Number | The type of rule block as specified in the Events Msg XML. | 
+| LogRhythm.AlarmDrilldown.RuleBlocks.DrillDownLogs | String | Logs that triggered the AI Engine rule associated with the rule block. | 
+| LogRhythm.AlarmDrilldown.RuleBlocks.AIECount | Number | The number of logs identified by the AI Engine that triggered the alarm. | 
+| LogRhythm.AlarmDrilldown.RuleBlocks.DXCount | Number | The number of logs stored in the Data Indexer that matched the drill-down criteria. | 
+| LogRhythm.AlarmDrilldown.RuleBlocks.NormalMessageDate | Date | The date, in UTC, that specifies the time of occurence of the log. | 
+| LogRhythm.AlarmDrilldown.RuleBlocks.NormalMessageDateUpper | Date | The date, in UTC, that specifies the upper bound for the rule block triggered. | 
+| LogRhythm.AlarmDrilldown.RuleBlocks.NormalMessageDateLower | Date | The date, in UTC, that specifies the lower bound for the rule block triggered. | 
+| LogRhythm.AlarmDrilldown.RuleBlocks.DDSummaries.SummaryFieldType | Number | The Summary Field type selected for the rule block. | 
+| LogRhythm.AlarmDrilldown.RuleBlocks.DDSummaries.DrillDownSummaries | String | The aggregate of the Summary Field type as found in the drill-down logs associated with the alarm. | 
+| LogRhythm.AlarmDrilldown.RuleBlocks.DDSummaries.DefaultValue | String | The value populated from the ARM when an alarm is added to the cache. | 
+
+
+### lr-get-alarm-details
+***
+Get the details of an alarm by the specified alarm ID.
+
+
+#### Base Command
+
+`lr-get-alarm-details`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alarm_id | Numeric ID of the alarm to get. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| LogRhythm.AlarmDetails.alarmId | Number | The alarm ID. | 
+| LogRhythm.AlarmDetails.personId | Number | The person ID. | 
+| LogRhythm.AlarmDetails.entityId | Number | The entity ID. | 
+| LogRhythm.AlarmDetails.entityName | String | The name of the entity. | 
+| LogRhythm.AlarmDetails.alarmDate | String | The date in UTC of the alarm. | 
+| LogRhythm.AlarmDetails.alarmRuleID | Number | The Rule ID of the rule which triggered the alarm | 
+| LogRhythm.AlarmDetails.alarmRuleName | String | The name of the rule which triggered the alarm | 
+| LogRhythm.AlarmDetails.alarmStatus | String | The status of the alarm. | 
+| LogRhythm.AlarmDetails.alarmStatusName | String | The name for the status of the alarm. | 
+| LogRhythm.AlarmDetails.lastUpdatedID | Number | The ID of the last person to update the alarm. | 
+| LogRhythm.AlarmDetails.lastUpdatedName | String | The name of the last person to update the alarm. | 
+| LogRhythm.AlarmDetails.dateInserted | String | The date in UTC, that the alarm was inserted. | 
+| LogRhythm.AlarmDetails.dateUpdated | String | The date in UTC, that the alarm was updated. | 
+| LogRhythm.AlarmDetails.associatedCases | String | The cases associated with this alarm. | 
+| LogRhythm.AlarmDetails.lastPersonID | Number | The ID of the last person to edit this alarm. | 
+| LogRhythm.AlarmDetails.eventCount | Number | The amount of events that triggered this alarm. | 
+| LogRhythm.AlarmDetails.eventDateFirst | String | The date in UTC of the first event to trigger this alarm. | 
+| LogRhythm.AlarmDetails.eventDateLast | String | The date in UTC of the last event to trigger this alarm. | 
+| LogRhythm.AlarmDetails.rBPMax | Number | The maximum Risk Based Priority for this alarm. | 
+| LogRhythm.AlarmDetails.rBPAvg | Number | The average Risk Based Priority for this alarm. | 
+| LogRhythm.AlarmDetails.executionTarget | Number | The target which the alarm was executed against. | 
+| LogRhythm.AlarmDetails.alarmDataCached | String | The cached alarm data. | 
+
 ### lr-cases-list
 ***
 Get cases details using filter criteria.

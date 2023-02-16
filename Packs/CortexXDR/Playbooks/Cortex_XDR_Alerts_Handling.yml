@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 7e32b542-4fd0-4a05-8f6a-914194fc2313
+    taskid: a47291e4-58cb-40b4-8eb5-306b2ffbbd0b
     type: condition
     task:
-      id: 7e32b542-4fd0-4a05-8f6a-914194fc2313
+      id: a47291e4-58cb-40b4-8eb5-306b2ffbbd0b
       version: -1
       name: Choose playbook by category
       description: Choose the playbook to run by the alert category.
@@ -49,6 +49,8 @@ tasks:
       - "7"
       Cloud:
       - "11"
+      First SSO Access:
+      - "14"
       Malware:
       - "9"
       Port Scan:
@@ -135,6 +137,50 @@ tasks:
           right:
             value:
               simple: Possible external RDP Brute-Force
+    - label: First SSO Access
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.alert_id
+                      iscontext: true
+                    ignorecase: true
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: First SSO access from ASN in organization
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.alert_id
+                      iscontext: true
+                    ignorecase: true
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: First successful SSO connection from a country in organization
     continueonerrortype: ""
     view: |-
       {
@@ -723,20 +769,157 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 14129f69-d407-4640-8114-b5548a37dbc0
+    type: playbook
+    task:
+      id: 14129f69-d407-4640-8114-b5548a37dbc0
+      version: -1
+      name: Cortex XDR - First SSO Access
+      description: |-
+        Investigates a Cortex XDR incident containing First SSO access from ASN in an organization
+         or First successful SSO connection from a country in an organization.
+
+        The playbook executes the following:
+        - IP and User Enrichment.
+        - User Investigation - Using 'User Investigation - Generic' sub-playbook.
+        - First SSO Access investigation - Using 'Cortex XDR - First SSO Investigation' sub-playbook.
+        - Set alert's verdict - Using 'Cortex XDR - First SSO access - Set Verdict' sub-playbook.
+        - Response based on the verdict.
+
+        The playbook is used as a sub-playbook in ‘Cortex XDR Incident Handling - v3’.
+      playbookName: Cortex XDR - First SSO Access
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      AlertID:
+        complex:
+          root: inputs.alert_id
+      AlertName:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+              ignorecase: true
+          accessor: name
+      AutomaticallyBlockAccount:
+        simple: "False"
+      AutomaticallyIsolateEndpoint:
+        simple: "False"
+      ContactUserManager:
+        simple: "True"
+      EndpointID:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+              ignorecase: true
+          accessor: endpoint_id
+      FailedlogonFromASNThreshold:
+        simple: "20"
+      FailedlogonUserThreshold:
+        simple: "30"
+      IPAddress:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+          accessor: host_ip_list
+      LoginCountry:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+              ignorecase: true
+          accessor: action_country
+      NumOfXdrAlertsThreshold:
+        simple: "3"
+      Username:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+          accessor: user_name
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -990,
+          "y": 565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
     "linkLabelsPosition": {
       "12_5_#default#": 0.18,
       "1_11_Cloud": 0.81,
+      "1_14_First SSO Access": 0.82,
       "1_7_#default#": 0.63,
       "1_9_Malware": 0.65
     },
     "paper": {
       "dimensions": {
         "height": 1095,
-        "width": 2280,
-        "x": -540,
+        "width": 2730,
+        "x": -990,
         "y": 70
       }
     }

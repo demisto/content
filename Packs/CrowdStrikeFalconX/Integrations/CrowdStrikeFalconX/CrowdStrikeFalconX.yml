@@ -1942,6 +1942,9 @@ script:
     - contextPath: csfalconx.resource.created_timestamp
       description: Analysis start time.
       type: Date
+    - contextPath: csfalconx.resource.url_name
+      description: Submitted URL.
+      type: String
   - arguments:
     - default: false
       description: ID of an artifact, such as an IOC pack, PCAP file, or actor image. Find an artifact ID in a report or summary.
@@ -1966,7 +1969,7 @@ script:
     description: Downloads IOC packs, PCAP files, and other analysis artifacts.
     execution: false
     name: cs-fx-download-ioc
-  dockerimage: demisto/python3:3.10.9.45313
+  dockerimage: demisto/python3:3.10.10.47713
   feed: false
   isfetch: false
   longRunning: false

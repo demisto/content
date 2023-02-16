@@ -94,12 +94,12 @@ In this playbook the remediation plan happens in two different phases:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* Enrichment for Verdict
 * Endpoint Investigation Plan
+* Handle False Positive Alerts
 * Eradication Plan
 * Containment Plan
 * Recovery Plan
-* Enrichment for Verdict
-* Handle False Positive Alerts
 
 ### Integrations
 This playbook does not use any integrations.
@@ -108,7 +108,7 @@ This playbook does not use any integrations.
 This playbook does not use any scripts.
 
 ### Commands
-closeInvestigation
+* closeInvestigation
 
 ## Playbook Inputs
 ---
