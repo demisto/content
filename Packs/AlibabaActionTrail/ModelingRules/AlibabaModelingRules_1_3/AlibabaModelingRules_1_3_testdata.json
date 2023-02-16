@@ -8,8 +8,6 @@
       "event_data": {
         "event": "null",
         "_raw_log": "",
-        "_vendor": "alibaba",
-        "_product": "action_trail",
         "event_eventid": "abc123",
         "event_eventrw": "Read",
         "event_acsregion": "TLV",
@@ -47,7 +45,7 @@
         "xdm.event.operation": "DescribeDBClusters",
         "xdm.target.resource.name": null,
         "xdm.target.resource.type": null,
-        "xdm.event.outcome": null,
+        "xdm.event.description": null,
         "xdm.target.cloud.region": "TLV",
         "xdm.source.user.username": "aliyunserviceroleforslsaudit:Common_Data_Access",
         "xdm.source.user.user_type": "testuser:Common_Data_Access",
