@@ -3060,21 +3060,31 @@ def test_add_or_remove_tag_endpoint_command(requests_mock, args, expected_filter
     }
 
 
-def test_endpoint_alias_change_command(mocker):
+excepted_output_1 = {'filters': [{'field': 'endpoint_status',
+                                  'operator': 'IN', 'value': ['connected']}], 'new_alias_name': 'test'}
+excepted_output_2 = {'filters': [{'field': 'endpoint_status',
+                                  'operator': 'IN', 'value': ['connected']}], 'new_alias_name': ""}
+
+
+@pytest.mark.parametrize('input, expected_output', [("test", excepted_output_1),
+                                                    ('""', excepted_output_2)])
+def test_endpoint_alias_change_command__diffrent_alias_new_names(mocker, input, expected_output):
     """
     Given:
-    - command arguments
+    - command arguments with endpoint filters, in the first case the new alias name is a string of text,
+    and in the second case the new alias name is a string of only double quotes.
+    
     when:
     - executing the endpoint-alias-change command
     then:
-    - make sure the body request was sent as expected to the api.
+    - make sure the body request was sent as expected to the api, and in the second case the double quotes
+    were transformed to an empty string.
     """
     client = CoreClient(base_url=f'{Core_URL}/public_api/v1/', headers={})
     mocker_set = mocker.patch.object(client, 'set_endpoints_alias')
     from CoreIRApiModule import endpoint_alias_change_command
-    endpoint_alias_change_command(client=client, status="connected", new_alias_name='test')
-    assert mocker_set.call_args[1] == {'filters': [{'field': 'endpoint_status',
-                                                   'operator': 'IN', 'value': ['connected']}], 'new_alias_name': 'test'}
+    endpoint_alias_change_command(client=client, status="connected", new_alias_name=input)
+    assert mocker_set.call_args[1] == expected_output
 
 
 def test_endpoint_alias_change_command__no_filters(mocker):
