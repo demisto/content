@@ -381,17 +381,17 @@ def test_taxii20_objects(mocker, taxii2_server_v20):
         assert response.status_code == 200
         assert response.content_type == 'application/vnd.oasis.stix+json; version=2.0'
         assert response.json == objects
-        assert response.headers.get('Content-Range') == 'items 0-2/5'
+        assert response.headers.get('Content-Range') == 'items 0-3/5'
 
 
 def test_taxii20_indicators_objects(mocker, taxii2_server_v20):
     """
         Given
-            TAXII Server v2.0, collection_id, content-range, types_for_indicator_sdo
+            TAXII Server v2.0, collection_id, content-range, types_for_indicator_sdo with all types included.
         When
             Calling get objects api request for given collection
         Then
-            Validate that right objects are returned.
+            Validate that right objects are returned and no extensions are returned.
     """
     iocs = util_load_json('test_data/ip_iocs.json')
     objects = util_load_json('test_data/objects20-indicators.json')
@@ -499,7 +499,7 @@ def test_taxii21_objects_filtered_params(mocker, taxii2_server_v21, res_file, fi
         Then
             Validate that right objects are returned.
     """
-    iocs = util_load_json('test_data/file_iocs.json')
+    iocs = util_load_json('test_data/file_iocs_filter_test.json')
     objects = util_load_json(f'test_data/{res_file}.json')
     mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
     mocker.patch('TAXII2Server.SERVER.fields_to_present', fields)
@@ -588,5 +588,6 @@ def test_convert_sco_to_indicator_sdo_with_type_file(mocker):
     mocker.patch('TAXII2Server.create_sdo_stix_uuid', return_value={})
 
     output = convert_sco_to_indicator_sdo(ioc, xsoar_indicator)
-    assert 'file:hash.' in output.get('pattern', '')
+    assert 'file:hashes.' in output.get('pattern', '')
+    assert 'MD5' in output.get('pattern', '')
     assert 'pattern_type' in output.keys()

@@ -215,5 +215,6 @@
                 "type": "custom"
             }
         ]
-    }
+    },
+    "marketplaces": ["xsoar"]
 }

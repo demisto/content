@@ -1,55 +1,6 @@
 {
     "iocs": [
         {
-            "calculatedTime": "2021-12-19T16:11:15.523761+02:00",
-            "comments": [
-                {
-                    "category": "Sighting",
-                    "content": "Created",
-                    "created": "2021-12-19T16:11:15.375887+02:00",
-                    "entryId": "",
-                    "id": "c44a5b3b-e508-4ac6-8881-c5dd7d118946",
-                    "modified": "0001-01-01T00:00:00Z",
-                    "sortValues": null,
-                    "source": "@DBot",
-                    "type": "IndicatorCommentTimeLine",
-                    "user": "@DBot",
-                    "version": 0
-                }
-            ],
-            "expirationSource": {
-                "brand": "",
-                "expirationInterval": 0,
-                "expirationPolicy": "never",
-                "instance": "",
-                "moduleId": "",
-                "setTime": "2021-12-19T16:11:15.375855+02:00",
-                "source": "indicatorType",
-                "user": ""
-            },
-            "expirationStatus": "active",
-            "firstSeen": "2021-12-19T16:11:15.523762+02:00",
-            "firstSeenEntryID": "8072@e99f97d1-7225-4c75-896c-3c960febbe8c",
-            "id": "5212669",
-            "indicator_type": "Attack Pattern",
-            "investigationIDs": [
-                "e99f97d1-7225-4c75-896c-3c960febbe8c"
-            ],
-            "lastReputationRun": "2021-12-19T16:11:15.375909+02:00",
-            "lastSeen": "2021-12-19T16:11:15.523761+02:00",
-            "lastSeenEntryID": "8072@e99f97d1-7225-4c75-896c-3c960febbe8c",
-            "modified": "2021-12-19T16:11:15.530455+02:00",
-            "score": 0,
-            "sortValues": [
-                " \u0001\u0016a\u000b+\u0013<=&h",
-                "5212669"
-            ],
-            "source": "DBot",
-            "timestamp": "2021-12-19T16:11:15.530454+02:00",
-            "value": "T1071.004",
-            "version": 1
-        },
-        {
             "calculatedTime": "2021-12-19T16:11:15.523598+02:00",
             "comments": [
                 {
@@ -96,6 +47,55 @@
             "source": "DBot",
             "timestamp": "2021-12-19T16:11:15.530719+02:00",
             "value": "T1195",
+            "version": 1
+        },
+        {
+            "calculatedTime": "2021-12-19T16:11:15.523761+02:00",
+            "comments": [
+                {
+                    "category": "Sighting",
+                    "content": "Created",
+                    "created": "2021-12-19T16:11:15.375887+02:00",
+                    "entryId": "",
+                    "id": "c44a5b3b-e508-4ac6-8881-c5dd7d118946",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                }
+            ],
+            "expirationSource": {
+                "brand": "",
+                "expirationInterval": 0,
+                "expirationPolicy": "never",
+                "instance": "",
+                "moduleId": "",
+                "setTime": "2021-12-19T16:11:15.375855+02:00",
+                "source": "indicatorType",
+                "user": ""
+            },
+            "expirationStatus": "active",
+            "firstSeen": "2021-12-19T16:11:15.523762+02:00",
+            "firstSeenEntryID": "8072@e99f97d1-7225-4c75-896c-3c960febbe8c",
+            "id": "5212669",
+            "indicator_type": "Attack Pattern",
+            "investigationIDs": [
+                "e99f97d1-7225-4c75-896c-3c960febbe8c"
+            ],
+            "lastReputationRun": "2021-12-19T16:11:15.375909+02:00",
+            "lastSeen": "2021-12-19T16:11:15.523761+02:00",
+            "lastSeenEntryID": "8072@e99f97d1-7225-4c75-896c-3c960febbe8c",
+            "modified": "2021-12-19T16:11:15.530455+02:00",
+            "score": 0,
+            "sortValues": [
+                " \u0001\u0016a\u000b+\u0013<=&h",
+                "5212669"
+            ],
+            "source": "DBot",
+            "timestamp": "2021-12-19T16:11:15.530454+02:00",
+            "value": "T1071.004",
             "version": 1
         },
         {
@@ -228,7 +228,7 @@
             "firstSeen": "2021-12-19T16:11:15.523415+02:00",
             "firstSeenEntryID": "8072@e99f97d1-7225-4c75-896c-3c960febbe8c",
             "id": "5212671",
-            "indicator_type": "Domain",
+            "indicator_type": "Attack Pattern",
             "investigationIDs": [
                 "e99f97d1-7225-4c75-896c-3c960febbe8c"
             ],
@@ -278,7 +278,7 @@
             "firstSeen": "2021-12-19T16:11:15.523262+02:00",
             "firstSeenEntryID": "8072@e99f97d1-7225-4c75-896c-3c960febbe8c",
             "id": "5212675",
-            "indicator_type": "Domain",
+            "indicator_type": "Attack Pattern",
             "investigationIDs": [
                 "e99f97d1-7225-4c75-896c-3c960febbe8c"
             ],
@@ -381,7 +381,7 @@
             "firstSeen": "0001-01-01T00:00:00Z",
             "firstSeenEntryID": "API",
             "id": "5212525",
-            "indicator_type": "Domain",
+            "indicator_type": "Attack Pattern",
             "lastSeen": "0001-01-01T00:00:00Z",
             "lastSeenEntryID": "API",
             "modified": "2021-12-19T15:46:03.856298+02:00",
@@ -473,7 +473,7 @@
             "firstSeen": "0001-01-01T00:00:00Z",
             "firstSeenEntryID": "API",
             "id": "5212497",
-            "indicator_type": "Domain",
+            "indicator_type": "Attack Pattern",
             "lastSeen": "0001-01-01T00:00:00Z",
             "lastSeenEntryID": "API",
             "modified": "2021-12-19T15:46:03.855356+02:00",
@@ -565,7 +565,7 @@
             "firstSeen": "0001-01-01T00:00:00Z",
             "firstSeenEntryID": "API",
             "id": "5212482",
-            "indicator_type": "Domain",
+            "indicator_type": "Attack Pattern",
             "lastSeen": "0001-01-01T00:00:00Z",
             "lastSeenEntryID": "API",
             "modified": "2021-12-19T15:46:03.854793+02:00",

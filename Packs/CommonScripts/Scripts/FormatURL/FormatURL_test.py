@@ -56,6 +56,8 @@ BRACKETS_URL_TO_FORMAT = [
     ('https://www.test.com]', 'https://www.test.com'),
     ('[https://www.test.com', 'https://www.test.com'),
     ('[[https://www.test.com', 'https://www.test.com'),
+    ('\'https://www.test.com/test\'', 'https://www.test.com/test'),
+    ('\'https://www.test.com/?a=\'b\'\'', 'https://www.test.com/?a=\'b\''),
 ]
 
 ATP_REDIRECTS = [

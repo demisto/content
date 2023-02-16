@@ -326,13 +326,14 @@ Configure a secrets engine to fetch secrets from.
 `hashicorp-configure-engine`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| path | The engine path, e.g., "secret/". | Required | 
-| folder | Specific folder to fetch secrets from, e.g., "secret-folder/". (Supported only for engine type KV2.) | Optional | 
-| ttl | The time in seconds until we delete the generated user in AWS. Max value=43200. (Supported only for engine type AWS in assume role or federation token). | Optional | 
-| type | The engine type, e.g., "KV". Possible values are: KV, Cubbyhole, AWS. | Required | 
-| version | The engine version (for KV engines); "1" or "2". Possible values are: 1, 2. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                               | **Required** |
+| --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| path | The engine path, e.g., "secret/".                                                                                                                             | Required | 
+| folder | Specific folder to fetch secrets from, e.g., "secret-folder/". (Supported only for engine type KV2.)                                                          | Optional | 
+| type | The engine type, e.g., "KV". Possible values are: KV, Cubbyhole, AWS.                                                                                         | Required | 
+| version | The engine version (for KV engines). Possible values are: 1, 2.                                                                                   | Optional | 
+| aws_roles_list | A comma-delimited list of roles names to generate credentials for. If not mentioned, we will generate credentials for all roles in the path.(used for only for AWS). | Optional | 
+| aws_method | A parameter to indicate which type of request we would like to use to generate credentials(used for only for AWS).                                            | Optional | 
 
 
 #### Context Output
@@ -403,9 +404,9 @@ Create a new authentication token.
 #### Command example
 ```!hashicorp-create-token display_name=token explicit_max_ttl=3600 renewable=false```
 
-##Additional Information
-In order to fetch credentials from HashiCorp Vault, the relevant secrets engines must be configured with the integration so it can pull the data from them. To configure an engine with the integration, use the configure-engine command.
-
+## Additional Information
+- In order to fetch credentials from HashiCorp Vault, the relevant secrets engines must be configured with the integration so it can pull the data from them. To configure an engine with the integration, use the ***configure-engine*** command.
+- The default fetch rate for fetch-credentials is 10 minutes. This is configurable with the server parameter *vault.module.cache.expire*
 ## Known Limitations
 Currently the integration is able to fetch credentials from the following engines:  
 - **K/V Versions 1,2**  

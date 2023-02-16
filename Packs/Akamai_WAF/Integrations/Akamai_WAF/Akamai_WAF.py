@@ -163,6 +163,7 @@ class Client(BaseClient):
         return self._http_request(method='GET',
                                   url_suffix='/cps/v2/enrollments',
                                   headers=headers,
+                                  timeout=(60, 180),
                                   params=params
                                   )
 
@@ -246,6 +247,29 @@ class Client(BaseClient):
         return self._http_request(
             method='POST',
             url_suffix=f"{change_path}/input/update/post-verification-warnings-ack",
+            headers=headers,
+            data=payload
+        )
+
+    def acknowledge_pre_verification_warning(self, change_path: str) -> dict:
+        """
+            Acknowledge the pre verification warning message after initiate an enrollment change
+
+        Args:
+            change_path: The path that includes enrollmentId and changeId: e.g. /cps/v2/enrollments/enrollmentId/changes/changeId
+
+        Returns:
+            Json response as dictionary
+        """
+        headers = {
+            "Content-Type": "application/vnd.akamai.cps.acknowledgement.v1+json",
+            "Accept": "application/vnd.akamai.cps.change-id.v1+json"
+        }
+
+        payload = '{"acknowledgement": "acknowledge"}'
+        return self._http_request(
+            method='POST',
+            url_suffix=f"{change_path}/input/update/pre-verification-warnings-ack",
             headers=headers,
             data=payload
         )
@@ -1443,19 +1467,21 @@ class Client(BaseClient):
     # created by D.S.
     def clone_appsec_config_version(self,
                                     config_id: str,
-                                    create_from_version: str) -> Dict:
+                                    create_from_version: str,
+                                    rule_update: bool = True) -> Dict:
         """
         Create a new version of security configuration from a previous version
         Args:
-            config_id
-            versionId
+            config_id: AppSec configuration ID
+            create_from_version: AppSec configuration version number to create from
+            rule_update: Specifies whether the application rules should be migrated to the latest version.
 
         Returns:
             <Response [204]>
         """
         body = {
             "createFromVersion": int(create_from_version),
-            "ruleUpdate": True
+            "ruleUpdate": rule_update
         }
         return self._http_request(method='Post',
                                   url_suffix=f'appsec/v1/configs/{config_id}/versions',
@@ -2714,7 +2740,18 @@ def acknowledge_warning_command(client: Client, change_path: str) -> Tuple[objec
     else:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
-# Created by C.L. Oct-06-22
+
+@logger
+def acknowledge_pre_verification_warning_command(client: Client, change_path: str) -> Tuple[object, dict, Union[List, Dict]]:
+
+    raw_response: Dict = client.acknowledge_pre_verification_warning(change_path)
+
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - Acknowledge_warning'
+
+        return human_readable, {"Akamai.Acknowledge": raw_response}, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
 
 def get_production_deployment_command(client: Client, enrollment_id: str) -> Tuple[object, dict, Union[List, Dict]]:
@@ -4150,12 +4187,14 @@ def clone_appsec_config_version_command(client: Client,
                                         config_id: str,
                                         create_from_version: str,
                                         do_not_clone: str,
+                                        rule_update: bool = True,
                                         ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         Appsec Configurtion - create a new version by clone the latest version
     Args:
-        config_id
-        create_from_version
+        config_id: AppSec configuration ID
+        create_from_version: AppSec configuration version number to create from
+        rule_update: Specifies whether the application rules should be migrated to the latest version.
         do_not_clone: Do not clone to create a new version, use in the test
 
     Returns:
@@ -4169,6 +4208,7 @@ def clone_appsec_config_version_command(client: Client,
     else:
         raw_response = client.clone_appsec_config_version(config_id=config_id,
                                                           create_from_version=create_from_version,
+                                                          rule_update=rule_update,
                                                           )
 
     title = f'{INTEGRATION_NAME} - Appsec Configurtion - create a new version by clone the latest version'
@@ -4738,7 +4778,9 @@ def main():
         f'{INTEGRATION_COMMAND_NAME}-update-appsec-config-version-notes': update_appsec_config_version_notes_command,
         f'{INTEGRATION_COMMAND_NAME}-new-or-renew-match-target': new_or_renew_match_target_command,
         f'{INTEGRATION_COMMAND_NAME}-patch-papi-property-rule-generic': patch_papi_property_rule_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-papi-property-rule': get_papi_property_rule_command
+        f'{INTEGRATION_COMMAND_NAME}-get-papi-property-rule': get_papi_property_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-acknowledge-pre-verification-warning': acknowledge_pre_verification_warning_command,
+
     }
     try:
         readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())

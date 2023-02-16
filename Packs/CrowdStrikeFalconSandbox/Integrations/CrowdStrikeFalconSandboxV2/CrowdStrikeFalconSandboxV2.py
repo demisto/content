@@ -2,11 +2,11 @@ from requests import Response
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-import requests
+import urllib3
 from typing import Dict, Any, Callable
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 SEARCH_TERM_QUERY_ARGS = ('filename', 'filetype', 'filetype_desc', 'env_id', 'country', 'verdict', 'av_detect',
                           'vx_family', 'tag', 'date_from', 'date_to', 'port', 'host', 'domain', 'url', 'similar_to',
                           'context', 'imp_hash', 'ssdeep', 'authentihash')
