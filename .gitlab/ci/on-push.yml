@@ -53,6 +53,7 @@ stop-running-pipelines:
   variables:
     master_branch_name: master
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   script:
     - section_start "Stop running piplines on current branch"
@@ -343,9 +344,11 @@ jobs-done-check-nightly:
       when: always
 
 jobs-done-check-on-push:
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
   extends:
-    - .push-rule
     - .jobs-done-check
+    - .push-rule
 #  needs: ['run-unittests-and-lint', 'trigger-private-build', 'validate-content-conf', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_6_5', 'xsoar_server_6_6', 'xsoar_server_6_8', 'xsoar_server_master']
   needs:
     - job: run-unittests-and-lint
@@ -548,6 +551,7 @@ test-upload-flow:
   extends:
     - .default-job-settings
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   variables:
     ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
