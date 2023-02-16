@@ -858,7 +858,6 @@ script:
       isArray: true
       name: replyTo
     - auto: PREDEFINED
-      default: true
       defaultValue: Normal
       description: Sets the importance/Priority of the email. Default value is Normal
       name: importance
