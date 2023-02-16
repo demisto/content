@@ -2407,6 +2407,33 @@ script:
     - contextPath: AzureSentinel.AlertRuleTemplate.properties.productFilter
       description: The alerts' productName on which the cases will be generated.
       type: String
+  - arguments:
+    - default: false
+      description: The alert rule id to delete.
+      isArray: false
+      name: rule_id
+      required: true
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
+    description: Deletes the specified alert rule.
+    name: azure-sentinel-delete-alert-rule
+    outputs:
+    - contextPath: AzureSentinel.AlertRule.ID
+      description: The alert rule ID.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.Deleted
+      description: Whether the alert rule was deleted.
+      type: Boolean
   dockerimage: demisto/crypto:1.0.0.48652
   feed: false
   isfetch: true

@@ -45,9 +45,9 @@ DEFAULT_SOURCE = 'Microsoft Sentinel'
 
 THREAT_INDICATORS_HEADERS = ['Name', 'DisplayName', 'Values', 'Types', 'Source', 'Confidence', 'Tags']
 
-ALERT_RULES_HEADERS = ['Id', 'Kind', 'Severity', 'Display Name', 'Description', 'Enabled']
+ALERT_RULES_HEADERS = ['ID', 'Kind', 'Severity', 'Display Name', 'Description', 'Enabled']
 
-ALERT_RULES_TEMPLATES_HEADERS = ['Id', 'Kind', 'Severity', 'Display Name', 'Description', 'Status', 'Created Date UTC',
+ALERT_RULES_TEMPLATES_HEADERS = ['ID', 'Kind', 'Severity', 'Display Name', 'Description', 'Status', 'Created Date UTC',
                                  'Last Updated Date UTC', 'Alert Rules Created By Template Count']
 
 # =========== Mirroring Mechanism Globals ===========
@@ -1723,7 +1723,7 @@ def list_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any]) -
 
     readable_result = [
         {
-            'Id': rule.get('name'),
+            'ID': rule.get('name'),
             'Kind': rule.get('kind'),
             'Severity': rule.get('properties', {}).get('severity'),
             'Display Name': rule.get('properties', {}).get('displayName'),
@@ -1765,7 +1765,7 @@ def list_alert_rule_template_command(client: AzureSentinelClient, args: Dict[str
 
     readable_result = [
         {
-            'Id': rule.get('name'),
+            'ID': rule.get('name'),
             'Kind': rule.get('kind'),
             'Severity': rule.get('properties', {}).get('severity'),
             'Display Name': rule.get('properties', {}).get('displayName'),
@@ -1784,6 +1784,28 @@ def list_alert_rule_template_command(client: AzureSentinelClient, args: Dict[str
         outputs=raw_results,
         outputs_key_field='name',
         raw_response=raw_results
+    )
+
+
+def delete_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any]) -> CommandResults:
+    rule_id = args.get('rule_id')
+    url_suffix = f'alertRules/{rule_id}'
+    res = client.http_request('DELETE', url_suffix)
+
+    if isinstance(res, requests.Response) and res.status_code == 204:
+        return CommandResults(readable_output=f'Alert rule {rule_id} does not exist.')
+
+    context = {
+        'ID': rule_id,
+        'Deleted': True
+    }
+
+    return CommandResults(
+        readable_output=f'Alert rule {rule_id} was deleted successfully.',
+        outputs_prefix='AzureSentinel.AlertRule',
+        outputs=context,
+        outputs_key_field='ID',
+        raw_response={}
     )
 
 
@@ -1856,6 +1878,11 @@ def main():
             'azure-sentinel-threat-indicator-tags-replace': replace_tags_threat_indicator_command,
             'azure-sentinel-list-alert-rule': list_alert_rule_command,
             'azure-sentinel-list-alert-rule-template': list_alert_rule_template_command,
+            'azure-sentinel-delete-alert-rule': delete_alert_rule_command,
+            # mirroring commands
+            'get-modified-remote-data': get_modified_remote_data_command,
+            'get-remote-data': get_remote_data_command,
+            'update-remote-system': update_remote_system_command
         }
 
         if demisto.command() == 'test-module':
@@ -1878,14 +1905,9 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'get-modified-remote-data':
-            return_results(get_modified_remote_data_command(client, args))
-        elif demisto.command() == 'get-remote-data':
-            return_results(get_remote_data_command(client, args))
+        # mirroring command
         elif demisto.command() == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
-        elif demisto.command() == 'update-remote-system':
-            return_results(update_remote_system_command(client, args))
 
         elif demisto.command() in commands:
             return_results(commands[demisto.command()](client, args))  # type: ignore

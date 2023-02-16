@@ -1907,7 +1907,7 @@ Gets a list of all alert rules.
 #### Human Readable Output
 
 >### Azure Sentinel Alert Rules
->|Id|Kind|Severity|Display Name|Description|Enabled|
+>|ID|Kind|Severity|Display Name|Description|Enabled|
 >|---|---|---|---|---|---|
 >| test-rule-id | Scheduled | Low | testing displayname |  | true |
 
@@ -2001,7 +2001,48 @@ Gets a list of all alert rule templates.
 #### Human Readable Output
 
 >### Azure Sentinel Alert Rule Template
->|Id|Kind|Severity|Display Name|Description|Status|Created Date UTC|Last Updated Date UTC|Alert Rules Created By Template Count|
+>|ID|Kind|Severity|Display Name|Description|Status|Created Date UTC|Last Updated Date UTC|Alert Rules Created By Template Count|
 >|---|---|---|---|---|---|---|---|---|
 >| test-rule-template-id | Scheduled | Low | Changes to Amazon VPC settings | This alert monitors changes to Amazon VPC (Virtual Private Cloud) settings such as new ACL entries and routes in route tables.<br/>More information: https://medium.com/@GorillaStack/the-most-important-aws-cloudtrail-security-events-to-track-a5b9873f8255 <br/>and https://aws.amazon.com/vpc/ | Available | 2019-02-27T00:00:00Z | 2021-02-27T10:00:00Z | 0 |
 
+### azure-sentinel-delete-alert-rule
+
+***
+Deletes the specified alert rule.
+
+#### Base Command
+
+`azure-sentinel-delete-alert-rule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | The alert rule id to delete. | Required | 
+| subscription_id | The subscription ID. | Optional | 
+| resource_group_name | The resource group name. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.AlertRule.ID | String | The alert rule ID. | 
+| AzureSentinel.AlertRule.Deleted | Boolean | Whether the alert rule was deleted. | 
+
+#### Command example
+```!azure-sentinel-delete-alert-rule rule_id=1234-abcd-5678-efgh```
+#### Context Example
+```json
+{
+    "AzureSentinel": {
+        "AlertRule": {
+            "Deleted": true,
+            "ID": "1234-abcd-5678-efgh"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Alert rule 1234-abcd-5678-efgh was deleted successfully.
