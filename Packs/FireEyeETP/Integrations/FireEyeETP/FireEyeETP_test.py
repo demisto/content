@@ -1,3 +1,5 @@
+from datetime import datetime
+import json
 import demistomock as demisto
 import FireEyeETP
 
@@ -75,18 +77,20 @@ def test_fetch_incident_by_status_messages(mocker):
     Then:
         - Ensure one incident was fetched as expected
     """
+    iso_format = "%Y-%m-%dT%H:%M:%S.%f"
+    current_time = datetime.now().strftime(iso_format)
     alerts = {'meta': {'fromLastModifiedOn': {'end': ''}},
               'data': [
         {'attributes': {'email': {'status': 'delivered (retroactive)', 'headers': {'subject': ''}},
-                        'alert': {'timestamp': '2023-02-08T19:34:17'}}}]}
-    expected_incidents = '{"email": {"status": "delivered (retroactive)", "headers": {"subject": ""}},' \
-                         ' "alert": {"timestamp": "2023-02-08T19:34:17"}}'
+                        'alert': {'timestamp': current_time}}}]}
+    expected_incidents = {'email': {'status': 'delivered (retroactive)', 'headers': {'subject': ''}},
+                          'alert': {'timestamp': current_time}}
     mocker.patch.object(FireEyeETP, 'MESSAGE_STATUS', ['delivered (retroactive)'])
     mocker.patch('FireEyeETP.demisto.getLastRun', return_value={})
     mocker.patch('FireEyeETP.get_alerts_request', return_value=alerts)
     res = mocker.patch('FireEyeETP.demisto.incidents')
     FireEyeETP.fetch_incidents()
-    assert res.call_args.args[0][0].get('rawJSON') == expected_incidents
+    assert res.call_args.args[0][0].get('rawJSON') == json.dumps(expected_incidents)
 
 
 def test_fetch_incident_by_status_messages_mismatch_status(mocker):
@@ -98,10 +102,12 @@ def test_fetch_incident_by_status_messages_mismatch_status(mocker):
     Then:
         - Ensure no incidents were fetched as expected
     """
+    iso_format = "%Y-%m-%dT%H:%M:%S.%f"
+    current_time = datetime.now().strftime(iso_format)
     alerts = {'meta': {'fromLastModifiedOn': {'end': ''}},
               'data': [
         {'attributes': {'email': {'status': 'deleted', 'headers': {'subject': ''}},
-                        'alert': {'timestamp': '2023-02-08T19:34:17'}}}]}
+                        'alert': {'timestamp': current_time}}}]}
     mocker.patch.object(FireEyeETP, 'MESSAGE_STATUS', ['delivered (retroactive)'])
     mocker.patch('FireEyeETP.demisto.getLastRun', return_value={})
     mocker.patch('FireEyeETP.get_alerts_request', return_value=alerts)
@@ -119,21 +125,23 @@ def test_fetch_incident_by_status_messages_with_two_status(mocker):
     Then:
         - Ensure 2 incidents were fetched as expected
     """
+    iso_format = "%Y-%m-%dT%H:%M:%S.%f"
+    current_time = datetime.now().strftime(iso_format)
     alerts = {'meta': {'fromLastModifiedOn': {'end': ''}},
               'data': [
         {'attributes': {'email': {'status': 'delivered (retroactive)', 'headers': {'subject': ''}},
-                        'alert': {'timestamp': '2023-02-08T19:34:17'}}},
+                        'alert': {'timestamp': current_time}}},
         {'attributes': {'email': {'status': 'deleted', 'headers': {'subject': ''}},
-                        'alert': {'timestamp': '2023-02-08T19:34:17'}}}
+                        'alert': {'timestamp': current_time}}}
     ]}
     expected_incidents = [
-        '{"email": {"status": "delivered (retroactive)", "headers": {"subject": ""}},'
-        ' "alert": {"timestamp": "2023-02-08T19:34:17"}}',
-        '{"email": {"status": "deleted", "headers": {"subject": ""}}, "alert": {"timestamp": "2023-02-08T19:34:17"}}']
+        {"email": {"status": "delivered (retroactive)", "headers": {"subject": ""}},
+         "alert": {"timestamp": current_time}},
+        {"email": {"status": "deleted", "headers": {"subject": ""}}, "alert": {"timestamp": current_time}}]
     mocker.patch.object(FireEyeETP, 'MESSAGE_STATUS', ['delivered (retroactive)', 'deleted'])
     mocker.patch('FireEyeETP.demisto.getLastRun', return_value={})
     mocker.patch('FireEyeETP.get_alerts_request', return_value=alerts)
     res = mocker.patch('FireEyeETP.demisto.incidents')
     FireEyeETP.fetch_incidents()
     for incident, expected_incident in zip(res.call_args.args[0], expected_incidents):
-        assert incident.get('rawJSON') == expected_incident
+        assert incident.get('rawJSON') == json.dumps(expected_incident)
