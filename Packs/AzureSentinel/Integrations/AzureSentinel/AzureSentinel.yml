@@ -2316,7 +2316,98 @@ script:
     - contextPath: AzureSentinel.AlertRule.properties.displayNamesFilter
       description: the alerts' displayNames on which the cases will be generated
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.47970
+  - arguments:
+    - default: false
+      description: The alert rule template id, if not given will return all alert rule templates.
+      isArray: false
+      name: template_id
+      required: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of templates to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
+    description: Gets a list of all alert rule templates.
+    name: azure-sentinel-list-alert-rule-template
+    outputs:
+    - contextPath: AzureSentinel.AlertRuleTemplate.id
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.name
+      description: The name of the resource.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.type
+      description: The type of the resource.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.kind
+      description: The alert rule kind
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.severity
+      description: The severity for alerts created by this alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.query
+      description: The query that creates alerts for this rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.queryFrequency
+      description: The frequency (in ISO 8601 duration format) for this alert rule to run.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.queryPeriod
+      description: The period (in ISO 8601 duration format) that this alert rule looks at.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.triggerOperator
+      description: The operation against the threshold that triggers alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.triggerThreshold
+      description: The threshold triggers this alert rule.
+      type: Number
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.displayName
+      description: The display name for alert rule template.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.description
+      description: The description of the alert rule template.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.tactics
+      description: The tactics of the alert rule template.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.lastUpdatedDateUTC
+      description: The time that this alert rule template was last updated.
+      type: Date
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.createdDateUTC
+      description: The time that this alert rule template has been added.
+      type: Date
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.status
+      description: The alert rule template status.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.version
+      description: The version of this template - in format <a.b.c>, where all are numbers. For example <1.0.2>.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.requiredDataConnectors.connectorId
+      description: The connector id that provides the following data types
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.requiredDataConnectors.dataTypes
+      description: The data types used by the alert rule template.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.alertRulesCreatedByTemplateCount
+      description: the number of alert rules that were created by this template.
+      type: Number
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.productFilter
+      description: The alerts' productName on which the cases will be generated.
+      type: String
+  dockerimage: demisto/crypto:1.0.0.48652
   feed: false
   isfetch: true
   longRunning: false

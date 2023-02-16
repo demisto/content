@@ -1911,3 +1911,97 @@ Gets a list of all alert rules.
 >|---|---|---|---|---|---|
 >| test-rule-id | Scheduled | Low | testing displayname |  | true |
 
+### azure-sentinel-list-alert-rule-template
+***
+Gets a list of all alert rule templates.
+
+
+#### Base Command
+
+`azure-sentinel-list-alert-rule-template`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template_id | The alert rule template id, if not given will return all alert rule templates. | Optional | 
+| limit | The maximum number of templates to return. Default is 50. | Optional | 
+| subscription_id | The subscription ID. | Optional | 
+| resource_group_name | The resource group name. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.AlertRuleTemplate.id | String | Fully qualified resource ID for the resource. | 
+| AzureSentinel.AlertRuleTemplate.name | String | The name of the resource. | 
+| AzureSentinel.AlertRuleTemplate.type | String | The type of the resource. | 
+| AzureSentinel.AlertRuleTemplate.kind | String | The alert rule kind | 
+| AzureSentinel.AlertRuleTemplate.properties.severity | String | The severity for alerts created by this alert rule. | 
+| AzureSentinel.AlertRuleTemplate.properties.query | String | The query that creates alerts for this rule. | 
+| AzureSentinel.AlertRuleTemplate.properties.queryFrequency | String | The frequency \(in ISO 8601 duration format\) for this alert rule to run. | 
+| AzureSentinel.AlertRuleTemplate.properties.queryPeriod | String | The period \(in ISO 8601 duration format\) that this alert rule looks at. | 
+| AzureSentinel.AlertRuleTemplate.properties.triggerOperator | String | The operation against the threshold that triggers alert rule. | 
+| AzureSentinel.AlertRuleTemplate.properties.triggerThreshold | Number | The threshold triggers this alert rule. | 
+| AzureSentinel.AlertRuleTemplate.properties.displayName | String | The display name for alert rule template. | 
+| AzureSentinel.AlertRuleTemplate.properties.description | String | The description of the alert rule template. | 
+| AzureSentinel.AlertRuleTemplate.properties.tactics | String | The tactics of the alert rule template. | 
+| AzureSentinel.AlertRuleTemplate.properties.lastUpdatedDateUTC | Date | The time that this alert rule template was last updated. | 
+| AzureSentinel.AlertRuleTemplate.properties.createdDateUTC | Date | The time that this alert rule template has been added. | 
+| AzureSentinel.AlertRuleTemplate.properties.status | String | The alert rule template status. | 
+| AzureSentinel.AlertRuleTemplate.properties.version | String | The version of this template - in format &lt;a.b.c&gt;, where all are numbers. For example &lt;1.0.2&gt;. | 
+| AzureSentinel.AlertRuleTemplate.properties.requiredDataConnectors.connectorId | String | The connector id that provides the following data types | 
+| AzureSentinel.AlertRuleTemplate.properties.requiredDataConnectors.dataTypes | String | The data types used by the alert rule template. | 
+| AzureSentinel.AlertRuleTemplate.properties.alertRulesCreatedByTemplateCount | Number | the number of alert rules that were created by this template. | 
+| AzureSentinel.AlertRuleTemplate.properties.productFilter | String | The alerts' productName on which the cases will be generated. | 
+
+#### Command example
+```!azure-sentinel-list-alert-rule-template limit=1```
+#### Context Example
+```json
+{
+    "AzureSentinel": {
+        "AlertRuleTemplate": {
+            "id": "/subscriptions/{subscription_id}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/providers/Microsoft.SecurityInsights/AlertRuleTemplates/test-rule-template-id",
+            "kind": "Scheduled",
+            "name": "test-rule-template-id",
+            "properties": {
+                "severity": "Low",
+                "query": "let timeframe = 1d;\nAWSCloudTrail\n| where TimeGenerated >= ago(timeframe)\n| where EventName == \"CreateNetworkAclEntry\"\n    or EventName == \"CreateRoute\"\n| project TimeGenerated, EventName, EventTypeName, UserIdentityAccountId, UserIdentityPrincipalid, UserAgent, UserIdentityUserName, SessionMfaAuthenticated, SourceIpAddress, AWSRegion, EventSource, AdditionalEventData, ResponseElements\n| extend AccountCustomEntity = UserIdentityUserName, IPCustomEntity = SourceIpAddress",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "displayName": "Changes to Amazon VPC settings",
+                "description": "This alert monitors changes to Amazon VPC (Virtual Private Cloud) settings such as new ACL entries and routes in route tables.\nMore information: https://medium.com/@GorillaStack/the-most-important-aws-cloudtrail-security-events-to-track-a5b9873f8255 \nand https://aws.amazon.com/vpc/",
+                "tactics": [
+                "PrivilegeEscalation",
+                "LateralMovement"
+                ],
+                "lastUpdatedDateUTC": "2021-02-27T10:00:00Z",
+                "createdDateUTC": "2019-02-27T00:00:00Z",
+                "status": "Available",
+                "version": "1.0.1",
+                "requiredDataConnectors": [
+                {
+                    "connectorId": "AWS",
+                    "dataTypes": [
+                    "AWSCloudTrail"
+                    ]
+                }
+                ],
+                "alertRulesCreatedByTemplateCount": 0
+            },
+            "type": "Microsoft.SecurityInsights/AlertRuleTemplates"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Azure Sentinel Alert Rule Template
+>|Id|Kind|Severity|Display Name|Description|Status|Created Date UTC|Last Updated Date UTC|Alert Rules Created By Template Count|
+>|---|---|---|---|---|---|---|---|---|
+>| test-rule-template-id | Scheduled | Low | Changes to Amazon VPC settings | This alert monitors changes to Amazon VPC (Virtual Private Cloud) settings such as new ACL entries and routes in route tables.<br/>More information: https://medium.com/@GorillaStack/the-most-important-aws-cloudtrail-security-events-to-track-a5b9873f8255 <br/>and https://aws.amazon.com/vpc/ | Available | 2019-02-27T00:00:00Z | 2021-02-27T10:00:00Z | 0 |
+

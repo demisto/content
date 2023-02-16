@@ -47,6 +47,8 @@ THREAT_INDICATORS_HEADERS = ['Name', 'DisplayName', 'Values', 'Types', 'Source',
 
 ALERT_RULES_HEADERS = ['Id', 'Kind', 'Severity', 'Display Name', 'Description', 'Enabled']
 
+ALERT_RULES_TEMPLATES_HEADERS = ['Id', 'Kind', 'Severity', 'Display Name', 'Description', 'Status', 'Created Date UTC', 'Last Updated Date UTC', 'Alert Rules Created By Template Count']
+
 # =========== Mirroring Mechanism Globals ===========
 
 MIRROR_DIRECTION_DICT = {
@@ -1727,11 +1729,57 @@ def list_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any]) -
             'Description': rule.get('properties', {}).get('description'),
             'Enabled': rule.get('properties', {}).get('enabled')
         } for rule in raw_results]
-    readable_output = tableToMarkdown('Azure Sentinel Alert Rules', readable_result, headers=ALERT_RULES_HEADERS)
+    tabel_name = 'Azure Sentinel Alert Rules' + (f' ({len(raw_results)} results)' if len(raw_results) > 1 else '')
+    readable_output = tableToMarkdown(tabel_name, readable_result, headers=ALERT_RULES_HEADERS)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='AzureSentinel.AlertRule',
+        outputs=raw_results,
+        outputs_key_field='name',
+        raw_response=raw_results
+    )
+
+
+def list_alert_rule_template_command(client: AzureSentinelClient, args: Dict[str, Any]) -> CommandResults:
+    limit = int(args.get('limit', 50))
+    template_id = args.get('template_id')
+
+    url_suffix = 'alertRuleTemplates' + (f'/{template_id}' if template_id else '')
+
+    raw_results = []
+    next_link = True
+    while next_link:
+        full_url = next_link if isinstance(next_link, str) else None
+
+        response = client.http_request('GET', url_suffix, full_url=full_url)
+
+        raw_results += [response] if template_id else response.get('value', [])
+
+        next_link = response.get('nextLink')
+        if len(raw_results) >= limit:
+            next_link = False
+
+    raw_results = raw_results[:limit]
+
+    readable_result = [
+        {
+            'Id': rule.get('name'),
+            'Kind': rule.get('kind'),
+            'Severity': rule.get('properties', {}).get('severity'),
+            'Display Name': rule.get('properties', {}).get('displayName'),
+            'Description': rule.get('properties', {}).get('description'),
+            'Status': rule.get('properties', {}).get('status'),
+            'Created Date UTC': rule.get('properties', {}).get('createdDateUTC'),
+            'Last Updated Date UTC': rule.get('properties', {}).get('lastUpdatedDateUTC'),
+            'Alert Rules Created By Template Count': rule.get('properties', {}).get('alertRulesCreatedByTemplateCount'),
+        } for rule in raw_results]
+    tabel_name = 'Azure Sentinel Alert Rule Template' + (f' ({len(raw_results)} results)' if len(raw_results) > 1 else '')
+    readable_output = tableToMarkdown(tabel_name, readable_result, headers=ALERT_RULES_TEMPLATES_HEADERS)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureSentinel.AlertRuleTemplate',
         outputs=raw_results,
         outputs_key_field='name',
         raw_response=raw_results
@@ -1806,6 +1854,7 @@ def main():
             'azure-sentinel-threat-indicator-tags-append': append_tags_threat_indicator_command,
             'azure-sentinel-threat-indicator-tags-replace': replace_tags_threat_indicator_command,
             'azure-sentinel-list-alert-rule': list_alert_rule_command,
+            'azure-sentinel-list-alert-rule-template': list_alert_rule_template_command,
         }
 
         if demisto.command() == 'test-module':
