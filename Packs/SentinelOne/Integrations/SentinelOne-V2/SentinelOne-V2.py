@@ -3046,7 +3046,7 @@ def main():
     fetch_severity = params.get('fetch_severity', 'High')
     fetch_incidentStatus = params.get('fetch_incidentStatus', [])
     fetch_threat_rank = int(params.get('fetch_threat_rank', 0))
-    fetch_limit = int(params.get('fetch_limit', 100))
+    fetch_limit = int(params.get('fetch_limit', 10))
     fetch_site_ids = params.get('fetch_site_ids', None)
     block_site_ids = params.get('block_site_ids', 'None') or 'None'
     global_block = block_site_ids == 'None'
