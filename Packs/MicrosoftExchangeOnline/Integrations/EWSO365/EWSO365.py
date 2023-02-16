@@ -1,41 +1,61 @@
-import email
-import hashlib
-import json
-import logging
-import os
 import random
 import string
 import subprocess
-import sys
-import traceback
-import warnings
-from io import StringIO
-from multiprocessing import Process
 from typing import Dict
 
-import chardet
 import dateparser
-import demistomock as demisto  # noqa: F401
-import exchangelib
-from CommonServerPython import *  # noqa: F401
-from exchangelib import (IMPERSONATION, OAUTH2, Account, Body, Configuration,
-                         EWSDateTime, EWSTimeZone, ExtendedProperty,
-                         FileAttachment, Folder, HTMLBody, Identity,
-                         ItemAttachment, OAuth2AuthorizationCodeCredentials,
-                         Version)
-from exchangelib.errors import (ErrorFolderNotFound, ErrorInvalidIdMalformed,
-                                ErrorItemNotFound, ErrorMailboxMoveInProgress,
-                                ErrorMailboxStoreUnavailable,
-                                ErrorNameResolutionNoResults,
-                                MalformedResponseError, RateLimitError,
-                                ResponseMessageError)
-from exchangelib.items import Contact, Item, Message
-from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
-from exchangelib.services.common import EWSAccountService, EWSService
-from exchangelib.util import MNS, TNS, add_xml_child, create_element
-from exchangelib.version import EXCHANGE_O365
-from oauthlib.oauth2 import OAuth2Token
+import chardet
+
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+
+import sys
+import traceback
+import json
+import os
+import hashlib
+from io import StringIO
+import logging
+import warnings
+import email
 from requests.exceptions import ConnectionError
+from multiprocessing import Process
+import exchangelib
+from exchangelib.errors import (
+    ErrorItemNotFound,
+    ResponseMessageError,
+    RateLimitError,
+    ErrorInvalidIdMalformed,
+    ErrorFolderNotFound,
+    ErrorMailboxStoreUnavailable,
+    ErrorMailboxMoveInProgress,
+    ErrorNameResolutionNoResults,
+    MalformedResponseError,
+)
+from exchangelib.items import Item, Message, Contact
+from exchangelib.services.common import EWSService, EWSAccountService
+from exchangelib.util import create_element, add_xml_child, MNS, TNS
+from exchangelib import (
+    IMPERSONATION,
+    Account,
+    EWSDateTime,
+    EWSTimeZone,
+    Configuration,
+    FileAttachment,
+    Version,
+    Folder,
+    HTMLBody,
+    Body,
+    ItemAttachment,
+    OAUTH2,
+    OAuth2AuthorizationCodeCredentials,
+    Identity,
+    ExtendedProperty
+)
+from oauthlib.oauth2 import OAuth2Token
+from exchangelib.version import EXCHANGE_O365
+from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
 
 # Ignore warnings print to stdout
 warnings.filterwarnings("ignore")
