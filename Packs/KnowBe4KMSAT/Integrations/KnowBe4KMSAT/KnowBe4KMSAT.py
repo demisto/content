@@ -343,7 +343,7 @@ class UserEventClient(BaseClient):
             raise_on_status=True,
             ok_codes=(204,),
         )
-    
+
     def user_event(self, event_id: str):
         """ Deletes a user event
 
@@ -361,7 +361,7 @@ class UserEventClient(BaseClient):
             raise_on_status=True,
             ok_codes=(200,),
         )
-        
+
     def user_event_status(self, request_id: str):
         """ gets a specific user event create request status
 
@@ -815,7 +815,7 @@ def kmsat_phishing_security_tests_failed_recipients_list_command(
     per_page = 100
     if (params.get('per_page')):
         per_page = int(params.get('per_page'))
-        
+
     if(len(response) < per_page):
         paging_end = True
 
@@ -872,7 +872,8 @@ def kmsat_phishing_security_tests_failed_recipients_list_command(
     )
     if not response:
         raise DemistoException(
-            "Translation failed: the response from server did not include `kmsat_phishing_security_tests_failed_recipients_list_command`.",
+            "Translation failed: the response from server did not include"
+            "`kmsat_phishing_security_tests_failed_recipients_list_command`.",
             res=response,
         )
     return CommandResults(
@@ -1017,7 +1018,7 @@ def kmsat_training_enrollments_list_command(
     per_page = 100
     if (params.get('per_page')):
         per_page = int(params.get('per_page'))
-        
+
     if(len(response) < per_page):
         paging_end = True
 
@@ -1200,7 +1201,7 @@ def kmsat_user_event_list_command(
     Returns:
         CommandResults: Returns context data user create event
     """
-    event_id = args.get("id")
+    event_id: str = str(args.get("id"))
     response = client.user_event(event_id)
     if not response:
         raise DemistoException(
@@ -1229,8 +1230,9 @@ def kmsat_user_event_status_list_command(
     Returns:
         CommandResults: Returns event status
     """
+
     request_id: str = str(args.get("id"))
-    response = client.user_event_status(request_id)    
+    response = client.user_event_status(request_id)
     data: List[Dict] = response.get("data") or []
     markdown = tableToMarkdown(
         "KMSAT User Event Status",

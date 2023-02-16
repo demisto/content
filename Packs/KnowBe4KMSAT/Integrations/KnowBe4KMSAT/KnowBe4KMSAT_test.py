@@ -316,7 +316,7 @@ def test_phishing_security_tests_failed_recipients_list(requests_mock):
             "paging_end": True
         }
     }
-    
+
     assert result.outputs_prefix == "KMSAT.PhishingSecurityPST"
     assert result.outputs_key_field == "recipient_id"
     assert result.outputs == valid_response
@@ -426,7 +426,7 @@ def test_training_enrollments_list(requests_mock):
     args: dict = {}
     result = kmsat_training_enrollments_list_command(client, args)
     valid_response = {
-        "data" : mock_response_data,
+        "data": mock_response_data,
         "meta": {
             "filtered_items_in_page": 0,
             "items_total": 4,
@@ -472,7 +472,7 @@ def test_status_training_enrollments_list(requests_mock):
     result = kmsat_training_enrollments_list_command(client, args)
 
     assert result.outputs_prefix == "KMSAT.TrainingEnrollments"
-    assert result.outputs_key_field == "enrollment_id"   
+    assert result.outputs_key_field == "enrollment_id"
     assert len(result.outputs["data"]) == 2
     assert len(mock_response_data) > 2
     for enrollment in result.outputs["data"]:
@@ -553,14 +553,14 @@ def test_get_user_events(requests_mock):
     assert result.outputs == mock_response_data["data"]
 
 
-def test_get_user_events(requests_mock):
+def test_get_user_event(requests_mock):
     """
     Given
             no params
     When
             Calling https://api.events.knowbe4.com/events/{id}
     Then
-            Make sure the data contains the user events
+            Make sure the data contains the user event
     """
 
     id: str = "513f46ac-c3d7-4682-ad0d-0c149c0728a2"
@@ -581,7 +581,7 @@ def test_get_user_events(requests_mock):
             "Content-Type": "application/json",
         },
     )
-   
+
     args: dict = {"id": id}
     result = kmsat_user_event_list_command(userEventClient, args)
 
@@ -619,6 +619,7 @@ def test_delete_user_event(requests_mock):
     result = kmsat_user_event_delete_command(userEventClient, args)
 
     assert result.readable_output == f"Successfully deleted event: {id}"
+
 
 def test_get_user_event_status(requests_mock):
     """
@@ -667,8 +668,6 @@ def test_get_user_event_statuses(requests_mock):
     Then
             Make sure the data contains the list of user event requests
     """
-
-    id: str = "513f46ac-c3d7-4682-ad0d-0c149c0728a2"
 
     mock_response_data = util_load_json("test_data/user_event_statuses_response.json")
     from KnowBe4KMSAT import kmsat_user_event_statuses_list_command
