@@ -334,8 +334,6 @@ jobs:
       - *store_artifacts
 
   Run Validations:
-    when:
-      condition: << pipeline.parameters.contrib_branch >>
     <<: *container_config
     resource_class: large
     <<: *environment
