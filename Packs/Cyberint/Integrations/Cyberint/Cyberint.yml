@@ -17,6 +17,11 @@ configuration:
   name: environment
   required: true
   type: 0
+- additionalinfo: Allow to duplicate the alert for each alert CSV file record.
+  display: Duplicate alerts for each alert CSV file record
+  name: duplicate_alert
+  required: false
+  type: 8
 - display: Fetch incidents
   name: isFetch
   required: false
