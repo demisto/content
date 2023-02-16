@@ -1,7 +1,7 @@
 {
   "trigger_id": "437fc412eafbec9c69d8af8322895b69",
   "playbook_id": "Ransomware Response",
-  "suggestion_reason": "Recommended for Alerts with evidence of MITRE technique “Impact”",
+  "suggestion_reason": "Recommended for Alerts triggered by the Anti Ransomware module",
   "description": "This trigger is responsible for handling ransomware alerts",
   "trigger_name": "Ransomware Response",
   "alerts_filter": {
