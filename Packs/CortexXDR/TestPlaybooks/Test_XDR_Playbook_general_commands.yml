@@ -2350,7 +2350,7 @@ tasks:
     task:
       id: 827315c2-df7b-4557-8da5-3d4d7d3d50a2
       version: -1
-      name: Save the original alias in context
+      name: Save the original alias name in context
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
