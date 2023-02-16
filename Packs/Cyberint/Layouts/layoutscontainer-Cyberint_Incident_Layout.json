@@ -593,7 +593,7 @@
 				"sections": [
 					{
 						"displayType": "CARD",
-						"h": 6,
+						"h": 4,
 						"hideName": false,
 						"i": "caseinfoid-gyt4oyoflh-caseinfoid-gyt4oyoflh-26cdff80-7c04-11eb-be8b-1b6b5950a0fc",
 						"items": [
@@ -835,7 +835,7 @@
 							{
 								"endCol": 2,
 								"fieldId": "cyberintclosurereason",
-								"height": 22,
+								"height": 53,
 								"id": "03646ae0-7c07-11eb-be8b-1b6b5950a0fc",
 								"index": 0,
 								"sectionItemType": "field",
@@ -848,8 +848,8 @@
 						"name": "CyberInt Closing Information",
 						"static": false,
 						"w": 1,
-						"x": 2,
-						"y": 0
+						"x": 0,
+						"y": 4
 					},
 					{
 						"displayType": "ROW",
@@ -877,7 +877,7 @@
 						"static": false,
 						"w": 1,
 						"x": 2,
-						"y": 4
+						"y": 2
 					},
 					{
 						"columns": [
@@ -976,7 +976,7 @@
 						"type": "",
 						"w": 1,
 						"x": 2,
-						"y": 2
+						"y": 0
 					},
 					{
 						"displayType": "ROW",
@@ -1016,11 +1016,64 @@
 								"startCol": 0
 							},
 							{
-								"endCol": 2,
-								"fieldId": "cyberintcsv",
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "cyberintpaymentcardexposedcsv",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cyberinttype"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "compromised_payment_cards"
+												}
+											},
+											"type": "shortText"
+										}
+									]
+								],
 								"height": 106,
-								"id": "973f0590-94d8-11ed-a678-c5e41553944a",
+								"id": "a4e76c80-ad12-11ed-a203-f9de85706091",
 								"index": 1,
+								"listId": "caseinfoid-gyt4oyoflh-caseinfoid-b5735270-94c7-11ed-9fde-6de9b07fd0d7",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 4,
+								"fieldId": "cyberintcredentialsexposedcsv",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cyberinttype"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "compromised_customer_credentials"
+												}
+											},
+											"type": "shortText"
+										}
+									]
+								],
+								"height": 106,
+								"id": "c86fcc60-ad12-11ed-a203-f9de85706091",
+								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -1030,7 +1083,7 @@
 						"moved": false,
 						"name": "CSV Details",
 						"static": false,
-						"w": 1,
+						"w": 2,
 						"x": 1,
 						"y": 4
 					}
@@ -1065,7 +1118,7 @@
 		]
 	},
 	"edit": null,
-	"fromServerVersion": "0.0.0",
+	"fromServerVersion": "6.0.0",
 	"group": "incident",
 	"id": "b094831f-4dc5-495c-8b9e-9be7b0c2723b",
 	"indicatorsDetails": null,
@@ -1080,6 +1133,5 @@
 	"quickViewV2": null,
 	"system": false,
 	"toServerVersion": "99.99.99",
-	"version": -1,
-	"fromVersion": "6.0.0"
+	"version": -1
 }
