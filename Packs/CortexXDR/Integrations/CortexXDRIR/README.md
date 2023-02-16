@@ -41,7 +41,8 @@ You need to collect several pieces of information in order to configure the inte
 5. From the ID column, copy the Key ID.
 
 *Note*: When Configuring a role for the API Key's permission you can create a custom role or use a builtin.
-The recommended role is Instance Admin. The 
+The recommended role is `Instance Admin`. 
+For role with less permission but maximum command running, use `Privileged Responder`.  
 
 #### URL
 1. In your Cortex XDR platform, go to **Settings**.
