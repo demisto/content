@@ -86,8 +86,7 @@ validate-content-conf:
   extends:
     - .default-job-settings
   rules:
-    - if: '$CI_COMMIT_BRANCH =~ /^demisto\/([^n]|n($|[^i]|i($|[^g]|g($|[^h]))))[^\/]*$/'
-      when: never
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
   script:
     - section_start "Validate content-test-conf Branch Merged"
