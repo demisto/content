@@ -15,6 +15,7 @@ alter
     xdm.alert.subcategory = arraystring(arraymap (json_extract_array (threatsInfoMap,"$."), json_extract_scalar ("@element", "$.threatType")), ","),
     xdm.source.host.ipv4_addresses = arraycreate(clickIP)
     // Parse message messageTime
+    | alter messageTime = to_string(messageTime)
     | alter messageTime = replex(messageTime, "th", "")
     | alter messageTime = replex(messageTime, "nd", "")
     | alter messageTime = replex(messageTime, "st", "")
