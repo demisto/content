@@ -1,0 +1,2560 @@
+id: PrismaSASE Test
+version: -1
+name: PrismaSASE Test
+description: Test playbook for Prisma SASE integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 93248e08-159e-4fbb-858b-3477513eaa7f
+    type: start
+    task:
+      id: 93248e08-159e-4fbb-858b-3477513eaa7f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "51"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: dc1743d8-bb04-4680-8e9e-931cae841199
+    type: regular
+    task:
+      id: dc1743d8-bb04-4680-8e9e-931cae841199
+      version: -1
+      name: prisma-sase-security-rule-create
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-security-rule-create
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      action:
+        simple: allow
+      name:
+        simple: test-playbook3
+      position:
+        simple: pre
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 823e3add-e8c4-4134-8988-a52a78dbc426
+    type: condition
+    task:
+      id: 823e3add-e8c4-4134-8988-a52a78dbc426
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.application
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.destination
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.from
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.position
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.service
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.source_user
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.to
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 56b64ac9-66a7-435e-8ca5-322f3631ab2d
+    type: regular
+    task:
+      id: 56b64ac9-66a7-435e-8ca5-322f3631ab2d
+      version: -1
+      name: prisma-sase-security-rule-list
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-security-rule-list
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      folder:
+        simple: Shared
+      position:
+        simple: pre
+      rule_id:
+        simple: ${PrismaSase.SecurityRule.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 242d5bc7-73f1-45ec-80f0-e6c429cd6619
+    type: condition
+    task:
+      id: 242d5bc7-73f1-45ec-80f0-e6c429cd6619
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.action
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.application
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.destination
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.from
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.position
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.service
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.source_user
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.to
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: f17ac3ca-9378-470f-8d0d-8ded2c898814
+    type: regular
+    task:
+      id: f17ac3ca-9378-470f-8d0d-8ded2c898814
+      version: -1
+      name: prisma-sase-candidate-config-push
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-candidate-config-push
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      folders:
+        simple: Remote Networks
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 29174e7c-2122-4771-8d53-f4786c187356
+    type: regular
+    task:
+      id: 29174e7c-2122-4771-8d53-f4786c187356
+      version: -1
+      name: prisma-sase-security-rule-update
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-security-rule-update
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      position:
+        simple: pre
+      rule_id:
+        simple: ${PrismaSase.SecurityRule.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: d5f132ad-16e4-4131-8108-f6e499dff0b3
+    type: condition
+    task:
+      id: d5f132ad-16e4-4131-8108-f6e499dff0b3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.application
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.destination
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.from
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.service
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.source_user
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.SecurityRule.to
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: d43f02db-d1d1-4310-8b3e-218dab24a401
+    type: regular
+    task:
+      id: d43f02db-d1d1-4310-8b3e-218dab24a401
+      version: -1
+      name: prisma-sase-address-object-update
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-address-object-update
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      address_value:
+        simple: 8.8.8.4/32
+      folder:
+        simple: Shared
+      object_id:
+        simple: ${PrismaSase.Address.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: f93f18a7-092b-4c15-8f96-457300cb1e46
+    type: condition
+    task:
+      id: f93f18a7-092b-4c15-8f96-457300cb1e46
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Address.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Address.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Address.name
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PrismaSase.Address.address_value
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.4/32
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PrismaSase.Address.type
+            iscontext: true
+          right:
+            value:
+              simple: ip_netmask
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 06aa0137-4dba-4362-8fe5-a2a79aadbb96
+    type: regular
+    task:
+      id: 06aa0137-4dba-4362-8fe5-a2a79aadbb96
+      version: -1
+      name: prisma-sase-config-job-list
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-config-job-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 4b52058e-6cb8-44bd-8e7e-c55e65b30d7a
+    type: condition
+    task:
+      id: 4b52058e-6cb8-44bd-8e7e-c55e65b30d7a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "63"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.ConfigJob.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 94a7c5d7-f722-4413-8538-288d858764e2
+    type: regular
+    task:
+      id: 94a7c5d7-f722-4413-8538-288d858764e2
+      version: -1
+      name: prisma-sase-security-rule-delete
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-security-rule-delete
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      rule_id:
+        simple: ${PrismaSase.SecurityRule.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: e5f4d223-3b63-431c-8369-89631a6b8a3a
+    type: regular
+    task:
+      id: e5f4d223-3b63-431c-8369-89631a6b8a3a
+      version: -1
+      name: prisma-sase-address-object-create
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-address-object-create
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      address_value:
+        simple: 8.8.8.8/32
+      folder:
+        simple: Shared
+      name:
+        simple: test-playbook11
+      type:
+        simple: ip_netmask
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: c590b019-7c3a-4bdf-8da3-ae21572d9539
+    type: condition
+    task:
+      id: c590b019-7c3a-4bdf-8da3-ae21572d9539
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Address.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Address.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Address.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Address.address_value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Address.type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 704ba4ad-f695-407c-888a-b53e7365b39e
+    type: regular
+    task:
+      id: 704ba4ad-f695-407c-888a-b53e7365b39e
+      version: -1
+      name: prisma-sase-address-object-delete
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-address-object-delete
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      object_id:
+        simple: ${PrismaSase.Address.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 5f259292-4f86-44be-8477-58bfed2a7dd5
+    type: regular
+    task:
+      id: 5f259292-4f86-44be-8477-58bfed2a7dd5
+      version: -1
+      name: prisma-sase-address-object-list
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-address-object-list
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      object_id:
+        simple: ${PrismaSase.Address.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 62f33a34-f3b2-42e8-8126-c4671923b8a2
+    type: condition
+    task:
+      id: 62f33a34-f3b2-42e8-8126-c4671923b8a2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Address.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Address.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Address.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Address.address_value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Address.type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: acbca9cf-9ffd-4f37-8ee3-d845f70c84e8
+    type: regular
+    task:
+      id: acbca9cf-9ffd-4f37-8ee3-d845f70c84e8
+      version: -1
+      name: prisma-sase-tag-list
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-tag-list
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      tag_id:
+        simple: ${PrismaSase.Tag.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: ec66ab7a-68b4-430f-82ef-e2f2f6783677
+    type: condition
+    task:
+      id: ec66ab7a-68b4-430f-82ef-e2f2f6783677
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Tag.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Tag.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Tag.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Tag.color
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 2703adff-b2e7-46ea-8a3f-5b3073d8d291
+    type: regular
+    task:
+      id: 2703adff-b2e7-46ea-8a3f-5b3073d8d291
+      version: -1
+      name: prisma-sase-tag-create
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-tag-create
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      color:
+        simple: Green
+      folder:
+        simple: Shared
+      name:
+        simple: test-playbook
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 4a0447da-bcc1-4881-84e0-9a6c8bc801ca
+    type: condition
+    task:
+      id: 4a0447da-bcc1-4881-84e0-9a6c8bc801ca
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Tag.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Tag.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Tag.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Tag.color
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: a079b8b2-c948-4a66-8e0a-d8f8d077b5b3
+    type: regular
+    task:
+      id: a079b8b2-c948-4a66-8e0a-d8f8d077b5b3
+      version: -1
+      name: prisma-sase-tag-update
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-tag-update
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      color:
+        simple: Blue
+      tag_id:
+        simple: ${PrismaSase.Tag.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 07b3dcaf-5b44-4396-88fb-2f16b7213267
+    type: condition
+    task:
+      id: 07b3dcaf-5b44-4396-88fb-2f16b7213267
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Tag.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Tag.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.Tag.folder
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PrismaSase.Tag.color
+            iscontext: true
+          right:
+            value:
+              simple: Blue
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: a7436a41-bf04-4a7c-81f4-b8d912561254
+    type: regular
+    task:
+      id: a7436a41-bf04-4a7c-81f4-b8d912561254
+      version: -1
+      name: prisma-sase-tag-delete
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-tag-delete
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      tag_id:
+        simple: ${PrismaSase.Tag.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8035
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: dc3900c8-f574-409a-8ef1-d4b0942be5ef
+    type: regular
+    task:
+      id: dc3900c8-f574-409a-8ef1-d4b0942be5ef
+      version: -1
+      name: prisma-sase-address-group-list
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-address-group-list
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      folder:
+        simple: Shared
+      group_id:
+        simple: ${PrismaSase.AddressGroup.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 6cd79b49-9448-4194-87ae-a6fceb4232c3
+    type: condition
+    task:
+      id: 6cd79b49-9448-4194-87ae-a6fceb4232c3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.AddressGroup.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.AddressGroup.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.AddressGroup.addresses
+            iscontext: true
+      - - operator: isEmpty
+          left:
+            value:
+              simple: PrismaSase.AddressGroup.dynamic_filter
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 01a5196e-0059-4a41-824b-9569d4c2c456
+    type: regular
+    task:
+      id: 01a5196e-0059-4a41-824b-9569d4c2c456
+      version: -1
+      name: prisma-sase-address-group-create
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-address-group-create
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      folder:
+        simple: Shared
+      name:
+        simple: test_playbook
+      static_addresses:
+        simple: ${PrismaSase.Address.name}
+      type:
+        simple: static
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: d9570684-9839-427e-8650-40076254f35b
+    type: condition
+    task:
+      id: d9570684-9839-427e-8650-40076254f35b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.AddressGroup.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.AddressGroup.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.AddressGroup.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.AddressGroup.addresses
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: ce678097-d935-4edf-848b-b8fda83ef313
+    type: regular
+    task:
+      id: ce678097-d935-4edf-848b-b8fda83ef313
+      version: -1
+      name: prisma-sase-address-group-update
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-address-group-update
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      description:
+        simple: Test playbook description
+      folder:
+        simple: Shared
+      group_id:
+        simple: ${PrismaSase.AddressGroup.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 1979f15a-1674-4e5b-8957-f102e8d8b317
+    type: condition
+    task:
+      id: 1979f15a-1674-4e5b-8957-f102e8d8b317
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.AddressGroup.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.AddressGroup.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.AddressGroup.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.AddressGroup.addresses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.AddressGroup.description
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 82140cce-4aa6-478e-85a2-87b16e226637
+    type: regular
+    task:
+      id: 82140cce-4aa6-478e-85a2-87b16e226637
+      version: -1
+      name: prisma-sase-address-group-delete
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-address-group-delete
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      group_id:
+        simple: ${PrismaSase.AddressGroup.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 153cbd09-0776-4ac8-8741-fc9eb39b3111
+    type: regular
+    task:
+      id: 153cbd09-0776-4ac8-8741-fc9eb39b3111
+      version: -1
+      name: prisma-sase-custom-url-category-list
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-custom-url-category-list
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      id:
+        simple: ${PrismaSase.CustomURLCategory.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 710f6f24-ece4-426a-8c89-8617de84f9d3
+    type: condition
+    task:
+      id: 710f6f24-ece4-426a-8c89-8617de84f9d3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.CustomURLCategory.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.CustomURLCategory.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.CustomURLCategory.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.CustomURLCategory.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.CustomURLCategory.list
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 14419343-d7fc-404d-8106-9ce4ac233f39
+    type: regular
+    task:
+      id: 14419343-d7fc-404d-8106-9ce4ac233f39
+      version: -1
+      name: prisma-sase-custom-url-category-create
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-custom-url-category-create
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      folder:
+        simple: Shared
+      name:
+        simple: test_playbook
+      type:
+        simple: Category Match
+      value:
+        simple: low-risk
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 4e601277-4c0b-479d-81c4-065d8ff4b422
+    type: condition
+    task:
+      id: 4e601277-4c0b-479d-81c4-065d8ff4b422
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.CustomURLCategory.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.CustomURLCategory.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.CustomURLCategory.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.CustomURLCategory.list
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: e8cbf5f2-7ec0-4a4b-84e8-e6788c7f6bf4
+    type: regular
+    task:
+      id: e8cbf5f2-7ec0-4a4b-84e8-e6788c7f6bf4
+      version: -1
+      name: prisma-sase-custom-url-category-update
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-custom-url-category-update
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      id:
+        simple: ${PrismaSase.CustomURLCategory.id}
+      value:
+        simple: high-risk
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 8510535c-5465-4bc5-8b08-ec8e5acc26ad
+    type: condition
+    task:
+      id: 8510535c-5465-4bc5-8b08-ec8e5acc26ad
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.CustomURLCategory.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.CustomURLCategory.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.CustomURLCategory.type
+            iscontext: true
+      - - operator: hasLength
+          left:
+            value:
+              simple: PrismaSase.CustomURLCategory.list
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 1b6e67de-efb8-4366-898e-f9d972a04fe6
+    type: regular
+    task:
+      id: 1b6e67de-efb8-4366-898e-f9d972a04fe6
+      version: -1
+      name: prisma-sase-custom-url-category-delete
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-custom-url-category-delete
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      id:
+        simple: ${PrismaSase.CustomURLCategory.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 97995d38-0f13-41b3-88f9-faba15ce3c49
+    type: regular
+    task:
+      id: 97995d38-0f13-41b3-88f9-faba15ce3c49
+      version: -1
+      name: prisma-sase-external-dynamic-list-list
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-external-dynamic-list-list
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      id:
+        simple: ${PrismaSase.ExternalDynamicList.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 260ea658-adcb-462d-8175-c581bf96ea9b
+    type: condition
+    task:
+      id: 260ea658-adcb-462d-8175-c581bf96ea9b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.ExternalDynamicList.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.ExternalDynamicList.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.ExternalDynamicList.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.ExternalDynamicList.source
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 11ac61e3-80b6-4fa1-8d7b-fe971ea12f03
+    type: regular
+    task:
+      id: 11ac61e3-80b6-4fa1-8d7b-fe971ea12f03
+      version: -1
+      name: prisma-sase-external-dynamic-list-create predefined
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-external-dynamic-list-create
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      name:
+        simple: test_playbook
+      predefined_ip_list:
+        simple: panw-known-ip-list
+      type:
+        simple: predefined_ip
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: bfccbded-5f6b-485d-821b-7cb7dc18ffbf
+    type: condition
+    task:
+      id: bfccbded-5f6b-485d-821b-7cb7dc18ffbf
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.ExternalDynamicList.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.ExternalDynamicList.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.ExternalDynamicList.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.ExternalDynamicList.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.ExternalDynamicList.type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: d607d6c2-a725-42b8-8537-754f26a0a280
+    type: regular
+    task:
+      id: d607d6c2-a725-42b8-8537-754f26a0a280
+      version: -1
+      name: prisma-sase-external-dynamic-list-update
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-external-dynamic-list-update
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      folder:
+        simple: Shared
+      id:
+        simple: ${PrismaSase.ExternalDynamicList.id}
+      predefined_ip_list:
+        simple: panw-bulletproof-ip-list
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 237790fe-2819-4725-8c4e-19b24703cd5c
+    type: condition
+    task:
+      id: 237790fe-2819-4725-8c4e-19b24703cd5c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.ExternalDynamicList.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.ExternalDynamicList.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.ExternalDynamicList.folder
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PrismaSase.ExternalDynamicList.source
+            iscontext: true
+          right:
+            value:
+              simple: panw-bulletproof-ip-list
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 6c2d07a9-c965-4565-80b7-2f657b22c797
+    type: regular
+    task:
+      id: 6c2d07a9-c965-4565-80b7-2f657b22c797
+      version: -1
+      name: prisma-sase-external-dynamic-list-delete
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-external-dynamic-list-delete
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks - Prisma SASE
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      id:
+        simple: ${PrismaSase.ExternalDynamicList.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 53274076-7bbd-44d1-883a-47ed007859c7
+    type: title
+    task:
+      id: 53274076-7bbd-44d1-883a-47ed007859c7
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 6d4ed277-448c-44fe-8f29-d11ecffa938a
+    type: title
+    task:
+      id: 6d4ed277-448c-44fe-8f29-d11ecffa938a
+      version: -1
+      name: Security Rules
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: c5462050-8a12-4d53-8412-9378e6cdba9b
+    type: title
+    task:
+      id: c5462050-8a12-4d53-8412-9378e6cdba9b
+      version: -1
+      name: Address Objects
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "52"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: e5f93cce-fdc0-4dce-8af4-f20a31f18a48
+    type: regular
+    task:
+      id: e5f93cce-fdc0-4dce-8af4-f20a31f18a48
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: e3518f28-84bf-4f2f-8e5c-25dc9434f98a
+    type: title
+    task:
+      id: e3518f28-84bf-4f2f-8e5c-25dc9434f98a
+      version: -1
+      name: Tags
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: c2955b87-bcc5-4e81-8b95-fba8b3545d1e
+    type: title
+    task:
+      id: c2955b87-bcc5-4e81-8b95-fba8b3545d1e
+      version: -1
+      name: Address Groups
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 956aec02-ae12-4622-83c2-15610730bc43
+    type: title
+    task:
+      id: 956aec02-ae12-4622-83c2-15610730bc43
+      version: -1
+      name: Custom URL Categories
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 3aceec1b-1614-4fe8-81d5-cb2bb9386951
+    type: title
+    task:
+      id: 3aceec1b-1614-4fe8-81d5-cb2bb9386951
+      version: -1
+      name: External Dynamic Lists
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 0ab8874e-1637-4614-829d-29cf2d0c66f2
+    type: title
+    task:
+      id: 0ab8874e-1637-4614-829d-29cf2d0c66f2
+      version: -1
+      name: Delete all objects
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: c30d91ff-6b00-43b6-8346-d8e5a98ef651
+    type: title
+    task:
+      id: c30d91ff-6b00-43b6-8346-d8e5a98ef651
+      version: -1
+      name: Config Job List
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: fdcd4a31-6df0-459f-808e-bc3f27037deb
+    type: title
+    task:
+      id: fdcd4a31-6df0-459f-808e-bc3f27037deb
+      version: -1
+      name: Push Config - Polling
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 7a9adde4-e344-44a8-8616-e43a30dfb5df
+    type: condition
+    task:
+      id: 7a9adde4-e344-44a8-8616-e43a30dfb5df
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.CandidateConfig.result
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.CandidateConfig.job_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 9740,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0
