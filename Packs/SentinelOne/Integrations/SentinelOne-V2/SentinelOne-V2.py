@@ -3149,7 +3149,7 @@ def main():
 
                 return_results(fetch_handler(client, fetch_dict))
             else:
-                raise DemistoException('Please definde what type to fetch. Alerts or Threats.')
+                raise DemistoException('Please define what type to fetch. Alerts or Threats.')
 
         else:
             if command in commands['common']:
