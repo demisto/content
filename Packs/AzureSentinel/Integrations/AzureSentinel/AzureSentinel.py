@@ -47,7 +47,8 @@ THREAT_INDICATORS_HEADERS = ['Name', 'DisplayName', 'Values', 'Types', 'Source',
 
 ALERT_RULES_HEADERS = ['Id', 'Kind', 'Severity', 'Display Name', 'Description', 'Enabled']
 
-ALERT_RULES_TEMPLATES_HEADERS = ['Id', 'Kind', 'Severity', 'Display Name', 'Description', 'Status', 'Created Date UTC', 'Last Updated Date UTC', 'Alert Rules Created By Template Count']
+ALERT_RULES_TEMPLATES_HEADERS = ['Id', 'Kind', 'Severity', 'Display Name', 'Description', 'Status', 'Created Date UTC',
+                                 'Last Updated Date UTC', 'Alert Rules Created By Template Count']
 
 # =========== Mirroring Mechanism Globals ===========
 
