@@ -206,7 +206,8 @@ references:
         dockerimageflag:
           type: string
       name: Run Unit Testing And Lint - Docker Image:<< parameters.dockerimageflag >>
-      when: always
+      when:
+        condition: << pipeline.parameters.contrib_branch >>
       no_output_timeout: 5h
       command: |
         if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
@@ -358,7 +359,8 @@ jobs:
             fi
       - run:
           name: Validate landingPageSections.json
-          when: always
+          when:
+            condition: << pipeline.parameters.contrib_branch >>
           command: |
             # Download index.zip
             INDEX_PATH=$(mktemp)
