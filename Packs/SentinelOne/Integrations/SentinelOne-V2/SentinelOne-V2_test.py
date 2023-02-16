@@ -495,6 +495,14 @@ def test_get_events(mocker, requests_mock):
 
 
 def test_run_remote_script(mocker, requests_mock):
+    """
+    Given
+        - required arguments i.e account_id, script_id, output_description, task_description, agent_ids and output_directory
+    When
+        - running sentinelone-run-remote-script command
+    Then
+        - returns a table of result had the affected process details
+    """
     requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/remote-scripts/execute",
                        json={"data": {"affected": 1}})
     mocker.patch.object(demisto, 'params', return_value={'token': 'token',
@@ -555,3 +563,100 @@ def test_get_installed_applications(mocker, requests_mock):
     call = sentinelone_v2.return_results.call_args_list
     command_results = call[0].args[0]
     assert command_results.outputs == [{'InstalledOn': '2023-02-10', 'Name': 'test', 'Publisher': 'abc', 'Size': 50, 'Version': '2.1'}] # noqa
+
+
+def test_get_remote_data_command(mocker, requests_mock):
+    """
+    Given
+        - an incident ID on the remote system
+    When
+        - running get_remote_data_command with changes to make on an incident
+    Then
+        - returns the relevant incident entity from the remote system with the relevant incoming mirroring fields
+    """
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/threats",
+                      json={"data": [{"name": "test", "id": "123456"}]})
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='get-remote-data')
+    mocker.patch.object(demisto, 'args', return_value={
+        'id': '123456', 'lastUpdate': '321456'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = vars(call[0].args[0])
+    assert command_results == {'mirrored_object': {'name': 'test', 'id': '123456', 'incident_type': 'incident'}, 'entries': None}
+
+
+def test_get_modified_remote_data_command(mocker, requests_mock):
+    """
+    Given
+        - arguments - lastUpdate time
+        - raw incidents (results of get_incidents_ids and get_fetch_detections)
+    When
+        - running get_modified_remote_data_command
+    Then
+        - returns a list of incidents and detections IDs that were modified since the lastUpdate time
+    """
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/threats",
+                      json={"data": [{"name": "test", "id": "123456"}]})
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='get-modified-remote-data')
+    mocker.patch.object(demisto, 'args', return_value={
+        'id': '123456', 'lastUpdate': '2023-02-16 09:35:40.020660+00:00'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = vars(call[0].args[0])
+    assert command_results == {'modified_incident_ids': ['123456']}
+
+
+def test_update_remote_system_command(mocker, requests_mock):
+    """
+    Given
+        - incident changes (one of the mirroring field changed or it was closed in XSOAR)
+    When
+        - outgoing mirroring triggered by a change in the incident
+    Then
+        - the relevant incident is updated with the corresponding fields in the remote system
+        - the returned result corresponds to the incident ID
+    """
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/threats",
+                      json={"data": [{"name": "test", "id": "123456"}]})
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='update-remote-system')
+    mocker.patch.object(demisto, 'args', return_value={
+        'id': '123456'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results is None
+
+
+def test_get_mapping_fields_command():
+    """
+    Given
+        - nothing
+    When
+        - running get_mapping_fields_command
+    Then
+        - the result fits the expected mapping scheme
+    """
+    result = sentinelone_v2.get_mapping_fields_command()
+    assert result.scheme_types_mappings[0].type_name == 'SentinelOne Incident'
+    assert list(result.scheme_types_mappings[0].fields.keys()) == ['analystVerdict', 'incidentStatus']

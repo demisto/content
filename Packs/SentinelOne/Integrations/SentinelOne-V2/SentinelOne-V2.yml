@@ -103,6 +103,18 @@ configuration:
     - Incoming And Outgoing
     required: false
     type: 15
+  - additionalinfo: When selected, closing the SentinelOne ticket is mirrored in Cortex XSOAR.
+    defaultvalue: 'false'
+    display: Close Mirrored XSOAR Incident
+    name: close_xsoar_incident
+    required: false
+    type: 8
+  - additionalinfo: When selected, closing the XSOAR incident is mirrored in SentinelOne.
+    defaultvalue: 'false'
+    display: Close Mirrored SentinelOne Incident
+    name: close_sentinelone_incident
+    required: false
+    type: 8
 description: Use the SentinelOne integration to send requests to your management
   server and get responses with data pulled from agents or from the management
   database.
@@ -2354,6 +2366,9 @@ script:
     - arguments: []
       description: Returns the list of fields for an incident type.
       name: get-mapping-fields
+    - arguments: []
+      description: pushes local changes to the remote system.
+      name: update-remote-system
     - arguments:
       - description: The ticket ID.
         name: id
@@ -2373,7 +2388,7 @@ script:
         command is used as part of a Mirroring feature, which is available from version
         6.1.
       name: get-modified-remote-data 
-  dockerimage: demisto/python3:3.10.10.47713
+  dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
   ismappable: true
   isremotesyncin: true

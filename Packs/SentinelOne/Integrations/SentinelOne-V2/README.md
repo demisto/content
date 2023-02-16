@@ -40,7 +40,7 @@ To setup the mirroring follow these instructions:
     - Incoming And Outgoing - Changes in XSOAR incidents and SentinelOne incidents  will be reflected in both directions.
     - None - Turns off incident mirroring.
 
-Newly fetched incidents  will be mirrored in the chosen direction.  However, this selection does not affect existing incidents.
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 
 **Important Notes**
  - To ensure the mirroring works as expected, `mappers` and `Incident type` are required, both for incoming and outgoing, to map the expected fields in XSOAR and SentinelOne.

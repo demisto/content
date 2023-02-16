@@ -6,7 +6,7 @@
     "name": "SentinelOne Incident",
     "prevName": "SentinelOne Incident",
     "color": "#295AFF",
-    "playbookId": "Mirror SentinelOne Ticket",
+    "playbookId": "playbook0",
     "hours": 0,
     "days": 0,
     "weeks": 0,

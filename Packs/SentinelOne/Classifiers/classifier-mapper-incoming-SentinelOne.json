@@ -21,7 +21,7 @@
 					"simple": "mirror_direction"
 				},
 				"dbotMirrorId": {
-					"simple": "mirror_id"
+					"simple": "id"
 				},
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"

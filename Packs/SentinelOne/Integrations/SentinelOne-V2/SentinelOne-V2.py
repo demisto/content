@@ -246,8 +246,8 @@ class Client(BaseClient):
         return response.get('data', {})
 
     def get_threats_request(self, content_hash=None, mitigation_status=None, created_before=None, created_after=None,
-                            created_until=None, created_from=None, resolved='false', display_name=None, query=None,
-                            threat_ids=None, limit=20, classifications=None, site_ids=None, rank=None,
+                            created_until=None, created_from=None, updated_from=None, resolved='false', display_name=None,
+                            query=None, threat_ids=None, limit=20, classifications=None, site_ids=None, rank=None,
                             include_resolved_param=True):
         keys_to_ignore = ['displayName__like' if IS_VERSION_2_1 else 'displayName']
 
@@ -258,6 +258,7 @@ class Client(BaseClient):
             createdAt__gt=created_after,
             createdAt__lte=created_until,
             createdAt__gte=created_from,
+            updatedAt__gte=updated_from,
             resolved=argToBoolean(resolved) if include_resolved_param else None,
             displayName__like=display_name,
             displayName=display_name,
@@ -286,11 +287,6 @@ class Client(BaseClient):
 
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
-
-    def get_threat_notes(self, threat_id):
-        endpoint_url = f"threats/{threat_id}/notes"
-        response = self._http_request(method="GET", url_suffix=endpoint_url)
-        return response.get("data", [])
 
     def mitigate_threat_request(self, threat_ids, action):
         endpoint_url = f'threats/mitigate/{action}'
@@ -861,13 +857,6 @@ class Client(BaseClient):
 
     def get_s1_threats_information(self, threat_ids):
         response = self._http_request(method="GET", url_suffix=f"threats?ids={threat_ids}")
-        return response.get("data", [])
-
-    def get_s1_threats_request(self, last_update):
-
-        params = assign_params(updatedAt__gte=last_update, limit=1000)
-        demisto.debug("last update value in api call", str(params))
-        response = self._http_request(method="GET", url_suffix="threats", params=params)
         return response.get("data", [])
 
     def run_remote_script_request(self,
@@ -2956,6 +2945,7 @@ def run_remote_script_command(client: Client, args: dict) -> CommandResults:
     """
 
     context = {}
+    headers = ["pendingExecutionId", "pending", "affected", "parentTaskId"]
     # Get arguments
     account_ids = argToList(args.get("account_ids"))
     script_id = args.get("script_id")
@@ -2976,7 +2966,7 @@ def run_remote_script_command(client: Client, args: dict) -> CommandResults:
         }
 
     return CommandResults(
-        readable_output=tableToMarkdown("Sentinel One - Run Remote Script", context, removeNull=True),
+        readable_output=tableToMarkdown("Sentinel One - Run Remote Script", context, headers=headers, removeNull=True),
         outputs_prefix="SentinelOne.RunRemoteScript",
         outputs=context,
         raw_response=run_remote_script)
@@ -3023,7 +3013,8 @@ def close_remote_incident(client: Client, threat_id: str, delta: dict) -> str:
     This method will close the remote incident
     """
     verdict = ANALYST_VERDICT.get(delta.get("sentinelonethreatanalystverdict", ""), None)
-    client.update_threat_analyst_verdict_request(threat_ids=argToList(threat_id), action=verdict)
+    if verdict:
+        client.update_threat_analyst_verdict_request(threat_ids=argToList(threat_id), action=verdict)
     response = client.update_threat_status_request(threat_ids=argToList(threat_id), status="resolved")
     if response.get("affected") and int(response.get("affected")) > 0:
         demisto.debug("Successfully updated the threat status and marked as resolved")
@@ -3067,7 +3058,8 @@ def update_remote_system_command(client: Client, args: dict) -> str:
     try:
         if parsed_args.incident_changed:
             if delta.get("closeNotes", None):
-                close_remote_incident(client, remote_incident_id, delta)
+                if demisto.params().get("close_sentinelone_incident"):
+                    close_remote_incident(client, remote_incident_id, delta)
             else:
                 update_remote_incident(client, remote_incident_id, delta)
     except Exception as e:
@@ -3080,18 +3072,19 @@ def update_remote_system_command(client: Client, args: dict) -> str:
 def set_xsoar_incident_entries(mirrored_object: dict, entries: list, remote_incident_id: str):
     demisto.debug("with in the set xsoar incident entries method")
     if mirrored_object.get("threatInfo", {}).get("incidentStatus") == "resolved":
-        demisto.debug(f"Incident is closed: {remote_incident_id}")
-        entries.append(
-            {
-                "Type": EntryType.NOTE,
-                "Contents": {
-                    "dbotIncidentClose": True,
-                    "closeReason": "Incident was closed on SentinelOne",
-                },
-                "ContentsFormat": EntryFormat.JSON,
-            }
-        )
-        return entries
+        if demisto.params().get("close_xsoar_incident"):
+            demisto.debug(f"Incident is closed: {remote_incident_id}")
+            entries.append(
+                {
+                    "Type": EntryType.NOTE,
+                    "Contents": {
+                        "dbotIncidentClose": True,
+                        "closeReason": "Incident was closed on SentinelOne",
+                    },
+                    "ContentsFormat": EntryFormat.JSON,
+                }
+            )
+            return entries
     elif mirrored_object.get("threatInfo", {}).get("incidentStatus") in (
         set(INCIDENT_STATUS) - {"resolved"}
     ):
@@ -3144,12 +3137,10 @@ def get_remote_data_command(client: Client, args: dict):
             f"and last_update: {remote_args.last_update}"
         )
         mirrored_data = get_remote_incident_data(client, remote_incident_id)
-        demisto.debug(f"mirrored object in get-remote-data {mirrored_data}")
         if mirrored_data:
-            demisto.debug(f"Update incident {remote_incident_id} with fields: {mirrored_data}")
-            entries = set_xsoar_incident_entries(mirrored_data, entries, remote_incident_id)  # sets in place
+            entries = set_xsoar_incident_entries(mirrored_data, entries, remote_incident_id)
         if not mirrored_data:
-            demisto.debug(f"No delta was found for detection {remote_incident_id}.")
+            demisto.debug(f"No delta was found for incident {remote_incident_id}.")
 
         return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=entries)
 
@@ -3187,8 +3178,7 @@ def get_modified_remote_data_command(client: Client, args: dict):
     demisto.debug(f"Remote arguments last_update in UTC is {last_update_utc}")
     modified_ids_to_mirror = list()
     last_update_utc = last_update_utc.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-    demisto.debug(f"last_update?_utc value= {last_update_utc} and typo {type(last_update_utc)}")
-    raw_threats = client.get_s1_threats_request(last_update=last_update_utc)
+    raw_threats = client.get_threats_request(updated_from=last_update_utc, limit=1000, include_resolved_param=False)
 
     for threat in raw_threats:
         modified_ids_to_mirror.append(threat.get("id"))
@@ -3198,11 +3188,10 @@ def get_modified_remote_data_command(client: Client, args: dict):
     return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
 
 
-def get_mirroring():
+def get_mirroring_fields(params):
     """
     Get tickets mirroring.
     """
-    params = demisto.params()
 
     return {
         "mirror_direction": MIRROR_DIRECTION.get(params.get("mirror_direction")),
@@ -3210,7 +3199,8 @@ def get_mirroring():
     }
 
 
-def fetch_incidents(client: Client, fetch_limit: int, first_fetch: str, fetch_threat_rank: int, fetch_site_ids: str):
+def fetch_incidents(client: Client, params: dict, fetch_limit: int, first_fetch: str,
+                    fetch_threat_rank: int, fetch_site_ids: str):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
 
@@ -3228,7 +3218,7 @@ def fetch_incidents(client: Client, fetch_limit: int, first_fetch: str, fetch_th
     threats = client.get_threats_request(limit=fetch_limit, created_after=last_fetch_date_string, site_ids=fetch_site_ids)
     for threat in threats:
         rank = threat.get('rank')
-        threat.update(get_mirroring())
+        threat.update(get_mirroring_fields(params))
         try:
             rank = int(rank)
         except TypeError:
@@ -3377,7 +3367,7 @@ def main():
         if command == 'test-module':
             return_results(test_module(client, params.get('isFetch'), first_fetch_time))
         if command == 'fetch-incidents':
-            fetch_incidents(client, fetch_limit, first_fetch_time, fetch_threat_rank, fetch_site_ids)
+            fetch_incidents(client, params, fetch_limit, first_fetch_time, fetch_threat_rank, fetch_site_ids)
 
         else:
             if command in commands['common']:
