@@ -160,7 +160,7 @@ script:
       description: The ip set lock token.
       type: String
     - contextPath: AWS.Waf.IpSet.ARN
-      description: The ip set ARN.
+      description: The ip set Amazon Resource Name.
       type: String
   - arguments:
     - name: name
@@ -219,7 +219,7 @@ script:
       description: The ip set ip addresses.
       type: String
     - contextPath: AWS.Waf.IpSet.ARN
-      description: The ip set ARN.
+      description: The ip set Amazon Resource Name.
       type: String
   - arguments:
     - name: name
@@ -328,7 +328,7 @@ script:
       description: The ip set lock token.
       type: String
     - contextPath: AWS.Waf.IpSet.IPSets.ARN
-      description: The ip set ARN.
+      description: The ip set Amazon Resource Name.
     - contextPath: AWS.Waf.IpSet.NextMarker
       description: The token for the next page.
       type: String
@@ -434,7 +434,7 @@ script:
       description: The regex set lock token.
       type: String
     - contextPath: AWS.Waf.RegexSet.ARN
-      description: The regex set ARN.
+      description: The regex set Amazon Resource Name.
       type: String
   - arguments:
     - name: name
@@ -490,7 +490,7 @@ script:
       description: The regex set patterns list.
       type: String
     - contextPath: AWS.Waf.RegexSet.ARN
-      description: The regex set ARN.
+      description: The regex set Amazon Resource Name.
       type: String
   - arguments:
     - name: name
@@ -546,8 +546,6 @@ script:
     description: Update a regex set.
     execution: false
     name: aws-waf-regex-set-update
-
-
   - arguments:
     - name: scope
       description: The regex set scope.
@@ -601,7 +599,7 @@ script:
       description: The regex set lock token.
       type: String
     - contextPath: AWS.Waf.RegexSet.RegexPatternSets.ARN
-      description: The regex set ARN.
+      description: The regex set Amazon Resource Name.
     - contextPath: AWS.Waf.RegexSet.NextMarker
       description: The token for the next page.
       type: String
@@ -645,7 +643,160 @@ script:
     description: Delete a specific regex set.
     execution: false
     name: aws-waf-regex-set-delete
+  - arguments:
+    - name: scope
+      description: The rule group scope.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "CLOUDFRONT"
+      - "REGIONAL"
+    - name: next_token
+      description: The token for the next page.
+    - name: limit
+      defaultValue: '50'
+      description: The maximum number of results to return.
+    - name: region
+      description: The AWS Region. If not specified the default region will be used.
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+        - us-gov-east-1
+        - us-gov-west-1
+    deprecated: false
+    description: Lists rule groups.
+    execution: false
+    name: aws-waf-rule-group-list
+    outputs:
+    - contextPath: AWS.Waf.RuleGroup.Id
+      description: The rule group ID.
+      type: String
+    - contextPath: AWS.Waf.RuleGroup.RuleGroups.Name
+      description: The rule group name.
+      type: String
+    - contextPath: AWS.Waf.RuleGroup.RuleGroups.Description
+      description: The rule group description.
+      type: String
+    - contextPath: AWS.Waf.RuleGroup.RuleGroups.LockToken
+      description: The rule group lock token.
+      type: String
+    - contextPath: AWS.Waf.RuleGroup.RuleGroups.ARN
+      description: The rule group Amazon Resource Name.
+    - contextPath: AWS.Waf.RuleGroup.NextMarker
+      description: The token for the next page.
+      type: String
 
+  - arguments:
+    - name: name
+      description: The rule group name.
+      required: true
+    - name: scope
+      description: The rule group scope.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "CLOUDFRONT"
+      - "REGIONAL"
+    - name: id
+      description: The rule group ID.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified the default region will be used.
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+        - us-gov-east-1
+        - us-gov-west-1
+    deprecated: false
+    description: Get a specific rule group.
+    execution: false
+    name: aws-waf-rule-group-get
+    outputs:
+    - contextPath: AWS.Waf.RuleGroup.Id
+      description: The rule group ID.
+      type: String
+    - contextPath: AWS.Waf.RuleGroup.Name
+      description: The rule group name.
+      type: String
+    - contextPath: AWS.Waf.RuleGroup.Description
+      description: The rule group description.
+      type: String
+    - contextPath: AWS.Waf.RuleGroup.Rules
+      description: The rule group rules.
+      type: String
+    - contextPath: AWS.Waf.RuleGroup.ARN
+      description: The rule group Amazon Resource Name.
+      type: String
+  - arguments:
+    - name: name
+      description: The rule group name.
+      required: true
+    - name: scope
+      description: The rule group scope.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "CLOUDFRONT"
+      - "REGIONAL"
+    - name: id
+      description: The rule group ID.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified the default region will be used.
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+        - us-gov-east-1
+        - us-gov-west-1
+    deprecated: false
+    description: Delete a specific rule group.
+    execution: false
+    name: aws-waf-rule-group-delete
   isfetch: false
   runonce: false
   script: '-'

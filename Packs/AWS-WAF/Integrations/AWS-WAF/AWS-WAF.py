@@ -298,6 +298,69 @@ def delete_regex_set_command(client: boto3.client, args) -> CommandResults:
     return CommandResults(readable_output=readable_output,
                           raw_response=response)
 
+
+def list_rule_group_command(client: boto3.client, args) -> CommandResults:
+    kwargs = {
+        'Scope': args.get('scope', ''),
+        'Limit': arg_to_number(args.get('limit')) or 50
+    }
+
+    if next_marker := args.get('next_token'):
+        kwargs |= {'NextMarker': next_marker}
+
+    response = client.list_rule_groups(**kwargs)
+
+    readable_output = tableToMarkdown('List rule groups',
+                                      response.get('RuleGroups', {}),
+                                      headers=['Name', 'Id', 'ARN', 'Description'],
+                                      is_auto_json_transform=True)
+
+    return CommandResults(readable_output=readable_output,
+                          outputs=response,
+                          raw_response=response,
+                          outputs_prefix=f'{OUTPUT_PREFIX}.RuleGroup',
+                          outputs_key_field='Id')
+
+
+def get_rule_group_command(client: boto3.client, args) -> CommandResults:
+    kwargs = {
+        'Name': args.get('name', ''),
+        'Scope': args.get('scope', ''),
+        'Id': args.get('id', '')
+    }
+
+    response = client.get_rule_group(**kwargs)
+
+    outputs = response.get('RuleGroup', {})
+
+    readable_output = tableToMarkdown('Rule group', outputs, headers=['Id', 'Name', 'Description'])
+
+    return CommandResults(readable_output=readable_output,
+                          outputs=outputs,
+                          raw_response=response,
+                          outputs_prefix=f'{OUTPUT_PREFIX}.RegexSet',
+                          outputs_key_field='Id')
+
+
+def delete_rule_group_command(client: boto3.client, args) -> CommandResults:
+    kwargs = {
+        'Name': args.get('name', ''),
+        'Scope': args.get('scope', ''),
+        'Id': args.get('id', '')
+    }
+
+    get_response = client.get_rule_group(**kwargs)
+
+    kwargs |= {'LockToken': get_response.get('LockToken', '')}
+
+    response = client.delete_rule_group(**kwargs)
+
+    readable_output = f'AWS Waf rule group with id {args.get("id", "")} was deleted successfully'
+
+    return CommandResults(readable_output=readable_output,
+                          raw_response=response)
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -330,7 +393,6 @@ def main() -> None:
         args = demisto.args()
 
         client = aws_client.aws_session(service=SERVICE, region=args.get('region'))
-        result = ''
 
         if demisto.command() == 'test-module':
             pass
@@ -359,6 +421,15 @@ def main() -> None:
             result = list_regex_set_command(client, args)
         elif demisto.command() == 'aws-waf-regex-set-delete':
             result = delete_regex_set_command(client, args)
+
+        elif demisto.command() == 'aws-waf-rule-group-list':
+            result = list_rule_group_command(client, args)
+        elif demisto.command() == 'aws-waf-rule-group-get':
+            result = get_rule_group_command(client, args)
+        elif demisto.command() == 'aws-waf-rule-group-delete':
+            result = delete_rule_group_command(client, args)
+        elif demisto.command() == 'aws-waf-rule-group-create':
+            result = create_rule_group_command(client, args)
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} is not implemented in AWS WAF integration.')
