@@ -3,28 +3,29 @@ from ipaddress import IPv4Address, IPv4Network
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-DELIMETER = ","
+DELIMITER = ","
 
-def is_ip_internal(ip: str, ranges: list[str]) -> bool:
+
+def is_ip_internal(ip: str, ranges: List[str]) -> bool:
     try:
-        return any((IPv4Address(ip) in IPv4Network(cidr.split(DELIMETER)[0] if DELIMETER in cidr else cidr) for cidr in ranges))
+        return any((IPv4Address(ip) in IPv4Network(cidr.split(DELIMITER)[0] if DELIMITER in cidr else cidr) for cidr in ranges))
     except ValueError:
         demisto.info("One or more IP ranges or IPs are invalid. Please make sure the list is in the correct structure.")
         return True
 
 
-def get_ip_tag(ip: str, ranges: list[str]) -> str:
+def get_ip_tag(ip: str, ranges: List[str]) -> str:
     for cidr in ranges:
         tag = None
-        if DELIMETER in cidr:
-            cidr, tag = cidr.split(DELIMETER)[0], cidr.split(DELIMETER)[1].strip()
+        if DELIMITER in cidr:
+            cidr, tag = cidr.split(DELIMITER)[0], cidr.split(DELIMITER)[1].strip()
         try:
             if IPv4Address(ip) in IPv4Network(cidr):
-                return tag
+                return tag or ''
         except ValueError:
             if ip == cidr:
-                return tag
-    return None
+                return tag or ''
+    return ''
 
 
 def main():
@@ -75,7 +76,7 @@ def main():
             "value": ip.get("Address"),
             "internal": ip.get("Private"),
             "customFields": {
-                "tags:": [ip.get("Tag", "")],
+                "tags": [ip.get("Tag", "")],
             }
         }
         args_set_existing_indicator = {
