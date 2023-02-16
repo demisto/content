@@ -30,13 +30,14 @@ configuration:
   required: false
   type: 13
 - name: fetch_type
-  display: Defines if Alerts and/or Threat should be fetched
+  display: Fetch incidents from type
   required: false
   defaultvalue: Threats
-  type: 16
+  type: 15
   options:
   - Alerts
   - Threats
+  - Both
 - name: fetch_time
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   required: false
