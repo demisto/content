@@ -20,6 +20,25 @@ configuration:
   name: defaultRegion
   required: true
   type: 0
+  options:
+    - us-east-1
+    - us-east-2
+    - us-west-1
+    - us-west-2
+    - ca-central-1
+    - eu-west-1
+    - eu-central-1
+    - eu-west-2
+    - ap-northeast-1
+    - ap-northeast-2
+    - ap-southeast-1
+    - ap-southeast-2
+    - ap-south-1
+    - sa-east-1
+    - eu-north-1
+    - eu-west-3
+    - us-gov-east-1
+    - us-gov-west-1
   section: Connect
 - display: Role Session Duration
   name: sessionDuration
@@ -97,6 +116,26 @@ script:
       - "IPV6"
     - name: region
       description: The AWS Region. If not specified the default region will be used.
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+        - us-gov-east-1
+        - us-gov-west-1
     - name: tag_key
       description: A comma separated list of the keys of the tags to associate with the ip set.
       isArray: true
@@ -123,6 +162,213 @@ script:
     - contextPath: AWS.Waf.IpSet.ARN
       description: The ip set ARN.
       type: String
+  - arguments:
+    - name: name
+      description: The IP set name.
+      required: true
+    - name: scope
+      description: The IP set scope.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "CLOUDFRONT"
+      - "REGIONAL"
+    - name: id
+      description: The IP set ID.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified the default region will be used.
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+        - us-gov-east-1
+        - us-gov-west-1
+    deprecated: false
+    description: Get a specific ip set.
+    execution: false
+    name: aws-waf-ip-set-get
+    outputs:
+    - contextPath: AWS.Waf.IpSet.Id
+      description: The ip set ID.
+      type: String
+    - contextPath: AWS.Waf.IpSet.Name
+      description: The ip set name.
+      type: String
+    - contextPath: AWS.Waf.IpSet.Description
+      description: The ip set description.
+      type: String
+    - contextPath: AWS.Waf.IpSet.LockToken
+      description: The ip set lock token.
+      type: String
+    - contextPath: AWS.Waf.IpSet.ARN
+      description: The ip set ARN.
+      type: String
+  - arguments:
+    - name: name
+      description: The IP set name.
+      required: true
+    - name: scope
+      description: The IP set scope.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "CLOUDFRONT"
+      - "REGIONAL"
+    - name: id
+      description: The IP set ID.
+      required: true
+    - name: addresses
+      description: The IP set addresses.
+      isArray: true
+    - name: description
+      description: The IP set description.
+    - name: region
+      description: The AWS Region. If not specified the default region will be used.
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+        - us-gov-east-1
+        - us-gov-west-1
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to overwrite the original addresses.
+      isArray: false
+      name: is_overwrite
+      predefined:
+        - 'true'
+        - 'false'
+    deprecated: false
+    description: Update an ip set.
+    execution: false
+    name: aws-waf-ip-set-update
+  - arguments:
+    - name: scope
+      description: The IP set scope.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "CLOUDFRONT"
+      - "REGIONAL"
+    - name: next_token
+      description: The token for the next page.
+    - name: limit
+      defaultValue: '50'
+      description: The maximum number of results to return.
+    - name: region
+      description: The AWS Region. If not specified the default region will be used.
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+        - us-gov-east-1
+        - us-gov-west-1
+    deprecated: false
+    description: Lists ip sets.
+    execution: false
+    name: aws-waf-ip-set-list
+    outputs:
+    - contextPath: AWS.Waf.IpSet.IPSets.Id
+      description: The ip set ID.
+      type: String
+    - contextPath: AWS.Waf.IpSet.IPSets.Name
+      description: The ip set name.
+      type: String
+    - contextPath: AWS.Waf.IpSet.IPSets.Description
+      description: The ip set description.
+      type: String
+    - contextPath: AWS.Waf.IpSet.IPSets.LockToken
+      description: The ip set lock token.
+      type: String
+    - contextPath: AWS.Waf.IpSet.IPSets.ARN
+      description: The ip set ARN.
+    - contextPath: AWS.Waf.IpSet.NextMarker
+      description: The token for the next page.
+      type: String
+  - arguments:
+    - name: name
+      description: The IP set name.
+      required: true
+    - name: scope
+      description: The IP set scope.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "CLOUDFRONT"
+      - "REGIONAL"
+    - name: id
+      description: The IP set ID.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified the default region will be used.
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+        - us-gov-east-1
+        - us-gov-west-1
+    deprecated: false
+    description: Delete a specific ip set.
+    execution: false
+    name: aws-waf-ip-set-delete
   isfetch: false
   runonce: false
   script: '-'

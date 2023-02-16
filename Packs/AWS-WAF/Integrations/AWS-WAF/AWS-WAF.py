@@ -34,7 +34,6 @@ def get_tags_dict_from_args(tag_keys: list, tag_values: list) -> List[dict]:
     return tags
 
 
-
 ''' COMMAND FUNCTIONS '''
 
 
@@ -55,18 +54,21 @@ def module(client: boto3.client) -> str:
     pass
 
 
-def create_ip_set_command(client: boto3.session.Session.client, args) -> CommandResults:
+def create_ip_set_command(client: boto3.client, args) -> CommandResults:
     tag_keys = argToList(args.get('tag_key')) or []
     tag_values = args.get('tag_value') or []
     kwargs = {
         'Name': args.get('name', ''),
         'Scope': args.get('scope', ''),
-        'Description': args.get('description'),
         'IPAddressVersion': args.get('ip_version', ''),
-        'Tags': get_tags_dict_from_args(tag_keys, tag_values),
+        'Addresses': argToList(args.get('addresses')) or [],
     }
-    remove_nulls_from_dictionary(kwargs)
-    kwargs |= {'Addresses': argToList(args.get('addresses')) or []}
+
+    if description := args.get('description'):
+        kwargs |= {'Description': description}
+    if tags := get_tags_dict_from_args(tag_keys, tag_values):
+        kwargs |= {'Tags': tags}
+
     response = client.create_ip_set(**kwargs)
     outputs = response.get('Summary', {})
 
@@ -75,8 +77,98 @@ def create_ip_set_command(client: boto3.session.Session.client, args) -> Command
     return CommandResults(readable_output=readable_output,
                           outputs=outputs,
                           raw_response=response,
+                          outputs_prefix=f'{OUTPUT_PREFIX}.IPSet',
+                          outputs_key_field='Id')
+
+
+def get_ip_set_command(client: boto3.client, args) -> CommandResults:
+    kwargs = {
+        'Name': args.get('name', ''),
+        'Scope': args.get('scope', ''),
+        'Id': args.get('id', '')
+    }
+
+    response = client.get_ip_set(**kwargs)
+
+    outputs = response.get('IPSet', {})
+
+    readable_output = tableToMarkdown('IP Set', outputs)
+
+    return CommandResults(readable_output=readable_output,
+                          outputs=outputs,
+                          raw_response=response,
                           outputs_prefix=f'{OUTPUT_PREFIX}.IpSet',
                           outputs_key_field='Id')
+
+
+def update_ip_set_command(client: boto3.client, args) -> CommandResults:
+    kwargs = {
+        'Name': args.get('name', ''),
+        'Scope': args.get('scope', ''),
+        'Id': args.get('id', '')
+    }
+
+    addresses_to_update = argToList(args.get('addresses')) or []
+    overwrite = argToBoolean(args.get('is_overwrite')) or False
+
+    get_response = client.get_ip_set(**kwargs)
+
+    lock_token = get_response.get('LockToken', '')
+    original_addresses = get_response.get('IPSet', {}).get('Addresses')
+    if not overwrite:
+        addresses_to_update.extend(original_addresses)
+
+    kwargs |= {'LockToken': lock_token, 'Addresses': addresses_to_update}
+
+    if description := args.get('description'):
+        kwargs |= {'Description': description}
+
+    response = client.update_ip_set(**kwargs)
+
+    readable_output = f'AWS Waf ip set with id {args.get("Id", "")} was updated successfully. ' \
+                      f'Next Lock Token: {response.get("NextLockToken")}'
+
+    return CommandResults(readable_output=readable_output,
+                          raw_response=response)
+
+
+def list_ip_set_command(client: boto3.client, args) -> CommandResults:
+    kwargs = {
+        'Scope': args.get('scope', ''),
+        'Limit': arg_to_number(args.get('limit')) or 50
+    }
+
+    if next_marker := args.get('next_token'):
+        kwargs |= {'NextMarker': next_marker}
+
+    response = client.list_ip_sets(**kwargs)
+
+    readable_output = tableToMarkdown('List IP Sets', response, is_auto_json_transform=True)
+
+    return CommandResults(readable_output=readable_output,
+                          outputs=response,
+                          raw_response=response,
+                          outputs_prefix=f'{OUTPUT_PREFIX}.IpSet',
+                          outputs_key_field='Id')
+
+
+def delete_ip_set_command(client: boto3.client, args) -> CommandResults:
+    kwargs = {
+        'Name': args.get('name', ''),
+        'Scope': args.get('scope', ''),
+        'Id': args.get('id', '')
+    }
+
+    get_response = client.get_ip_set(**kwargs)
+
+    kwargs |= {'LockToken': get_response.get('LockToken', '')}
+
+    response = client.delete_ip_set(**kwargs)
+
+    readable_output = f'AWS Waf ip set with id {args.get("Id", "")} was deleted successfully'
+
+    return CommandResults(readable_output=readable_output,
+                          raw_response=response)
 
 
 ''' MAIN FUNCTION '''
@@ -110,7 +202,7 @@ def main() -> None:
                                timeout, retries)
         args = demisto.args()
 
-        client = aws_client.aws_session(service=SERVICE)
+        client = aws_client.aws_session(service=SERVICE, region=args.get('region'))
         result = ''
 
         if demisto.command() == 'test-module':
@@ -121,6 +213,14 @@ def main() -> None:
 
         elif demisto.command() == 'aws-waf-ip-set-create':
             result = create_ip_set_command(client, args)
+        elif demisto.command() == 'aws-waf-ip-set-get':
+            result = get_ip_set_command(client, args)
+        elif demisto.command() == 'aws-waf-ip-set-update':
+            result = update_ip_set_command(client, args)
+        elif demisto.command() == 'aws-waf-ip-set-list':
+            result = list_ip_set_command(client, args)
+        elif demisto.command() == 'aws-waf-ip-set-delete':
+            result = delete_ip_set_command(client, args)
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} is not implemented in AWS WAF integration.')
