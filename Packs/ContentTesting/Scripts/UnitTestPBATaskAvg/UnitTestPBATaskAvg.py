@@ -14,7 +14,6 @@ BLUE6 = "rgb(2, 112, 171)"
 COLORS = [BLUE1, BLUE2, BLUE3, BLUE4, BLUE5, BLUE6]
 
 FORMATS = ["bar", "pie"]
-#FORMATS = ["bar", "pie", "line", "duration", "number"]
 LAYOUTS = ["horizontal", "vertical"]
 
 STATFIELD = 'avgdur'
@@ -48,12 +47,12 @@ def main():
         if len(stats) == 0:
             return
         wstats: list[WidgetStat] = []
-        l = len(COLORS)
-        i = l
+        length = len(COLORS)
+        i = length
         for key, val in stats.items():
             if val[STATFIELD] == 0:
                 continue
-            newstat = NewWidgetStat("", COLORS[i % l], val['name'], val[STATFIELD])
+            newstat = NewWidgetStat("", COLORS[i % length], val['name'], val[STATFIELD])
             wstats.append(newstat)
             i += 1
 

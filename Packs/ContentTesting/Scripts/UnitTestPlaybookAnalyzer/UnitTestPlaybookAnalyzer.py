@@ -48,25 +48,19 @@ def GetTasks(incid: str) -> list[Task]:
             duration = -1.0
             state = "Unknown"
             started = 0
-            error = 0
-            waiting = 0
             notexecuted = 0
 
             if 'state' in t:
                 state = t['state']
                 if state == "Completed":
-                    l = len(t['startDate']) - 9
-                    start = date_to_timestamp(t['startDate'][:l], date_format='%Y-%m-%dT%H:%M:%S.%f')
-                    end = date_to_timestamp(t['completedDate'][:l], date_format='%Y-%m-%dT%H:%M:%S.%f')
+                    length = len(t['startDate']) - 9
+                    start = date_to_timestamp(t['startDate'][:length], date_format='%Y-%m-%dT%H:%M:%S.%f')
+                    end = date_to_timestamp(t['completedDate'][:length], date_format='%Y-%m-%dT%H:%M:%S.%f')
                     duration = end - start
                 elif state == "inprogress":
                     started = 1
                 elif state == "WillNotBeExecuted":
                     notexecuted = 1
-                elif state == "Error":
-                    error = 1
-                elif state == "Waiting":
-                    waiting = 1
 
             newtask: Task = {'name': t['task']['name'], 'duration': duration, 'state': state,
                              'tid': t['id'], 'started': started, 'notexecuted': notexecuted}
@@ -113,7 +107,7 @@ def GetTaskStats(playbookname: str, occurred: str) -> (dict[TaskStat], int):
     taskstat: TaskStat = {}  # type: ignore
     taskstats: dict[TaskStat] = {}  # type: ignore
     count = 0
-    if response['data'] != None:
+    if response['data'] is not None:
         for inc in response['data']:
             tasks = GetTasks(inc['id'])
             taskstats = TaskStats(tasks, taskstat)
@@ -188,8 +182,8 @@ def EntityMarkdown(ent: Entity, count: int) -> str:
     output = f"### Playbook: {ent['name']}\n"
     output += f"#### Analysis Date: {datetime_to_string(datetime.now())}\n"
     output += f"#### Incidents Analyzed: {count}\n"
-    pboutput = f"#### Sub-playbooks Called\n"
-    cmdoutput = f"#### Automations Called\n"
+    pboutput = "#### Sub-playbooks Called\n"
+    cmdoutput = "#### Automations Called\n"
     for val in ent['calls']:
         if val[:2] == "p.":
             pboutput += f"- {val[2:]}\n"
@@ -198,7 +192,7 @@ def EntityMarkdown(ent: Entity, count: int) -> str:
 
     output += pboutput
     output += cmdoutput
-    output += f"\n#### Called by Parent Playbooks\n"
+    output += "\n#### Called by Parent Playbooks\n"
     for val in ent['called']:
         output += f"- {val[2:]}\n"
 
@@ -211,7 +205,7 @@ def StatsInfoMarkdown(stats: dict[TaskStat]) -> str:
     markdown += "|---|:---:|:---:|:---:|\n"
 
     for key, val in stats.items():
-        if val['mindur'] == None:
+        if val['mindur'] is None:
             val['mindur'] = 0
         markdown += f"|{val['name']}|{val['mindur']}|{val['avgdur']}|{val['maxdur']}|\n"
 
