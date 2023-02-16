@@ -848,7 +848,7 @@ script:
         - contextPath: KMSAT.UserEvents.event_type.name
           description: "Event Type Name"
           type: String
-      description: Returns KMSAT User Events.
+      description: Returns all KMSAT User Events.
     - name: kmsat-user-event-list
       arguments:
         - name: id

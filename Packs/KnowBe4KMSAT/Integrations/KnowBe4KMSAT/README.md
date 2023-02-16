@@ -40,7 +40,7 @@
 | kmsat-training-campaigns-list                        | Displays all training campaigns                                        |
 | kmsat-training-enrollments-list                      | Displays all training enrollments                                      |
 | kmsat-user-event-list                                | Displays a user event by id
-| kmsat-user-events-list                               | Displays user events                                                   |
+| kmsat-user-events-list                               | Displays all user events                                                   |
 | kmsat-user-event-types-list                          | Displays types of user events                                          |
 | kmsat-user-event-create                              | Creates an event on the User Timeline                                  |
 | kmsat-user-event-delete                              | Deletes an event from the User Timeline                                
