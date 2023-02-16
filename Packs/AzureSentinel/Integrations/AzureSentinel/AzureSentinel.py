@@ -50,7 +50,8 @@ class AzureSentinelClient:
     def __init__(self, server_url: str, tenant_id: str, client_id: str,
                  client_secret: str, subscription_id: str,
                  resource_group_name: str, workspace_name: str, certificate_thumbprint: Optional[str],
-                 private_key: Optional[str], verify: bool = True, proxy: bool = False):
+                 private_key: Optional[str], verify: bool = True, proxy: bool = False,
+                 managed_identities_client_id: Optional[str] = None):
         """
         AzureSentinelClient class that make use client credentials for authorization with Azure.
 
@@ -86,6 +87,9 @@ class AzureSentinelClient:
 
         :type proxy: ``bool``
         :param proxy: Whether to run the integration using the system proxy.
+
+        :type managed_identities_client_id: ``str``
+        :param managed_identities_client_id: The Azure Managed Identities client id.
         """
         server_url = f'{server_url}/subscriptions/{subscription_id}/' \
                      f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
@@ -103,6 +107,8 @@ class AzureSentinelClient:
             proxy=proxy,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
+            managed_identities_client_id=managed_identities_client_id,
+            managed_identities_resource_uri=Resources.management_azure
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None):
@@ -1363,14 +1369,22 @@ def main():
     LOG(f'Command being called is {demisto.command()}')
     try:
         client_secret = params.get('credentials', {}).get('password')
-        certificate_thumbprint = params.get('certificate_thumbprint')
-        private_key = params.get('private_key')
-        if not client_secret and not (certificate_thumbprint and private_key):
+        certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or \
+            params.get('certificate_thumbprint')
+        private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password'))
+                       or params.get('private_key'))
+        managed_identities_client_id = get_azure_managed_identities_client_id(params)
+        if not managed_identities_client_id and not client_secret and not (certificate_thumbprint and private_key):
             raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+
+        tenant_id = params.get('creds_tenant_id', {}).get('password', '') or params.get('tenant_id', '')
+
+        if not tenant_id:
+            raise ValueError('Tenant ID must be provided.')
 
         client = AzureSentinelClient(
             server_url=params.get('server_url') or DEFAULT_AZURE_SERVER_URL,
-            tenant_id=params.get('tenant_id', ''),
+            tenant_id=tenant_id,
             client_id=params.get('credentials', {}).get('identifier'),
             client_secret=client_secret,
             subscription_id=params.get('subscriptionID', ''),
@@ -1379,7 +1393,8 @@ def main():
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
             certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key
+            private_key=private_key,
+            managed_identities_client_id=managed_identities_client_id
         )
 
         commands = {

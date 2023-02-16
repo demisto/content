@@ -1,0 +1,195 @@
+{
+  "request_headers": {
+    "X-Vault-Token": "hvs.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    "X-Vault-Namespace": "test_namespace",
+    "Content-Type": "application/json"
+  },
+  "hashicorp-destroy-secret-response": "http code 204",
+  "hashicorp-delete-secret-response": "http code 204",
+  "hashicorp-undelete-secret-response": "http code 204",
+  "hashicorp-list-secrets-response": {
+    "request_id": "8-8-8-8-8",
+    "lease_id": "",
+    "renewable": false,
+    "lease_duration": 0,
+    "data": {
+      "keys": [
+        "sample-secret",
+        "secret12"
+      ]
+    },
+    "wrap_info": null,
+    "warnings": null,
+    "auth": null
+  },
+  "hashicorp-get-secret-metadata-response": {
+    "data": {
+      "cas_required": false,
+      "created_time": "2018-03-22T02:24:06.945319214Z",
+      "current_version": 3,
+      "delete_version_after": "3h25m19s",
+      "max_versions": 0,
+      "oldest_version": 0,
+      "updated_time": "2018-03-22T02:36:43.986212308Z",
+      "custom_metadata": {
+        "foo": "abc",
+        "bar": "123",
+        "baz": "5c07d823-3810-48f6-a147-4c06b5219e84"
+      },
+      "versions": {
+        "1": {
+          "created_time": "2018-03-22T02:24:06.945319214Z",
+          "deletion_time": "",
+          "destroyed": false
+        },
+        "2": {
+          "created_time": "2018-03-22T02:36:33.954880664Z",
+          "deletion_time": "",
+          "destroyed": false
+        },
+        "3": {
+          "created_time": "2018-03-22T02:36:43.986212308Z",
+          "deletion_time": "",
+          "destroyed": false
+        }
+      }
+    }
+  },
+  "hashicorp-create-token-response": {
+    "request_id": "e-e-e-e-e",
+    "lease_id": "",
+    "renewable": false,
+    "lease_duration": 0,
+    "data": null,
+    "wrap_info": null,
+    "warnings": null,
+    "auth": {
+      "client_token": "testing-dummy-token",
+      "accessor": "eeeeeee.JBGwR",
+      "policies": [
+        "default"
+      ],
+      "token_policies": [
+        "default",
+        "templated_secret_read_write"
+      ],
+      "metadata": {
+        "role_name": "app-read-write"
+      },
+      "lease_duration": 3600,
+      "renewable": true,
+      "entity_id": "9-9-9-9-9",
+      "token_type": "service",
+      "orphan": true,
+      "mfa_requirement": null,
+      "num_uses": 0
+    }
+  },
+  "hashicorp-list-policies-response": {
+    "policies": [
+      "root",
+      "deploy"
+    ]
+  },
+  "hashicorp-get-policy-response": {
+    "name": "my-policy",
+    "rules": "path secret"
+  },
+  "hashicorp-seal-vault-response": "http code 204",
+  "hashicorp-unseal-vault-response": {
+    "sealed": true,
+    "t": 3,
+    "n": 5,
+    "progress": 2,
+    "version": "0.6.2"
+  },
+  "hashicorp-list-secret-engines-response": {
+    "request_id": "8-8-8-8-8",
+    "lease_id": "",
+    "lease_duration": 0,
+    "renewable": false,
+    "data": {
+      "cubbyhole/": {
+        "accessor": "cubbyhole_eb4503de",
+        "config": {
+          "default_lease_ttl": 0,
+          "force_no_cache": false,
+          "max_lease_ttl": 0
+        },
+        "description": "per-token private secret storage",
+        "external_entropy_access": false,
+        "local": true,
+        "options": null,
+        "plugin_version": "",
+        "running_plugin_version": "v1.12.0+builtin.vault",
+        "running_sha256": "",
+        "seal_wrap": false,
+        "type": "cubbyhole",
+        "uuid": "8-8-8-8-8"
+      },
+      "identity/": {
+        "accessor": "888888",
+        "config": {
+          "default_lease_ttl": 0,
+          "force_no_cache": false,
+          "max_lease_ttl": 0
+        },
+        "description": "identity store",
+        "external_entropy_access": false,
+        "local": false,
+        "options": null,
+        "plugin_version": "",
+        "running_plugin_version": "v1.128888in.vault",
+        "running_sha256": "",
+        "seal_wrap": false,
+        "type": "identity",
+        "uuid": "8-8-8-zZ-8"
+      },
+      "secret/": {
+        "accessor": "8888888",
+        "config": {
+          "default_lease_ttl": 0,
+          "force_no_cache": false,
+          "max_lease_ttl": 0
+        },
+        "deprecation_status": "supported",
+        "description": "key/8988888ecret storage",
+        "external_entropy_access": false,
+        "local": false,
+        "options": {
+          "version": "2"
+        },
+        "plugin_version": "",
+        "running_plugin_version": "v0.138888in",
+        "running_sha256": "",
+        "seal_wrap": false,
+        "type": "kv",
+        "uuid": "9-9-9-9-9"
+      },
+      "sys/": {
+        "accessor": "888",
+        "config": {
+          "default_lease_ttl": 0,
+          "force_no_cache": false,
+          "max_lease_ttl": 0,
+          "passthrough_request_headers": [
+            "Accept"
+          ]
+        },
+        "description": "system endpoints used for control, policy and debugging",
+        "external_entropy_access": false,
+        "local": false,
+        "options": null,
+        "plugin_version": "",
+        "running_plugin_version": "v1.12.0+builtin.vault",
+        "running_sha256": "",
+        "seal_wrap": false,
+        "type": "system",
+        "uuid": "9-9-9-9-9"
+      }
+    },
+    "warnings": null
+  },
+  "hashicorp-disable-engine-response": "http code 204",
+  "hashicorp-enable-engine-response": "http code 204"
+}

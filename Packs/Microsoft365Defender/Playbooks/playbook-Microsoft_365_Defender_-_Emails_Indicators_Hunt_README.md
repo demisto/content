@@ -13,8 +13,8 @@ This playbook does not use any sub-playbooks.
 * Microsoft 365 Defender
 
 ### Scripts
-* IsIntegrationAvailable
 * Set
+* IsIntegrationAvailable
 * SetAndHandleEmpty
 
 ### Commands
@@ -31,6 +31,7 @@ This playbook does not use any sub-playbooks.
 | Timeout | The time limit in seconds for the HTTP request to run. Default is 60. | 60 | Optional |
 | SearchTimeframe | Number of days past to search. Default is 7. | 7 | Optional |
 | ResultsLimit | Number of retrieved entries. Enter -1 for unlimited query. 50 is the default. | 50 | Optional |
+| ListenerMailbox | The mailbox of the listening integration. In case it is provided, the emails found in it will be ignored. |  | Optional |
 
 ## Playbook Outputs
 ---

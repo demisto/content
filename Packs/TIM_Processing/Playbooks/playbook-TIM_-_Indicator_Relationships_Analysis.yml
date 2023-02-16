@@ -23,14 +23,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "15"
+      - "23"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 440,
-          "y": -650
+          "y": -830
         }
       }
     note: false
@@ -76,8 +76,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": -340
+          "x": -430,
+          "y": -350
         }
       }
     note: false
@@ -122,13 +122,14 @@ tasks:
           accessor: EntityB
           transformers:
           - operator: uniq
+    reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1090,
-          "y": 1160
+          "x": 220,
+          "y": 1150
         }
       }
     note: false
@@ -173,13 +174,14 @@ tasks:
           accessor: EntityB
           transformers:
           - operator: uniq
+    reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 650,
-          "y": 1160
+          "x": -220,
+          "y": 1150
         }
       }
     note: false
@@ -224,13 +226,14 @@ tasks:
           accessor: EntityB
           transformers:
           - operator: uniq
+    reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 1160
+          "x": -650,
+          "y": 1150
         }
       }
     note: false
@@ -275,13 +278,14 @@ tasks:
           accessor: EntityB
           transformers:
           - operator: uniq
+    reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -190,
-          "y": 1160
+          "x": -1060,
+          "y": 1150
         }
       }
     note: false
@@ -327,8 +331,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1090,
-          "y": 985
+          "x": 220,
+          "y": 975
         }
       }
     note: false
@@ -374,8 +378,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -190,
-          "y": 985
+          "x": -1060,
+          "y": 975
         }
       }
     note: false
@@ -421,8 +425,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 985
+          "x": -650,
+          "y": 975
         }
       }
     note: false
@@ -468,8 +472,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 650,
-          "y": 985
+          "x": -220,
+          "y": 975
         }
       }
     note: false
@@ -496,7 +500,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 430,
+          "x": 440,
           "y": 1330
         }
       }
@@ -532,13 +536,14 @@ tasks:
       limit:
         complex:
           root: inputs.LimitResults
+    reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": -520
+          "x": -430,
+          "y": -530
         }
       }
     note: false
@@ -573,13 +578,14 @@ tasks:
       limit:
         complex:
           root: inputs.LimitResults
+    reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 210,
-          "y": -10
+          "x": -660,
+          "y": -20
         }
       }
     note: false
@@ -629,8 +635,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 210,
-          "y": -170
+          "x": -660,
+          "y": -180
         }
       }
     note: false
@@ -663,8 +669,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 840
+          "x": -430,
+          "y": 830
         }
       }
     note: false
@@ -710,8 +716,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 210,
-          "y": 150
+          "x": -660,
+          "y": 140
         }
       }
     note: false
@@ -761,13 +767,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -20,
-          "y": 330
+          "x": -890,
+          "y": 320
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: Related Report
+      output:
+        complex:
+          root: RelatedReport
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -818,8 +829,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 500
+          "x": -430,
+          "y": 490
         }
       }
     note: false
@@ -873,13 +884,56 @@ tasks:
           accessor: EntityB
           transformers:
           - operator: uniq
+    reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 670
+          "x": -650,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 41ea1dab-1062-4835-8f3f-ea99bc964815
+    type: condition
+    task:
+      id: 41ea1dab-1062-4835-8f3f-ea99bc964815
+      version: -1
+      name: Has Indicator?
+      description: Check if an input indicator exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Indicator
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -700
         }
       }
     note: false
@@ -892,14 +946,19 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "2_17_yes": 0.9
+      "10_12_#default#": 0.1,
+      "11_12_#default#": 0.15,
+      "19_21_#default#": 0.37,
+      "2_17_yes": 0.9,
+      "8_12_#default#": 0.36,
+      "9_12_#default#": 0.1
     },
     "paper": {
       "dimensions": {
-        "height": 2045,
-        "width": 1660,
-        "x": -190,
-        "y": -650
+        "height": 2225,
+        "width": 1880,
+        "x": -1060,
+        "y": -830
       }
     }
   }

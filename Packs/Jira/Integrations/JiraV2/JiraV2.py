@@ -686,6 +686,7 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
             issue['fields']['reporter'] = {}
         issue['fields']['reporter']['name'] = issue_args['reporter']
 
+    demisto.debug(f'The issue after updating relevant fields: {issue}')
     return issue
 
 
@@ -830,14 +831,15 @@ def edit_status(issue_id, status, issue):
     if not issue:
         issue = {}
     j_res = list_transitions_data_for_issue(issue_id)
-    transitions = [transition.get('name') for transition in j_res.get('transitions')]
-    for i, transition in enumerate(transitions):
+    # When changing the status we search the transition that leads to this status
+    statuses = [transition.get('to', {}).get('name', '') for transition in j_res.get('transitions')]
+    for i, transition in enumerate(statuses):
         if transition.lower() == status.lower():
             url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
             issue['transition'] = {"id": str(j_res.get('transitions')[i].get('id'))}
             return jira_req('POST', url, json.dumps(issue))
 
-    return_error(f'Status "{status}" not found. \nValid transitions are: {transitions} \n')
+    return_error(f'Status "{status}" not found. \nValid statuses are: {statuses} \n')
 
 
 def list_transitions_data_for_issue(issue_id):
@@ -1257,7 +1259,8 @@ def update_remote_system_command(args):
             demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update Jira '
                           f'incident {remote_id}')
             # take the val from data as it's the updated value
-            delta = {k: remote_args.data[k] for k in remote_args.delta.keys()}
+            delta = {k: remote_args.data.get(k) for k in remote_args.delta.keys()}
+            demisto.debug(f'sending the following data to edit the issue with: {delta}')
             edit_issue_command(remote_id, mirroring=True, **delta)
 
         else:
@@ -1288,7 +1291,7 @@ def get_user_info_data():
     :return: API response
     """
     HEADERS['Accept'] = "application/json"
-    return jira_req(method='GET', resource_url=BASE_URL + 'rest/api/latest/myself', headers=HEADERS)
+    return jira_req(method='GET', resource_url='rest/api/latest/myself', headers=HEADERS)
 
 
 def get_modified_remote_data_command(args):

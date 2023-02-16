@@ -1,4 +1,7 @@
 category: Identity and Access Management
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Slack IAM
   version: -1
@@ -12,51 +15,68 @@ configuration:
   name: access_token
   required: false
   type: 4
+  section: Connect
   hidden: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-- defaultvalue: 'true'
+  section: Connect
+  advanced: true
+- additionalinfo: If set to false, iam-create-user command will be skipped, and user will not be created.
+  defaultvalue: 'true'
   display: Allow creating users
   name: create_user_enabled
   required: false
   type: 8
-  additionalinfo: If set to false, iam-create-user command will be skipped, and user will not be created.
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Allow updating users
   name: update_user_enabled
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Allow enabling users
   name: enable_user_enabled
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Allow disabling users
   name: disable_user_enabled
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Automatically create user if not found in update command
   name: create_if_not_exists
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: User Profile - SCIM (Incoming)
   display: Incoming Mapper
   name: mapper_in
   required: true
   type: 0
+  section: Connect
 - defaultvalue: User Profile - SCIM (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
   required: true
   type: 0
+  section: Connect
 description: Integrate with Slack's services to execute CRUD operations for employee lifecycle processes.
 display: Slack IAM
 name: Slack IAM

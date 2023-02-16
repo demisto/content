@@ -1,4 +1,4 @@
-This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddress` and `MessageID` inputs. The output is a unified object with all of the retrieved emails based on the sub-playbooks outputs:
+This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddress`, and `MessageID` inputs. The output is a unified object with all of the retrieved emails based on the following sub-playbooks outputs:
 
 - **Microsoft 365 Defender - Get Email URL clicks**:
         Retrieves data based on URL click events.
@@ -7,21 +7,21 @@ This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddres
 - **Microsoft 365 Defender - Emails Indicators Hunt**:
         Retrieves data based on several different email events.
 
-Please read the playbooks descriptions in order to get the full details.
+Read the playbooks' descriptions in order to get the full details.
 
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Microsoft 365 Defender - Emails Indicators Hunt
 * Microsoft 365 Defender - Get Email URL Clicks
+* Microsoft 365 Defender - Emails Indicators Hunt
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-SetAndHandleEmpty
+* SetAndHandleEmpty
 
 ### Commands
 This playbook does not use any commands.
@@ -38,6 +38,7 @@ This playbook does not use any commands.
 | Timeout | The time limit in seconds for the HTTP request to run.  | 180 | Optional |
 | SearchTimeframe | Number of days past to search. | 7 | Optional |
 | ResultsLimit | Number of retrieved entries. Enter -1 for unlimited query. | 50 | Optional |
+| ListenerMailbox | The mailbox of the listening integration. In case it is provided, the emails found in it will be ignored. |  | Optional |
 
 ## Playbook Outputs
 ---

@@ -23,6 +23,10 @@
     "event_result": {
         "type": "string",
         "is_array": false
+    },
+    "user": {
+        "type": "string",
+        "is_array": false
     }
   }
 }

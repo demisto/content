@@ -16,14 +16,6 @@ test_client = CoreClient(
 )
 
 
-def test_client_update_incident():
-    with pytest.raises(ValueError, match="Can't provide both assignee_email/assignee_name and unassign_user"):
-        test_client.update_incident(incident_id='1',
-                                    status='new',
-                                    unassign_user="user",
-                                    assigned_user_mail="user")
-
-
 Core_URL = 'https://api.xdrurl.com'
 
 ''' HELPER FUNCTIONS '''
@@ -68,25 +60,6 @@ def return_extra_data_result(*args):
         return {}, {}, {"incident": incident_from_extra_data_command}
 
 
-def test_update_incident(requests_mock):
-    from CoreIRApiModule import update_incident_command, CoreClient
-
-    update_incident_response = load_test_data('./test_data/update_incident.json')
-    requests_mock.post(f'{Core_URL}/public_api/v1/incidents/update_incident/', json=update_incident_response)
-
-    client = CoreClient(
-        base_url=f'{Core_URL}/public_api/v1', headers={}
-    )
-    args = {
-        'incident_id': '1',
-        'status': 'new'
-    }
-    readable_output, outputs, _ = update_incident_command(client, args)
-
-    assert outputs is None
-    assert readable_output == 'Incident 1 has been updated'
-
-
 def test_get_endpoints(requests_mock):
     from CoreIRApiModule import get_endpoints_command, CoreClient
 
@@ -104,7 +77,7 @@ def test_get_endpoints(requests_mock):
 
     res = get_endpoints_command(client, args)
     assert get_endpoints_response.get('reply').get('endpoints') == \
-           res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
+        res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
 
 
 def test_get_all_endpoints_using_limit(requests_mock):
@@ -2284,49 +2257,6 @@ def test_get_endpoint_properties(endpoint, expected):
 
     status, is_isolated, hostname, ip = get_endpoint_properties(endpoint)
     assert status == expected
-
-
-def test_get_update_args_when_getting_close_reason():
-    """
-    Given:
-        - closingUserId from update_remote_system
-    When
-        - An incident in XSOAR was closed with "Duplicate" as a close reason.
-    Then
-        - The status that the incident is getting to be mirrored out is "resolved_duplicate"
-    """
-    from CoreIRApiModule import get_update_args
-    from CommonServerPython import UpdateRemoteSystemArgs
-    remote_args = UpdateRemoteSystemArgs({
-        'delta': {
-            'closeReason': 'Duplicate', 'closeNote': 'Closed as Duplicate.',
-            'closingUserId': 'Admin'},
-        'data': {'status': 'new'},
-        'status': 2}
-    )
-    update_args = get_update_args(remote_args)
-    assert update_args.get('status') == 'resolved_duplicate'
-    assert update_args.get('closeNote') == 'Closed as Duplicate.'
-
-
-def test_get_update_args_when_not_getting_closing_user_id():
-    """
-    Given:
-        - delta from update_remote_system
-    When
-        - An incident in XSOAR was closed and update_remote_system has occurred.
-    Then
-        - Because There is no change in the "closingUserId" value, the status should not change.
-    """
-    from CoreIRApiModule import get_update_args
-    from CommonServerPython import UpdateRemoteSystemArgs
-    remote_args = UpdateRemoteSystemArgs({
-        'delta': {'someChange': '1234'},
-        'data': {'status': 'new'},
-        'status': 2}
-    )
-    update_args = get_update_args(remote_args)
-    assert update_args.get('status') is None
 
 
 def test_remove_blocklist_files_command(requests_mock):
