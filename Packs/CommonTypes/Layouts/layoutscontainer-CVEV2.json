@@ -97,7 +97,7 @@
         ]
     },
     "group": "indicator",
-    "id": "CVE Indicator",
+    "id": "cveRep",
     "indicatorsDetails": {
         "tabs": [
             {

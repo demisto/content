@@ -101,7 +101,7 @@
         ]
     },
     "group": "indicator",
-    "id": "Account Indicator",
+    "id": "accountRep",
     "indicatorsDetails": {
         "tabs": [
             {

@@ -89,7 +89,7 @@
         ]
     },
     "group": "indicator",
-    "id": "Report",
+    "id": "STIX Report",
     "indicatorsDetails": {
         "tabs": [
             {

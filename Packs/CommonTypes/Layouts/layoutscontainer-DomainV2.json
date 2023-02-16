@@ -101,7 +101,7 @@
         ]
     },
     "group": "indicator",
-    "id": "Domain Indicator",
+    "id": "domainRepUnified",
     "indicatorsDetails": {
         "tabs": [
             {

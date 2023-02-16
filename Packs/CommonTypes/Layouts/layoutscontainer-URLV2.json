@@ -89,7 +89,7 @@
         ]
     },
     "group": "indicator",
-    "id": "URL Indicator",
+    "id": "urlRep",
     "indicatorsDetails": {
         "tabs": [
             {

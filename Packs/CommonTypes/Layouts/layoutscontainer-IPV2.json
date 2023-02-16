@@ -94,7 +94,7 @@
         ]
     },
     "group": "indicator",
-    "id": "IP Indicator",
+    "id": "ipRep",
     "indicatorsDetails": {
         "tabs": [
             {

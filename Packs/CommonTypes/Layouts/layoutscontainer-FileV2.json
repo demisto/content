@@ -141,7 +141,7 @@
         ]
     },
     "group": "indicator",
-    "id": "File Indicator",
+    "id": "unifiedFileRep1",
     "indicatorsDetails": {
         "tabs": [
             {

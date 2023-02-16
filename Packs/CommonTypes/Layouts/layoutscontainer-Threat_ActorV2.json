@@ -114,7 +114,7 @@
         ]
     },
     "group": "indicator",
-    "id": "Threat Actor",
+    "id": "STIX Threat Actor",
     "indicatorsDetails": {
         "tabs": [
             {

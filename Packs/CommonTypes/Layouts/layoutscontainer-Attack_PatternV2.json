@@ -90,7 +90,7 @@
         ]
     },
     "group": "indicator",
-    "id": "Attack Pattern",
+    "id": "STIX Attack Pattern",
     "indicatorsDetails": {
         "tabs": [
             {
