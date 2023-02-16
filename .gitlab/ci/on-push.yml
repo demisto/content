@@ -66,7 +66,6 @@ run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
   rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$BUCKET_UPLOAD == "true"'
       when: never
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
@@ -88,7 +87,6 @@ validate-content-conf:
   extends:
     - .default-job-settings
   rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
   script:
     - section_start "Validate content-test-conf Branch Merged"
@@ -344,8 +342,6 @@ jobs-done-check-nightly:
       when: always
 
 jobs-done-check-on-push:
-  rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
   extends:
     - .jobs-done-check
     - .push-rule
@@ -375,6 +371,8 @@ jobs-done-check-on-push:
       optional: true
   tags:
     - gke
+  rules:
+    - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
 
 
 slack-notify-nightly-build:
