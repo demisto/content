@@ -65,10 +65,8 @@ configuration:
 - name: creds_certificate
   display: Certificate (Required for HTTPS)
   required: false
-  defaultvalue:
   type: 9
   displaypassword: Private Key (Required for HTTPS)
-  hiddenusername: false
   section: Connect
   advanced: true
 - display: Certificate (Required for HTTPS)

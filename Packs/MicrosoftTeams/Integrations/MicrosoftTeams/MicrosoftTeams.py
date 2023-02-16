@@ -28,10 +28,10 @@ USE_SSL: bool = not PARAMS.get('insecure', False)
 APP: Flask = Flask('demisto-teams')
 PLAYGROUND_INVESTIGATION_TYPE: int = 9
 GRAPH_BASE_URL: str = 'https://graph.microsoft.com'
-PRIVATE_KEY = replace_spaces_in_credential(PARAMS.get('creds_certificate', {}).get('password', '')) \
-    or demisto.params().get('key', '')
 CERTIFICATE = replace_spaces_in_credential(PARAMS.get('creds_certificate', {}).get('identifier', '')) \
     or demisto.params().get('certificate', '')
+PRIVATE_KEY = replace_spaces_in_credential(PARAMS.get('creds_certificate', {}).get('password', '')) \
+    or demisto.params().get('key', '')
 
 INCIDENT_TYPE: str = PARAMS.get('incidentType', '')
 
