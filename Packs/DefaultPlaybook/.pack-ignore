@@ -6,3 +6,6 @@ ignore=PA125
 
 [file:Default_8_0.yml]
 ignore=BA101
+
+[known_words]
+Deduplicates
