@@ -8,6 +8,8 @@
       "event_data": {
         "event": "null",
         "_raw_log": "",
+        "_vendor": "alibaba",
+        "_product": "action_trail",
         "event_eventid": "abc123",
         "event_eventrw": "Read",
         "event_acsregion": "TLV",
