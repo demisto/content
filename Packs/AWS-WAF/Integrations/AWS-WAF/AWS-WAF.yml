@@ -797,6 +797,91 @@ script:
     description: Delete a specific rule group.
     execution: false
     name: aws-waf-rule-group-delete
+
+
+  - arguments:
+      - name: name
+        description: The rule group name.
+        required: true
+      - name: scope
+        description: The rule group scope.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - "CLOUDFRONT"
+          - "REGIONAL"
+      - name: capacity
+        description: The rule group capacity.
+        required: true
+      - name: description
+        description: The rule group description.
+      - name: cloud_watch_metrics_enabled
+        description: whether the associated resource sends metrics to Amazon CloudWatch.
+        defaultValue: 'true'
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: metric_name
+        description: The name of the Amazon CloudWatch metric dimension. The name can contain only the alphanumeric characters, hyphen, and underscore. The name can be from one to 128 characters long. It can't contain whitespace or metric names that are reserved for AWS WAF.
+        defaultValue: 'group_name'
+      - name: sampled_requests_enabled
+        description: whether to store a sampling of the web requests that match the rules.
+        defaultValue: 'true'
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: region
+        description: The AWS Region. If not specified the default region will be used.
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - ca-central-1
+          - eu-west-1
+          - eu-central-1
+          - eu-west-2
+          - ap-northeast-1
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-south-1
+          - sa-east-1
+          - eu-north-1
+          - eu-west-3
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: tag_key
+        description: A comma separated list of the keys of the tags to associate with the rule group.
+        isArray: true
+      - name: tag_value
+        description: A comma separated list of the values of the tags to associate with the rule group.
+        isArray: true
+    deprecated: false
+    description: Create a new rule group.
+    execution: false
+    name: aws-waf-rule-group-create
+    outputs:
+      - contextPath: AWS.Waf.RuleGroup.Id
+        description: The rule group ID.
+        type: String
+      - contextPath: AWS.Waf.RuleGroup.Name
+        description: The rule group name.
+        type: String
+      - contextPath: AWS.Waf.RuleGroup.Description
+        description: The rule group description.
+        type: String
+      - contextPath: AWS.Waf.RuleGroup.LockToken
+        description: The ip set lock token.
+        type: String
+      - contextPath: AWS.Waf.RuleGroup.ARN
+        description: The rule group Amazon Resource Name.
+        type: String
+
+
   isfetch: false
   runonce: false
   script: '-'

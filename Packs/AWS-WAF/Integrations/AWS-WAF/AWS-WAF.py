@@ -41,6 +41,7 @@ def build_regex_pattern_object(regex_patterns: list) -> List[dict]:
 
     return regex_patterns_objects
 
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -338,7 +339,7 @@ def get_rule_group_command(client: boto3.client, args) -> CommandResults:
     return CommandResults(readable_output=readable_output,
                           outputs=outputs,
                           raw_response=response,
-                          outputs_prefix=f'{OUTPUT_PREFIX}.RegexSet',
+                          outputs_prefix=f'{OUTPUT_PREFIX}.RuleGroup',
                           outputs_key_field='Id')
 
 
@@ -359,6 +360,40 @@ def delete_rule_group_command(client: boto3.client, args) -> CommandResults:
 
     return CommandResults(readable_output=readable_output,
                           raw_response=response)
+
+
+def create_rule_group_command(client: boto3.client, args) -> CommandResults:
+    tag_keys = argToList(args.get('tag_key')) or []
+    tag_values = argToList(args.get('tag_value')) or []
+
+    visibility_config = {
+                    'CloudWatchMetricsEnabled': argToBoolean(args.get('cloud_watch_metrics_enabled', '')) or True,
+                    'MetricName': args.get('metric_name', ''),
+                    'SampledRequestsEnabled': argToBoolean(args.get('sampled_requests_enabled', '')) or True
+                }
+
+    kwargs = {
+        'Name': args.get('name', ''),
+        'Scope': args.get('scope', ''),
+        'Capacity': arg_to_number(args.get('capacity', '')),
+        'VisibilityConfig': visibility_config
+    }
+
+    if description := args.get('description'):
+        kwargs |= {'Description': description}
+    if tags := get_tags_dict_from_args(tag_keys, tag_values):
+        kwargs |= {'Tags': tags}
+
+    response = client.create_rule_group(**kwargs)
+    outputs = response.get('Summary', {})
+
+    readable_output = f'AWS Waf rule group with id {outputs.get("Id", "")} was created successfully'
+
+    return CommandResults(readable_output=readable_output,
+                          outputs=outputs,
+                          raw_response=response,
+                          outputs_prefix=f'{OUTPUT_PREFIX}.RuleGroup',
+                          outputs_key_field='Id')
 
 
 ''' MAIN FUNCTION '''
