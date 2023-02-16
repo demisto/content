@@ -26,7 +26,7 @@ outputs:
   description: The IPv4 Address.
   type: string
 - contextPath: IP.Private
-  description: Whether the IP address is private or public, according to the ranges defined in the XSOAR list, which is provided in the PrivateIPRangeList argument.
+  description: Whether the IP address is private or public, according to the ranges defined in the Cortex XSOAR list, which is provided in the PrivateIPRangeList argument.
   type: boolean
 - contextPath: IP.Tag
   description: Any tags that were added to the indicator. The tags are added by this script if they were specified for the IP or IP range in the XSOAR list.
