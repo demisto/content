@@ -1,6 +1,6 @@
 .filter-non-nightly-docker-updates-rule:
   rules:
-    - if: '$CI_COMMIT_BRANCH =~ /^demisto\// && $CI_COMMIT_BRANCH =~ /.*[^-]nightly$/'
+    - if: '$CI_COMMIT_BRANCH =~ /^demisto\// && $CI_COMMIT_BRANCH !~ /.*[^-]nightly$/'
       when: never
 
 .push-rule:
