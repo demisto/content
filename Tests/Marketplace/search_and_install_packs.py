@@ -240,6 +240,7 @@ def find_malformed_pack_id(body: str) -> List:
         else:
             # the error is returned as a list of error
             errors_info = response_info.get('errors', [])
+        logging.error(f'the given error is: {errors_info}')
         for error in errors_info:
             if 'pack id: ' in error:
                 malformed_ids.extend(error.split('pack id: ')[1].replace(']', '').replace('[', '').replace(
@@ -347,11 +348,11 @@ def install_packs(client: demisto_client,
         try:
             logging.info(f'Installing packs {", ".join([p.get("id") for p in packs_to_install])} on server {host}. '
                          f'Attempts left on failure: {attempts_count}.')
+            body = {'packs': packs, 'ignoreWarnings': True}
             response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                                 path='/contentpacks/marketplace/install',
                                                                                 method='POST',
-                                                                                body={'packs': packs,
-                                                                                      'ignoreWarnings': True},
+                                                                                body=body,
                                                                                 accept='application/json',
                                                                                 _request_timeout=request_timeout)
 
