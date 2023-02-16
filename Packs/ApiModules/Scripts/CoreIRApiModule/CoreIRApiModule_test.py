@@ -3073,7 +3073,7 @@ def test_endpoint_alias_change_command__diffrent_alias_new_names(mocker, input, 
     Given:
     - command arguments with endpoint filters, in the first case the new alias name is a string of text,
     and in the second case the new alias name is a string of only double quotes.
-    
+
     when:
     - executing the endpoint-alias-change command
     then:
