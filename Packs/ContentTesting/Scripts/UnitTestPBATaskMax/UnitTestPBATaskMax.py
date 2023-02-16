@@ -29,7 +29,7 @@ class WidgetStat(TypedDict):
 
 
 def NewWidgetStat(name: str, color: str, label: str, data: list) -> WidgetStat:
-    wstat: WidgetStat = {'name': name, 'color': color, 'data': [data], 'label': label, 'groups': None}
+    wstat: WidgetStat = {'name': name, 'color': color, 'data': [data], 'label': label, 'groups': []}
     return wstat
 
 

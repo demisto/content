@@ -26,7 +26,9 @@ class TaskStat(TypedDict):
     count: int
     completed: int
     started: int
+    waiting: int
     notexecuted: int
+    error: int
 
 
 class WidgetStat(TypedDict):
@@ -65,14 +67,14 @@ def TaskWidget(tstat: TaskStat) -> list[WidgetGroup]:
     return group
 
 
-def WidgetStatGroup(wstats: list[WidgetStat], name: str, stat: Dict) -> list[WidgetStat]:
+def TaskWidgetGroup(wstats: list[WidgetStat], name: str, stat: list[WidgetGroup]) -> list[WidgetStat]:
     w: WidgetStat = NewWidgetStatGroup(name, stat)
     wstats.append(w)
     return wstats
 
 
-def NewWidgetStatGroup(name: str, data: list) -> WidgetStat:
-    wstat: WidgetStat = {'name': name, 'groups': data}
+def NewWidgetStatGroup(name: str, data: list[WidgetGroup]) -> WidgetStat:
+    wstat: WidgetStat = {'name': name, 'groups': data, 'data': [], 'label': "", 'color': ""}
     return wstat
 
 
@@ -93,7 +95,7 @@ def main():
         wstats: list[WidgetStat] = []
         for key, val in stats.items():
             tw = TaskWidget(val)
-            wstats = WidgetStatGroup(wstats, val['name'], tw)
+            wstats = TaskWidgetGroup(wstats, val['name'], tw)
         widget = NewWidget("bar", "vertical", wstats)
         demisto.results(widget)
     except Exception as ex:
