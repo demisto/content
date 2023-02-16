@@ -33,10 +33,10 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.9.44472
+dockerimage: demisto/python3:3.10.10.48392
 runas: DBotWeakRole
 fromversion: 6.5.0
 marketplaces:
 - xsoar
 tests:
-- No tests (auto formatted)
+- IsIPPrivate - Test
