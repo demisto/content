@@ -1,0 +1,1010 @@
+id: Cortex ASM - Remediation Path Rules
+version: -1
+name: Cortex ASM - Remediation Path Rules
+description: This playbook returns "RemediationAction" options based return from Remediation Path Rules API, or defaults to data collection task options from "Cortex ADM - Decision" subplaybook.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: edfb3225-8311-460f-8ada-6880afcf1a27
+    type: start
+    task:
+      id: edfb3225-8311-460f-8ada-6880afcf1a27
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: dd8fa5b7-db52-4a2e-8b67-12e013dc9928
+    type: regular
+    task:
+      id: dd8fa5b7-db52-4a2e-8b67-12e013dc9928
+      version: -1
+      name: List remediation path rules
+      description: Returns list of remediation path rules.
+      script: '|||asm-list-remediation-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      asm_rule_id:
+        complex:
+          root: alert
+          accessor: asmattacksurfaceruleid
+          transformers:
+          - operator: StripChars
+            args:
+              chars:
+                value:
+                  simple: '[\"]'
+      sort_by_creation_time:
+        simple: desc
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 53cd243d-e2d6-49ca-8e7e-435d958c0ae5
+    type: condition
+    task:
+      id: 53cd243d-e2d6-49ca-8e7e-435d958c0ae5
+      version: -1
+      name: Was there a result?
+      description: Determines if there was a result from the previous command to continue.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.RemediationRule
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 9d3d0c7b-7131-4557-85b8-e32f167c1c38
+    type: regular
+    task:
+      id: 9d3d0c7b-7131-4557-85b8-e32f167c1c38
+      version: -1
+      name: Evaluate remediation path rules
+      description: For a given alert and remediation path rules that are defined for that alert's attack surface rule, this takes each remediation path rule and looks at the rule criteria too see if the rule matches for the given alert. If multiple rules match, it will return the most recently created rule. This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule.
+      scriptName: RemediationPathRuleEvaluation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      cloud_managed:
+        complex:
+          root: alert
+          accessor: asmcloud
+      development_environment:
+        complex:
+          root: alert
+          accessor: asmdevcheck
+      ip:
+        complex:
+          root: alert
+          accessor: remoteip
+      providers:
+        complex:
+          root: inputs.ExternallyDetectedProviders
+      remediation_path_rules:
+        complex:
+          root: ASM
+          accessor: RemediationRule
+      service_owner_identified:
+        complex:
+          root: alert
+          accessor: asmserviceowner
+      severity:
+        complex:
+          root: alert
+          accessor: severity
+      tags:
+        complex:
+          root: alert
+          accessor: asmtags
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 5e4c0cb4-c708-4b18-8fec-5dafaa201ef8
+    type: title
+    task:
+      id: 5e4c0cb4-c708-4b18-8fec-5dafaa201ef8
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 59707f87-7c81-4617-89fc-cc923d071cbb
+    type: condition
+    task:
+      id: 59707f87-7c81-4617-89fc-cc923d071cbb
+      version: -1
+      name: Meets automated remediation requirements?
+      description: Determines if the alert meets the criteria for automated remediation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: asmattacksurfaceruleid
+                transformers:
+                - operator: StripChars
+                  args:
+                    chars:
+                      value:
+                        simple: '[\"]'
+            iscontext: true
+          right:
+            value:
+              simple: RdpServer,InsecureOpenSSH,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer,SnmpServer
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: alert.asmcloud
+                accessor: Provider
+            iscontext: true
+          right:
+            value:
+              simple: AWS,GCP,Azure
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: asmserviceowner
+            iscontext: true
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: asmdevcheck
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": -320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 46bcd9bd-3ea9-4788-8976-147b158e6a80
+    type: condition
+    task:
+      id: 46bcd9bd-3ea9-4788-8976-147b158e6a80
+      version: -1
+      name: Is Cortex ASM enabled?
+      description: Determines if the "Cortex Attack Surface Management" integration instance is configured to pull Remediation Path Rules.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex Attack Surface Management
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 6f59063d-f5a0-45ce-8ba2-eca5c8500796
+    type: condition
+    task:
+      id: 6f59063d-f5a0-45ce-8ba2-eca5c8500796
+      version: -1
+      name: Is ServiceNow v2 enabled?
+      description: Determines if the "ServiceNow v2" integration instance is enabled in order to send ServiceNow tickets as notifications.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ServiceNow v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": -320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: d766bc5a-dbe7-4212-8c25-df2066c04db2
+    type: regular
+    task:
+      id: d766bc5a-dbe7-4212-8c25-df2066c04db2
+      version: -1
+      name: Set ServiceNowv2Enabled to true
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: ServiceNowv2Enabled
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: ec2b3b7c-2b7e-452d-843b-3c008ff02f49
+    type: regular
+    task:
+      id: ec2b3b7c-2b7e-452d-843b-3c008ff02f49
+      version: -1
+      name: Set ServiceNowv2Enabled to false
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: ServiceNowv2Enabled
+      value:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 232f64dc-79ee-4cdc-8204-abdcc8bd6c31
+    type: regular
+    task:
+      id: 232f64dc-79ee-4cdc-8204-abdcc8bd6c31
+      version: -1
+      name: Set AutoRemediationRequirements to true
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: AutoRemediationRequirements
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 11b9d93a-4c59-4d3b-856a-ce1e710c64ea
+    type: regular
+    task:
+      id: 11b9d93a-4c59-4d3b-856a-ce1e710c64ea
+      version: -1
+      name: Set AutoRemediationRequirements to false
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: AutoRemediationRequirements
+      value:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: cf490238-a6ad-4810-8836-2f34a81643ba
+    type: playbook
+    task:
+      id: cf490238-a6ad-4810-8836-2f34a81643ba
+      version: -1
+      name: Cortex ASM - Decision
+      playbookName: Cortex ASM - Decision
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      AutoRemediationRequirements:
+        complex:
+          root: AutoRemediationRequirements
+      ServiceNowv2Enabled:
+        complex:
+          root: ServiceNowv2Enabled
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: dfd5d2a3-1680-4e15-8d36-ca100b6953a6
+    type: condition
+    task:
+      id: dfd5d2a3-1680-4e15-8d36-ca100b6953a6
+      version: -1
+      name: Was there a match?
+      description: Determines if a matching remediation path rule was found based on population of the "ASM - Remediation Path Rule" field.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: asmremediationpathrule
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: b9afa33d-f4d0-42b1-8676-bd3180067bbd
+    type: condition
+    task:
+      id: b9afa33d-f4d0-42b1-8676-bd3180067bbd
+      version: -1
+      name: What is the action of the matched rule?
+      description: Determines what is returned to the parent playbook based on contents of "ASM - Remediation Path Rule" field and other requirements.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      Manual:
+      - "27"
+      return AR:
+      - "24"
+      return Email:
+      - "26"
+      return SNOW:
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: return AR
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmremediationpathrule
+                accessor: action
+            iscontext: true
+          right:
+            value:
+              simple: automated_remediation
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AutoRemediationRequirements
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    - label: return SNOW
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmremediationpathrule
+                accessor: action
+            iscontext: true
+          right:
+            value:
+              simple: servicenow
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ServiceNowv2Enabled
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    - label: return Email
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmremediationpathrule
+                accessor: action
+            iscontext: true
+          right:
+            value:
+              simple: email
+    - label: Manual
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmremediationpathrule
+                accessor: action
+            iscontext: true
+          right:
+            value:
+              simple: manual_remediation
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 23ac2f5c-4a17-4d9d-8d00-2656f8ad4d4b
+    type: regular
+    task:
+      id: 23ac2f5c-4a17-4d9d-8d00-2656f8ad4d4b
+      version: -1
+      name: Return AR
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      key:
+        simple: RemediationAction
+      value:
+        simple: AR
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 474d7ebe-d169-472a-8582-1e31d1eeedc4
+    type: regular
+    task:
+      id: 474d7ebe-d169-472a-8582-1e31d1eeedc4
+      version: -1
+      name: Return SNOW
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      key:
+        simple: RemediationAction
+      value:
+        simple: SNOW
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 521d8d56-42fc-4d34-8e04-79fdedc75f07
+    type: regular
+    task:
+      id: 521d8d56-42fc-4d34-8e04-79fdedc75f07
+      version: -1
+      name: Return Email
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      key:
+        simple: RemediationAction
+      value:
+        simple: Email
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 99b4d0f9-cef1-4b3f-8c2c-efcdb7dc2ee7
+    type: regular
+    task:
+      id: 99b4d0f9-cef1-4b3f-8c2c-efcdb7dc2ee7
+      version: -1
+      name: Return Manual
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      key:
+        simple: RemediationAction
+      value:
+        simple: Manual
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: f5b40854-83e1-44db-8157-a2eaf51ed544
+    type: regular
+    task:
+      id: f5b40854-83e1-44db-8157-a2eaf51ed544
+      version: -1
+      name: Get current time
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: bff62ba0-bcad-4e52-8b6d-e2eff6a8b666
+    type: regular
+    task:
+      id: bff62ba0-bcad-4e52-8b6d-e2eff6a8b666
+      version: -1
+      name: Set timestamp
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: RPR_Timestamp
+      value:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: TimeStampToDate
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_21_#default#": 0.3,
+      "3_21_#default#": 0.34
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2200,
+        "width": 2110,
+        "x": -400,
+        "y": -470
+      }
+    }
+  }
+inputs:
+- key: ExternallyDetectedProviders
+  value: {}
+  required: false
+  description: Providers of external service.
+  playbookInputQuery:
+outputs:
+- contextPath: RemediationAction
+  description: Remediation action to be taken.
+  type: string
+- contextPath: RPR_Timestamp
+  description: Timestamp of when the remediation path rule action was determined.
+  type: string
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
