@@ -34,6 +34,13 @@ def get_tags_dict_from_args(tag_keys: list, tag_values: list) -> List[dict]:
     return tags
 
 
+def build_regex_pattern_object(regex_patterns: list) -> List[dict]:
+    regex_patterns_objects: list = []
+    for regex_pattern in regex_patterns:
+        regex_patterns_objects.append({'RegexString': regex_pattern})
+
+    return regex_patterns_objects
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -56,7 +63,7 @@ def module(client: boto3.client) -> str:
 
 def create_ip_set_command(client: boto3.client, args) -> CommandResults:
     tag_keys = argToList(args.get('tag_key')) or []
-    tag_values = args.get('tag_value') or []
+    tag_values = argToList(args.get('tag_value')) or []
     kwargs = {
         'Name': args.get('name', ''),
         'Scope': args.get('scope', ''),
@@ -165,11 +172,131 @@ def delete_ip_set_command(client: boto3.client, args) -> CommandResults:
 
     response = client.delete_ip_set(**kwargs)
 
-    readable_output = f'AWS Waf ip set with id {args.get("Id", "")} was deleted successfully'
+    readable_output = f'AWS Waf ip set with id {args.get("id", "")} was deleted successfully'
 
     return CommandResults(readable_output=readable_output,
                           raw_response=response)
 
+
+def create_regex_set_command(client: boto3.client, args) -> CommandResults:
+    tag_keys = argToList(args.get('tag_key')) or []
+    tag_values = argToList(args.get('tag_value')) or []
+    regex_patterns = argToList(args.get('regex_pattern')) or []
+    kwargs = {
+        'Name': args.get('name', ''),
+        'Scope': args.get('scope', ''),
+        'RegularExpressionList': build_regex_pattern_object(regex_patterns)
+    }
+
+    if description := args.get('description'):
+        kwargs |= {'Description': description}
+    if tags := get_tags_dict_from_args(tag_keys, tag_values):
+        kwargs |= {'Tags': tags}
+
+    response = client.create_regex_pattern_set(**kwargs)
+    outputs = response.get('Summary', {})
+
+    readable_output = f'AWS Waf regex set with id {outputs.get("Id", "")} was created successfully'
+
+    return CommandResults(readable_output=readable_output,
+                          outputs=outputs,
+                          raw_response=response,
+                          outputs_prefix=f'{OUTPUT_PREFIX}.RegexSet',
+                          outputs_key_field='Id')
+
+
+def get_regex_set_command(client: boto3.client, args) -> CommandResults:
+    kwargs = {
+        'Name': args.get('name', ''),
+        'Scope': args.get('scope', ''),
+        'Id': args.get('id', '')
+    }
+
+    response = client.get_regex_pattern_set(**kwargs)
+
+    outputs = response.get('RegexPatternSet', {})
+
+    readable_output = tableToMarkdown('Regex Set', outputs)
+
+    return CommandResults(readable_output=readable_output,
+                          outputs=outputs,
+                          raw_response=response,
+                          outputs_prefix=f'{OUTPUT_PREFIX}.RegexSet',
+                          outputs_key_field='Id')
+
+
+def update_regex_set_command(client: boto3.client, args) -> CommandResults:
+    kwargs = {
+        'Name': args.get('name', ''),
+        'Scope': args.get('scope', ''),
+        'Id': args.get('id', '')
+    }
+
+    patterns_to_update = build_regex_pattern_object(argToList(args.get('regex_pattern')))
+    overwrite = argToBoolean(args.get('is_overwrite')) or False
+    print(overwrite)
+
+    get_response = client.get_regex_pattern_set(**kwargs)
+
+    lock_token = get_response.get('LockToken', '')
+    original_patterns = get_response.get('RegexPatternSet', {}).get('RegularExpressionList')
+    if not overwrite:
+        patterns_to_update.extend(original_patterns)
+
+    print(patterns_to_update)
+    print(original_patterns)
+
+    kwargs |= {'LockToken': lock_token, 'RegularExpressionList': patterns_to_update}
+
+    if description := args.get('description'):
+        kwargs |= {'Description': description}
+
+    response = client.update_regex_pattern_set(**kwargs)
+
+    readable_output = f'AWS Waf ip set with id {args.get("Id", "")} was updated successfully. ' \
+                      f'Next Lock Token: {response.get("NextLockToken")}'
+
+    return CommandResults(readable_output=readable_output,
+                          raw_response=response)
+
+
+def list_regex_set_command(client: boto3.client, args) -> CommandResults:
+    kwargs = {
+        'Scope': args.get('scope', ''),
+        'Limit': arg_to_number(args.get('limit')) or 50
+    }
+
+    if next_marker := args.get('next_token'):
+        kwargs |= {'NextMarker': next_marker}
+
+    response = client.list_regex_pattern_sets(**kwargs)
+
+    readable_output = tableToMarkdown('List regex Sets', response, is_auto_json_transform=True)
+
+    return CommandResults(readable_output=readable_output,
+                          outputs=response,
+                          raw_response=response,
+                          outputs_prefix=f'{OUTPUT_PREFIX}.RegexSet',
+                          outputs_key_field='Id')
+
+
+def delete_regex_set_command(client: boto3.client, args) -> CommandResults:
+    kwargs = {
+        'Name': args.get('name', ''),
+        'Scope': args.get('scope', ''),
+        'Id': args.get('id', '')
+    }
+
+    get_response = client.get_regex_pattern_set(**kwargs)
+
+    kwargs |= {'LockToken': get_response.get('LockToken', '')}
+
+    response = client.delete_regex_pattern_set(**kwargs)
+
+    readable_output = f'AWS Waf regex set with id {args.get("id", "")} was deleted successfully'
+
+    return CommandResults(readable_output=readable_output,
+                          raw_response=response)
 
 ''' MAIN FUNCTION '''
 
@@ -221,6 +348,17 @@ def main() -> None:
             result = list_ip_set_command(client, args)
         elif demisto.command() == 'aws-waf-ip-set-delete':
             result = delete_ip_set_command(client, args)
+
+        elif demisto.command() == 'aws-waf-regex-set-create':
+            result = create_regex_set_command(client, args)
+        elif demisto.command() == 'aws-waf-regex-set-get':
+            result = get_regex_set_command(client, args)
+        elif demisto.command() == 'aws-waf-regex-set-update':
+            result = update_regex_set_command(client, args)
+        elif demisto.command() == 'aws-waf-regex-set-list':
+            result = list_regex_set_command(client, args)
+        elif demisto.command() == 'aws-waf-regex-set-delete':
+            result = delete_regex_set_command(client, args)
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} is not implemented in AWS WAF integration.')

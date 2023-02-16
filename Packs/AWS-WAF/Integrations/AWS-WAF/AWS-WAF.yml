@@ -103,7 +103,7 @@ script:
       - "CLOUDFRONT"
       - "REGIONAL"
     - name: addresses
-      description: The IP set addresses.
+      description: A comma separated list of the IP set addresses.
       isArray: true
     - name: description
       description: The IP set description.
@@ -212,8 +212,11 @@ script:
     - contextPath: AWS.Waf.IpSet.Description
       description: The ip set description.
       type: String
-    - contextPath: AWS.Waf.IpSet.LockToken
-      description: The ip set lock token.
+    - contextPath: AWS.Waf.IpSet.IPAddressVersion
+      description: The ip set ip version.
+      type: String
+    - contextPath: AWS.Waf.IpSet.Addresses
+      description: The ip set ip addresses.
       type: String
     - contextPath: AWS.Waf.IpSet.ARN
       description: The ip set ARN.
@@ -233,7 +236,7 @@ script:
       description: The IP set ID.
       required: true
     - name: addresses
-      description: The IP set addresses.
+      description: A comma separated list of the IP set addresses.
       isArray: true
     - name: description
       description: The IP set description.
@@ -369,6 +372,280 @@ script:
     description: Delete a specific ip set.
     execution: false
     name: aws-waf-ip-set-delete
+  - arguments:
+    - name: name
+      description: The regex set name.
+      required: true
+    - name: scope
+      description: The regex set scope.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "CLOUDFRONT"
+      - "REGIONAL"
+    - name: regex_pattern
+      description: A comma separated list of the regex patterns.
+      isArray: true
+    - name: description
+      description: The regex set description.
+    - name: region
+      description: The AWS Region. If not specified the default region will be used.
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: tag_key
+      description: A comma separated list of the keys of the tags to associate with the regex set.
+      isArray: true
+    - name: tag_value
+      description: A comma separated list of the values of the tags to associate with the regex set.
+      isArray: true
+    deprecated: false
+    description: Create a new regex set.
+    execution: false
+    name: aws-waf-regex-set-create
+    outputs:
+    - contextPath: AWS.Waf.RegexSet.Id
+      description: The regex set ID.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.Name
+      description: The regex set name.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.Description
+      description: The regex set description.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.LockToken
+      description: The regex set lock token.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.ARN
+      description: The regex set ARN.
+      type: String
+  - arguments:
+    - name: name
+      description: The regex set name.
+      required: true
+    - name: scope
+      description: The regex set scope.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "CLOUDFRONT"
+      - "REGIONAL"
+    - name: id
+      description: The regex set ID.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified the default region will be used.
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+        - us-gov-east-1
+        - us-gov-west-1
+    deprecated: false
+    description: Get a specific regex set.
+    execution: false
+    name: aws-waf-regex-set-get
+    outputs:
+    - contextPath: AWS.Waf.RegexSet.Id
+      description: The regex set ID.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.Name
+      description: The regex set name.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.Description
+      description: The regex set description.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.RegularExpressionList
+      description: The regex set patterns list.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.ARN
+      description: The regex set ARN.
+      type: String
+  - arguments:
+    - name: name
+      description: The regex set name.
+      required: true
+    - name: scope
+      description: The regex set scope.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "CLOUDFRONT"
+      - "REGIONAL"
+    - name: id
+      description: The regex set ID.
+      required: true
+    - name: regex_pattern
+      description: A comma separated list of the regex patterns.
+      isArray: true
+    - name: description
+      description: The regex set description.
+    - name: region
+      description: The AWS Region. If not specified the default region will be used.
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+        - us-gov-east-1
+        - us-gov-west-1
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to overwrite the original regex patterns.
+      isArray: false
+      name: is_overwrite
+      predefined:
+        - 'true'
+        - 'false'
+    deprecated: false
+    description: Update a regex set.
+    execution: false
+    name: aws-waf-regex-set-update
+
+
+  - arguments:
+    - name: scope
+      description: The regex set scope.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "CLOUDFRONT"
+      - "REGIONAL"
+    - name: next_token
+      description: The token for the next page.
+    - name: limit
+      defaultValue: '50'
+      description: The maximum number of results to return.
+    - name: region
+      description: The AWS Region. If not specified the default region will be used.
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+        - us-gov-east-1
+        - us-gov-west-1
+    deprecated: false
+    description: Lists regex sets.
+    execution: false
+    name: aws-waf-regex-set-list
+    outputs:
+    - contextPath: AWS.Waf.RegexSet.RegexPatternSets.Id
+      description: The regex set ID.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.RegexPatternSets.Name
+      description: The regex set name.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.RegexPatternSets.Description
+      description: The regex set description.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.RegexPatternSets.LockToken
+      description: The regex set lock token.
+      type: String
+    - contextPath: AWS.Waf.RegexSet.RegexPatternSets.ARN
+      description: The regex set ARN.
+    - contextPath: AWS.Waf.RegexSet.NextMarker
+      description: The token for the next page.
+      type: String
+  - arguments:
+    - name: name
+      description: The regex set name.
+      required: true
+    - name: scope
+      description: The regex set scope.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "CLOUDFRONT"
+      - "REGIONAL"
+    - name: id
+      description: The regex set ID.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified the default region will be used.
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+        - us-gov-east-1
+        - us-gov-west-1
+    deprecated: false
+    description: Delete a specific regex set.
+    execution: false
+    name: aws-waf-regex-set-delete
+
   isfetch: false
   runonce: false
   script: '-'
