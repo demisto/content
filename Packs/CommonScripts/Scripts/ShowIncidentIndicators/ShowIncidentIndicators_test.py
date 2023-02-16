@@ -11,17 +11,13 @@ def test_group_by_type():
     assert result == expected
 
 
-def test_get_indicators_from_incident():
-    def mock_execute_command(command, args):
-        return [{"indicator_type": "IP", "value": "1.1.1.1"},
+def test_get_indicators_from_incident(mocker):
+
+    execute_command_output = [{"indicator_type": "IP", "value": "1.1.1.1"},
                   {"indicator_type": "IP", "value": "2.2.2.2"},
                   {"indicator_type": "Domain", "value": "test.com"}]
-
-    def mock_incident():
-        return {"id": 123}
-
-    demisto.execute_command = mock_execute_command
-    demisto.incident = mock_incident
+    mocker.patch.object(demisto, 'executeCommand', return_value=mock_execute_command_output)
+    mocker.patch.object(demisto, 'incidents', return_value={"id": 123})
 
     expected = {"hidden": False, "options": ["--- IP ---", "1.1.1.1", "2.2.2.2", "", "--- Domain ---", "test.com", ""]}
     result = get_indicators_from_incident()
