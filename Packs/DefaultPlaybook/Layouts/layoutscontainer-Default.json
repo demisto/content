@@ -404,7 +404,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Incident Data",
-                        "query": "displayAlertFields",
+                        "query": "displayMappedFields",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
