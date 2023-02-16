@@ -206,8 +206,7 @@ references:
         dockerimageflag:
           type: string
       name: Run Unit Testing And Lint - Docker Image:<< parameters.dockerimageflag >>
-      when:
-        condition: << pipeline.parameters.contrib_branch >>
+      when: always
       no_output_timeout: 5h
       command: |
         if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
@@ -293,6 +292,8 @@ references:
             dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "from-yml" ]
         name: Run Unit Testing And Lint - Docker Image:<< matrix.dockerimageflag >>
     - Run Validations:
+        when:
+            condition: << pipeline.parameters.contrib_branch >>
         requires:
           - Setup Environment
 
@@ -359,8 +360,7 @@ jobs:
             fi
       - run:
           name: Validate landingPageSections.json
-          when:
-            condition: << pipeline.parameters.contrib_branch >>
+          when: always
           command: |
             # Download index.zip
             INDEX_PATH=$(mktemp)
@@ -392,6 +392,8 @@ workflows:
               dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "from-yml" ]
           name: Run Unit Testing And Lint - Docker Image:<< matrix.dockerimageflag >>
       - Run Validations:
+          when:
+            condition: << pipeline.parameters.contrib_branch >>
           requires:
             - Setup Environment
 
