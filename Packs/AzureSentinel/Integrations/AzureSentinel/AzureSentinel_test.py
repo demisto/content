@@ -18,7 +18,7 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     get_modified_remote_data_command, get_remote_data_command, get_remote_incident_data, get_mapping_fields_command, \
     update_remote_system_command, update_remote_incident, close_incident_in_remote, update_incident_request, \
     set_xsoar_incident_entries, build_threat_indicator_data, DEFAULT_SOURCE, \
-    list_alert_rule_command
+    list_alert_rule_command, list_alert_rule_template_command
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -1694,6 +1694,15 @@ def test_update_incident_request(mocker, data, delta, mock_response, close_ticke
     ({'rule_id': 'rule1'})
 ])
 def test_list_alert_rule_command(mocker, args):
+    """
+    Given
+        - client
+        - args with limit or rule_id
+    When
+        - running list_alert_rule_command
+    Then
+        - Ensure the function returns the expected alert rule
+    """
     prefix_file = 'get' if args.get('rule_id') else 'list'
     with open(f'test_data/{prefix_file}_alert_rule-mock_response.json', 'r') as file:
         mock_response = json.load(file)
@@ -1707,6 +1716,43 @@ def test_list_alert_rule_command(mocker, args):
         assert command_results.outputs == mock_response.get("value", [])[:limit]
 
     elif rule_id := args.get("rule_id"):
+        assert command_results.outputs == [mock_response]
+        assert command_results.outputs[0].get("name") == rule_id
+
+    else:
+        assert command_results.outputs == mock_response.get("value", [])
+        assert len(command_results.outputs) == len(mock_response.get("value", []))
+
+
+@pytest.mark.parametrize("args", [
+    ({}),
+    ({"limit": 1}),
+    ({"limit": 2}),
+    ({'template_id': 'template1'})
+])
+def test_list_alert_rule_template_command(mocker, args):
+    """
+    Given
+        - client
+        - args with limit or rule_id
+    When
+        - running list_alert_rule_template_command
+    Then
+        - Ensure the function returns the expected alert rule template
+    """
+    prefix_file = 'get' if args.get('template_id') else 'list'
+    with open(f'test_data/{prefix_file}_alert_rule_template-mock_response.json', 'r') as file:
+        mock_response = json.load(file)
+
+    client = mock_client()
+    mocker.patch.object(client, 'http_request', return_value=mock_response)
+    command_results = list_alert_rule_template_command(client, args)
+
+    if limit := args.get("limit"):
+        assert len(command_results.outputs) == limit
+        assert command_results.outputs == mock_response.get("value", [])[:limit]
+
+    elif rule_id := args.get("template_id"):
         assert command_results.outputs == [mock_response]
         assert command_results.outputs[0].get("name") == rule_id
 

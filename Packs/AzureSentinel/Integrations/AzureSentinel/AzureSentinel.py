@@ -1222,9 +1222,9 @@ def fetch_incidents_additional_info(client: AzureSentinelClient, incidents: List
             info_type = additional_info.lower()
             method = additional_fetch[additional_info]['method']
             results_key = additional_fetch[additional_info]['result_key']
-            id_ = incident.get('ID')
+            incident_id = incident.get('ID')
 
-            incident[info_type] = client.http_request(method, f'incidents/{id_}/{info_type}').get(results_key)
+            incident[info_type] = client.http_request(method, f'incidents/{incident_id}/{info_type}').get(results_key)
 
 
 def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_time: str, min_severity: int) -> tuple:
