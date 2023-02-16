@@ -905,3 +905,5 @@ script:
 tests:
 - EWS search-mailbox test
 fromversion: 5.0.0
+defaultclassifier: EWS v2	
+defaultmapperin: EWS v2-mapper
