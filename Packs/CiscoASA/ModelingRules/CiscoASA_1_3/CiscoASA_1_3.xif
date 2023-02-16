@@ -1,9 +1,13 @@
 [MODEL: dataset=cisco_asa_raw]
 alter
     event_id = to_integer(arrayindex(regextract(_raw_log, "ASA\-\d\-(\d+)\:"),0)),
+    priority = arrayindex(regextract(_raw_log, "\<(\d+)\>"),0),
     severity = arrayindex(regextract(_raw_log, "\%ASA\-(\d)\-\d+\:\s"),0),
     message = arrayindex(regextract(_raw_log, "\%ASA\-\d\-\d+\:\s(.*)"),0),
-    bytes = arrayindex(regextract(_raw_log,"bytes\s*(\d+)\s+"),0)
+//direction = arrayindex(regextract(_raw_log,"Built\s+([A-Za-z]+)\s+[A-Z]+\s+connection"),0),// the field not exits on data model network
+    duration = arrayindex(regextract(_raw_log,"duration\s*(\d+\:\d+\:\d+)\s*"),0), // not have function in xql to change it to milliseconds
+    bytes = arrayindex(regextract(_raw_log,"bytes\s*(\d+)\s+"),0),
+    threat_level = arrayindex(regextract(_raw_log,"threat-level\:\s*([^\,]+)\,"),0)
 // Action
 | alter action1 = arrayindex(regextract(_raw_log ,"\d+\-\d+\:\s([a-zA-Z]+[\s|\-][a-zA-Z]{2,}\s+[a-zA-Z\s]{3,})"),0),
     action2 = arrayindex(regextract(_raw_log ,"([a-zA-Z]{3,}\s[a-zA-Z]{3,}\s[a-zA-Z\s]{3,})\.*$"),0),
@@ -56,9 +60,13 @@ alter
     source_ip3 = arrayindex(regextract(_raw_log,"[a-zA-Z0-9-_]+\:\s*(\d+\.\d+\.\d+\.\d+)\/\d+\s*\([^\)]+\)\s*\(*[^\)]*\)*\s*to"),0),
     source_port3 = arrayindex(regextract(_raw_log,"[a-zA-Z0-9-_]+\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)\s*\([^\)]+\)\s*\s*\(*[^\)]*\)*\s*to"),0),
     source_interface3 = arrayindex(regextract(_raw_log,"([a-zA-Z0-9-_]+)\:\s*\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\s*\(*[^\)]*\)*\s*toto"),0),
+    source_mapped_ip = arrayindex(regextract(_raw_log,"\d+\.\d+\.\d+\.\d+\/\d+\s*\((\d+\.\d+\.\d+\.\d+)\/\d+\)\s*to"),0),
+    source_mapped_port = arrayindex(regextract(_raw_log,"\d+\.\d+\.\d+\.\d+\/\d+\s*\(\d+\.\d+\.\d+\.\d+\/(\d+)\)\s*to"),0),
     dest_ip3 = arrayindex(regextract(_raw_log,"to\s*[a-zA-Z0-9-_]+\:(\d+\.\d+\.\d+\.\d+)\/\d+\s*"),0),
     dest_port3 = arrayindex(regextract(_raw_log,"to\s*[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/(\d+)\s*"),0),
-    dest_interface3 = arrayindex(regextract(_raw_log,"to\s*([a-zA-Z0-9-_]+)\:\d+\.\d+\.\d+\.\d+\/\d+\s*"),0)
+    dest_interface3 = arrayindex(regextract(_raw_log,"to\s*([a-zA-Z0-9-_]+)\:\d+\.\d+\.\d+\.\d+\/\d+\s*"),0),
+    dest_mapped_ip = arrayindex(regextract(_raw_log,"to\s*[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\s*\((\d+\.\d+\.\d+\.\d+)\/"),0),
+    dest_mapped_port = arrayindex(regextract(_raw_log,"to\s*[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\/]+\/(\d+)\)"),0)
 //option 4
 //from <source_ip>/<source_port> to <interface>:<source_ip>/<source_port>
 | alter
@@ -130,5 +138,4 @@ alter
     xdm.target.port = to_number(dest_port),
     xdm.target.interface = dest_interface,
     xdm.source.user.username = user_name,
-    xdm.event.operation = action,
-    xdm.event.is_completed = if(action contains "Teardown",true, false);
+    xdm.event.operation = action;
