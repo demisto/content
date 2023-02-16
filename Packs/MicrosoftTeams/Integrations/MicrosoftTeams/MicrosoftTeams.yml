@@ -62,18 +62,29 @@ configuration:
   type: 0
   defaultvalue: General
   section: Connect
+- name: creds_certificate
+  display: Certificate (Required for HTTPS)
+  required: false
+  defaultvalue:
+  type: 9
+  displaypassword: Private Key (Required for HTTPS)
+  hiddenusername: false
+  section: Connect
+  advanced: true
 - display: Certificate (Required for HTTPS)
   name: certificate
   required: false
   type: 12
   section: Connect
   advanced: true
+  hidden: true
 - display: Private Key (Required for HTTPS)
   name: key
   required: false
   type: 14
   section: Connect
   advanced: true
+  hidden: true
 - display: Minimum incident severity to send notifications to Teams by
   name: min_incident_severity
   required: false
