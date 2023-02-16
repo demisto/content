@@ -292,8 +292,6 @@ references:
             dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "from-yml" ]
         name: Run Unit Testing And Lint - Docker Image:<< matrix.dockerimageflag >>
     - Run Validations:
-        when:
-          condition: << pipeline.parameters.contrib_branch >>
         requires:
           - Setup Environment
 
@@ -336,6 +334,8 @@ jobs:
       - *store_artifacts
 
   Run Validations:
+    when:
+      condition: << pipeline.parameters.contrib_branch >>
     <<: *container_config
     resource_class: large
     <<: *environment
@@ -392,8 +392,6 @@ workflows:
               dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "from-yml" ]
           name: Run Unit Testing And Lint - Docker Image:<< matrix.dockerimageflag >>
       - Run Validations:
-          when:
-            condition: << pipeline.parameters.contrib_branch >>
           requires:
             - Setup Environment
 
