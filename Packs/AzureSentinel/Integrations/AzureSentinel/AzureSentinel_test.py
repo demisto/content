@@ -18,7 +18,7 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     get_modified_remote_data_command, get_remote_data_command, get_remote_incident_data, get_mapping_fields_command, \
     update_remote_system_command, update_remote_incident, close_incident_in_remote, update_incident_request, \
     set_xsoar_incident_entries, build_threat_indicator_data, DEFAULT_SOURCE, \
-    list_alert_rule_command, list_alert_rule_template_command
+    list_alert_rule_command, list_alert_rule_template_command, delete_alert_rule_command
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -74,6 +74,12 @@ def mock_404_response(resource_id: str):
     res.status_code = 404
     res._content = json.dumps(
         {'error': {'code': 'NotFound', 'message': f"Resource '{resource_id}' does not exist"}}).encode()
+    return res
+
+
+def mock_204_response():
+    res = requests.Response()
+    res.status_code = 204
     return res
 
 
@@ -1759,3 +1765,24 @@ def test_list_alert_rule_template_command(mocker, args):
     else:
         assert command_results.outputs == mock_response.get("value", [])
         assert len(command_results.outputs) == len(mock_response.get("value", []))
+
+
+@pytest.mark.parametrize("mock_response, expected_readable_output, expected_outputs", [
+    ({}, 'Alert rule rule1 was deleted successfully.', {'ID': 'rule1', 'Deleted': True}),  # 200 response
+    (mock_204_response(), 'Alert rule rule1 does not exist.', None)  # 204 response
+])
+def test_delete_alert_rule_command(mocker, mock_response, expected_readable_output, expected_outputs):
+    """
+    Given
+        - args with rule_id
+    When
+        - running delete_alert_rule_command
+    Then
+        - Ensure the function returns the expected command results
+    """
+    client = mock_client()
+    mocker.patch.object(client, 'http_request', return_value=mock_response)
+    command_results = delete_alert_rule_command(client, {'rule_id': 'rule1'})
+
+    assert command_results.readable_output == expected_readable_output
+    assert command_results.outputs == expected_outputs
