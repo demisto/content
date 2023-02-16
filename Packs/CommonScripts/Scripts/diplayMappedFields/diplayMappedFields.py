@@ -1,16 +1,12 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-incident = demisto.incident()
-fields = incident.get('CustomFields', {})
-
-data = fields
 
 
 def extract_keys_with_values(obj, parent_key=''):
     """Extracts the keys with values in the JSON object"""
     items = []
     for k, v in obj.items():
-        new_key = parent_key + '.' + k if parent_key else k
+        new_key = f'{parent_key}.{k}' if parent_key else k
         if isinstance(v, dict):
             items.extend(extract_keys_with_values(v, new_key))
         else:
@@ -23,11 +19,6 @@ def format_data_to_table(items):
     table = '| Field Name | Value |\n'
     for key, value in items:
         table += f'| {key} | {value} |\n'
-    return table
-
-
-def convert_to_markdown(table):
-    """Converts the table format to markdown"""
     return table
 
 
@@ -67,24 +58,26 @@ def remove_empty_rows(table):
     return filtered_table
 
 
-# Extract the keys with values
-items = extract_keys_with_values(data)
+def main():
+    # Fetch alert mapped fields
+    incident = demisto.incident()
+    fields = incident.get('CustomFields', {})
 
-# Format the data into a table
-table = format_data_to_table(items)
+    # Extract the keys with values
+    items = extract_keys_with_values(fields)
+    # Format the data into a table
+    table = format_data_to_table(items)
+    # Remove keys with empty dictionaries
+    filtered_markdown = remove_empty_rows(table)
+    # Convert the markdown to HTML
+    html = convert_to_html(filtered_markdown)
 
-# Convert the table to markdown
-markdown = convert_to_markdown(table)
+    demisto.results({
+        'ContentsFormat': formats['html'],
+        'Type': entryTypes['note'],
+        'Contents': html
+    })
 
-# Remove keys with empty dictionaries
 
-filtered_markdown = remove_empty_rows(markdown)
-
-# Convert the markdown to HTML
-html = convert_to_html(filtered_markdown)
-
-return_results({
-    'ContentsFormat': EntryFormat.HTML,
-    'Type': EntryType.NOTE,
-    'Contents': html,
-})
+if __name__ in ("builtins", "__builtin__", "__main__"):
+    main()
