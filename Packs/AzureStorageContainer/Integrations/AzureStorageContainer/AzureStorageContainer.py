@@ -18,9 +18,10 @@ class Client:
     API Client
     """
 
-    def __init__(self, server_url, verify, proxy, account_sas_token, storage_account_name, api_version):
+    def __init__(self, server_url, verify, proxy, account_sas_token, storage_account_name,
+                 api_version, managed_identities_client_id: Optional[str] = None):
         self.ms_client = MicrosoftStorageClient(server_url, verify, proxy, account_sas_token, storage_account_name,
-                                                api_version)
+                                                api_version, managed_identities_client_id)
 
     def list_containers_request(self, limit: str = None, prefix: str = None, marker: str = None) -> str:
         """
@@ -1009,8 +1010,9 @@ def main() -> None:  # pragma: no cover
     proxy = params.get('proxy', False)
     global account_sas_token
     global storage_account_name
-    account_sas_token = params['credentials']['password']
+    account_sas_token = params.get('credentials', {}).get('password')
     storage_account_name = params['credentials']['identifier']
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
     api_version = "2020-10-02"
     base_url = f'https://{storage_account_name}.blob.core.windows.net/'
     # supported api versions can be found here:
@@ -1020,7 +1022,8 @@ def main() -> None:  # pragma: no cover
 
     try:
         client: Client = Client(base_url, verify_certificate, proxy, account_sas_token, storage_account_name,
-                                api_version)
+                                api_version,
+                                managed_identities_client_id)
 
         commands = {
             'azure-storage-container-list': list_containers_command,

@@ -936,4 +936,6 @@ inputs: []
 outputs: []
 quiet: true
 fromversion: 6.5.0
+marketplaces:
+- xsoar
 description: RunZero integration test playbook. running asset-search, service-search, quota, tag-add, comment-add, tag-delete

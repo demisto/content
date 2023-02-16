@@ -1,0 +1,42 @@
+{
+    "data": [
+        {
+            "id": "id1",
+            "name": "name1",
+            "folder": "Shared",
+            "dynamic": {
+                "filter": "'Api test' or 'Hamuzim' and 'best-practice'"
+            },
+            "description": "test"
+        },
+        {
+            "id": "id2",
+            "name": "name2",
+            "folder": "Shared",
+            "static": [
+                "shachar_test2"
+            ],
+            "description": "test"
+        },
+        {
+            "id": "id3",
+            "name": "name3",
+            "folder": "Shared",
+            "dynamic": {
+                "filter": "'Microsoft 365' and 'Hamuzim'"
+            }
+        },
+        {
+            "id": "id4",
+            "name": "name4",
+            "folder": "Remote Networks",
+            "dynamic": {
+                "filter": "'Microsoft 365' and 'Hamuzim' or 'Api test'"
+            }
+        }
+
+    ],
+    "offset": 0,
+    "total": 7,
+    "limit": 200
+}

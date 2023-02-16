@@ -125,3 +125,40 @@ def test_suppress_errors(mocker, fun, mock_fun, mock_value, args, expected_resul
     mocker.patch.object(client, mock_fun, side_effect=mock_value)
     results, _, _ = fun(client, args)
     assert results == expected_result
+
+
+@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
+    """
+        Given:
+            - Managed Identities client id for authentication.
+        When:
+            - Calling test_module.
+        Then:
+            - Ensure the output are as expected.
+    """
+    from MicrosoftGraphGroups import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    import demistomock as demisto
+    import re
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
+    requests_mock.get(re.compile(f'^{Resources.graph}.*'), json={})
+
+    params = {
+        'managed_identities_client_id': {'password': client_id},
+        'use_managed_identities': 'True',
+        'url': Resources.graph
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'results', return_value=params)
+    mocker.patch('MicrosoftApiModule.get_integration_context', return_value={})
+
+    main()
+
+    assert 'ok' in demisto.results.call_args[0][0]['Contents']
+    qs = get_mock.last_request.qs
+    assert qs['resource'] == [Resources.graph]
+    assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
