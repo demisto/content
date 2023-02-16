@@ -335,4 +335,6 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+marketplaces:
+- xsoar
 fromversion: 6.5.0
