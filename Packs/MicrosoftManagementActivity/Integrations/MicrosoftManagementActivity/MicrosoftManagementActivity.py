@@ -95,7 +95,7 @@ class Client(BaseClient):
                                          refresh_token_param=self.refresh_token_param,
                                          ok_codes=(200, 201, 202, 204),
                                          timeout=self.timeout,
-                                         scope='',
+                                         scope=Scopes.management_azure,
                                          auth_code=auth_code,
                                          resource='https://manage.office.com',
                                          token_retrieval_url='https://login.windows.net/common/oauth2/token',
@@ -541,10 +541,9 @@ def main():
     proxy = demisto.params().get('proxy', False)
     args = demisto.args()
     params = demisto.params()
-
-    LOG(f'Command being called is {demisto.command()}')
+    command = demisto.command()
+    LOG(f'Command being called is {command}')
     try:
-
         refresh_token = params.get('refresh_token', '')
         managed_identities_client_id = get_azure_managed_identities_client_id(params)
         self_deployed = params.get('self_deployed', False) or managed_identities_client_id is not None
@@ -586,14 +585,16 @@ def main():
             managed_identities_client_id=managed_identities_client_id
         )
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             return_results(test_module(client=client))
 
-        access_token, token_data = client.get_access_token_data()
-        client.access_token = access_token
-        client.tenant_id = token_data['tid']
+        # in the generate login url command we still don't't have the auth code do get the token
+        if command != 'ms-management-activity-generate-login-url':
+            access_token, token_data = client.get_access_token_data()
+            client.access_token = access_token
+            client.tenant_id = token_data['tid']
 
-        if demisto.command() == 'fetch-incidents':
+        if command == 'fetch-incidents':
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
@@ -602,21 +603,24 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'ms-management-activity-start-subscription':
+        elif command == 'ms-management-activity-start-subscription':
             start_or_stop_subscription_command(client, args, 'start')
 
-        elif demisto.command() == 'ms-management-activity-stop-subscription':
+        elif command == 'ms-management-activity-stop-subscription':
             start_or_stop_subscription_command(client, args, 'stop')
 
-        elif demisto.command() == 'ms-management-activity-list-subscriptions':
+        elif command == 'ms-management-activity-list-subscriptions':
             list_subscriptions_command(client)
 
-        elif demisto.command() == 'ms-management-activity-list-content':
+        elif command == 'ms-management-activity-list-content':
             list_content_command(client, args)
+
+        elif command == 'ms-management-activity-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
 
     # Log exceptions
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
 
 from MicrosoftApiModule import *   # noqa: E402
