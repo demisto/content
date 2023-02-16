@@ -6,7 +6,6 @@ from CommonServerPython import *  # noqa: F401
 import base64
 import copy
 import defusedxml.ElementTree as defused_ET
-import urllib3
 from requests import Response
 import urllib3
 
