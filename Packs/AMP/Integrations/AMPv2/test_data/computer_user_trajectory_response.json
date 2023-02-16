@@ -1,0 +1,74 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self"
+        }
+    },
+    "data": {
+        "computer": {
+            "connector_guid": "data_computer_connector_guid",
+            "hostname": "data_computer_hostname",
+            "active": "data_computer_active",
+            "links": {
+                "computer": "data_computer_links_computer",
+                "trajectory": "data_computer_links_trajectory",
+                "group": "data_computer_links_group"
+            }
+        },
+        "events": [
+            {
+                "id": "data_events[0]_id",
+                "timestamp": "data_events[0]_timestamp",
+                "timestamp_nanoseconds": "data_events[0]_timestamp_nanoseconds",
+                "date": "data_events[0]_date",
+                "event_type": "data_events[0]_event_type",
+                "event_type_id": "data_events[0]_event_type_id",
+                "detection_id": "data_events[0]_detection_id",
+                "group_guids": [
+                    "data_events[0]_group_guids_0"
+                ],
+                "severity": "data_events[0]_severity",
+                "file": {
+                    "disposition": "data_events[0]_file_disposition",
+                    "file_name": "data_events[0]_file_file_name",
+                    "file_path": "data_events[0]_file_file_path",
+                    "identity": {
+                        "sha256": "data_events[0]_file_identity_sha256",
+                        "sha1": "data_events[0]_file_identity_sha1",
+                        "md5": "data_events[0]_file_identity_md5"
+                    },
+                    "attack_details": {
+                        "application": "data_events[0]_file_attack_details_application",
+                        "attacked_module": "data_events[0]_file_attack_details_attacked_module",
+                        "base_address": "data_events[0]_file_attack_details_base_address",
+                        "suspicious_files": [
+                            "data_events[0]_file_attack_details_suspicious_files_0"
+                        ],
+                        "indicators": [
+                            {
+                                "tactics": [
+                                    "data_events[0]_file_attack_details_indicators[0]_tactics_0"
+                                ],
+                                "severity": "data_events[0]_file_attack_details_indicators[0]_severity",
+                                "description": "data_events[0]_file_attack_details_indicators[0]_description",
+                                "short_description": "data_events[0]_file_attack_details_indicators[0]_short_description",
+                                "id": "data_events[0]_file_attack_details_indicators[0]_id",
+                                "techniques": [
+                                    "data_events[0]_file_attack_details_indicators[0]_techniques_0"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "user_name": "data_events[0]_user_name",
+                "tactics": [
+                    "data_events[0]_tactics_0"
+                ],
+                "techniques": [
+                    "data_events[0]_techniques_0"
+                ]
+            }
+        ]
+    }
+}

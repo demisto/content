@@ -14,13 +14,13 @@ This playbook does not use any sub-playbooks.
 * VirusTotal - Private API
 
 ### Scripts
-* IPToHost
 * IsIPInRanges
+* IPToHost
 
 ### Commands
-* vt-private-get-ip-report
-* threat-crowd-ip
 * ip
+* threat-crowd-ip
+* vt-private-get-ip-report
 
 ## Playbook Inputs
 ---
@@ -28,8 +28,9 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | IP | The IP address to enrich. | IP.Address | Optional |
-| InternalRange | A CSV list of IP address ranges \(in CIDR notation\). Use this list to check if an IP address is found within a set of IP address ranges. For example: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). | inputs.InternalRange | Optional |
-| ResolveIP | Whether to convert the IP address to a hostname using a DNS query \(True/False\). | inputs.ResolveIP.None | Required |
+| InternalRange | A CSV list of IP address ranges \(in CIDR notation\). Use this list to check if an IP address is found within a set of IP address ranges. For example: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). | 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16 | Optional |
+| ResolveIP | Whether to convert the IP address to a hostname using a DNS query \(True/False\). | True | Required |
+| UseReputationCommand | Define if you would like to use the \!IP command.<br/>Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.<br/>Possible values: True / False. | False | Required |
 
 ## Playbook Outputs
 ---

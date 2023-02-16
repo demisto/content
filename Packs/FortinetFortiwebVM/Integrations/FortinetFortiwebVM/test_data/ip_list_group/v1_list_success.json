@@ -1,0 +1,23 @@
+[
+    {
+        "_id": "wallaks",
+        "id": 1,
+        "name": "wallaks",
+        "ipListCount": 0,
+        "can_delete": true
+    },
+    {
+        "_id": "wallakss",
+        "id": 2,
+        "name": "wallakss",
+        "ipListCount": 0,
+        "can_delete": true
+    },
+    {
+        "_id": "check",
+        "id": 3,
+        "name": "check",
+        "ipListCount": 0,
+        "can_delete": true
+    }
+]

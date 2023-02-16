@@ -1,0 +1,27 @@
+args:
+- description: Incident Field Name to Set
+  name: field
+  required: true
+- description: Value to Set Incident Field To
+  name: value
+  required: true
+commonfields:
+  id: UnitTestSetField
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.9.44472
+enabled: true
+name: UnitTestSetField
+comment: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

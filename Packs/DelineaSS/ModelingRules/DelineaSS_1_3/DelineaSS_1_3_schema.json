@@ -1,0 +1,64 @@
+{
+    "thycotic_software_secret_server_raw": {
+        "cs2": {
+          "type": "string",
+          "is_array": false
+        },
+        "cs3": {
+            "type": "string",
+            "is_array": false
+          },
+          "msg": {
+            "type": "string",
+            "is_array": false
+          },
+          "src": {
+            "type": "string",
+            "is_array": false
+          },
+          "duid": {
+            "type": "string",
+            "is_array": false
+          },
+          "suid": {
+            "type": "string",
+            "is_array": false
+          },
+          "duser": {
+            "type": "string",
+            "is_array": false
+          },
+          "fname": {
+            "type": "string",
+            "is_array": false
+          },
+          "suser": {
+            "type": "string",
+            "is_array": false
+          },
+          "cs4": {
+            "type": "string",
+            "is_array": false
+          },
+          "fileId": {
+            "type": "string",
+            "is_array": false
+          },
+          "cefName": {
+            "type": "string",
+            "is_array": false
+          },
+          "fileType": {
+            "type": "string",
+            "is_array": false
+          },
+          "cefSeverity": {
+            "type": "string",
+            "is_array": false
+          },
+          "cefDeviceVersion": {
+            "type": "string",
+            "is_array": false
+          }        
+    }
+  }

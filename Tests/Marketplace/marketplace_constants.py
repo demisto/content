@@ -3,7 +3,7 @@ import json
 import enum
 from typing import List
 
-IGNORED_FILES = ['__init__.py', 'ApiModules', 'NonSupported']  # files to ignore inside Packs folder
+IGNORED_FILES = ['__init__.py', 'ApiModules', 'NonSupported', 'index']  # files to ignore inside Packs folder
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
@@ -46,6 +46,7 @@ class BucketUploadFlow(object):
     PREPARE_CONTENT_FOR_TESTING = "prepare_content_for_testing"
     UPLOAD_PACKS_TO_MARKETPLACE_STORAGE = "upload_packs_to_marketplace_storage"
     SUCCESSFUL_PACKS = "successful_packs"
+    SUCCESSFUL_UPLOADED_DEPENDENCIES_ZIP_PACKS = "successful_uploaded_dependencies_zip_packs"
     SUCCESSFUL_PRIVATE_PACKS = "successful_private_packs"
     FAILED_PACKS = "failed_packs"
     STATUS = "status"
@@ -129,6 +130,7 @@ class PackTags(object):
     TRANSFORMER = "Transformer"
     FILTER = "Filter"
     COLLECTION = "Collection"
+    DATA_SOURCE = "Data Source"
 
 
 class Metadata(object):
@@ -220,6 +222,7 @@ class PackFolders(enum.Enum):
     TRIGGERS = 'Triggers'
     WIZARDS = 'Wizards'
     XDRC_TEMPLATES = 'XDRCTemplates'
+    LAYOUT_RULES = 'LayoutRules'
 
     @classmethod
     def pack_displayed_items(cls):
@@ -232,7 +235,7 @@ class PackFolders(enum.Enum):
             PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value, PackFolders.JOBS.value,
             PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value, PackFolders.CORRELATION_RULES.value,
             PackFolders.XSIAM_DASHBOARDS.value, PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value,
-            PackFolders.WIZARDS.value, PackFolders.XDRC_TEMPLATES.value,
+            PackFolders.WIZARDS.value, PackFolders.XDRC_TEMPLATES.value, PackFolders.LAYOUT_RULES.value
         }
 
     @classmethod
@@ -251,7 +254,7 @@ class PackFolders(enum.Enum):
             PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value,
             PackFolders.PREPROCESS_RULES.value, PackFolders.JOBS.value, PackFolders.XSIAM_DASHBOARDS.value,
             PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value, PackFolders.WIZARDS.value,
-            PackFolders.XDRC_TEMPLATES.value,
+            PackFolders.XDRC_TEMPLATES.value, PackFolders.LAYOUT_RULES.value
         }
 
 
@@ -304,6 +307,7 @@ PACK_FOLDERS_TO_ID_SET_KEYS = {
     PackFolders.TRIGGERS.value: "Triggers",
     PackFolders.WIZARDS.value: "Wizards",
     PackFolders.XDRC_TEMPLATES.value: "XDRCTemplates",
+    PackFolders.LAYOUT_RULES.value: "LayoutRules"
 }
 
 
@@ -312,6 +316,7 @@ class PackStatus(enum.Enum):
 
     """
     SUCCESS = "Successfully uploaded pack data to gcs"
+    SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING = "Successfully uploaded pack while creating dependencies zip"
     FAILED_LOADING_USER_METADATA = "Failed in loading user-defined pack metadata"
     FAILED_IMAGES_UPLOAD = "Failed to upload pack integration images to gcs"
     FAILED_AUTHOR_IMAGE_UPLOAD = "Failed to upload pack author image to gcs"
@@ -387,6 +392,7 @@ RN_HEADER_TO_ID_SET_KEYS = {
     'Triggers Recommendations': 'Triggers',
     'Wizards': 'Wizards',
     'XDRC Templates': 'XDRCTemplates',
+    'Layout Rules': 'LayoutRules'
 }
 
 
@@ -419,6 +425,7 @@ CONTENT_ITEM_NAME_MAPPING = {
     PackFolders.TRIGGERS.value: "trigger",
     PackFolders.WIZARDS.value: "wizard",
     PackFolders.XDRC_TEMPLATES.value: "xdrctemplate",
+    PackFolders.LAYOUT_RULES.value: "layoutrule"
 }
 
 ITEMS_NAMES_TO_DISPLAY_MAPPING = {
@@ -449,4 +456,5 @@ ITEMS_NAMES_TO_DISPLAY_MAPPING = {
     CONTENT_ITEM_NAME_MAPPING[PackFolders.TRIGGERS.value]: "Trigger",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.WIZARDS.value]: "Wizard",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.XDRC_TEMPLATES.value]: "XDRC Template",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.LAYOUT_RULES.value]: "Layout Rule"
 }

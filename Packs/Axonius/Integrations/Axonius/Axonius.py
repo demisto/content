@@ -275,8 +275,8 @@ def main():
     command: str = demisto.command()
 
     url: str = params["ax_url"]
-    key: str = params["ax_key"]
-    secret: str = params["ax_secret"]
+    key: str = params.get('credentials', {}).get('identifier')
+    secret: str = params.get('credentials', {}).get('password')
     certverify: bool = not params.get("insecure", False)
 
     handle_proxy()  # noqa: F821, F405

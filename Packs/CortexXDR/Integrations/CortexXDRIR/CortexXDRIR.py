@@ -35,13 +35,6 @@ XDR_INCIDENT_FIELDS = {
                         "xsoar_field_name": "severity"},
 }
 
-XSOAR_RESOLVED_STATUS_TO_XDR = {
-    'Other': 'resolved_other',
-    'Duplicate': 'resolved_duplicate',
-    'False Positive': 'resolved_false_positive',
-    'Resolved': 'resolved_true_positive',
-}
-
 MIRROR_DIRECTION = {
     'None': None,
     'Incoming': 'In',
@@ -309,6 +302,45 @@ class Client(CoreClient):
 
         return incidents
 
+    def update_incident(self, incident_id, status=None, assigned_user_mail=None, assigned_user_pretty_name=None, severity=None,
+                        resolve_comment=None, unassign_user=None, add_comment=None):
+        update_data: dict[str, Any] = {}
+
+        if unassign_user and (assigned_user_mail or assigned_user_pretty_name):
+            raise ValueError("Can't provide both assignee_email/assignee_name and unassign_user")
+        if unassign_user:
+            update_data['assigned_user_mail'] = 'none'
+
+        if assigned_user_mail:
+            update_data['assigned_user_mail'] = assigned_user_mail
+
+        if assigned_user_pretty_name:
+            update_data['assigned_user_pretty_name'] = assigned_user_pretty_name
+
+        if status:
+            update_data['status'] = status
+
+        if severity:
+            update_data['manual_severity'] = severity
+
+        if resolve_comment:
+            update_data['resolve_comment'] = resolve_comment
+
+        if add_comment:
+            update_data['comment'] = {'comment_action': 'add', 'value': add_comment}
+
+        request_data = {
+            'incident_id': incident_id,
+            'update_data': update_data,
+        }
+
+        self._http_request(
+            method='POST',
+            url_suffix='/incidents/update_incident/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
     def get_incident_extra_data(self, incident_id, alerts_limit=1000):
         """
         Returns incident by id
@@ -374,6 +406,28 @@ class Client(CoreClient):
         )
 
         return reply.get('reply')
+
+    def get_tenant_info(self):
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/system/get_tenant_info/',
+            json_data={'request_data': {}},
+            timeout=self.timeout
+        )
+        return reply.get('reply', {})
+
+
+def get_tenant_info_command(client: Client):
+    tenant_info = client.get_tenant_info()
+    readable_output = tableToMarkdown(
+        'Tenant Information', tenant_info, headerTransform=pascalToSpace, removeNull=True, is_auto_json_transform=True
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.TenantInformation',
+        outputs=tenant_info,
+        raw_response=tenant_info
+    )
 
 
 def get_incidents_command(client, args):
@@ -472,6 +526,30 @@ def get_incidents_command(client, args):
         },
         raw_incidents
     )
+
+
+def update_incident_command(client, args):
+    incident_id = args.get('incident_id')
+    assigned_user_mail = args.get('assigned_user_mail')
+    assigned_user_pretty_name = args.get('assigned_user_pretty_name')
+    status = args.get('status')
+    severity = args.get('manual_severity')
+    unassign_user = args.get('unassign_user') == 'true'
+    resolve_comment = args.get('resolve_comment')
+    add_comment = args.get('add_comment')
+
+    client.update_incident(
+        incident_id=incident_id,
+        assigned_user_mail=assigned_user_mail,
+        assigned_user_pretty_name=assigned_user_pretty_name,
+        unassign_user=unassign_user,
+        status=status,
+        severity=severity,
+        resolve_comment=resolve_comment,
+        add_comment=add_comment,
+    )
+
+    return f'Incident {incident_id} has been updated', None, None
 
 
 def check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time_timestamp, last_modified_incidents_dict):
@@ -865,6 +943,33 @@ def get_remote_data_command(client, args):
             mirrored_object=incident_data,
             entries=[]
         )
+
+
+def update_remote_system_command(client, args):
+    remote_args = UpdateRemoteSystemArgs(args)
+
+    if remote_args.delta:
+        demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
+                      f'incident {remote_args.remote_incident_id}')
+    try:
+        if remote_args.incident_changed:
+            update_args = get_update_args(remote_args)
+
+            update_args['incident_id'] = remote_args.remote_incident_id
+            demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
+            update_incident_command(client, update_args)
+
+        else:
+            demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
+                          f'as it is not new nor changed')
+
+        return remote_args.remote_incident_id
+
+    except Exception as e:
+        demisto.debug(f"Error in outgoing mirror for incident {remote_args.remote_incident_id} \n"
+                      f"Error message: {str(e)}")
+
+        return remote_args.remote_incident_id
 
 
 def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
@@ -1474,7 +1579,8 @@ def main():  # pragma: no cover
             return_results(add_tag_to_endpoints_command(client, args))
         elif command == 'xdr-endpoint-tag-remove':
             return_results(remove_tag_from_endpoints_command(client, args))
-
+        elif command == 'xdr-get-tenant-info':
+            return_results(get_tenant_info_command(client))
     except Exception as err:
         return_error(str(err))
 

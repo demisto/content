@@ -25,6 +25,21 @@ args:
   predefined:
   - "true"
   - "false"
+- name: conflict_strategy
+  auto: PREDEFINED
+  predefined:
+  - merge
+  - source
+  - destination
+  description: How to merge the values if the key conflicts. 'source'
+    means data of 'merge_with', 'destination' means data of 'array_path'.
+  defaultValue: merge
+- name: overwrite_by_source
+  description: The comma separeted list of keys to overwrite by source value when the key conflicts.
+  isArray: true
+- name: overwrite_by_destination
+  description: The comma separeted list of keys to overwrite by destination value when the key conflicts.
+  isArray: true
 comment: Each entry in an array is merged into the existing array if the keyed-value matches.
 commonfields:
   id: MergeDictArray

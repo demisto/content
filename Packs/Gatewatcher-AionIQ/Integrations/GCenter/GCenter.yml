@@ -26,13 +26,14 @@ configuration:
   name: check_cert
   type: 8
   required: false
-description: This integration allows, via about twenty commands, to interact with the GCenter appliance via its API.
+description: This integration allows, via about twenty commands, to interact with
+  the GCenter appliance via its API.
 display: GCenter
 name: GCenter
 script:
   commands:
   - name: gw-list-alerts
-    description: List all alerts
+    description: List all alerts (Deprecated. use gw-es-wrapper command instead)
     deprecated: true
     outputs:
     - contextPath: GCenter.Alert.List.sha256
@@ -81,7 +82,8 @@ script:
       description: The State Of The Alert
       type: String
     - contextPath: GCenter.Alert.List.matched_event
-      description: Value Of The Id Of An Other Alert That Matched (Allows The Correlation Between Alerts)
+      description: Value Of The Id Of An Other Alert That Matched (Allows The Correlation
+        Between Alerts)
       type: String
     - contextPath: GCenter.Alert.List.domain_name
       description: For Dga Alerts Only
@@ -342,7 +344,8 @@ script:
       description: The File Magic
       type: String
     - contextPath: GCenter.Alert.List.malware.total_found
-      description: The Malcore Number Of Engines That Found The File Suspicious / The Total Number Of Engines
+      description: The Malcore Number Of Engines That Found The File Suspicious /
+        The Total Number Of Engines
       type: String
     - contextPath: GCenter.Alert.List.sigflow.alert.action
       description: Action
@@ -424,7 +427,8 @@ script:
       description: The State Of The Alert
       type: String
     - contextPath: GCenter.Alert.Single.matched_event
-      description: Value Of The Id Of An Other Alert That Matched (Allows The Correlation Between Alerts)
+      description: Value Of The Id Of An Other Alert That Matched (Allows The Correlation
+        Between Alerts)
       type: String
     - contextPath: GCenter.Alert.Single.domain_name
       description: For Dga Alerts Only
@@ -685,7 +689,8 @@ script:
       description: The File Magic
       type: String
     - contextPath: GCenter.Alert.Single.malware.total_found
-      description: The Malcore Number Of Engines That Found The File Suspicious / The Total Number Of Engines
+      description: The Malcore Number Of Engines That Found The File Suspicious /
+        The Total Number Of Engines
       type: String
     - contextPath: GCenter.Alert.Single.sigflow.alert.action
       description: Action
@@ -850,10 +855,12 @@ script:
       description: Ignored Name For The Assets (Hostnames). Case Insensitive.
       type: String
     - contextPath: GCenter.Ignore.AssetName.is_startswith_pattern
-      description: Should The Assets (Hostnames) Be Ignored If They Start With This Name ?
+      description: Should The Assets (Hostnames) Be Ignored If They Start With This
+        Name ?
       type: Boolean
     - contextPath: GCenter.Ignore.AssetName.is_endswith_pattern
-      description: Should The Assets (Hostnames) Be Ignored If They End With This Name ?
+      description: Should The Assets (Hostnames) Be Ignored If They End With This
+        Name ?
       type: Boolean
   - name: gw-add-ignore-kuser-ip
     description: Ignore kuser IP
@@ -902,10 +909,12 @@ script:
       description: Ignored Name For The Kerberos Users. Case Insensitive.
       type: String
     - contextPath: GCenter.Ignore.KuserName.is_startswith_pattern
-      description: Should The Kerberos Users Be Ignored If They Start With This Name ?
+      description: Should The Kerberos Users Be Ignored If They Start With This Name
+        ?
       type: Boolean
     - contextPath: GCenter.Ignore.KuserName.is_endswith_pattern
-      description: Should The Kerberos Users Be Ignored If They End With This Name ?
+      description: Should The Kerberos Users Be Ignored If They End With This Name
+        ?
       type: Boolean
   - name: gw-add-ignore-mac-address
     description: Ignore mac address
@@ -931,7 +940,8 @@ script:
       description: Address
       type: String
     - contextPath: GCenter.Ignore.MacAddress.is_startswith_pattern
-      description: Should The Mac Addresses Be Ignored If They Start With This Address Value ?
+      description: Should The Mac Addresses Be Ignored If They Start With This Address
+        Value ?
       type: Boolean
   - name: gw-del-ignore-asset-name
     description: Delete an ignore asset ID
@@ -1342,7 +1352,8 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: 'Set the lower timerange in minute based on the now keyword when uuid is not given
+      description: 'Set the lower timerange in minute based on the now keyword when
+        uuid is not given
 
         Default value to 60 minutes'
       isArray: false
@@ -1350,7 +1361,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Set the number of aggregate value that can be returned when uuid is not given
+      description: 'Set the number of aggregate value that can be returned when uuid
+        is not given
 
         Get all the values by default'
       isArray: false
@@ -1389,7 +1401,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.39276
+  dockerimage: demisto/python3:3.10.9.40422
 fromversion: 6.2.0
 tests:
 - Gcenter Test Playbook

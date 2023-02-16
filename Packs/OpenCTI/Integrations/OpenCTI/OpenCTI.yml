@@ -22,7 +22,12 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Manages indicators from OpenCTI. Compatible with OpenCTI 4.X API version.
+- name: redirect_std_out
+  display: Redirect stdout
+  required: false
+  type: 8
+  additionalinfo: Used for troubleshooting purposes.
+description: Manages indicators from OpenCTI. Compatible with OpenCTI 4.X API and OpenCTI 5.X API versions.
 display: OpenCTI
 name: OpenCTI
 script:
@@ -445,7 +450,7 @@ script:
     - contextPath: OpenCTI.MarkingDefinitions.markingsLastRun
       description: The last ID of the previous fetch to use for pagination.
       type: String
-  dockerimage: demisto/opencti-v4:1.0.0.35674
+  dockerimage: demisto/opencti-v4:1.0.0.43083
   isfetch: false
   longRunning: false
   longRunningPort: false

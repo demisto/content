@@ -26,7 +26,11 @@ def extract_email(email_address: str) -> str:
                               "\[?@]?[\w.-]{1,255}\[?\.]?"
                               "[A-Za-z]{2,})", re.IGNORECASE)
 
-    return re.findall(email_format, email_address)[0]
+    try:
+        return re.findall(email_format, email_address)[0]
+
+    except IndexError:
+        return ''
 
 
 def check_tld(email_address: str) -> bool:
@@ -71,8 +75,8 @@ def main():
         {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': email_address,
-            'EntryContext': {'Email': email_address},
+            'Contents': [email_address] if email_address else [],
+            'EntryContext': {'Email': email_address} if email_address else {},
         } for email_address in list_results]
 
     if output:

@@ -1,3 +1,4 @@
+# pylint: disable=E9010
 from CommonServerPython import *
 
 ''' IMPORTS '''
@@ -246,11 +247,16 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
                 item = {indicator_field: item}
 
             indicator_value = item.get(indicator_field)
+            if indicator_value is None:
+                continue
             if indicator_value not in indicators_values:
                 indicators_values_indexes[indicator_value] = len(indicators_values)
                 indicators_values.add(indicator_value)
             else:
-                indicators[indicators_values_indexes[indicator_value]]['rawJSON']['service'] += f", {service_name}"
+                service = indicators[indicators_values_indexes[indicator_value]].get('rawJSON', {}).get('service', '')
+                if service and service_name not in service.split(','):
+                    service_name += f', {service}'
+                indicators[indicators_values_indexes[indicator_value]]['rawJSON']['service'] = service_name
                 continue
 
             indicators.extend(

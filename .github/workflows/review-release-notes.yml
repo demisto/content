@@ -1,10 +1,9 @@
 name: Review Release Notes
 on: pull_request
-
 jobs:
   release_notes_review:
     runs-on: ubuntu-latest
-    if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == false
+    if: github.repository == 'demisto/content'
     steps:
       - name: Checkout
         uses: actions/checkout@v3

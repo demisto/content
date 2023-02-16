@@ -1903,7 +1903,9 @@ Returns passive DNS records by indicator.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP for which to get its DNS data. | Required |
+| id | IP or domain for which to get its DNS data. | Optional |
+| ip | IP for which to get its DNS data. | Optional |
+| domain | Domain for which to get its DNS data. | Optional |
 | limit | Maximum number of results to fetch. Default is 10. | Optional |
 
 #### Context Output

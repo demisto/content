@@ -104,22 +104,16 @@ def commit_content_item_gitlab(branch_name: str, content_file: ContentFile, new_
     commit_args = {'commit_message': f'Added {content_file.file_name}',
                    'file_path': f'{content_file.path_to_file}/{content_file.file_name}',
                    'branch': branch_name, 'file_content': content_file.file_text}
-
-    file_sha = get_file_sha(branch_name, content_file, 'gitlab-file-get')
-
-    # dont commit pack_metadata.json if already exists in the branch
-    if file_sha and content_file.file_name == 'pack_metadata.json':
-        return
-    elif file_sha:
-        # update existing file
-        commit_args['file_content'] = file_sha
+    status, commit_res = execute_command('gitlab-file-create', commit_args, fail_on_error=False)
+    if isinstance(commit_res, dict):
+        new_files.append(content_file.file_name)
+    elif isinstance(commit_res, str) and "already exists" in commit_res:
+        demisto.debug(f'The file {content_file.file_name} already exist, running update command')
+        if content_file.file_name == 'pack_metadata.json':
+            return
         commit_args['commit_message'] = f'Updated {content_file.file_name}'
         modified_files.append(content_file.file_name)
-    else:
-        # new file added
-        new_files.append(content_file.file_name)
-    #  gitlab-file-create
-    status, commit_res = execute_command('gitlab-file-create', commit_args, fail_on_error=False)
+        status, commit_res = execute_command('gitlab-file-update', commit_args, fail_on_error=False)
     if not status:
         raise DemistoException(commit_res)
 
@@ -237,7 +231,7 @@ def split_yml_file(content_file: ContentFile):  # pragma: no cover
 
 
 def commit_git(git_integration: str, branch_name: str, content_file: ContentFile,
-               new_files: List, modified_files: List):  # pragma: no cover
+               new_files: List, modified_files: List):
     if git_integration == 'Gitlab':
         commit_content_item_gitlab(branch_name, content_file, new_files, modified_files)
     elif git_integration == 'GitHub':
@@ -249,7 +243,7 @@ def commit_git(git_integration: str, branch_name: str, content_file: ContentFile
 ''' MAIN FUNCTION '''
 
 
-def main():  # pragma: no cover
+def main():
     try:
         files = demisto.getArg('files')
         branch_name = demisto.getArg('branch')

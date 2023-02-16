@@ -1,0 +1,4 @@
+{
+  "breakingChanges":true,
+  "breakingChangesNotes":"This version introduces changes in the human readable and context output of several commands. For more details read the release notes."
+}

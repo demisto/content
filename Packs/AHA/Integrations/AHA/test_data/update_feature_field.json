@@ -1,7 +1,7 @@
 {
     "feature": {
         "id": "7142047393121670680",
-        "name": "Demo-10",
+        "name": "change just name",
         "reference_num": "DEMO-10",
         "created_by_user": {
             "id": "7142047370286614216",
@@ -21,7 +21,7 @@
         },
         "description": {
             "id": "7142047393165357275",
-            "body": "change just description"
+            "body": "description"
         }
     }
 }

@@ -29,7 +29,7 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | threshold | The number of previous alerts that were closed as false positive alerts. This threshold establishes whether the Previous Verdict key will be marked as false positive. | alert.hostip | Optional |
-| query | A query for the previous alerts search.<br/>Use free form query \(Lucene syntax\) as a filter. All other filters are ignored when this filter is used. | (initiatorsha256:${inputs.FileSHA256} or hostip:${inputs.IP}) and alertsource:${alert.sourceBrand} and alertname:${alert.name} | Optional |
+| query | A query for the previous alerts search.<br/>Use free form query \(Lucene syntax\) as a filter. All other filters are ignored when this filter is used. | (initiatorsha256:${inputs.FileSHA256} or hostip:${inputs.IP}) and sourceBrand:"${alert.sourceBrand}" and name:"${alert.name}" | Optional |
 | CloseReason | The closing reason of the previous alerts to search for.<br/>Possible values are:<br/>- Resolved - Threat Handled<br/>- Resolved - True Positive<br/>- Resolved - False Positive<br/>- Resolved - Security Testing<br/>- Resolved - Known Issue<br/>- Resolved - Duplicate Incident<br/>- Resolved - Other<br/>- Resolved - Auto | Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue | Optional |
 | FileMD5 | File MD5 to enrich and give verdict. |  | Optional |
 | FileSHA256 | File SHA256 to enrich and give verdict. | alert.initiatorsha256 | Optional |

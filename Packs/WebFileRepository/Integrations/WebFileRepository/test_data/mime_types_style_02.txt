@@ -1,0 +1,8 @@
+#
+# Comments
+#
+audio/mp4     mp4a m4a
+image/jpeg    jpeg jpe jpg
+text/html     html
+image/x-icon  ico
+

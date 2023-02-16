@@ -1,52 +1,51 @@
 args:
-- default: false
-  defaultValue: GeneratePassword
+- defaultValue: GeneratePassword
   description: The password generator script.
-  isArray: false
   name: pwdGenerationScript
-  required: false
-  secret: false
-- default: false
-  description: The sAMAccountName of the employee.
-  isArray: false
+- description: The sAMAccountName of the employee.
   name: sAMAccountName
   required: true
-  secret: false
-- default: false
-  description: The email of the employee.
-  isArray: false
+- description: The email of the employee.
   name: email
   required: true
-  secret: false
-- default: false
-  description: The display name of the employee.
-  isArray: false
+- description: The display name of the employee.
   name: displayname
-  required: false
-  secret: false
-- default: false
-  description: The email address that the password will send to.
-  isArray: false
+- description: The email address that the password will send to.
   name: to_email
   required: true
-  secret: false
-- default: false
-  description: The incident ID.
-  isArray: false
+- description: The incident ID.
   name: inc_id
-  required: false
-  secret: false
-- default: false
-  description: The subject of the email sent to IT.
-  isArray: false
+- description: The subject of the email sent to IT.
   name: email_subject
-  required: false
-  secret: false
+- name: min_lcase
+  description: Minimum number of lower case characters to include in password. Used with the GeneratePassword script.
+  defaultValue: "0"
+- name: max_lcase
+  description: Maximum number of lower case characters to include in password. Used with the GeneratePassword script.
+  defaultValue: "10"
+- name: min_ucase
+  description: Minimum number of upper case characters to include in password. Used with the GeneratePassword script.
+  defaultValue: "0"
+- name: max_ucase
+  description: Maximum number of upper case characters to include in password. Used with the GeneratePassword script.
+  defaultValue: "10"
+- name: min_digits
+  description: Minimum number of digits to include in password. Used with the GeneratePassword script.
+  defaultValue: "0"
+- name: max_digits
+  description: Maximum number of digits to include in password. Used with the GeneratePassword script.
+  defaultValue: "10"
+- name: min_symbols
+  description: Minimum number of symbols to include in password. Used with the GeneratePassword script.
+  defaultValue: "0"
+- name: max_symbols
+  description: Maximum number of symbols to include in password. Used with the GeneratePassword script.
+  defaultValue: "10"
 comment: |-
   Generates password,
   Set an AD user account with this password.
   Enable the account.
-  Send mail to the user with tha account information.
+  Send mail to the user with the account information.
   This script is running `send-mail` command, make sure there is a matching Integration configurated.
 commonfields:
   id: IAMInitADUser
@@ -55,12 +54,10 @@ enabled: true
 name: IAMInitADUser
 outputs:
 - contextPath: IAM.InitADUser.success
-  description: True if the Active Directory user was successfully activated, false
-    otherwise.
+  description: True if the Active Directory user was successfully activated, false otherwise.
   type: Boolean
 - contextPath: IAM.InitADUser.sentMail
-  description: True if the mail containing the information about the user activation
-    and its auto-generated password was successfully sent to IT, false otherwise.
+  description: True if the mail containing the information about the user activation and its auto-generated password was successfully sent to IT, false otherwise.
   type: Boolean
 - contextPath: IAM.InitADUser.errorDetails
   description: The error details, if exists.
@@ -68,18 +65,21 @@ outputs:
 - contextPath: IAM.InitADUser.sendMailError
   description: The error received from send-mail command, if exists.
   type: String
-script: '-'
+script: ''
 subtype: python3
-system: false
+system: true
 tags:
 - IAM
 - active directory
 - Utility
-timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.9.40422
 runas: DBotWeakRole
 runonce: false
 tests:
-- No tests (auto formatted)
+- Active Directory Test
 fromversion: 5.0.0
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+scripttarget: 0

@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: imperva_waf
+name: Imperva WAF
+rules: ''
+schema: ''
+tags: ''

@@ -1,6 +1,5 @@
 from pytz import utc
 from taxii2client.common import _ensure_datetime_to_string
-from taxii2client.exceptions import InvalidJSONError
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -45,12 +44,7 @@ def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval:
     # initial_interval gets here limited so no need to check limitation with default value
     added_after: datetime = get_limited_interval(initial_interval, last_fetch_time)
 
-    try:
-        indicators = client.build_iterator(limit, added_after=added_after)
-    except InvalidJSONError:
-        demisto.debug('Excepted InvalidJSONError, continuing with empty result')
-        # raised when the response is empty, because {} is parsed into '筽'
-        indicators = []
+    indicators = client.build_iterator(limit, added_after=added_after)
 
     if last_run_ctx is not None:  # in case we got {}, we want to set it because we are in fetch incident run
         last_run_ctx[client.collection_to_fetch.id] = _ensure_datetime_to_string(client.last_fetched_indicator__modified
@@ -145,15 +139,10 @@ def get_indicators_command(client: Taxii2FeedClient, args: Dict[str, Any]) \
     if max_fetch_datetime > added_after:
         raise DemistoException('Due to DHS API limitations, "added_after" is limited to 48 hours.')
 
-    try:
-        if client.collection_to_fetch:
-            indicators = client.build_iterator(limit, added_after=added_after)
-        else:
-            indicators, _ = fetch_all_collections(client, limit, added_after)  # type: ignore[arg-type]
-    except InvalidJSONError:
-        demisto.debug('Excepted InvalidJSONError, continuing with empty result')
-        # raised when the response is empty, because {} is parsed into '筽'
-        indicators = []
+    if client.collection_to_fetch:
+        indicators = client.build_iterator(limit, added_after=added_after)
+    else:
+        indicators, _ = fetch_all_collections(client, limit, added_after)  # type: ignore[arg-type]
 
     if raw:
         return {'indicators': [x.get('rawJSON') for x in indicators]}
