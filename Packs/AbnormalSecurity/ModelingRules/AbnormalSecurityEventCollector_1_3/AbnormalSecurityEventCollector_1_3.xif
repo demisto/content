@@ -7,7 +7,7 @@ alter
     senderIpAddress = coalesce(arraycreate(senderIpAddress))
 | alter
     xdm.event.id = threatId,
-    xdm.event.outcome = remediationStatus,
+    xdm.event.outcome = if(remediationStatus = "Auto-Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "Post Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "No Action Done", XDM_CONST.OUTCOME_FAILED, remediationStatus = "Would Remediate", XDM_CONST.OUTCOME_PARTIAL, remediationStatus = "Remediation Attempted", XDM_CONST.OUTCOME_PARTIAL, remediationStatus = null, null, to_string(remediationStatus)),
     xdm.email.recipients = toAddresses,
     xdm.email.attachment.filename = attachmentNames,
     xdm.email.subject = subject,
@@ -18,6 +18,5 @@ alter
     xdm.alert.category = attackType,
     xdm.alert.name = attackStrategy,
     xdm.alert.description = summaryInsights,
-    xdm.observer.product = abxPortalUrl,
     xdm.observer.unique_identifier = to_string(abxMessageId),
     xdm.target.host.ipv4_addresses = senderIpAddress;
