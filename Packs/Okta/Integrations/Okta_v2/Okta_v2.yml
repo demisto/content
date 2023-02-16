@@ -409,6 +409,12 @@ script:
     - contextPath: Account.PasswordChanged
       description: Timestamp for when the user's password was last changed.
       type: Date
+    - contextPath: Account.Manager
+      description: The manager.
+      type: String
+    - contextPath: Account.ManagerEmail
+      description: The manager email.
+      type: String
     deprecated: false
     execution: false
   - arguments:
@@ -2026,7 +2032,7 @@ script:
     name: okta-assign-group-to-app
     deprecated: false
     execution: false
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.9.46807
   runonce: false
   script: '-'
   subtype: python3
