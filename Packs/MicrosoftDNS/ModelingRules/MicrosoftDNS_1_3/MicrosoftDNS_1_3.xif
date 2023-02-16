@@ -1,5 +1,5 @@
 [MODEL: dataset="microsoft_dns_raw"]
-// anser section part
+// answer section part
 alter answerSec = arrayindex(regextract(_raw_log ,"ANSWER\sSECTION\:([^\:]+)AUTHORITY\sSECTION\:"),0)
 | alter answerSec = replex(answerSec ,"\n","")
 | alter answerType = arrayindex(regextract(answerSec ,"TYPE\s+([a-zA-Z]*)"),0),
