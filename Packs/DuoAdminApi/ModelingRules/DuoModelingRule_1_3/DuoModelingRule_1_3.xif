@@ -12,7 +12,7 @@ filter
     xdm.intermediate.host.fqdn = HOST,
     xdm.source.user.username = username,
     xdm.event.outcome_reason = reason,
-    xdm.event.outcome = result,
+    xdm.event.outcome = if(result = "FAILURE", XDM_CONST.OUTCOME_FAILED, result = "SUCCESS", XDM_CONST.OUTCOME_SUCCESS, result = "ERROR", XDM_CONST.OUTCOME_UNKNOWN, result = null, null, to_string(result)),    
     xdm.source.application.name = integration,
     xdm.auth.auth_method = factor;
 
