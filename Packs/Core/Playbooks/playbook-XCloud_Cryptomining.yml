@@ -281,11 +281,10 @@ tasks:
           root: inputs.autoResourceRemediation
       autoUserRemediation:
         complex:
-          root: inputs.autoResourceRemediation
+          root: inputs.autoUserRemediation
       cloudProvider:
         complex:
-          root: alert
-          accessor: cloudprovider
+          root: inputs.cloudProvider
       region:
         complex:
           root: alertJson._all_events
@@ -522,7 +521,7 @@ tasks:
           left:
             value:
               complex:
-                root: requireAnalystReview
+                root: inputs.requireAnalystReview
             iscontext: true
           right:
             value:
