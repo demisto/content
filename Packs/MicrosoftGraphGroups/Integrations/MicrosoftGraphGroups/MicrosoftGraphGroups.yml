@@ -81,6 +81,21 @@ configuration:
   required: false
   defaultvalue: 'true'
   type: 8
+- display: Application redirect URI (for Authorization Code flow mode)
+  name: redirect_uri
+  required: false
+  type: 0
+  section: Connect
+- name: creds_auth_code
+  type: 9
+  displaypassword: Authorization code (for Authorization Code flow mode - received from the authorization step. see Detailed Instructions)
+  hiddenusername: true
+- display: Authorization code (for Authorization Code flow mode - received from the authorization step. see Detailed Instructions (?) section)
+  name: auth_code
+  required: false
+  type: 4
+  hidden: true
+  section: Connect
 description: Microsoft Graph Groups enables you to create and manage different types
   of groups and group functionality according to your requirements.
 display: Azure Active Directory Groups
