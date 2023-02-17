@@ -67,7 +67,7 @@ class MsGraphClient:
       """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
-                 redirect_uri, auth_code, handle_error, certificate_thumbprint: Optional[str] = None,
+                 redirect_uri=None, auth_code=None, handle_error, certificate_thumbprint: Optional[str] = None,
                  private_key: Optional[str] = None,
                  managed_identities_client_id: Optional[str] = None,
                  ):
