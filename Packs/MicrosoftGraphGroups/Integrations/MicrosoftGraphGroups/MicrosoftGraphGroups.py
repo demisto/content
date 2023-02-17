@@ -66,8 +66,8 @@ class MsGraphClient:
       Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
       """
 
-    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
-                 handle_error, redirect_uri: Optional[str] = None,  auth_code: Optional[str] = None,
+    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy,
+                 self_deployed, handle_error, redirect_uri=None, auth_code=None,
                  certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None,
                  managed_identities_client_id: Optional[str] = None):
         grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
