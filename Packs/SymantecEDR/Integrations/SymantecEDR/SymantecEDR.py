@@ -16,8 +16,8 @@ DEFAULT_TIMEOUT = 600
 
 # Symantec TOKEN timeout 60 minutes
 SESSION_TIMEOUT_SEC = 3600
-TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
-ISO8601_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+ISO8601_L_FORMAT = '%Y-%m-%dT%H:%M:%S.%L'
+ISO8601_F_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 INTEGRATION_CONTEXT_NAME = 'SymantecEDR'
 DEFAULT_OFFSET = 0
 DEFAULT_PAGE_SIZE = 50
@@ -104,6 +104,17 @@ HTTP_ERRORS = {
     503: '503 Service Unavailable'
 }
 
+# Map severity to Demisto severity for incident creation
+XSOAR_SEVERITY_MAP = {
+    'High': 3,
+    'Medium': 2,
+    'Low': 1
+}
+
+# Reverse Incident Priority and State mapping
+REVERSE_INCIDENT_PRIORITY = {v: k for k, v in INCIDENT_PRIORITY_LEVEL.items()}
+REVERSE_INCIDENT_STATE = {v: k for k, v in INCIDENT_STATUS.items()}
+
 ''' CLIENT CLASS '''
 
 
@@ -117,8 +128,7 @@ class Client(BaseClient):
     """
     def __init__(self, base_url: str, verify: bool, proxy: bool, client_id: str, client_secret: str,
                  first_fetch: str = '3 days', fetch_limit: Optional[int] = 50, is_incident_event: bool = False,
-                 is_fetch_comment: bool = False, fetch_status: list = None, fetch_priority: list = None,
-                 token: Optional[str] = None):
+                 is_fetch_comment: bool = False, fetch_status: list = None, fetch_priority: list = None):
 
         super().__init__(
             base_url=base_url,
@@ -134,7 +144,7 @@ class Client(BaseClient):
         self.is_fetch_comment = is_fetch_comment
         self.fetch_status = fetch_status
         self.fetch_priority = fetch_priority
-        self.access_token = token
+        self.access_token = self.get_access_token_or_login()
 
     @property
     def headers(self) -> dict:
@@ -149,32 +159,35 @@ class Client(BaseClient):
         return {'Authorization': f'Bearer {self.access_token}', 'Content-Type': 'application/json'}
 
     @staticmethod
-    def get_access_token_from_context(global_context: dict[str, Any]) -> str | None:
+    def get_access_token_from_context() -> str | None:
         """
         Symantec EDR on-premise get previous access token from global integration context
         Args:
-            global_context(dict): Integration Context data
+
         Returns:
-            return token or None
+            return token from context or None
         """
-        if save_timestamp := global_context.get('access_token_timestamp'):
+        global_context = demisto.getIntegrationContext()
+        if access_token_timestamp := global_context.get('access_token_timestamp'):
             now_timestamp = int(time.time())
             if token := global_context.get('access_token'):
-                time_diff = int(now_timestamp - save_timestamp)
+                time_diff = int(now_timestamp - access_token_timestamp)
                 if time_diff <= SESSION_TIMEOUT_SEC:
                     return token
                 else:
                     LOG('Access token expired')
         return None
 
-    def get_access_token_or_login(self) -> None:
+    def get_access_token_or_login(self) -> str:
         """
-        Generate Access token
+        Check Access Token from Context if that still valid then using the same token
+         else Generate new Access token
+        Return:
+            return access_token
         """
-        global_context = demisto.getIntegrationContext()
-        if last_access_token := self.get_access_token_from_context(global_context):
-            self.access_token = last_access_token
-            LOG("Access token still active. Re-use the same token")
+        if last_access_token := self.get_access_token_from_context():
+            LOG("Last access token in context is still active, reusing it")
+            access_token = last_access_token
         else:
             try:
                 response = self._http_request(
@@ -188,18 +201,17 @@ class Client(BaseClient):
             except requests.exceptions.HTTPError as exc:
                 if error_msg := HTTP_ERRORS.get(exc.response.status_code):
                     raise DemistoException(f'{error_msg}', res=exc.response) from exc
-                else:
-                    raise
+
+                raise
 
             LOG("Generated Access token.")
-            self.access_token = response.json().get("access_token")
-            timestamp_string = int(time.time())
+            access_token = response.json().get("access_token")
             demisto.setIntegrationContext(
                 demisto.getIntegrationContext() | {
-                    'access_token': self.access_token, 'access_token_timestamp': timestamp_string}
+                    'access_token': access_token, 'access_token_timestamp': int(time.time())}
             )
 
-        return None
+        return access_token
 
     def http_request(self, method: str, endpoint: str, params: dict[str, Any] = None,
                      json_data: Union[dict[str, Any], list] = None,
@@ -223,15 +235,14 @@ class Client(BaseClient):
                 json_data=json_data,
                 params=params,
                 resp_type='response',
-                allow_redirects=False,
                 return_empty_response=ignore_empty_response
             )
             response.raise_for_status()
         except requests.exceptions.HTTPError as exc:
             if error_msg := HTTP_ERRORS.get(exc.response.status_code):
                 raise DemistoException(f'{error_msg}', res=exc.response) from exc
-            else:
-                raise
+
+            raise
 
         return response
 
@@ -381,8 +392,11 @@ class Client(BaseClient):
         Returns:
             return response json
         """
+        if len(value) > 512:
+            raise ValueError('The maximum length of comment is 512 characters')
+
         request_data: list[dict[str, Any]] = [
-            {'op': 'add', 'path': f'/{uuid}/comments', 'value': value[:512]}
+            {'op': 'add', 'path': f'/{uuid}/comments', 'value': value}
         ]
         # json.dumps([payload])
         return self.http_request(
@@ -671,10 +685,9 @@ def convert_to_iso8601(timestamp: str) -> str:
         "<n> months", "1 months ago"
 
     Returns: return timestamp in iso 8601 format.
-
     """
     if datetime_from_timestamp := dateparser.parse(timestamp, settings={'TIMEZONE': 'UTC'}):
-        return f'{datetime_from_timestamp.strftime(ISO8601_DATE_FORMAT)[:23]}Z'
+        return f'{datetime_from_timestamp.strftime(ISO8601_F_FORMAT)[:-3]}Z'
     else:
         raise ValueError(f'{timestamp} could not be parsed')
 
@@ -690,7 +703,7 @@ def extract_headers_for_readable_output(summary_data: list[dict]) -> list:
 
     """
     if not summary_data:
-        raise DemistoException('No Readable output data found to display.')
+        return []
 
     headers = summary_data[0] if summary_data else {}
     headers = list(headers.keys())
@@ -711,7 +724,6 @@ def get_data_of_current_page(response_data: list[dict[str, Any]], offset: int = 
     """
 
     if offset >= 0 and limit >= 0:
-        demisto.debug(f'I am here {offset} <=> {limit} ...')
         return response_data[offset:(offset + limit)]
     return response_data[:limit]
 
@@ -956,7 +968,7 @@ def parse_event_object_data(data: dict[str, Any]) -> dict:
         if values := data.get(key):
             result |= func(values)  # type: ignore[operator]
 
-    for item in {'edr_data_protocols', 'edr_files', 'source_port', 'target_port'}:
+    for item in ('edr_data_protocols', 'edr_files', 'source_port', 'target_port'):
         if values := data.get(item):
             result |= {f'{item}': values}
 
@@ -1242,7 +1254,7 @@ def extract_raw_data(result: list | dict, ignore_key: list, prefix: str = None) 
      """
     dataset: dict = {}
     if not isinstance(result, (dict, list)):
-        raise ValueError('Unable to determined result object type. Data must be either list or dict')
+        raise ValueError(f'Unexpected data type {type(result)}:: must be either list or dict.\ndata={result}')
 
     raw_data = {k: v for attribute in result for (k, v) in attribute.items()} if isinstance(result, list) \
         else result
@@ -1409,10 +1421,9 @@ def get_association_filter_query(args: dict) -> str:
         return query
 
 
-# def post_request_body(args: dict, limit: int = 1) -> dict:
-def post_request_body(args: dict) -> dict[str, Any]:
+def create_content_query(args: dict) -> dict[str, Any]:
     """
-    This function creates a default payload based on the demisto.args().
+    This function create content request body based on the demisto.args().
     Args:
         args: demisto.args()
     Returns:
@@ -1425,14 +1436,14 @@ def post_request_body(args: dict) -> dict[str, Any]:
         'limit': limit,
         'offset': offset
     }
-    # 2022-10-31T00:00:00.000000
-    if args.get('start_time'):
-        if from_time := convert_to_iso8601(args.get('start_time', '')):
-            payload['start_time'] = from_time
 
-    if args.get('end_time'):
-        if to_time := convert_to_iso8601(args.get('end_time', '')):
-            payload['end_time'] = to_time
+    if raw_start_time := args.get('start_time'):
+        if start_time := convert_to_iso8601(raw_start_time):
+            payload['start_time'] = start_time
+
+    if raw_end_time := args.get('end_time'):
+        if end_time := convert_to_iso8601(raw_end_time):
+            payload['end_time'] = end_time
 
     return payload
 
@@ -1492,9 +1503,9 @@ def get_query_limit(args: dict) -> tuple[int, int]:
     return limit, DEFAULT_OFFSET
 
 
-def get_params_query(args: dict) -> dict:
+def create_params_query(args: dict) -> dict:
     """
-    This function creates a query param based on the demisto.args().
+    This function create a query param based on the demisto.args().
     Args:
         args: demisto.args()
     Returns:
@@ -1533,7 +1544,7 @@ def check_valid_indicator_value(indicator_type: str, indicator_value: str) -> bo
     """
     if indicator_type == 'ip':
         if not is_ip_valid(indicator_value):
-            raise ValueError(f'"{indicator_value}" is not a valid IP')
+            raise ValueError(f'{indicator_value} is not a valid IP')
         return True
 
     hash_to_regex: dict[str, Any] = {
@@ -1559,7 +1570,7 @@ def get_incident_uuid(client: Client, args: dict[str, Any]) -> str | None:
       Returns:
         Return Incident UUID
     """
-    payload = post_request_body(args)
+    payload = create_content_query(args)
 
     # offset does not support by API therefore need to be removed
     payload.pop('offset')
@@ -1574,10 +1585,10 @@ def get_incident_uuid(client: Client, args: dict[str, Any]) -> str | None:
         raise DemistoException(f'Incident ID not found {args.get("incident_id")}, '
                                f'May be incident ID is older than 30 days, '
                                f'If that is the case try with time range Arguments')
-    return uuid if (uuid := raw_data[0].get('uuid')) else None
+    return raw_data[0].get('uuid')
 
 
-def get_request_payload(args: dict[str, Any], query_type: Optional[str] = None) -> dict:
+def create_payload_for_query(args: dict[str, Any], query_type: Optional[str] = None) -> dict:
     """
     Create payload for request the endpoints
     Args:
@@ -1588,11 +1599,11 @@ def get_request_payload(args: dict[str, Any], query_type: Optional[str] = None) 
     """
     if query_type in {'allow_list', 'deny_list'}:
         limit = arg_to_number(args.get('limit'))
-        if limit and (limit < 10 or limit > 1000):
+        if limit is not None and (limit < 10 or limit > 1000):
             raise ValueError('Invalid input limit: Value between Minimum = 10 , Maximum = 1000')
-        payload = get_params_query(args)
+        payload = create_params_query(args)
     else:
-        payload = post_request_body(args)
+        payload = create_content_query(args)
 
     # search query as Lucene query string
     if query_type == 'association':
@@ -1650,7 +1661,7 @@ def get_domain_file_association_list_command(client: Client, args: dict[str, Any
     Returns:
         CommandResults: A ``CommandResults`` object
     """
-    payload = get_request_payload(args, 'association')
+    payload = create_payload_for_query(args, 'association')
     offset = int(payload.pop('offset', ''))
     limit = int(payload.get('limit', ''))
 
@@ -1683,7 +1694,7 @@ def get_endpoint_domain_association_list_command(client: Client, args: dict[str,
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    payload = get_request_payload(args, 'association')
+    payload = create_payload_for_query(args, 'association')
     offset = int(payload.pop('offset', ''))
     limit = int(payload.get('limit', ''))
 
@@ -1715,7 +1726,7 @@ def get_endpoint_file_association_list_command(client: Client, args: dict[str, A
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    payload = get_request_payload(args, 'association')
+    payload = create_payload_for_query(args, 'association')
     offset = int(payload.pop('offset', ''))
     limit = int(payload.get('limit', ''))
 
@@ -1748,7 +1759,7 @@ def get_audit_event_command(client: Client, args: dict[str, Any]) -> CommandResu
             result.
     """
     context_data: list = []
-    payload = get_request_payload(args, 'event')
+    payload = create_payload_for_query(args, 'event')
     offset = int(payload.pop('offset', ''))
     limit = int(payload.get('limit', ''))
 
@@ -1781,7 +1792,7 @@ def get_event_list_command(client: Client, args: dict[str, Any]) -> CommandResul
             result.
     """
     context_data: list = []
-    payload = get_request_payload(args, 'event')
+    payload = create_payload_for_query(args, 'event')
     offset = int(payload.pop('offset', ''))
     limit = int(payload.get('limit', ''))
 
@@ -1814,7 +1825,7 @@ def get_system_activity_command(client: Client, args: dict[str, Any]) -> Command
             result.
     """
     context_data: list = []
-    payload = get_request_payload(args, 'event')
+    payload = create_payload_for_query(args, 'event')
     offset = int(payload.pop('offset', ''))
     limit = int(payload.get('limit', ''))
 
@@ -1847,7 +1858,7 @@ def get_event_for_incident_list_command(client: Client, args: dict[str, Any]) ->
             result.
     """
     context_data: list = []
-    payload = get_request_payload(args, 'event')
+    payload = create_payload_for_query(args, 'event')
     offset = int(payload.pop('offset', ''))
     limit = int(payload.get('limit', ''))
 
@@ -1880,7 +1891,7 @@ def get_incident_list_command(client: Client, args: dict[str, Any]) -> CommandRe
             result.
     """
     context_data: list = []
-    payload = get_request_payload(args, 'incident')
+    payload = create_payload_for_query(args, 'incident')
     offset = int(payload.pop('offset', ''))
     limit = int(payload.get('limit', ''))
 
@@ -1918,7 +1929,7 @@ def get_incident_comments_command(client: Client, args: dict[str, Any]) -> Comma
     if uuid is None:
         raise ValueError("Error: No Incident UUID found. Provide valid Incident IDs.")
 
-    payload = get_request_payload(args, 'incident')
+    payload = create_payload_for_query(args, 'incident')
     offset = int(payload.pop('offset', ''))
     limit = int(payload.get('limit', ''))
 
@@ -2017,7 +2028,7 @@ def get_file_instance_command(client: Client, args: dict[str, Any]) -> CommandRe
     if sha2 := args.get('file_sha2'):
         check_valid_indicator_value('sha256', sha2)
 
-    payload = get_request_payload(args)
+    payload = create_payload_for_query(args)
     offset = int(payload.pop('offset', ''))
     limit = int(payload.get('limit', ''))
 
@@ -2050,7 +2061,7 @@ def get_domain_instance_command(client: Client, args: dict[str, Any]) -> Command
             result.
     """
     context_data: list = []
-    payload = get_request_payload(args)
+    payload = create_payload_for_query(args)
     offset = int(payload.pop('offset', ''))
     limit = int(payload.get('limit', ''))
 
@@ -2082,7 +2093,7 @@ def get_endpoint_instance_command(client: Client, args: dict[str, Any]) -> Comma
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    payload = get_request_payload(args)
+    payload = create_payload_for_query(args)
     offset = int(payload.pop('offset', ''))
     limit = int(payload.get('limit', ''))
 
@@ -2114,7 +2125,7 @@ def get_allow_list_command(client: Client, args: dict[str, Any]) -> CommandResul
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    payload = get_request_payload(args, 'allow_list')
+    payload = create_payload_for_query(args, 'allow_list')
     offset = int(payload.pop('offset', ''))
     limit = int(payload.get('limit', ''))
 
@@ -2146,7 +2157,7 @@ def get_deny_list_command(client: Client, args: dict[str, Any]) -> CommandResult
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    payload = get_request_payload(args, 'deny_list')
+    payload = create_payload_for_query(args, 'deny_list')
     offset = int(payload.pop('offset', ''))
     limit = int(payload.get('limit', ''))
 
@@ -2242,7 +2253,7 @@ def get_endpoint_status_command(client: Client, args: dict[str, Any]) -> Command
     """
     command_id = args.get('command_id', '')
     readable_data = []
-    payload = post_request_body(args)
+    payload = create_content_query(args)
     payload.pop('offset', 0)
 
     raw_response = client.get_status_endpoint(command_id, payload)
@@ -2280,51 +2291,41 @@ def get_endpoint_status_command(client: Client, args: dict[str, Any]) -> Command
 
 def fetch_incidents(client: Client) -> list:
     """
-    Arguments Validation.
+    Fetching Incidents pulls incidents and events from third party tools and convert then into incidents.
     Args:
         client: Client Object
     Returns:
         Incidents List
     """
-
-    rev_incident_priority = {v: k for k, v in INCIDENT_PRIORITY_LEVEL.items()}
-    rev_incident_state = {v: k for k, v in INCIDENT_STATUS.items()}
-
     seperator = ' OR '
-    priority_list = [rev_incident_priority.get(i) for i in client.fetch_priority]  # type: ignore[union-attr]
+    priority_list = [REVERSE_INCIDENT_PRIORITY.get(i) for i in client.fetch_priority]  # type: ignore[union-attr]
     priority = priority_list[0] if len(priority_list) == 1 else seperator.join(map(str, priority_list))
 
-    state_list = [rev_incident_state.get(i) for i in client.fetch_status]  # type: ignore[union-attr]
+    state_list = [REVERSE_INCIDENT_STATE.get(i) for i in client.fetch_status]  # type: ignore[union-attr]
     state = state_list[0] if len(state_list) == 1 else seperator.join(map(str, state_list))
 
     last_run = demisto.getLastRun()
     demisto.debug(f'Last Run Object : {last_run}')
 
-    payload = {
-        "verb": "query",
-        "limit": client.fetch_limit,
-        "query": f'priority_level: ({priority}) AND state: ({state})'
-    }
-    demisto.debug(f'limit: {client.fetch_limit}, priority_level: ({priority}) AND state: ({state})')
     # demisto.getLastRun() will return an obj with the previous run in it.
     # set First Fetch starting time in case running first time or reset
-    start_time = convert_to_iso8601(client.first_fetch)
-    start_time_n, end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=client.first_fetch)
+    previous_start_time, previous_end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=client.first_fetch)
 
-    if last_run and 'time' in last_run:
-        query_start_time = convert_to_iso8601(last_run.get('time'))
-        payload['start_time'] = query_start_time
-    else:
-        payload['start_time'] = start_time
-    demisto.debug(f'### get_incident payload: {payload} ###')
-    # payload['start_time'] = start_time_lastrun if last_run else start_time
-    result = client.get_incident(payload).get('result', [])
+    query_start_time = convert_to_iso8601(last_run.get('time')) \
+        if last_run and 'time' in last_run else convert_to_iso8601(previous_start_time)
+
+    incident_payload = {
+        "verb": "query",
+        "limit": client.fetch_limit,
+        "query": f'priority_level: ({priority}) AND state: ({state})',
+        "start_time": query_start_time
+    }
+    demisto.debug(f'Incident query with {incident_payload}')
+    result = client.get_incident(incident_payload).get('result', [])
 
     incidents, events_result, comments_result = [], [], []
     if result:
         _, incidents_context = incident_readable_output(result)
-        # Map severity to Demisto severity for incident creation
-        xsoar_severity_map = {'High': 3, 'Medium': 2, 'Low': 1}
 
         for incident in incidents_context:
             incident_id = incident.get('incident_id')
@@ -2332,30 +2333,25 @@ def fetch_incidents(client: Client) -> list:
 
             # Get Incidents Comments if set as true
             if client.is_fetch_comment:
-                payload = (
-                    {"verb": "query"}
-                    if last_run
-                    else {"verb": "query", "start_time": start_time}
-                )
-                demisto.debug(f'=== get incident comment payload: {payload} incident_uuid: {incident_uuid} ===')
-                comments_result = client.get_incident_comment(payload, incident_uuid).get('result', [])
+                comment_payload = {"verb": "query", "start_time": query_start_time}
+                comments_result = client.get_incident_comment(comment_payload, incident_uuid).get('result', [])
 
             # Fetch incident for event if set as true
             if client.is_incident_event:
-                payload = {
+                event_payload = {
                     "verb": "query",
                     "query": f'incident: {incident_uuid}',
-                    "start_time": start_time
+                    "start_time": query_start_time
                 }
-                demisto.debug(f'*** Event Incident payload: {payload} ***')
-                events_result = client.get_event_for_incident(payload).get('result', [])
+                events_result = client.get_event_for_incident(event_payload).get('result', [])
 
             # Incidents Data
             incidents.append({
                 'name': f'SEDR Incident {incident_id}',
                 'details': incident.get("description"),
-                'severity': xsoar_severity_map.get(str(incident.get('priority')), 0),
+                'severity': XSOAR_SEVERITY_MAP.get(str(incident.get('priority')), 0),
                 'occurred': incident.get('incident_created'),
+                'dbotMirrorId': str(incident_id),
                 'rawJSON': json.dumps(
                     {
                         'incident': incident,
@@ -2370,24 +2366,22 @@ def fetch_incidents(client: Client) -> list:
         incidents_res=incidents, last_run=last_run, fetch_limit=client.fetch_limit, id_field='name'
     )
 
-    end_time = convert_to_iso8601('now')
+    current_end_time = convert_to_iso8601('now')
     last_run = update_last_run_object(
         last_run=last_run,
         incidents=incidents_insert,
         fetch_limit=client.fetch_limit,
-        start_fetch_time=start_time_n,
-        end_fetch_time=end_time,
+        start_fetch_time=query_start_time,
+        end_fetch_time=current_end_time,
         look_back=30,
         created_time_field='occurred',
         id_field='name',
-        date_format=ISO8601_DATE_FORMAT
+        date_format=f'{ISO8601_F_FORMAT}Z'
     )
 
-    demisto.debug(f'last run at the end of the incidents fetching {last_run},'
-                  f'incident count : {len(incidents)},'
-                  f'Incident insert: {len(incidents_insert)}')
+    demisto.debug(f'Incident insert: {len(incidents_insert)}')
     demisto.setLastRun(last_run)
-    return incidents
+    return incidents_insert
 
 
 ''' POLLING CODE '''
@@ -2404,17 +2398,13 @@ def get_sandbox_verdict(client: Client, args: Dict[str, Any]) -> CommandResults:
              result.
      """
     sha2 = args.get('file', '')
-
-    response_verdict = client.get_sandbox_verdict_for_file(sha2)
-    file_res = client.get_file_entity(sha2)
-
-    response_verdict |= file_res
+    response_verdict = client.get_sandbox_verdict_for_file(sha2) | client.get_file_entity(sha2)
     # Sandbox verdict
     title = "Sandbox Verdict"
     if response_verdict:
         readable_output = generic_readable_output([response_verdict], title)
     else:
-        readable_output = f'{title} does not have data to present. \n'
+        readable_output = f'{title} does not have data to present.'
 
     return CommandResults(
         readable_output=readable_output,
@@ -2457,7 +2447,7 @@ def check_sandbox_status(client: Client, args: Dict[str, Any]) -> CommandResults
         readable_data.append(summary_data)
         readable_output = generic_readable_output(readable_data, title)
     else:
-        readable_output = f'{title} does not have data to present. \n'
+        readable_output = f'{title} does not have data to present.'
 
     return CommandResults(
         readable_output=readable_output,
@@ -2480,8 +2470,8 @@ def issue_sandbox_command(client: Client, args: Dict[str, Any]) -> CommandResult
      """
 
     sha2 = args.get('file', '')
-    if not re.match(sha256Regex, sha2):
-        raise ValueError(f'SHA256 value {sha2} is invalid')
+    if get_hash_type(sha2) != 'sha256':
+        raise ValueError(f'SHA256 value:{sha2} is invalid')
 
     payload = {
         'action': 'analyze',
@@ -2525,8 +2515,6 @@ def run_polling_command(client: Client, args: dict, cmd: str, status_func: Calla
         return CommandResults
     """
     demisto.debug(f'-- Polling Command --\nArguments : {args}')
-    demisto.debug(f'Integration Global Context Data: {demisto.getIntegrationContext()}')
-
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs: int = int(args.get('interval_in_seconds', DEFAULT_INTERVAL))
     timeout_in_seconds: int = int(args.get('timeout_in_seconds', DEFAULT_TIMEOUT))
@@ -2575,12 +2563,12 @@ def run_polling_command(client: Client, args: dict, cmd: str, status_func: Calla
     if status == 'Completed':
         # # action was completed
         if global_integration_context := demisto.getIntegrationContext():
-            del global_integration_context['command_id']
+            global_integration_context.pop('command_id')
             demisto.setIntegrationContext(global_integration_context)
         return results_func(client, args)
     elif status == 'Error':
         if global_integration_context := demisto.getIntegrationContext():
-            del global_integration_context['command_id']
+            global_integration_context.pop('command_id')
             demisto.setIntegrationContext(global_integration_context)
 
         return command_result
@@ -2645,8 +2633,6 @@ def main() -> None:
                         client_secret=client_secret, first_fetch=first_fetch_time, fetch_limit=fetch_limit,
                         is_incident_event=fetch_incident_event, is_fetch_comment=fetch_comments,
                         fetch_status=fetch_status, fetch_priority=fetch_priority)
-
-        client.get_access_token_or_login()
 
         demisto.info(f'Command being called is {demisto.command()}')
 

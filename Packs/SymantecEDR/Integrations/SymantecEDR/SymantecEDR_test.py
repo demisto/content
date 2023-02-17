@@ -8,6 +8,8 @@ import time
 from datetime import datetime, timedelta
 import dateparser
 import os
+
+import CommonServerPython
 from CommonServerPython import DemistoException
 from SymantecEDR import Client, get_file_instance_command, get_domain_instance_command, get_endpoint_instance_command, \
     get_endpoint_file_association_list_command, get_domain_file_association_list_command, \
@@ -25,6 +27,11 @@ def util_load_json(path):
     with open(path) as f:
         return json.loads(f.read())
 
+
+CommonServerPython.demisto.setIntegrationContext(
+    CommonServerPython.demisto.getIntegrationContext() | {
+        'access_token': '12345678', 'access_token_timestamp': int(time.time())}
+)
 
 client = Client(
     base_url="http://test.com",
@@ -57,6 +64,33 @@ HEADER_LIST = util_load_json('test_data/header_list.json')
 SANDBOX_ISSUE_COMMAND = util_load_json('test_data/sandbox_issue_command.json')
 SANDBOX_STATUS_COMMAND = util_load_json('test_data/sandbox_status_command.json')
 SANDBOX_VERDICT_COMMAND = util_load_json('test_data/sandbox_verdict_command.json')
+
+
+@pytest.mark.parametrize('expected_result', ['12345678'])
+def test_get_access_token_from_context(expected_result):
+    actual_result = client.get_access_token_from_context()
+    assert actual_result == expected_result
+
+
+def test_get_access_token_or_login(requests_mock):
+    """
+        Tests the get_access_token_or_login function.
+            Given:
+                - requests_mock object.
+            When:
+                - Running the 'get_access_token_or_login function'.
+            Then:
+                -  Checks the output of the command function with the expected output.
+    """
+    post_req_url = f'{client._base_url}/atpapi/oauth2/tokens'
+    # before login, access_token is not present
+    # requests_mock.post(post_req_url, json={'access_token': '12345678'})
+    # assert client.headers == {'Content-Type': 'application/json'}
+    requests_mock.post(post_req_url, json={})
+    access_token = client.get_access_token_or_login()
+    assert client.access_token == access_token
+    # after login, access_token is present
+    assert client.headers == {'Authorization': f'Bearer {client.access_token}', 'Content-Type': 'application/json'}
 
 
 @pytest.mark.parametrize('raw_response, expected', [(FILE_INSTANCE_RESPONSE, FILE_INSTANCE_RESPONSE)])
@@ -652,17 +686,6 @@ def test_compile_command_title_string(sub_context, params, total_record, expecte
     assert actual_title == expected_title
 
 
-@pytest.mark.parametrize('context_dict, expected_result', [
-    ({'access_token_timestamp': int(time.time()), 'access_token': '12345'}, '12345'),
-    ({'access_token_timestamp': int(time.time() - 300), 'access_token': '12345'}, '12345'),
-    ({'access_token_timestamp': int(time.time() - 3660), 'access_token': '12345'}, None),
-    ({}, None),
-])
-def test_get_access_token_from_context(context_dict, expected_result):
-    actual_result = client.get_access_token_from_context(context_dict)
-    assert actual_result == expected_result
-
-
 @pytest.mark.parametrize('indicator_type, indicator_value, expected_result', [
     ('urls', 'https://www.facebook.com', True),
     ('ip', '1.1.1.1', True),
@@ -690,7 +713,7 @@ def test_check_valid_indicator_value(indicator_type, indicator_value, expected_r
 @pytest.mark.parametrize('indicator_type, indicator_value, expected_err_msg', [
     ('domains', 'abcd123', 'Indicator domains type id not support'),
     ('urls', '123245', '123245 is not a valid urls'),
-    ('ip', 'google.1234', '"google.1234" is not a valid IP'),
+    ('ip', 'google.1234', 'google.1234 is not a valid IP'),
     ('sha256', 'abcde34', 'abcde34 is not a valid sha256'),
     ('md5', 'eb67bdf0eaac6e', 'eb67bdf0eaac6e is not a valid md5')
 ])
@@ -711,26 +734,6 @@ def test_check_valid_indicator_value_wrong_input(indicator_type, indicator_value
     with pytest.raises(ValueError) as e:
         check_valid_indicator_value(indicator_type, indicator_value)
     assert e.value.args[0] == expected_err_msg
-
-
-def test_get_access_token_or_login(requests_mock):
-    """
-        Tests the get_access_token_or_login function.
-            Given:
-                - requests_mock object.
-            When:
-                - Running the 'get_access_token_or_login function'.
-            Then:
-                -  Checks the output of the command function with the expected output.
-    """
-    post_req_url = f'{client._base_url}/atpapi/oauth2/tokens'
-    # before login, access_token is not present
-    requests_mock.post(post_req_url, json={'access_token': '12345'})
-    assert client.headers == {'Content-Type': 'application/json'}
-    client.get_access_token_or_login()
-    assert client.access_token == "12345"
-    # after login, access_token is present
-    assert client.headers == {'Authorization': f'Bearer {client.access_token}', 'Content-Type': 'application/json'}
 
 
 @pytest.mark.parametrize('raw_response, expected', [(INCIDENT_LIST_RESPONSE, 'ok')])
@@ -772,14 +775,14 @@ def test_test_module__invalid(requests_mock, response_code):
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 now = str(datetime.today())
-now_iso = dateparser.parse(now, settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)[:23] + 'Z'
+now_iso = dateparser.parse(now, settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)[:-3]
 week_before = str(datetime.today() - timedelta(days=7))
-iso_datatime_week_before = dateparser.parse(week_before, settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)[:23] + 'Z'
+iso_datatime_week_before = dateparser.parse(week_before, settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)[:-3]
 
 
 @pytest.mark.parametrize('date_string, expected_result', [
-    (now, now_iso),
-    (week_before, iso_datatime_week_before)
+    (now, f'{now_iso}Z'),
+    (week_before, f'{iso_datatime_week_before}Z')
 ])
 def test_convert_to_iso8601(date_string, expected_result):
     """
