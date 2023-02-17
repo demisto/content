@@ -7,11 +7,17 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: In order to authenticate with a Cluster Authentication Token, insert `__token` in the "Username" textbox, and the token itself in the "Password" textbox.
-  display: Username
+- display: Username
   name: credentials
-  required: true
+  required: false
   type: 9
+- additionalinfo: Cluster Authentication Token
+  display: Username
+  displaypassword: API Token
+  name: api_token
+  required: false
+  type: 9
+  hiddenusername: true
 - defaultvalue: "generic,abnormalAuth,accountManipulation,accountTampering,ueba,bruteForce,compromisedCredentials,
     cryptomining,dataAccessAbuse,dataExfiltration,dlp,departedEmployee,dataDestruction,evasion,lateralMovement,alertTriage,
     malware,phishing,privilegeAbuse,physicalSecurity,privilegeEscalation,privilegedActivity,ransomware,workforceProtection"
@@ -2095,7 +2101,7 @@ script:
     - contextPath: Exabeam.incidents.fields.description
       description: The incident description.
       type: String
-  dockerimage: demisto/python3:3.10.9.42008
+  dockerimage: demisto/python3:3.10.9.45313
   isfetch: true
   longRunning: false
   longRunningPort: false

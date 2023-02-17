@@ -3,11 +3,9 @@ from CommonServerPython import *  # noqa: F401
 from traceback import format_exc
 
 
-def arr_to_csv_command(array: list[str] | str) -> CommandResults:
+def arr_to_csv_command(array: list[str] | str) -> str:
     csv = ','.join(array)
-    return CommandResults(
-        readable_output=csv
-    )
+    return csv
 
 
 def main():     # pragma: no cover

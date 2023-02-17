@@ -12,8 +12,8 @@ Use one of the following methods:
 4. In the **Client Secret** field, enter your Client Secret.
 5. In the **Tenant ID** field, enter your Tenant ID .
 6. In the **Application redirect URI** field, enter your Application redirect URI.
-7. In the **Authorization code** field, enter your Authorization code.
-8. Save the instance.
+7. Save the instance.
+8. Run the `!azure-storage-generate-login-url` command in the War Room and follow the instruction.
 
 ### Authentication Using the Device Code Flow
 
@@ -38,3 +38,16 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
 
 The application must have *user_impersonation* permission and must allow public client flows (can be found under the **Authentication** section of the app).
 
+### Azure Managed Identities Authentication
+##### Note: This option is relevant only if the integration is running on Azure VM.
+Follow one of these steps for authentication based on Azure Managed Identities:
+
+- ##### To use System Assigned Managed Identity
+   - In the **Authentication Type** drop-down list, select **Azure Managed Identities** and leave the **Azure Managed Identities Client ID** field empty.
+
+- ##### To use User Assigned Managed Identity
+   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**.
+   2. Select your User Assigned Managed Identity -> copy the Client ID -> paste it in the **Azure Managed Identities client ID** field in the instance configuration.
+   3. In the **Authentication Type** drop-down list, select **Azure Managed Identities**.
+
+For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).

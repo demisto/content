@@ -1108,7 +1108,8 @@ class MsClient:
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
                  auth_type, redirect_uri, auth_code,
-                 is_gcc: bool, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
+                 is_gcc: bool, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None,
+                 managed_identities_client_id: Optional[str] = None):
         client_args = assign_params(
             self_deployed=self_deployed,
             auth_id=auth_id,
@@ -1127,7 +1128,9 @@ class MsClient:
             enc_key=enc_key,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
-            retry_on_rate_limit=True
+            retry_on_rate_limit=True,
+            managed_identities_client_id=managed_identities_client_id,
+            managed_identities_resource_uri=Resources.security_center
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.alert_severities_to_fetch = alert_severities_to_fetch
@@ -5405,13 +5408,13 @@ def main():  # pragma: no cover
     params: dict = demisto.params()
     base_url: str = params.get('url', '').rstrip('/') + '/api'
     tenant_id = params.get('tenant_id') or params.get('_tenant_id')
-    auth_id = params.get('auth_id') or params.get('_auth_id')
-    enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
+    auth_id = params.get('_auth_id') or params.get('auth_id')
+    enc_key = (params.get('credentials') or {}).get('password') or params.get('enc_key')
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or params.get('certificate_thumbprint')
-    private_key = params.get('creds_certificate', {}).get('password') or params.get('private_key')
+    private_key = replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')) or params.get('private_key')
     alert_severities_to_fetch = params.get('fetch_severity')
     alert_status_to_fetch = params.get('fetch_status')
     alert_time_to_fetch = params.get('first_fetch_timestamp', '3 days')
@@ -5422,22 +5425,24 @@ def main():  # pragma: no cover
     auth_type = params.get('auth_type', 'Client Credentials')
     auth_code = params.get('auth_code', {}).get('password', '')
     redirect_uri = params.get('redirect_uri', '')
-
-    if not self_deployed and not enc_key:
-        raise DemistoException('Key must be provided. For further information see '
-                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
-    elif not enc_key and not (certificate_thumbprint and private_key):
-        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
-    if not auth_id:
-        raise Exception('Authentication ID must be provided.')
-    if not tenant_id:
-        raise Exception('Tenant ID must be provided.')
-    if auth_code and redirect_uri:
-        if not self_deployed:
-            raise Exception('In order to use Authorization Code, set Self Deployed: True.')
-    if (auth_code and not redirect_uri) or (redirect_uri and not auth_code):
-        raise Exception('In order to use Authorization Code auth flow, you should set: '
-                        '"Application redirect URI", "Authorization code" and "Self Deployed=True".')
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
+    self_deployed = self_deployed or managed_identities_client_id is not None
+    if not managed_identities_client_id:
+        if not self_deployed and not enc_key:
+            raise DemistoException('Key must be provided. For further information see '
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+        elif not enc_key and not (certificate_thumbprint and private_key):
+            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+        if not auth_id:
+            raise Exception('Authentication ID must be provided.')
+        if not tenant_id:
+            raise Exception('Tenant ID must be provided.')
+        if auth_code and redirect_uri:
+            if not self_deployed:
+                raise Exception('In order to use Authorization Code, set Self Deployed: True.')
+        if auth_code and not redirect_uri:
+            raise Exception('In order to use Authorization Code auth flow, you should set: '
+                            '"Application redirect URI", "Authorization code" and "Self Deployed=True".')
 
     command = demisto.command()
     args = demisto.args()
@@ -5448,7 +5453,8 @@ def main():  # pragma: no cover
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
             max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
-            is_gcc=is_gcc, auth_type=auth_type, auth_code=auth_code, redirect_uri=redirect_uri
+            is_gcc=is_gcc, auth_type=auth_type, auth_code=auth_code, redirect_uri=redirect_uri,
+            managed_identities_client_id=managed_identities_client_id
         )
         if command == 'test-module':
             if auth_type == 'Authorization Code':
@@ -5649,6 +5655,8 @@ def main():  # pragma: no cover
             return_results(get_machine_alerts_command(client, args))
         elif command == 'microsoft-atp-request-and-download-investigation-package':
             return_results(request_download_investigation_package_command(client, args))
+        elif command == 'microsoft-atp-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
 
     except Exception as err:
         return_error(str(err))

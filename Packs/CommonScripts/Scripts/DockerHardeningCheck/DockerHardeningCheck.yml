@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
 - Utility
-comment: 'Checks if the Docker container running this script has been hardened according to the recommended settings at: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/docker/docker-hardening-guide.html'
+comment: 'Checks if the Docker container running this script has been hardened according to the recommended settings at: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide'
 enabled: true
 args:
 - name: memory
@@ -42,7 +42,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.9.40422
+dockerimage: demisto/python3:3.10.9.44472
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

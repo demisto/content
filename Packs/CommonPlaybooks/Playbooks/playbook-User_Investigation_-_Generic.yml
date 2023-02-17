@@ -757,7 +757,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "28"
+      - "80"
     scriptarguments:
       AzureSearchTime:
         complex:
@@ -890,8 +890,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "28"
+      - "80"
     scriptarguments:
+      ASN:
+        complex:
+          root: inputs.ASN
       LoginCountry:
         complex:
           root: inputs.LoginCountry
@@ -950,6 +953,55 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 9faef5f8-cf67-4f6f-8419-6104cf012806
+    type: regular
+    task:
+      id: 9faef5f8-cf67-4f6f-8419-6104cf012806
+      version: -1
+      name: Number Of Failed Logon
+      description: |
+        Script will run the provided mathematical action on 2 provided values and produce a result.
+        The result can be stored on the context using the contextKey argument
+      scriptName: MathUtil
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      action:
+        simple: +
+      contextKey:
+        simple: NumOfFailedLogon
+      ignore-outputs:
+        simple: "false"
+      lh:
+        complex:
+          root: NumOfOktaFailedLogon
+      rh:
+        complex:
+          root: NumOfSiemFailedLogon
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1052,6 +1104,11 @@ inputs:
   required: false
   description: 'The Search Time for the Azure Log Analytics search query. for example: ago(1d)'
   playbookInputQuery:
+- key: ASN
+  value: {}
+  required: false
+  description: The ASN from which the user logged in.
+  playbookInputQuery:
 outputs:
 - contextPath: NumOfSiemFailedLogon
   description: Number of failed login from Siem.
@@ -1094,6 +1151,12 @@ outputs:
   description: 'The result of the QRadar search '
 - contextPath: Splunk.Result
   description: The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event.
+- contextPath: NumOfFailedLogon
+  description: Number of failed login.
+  type: unknown
+- contextPath: NumOfFailedLogonASN
+  description: Number of failed login from ASN by all users.
+  type: unknown
 quiet: true
 tests:
 - No tests (auto formatted)

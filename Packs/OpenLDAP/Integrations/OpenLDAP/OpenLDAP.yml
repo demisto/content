@@ -1,4 +1,7 @@
 beta: false
+sectionOrder:
+- Connect
+- Collect
 category: Authentication
 commonfields:
   id: OpenLDAP
@@ -14,68 +17,88 @@ configuration:
   - Active Directory
   required: true
   type: 15
+  section: Connect
 - display: Server IP or Host Name (e.g., 192.168.0.1)
   name: host
   required: true
   type: 0
+  section: Connect
 - display: Port. If not specified, default port is 389, or 636 for LDAPS.
   name: port
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: User DN (e.g., cn=admin,ou=users,dc=domain,dc=com)
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Base DN (e.g., DC=domain,DC=com)
   name: base_dn
   required: true
   type: 0
+  section: Connect
 - defaultvalue: 'true'
   display: Auto populate groups
   name: fetch_groups
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: posixGroup
   display: Groups Object Class
   name: group_filter_class
   required: false
   type: 0
   additionalinfo: Relevant for OpenLDAP.
+  section: Collect
+  advanced: true
 - defaultvalue: gidNumber
   display: Groups Unique Identifier Attribute
   name: group_identifier_attribute
   required: false
   type: 0
   additionalinfo: Relevant for OpenLDAP.
+  section: Collect
+  advanced: true
 - defaultvalue: memberUid
   display: Group Membership Identifier Attribute
   name: member_identifier_attribute
   required: false
   type: 0
   additionalinfo: Relevant for OpenLDAP.
+  section: Collect
+  advanced: true
 - defaultvalue: posixAccount
   display: User Object Class
   name: user_filter_class
   required: false
   type: 0
   additionalinfo: Relevant for OpenLDAP.
-- additionalinfo: User attributes will be added to the user filter in 'ad-authenticate-and-roles'.
-    Attributes should be in the format "attrA=valA,attrB=valB,..." (Relevant for OpenLDAP).
+  section: Collect
+  advanced: true
+- additionalinfo: User attributes will be added to the user filter in 'ad-authenticate-and-roles'. Attributes should be in the format "attrA=valA,attrB=valB,..." (Relevant for OpenLDAP).
   display: User Defined Attributes
   name: custom_attributes
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - defaultvalue: uid
   display: User Unique Identifier Attribute
   name: user_identifier_attribute
   required: false
   type: 0
   additionalinfo: Relevant for OpenLDAP.
+  section: Collect
+  advanced: true
 - defaultvalue: '500'
   display: Page size
   name: page_size
   required: false
   type: 0
+  section: Collect
 - defaultvalue: None
   display: Connection Type
   name: connection_type
@@ -85,6 +108,7 @@ configuration:
   - Start TLS
   required: true
   type: 15
+  section: Connect
 - additionalinfo: 'The SSL\TLS version to use in SSL or Start TLS connections types. Default is None. It is recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections.'
   defaultvalue: None
   display: SSL Version
@@ -99,14 +123,20 @@ configuration:
   - TLS_CLIENT
   required: false
   type: 15
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Authenticate using OpenLDAP or Active Directory.
 display: LDAP Authentication
 name: OpenLDAP
@@ -131,8 +161,7 @@ script:
     name: ad-authenticate
   - arguments:
     - default: false
-      description: A list of group object names to fetch. The list is delimited by
-        a number sign (#).
+      description: A list of group object names to fetch. The list is delimited by a number sign (#).
       isArray: false
       name: specific-groups
       required: false
@@ -211,7 +240,7 @@ script:
     description: Performs a simple bind operation on the LDAP server and returns the authenticated user's groups.
     execution: false
     name: ad-authenticate-and-roles
-  dockerimage: demisto/py3-tools:1.0.0.42258
+  dockerimage: demisto/py3-tools:1.0.0.45685
   feed: false
   isfetch: false
   longRunning: false

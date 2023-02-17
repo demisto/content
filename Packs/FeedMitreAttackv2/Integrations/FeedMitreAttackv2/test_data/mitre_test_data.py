@@ -733,3 +733,130 @@ CAMPAIGN = {
         'tlp': 'WHITE'
     }
 }
+
+ATTACK_PATTERNS = [
+    {
+        "object_marking_refs": ["marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"],
+        "type": "attack-pattern",
+        "id": "attack-pattern--a11bb2c5-0c4b-4611-8297-d1b8b55e40b6",
+        "created": "2022-03-04T18:56:38.844Z",
+        "external_references": [
+            {
+                "source_name": "mitre-attack",
+                "external_id": "T1111.001",
+                "url": "https://attack.mitre.org/techniques/T1111/001"
+            },
+            {
+                "source_name": "Something Jan 2021",
+                "url": "https://www.something.com/content/file.pdf",
+                "description": "Something. (2021, January).  Retrieved February 14, 2022."
+            },
+            {
+                "source_name": "Bucket",
+                "url": "https://test.org",
+                "description": "Info. (2019, February 26). Retrieved March 4, 2022."
+            }
+        ],
+        "description": "Adversaries may iteratively probe infrastructure using brute-forcing and crawling techniques. ",
+        "modified": "2022-04-15T19:10:23.838Z",
+        "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+        "name": "Wordlist Scanning",
+        "kill_chain_phases": [{
+            "kill_chain_name": "mitre-attack",
+            "phase_name": "reconnaissance"
+        }],
+        "x_mitre_platforms": ["PRE"],
+        "x_mitre_domains": ["enterprise-attack"],
+        "x_mitre_contributors": [
+            "Jan Petrov, Citi",
+            "Elvis Veliz, Citi",
+            "Richard Julian, Citi"
+        ],
+        "x_mitre_version": "1.0",
+        "x_mitre_detection": "Monitor for suspicious network traffic that could be indicative of scanning.",
+        "x_mitre_data_sources": ["Network Traffic: Network Traffic Content"],
+        "x_mitre_attack_spec_version": "2.1.0",
+        "x_mitre_modified_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5"
+    },
+    {
+        "object_marking_refs": ["marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"],
+        "id": "attack-pattern--4e6620ac-c30c-4f6d-918e-fa20cae7c1ce",
+        "type": "attack-pattern",
+        "created": "2020-10-02T16:53:16.526Z",
+        "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+        "external_references": [
+            {
+                "source_name": "mitre-attack",
+                "external_id": "T1111",
+                "url": "https://attack.mitre.org/techniques/T1111"
+            },
+            {
+                "source_name": "Scan",
+                "url": "https://test.org",
+                "description": "Test. (2012). Retrieved October 20, 2020."
+            }
+        ],
+        "modified": "2022-03-08T20:58:13.661Z",
+        "name": "Active Scanning",
+        "description": "Adversaries may execute active reconnaissance scans to gather information.",
+        "kill_chain_phases": [{
+            "kill_chain_name": "mitre-attack",
+            "phase_name": "reconnaissance"
+        }],
+        "x_mitre_platforms": ["PRE"],
+        "x_mitre_domains": ["enterprise-attack"],
+        "x_mitre_detection": "Monitor for suspicious network traffic that could be indicative of scanning.",
+        "x_mitre_version": "1.0",
+        "x_mitre_modified_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+        "x_mitre_data_sources": [
+            "Network Traffic: Network Traffic Flow",
+            "Network Traffic: Network Traffic Content"
+        ],
+    },
+    {
+        "object_marking_refs": ["marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"],
+        "id": "attack-pattern--19da6e1c-71ab-4c2f-886d-d620d09d3b5a",
+        "type": "attack-pattern",
+        "created": "2020-01-30T13:58:14.373Z",
+        "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+        "external_references": [
+            {
+                "source_name": "mitre-attack",
+                "external_id": "T1234",
+                "url": "https://attack.mitre.org/techniques/T1234"
+            }
+        ],
+        "modified": "2022-03-21T19:01:25.043Z",
+        "name": "Abuse Elevation Control Mechanism",
+        "description": "Adversaries may circumvent mechanisms designed to control elevate privileges to gain permissions.",
+        "kill_chain_phases": [
+            {
+                "kill_chain_name": "mitre-attack",
+                "phase_name": "privilege-escalation"
+            },
+            {
+                "kill_chain_name": "mitre-attack",
+                "phase_name": "defense-evasion"
+            }
+        ],
+        "x_mitre_platforms": [
+            "Linux",
+            "macOS",
+            "Windows"
+        ],
+        "x_mitre_domains": ["enterprise-attack"],
+        "x_mitre_detection": "Monitor the file system for files that have the setuid or setgid bits set.",
+        "x_mitre_version": "1.0",
+        "x_mitre_modified_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+        "x_mitre_data_sources": [
+            "Command: Command Execution",
+            "File: File Modification",
+            "Windows Registry: Windows Registry Key Modification",
+            "Process: Process Metadata",
+            "Process: Process Creation",
+            "Process: OS API Execution",
+            "File: File Metadata"
+        ],
+        "x_mitre_permissions_required": ["Administrator", "User"],
+    },
+]

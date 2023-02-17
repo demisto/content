@@ -1,0 +1,74 @@
+[
+    {
+        "_id": "2",
+        "id": "2",
+        "type": 2,
+        "distype": "Black IP",
+        "severity": 2,
+        "triggerPolicy": "",
+        "iPv4IPv6": "1.1.1.23"
+    },
+    {
+        "_id": "3",
+        "id": "3",
+        "type": 1,
+        "distype": "Trust IP",
+        "severity": 3,
+        "triggerPolicy": "",
+        "iPv4IPv6": "1.1.2.3"
+    },
+    {
+        "_id": "4",
+        "id": "4",
+        "type": 2,
+        "distype": "Black IP",
+        "severity": 3,
+        "triggerPolicy": "",
+        "iPv4IPv6": "1.1.2.4"
+    },
+    {
+        "_id": "5",
+        "id": "5",
+        "type": 1,
+        "distype": "Trust IP",
+        "severity": 3,
+        "triggerPolicy": "",
+        "iPv4IPv6": "1.1.2.5"
+    },
+    {
+        "_id": "6",
+        "id": "6",
+        "type": 2,
+        "distype": "Black IP",
+        "severity": 4,
+        "triggerPolicy": "",
+        "iPv4IPv6": "1.2.3.89"
+    },
+    {
+        "_id": "7",
+        "id": "7",
+        "type": 1,
+        "distype": "Trust IP",
+        "severity": 3,
+        "triggerPolicy": "",
+        "iPv4IPv6": "1.2.3.84"
+    },
+    {
+        "_id": "8",
+        "id": "8",
+        "type": 1,
+        "distype": "Trust IP",
+        "severity": 3,
+        "triggerPolicy": "",
+        "iPv4IPv6": "1.2.3.87"
+    },
+    {
+        "_id": "9",
+        "id": "9",
+        "type": 1,
+        "distype": "Trust IP",
+        "severity": 3,
+        "triggerPolicy": "",
+        "iPv4IPv6": "1.2.3.80"
+    }
+]

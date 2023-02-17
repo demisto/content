@@ -9,14 +9,12 @@ def determine_correct_format(time: str, fmt: str) -> datetime:
     return time_as_datetime
 
 
-def convert_UTC_Timezone_command(time: datetime, timezone: str, fmt: str) -> CommandResults:
+def convert_UTC_Timezone_command(time: datetime, timezone: str, fmt: str) -> str:
     desired_timezone = pytz.timezone(timezone)
 
     # convert me to desired timezone
     desired_time = time.astimezone(desired_timezone).strftime(fmt)
-    return CommandResults(
-        readable_output=desired_time
-    )
+    return desired_time
 
 
 def main():     # pragma: no cover

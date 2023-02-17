@@ -1,10 +1,11 @@
 import json
 import pytest
-from stix2 import TAXIICollectionSource
+from stix2 import TAXIICollectionSource, parse
+
 from test_data.mitre_test_data import ATTACK_PATTERN, COURSE_OF_ACTION, INTRUSION_SET, MALWARE, TOOL, ID_TO_NAME, \
     RELATION, STIX_TOOL, STIX_MALWARE, STIX_ATTACK_PATTERN, MALWARE_LIST_WITHOUT_PREFIX, MALWARE_LIST_WITH_PREFIX, \
     INDICATORS_LIST, NEW_INDICATORS_LIST, MITRE_ID_TO_MITRE_NAME, OLD_ID_TO_NAME, NEW_ID_TO_NAME, RELATIONSHIP_ENTITY, \
-    CAMPAIGN
+    CAMPAIGN, ATTACK_PATTERNS
 
 ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
 NON_ENTERPRISE_COLLECTION_ID = '101010101010101010101010101010101'
@@ -230,3 +231,26 @@ def test_extract_timestamp_from_description(description, expected_result):
     from FeedMitreAttackv2 import extract_timestamp_from_description
     output = extract_timestamp_from_description(description)
     assert output == expected_result
+
+
+def test_attack_pattern_reputation_command(mocker):
+    """
+    Given:
+        Some attack patterns to retrieve, with and without sub-technique
+
+    When:
+        Running attack-pattern reputation command
+
+    Then:
+        Returns the wanted attack patterns
+    """
+    from FeedMitreAttackv2 import attack_pattern_reputation_command
+
+    stix_objs = [parse(stix_obj_dict, allow_custom=True) for stix_obj_dict in ATTACK_PATTERNS]
+    mocker.patch('FeedMitreAttackv2.get_mitre_data_by_filter', return_value=stix_objs)
+
+    args = {'attack_pattern': 'Abuse Elevation Control Mechanism, Active Scanning: Wordlist Scanning'}
+    command_results = attack_pattern_reputation_command('', args)
+
+    assert command_results[0].indicator.value == 'Abuse Elevation Control Mechanism'
+    assert command_results[1].indicator.value == 'Active Scanning: Wordlist Scanning'

@@ -3360,10 +3360,11 @@ Search for hashes on A1000 using multi-part search criteria
 `reversinglabs-a1000-advanced-search`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| query | Advanced search query. | Required | 
-| result_limit | Maximum number of results. Default is 5000. | Optional | 
+| **Argument Name** | **Description**                                                                                   | **Required** |
+|-------------------|---------------------------------------------------------------------------------------------------| --- |
+| query             | Advanced search query.                                                                            | Required | 
+| ticloud           | Show only cloud results. If omitted, the response will show only local results. Default is False. | Optional | 
+| result_limit      | Maximum number of results. Default is 5000.                                                       | Optional | 
 
 
 #### Context Output
@@ -3373,7 +3374,7 @@ Search for hashes on A1000 using multi-part search criteria
 | ReversingLabs.a1000_advanced_search_report | Unknown | A1000 classification report | 
 
 #### Command example
-```!reversinglabs-a1000-advanced-search query="av-count:5 available:TRUE" result_limit=5```
+```!reversinglabs-a1000-advanced-search query="av-count:5 available:TRUE" ticloud=False result_limit=5```
 #### Context Example
 ```json
 {

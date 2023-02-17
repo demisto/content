@@ -26,3 +26,46 @@ def test_parse_reg_values():
 00,72,00,76,00,69,00,63,00,65,00,00,00'
     actual = reg_parse.parse_reg_value(hex_value)
     assert actual == expected
+
+
+def test_get_reg_results():
+    """
+    Given
+       - registry keys with mocked "evil" data (which could be case-insensitive as well)
+
+    When
+       - parsing registry results
+
+    Then
+      - make sure the result is parsed correctly.
+
+    """
+    from RegistryParse import get_reg_results
+    reg = {
+        'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run': {
+            '"Cyvera"': '"test.exe"',
+            '"EvilKey"': '"test2.exe"'
+        }
+    }
+
+    records, type_records = get_reg_results(
+        reg=reg,
+        type_to_keys={'MachineStartup': ['HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run']}
+    )
+
+    assert records == [
+        {
+            'Type': 'MachineStartup',
+            'RegistryPath': 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run',
+            'RegistryKey': 'Cyvera',
+            'RegistryValue': 'test.exe'
+        },
+        {
+            'Type': 'MachineStartup',
+            'RegistryPath': 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run',
+            'RegistryKey': 'EvilKey',
+            'RegistryValue': 'test2.exe'
+        }
+    ]
+
+    assert type_records == {'MachineStartup': [{'Cyvera': 'test.exe', 'EvilKey': 'test2.exe'}]}

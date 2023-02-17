@@ -1402,5 +1402,6 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "description": ""
+    "description": "",
+    "marketplaces": ["xsoar"]
 }
