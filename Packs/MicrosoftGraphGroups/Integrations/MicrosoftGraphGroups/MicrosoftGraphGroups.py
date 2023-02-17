@@ -67,10 +67,9 @@ class MsGraphClient:
       """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
-                 redirect_uri=None, auth_code=None, handle_error, certificate_thumbprint: Optional[str] = None,
-                 private_key: Optional[str] = None,
-                 managed_identities_client_id: Optional[str] = None,
-                 ):
+                 handle_error, redirect_uri: Optional[str] = None,  auth_code: Optional[str] = None,
+                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None,
+                 managed_identities_client_id: Optional[str] = None):
         grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
         resource = None if self_deployed else ''
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
