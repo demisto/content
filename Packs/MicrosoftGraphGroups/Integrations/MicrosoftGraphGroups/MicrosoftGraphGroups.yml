@@ -510,6 +510,10 @@ script:
     description: Removes a member from a group.
     execution: false
     name: msgraph-groups-remove-member
+  - description: Generate the login url used for Authorization code flow.
+    execution: false
+    name: msgraph-groups-generate-login-url
+    arguments: []
   dockerimage: demisto/crypto:1.0.0.47103
   isfetch: false
   longRunning: false

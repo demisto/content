@@ -492,7 +492,7 @@ def main():
                                               certificate_thumbprint=certificate_thumbprint,
                                               private_key=private_key,
                                               managed_identities_client_id=managed_identities_client_id)
-        if command == 'msgraph-user-generate-login-url':
+        if command == 'msgraph-groups-generate-login-url':
             return_results(generate_login_url(client.ms_client))
         else:
             human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
