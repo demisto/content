@@ -105,7 +105,8 @@ def email_command(client, args, email_suspicious_score_threshold, email_maliciou
     emails = argToList(args.get("email"), ",")
     results = []
     for email in emails:
-        result = client.get_email_reputation(email)
+        email_encoded = urllib.parse.quote(email, safe="")
+        result = client.get_email_reputation(email_encoded)
         result['address'] = email
 
         human_readable = tableToMarkdown(f"IPQualityScore Results for {email}", result, result.keys())
