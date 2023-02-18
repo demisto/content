@@ -151,9 +151,9 @@ def url_command(client, args, url_suspicious_score_threshold, url_malicious_scor
 
         human_readable = tableToMarkdown(f"IPQualityScore Results for {url}", result, result.keys())
 
-        if result.get('fraud_score', 0) >= url_malicious_score_threshold:
+        if result.get('risk_score', 0) >= url_malicious_score_threshold:
             score = 3
-        elif result.get('fraud_score', 0) >= url_suspicious_score_threshold:
+        elif result.get('risk_score', 0) >= url_suspicious_score_threshold:
             score = 2
         else:
             score = 0
