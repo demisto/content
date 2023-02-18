@@ -3071,14 +3071,15 @@ excepted_output_2 = {'filters': [{'field': 'endpoint_status',
 def test_endpoint_alias_change_command__diffrent_alias_new_names(mocker, input, expected_output):
     """
     Given:
-    - command arguments with endpoint filters, in the first case the new alias name is a string of text,
-    and in the second case the new alias name is a string of only double quotes.
+    - valid new alias name as string - empty new alias name (due to xsoar limitation,
+    represented by a string of double quote)
 
-    when:
+    When:
     - executing the endpoint-alias-change command
-    then:
-    - make sure the body request was sent as expected to the api, and in the second case the double quotes
-    were transformed to an empty string.
+
+    Then:
+    - Makes sure the request body is created correctly.
+
     """
     client = CoreClient(base_url=f'{Core_URL}/public_api/v1/', headers={})
     mocker_set = mocker.patch.object(client, 'set_endpoints_alias')
