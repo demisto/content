@@ -2,7 +2,7 @@
 alter
 	xdm.event.type = action,
     xdm.event.id = id,
-    xdm.event.outcome = if(success=TRUE, "SUCCESS", success=FALSE, "FAILED", null),
+    xdm.event.outcome = if(success = to_boolean("false"), XDM_CONST.OUTCOME_FAILED, success = to_boolean("true"), XDM_CONST.OUTCOME_SUCCESS, success = null, null, to_string(success)),
     xdm.target.resource.type = target_type,
     xdm.target.resource.name = target_name,
     xdm.target.resource.id = target_id,
