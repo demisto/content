@@ -570,7 +570,7 @@ script:
       contextPath: CiscoWSA.DomainMap.domain_name
       description: Domain name.
     - type: String
-      contextPath: CiscoWSA.DomainMap.IP_addresses
+      contextPath: CiscoWSA.DomainMap.ip_addresses
       description: Mapped IP addresses.
     - type: Number
       contextPath: CiscoWSA.DomainMap.order
@@ -663,7 +663,7 @@ script:
       description: Identification Profile predefined URL categories.
     - type: String
       contextPath: CiscoWSA.IdentificationProfile.UrlCategories.custom
-      description: Identification Profile custom URL categoriesץ
+      description: Identification Profile custom URL categories.
     - type: String
       contextPath: CiscoWSA.IdentificationProfile.UrlCategories.uncategorized
       description: Identification Profile uncategorized URL categories status.

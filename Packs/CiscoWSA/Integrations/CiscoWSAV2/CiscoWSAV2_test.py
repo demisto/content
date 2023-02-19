@@ -3,7 +3,7 @@ import os
 import pytest
 from http import HTTPStatus
 from unittest.mock import patch
-
+from CommonServerPython import *
 
 """CONSTANTS"""
 BASE_URL = "https://example.com/wsa/api"
@@ -151,6 +151,42 @@ def test_access_policy_create_command(
     assert result.readable_output == 'Created "test" access policy successfully.'
 
 
+def test_fail_access_policy_create_command(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Access policies create.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-access-policy-create command called.
+    Then:
+    - Ensure outputs prefix is correct.
+    - Ensure number of items is correct.
+    - Validate outputs' fields.
+    """
+    from CiscoWSAV2 import access_policy_create_command
+
+    mock_response = load_mock_response('access_policy_create_fail.json')
+
+    url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
+    requests_mock.post(url=url, status_code=HTTPStatus.MULTI_STATUS, json=mock_response)
+    with pytest.raises(DemistoException):
+        access_policy_create_command(
+            mock_client,
+            {
+                "policy_name": "test",
+                "policy_status": "enable",
+                "identification_profiles": "global_identification_profile",
+                "policy_order": "1",
+                "policy_description": "test",
+            },
+        )
+
+
 def test_access_policy_update_command(
     requests_mock,
     mock_client,
@@ -183,6 +219,42 @@ def test_access_policy_update_command(
     )
 
     assert result.readable_output == 'Updated "test" access policy successfully.'
+
+
+def test_fail_access_policy_update_command(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Access policies update.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-access-policy-update command called.
+    Then:
+    - Ensure readable output is correct.
+    """
+    from CiscoWSAV2 import access_policy_update_command
+
+    mock_response = load_mock_response('access_policy_create_fail.json')
+
+    url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
+    requests_mock.put(url=url, status_code=HTTPStatus.MULTI_STATUS, json=mock_response)
+
+    with pytest.raises(DemistoException):
+        access_policy_update_command(
+                mock_client,
+                {
+                    "policy_name": "test",
+                    "new_policy_name": "test",
+                    "policy_status": "enable",
+                    "identification_profiles": "global_identification_profile",
+                    "policy_order": "2",
+                    "policy_description": "test description",
+                },
+            )
 
 
 def test_access_policy_protocols_user_agents_update_command(
@@ -394,8 +466,40 @@ def test_access_policy_delete_command(
     )
 
     assert (
-        result.readable_output == 'Access policies "test, test2" deleted successfully.'
+        result.readable_output == 'Access policy profiles successfully.'
     )
+
+
+def test_fail_access_policy_delete_command(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Access policies delete.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-access-policy-delete command called.
+    Then:
+    - Ensure outputs prefix is correct.
+    - Ensure number of items is correct.
+    - Validate outputs' fields.
+    """
+    from CiscoWSAV2 import access_policy_delete_command
+
+    mock_response = load_mock_response('access_policy_delete_fail.json')
+
+    url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
+    requests_mock.delete(url=url, status_code=HTTPStatus.MULTI_STATUS, json=mock_response)
+    result = access_policy_delete_command(
+        mock_client,
+        {
+            "policy_names": "test,test2",
+        },
+    )
+    assert len(result) == 6
 
 
 @pytest.mark.parametrize(
@@ -493,6 +597,39 @@ def test_domain_map_create_command(
     assert result.raw_response["res_code"] == HTTPStatus.CREATED
 
 
+def test_fail_domain_map_create_command(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Domain map create.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-domain-map-create command called.
+    Then:
+    - Ensure readable output is correct.
+    - Ensure response code is correct.
+    """
+    from CiscoWSAV2 import domain_map_create_command
+    mock_response = load_mock_response('domain_map_create_fail.json')
+
+    url = f"{BASE_URL}/{V2_PREFIX}/configure/web_security/domain_map"
+    requests_mock.post(url=url, status_code=HTTPStatus.OK, json=mock_response)
+
+    with pytest.raises(DemistoException):
+        domain_map_create_command(
+            mock_client,
+            {
+                "domain_name": "test.com",
+                "ip_addresses": "1.1.1.1",
+                "order": 1,
+            },
+        )
+
+
 def test_domain_map_update_command(
     requests_mock,
     mock_client,
@@ -529,6 +666,40 @@ def test_domain_map_update_command(
     assert result.raw_response["res_code"] == HTTPStatus.OK
 
 
+def test_fail_domain_map_update_command(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Domain map update.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-domain-map-update command called.
+    Then:
+    - Ensure readable output is correct.
+    - Ensure response code is correct.
+    """
+    from CiscoWSAV2 import domain_map_update_command
+
+    mock_response = load_mock_response("domain_map_update_fail.json")
+    url = f"{BASE_URL}/{V2_PREFIX}/configure/web_security/domain_map"
+    requests_mock.put(url=url, json=mock_response)
+
+    with pytest.raises(DemistoException):
+        domain_map_update_command(
+            mock_client,
+            {
+                "domain_name": "test.com",
+                "new_domain_name": "test.com",
+                "ip_addresses": "1.1.1.1",
+                "order": 1,
+            },
+        )
+
+
 def test_domain_map_delete_command(
     requests_mock,
     mock_client,
@@ -558,6 +729,35 @@ def test_domain_map_delete_command(
 
     assert result.readable_output == 'Domain "test.com" deleted successfully.'
     assert result.raw_response["res_code"] == HTTPStatus.OK
+
+
+def test_fail_domain_map_delete_command(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Domain map delete.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-domain-map-delete command called.
+    Then:
+    - Ensure readable output is correct.
+    - Ensure response code is correct.
+    """
+    from CiscoWSAV2 import domain_map_delete_command
+
+    mock_response = load_mock_response("domain_map_delete_fail.json")
+    url = f"{BASE_URL}/{V2_PREFIX}/configure/web_security/domain_map"
+    requests_mock.delete(url=url, json=mock_response)
+
+    result = domain_map_delete_command(
+        mock_client,
+        {"domain_names": "test.com,errer1,error2"},
+    )
+    assert len(result) == 2
 
 
 @pytest.mark.parametrize(

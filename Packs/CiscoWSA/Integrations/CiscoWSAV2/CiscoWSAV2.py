@@ -71,7 +71,7 @@ class Client(BaseClient):
 
         """
         res = super()._http_request(*args, **kwargs)
-        if res.get("res_code") and res.get("res_code") == HTTPStatus.BAD_REQUEST:
+        if isinstance(res, dict) and all([res.get("res_code"), res.get("res_code") == HTTPStatus.BAD_REQUEST]):
             raise DemistoException(message=res)
         return res
 
@@ -380,28 +380,28 @@ class Client(BaseClient):
         access_policies = self.access_policy_list_request(policy_name).get(
             "access_policies", []
         )
-        if access_policies:
-            objects = access_policies[0].get("objects")
-            if objects:
-                organize_policy_object_data(
-                    objects=objects,
-                    object_type=object_type,
-                    object_action=object_action,
-                    object_values=object_values,
-                    block_custom_mime_types=block_custom_mime_types,
-                    http_or_https_max_object_size_mb=http_or_https_max_object_size_mb,
-                    ftp_max_object_size_mb=ftp_max_object_size_mb,
-                )
-
-                data = {
-                    "access_policies": [
-                        {"policy_name": policy_name, "objects": objects}
-                    ]
-                }
-            else:
-                raise DemistoException("Update failed, objects were not found.")
-        else:
+        if not access_policies:
             raise DemistoException("Policy was not found.")
+
+        if not access_policies[0].get("objects"):
+            raise DemistoException("Update failed, objects were not found.")
+
+        objects = access_policies[0].get("objects")
+        organize_policy_object_data(
+            objects=objects,
+            object_type=object_type,
+            object_action=object_action,
+            object_values=object_values,
+            block_custom_mime_types=block_custom_mime_types,
+            http_or_https_max_object_size_mb=http_or_https_max_object_size_mb,
+            ftp_max_object_size_mb=ftp_max_object_size_mb,
+        )
+
+        data = {
+            "access_policies": [
+                {"policy_name": policy_name, "objects": objects}
+            ]
+        }
         return self._http_request(
             "PUT",
             f"{V3_PREFIX}/web_security/access_policies",
@@ -485,14 +485,14 @@ class Client(BaseClient):
             Response: API response from Cisco WSA.
         """
         params = assign_params(policy_names=",".join(policy_names))
-
-        return self._http_request(
+        res = self._http_request(
             "DELETE",
             f"{V3_PREFIX}/web_security/access_policies",
             params=params,
             resp_type="response",
-            ok_codes=[HTTPStatus.NO_CONTENT],
+            ok_codes=[HTTPStatus.NO_CONTENT, HTTPStatus.MULTI_STATUS],
         )
+        return res
 
     def domain_map_list_request(self) -> dict[str, Any]:
         """
@@ -1147,15 +1147,26 @@ def access_policy_delete_command(
     """
     policy_names = argToList(args["policy_names"])
 
-    client.access_policy_delete_request(policy_names)
+    response = client.access_policy_delete_request(policy_names)
+    if response.status_code == HTTPStatus.MULTI_STATUS:
+        output_data = response.json()
+        command_results_list = []
+        for profile in output_data.get("success_list"):
+            readable_output = (
+                f'Access policy "{profile.get("policy_name")}" '
+                f"was successfully deleted."
+            )
+            command_results_list.append(CommandResults(readable_output=readable_output))
+        for profile in output_data.get("failure_list"):
+            readable_output = (
+                f'Access policy "{profile.get("policy_name")}" '
+                f'deletion failed, message: "{profile.get("message")}".'
+            )
+            command_results_list.append(CommandResults(readable_output=readable_output))
 
-    readable_output = (
-        f'Access polic{"ies" if len(policy_names) > 1 else "y"} '
-        f'"{", ".join(policy_names)}" deleted successfully.'
-    )
-
+        return command_results_list
     return CommandResults(
-        readable_output=readable_output,
+        readable_output="Access policy profiles successfully."
     )
 
 
