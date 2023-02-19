@@ -117,7 +117,7 @@ configuration:
   type: 0
   section: Collect
   advanced: true
-  additionalinfo: "A comma-separated list of additional incident filters in the form 'name=name1,value=value1,comparison=comparison1."
+  additionalinfo: "A comma-separated list of additional incident filters in the format 'name=name1,value=value1,comparison=comparison1."
 - display: Change findings workflow to 'NOTIFIED'
   name: archiveFindings
   required: false

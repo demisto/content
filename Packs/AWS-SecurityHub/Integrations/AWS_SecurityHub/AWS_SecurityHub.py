@@ -763,7 +763,6 @@ def batch_update_findings_command(client, args):
 
 def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filters, mirror_direction, finding_types,
                     workflow_status, product_name):
-    demisto.debug(f'{mirror_direction=}')
     last_run = demisto.getLastRun().get('lastRun', None)
     next_token = demisto.getLastRun().get('next_token', None)
     if last_run is None:
@@ -949,7 +948,7 @@ def update_remote_system_command(client: boto3.client, args: Dict[str, Any]) -> 
             demisto.debug(f'{kwargs=}')
             response = client.batch_update_findings(**kwargs)
             if response:
-                demisto.debug(f'The response is: {response}')
+                demisto.debug(f'The update remote system response is: {response}')
     else:
         demisto.debug(f'Skipping updating remote incident {remote_incident_id} as it did not change.')
     return remote_incident_id
