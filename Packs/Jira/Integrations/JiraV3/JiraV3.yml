@@ -45,7 +45,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: A CSV list of the attachments' ID.
+      description: A CSV list of the attachments' ID, which can be retrieved using the `jira-get-issue` command.
       isArray: true
       name: attachment_id
       required: true
@@ -870,13 +870,13 @@ script:
       description: The comment ID.
       isArray: false
       name: comment_id
-      required: false
+      required: true
       secret: false
     - default: false
       description: The content of the comment.
       isArray: false
       name: comment
-      required: false
+      required: true
       secret: false
     - default: false
       description: 'The roles that can view the comment, for example: Administrators.'
@@ -904,7 +904,26 @@ script:
     - contextPath: Ticket.Comment.User
       description: The user that created the comment.
       type: string
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: Add description. This argument will be ignored if page or page_size arguments were given. Default value is 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Add description. Default value is 0
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Add description. Default value is 50
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
     description: This command returns the issue fields, both system and custom fields.
     execution: false
     name: jira-issue-list-fields
@@ -1010,8 +1029,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The board ID, can be only used with a Jira Cloud instance.
-                  This argument is required when the issues supplied are NOT part of a board with sprints.
+      description: The board ID, can be only used with a Jira Cloud instance. Run the command `jira-board-list` to retrieve the
+                  boards' ID. This argument is required when the issues supplied are NOT part of a board with sprints.
       isArray: false
       name: board_id
       required: false
@@ -1371,13 +1390,13 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get issues from backlog of specific board
+    description: Get all sprints of a specific board.
     execution: false
     name: jira-board-sprint-list
     outputs:
     - contextPath: Jira.BoardSprint.id
       description: The ID of the board.
-      type: number
+      type: string
     - contextPath: Jira.BoardSprint.Sprints
       description: The sprints in the board.
       type: object
@@ -1404,7 +1423,7 @@ script:
       type: string
     - contextPath: Jira.BoardSprint.Sprints.originBoardId
       description: The ID of the origin board.
-      type: string
+      type: number
     - contextPath: Jira.BoardSprint.Sprints.goal
       description: The goal of the sprint.
       type: string
@@ -1632,7 +1651,7 @@ script:
     name: jira-epic-issue-list
     outputs:
     - contextPath: Jira.EpicIssues.id
-      description: The ID of the epic.
+      description: The ID of the board that holds the issues.
       type: string
     - contextPath: Jira.EpicIssues.key
       description: The key of the epic.

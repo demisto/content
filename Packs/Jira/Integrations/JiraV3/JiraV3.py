@@ -922,7 +922,7 @@ def create_issue_md_and_outputs(res: Dict[str, Any]) -> tuple[Dict[str, Any], Di
                                                                        'DueDate': ('fields.duedate', ''),
                                                                        'Created': ('fields.created', ''),
                                                                        'Labels': ('fields.labels', []),
-                                                                       'Components': ('fields.components', [])
+                                                                       #    'Components': ('fields.components', [])
                                                                        },
                                                         outputs_fields={'LastSeen': ('fields.lastViewed', ''),
                                                                         'LastUpdate': ('fields.updated', '')},
@@ -1543,6 +1543,12 @@ def get_specific_fields_command(client: JiraBaseClient, args: Dict[str, str]) ->
 
 def list_fields_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
     res = client.get_issue_fields()
+    pagination_args = prepare_pagination_args(page=arg_to_number(arg=args.get('page', None)),
+                                              page_size=arg_to_number(arg=args.get('page_size', None)),
+                                              limit=arg_to_number(arg=args.get('limit', None)))
+    start_at = pagination_args.get('start_at', 0)
+    max_results = pagination_args.get('max_results', 50)
+    fields_entry = res[start_at: start_at + max_results]
     markdown_dict: List[Dict[str, Any]] = [
         {
             'Id': field.get('id', ''),
@@ -1551,11 +1557,11 @@ def list_fields_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
             'Searchable': field.get('searchable', ''),
             'Schema Type': demisto.get(field, 'schema.type'),
         }
-        for field in res
+        for field in fields_entry
     ]
     return CommandResults(
         outputs_prefix='Jira.IssueField',
-        outputs=res,
+        outputs=fields_entry,
         outputs_key_field='id',
         readable_output=tableToMarkdown(name='Issue Fields', t=markdown_dict),
         raw_response=res
@@ -1634,21 +1640,30 @@ def sprint_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> 
             jql_query=jql_query,
             **pagination_args
         )
-    issues = res.get('issues', [])
-    board_id = issues[0].get('fields', {}).get('sprint', {}).get('originBoardId', '') if (issues and not board_id) else board_id
-    markdown_list = []
-    issues_list = []
-    for issue in issues:
-        markdown_dict, outputs = create_issue_md_and_outputs(res=issue)
-        markdown_list.append(markdown_dict)
-        issues_list.append(outputs)
-    return CommandResults(
-        outputs_prefix='Jira.SprintIssues',
-        outputs_key_field='id',
-        outputs={'id': board_id, 'Ticket': issues_list},
-        readable_output=tableToMarkdown(name=f'Sprint Issues in board {board_id}', t=markdown_list),
-        raw_response=res
-    )
+    if issues := res.get('issues', []):
+        if not board_id:
+            sprint = issues[0].get('fields', {}).get('sprint', {}) or {}
+            board_id = sprint.get(
+                'originBoardId', '') if not board_id else ''
+        # board_id = issues[0].get('fields', {}).get('sprint', {}).get(
+        #     'originBoardId', '') if (issues and not board_id) else board_id
+        markdown_list = []
+        issues_list = []
+        for issue in issues:
+            markdown_dict, outputs = create_issue_md_and_outputs(res=issue)
+            markdown_list.append(markdown_dict)
+            issues_list.append(outputs)
+        context_data_outputs: Dict[str, Any] = {'Ticket': issues_list or []}
+        board_id = str(board_id)
+        context_data_outputs |= {'id': board_id} if board_id else {}
+        return CommandResults(
+            outputs_prefix='Jira.SprintIssues',
+            outputs_key_field='id' if board_id else None,
+            outputs=context_data_outputs or None,
+            readable_output=tableToMarkdown(name=f'Sprint Issues in board {board_id}', t=markdown_list),
+            raw_response=res
+        )
+    return CommandResults(readable_output='No issues were found with the respective arguments.')
 
 
 def issues_to_sprint_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
@@ -1690,16 +1705,15 @@ def create_epic_issues_command_results(issues: List[Dict[str, Any]], client: Jir
         markdown_dict, outputs_context_data = create_issue_md_and_outputs(res=issue)
         markdown_list.append(markdown_dict)
         issues_list.append(outputs_context_data)
-    is_id = is_issue_id(issue_id_or_key=epic_id_or_key)
     outputs: Dict[str, Any] = {'Ticket': issues_list}
-    if(is_id):
-        outputs |= {'id': epic_id_or_key}
-    else:
-        extracted_issue_id = str(issues[0].get('fields', {}).get('epic', {}).get('id', ''))
-        outputs |= {'id': extracted_issue_id, 'key': epic_id_or_key}
+    sprint = issues[0].get('fields', {}).get('sprint', {}) or {}
+    board_id = sprint.get(
+        'originBoardId', '')
+    board_id = str(board_id)
+    outputs |= {'id': board_id} if board_id else {}
     return CommandResults(
         outputs_prefix='Jira.EpicIssues',
-        outputs_key_field='id',
+        outputs_key_field='id' if board_id else None,
         outputs=outputs,
         readable_output=tableToMarkdown(name=f'Child Issues in epic {epic_id_or_key}', t=markdown_list),
         raw_response=res
