@@ -10767,12 +10767,71 @@ class YMLMetadataCollector:
         return command_wrapper
 
 
+def xsiam_api_call_with_retries(
+    client,
+    xsiam_url,
+    zipped_data,
+    headers,
+    num_of_attempts,
+    events_error_handler=None
+):
+    """
+    Send the fetched events into the XDR data-collector private api.
+
+    :type client: ``BaseClient``
+    :param client: base client containing the XSIAM url.
+
+    :type xsiam_url: ``str``
+    :param xsiam_url: The URL of XSIAM to send the api request.
+
+    :type zipped_data: ``bytes``
+    :param zipped_data: encoded events
+
+    :type headers: ``dict``
+    :param headers: headers for the request
+
+    :type num_of_attempts: ``int``
+    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
+
+    :type events_error_handler: ``callable``
+    :param events_error_handler: error handler function
+
+    :return: Response object
+    :rtype: ``requests.Response``
+    """
+    # retry mechanism in case there is a rate limit (429) from xsiam.
+    status_code = None
+    attempt_num = 1
+    response = None
+
+    while status_code != 200 and attempt_num < num_of_attempts + 1:
+        demisto.debug('Sending events into xsiam, attempt number {attempt_num}'.format(attempt_num=attempt_num))
+        # in the last try we should raise an exception if any error occurred, including 429
+        ok_codes = (200, 429) if attempt_num < num_of_attempts else None
+        response = client._http_request(
+            method='POST',
+            full_url=urljoin(xsiam_url, '/logs/v1/xsiam'),
+            data=zipped_data,
+            headers=headers,
+            error_handler=events_error_handler,
+            ok_codes=ok_codes,
+            resp_type='response'
+        )
+        status_code = response.status_code
+        demisto.debug('received status code: {status_code}'.format(status_code=status_code))
+        if status_code == 429:
+            time.sleep(1)
+        attempt_num += 1
+
+    return response
+
+
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3):
     """
     Send the fetched events into the XDR data-collector private api.
 
     :type events: ``Union[str, list]``
-    :param events: The events to send to send to XSIAM server. Should be of the following:
+    :param events: The events to send to XSIAM server. Should be of the following:
         1. List of strings or dicts where each string or dict represents an event.
         2. String containing raw events separated by a new line.
 
@@ -10875,30 +10934,10 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     zipped_data = gzip.compress(data.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
     client = BaseClient(base_url=xsiam_url)
 
-    # retry mechanism in case there is a rate limit (429) from xsiam.
-    status_code = None
-    attempt_num = 1
+    raw_response = xsiam_api_call_with_retries(
+        client, xsiam_url, zipped_data, headers, num_of_attempts, events_error_handler
+    ).json()
 
-    while status_code != 200 and attempt_num < num_of_attempts + 1:
-        demisto.debug('Sending events into xsiam, attempt number {attempt_num}'.format(attempt_num=attempt_num))
-        # in the last try we should raise an exception if any error occurred, including 429
-        ok_codes = (200, 429) if attempt_num < num_of_attempts else None
-        response = client._http_request(
-            method='POST',
-            full_url=urljoin(xsiam_url, '/logs/v1/xsiam'),
-            data=zipped_data,
-            headers=headers,
-            error_handler=events_error_handler,
-            ok_codes=ok_codes,
-            resp_type='response'
-        )
-        status_code = response.status_code
-        demisto.debug('received status code: {status_code}'.format(status_code=status_code))
-        if status_code == 429:
-            time.sleep(1)
-        attempt_num += 1
-
-    raw_response = response.json()
     if raw_response.get('error').lower() != 'false':
         raise DemistoException(header_msg + raw_response.get('error'))
 
