@@ -69,7 +69,7 @@ filter eventType = "Alert"
     xdm.source.user.domain = json_extract_scalar(alertInfo, "$.loginAccountDomain"),
     xdm.source.user.identifier = json_extract_scalar(alertInfo, "$.loginAccountSid"),
     xdm.logon.type = if(loginType="SYSTEM","SERVICE", loginType="INTERACTIVE","INTERACTIVE", loginType="NETWORK","NETWORK", loginType="BATCH","BATCH", loginType="SERVICE","SERVICE", loginType="UNLOCK","UNLOCK", loginType="NETWORK_CREDENTIALS","NEW_CREDENTIALS", loginType="NETWORK_CLEAR_TEXT","NETWORK_CLEARTEXT", loginType="REMOTE_INTERACTIVE","REMOTE_INTERACTIVE", loginType="CACHED_INTERACTIVE","CACHED_INTERACTIVE", loginType="CACHED_REMOTE_INTERACTIVE","CACHED_REMOTE_INTERACTIVE", loginType="CACHED_UNLOCK","CACHED_UNLOCK", null),
-    xdm.source.user.username = json_extract_scalar(sourceParentProcessInfo, "$.user")
+    xdm.source.user.username = json_extract_scalar(sourceParentProcessInfo, "$.user"),
     xdm.source.ipv4 = json_extract_scalar(alertInfo, "$.srcIp"),
     xdm.source.port = to_integer(json_extract_scalar(alertInfo, "$.srcPort")),
     xdm.source.process.container_id = json_extract_scalar(containerInfo, "$.id"),
