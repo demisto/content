@@ -1274,6 +1274,38 @@ def channel_user_list_command():
     return_results(result)
 
 
+def is_bot_in_chat(chat_id):
+    """
+    check if the bot is already in the chat.
+    """
+    url_suffix = f"v1.0/chats/{chat_id}/installedApps?$expand=teamsApp," \
+                 f"teamsAppDefinition&$filter=teamsApp/externalId eq '{BOT_ID}'"
+    res = http_request('GET', urljoin(GRAPH_BASE_URL, url_suffix))
+    return True if res.get('value') else False
+
+
+def add_bot_to_chat(chat_id: str):
+    """
+    Add the Dbot to a chat.
+    :param chat_id: chat id which to add the bot to.
+    """
+
+    demisto.debug(f'adding bot with id {BOT_ID} to chat')
+
+    # bot is already part of the chat
+    if is_bot_in_chat(chat_id):
+        return
+
+    res = http_request('GET', f"{GRAPH_BASE_URL}/v1.0/appCatalogs/teamsApps?$filter=externalId eq '{BOT_ID}'")
+    app_data = res.get('value')[0]
+    bot_internal_id = app_data.get('id')
+
+    request_json = {"teamsApp@odata.bind": f"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/{bot_internal_id}"}
+    http_request('POST', f'{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/installedApps', json_=request_json)
+
+    demisto.debug(f"Bot {app_data.get('displayName')} with {BOT_ID} ID was added to chat successfully")
+
+
 def chat_create_command():
     """
     Create a new chat object.
@@ -1303,6 +1335,8 @@ def chat_create_command():
     chat_data.pop('@odata.context', '')
     chat_data['chatId'] = chat_data.pop('id', '')
 
+    add_bot_to_chat(chat_data.get("chatId"))
+
     hr_title = f"The chat '{chat_name}' was created successfully" if chat_type == 'group' else \
         f'The chat with "{members[0]}" was created successfully'
 
@@ -1331,6 +1365,8 @@ def message_send_to_chat_command():
     message_type: str = args.get('message_type', 'message')
     chat: str = args.get('chat', '')
     chat_id, _ = get_chat_id_and_type(chat)
+
+    add_bot_to_chat(chat_id)
 
     message_data: dict = send_message_in_chat(content, message_type, chat_id, content_type)
     message_data.pop('@odata.context', '')
