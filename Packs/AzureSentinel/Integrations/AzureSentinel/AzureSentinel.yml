@@ -2434,6 +2434,198 @@ script:
     - contextPath: AzureSentinel.AlertRule.Deleted
       description: Whether the alert rule was deleted.
       type: Boolean
+  - arguments:
+    - default: false
+      description: The alert rule name to create.
+      isArray: false
+      name: rule_name
+      required: true
+    - auto: PREDEFINED
+      default: false
+      description: The alert rule kind to create.
+      isArray: false
+      name: kind
+      required: true
+      predefined:
+      - fusion
+      - microsoft_security_incident_creation
+      - scheduled
+    - default: false
+      description: |
+        The Name of the alert rule template used to create this rule.
+        Required for Fusion, optional for Scheduled rules.
+      isArray: false
+      name: template_name
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: Determines whether this alert rule is enabled or disabled.
+      isArray: false
+      name: enabled
+      required: true
+      predefined:
+      - yes
+      - no
+    - default: false
+      description: Etag of the azure resource.
+      isArray: false
+      name: etag
+      required: false
+    - default: false
+      description: |
+        The display name for alerts created by this alert rule.
+        Required for MicrosoftSecurityIncidentCreation and scheduled rules.
+      isArray: false
+      name: displayName
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: |
+        The alerts' productName on which the cases will be generated.
+        Required for MicrosoftSecurityIncidentCreation rules.
+      isArray: false
+      name: product_filter
+      required: false
+      predefined:
+      - azure_active_directory_identity_protection
+      - azure_advanced_threat_protection
+      - azure_security_center
+      - azure_security_center_for_iot
+      - microsoft_cloud_app_security
+    - default: false
+      description: |
+        The description of the alert rule.
+        Relevant for MicrosoftSecurityIncidentCreation and scheduled rules.
+      isArray: false
+      name: description
+      required: false
+    - default: false
+      description: |
+        Alerts' displayNames on which the cases will not be generated.
+        Relevant for MicrosoftSecurityIncidentCreation rules.
+      isArray: true
+      name: name_exclude_filter
+      required: false
+    - default: false
+      description: |
+        Alerts' displayNames on which the cases will be generated.
+        Relevant for MicrosoftSecurityIncidentCreation rules.
+      isArray: true
+      name: name_include_filter
+      required: false
+    - default: false
+      description: |
+        Alerts' severities on which the cases will be generated.
+        Relevant for MicrosoftSecurityIncidentCreation rules.
+      isArray: true
+      name: severity_filter
+      required: false
+    - default: false
+      description: |
+        The query that creates alerts for this rule.
+        Required for scheduled rules.
+      isArray: false
+      name: query
+      required: false
+    - default: false
+      description: |
+        The frequency (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) for this alert rule to run.
+        Required for scheduled rules.
+      isArray: false
+      name: query_frequency
+      required: false
+    - default: false
+      description: |
+        The period (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) that this alert rule looks at.
+        Required for scheduled rules.
+      isArray: false
+      name: query_period
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: |
+        The severity for alerts created by this alert rule.
+        Required for scheduled rules.
+      isArray: false
+      name: severity
+      required: false
+      predefined:
+        - informational
+        - low
+        - medium
+        - high
+    - default: false
+      description: |
+        The suppression (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) to wait since the last time this alert rule was triggered.
+        Required for scheduled rules.
+      isArray: false
+      name: suppression_duration
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: |
+        Determines whether the suppression for this alert rule is enabled or disabled.
+        Required for scheduled rules.
+      isArray: false
+      name: suppression_enabled
+      required: false
+      predefined:
+        - yes
+        - no
+    - auto: PREDEFINED
+      default: false
+      description: |
+        The operation against the threshold that triggers the alert rule.
+        Required for scheduled rules.
+      isArray: false
+      name: trigger_operator
+      required: false
+      predefined:
+        - equal
+        - greater_than
+        - less_than
+        - not_equal
+    - default: false
+      description: |
+        The threshold triggers this alert rule.
+        Required for scheduled rules.
+      isArray: false
+      name: trigger_threshold
+      required: false
+    - default: false
+      description: |
+        The tactics of the alert rule.
+        Relevant for scheduled rules.
+      isArray: true
+      name: tactics
+      required: false
+    - default: false
+      description: |
+        The techniques of the alert rule.
+        Relevant for scheduled rules.
+      isArray: true
+      name: techniques
+      required: false
+    - default: false
+      description: |
+        Option to insert a configured rule json instead of using the arguments.
+      isArray: false
+      name: rule_json
+      required: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
+    description: Creates a new alert rule.
+    name: azure-sentinel-create-alert-rule
   dockerimage: demisto/crypto:1.0.0.48652
   feed: false
   isfetch: true

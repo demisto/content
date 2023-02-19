@@ -1790,9 +1790,9 @@ def list_alert_rule_template_command(client: AzureSentinelClient, args: Dict[str
 def delete_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any]) -> CommandResults:
     rule_id = args.get('rule_id')
     url_suffix = f'alertRules/{rule_id}'
-    res = client.http_request('DELETE', url_suffix)
+    response = client.http_request('DELETE', url_suffix)
 
-    if isinstance(res, requests.Response) and res.status_code == 204:
+    if isinstance(response, requests.Response) and response.status_code == 204:
         return CommandResults(readable_output=f'Alert rule {rule_id} does not exist.')
 
     context = {
@@ -1806,6 +1806,77 @@ def delete_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any])
         outputs=context,
         outputs_key_field='ID',
         raw_response={}
+    )
+
+
+def validate_required_arguments_for_alert_rule(args: Dict[str, Any]) -> None:
+    required_args_by_kind = {
+        'fusion': ['rule_name', 'kind', 'template_name', 'enabled'],
+        'microsoft_security_incident_creation': ['rule_name', 'kind', 'displayName', 'enabled', 'product_filter'],
+        'scheduled': ['rule_name', 'kind', 'displayName', 'enabled', 'query', 'query_frequency', 'query_period', 'severity',
+                      'suppression_duration', 'suppression_enabled', 'trigger_operator', 'trigger_threshold']
+    }
+
+    kind = args.get('kind', '')
+    for arg in required_args_by_kind.get(kind, []):
+        if not args.get(arg):
+            raise DemistoException(f'"{arg}" is required for "{kind}" alert rule.')
+
+
+def create_data_for_alert_rule(args: Dict[str, Any]) -> Dict[str, Any]:
+    properties = {
+        'alertRuleTemplateName': args.get('template_name'),
+        'enabled': argToBoolean(args.get('enabled')),
+        'displayName': args.get('displayName'),
+        'productFilter': args.get('product_filter'),
+        'description': args.get('description'),
+        'displayNamesExcludeFilter': args.get('name_exclude_filter'),
+        'displayNamesFilter': args.get(''),
+        'severitiesFilter': args.get('severity_filter'),
+    }
+    remove_nulls_from_dictionary(properties)
+
+    data = {
+        'kind': underscoreToCamelCase(args.get('kind')),
+        'etag': args.get('etag'),
+        'properties': properties
+    }
+
+    return data
+
+
+def create_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any]) -> CommandResults:
+    validate_required_arguments_for_alert_rule(args)
+
+    data = {
+        'kind': underscoreToCamelCase(args.get('kind')),
+        'etag': args.get('etag'),
+        'properties': {
+            'alertRuleTemplateName': args.get('template_name'),
+            'enabled': argToBoolean(args.get('enabled'))
+        }
+    }
+
+    response = client.http_request('PUT', f'alertRules/{args.get("rule_name")}', data=data)
+
+    readable_result = {
+        'ID': response.get('id'),
+        'Name': response.get('name'),
+        'Kind': response.get('kind'),
+        'Severity': response.get('properties', {}).get('severity'),
+        'Display Name': response.get('properties', {}).get('displayName'),
+        'Description': response.get('properties', {}).get('description'),
+        'Enabled': response.get('properties', {}).get('enabled'),
+        'Etag': response.get('etag')
+    }
+    readable_output = tableToMarkdown('Azure Sentinel Alert Rule successfully created', readable_result)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureSentinel.AlertRule',
+        outputs=response,
+        outputs_key_field='name',
+        raw_response=response
     )
 
 
@@ -1879,6 +1950,7 @@ def main():
             'azure-sentinel-list-alert-rule': list_alert_rule_command,
             'azure-sentinel-list-alert-rule-template': list_alert_rule_template_command,
             'azure-sentinel-delete-alert-rule': delete_alert_rule_command,
+            'azure-sentinel-create-alert-rule': create_alert_rule_command,
             # mirroring commands
             'get-modified-remote-data': get_modified_remote_data_command,
             'get-remote-data': get_remote_data_command,
