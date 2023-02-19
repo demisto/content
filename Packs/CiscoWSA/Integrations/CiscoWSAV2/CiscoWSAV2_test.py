@@ -914,6 +914,38 @@ def test_identification_profiles_delete_command(
     assert result.readable_output == "Deleted identification profiles successfully."
 
 
+def test_fail_identification_profiles_delete_command(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Identification profile delete.
+    Given:
+    - User has provided valid credentials.
+    - User may provided pagination args.
+    - User may Provided filtering arguments.
+    When:
+    - cisco-wsa-identification-profiles-delete command called.
+    Then:
+    - Ensure readable output is correct.
+    """
+    from CiscoWSAV2 import identification_profiles_delete_command
+
+    mock_response = load_mock_response("identification_profiles_delete_fail.json")
+
+    url = f"{BASE_URL}/{V3_PREFIX}/web_security/identification_profiles"
+    requests_mock.delete(url=url, status_code=HTTPStatus.MULTI_STATUS, json=mock_response)
+
+    result = identification_profiles_delete_command(
+        mock_client,
+        {
+            "profile_names": "test,test2,test3",
+        },
+    )
+
+    assert len(result) == 3
+
+
 def test_url_categories_list_command(
     requests_mock,
     mock_client,
