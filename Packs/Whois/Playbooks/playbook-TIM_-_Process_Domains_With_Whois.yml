@@ -2,8 +2,7 @@ id: TIM - Process Domains With Whois
 version: -1
 fromversion: 5.5.0
 name: TIM - Process Domains With Whois
-description: This playbook uses several sub playbooks to process and tag indicators
-  based on the results of the Whois tool.
+description: This playbook uses several sub playbooks to process and tag indicators based on the results of the Whois tool.
 starttaskid: "0"
 tasks:
   "0":
@@ -33,6 +32,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 4377baae-b28b-4ed3-88eb-92739f774496
@@ -79,6 +81,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 3e91d851-7939-4aae-8eaf-44824d0de234
@@ -104,12 +109,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: dbb7e5e0-66b2-48fc-8e23-0153e92fff2f
+    taskid: f20880ef-0dc5-48f0-8e4d-7b6f365ae65b
     type: regular
     task:
-      id: dbb7e5e0-66b2-48fc-8e23-0153e92fff2f
+      id: f20880ef-0dc5-48f0-8e4d-7b6f365ae65b
       version: -1
       name: Run Whois on domain indicators
       description: Enrich domains with data from the whois script.
@@ -121,6 +129,8 @@ tasks:
       '#none#':
       - "6"
       - "8"
+      '#error#':
+      - "2"
     scriptarguments:
       query:
         complex:
@@ -150,6 +160,10 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerror: true
+    continueonerrortype: errorPath
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 96773908-372c-4daa-8d9e-15eddee6e4dc
@@ -191,6 +205,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: 71774b85-6fd5-4762-8c28-bd64d3527b6a
@@ -199,9 +216,7 @@ tasks:
       id: 71774b85-6fd5-4762-8c28-bd64d3527b6a
       version: -1
       name: TIM - Process Domain Registrant With Whois
-      description: This playbook compares the domain registrant against the Cortex
-        XSOAR list of approved registrants provided in the inputs. A registrant is the company or entity that
-        owns the domain.
+      description: This playbook compares the domain registrant against the Cortex XSOAR list of approved registrants provided in the inputs. A registrant is the company or entity that owns the domain.
       playbookName: TIM - Process Domain Registrant With Whois
       type: playbook
       iscommand: false
@@ -210,10 +225,8 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      ApprovedregistrantsListName: {}
       WhoisResults:
         simple: ${Domain}
-      registrantListDelimiter: {}
     separatecontext: true
     loop:
       iscommand: false
@@ -232,6 +245,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: ba4eea74-f034-4d54-8082-8279783819d6
@@ -273,6 +289,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: c3687b9a-158f-4fbe-89ec-3ae97d61a750
@@ -281,12 +300,7 @@ tasks:
       id: c3687b9a-158f-4fbe-89ec-3ae97d61a750
       version: -1
       name: TIM - Process Domain Age With Whois
-      description: This playbook compares the domain creation time against a provided
-        time value such as one month ago. The period can be configured within the
-        playbook inputs MinimumAgeOfDomainMonths or MinimumAgeOfDomainHours. The playbook
-        calculates the timestamp for the relevant period and compares it to the domain
-        creation time value provided by Whois. The domains are outputted
-        accordingly if they were created before or after the compared time, respectively.
+      description: This playbook compares the domain creation time against a provided time value such as one month ago. The period can be configured within the playbook inputs MinimumAgeOfDomainMonths or MinimumAgeOfDomainHours. The playbook calculates the timestamp for the relevant period and compares it to the domain creation time value provided by Whois. The domains are outputted accordingly if they were created before or after the compared time, respectively.
       playbookName: TIM - Process Domain Age With Whois
       type: playbook
       iscommand: false
@@ -295,7 +309,6 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      MinimumAgeOfDomainHours: {}
       MinimumAgeOfDomainMonths:
         simple: "1"
       WhoisResults:
@@ -318,6 +331,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 73ce68b3-5868-401b-8d1d-f476272d3b0c
@@ -329,7 +345,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#default#':
       - "2"
@@ -375,6 +391,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -389,40 +408,18 @@ view: |-
     }
   }
 inputs:
-- key: ""
-  value: {}
-  required: false
-  description: ""
-  playbookInputQuery:
-    query: ""
-    queryEntity: indicators
-    results: null
-    daterange:
-      fromdate: 0001-01-01T00:00:00Z
-      todate: 0001-01-01T00:00:00Z
-      period:
-        by: ""
-        byto: ""
-        byfrom: ""
-        tovalue: null
-        fromvalue: null
-        field: ""
-      fromdatelicenseval: 0001-01-01T00:00:00Z
-    runFromLastJobTime: false
-- key: CheckForWhoisRegistrant
+- key: "CheckForWhoisRegistrant"
   value:
     simple: "True"
   required: false
-  description: Setting this input as True will run the TIM - Process Domain registrant
-    With Whois playbook.
-  playbookInputQuery: null
+  description: "Setting this input as True will run the TIM - Process Domain registrant With Whois playbook."
+  playbookInputQuery:
 - key: CheckForWhoisDomainAgeCreation
   value:
     simple: "True"
   required: false
-  description: Setting this input as True will run the TIM - Process Domain Creation
-    Age With Whois playbook.
-  playbookInputQuery: null
+  description: Setting this input as True will run the TIM - Process Domain Creation Age With Whois playbook.
+  playbookInputQuery:
 outputs:
 - contextPath: DomainsNotApproved
   description: Domains for which the registrant isn't approved.
@@ -444,4 +441,6 @@ outputs:
   type: string
 quiet: true
 tests:
-- No test
+- No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields: {}
