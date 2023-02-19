@@ -17,12 +17,6 @@ SANITY_TEST_TO_PACK: dict[str, str] = {
     'Sanity Test - Playbook with mocked integration': 'HelloWorld',
 }
 
-DEFAULT_REPUTATION_TESTS: tuple[str, ...] = (
-    'FormattingPerformance - Test',
-    'reputations.json Test',
-    'Indicators reputation-.json Test',
-)
-
 ALWAYS_INSTALLED_PACKS_XSOAR = (
     'Base',
     'DeveloperTools',
