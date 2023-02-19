@@ -1621,9 +1621,7 @@ tasks:
           - operator: uniq
       Endpoint_id:
         complex:
-          root: |2-
-
-            PaloAltoNetworksXDREndpoint
+          root: PaloAltoNetworksXDREndpoint
           accessor: endpoint_id
       Endpoint_ip:
         complex:
