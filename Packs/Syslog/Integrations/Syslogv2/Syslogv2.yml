@@ -12,13 +12,13 @@ configuration:
   type: 9
   displaypassword: Key File as Text
 - additionalinfo: Required for TLS
-  display: Certificate File as Text
+  display: Certificate
   name: certificate
   required: false
   type: 12
   hidden: true
 - additionalinfo: Required for TLS
-  display: Key File as Text
+  display: Private Key
   name: private_key
   required: false
   type: 4
