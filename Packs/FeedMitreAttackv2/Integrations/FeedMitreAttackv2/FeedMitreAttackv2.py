@@ -325,12 +325,18 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
 
 
 def extract_date_time_from_description(description: str) -> str:
+    """
+    Extract the Datetime object from the description.
+    In case of incomplete Datetime format, fill the missing component from the default format 1970-01-01T00:00:00.
+    In any other case, return empty str.
+    """
     date_time_result = ''
     if not description or 'Citation' in description or 'n.d' in description:
         return date_time_result
     matches = re.findall(EXTRACT_TIMESTAMP_REGEX, description)
     for match in matches:
         try:
+            # In case there is only one of the Datetime component (day,month,year), return an empty str.
             int(match)
             continue
         except ValueError:
