@@ -1,7 +1,7 @@
 id: XCloud Cryptomining
 version: -1
-name: XCloud Cryptomining
-description: "Investigates a Cortex XDR incident containing Cloud Cryptomining related alert. \nThe playbook supports AWS, Azure, and GCP and executes the following:\n\n- Cloud enrichment:\n\n    -Collects info about the involved resources\n\n    -Collects info about the involved identities\n\n    -Collects info about the involved IPs\n\n\n- Verdict decision tree\n\n\n- Verdict handling:\n\n -Handle False Positives\n\n -Handle True Positives\n\n -Cloud Response - Generic sub-playbook.\n\n- Notifies the SOC if a malicious verdict was found"
+name: XCloud Cryptojacking
+description: "Investigates a Cortex XDR incident containing Cloud Cryptojacking related alert. \nThe playbook supports AWS, Azure, and GCP and executes the following:\n\n- Cloud enrichment:\n\n    -Collects info about the involved resources\n\n    -Collects info about the involved identities\n\n    -Collects info about the involved IPs\n\n\n- Verdict decision tree\n\n\n- Verdict handling:\n\n -Handle False Positives\n\n -Handle True Positives\n\n -Cloud Response - Generic sub-playbook.\n\n- Notifies the SOC if a malicious verdict was found"
 starttaskid: "0"
 tasks:
   "0":
@@ -189,7 +189,7 @@ tasks:
         simple: |-
           XSOAR Notification
 
-          XSOAR has detected activity related to cryptomining.
+          XSOAR has detected activity related to Cryptojacking.
           After careful analysis, XSOAR found the activity malicious.
 
           Please enter XSOAR incident ID ${incident.id} for further investigation and response.
@@ -281,11 +281,10 @@ tasks:
           root: inputs.autoResourceRemediation
       autoUserRemediation:
         complex:
-          root: inputs.autoResourceRemediation
+          root: inputs.autoUserRemediation
       cloudProvider:
         complex:
-          root: alert
-          accessor: cloudprovider
+          root: inputs.cloudProvider
       region:
         complex:
           root: alertJson._all_events
@@ -522,7 +521,7 @@ tasks:
           left:
             value:
               complex:
-                root: requireAnalystReview
+                root: inputs.requireAnalystReview
             iscontext: true
           right:
             value:
@@ -652,9 +651,9 @@ tasks:
     task:
       id: dfa1bd6f-e9c9-4422-8d6d-e31cfd7e3558
       version: -1
-      name: XCloud Cryptomining - Set Verdict
+      name: XCloud Cryptojacking - Set Verdict
       description: "This playbook sets the alert's verdict as malicious if one of the following conditions is true:\n1. If the source IP address is malicious\n2. If the incident includes both \"Unusual allocation of multiple cloud compute resources\" AND \"Cloud identity reached a throttling API rate\" (medium/high severity)\n3. If the incident includes both \"Unusual allocation of multiple cloud compute resources\" AND \"Suspicious heavy allocation of compute resources - possible mining activity\" \n4. If the incident includes \"Unusual allocation of multiple cloud compute resources\" with medium/high severity, the source ASN isn't known, and the source IP isn't known as well.\n5. If the incident includes both \"Unusual allocation of multiple cloud compute resources\" AND \"A cloud compute instance was created in a dormant region\"\n\nIf none of the conditions is true, the playbook will wait for an analyst's decision."
-      playbookName: XCloud Cryptomining - Set Verdict
+      playbookName: XCloud Cryptojacking - Set Verdict
       type: playbook
       iscommand: false
       brand: ""
@@ -695,7 +694,7 @@ tasks:
       id: d52086b0-9eb3-4154-8a2a-50236c8957dc
       version: -1
       name: Check alert verdict
-      description: Checks the outcome of the alert Cryptomining - Set Verdict playbook.
+      description: Checks the outcome of the alert Cryptojacking - Set Verdict playbook.
       type: condition
       iscommand: false
       brand: ""
