@@ -31,11 +31,11 @@ configuration:
   section: Connect
   advanced: true
   additionalinfo: TLS versions supported are 1.2 and above.
-- display: Certificate
+- displaypassword: Certificate
   name: certificate
+  hiddenusername: true
   required: false
-  type: 12
-  additionalinfo: Required for TLS.
+  type: 9
 - display: Self Signed Certificate
   name: self_signed_certificate
   required: false
