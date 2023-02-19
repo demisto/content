@@ -69,7 +69,7 @@ tasks:
                   args:
                     chars:
                       value:
-                        simple: '["]'
+                        simple: '[\"]'
             iscontext: true
           right:
             value:
@@ -87,7 +87,7 @@ tasks:
                   args:
                     chars:
                       value:
-                        simple: '["]'
+                        simple: '[\"]'
             iscontext: true
           right:
             value:
@@ -105,7 +105,7 @@ tasks:
                   args:
                     chars:
                       value:
-                        simple: '["]'
+                        simple: '[\"]'
             iscontext: true
           right:
             value:
@@ -646,5 +646,3 @@ tests:
 - No tests (auto formatted)
 contentitemexportablefields:
   contentitemfields: {}
-marketplaces:
-  - marketplacev2
