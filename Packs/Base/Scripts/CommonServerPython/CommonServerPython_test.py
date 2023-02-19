@@ -899,10 +899,10 @@ class TestTableToMarkdown:
         """
         data = [{'c': 1, 'b': 2, 'a': 3}, {'c': 4, 'b': 5, 'a': 6}]
         table = tableToMarkdown("tableToMarkdown test", data)
-        assert table == '### tableToMarkdown test\n' \
-                        '|a|b|c|\n|---|---|---|\n' \
-                        '| 3 | 2 | 1 |\n' \
-                        '| 6 | 5 | 4 |\n'
+        assert table == ('### tableToMarkdown test\n'
+                         '|a|b|c|\n|---|---|---|\n'
+                         '| 3 | 2 | 1 |\n'
+                         '| 6 | 5 | 4 |\n')
 
     @staticmethod
     def test_no_given_headers_and_no_is_sorted():
@@ -916,10 +916,19 @@ class TestTableToMarkdown:
         """
         data = [{'c': 1, 'b': 2, 'a': 3}, {'c': 4, 'b': 5, 'a': 6}]
         table = tableToMarkdown("tableToMarkdown test", data, is_sorted=False)
-        assert table == '### tableToMarkdown test\n' \
-                        '|c|b|a|\n|---|---|---|\n' \
-                        '| 1 | 2 | 3 |\n' \
-                        '| 4 | 5 | 6 |\n'
+
+        if IS_PY3:
+            expected_table_unsorted = ('### tableToMarkdown test\n'
+                                       '|c|b|a|\n|---|---|---|\n'
+                                       '| 1 | 2 | 3 |\n'
+                                       '| 4 | 5 | 6 |\n')
+            assert table == expected_table_unsorted
+        else:  # in python 2 is_sorted=False is not working
+            expected_table_sorted = ('### tableToMarkdown test\n'
+                                     '|a|b|c|\n|---|---|---|\n'
+                                     '| 3 | 2 | 1 |\n'
+                                     '| 6 | 5 | 4 |\n')
+            assert table == expected_table_sorted
 
 
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
