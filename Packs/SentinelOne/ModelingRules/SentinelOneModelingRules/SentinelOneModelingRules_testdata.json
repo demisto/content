@@ -19,6 +19,7 @@
         "data": {
           "accountId": 123456,
           "accountName": "Palo Alto Networks",
+          "byUser": "SA-API",
           "expiration": null,
           "fullScopeDetails": "Account Palo Alto Networks",
           "fullScopeDetailsPath": "Global / Palo Alto Networks",
@@ -69,7 +70,7 @@
         "xdm.target.process.integrity_level": null,
         "xdm.source.user.identifier": "123456",
         "xdm.source.host.hostname": null,
-        "xdm.source.user.username": "Palo Alto Networks",
+        "xdm.source.user.username": "SA-API",
         "xdm.event.type": null,
         "xdm.target.file_before.path": null,
         "xdm.target.user.groups": null,
@@ -326,7 +327,7 @@
         "xdm.target.process.integrity_level": null,
         "xdm.source.user.identifier": "123456",
         "xdm.source.host.hostname": "DESKTOP-8CME2KF",
-        "xdm.source.user.username": "Palo Alto Networks",
+        "xdm.source.user.username": "Win10-Regression",
         "xdm.event.type": null,
         "xdm.target.file_before.path": null,
         "xdm.target.user.groups": null,
@@ -556,6 +557,7 @@
         "xdm.alert.original_alert_id": "121212",
         "xdm.alert.mitre_techniques": null,
         "xdm.network.http.url": null,
+        "xdm.event.operation_sub_type": "REGVALUEMODIFIED",
         "xdm.source.process.name": null
       }
     }
