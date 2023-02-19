@@ -62,6 +62,19 @@ class Client(BaseClient):
                 )
             raise e
 
+    def _http_request(self, *args, **kwargs):
+        """HTTP request for Cisco WSA API.
+        In some cases, the API status code is 200 but there are errors.
+
+        Raises:
+            DemistoException: Error to get to the API.
+
+        """
+        res = super()._http_request(*args, **kwargs)
+        if res.get("res_code") and res.get("res_code") == HTTPStatus.BAD_REQUEST:
+            raise DemistoException(message=res)
+        return res
+
     def access_policy_list_request(self, policy_names: str | None) -> dict[str, Any]:
         """
         Access Policies list.
