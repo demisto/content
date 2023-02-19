@@ -7,7 +7,6 @@ import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
 
-
 ''' IMPORTS '''
 
 # Disable insecure warnings
@@ -48,7 +47,6 @@ def parser(date_str, date_formats=None, languages=None, locales=None, region=Non
 
 
 def get_token_soap_request(user, password, instance, domain=None):
-
     if domain:
         # Create the root element
         root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance",
@@ -149,7 +147,7 @@ def get_search_options_soap_request(token, report_guid):
     body = ET.SubElement(root, "soap:Body")
     # Create the GetSearchOptionsByGuid element
     get_search_options_by_grid = ET.SubElement(body, "GetSearchOptionsByGuid",
-                                             {"xmlns": "http://archer-tech.com/webservices/"})
+                                               {"xmlns": "http://archer-tech.com/webservices/"})
     # Add the sessionToken and searchReportGuid elements
     ET.SubElement(get_search_options_by_grid, "sessionToken").text = token
     ET.SubElement(get_search_options_by_grid, "searchReportGuid").text = report_guid
@@ -168,7 +166,7 @@ def search_records_by_report_soap_request(token, report_guid):
     body = ET.SubElement(root, "soap:Body")
     # Create the SearchRecordsByReport element
     search_records_by_report = ET.SubElement(body, "SearchRecordsByReport",
-                                               {"xmlns": "http://archer-tech.com/webservices/"})
+                                             {"xmlns": "http://archer-tech.com/webservices/"})
     # Add the sessionToken, reportIdOrGuid and pageNumber elements
     ET.SubElement(search_records_by_report, "sessionToken").text = token
     ET.SubElement(search_records_by_report, "reportIdOrGuid").text = report_guid
@@ -182,7 +180,6 @@ def search_records_soap_request(
         field_to_search_by_id='', numeric_operator='', max_results=10, level_id='',
         sort_type: str = 'Ascending'
 ):
-
     # create the root element
     root = ET.Element("soap:Envelope", {"xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/",
                                         "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
@@ -541,7 +538,7 @@ class Client(BaseClient):
             if field_name in fields_to_display:
                 fields_xml += f'<DisplayField name="{field_name}">{field}</DisplayField>'
             if (field_to_search and field_name.lower() == field_to_search.lower()) or \
-               (field_to_search_by_id and field_name.lower() == field_to_search_by_id.lower()):
+                    (field_to_search_by_id and field_name.lower() == field_to_search_by_id.lower()):
                 search_field_name = field_name
                 search_field_id = field
 
