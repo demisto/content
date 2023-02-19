@@ -1829,7 +1829,7 @@ def handle_template_params(template_params):      # pragma: no cover
     return actual_params
 
 
-def create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to):
+def create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to, importance):
     """Creates the message object according to the existence of additional custom headers.
     """
     if additional_headers:
@@ -1841,6 +1841,7 @@ def create_message_object(to, cc, bcc, subject, body, additional_headers, from_a
             subject=subject,
             reply_to=reply_to,
             body=body,
+            importance=importance,
             **additional_headers
         )
 
@@ -1851,12 +1852,13 @@ def create_message_object(to, cc, bcc, subject, body, additional_headers, from_a
         bcc_recipients=bcc,
         subject=subject,
         reply_to=reply_to,
-        body=body
+        body=body,
+        importance=importance
     )
 
 
 def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, attachments=None,
-                   additional_headers=None, from_address=None, reply_to=None):     # pragma: no cover
+                   additional_headers=None, from_address=None, reply_to=None, importance=None):     # pragma: no cover
     """Creates the Message object that will be sent.
 
     Args:
@@ -1876,7 +1878,7 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
     """
     if not html_body:
         # This is a simple text message - we cannot have CIDs here
-        message = create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to)
+        message = create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to, importance)
 
         for attachment in attachments:
             if not attachment.get('cid'):
@@ -1888,7 +1890,7 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
         attachments += html_attachments
 
         message = create_message_object(to, cc, bcc, subject, HTMLBody(html_body), additional_headers, from_address,
-                                        reply_to)
+                                        reply_to, importance)
 
         for attachment in attachments:
             if not attachment.get('cid'):
@@ -1933,7 +1935,7 @@ def add_additional_headers(additional_headers):
 def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, htmlBody=None,
                attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
                transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
-               additionalHeader=None, raw_message=None, from_address=None, replyTo=None):     # pragma: no cover
+               additionalHeader=None, raw_message=None, from_address=None, replyTo=None, importance=None):     # pragma: no cover
     to = argToList(to)
     cc = argToList(cc)
     bcc = argToList(bcc)
@@ -1951,7 +1953,8 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
             bcc_recipients=bcc,
             body=raw_message,
             author=from_address,
-            reply_to=reply_to
+            reply_to=reply_to,
+            importance=importance
         )
 
     else:
@@ -1971,7 +1974,7 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
                 htmlBody = htmlBody.format(**template_params)
 
         message = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader, from_address,
-                                 reply_to)
+                                 reply_to, importance)
 
     client.send_email(message)
 
