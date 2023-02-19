@@ -3562,7 +3562,8 @@
         {
             "integrations": "ExpanseV2",
             "playbookID": "ExpanseV2 Test",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "timeout": 250
         },
         {
             "integrations": "FeedExpanse",
