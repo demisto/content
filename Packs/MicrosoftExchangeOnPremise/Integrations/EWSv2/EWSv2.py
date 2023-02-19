@@ -2236,7 +2236,7 @@ def reply_email(to, inReplyTo, body="", subject="", bcc=None, cc=None, htmlBody=
     bcc = bcc.split(",") if bcc else None
     cc = cc.split(",") if cc else None
     to = to.split(",") if to else None
-    manual_attach_obj = manualAttachObj if manualAttachObj is not None else []
+    manualAttachObj = manualAttachObj if manualAttachObj is not None else []
     subject = subject[:252] + '...' if len(subject) > 255 else subject
 
     attachments, attachments_names = process_attachments(attachCIDs, attachIDs, attachNames, manualAttachObj)
