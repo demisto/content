@@ -895,7 +895,7 @@ class TestTableToMarkdown:
         When:
             - Calling tableToMarkdown with no given headers and is_sorted=True by default.
         Then:
-            - Create a markdown table with the given data and sorting by keys.
+            - Validate that the table is sorted by the keys.
         """
         data = [{'c': 1, 'b': 2, 'a': 3}, {'c': 4, 'b': 5, 'a': 6}]
         table = tableToMarkdown("tableToMarkdown test", data)
@@ -912,7 +912,8 @@ class TestTableToMarkdown:
         When:
             - Calling tableToMarkdown with no given headers and is_sorted=False.
         Then:
-            - Create a markdown table with the given data and no sorting.
+            - Python 3: Validate that the table is not sorted by the keys.
+            - Python 2: Validate that the table is sorted by the keys.
         """
         data = [{'c': 1, 'b': 2, 'a': 3}, {'c': 4, 'b': 5, 'a': 6}]
         table = tableToMarkdown("tableToMarkdown test", data, is_sorted=False)
