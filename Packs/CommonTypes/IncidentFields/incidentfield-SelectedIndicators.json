@@ -11,7 +11,7 @@
     "closeForm": false,
     "editForm": true,
     "required": false,
-    "fieldCalcScript": "687943cc-1331-4038-833c-51c59b9173a8",
+    "fieldCalcScript": "ShowIncidentIndicators",
     "neverSetAsRequired": false,
     "isReadOnly": false,
     "useAsKpi": false,
