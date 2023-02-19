@@ -1,0 +1,12 @@
+[MODEL, dataset="forcepoint_email_security_raw"]
+filter cefName = "Audit Log"
+| alter xdm.event.outcome_reason = act,
+    xdm.source.ipv4 = src,
+    //page ?
+    xdm.source.user.groups = arraycreate(coalesce(spriv,"")),
+    xdm.source.user.username = suser ,
+    xdm.alert.severity = cefSeverity,
+    xdm.observer.vendor = cefDeviceVendor,
+    xdm.observer.product = cefDeviceProduct,
+    xdm.observer.version = cefDeviceVersion,
+    xdm.source.host.ipv4_addresses = arraycreate(coalesce(dvc,"")) 
