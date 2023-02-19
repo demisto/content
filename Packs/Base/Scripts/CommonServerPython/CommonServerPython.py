@@ -2134,7 +2134,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         :param is_auto_json_transform: Boolean to try to auto transform complex json
 
         :type sorting: ``bool``
-        :param sorting: Boolean to sort the table by the headers
+        :param sorting: Boolean which indictates whether to sort the table's headers or not.
 
        :return: A string representation of the markdown table
        :rtype: ``str``
