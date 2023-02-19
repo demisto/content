@@ -866,6 +866,16 @@ def access_policy_list_command(client: Client, args: dict[str, Any]) -> CommandR
 def access_policy_create_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
+    """
+    Create an access policy.
+
+    Args:
+        client (Client): Cisco WSA API client.
+        args (dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: readable outputs for XSOAR.
+    """
     policy_name = args["policy_name"]
     policy_status = args["policy_status"]
     policy_order = arg_to_number(args["policy_order"])
