@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Microsoft Teams
+  id: Microsoft Teams merit test
   version: -1
 configuration:
 - display: "Bot ID"
@@ -141,8 +141,8 @@ configuration:
   type: 13
   section: Connect
 description: Send messages and notifications to your team members.
-display: Microsoft Teams
-name: Microsoft Teams
+display: Microsoft Teams merit test
+name: Microsoft Teams merit test
 script:
   commands:
   - arguments:
