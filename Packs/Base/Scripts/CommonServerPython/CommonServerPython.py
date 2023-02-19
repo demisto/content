@@ -2098,7 +2098,7 @@ class JsonTransformer:
 
 
 def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None,
-                    date_fields=None, json_transform_mapping=None, is_auto_json_transform=False, sorting=True):
+                    date_fields=None, json_transform_mapping=None, is_auto_json_transform=False, is_sorted=True):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -2133,8 +2133,8 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         :type is_auto_json_transform: ``bool``
         :param is_auto_json_transform: Boolean to try to auto transform complex json
 
-        :type sorting: ``bool``
-        :param sorting: Boolean which indictates whether to sort the table's headers or not.
+        :type is_sorted: ``bool``
+        :param is_sorted: Boolean to sort the table by the headers, this is only if the headers parameter is not given
 
        :return: A string representation of the markdown table
        :rtype: ``str``
@@ -2177,7 +2177,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     # in case of headers was not provided (backward compatibility)
     if not headers:
         headers = list(t[0].keys())
-        if sorting:
+        if is_sorted:
             headers.sort()
 
     if removeNull:

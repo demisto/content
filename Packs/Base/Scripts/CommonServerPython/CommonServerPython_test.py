@@ -888,12 +888,12 @@ class TestTableToMarkdown:
         assert expected_table == table
 
     @staticmethod
-    def test_no_given_headers_and_sorting():
+    def test_no_given_headers_and_is_sorted():
         """
         Given:
             - A list of dictionaries.
         When:
-            - Calling tableToMarkdown with no given headers and sorting=True by default.
+            - Calling tableToMarkdown with no given headers and is_sorted=True by default.
         Then:
             - Create a markdown table with the given data and sorting by keys.
         """
@@ -905,17 +905,17 @@ class TestTableToMarkdown:
                         '| 6 | 5 | 4 |\n'
 
     @staticmethod
-    def test_no_given_headers_and_no_sorting():
+    def test_no_given_headers_and_no_is_sorted():
         """
         Given:
             - A list of dictionaries.
         When:
-            - Calling tableToMarkdown without headers and sorting=False.
+            - Calling tableToMarkdown with no given headers and is_sorted=False.
         Then:
             - Create a markdown table with the given data and no sorting.
         """
         data = [{'c': 1, 'b': 2, 'a': 3}, {'c': 4, 'b': 5, 'a': 6}]
-        table = tableToMarkdown("tableToMarkdown test", data, sorting=False)
+        table = tableToMarkdown("tableToMarkdown test", data, is_sorted=False)
         assert table == '### tableToMarkdown test\n' \
                         '|c|b|a|\n|---|---|---|\n' \
                         '| 1 | 2 | 3 |\n' \
