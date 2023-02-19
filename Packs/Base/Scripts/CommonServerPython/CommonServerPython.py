@@ -2177,7 +2177,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     # in case of headers was not provided (backward compatibility)
     if not headers:
         headers = list(t[0].keys())
-        if is_sorted:
+        if is_sorted or not IS_PY3:
             headers.sort()
 
     if removeNull:
