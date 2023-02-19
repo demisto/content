@@ -511,7 +511,7 @@ class Client(BaseClient):
         ]
 
         return self._http_request(
-            "POST", f"{V2_PREFIX}/configure/web_security/domain_map", json_data=data
+            "POST", f"{V2_PREFIX}/configure/web_security/domain_map", json_data=data, ok_codes=[HTTPStatus.CREATED]
         )
 
     def domain_map_update_request(
@@ -545,7 +545,7 @@ class Client(BaseClient):
         )
 
         return self._http_request(
-            "PUT", f"{V2_PREFIX}/configure/web_security/domain_map", json_data=data
+            "PUT", f"{V2_PREFIX}/configure/web_security/domain_map", json_data=data, ok_codes=[HTTPStatus.OK]
         )
 
     def domain_map_delete_request(self, domain_name: str) -> dict[str, Any]:
@@ -563,7 +563,7 @@ class Client(BaseClient):
         return self._http_request(
             "DELETE",
             f"{V2_PREFIX}/configure/web_security/domain_map",
-            json_data=data,
+            json_data=data, ok_codes=[HTTPStatus.OK, HTTPStatus.PARTIAL_CONTENT]
         )
 
     def identification_profiles_list_request(
@@ -1200,10 +1200,7 @@ def domain_map_create_command(client: Client, args: dict[str, Any]) -> CommandRe
         order=order,
     )
 
-    if response.get("res_code") == HTTPStatus.CREATED:
-        readable_output = f'Domain "{domain_name}" mapping created successfully.'
-    else:
-        raise DemistoException(response)
+    readable_output = f'Domain "{domain_name}" mapping created successfully.'
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -1231,10 +1228,7 @@ def domain_map_update_command(client: Client, args: dict[str, Any]) -> CommandRe
         order=order,
     )
 
-    if response.get("res_code") == HTTPStatus.OK:
-        readable_output = f'Domain "{domain_name}" mapping updated successfully.'
-    else:
-        raise DemistoException(response)
+    readable_output = f'Domain "{domain_name}" mapping updated successfully.'
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -1277,8 +1271,6 @@ def domain_map_delete_command(
                 CommandResults(readable_output=readable_output, raw_response=response)
             )
         return command_results_list
-    else:
-        raise DemistoException(response)
 
 
 def identification_profiles_list_command(
@@ -1466,10 +1458,9 @@ def identification_profiles_delete_command(
             command_results_list.append(CommandResults(readable_output=readable_output))
 
         return command_results_list
-    else:
-        return CommandResults(
-            readable_output="Deleted identification profiles successfully."
-        )
+    return CommandResults(
+        readable_output="Deleted identification profiles successfully."
+    )
 
 
 def url_categories_list_command(client: Client, args: dict[str, Any]) -> CommandResults:

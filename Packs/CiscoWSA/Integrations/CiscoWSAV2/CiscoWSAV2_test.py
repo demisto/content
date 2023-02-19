@@ -478,7 +478,7 @@ def test_domain_map_create_command(
 
     mock_response = load_mock_response("domain_map_create.json")
     url = f"{BASE_URL}/{V2_PREFIX}/configure/web_security/domain_map"
-    requests_mock.post(url=url, json=mock_response)
+    requests_mock.post(url=url, json=mock_response, status_code=HTTPStatus.CREATED)
 
     result = domain_map_create_command(
         mock_client,
