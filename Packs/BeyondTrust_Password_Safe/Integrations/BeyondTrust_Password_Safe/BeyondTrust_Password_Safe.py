@@ -324,10 +324,6 @@ def get_credentials():
     entry_context = {'BeyondTrust.Credentials': createContext(response)}
     return_outputs(tableToMarkdown('Passwordsafe Credentials', response), entry_context, response)
 
-    """
-    demisto.results('The credentials for BeyondTrust request: ' + response)
-    """
-
 
 def check_in_credentials_request(request_id: str, data: dict):
     """
@@ -483,10 +479,10 @@ try:
         check_in_credentials()
     elif demisto.command() == 'beyondtrust-change-credentials':
         change_credentials()
-    elif demisto.command() == 'fetch-credentials':
-        fetch_credentials()
     elif demisto.command() == 'beyondtrust-list-release-requests':
         list_release_requests()
+    elif demisto.command() == 'fetch-credentials':
+        fetch_credentials()
 
 # Log exceptions
 except Exception as e:
