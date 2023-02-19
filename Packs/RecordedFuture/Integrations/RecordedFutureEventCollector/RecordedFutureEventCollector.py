@@ -1,19 +1,15 @@
-import uuid
 
-from requests import Response
-
-import demistomock as demisto
 from CommonServerPython import *
 import json
 import urllib3
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-
 BASE_URL = 'https://api.recordedfuture.com/v2'
+STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'Recorded Future'
 PRODUCT = 'Intelligence Cloud'
@@ -22,41 +18,69 @@ PRODUCT = 'Intelligence Cloud'
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
+    def whoami(self) -> dict[str, Any]:
 
-    This Client implements API calls, and does not contain any Demisto logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this HelloWorld implementation, no special attributes defined
-    """
+        return self._http_request(
+            method='get',
+            url_suffix='/info/whoami',
+            timeout=60,
+        )
 
-    def search_events(self, prev_id, alert_status):
-        """
-        Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
-        All the parameters are passed directly to the API as HTTP POST parameters in the request
+    def _call(self, url_suffix, **kwargs):
 
-        Args:
-            prev_id: previous id that was fetched.
-            alert_status:
+        json_data = {
+            'demisto_command': demisto.command(),
+            'demisto_args': demisto.args(),
+        }
 
-        Returns:
-            dict: the next event
-        """
-        return [{
-            'id': prev_id + 1,
-            'created_time': datetime.now().isoformat(),
-            'description': f'This is test description {prev_id + 1}',
-            'alert_status': alert_status,
-            'custom_details': {
-                               'triggered_by_name': f'Name for id: {prev_id + 1}',
-                               'triggered_by_uuid': str(uuid.uuid4()),
-                               'type': 'customType'
-            }
-        }]
+        request_kwargs = {
+            'method': 'post',
+            'url_suffix': url_suffix,
+            'json_data': json_data,
+            'timeout': 90,
+            'retries': 3,
+            'status_list_to_retry': STATUS_TO_RETRY
+        }
+
+        request_kwargs.update(kwargs)
+
+        try:
+            response = self._http_request(**request_kwargs)
+
+            if isinstance(response, dict) and response.get('return_error'):
+                # This will raise the Exception or call "demisto.results()" for the error and sys.exit(0).
+                return_error(**response['return_error'])
+
+        except DemistoException as err:
+            if '404' in str(err):
+                return CommandResults(
+                    outputs_prefix='',
+                    outputs=dict(),
+                    raw_response=dict(),
+                    readable_output='No results found.',
+                    outputs_key_field='',
+                )
+            else:
+                raise err
+
+        return response
+
+    def fetch_incidents(self, last_run) -> dict[str, Any]:
+        """Fetch incidents."""
+        return self._call(
+            url_suffix=f'/v2/alert/fetch_incidents',
+            json_data={
+                'demisto_last_run': last_run
+            },
+            timeout=120
+        )
+
+    def get_alerts(self) -> dict[str, Any]:
+        """Get alerts."""
+        return self._call(url_suffix='/v2/alert/search')
 
 
-def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -> str:
+def test_module(client: Client):
     """
     Tests API connectivity and authentication'
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -65,7 +89,7 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
 
     Args:
         client (Client): HelloWorld client to use.
-        params (Dict): Integration parameters.
+        params (dict): Integration parameters.
         first_fetch_time (int): The first fetch time as configured in the integration params.
 
     Returns:
@@ -73,36 +97,29 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
     """
 
     try:
-        alert_status = params.get('alert_status', None)
-
-        fetch_events(
-            client=client,
-            last_run={},
-            first_fetch_time=first_fetch_time,
-            alert_status=alert_status,
-        )
-
-    except Exception as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-
-    return 'ok'
+        client.whoami()
+        return_results('ok')
+    except Exception as err:
+        message = str(err)
+        try:
+            error = json.loads(str(err).split('\n')[1])
+            if 'fail' in error.get('result', dict()).get('status', ''):
+                message = error.get('result', dict())['message']
+        except Exception:
+            message = (
+                'Unknown error. Please verify that the API'
+                f' URL and Token are correctly configured. RAW Error: {err}'
+            )
+        raise DemistoException(f'Failed due to - {message}')
 
 
-def get_events(client, alert_status):
-    events = client.search_events(
-        prev_id=0,
-        alert_status=alert_status
-    )
-    hr = tableToMarkdown(name='Test Event', t=events)
-    return events, CommandResults(readable_output=hr)
+def get_events(client) -> tuple[dict[str, any], CommandResults]:
+    response = client.get_alerts()
+    hr = tableToMarkdown(name='Test Event', t=response)
+    return response, CommandResults(readable_output=hr)
 
 
-def fetch_events(client: Client, last_run: Dict[str, int],
-                 first_fetch_time: Optional[int], alert_status: Optional[str]
-                 ):
+def fetch_events(client: Client, last_run: str):
     """
     Args:
         client (Client): HelloWorld client to use.
@@ -114,20 +131,15 @@ def fetch_events(client: Client, last_run: Dict[str, int],
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be created in XSIAM.
     """
-    prev_id = last_run.get('prev_id', None)
-    if not prev_id:
-        prev_id = 0
+    response = client.fetch_incidents(last_run)
 
-    events = client.search_events(
-        prev_id=prev_id,
-        alert_status=alert_status
-    )
-    demisto.info(f'Fetched event with id: {prev_id + 1}.')
+    if isinstance(response, CommandResults):
+        # 404 case.
+        return
 
-    # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'prev_id': prev_id + 1}
-    demisto.info(f'Setting next run {next_run}.')
-    return next_run, events
+    if incidents := response.get('incidents'):
+        demisto.setLastRun(response['demisto_last_run'])
+        return incidents
 
 
 ''' MAIN FUNCTION '''
@@ -142,52 +154,39 @@ def main() -> None:
     args = demisto.args()
     command = demisto.command()
     api_key = params.get('credentials', {}).get('password')
-    base_url =
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-
-    # How much time before the first fetch to retrieve events
-    first_fetch_time = arg_to_datetime(
-        arg=params.get('first_fetch', '3 days'),
-        arg_name='First fetch time',
-        required=True
-    )
-    first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
-    assert isinstance(first_fetch_timestamp, int)
 
     demisto.debug(f'Command being called is {command}')
     try:
         headers = {
-            'X-RFToken:{api_key}'
+            'X-RFToken': api_key
         }
         client = Client(
             base_url=BASE_URL,
-            verify=verify_certificate,
             headers=headers,
-            proxy=proxy)
+            verify=verify_certificate,
+            proxy=proxy
+        )
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, params, first_fetch_timestamp)
+            result = test_module(client)
             return_results(result)
 
-        elif command in ('hello-world-get-events', 'fetch-events'):
-            if command == 'hello-world-get-events':
+        elif command in ('recorded-future-get-events', 'fetch-events'):
+            if command == 'recorded-future-get-events':
                 should_push_events = argToBoolean(args.pop('should_push_events'))
-                events, results = get_events(client, alert_status)
+                events, results = get_events(client)
                 return_results(results)
 
             else:  # command == 'fetch-events':
                 should_push_events = True
-                last_run = demisto.getLastRun()
-                next_run, events = fetch_events(
+                last_run = demisto.getLastRun().get('last_run') or arg_to_datetime(params.get('first_fetch', '3 days'))
+                events = fetch_events(
                     client=client,
-                    last_run=last_run,
-                    first_fetch_time=first_fetch_timestamp,
-                    alert_status=alert_status,
+                    last_run=last_run
                 )
-                # saves next_run for the time fetch-events is invoked
-                demisto.setLastRun(next_run)
 
             if should_push_events:
                 send_events_to_xsiam(
