@@ -539,7 +539,7 @@ coverage = "6.3.2"
 cryptography = "^36.0.2"
 dateparser = "^1.1.1"
 decorator = "^5.1.1"
-demisto-py = {git = "https://github.com/demisto/demisto-py.git", rev = "re_create_client_session_timeouts"}
+demisto-py = "^3.2.6"
 dictdiffer = "^0.9.0"
 dictor = "^0.1.9"
 docker = "^5.0.3"
@@ -617,8 +617,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "test_session_timeouts_demisto_py"
-resolved_reference = "17295b5a2ff3a1d8f32c076ef5bd1538cf5e1bfc"
+reference = "re_configure_client"
+resolved_reference = "0d0e1c976b461620d6ead6ca57cb24d21fe5701e"
 
 [[package]]
 name = "deprecated"
@@ -3454,7 +3454,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "5cefb4d82249c4c293599b423c6ae118423674a900f1f389eaa2f55f3db41b34"
+content-hash = "015098d65364e4f0156dc564d7b5ad911823070a77d1768017c122b01f55376f"
 
 [metadata.files]
 aiodns = [
