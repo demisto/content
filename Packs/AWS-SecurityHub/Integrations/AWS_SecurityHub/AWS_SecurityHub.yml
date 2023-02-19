@@ -176,7 +176,7 @@ configuration:
   - Suppressed
 - display: Product Name
   name: product_name
-  additionalinfo: 'You can write a list of product names separated by comma. In order to get the product name you need to press Integrations in the AWS - Security Hub menu. Than provide here only the product name (the value after the colon (:)).'
+  additionalinfo: 'You can enter a comma-separated list of product names. In order to get the product name, click Integrations in the AWS - Security Hub menu. Use only the product name (the value after the colon (:)) for this parameter.'
   required: false
   type: 0
   section: Connect
