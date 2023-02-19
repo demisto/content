@@ -2115,13 +2115,19 @@ def member_added_handler(integration_context: dict, request_body: dict, channel_
 
 
 def handle_external_user(user_identifier, allow_create_incident, create_incident):
-
+    """
+    Handles message from non xsoar user
+    :param user_identifier: the user name or email
+    :param allow_create_incident: if external user is allowed to create incidents or not
+    :param create_incident: if the message (command) sent by the user is "new incident"
+    :return: data: the response from the bot the user
+    """
     # external user is not allowed to run any command
     if not allow_create_incident:
         data = f"I'm sorry but I was unable to find you as a Cortex XSOAR user " \
                f"for {user_identifier}. You're not allowed to run any command"
 
-    # allowed creating new incident, but typed something else
+    # allowed creating new incident, but the command sent is not new incident
     elif not create_incident:
         data = "As a non Cortex XSOAR user, you're only allowed to run command:\nnew incident [details]"
     # allowed to create incident, and tried to create incident
@@ -2174,7 +2180,7 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
         if create_incident:
             data = process_incident_create_message(demisto_user, message)
             formatted_message = urlify_hyperlinks(data)
-        else:
+        else:   # internal user running any command except for new incident
             try:
                 data = demisto.directMessage(message, username, user_email, allow_external_incidents_creation)
                 return_card = True
