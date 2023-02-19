@@ -3058,3 +3058,48 @@ def test_add_or_remove_tag_endpoint_command(requests_mock, args, expected_filter
             'tag': 'test'
         }
     }
+
+
+excepted_output_1 = {'filters': [{'field': 'endpoint_status',
+                                  'operator': 'IN', 'value': ['connected']}], 'new_alias_name': 'test'}
+excepted_output_2 = {'filters': [{'field': 'endpoint_status',
+                                  'operator': 'IN', 'value': ['connected']}], 'new_alias_name': ""}
+
+
+@pytest.mark.parametrize('input, expected_output', [("test", excepted_output_1),
+                                                    ('""', excepted_output_2)])
+def test_endpoint_alias_change_command__diffrent_alias_new_names(mocker, input, expected_output):
+    """
+    Given:
+    - valid new alias name as string - empty new alias name (due to xsoar limitation,
+    represented by a string of double quote)
+
+    When:
+    - executing the endpoint-alias-change command
+
+    Then:
+    - Makes sure the request body is created correctly.
+
+    """
+    client = CoreClient(base_url=f'{Core_URL}/public_api/v1/', headers={})
+    mocker_set = mocker.patch.object(client, 'set_endpoints_alias')
+    from CoreIRApiModule import endpoint_alias_change_command
+    endpoint_alias_change_command(client=client, status="connected", new_alias_name=input)
+    assert mocker_set.call_args[1] == expected_output
+
+
+def test_endpoint_alias_change_command__no_filters(mocker):
+    """
+    Given:
+    - command withot endpoint filters
+    when:
+    - executing the endpoint-alias-change command
+    then:
+    - make sure the correct error message wil raise.
+    """
+    client = CoreClient(base_url=f'{Core_URL}/public_api/v1/', headers={})
+    mocker.patch.object(client, 'set_endpoints_alias')
+    from CoreIRApiModule import endpoint_alias_change_command
+    with pytest.raises(Exception) as e:
+        endpoint_alias_change_command(client=client, new_alias_name='test')
+    assert e.value.message == "Please provide at least one filter."
