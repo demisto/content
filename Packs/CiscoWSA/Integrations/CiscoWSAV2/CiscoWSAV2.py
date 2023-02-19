@@ -1450,15 +1450,15 @@ def identification_profiles_delete_command(
     response = client.identification_profiles_delete_request(profile_names)
 
     if response.status_code == HTTPStatus.MULTI_STATUS:
-        response = response.json()
+        output_data = response.json()
         command_results_list = []
-        for profile in response.get("success_list"):
+        for profile in output_data.get("success_list"):
             readable_output = (
                 f'Identification profile "{profile.get("profile_name")}" '
                 f"was successfully deleted."
             )
             command_results_list.append(CommandResults(readable_output=readable_output))
-        for profile in response.get("failure_list"):
+        for profile in output_data.get("failure_list"):
             readable_output = (
                 f'Identification profile "{profile.get("profile_name")}" '
                 f'deletion failed, message: "{profile.get("message")}".'
