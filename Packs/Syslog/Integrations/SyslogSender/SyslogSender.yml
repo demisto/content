@@ -31,11 +31,11 @@ configuration:
   section: Connect
   advanced: true
   additionalinfo: TLS versions supported are 1.2 and above.
-- displaypassword: Certificate
-  name: certificate
-  hiddenusername: true
+- name: certificate
   required: false
   type: 9
+  displaypassword: Certificate
+  hiddenusername: true
   additionalinfo: Required for TLS.
 - display: Self Signed Certificate
   name: self_signed_certificate
@@ -231,7 +231,7 @@ script:
     description: Sends a message to Syslog.
     execution: false
     name: syslog-send
-  dockerimage: demisto/syslog:1.0.0.48267
+  dockerimage: demisto/syslog:1.0.0.48738
   feed: false
   isfetch: false
   longRunning: false
