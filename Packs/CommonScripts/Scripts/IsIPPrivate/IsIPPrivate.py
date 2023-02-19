@@ -9,9 +9,9 @@ DELIMITER = ","
 def is_ip_internal(ip: str, ranges: List[str]) -> bool:
     try:
         return any((IPv4Address(ip) in IPv4Network(cidr.split(DELIMITER)[0] if DELIMITER in cidr else cidr) for cidr in ranges))
-    except ValueError:
-        demisto.info("One or more IP ranges or IPs are invalid. Please make sure the list is in the correct structure.")
-        return True
+    except ValueError as ve:
+        return_error(f"One or more IP ranges or IPs are invalid. Please make sure the list is in the correct structure."
+        f"Error: {ve}")
 
 
 def get_ip_tag(ip: str, ranges: List[str]) -> str:
@@ -48,7 +48,7 @@ def main():
                 "Please make sure that the list contains ranges written in CIDR notation, separated by new lines.")
     else:
         private_ranges = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]  # No ranges in list, use default ranges
-        demisto.info(f"The list {ranges_list_name} was empty. Using the default private ranges as fall-back.")
+        demisto.debug(f"The list {ranges_list_name} was empty. Using the default private ranges as fall-back.")
 
     # Create list of IPs with private property and tag
     ip_list = [{"Address": ip, "Private": is_ip_internal(ip, private_ranges), "Tag": get_ip_tag(ip, private_ranges)} for
