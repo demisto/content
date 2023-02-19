@@ -6,7 +6,7 @@ commonfields:
   id: Syslog v2
   version: -1
 configuration:
-- display: certificate
+- display: Certificate
   name: creds_certificate
   required: false
   type: 9
@@ -22,7 +22,7 @@ configuration:
   display: Private Key
   name: private_key
   required: false
-  type: 4
+  type: 9
   section: Connect
   advanced: true
 - display: Message Regex Filter For Incidents Creation.
