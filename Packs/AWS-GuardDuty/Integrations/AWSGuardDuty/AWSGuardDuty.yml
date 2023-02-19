@@ -1517,5 +1517,5 @@ script:
 tests:
 - No tests
 fromversion: 5.0.0
-defaultmapperin: AWSGuardDuty Mapper (incoming) a
-defaultclassifier: AWSGuardDuty classifier
+defaultmapperin: AWSGuardDuty - Incoming Mapper
+defaultclassifier: AWSGuardDuty - Classifier
