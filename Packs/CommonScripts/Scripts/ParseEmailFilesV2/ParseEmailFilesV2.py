@@ -146,7 +146,9 @@ def main():
                     if name := attachment.get('Name'):
                         if content := attachment.get('FileData'):
                             attachment['FilePath'] = save_file(name, content)
-                        del attachment['FileData']
+                            del attachment['FileData']
+                        else:
+                            attachment['FileData'] = None
 
             results.append(CommandResults(
                 outputs_prefix='Email',

@@ -531,4 +531,4 @@ def test_eml_contains_empty_htm_not_containing_file_data(mocker):
 
     results = demisto.results.call_args[0]
 
-    assert 'FileData' not in results[0]['EntryContext']['Email']['AttachmentsData'][0]
+    assert results[0]['EntryContext']['Email']['AttachmentsData'][0]['FileData'] is None
