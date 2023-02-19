@@ -13,9 +13,10 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
+BASE_URL = 'https://api.recordedfuture.com/v2'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-VENDOR = 'hello'
-PRODUCT = 'world'
+VENDOR = 'Recorded Future'
+PRODUCT = 'Intelligence Cloud'
 
 ''' CLIENT CLASS '''
 
@@ -140,9 +141,10 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    api_key = params.get('apikey', {}).get('password')
-    base_url = urljoin(params.get('url'), '/api/v1')
+    api_key = params.get('credentials', {}).get('password')
+    base_url =
     verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
     # How much time before the first fetch to retrieve events
     first_fetch_time = arg_to_datetime(
@@ -152,16 +154,14 @@ def main() -> None:
     )
     first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
     assert isinstance(first_fetch_timestamp, int)
-    proxy = params.get('proxy', False)
-    alert_status = params.get('alert_status', None)
 
     demisto.debug(f'Command being called is {command}')
     try:
         headers = {
-            'Authorization': f'Bearer {api_key}'
+            'X-RFToken:{api_key}'
         }
         client = Client(
-            base_url=base_url,
+            base_url=BASE_URL,
             verify=verify_certificate,
             headers=headers,
             proxy=proxy)
