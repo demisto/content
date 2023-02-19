@@ -36,6 +36,7 @@ configuration:
   hiddenusername: true
   required: false
   type: 9
+  additionalinfo: Required for TLS.
 - display: Self Signed Certificate
   name: self_signed_certificate
   required: false

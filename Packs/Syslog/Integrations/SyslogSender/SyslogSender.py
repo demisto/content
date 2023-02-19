@@ -231,8 +231,8 @@ def init_manager(params: dict) -> SyslogManager:
     protocol = params.get('protocol', UDP).lower()
     facility = FACILITY_DICT.get(params.get('facility', 'LOG_SYSLOG'), SysLogHandler.LOG_SYSLOG)
     logging_level = LOGGING_LEVEL_DICT.get(params.get('priority', 'LOG_INFO'), INFO)
-    certificate: Optional[str] = params.get('certificate', {}).get('password')
-    certificate = replace_spaces_in_credential(certificate)
+    certificate: Optional[str] = (replace_spaces_in_credential(params.get('certificate', {}).get('password'))
+                                  or params.get('certificate', None))
     certificate_path: Optional[str] = None
     max_port = 65535
     default_port = 6514 if protocol == 'tls' else 514

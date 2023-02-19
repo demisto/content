@@ -329,7 +329,7 @@ def test_SyslogManager_tls(mocker):
         'protocol': 'tls',
         'priority': 'LOG_DEBUG',
         'facility': 'LOG_SYSLOG',
-        'certificate': 'cert.pem'
+        'certificate': {'certificate': 'cert.pem'}
     }
     handler = {'syslog': {
         'level': 'INFO',
@@ -359,7 +359,7 @@ def test_main(mocker):
               'protocol': 'tls',
               'priority': 'LOG_DEBUG',
               'facility': 'LOG_SYSLOG',
-              'certificate': 'cert.pem'}
+              'certificate': {'password': '-----BEGIN SSH CERTIFICATE----- MIIF7z gdwZcx IENpdH -----END SSH CERTIFICATE-----'}}
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'command', return_value='syslog-send')
     mocker.patch.object(demisto, 'args', return_value={})
