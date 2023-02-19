@@ -1,4 +1,4 @@
-category: Messaging
+category: Email
 commonfields:
   id: MailListener - POP3 Beta
   version: -1

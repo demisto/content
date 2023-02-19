@@ -1,3 +1,4 @@
+category: Email
 args:
 - defaultValue: ${incident.attachment}
   description: Attachments

@@ -1,3 +1,4 @@
+category: Email
 args:
 - defaultValue: ${File}
   description: Files
