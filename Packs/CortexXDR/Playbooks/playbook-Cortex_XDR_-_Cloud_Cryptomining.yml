@@ -1,7 +1,7 @@
 id: Cortex XDR - Cloud Cryptomining
 version: -1
-name: Cortex XDR - Cloud Cryptomining
-description: "Investigates a Cortex XDR incident containing a Cloud Cryptomining related alert. \nThe playbook supports AWS, Azure, and GCP and executes the following:\n\n- Cloud enrichment:\n   - Collects info about the involved resources\n   - Collects info about the involved identities\n   - Collects info about the involved IPs\n- Verdict decision tree\n- Verdict handling:\n   - Handle False Positives\n   - Handle True Positives\n      - Cloud Response - Generic sub-playbook.\n- Notifies the SOC if a malicious verdict was found"
+name: Cortex XDR - Cloud Cryptojacking
+description: "Investigates a Cortex XDR incident containing a Cloud Cryptojacking related alert. \nThe playbook supports AWS, Azure, and GCP and executes the following:\n\n- Cloud enrichment:\n   - Collects info about the involved resources\n   - Collects info about the involved identities\n   - Collects info about the involved IPs\n- Verdict decision tree\n- Verdict handling:\n   - Handle False Positives\n   - Handle True Positives\n      - Cloud Response - Generic sub-playbook.\n- Notifies the SOC if a malicious verdict was found"
 starttaskid: "0"
 tasks:
   "0":
@@ -190,12 +190,12 @@ tasks:
         simple: |-
           Cortex XSOAR Notification
 
-          Cortex XSOAR has detected activity related to cryptomining.
+          Cortex XSOAR has detected activity related to Cryptojacking.
           After careful analysis, Cortex XSOAR found the activity malicious.
 
           Please enter Cortex XSOAR incident ID ${incident.id} for further investigation and response.
       subject:
-        simple: Cryptominig activity detected by Cortex XSOAR
+        simple: Cryptojacking activity detected by Cortex XSOAR
       to:
         complex:
           root: inputs.SOCEmailAddress
@@ -496,8 +496,8 @@ tasks:
     task:
       id: 7b42c9f5-0154-4859-8581-eb2e74e97026
       version: -1
-      name: Cortex XDR - Cryptomining - Set Verdict
-      playbookName: Cortex XDR - Cryptomining - Set Verdict
+      name: Cortex XDR - Cryptojacking - Set Verdict
+      playbookName: Cortex XDR - Cryptojacking - Set Verdict
       type: playbook
       iscommand: false
       brand: ""
@@ -529,7 +529,7 @@ tasks:
       id: d063ebe3-900f-4192-8655-c564405a4bf8
       version: -1
       name: Check alert verdict
-      description: Checks the outcome of the alert Cryptomining - Set Verdict playbook.
+      description: Checks the outcome of the alert Cryptojacking - Set Verdict playbook.
       type: condition
       iscommand: false
       brand: ""
@@ -706,7 +706,7 @@ tasks:
       - "38"
     scriptarguments:
       type:
-        simple: Cortex XDR - XCLOUD Cryptomining
+        simple: Cortex XDR - XCLOUD Cryptojacking
     separatecontext: false
     continueonerrortype: ""
     view: |-
