@@ -48,8 +48,6 @@ def GetTasks(incid: str) -> list[Task]:
             duration = -1.0
             state = "Unknown"
             started = 0
-            error = 0
-            waiting = 0
             notexecuted = 0
 
             if 'state' in t:
@@ -76,7 +74,7 @@ def TaskStats(task: list[Task], taskstat: dict[str, TaskStat]) -> dict[str, Task
         tid = t['tid']
         dur = t['duration']
         if tid not in taskstat:
-            taskstat[tid] = {'tid': tid, 'name': t['name'], 'mindur': None, 'maxdur': 0, 'avgdur': 0, 'totdur': 0,
+            taskstat[tid] = {'tid': tid, 'name': t['name'], 'mindur': 0, 'maxdur': 0, 'avgdur': 0, 'totdur': 0,
                              'count': 0, 'completed': 0, 'started': 0, 'notexecuted': 0, 'error': 0, 'waiting': 0}  # type: ignore
         if t['state'] == "Completed":
             if dur > taskstat[tid]['maxdur']:  # type: ignore
@@ -106,7 +104,7 @@ def TaskStats(task: list[Task], taskstat: dict[str, TaskStat]) -> dict[str, Task
 def GetTaskStats(playbookname: str, occurred: str) -> tuple[dict[str, TaskStat], int]:
     argument = {'query': f'playbook:"{playbookname}" occurred:>="{occurred}"', 'size': 1000}
     response = execute_command("getIncidents", argument)
-    taskstat: TaskStat = {}  # type: ignore
+    taskstat: dict[str, TaskStat] = {}  # type: ignore
     taskstats: dict[str, TaskStat] = {}  # type: ignore
     count = 0
     if response['data'] is not None:
