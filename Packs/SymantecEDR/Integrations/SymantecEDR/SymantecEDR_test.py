@@ -747,15 +747,15 @@ def test_test_module(mocker, raw_response, expected):
             Then:
                 - Check weather the given credentials are correct or not.
     """
-    from SymantecEDR import test_module
-    mocker.patch.object(client, 'http_request', side_effect=[raw_response])
-    output = test_module(client)
+    # from SymantecEDR import test_module
+    mocker.patch.object(client, 'get_incident', side_effect=[raw_response])
+    output = client.test_module()
     # results
     assert output == expected
 
 
 @pytest.mark.parametrize('response_code', [401, 500])
-def test_test_module__invalid(requests_mock, response_code):
+def test_test_module__invalid(mocker, response_code):
     """
         Tests the test_module handle exception.
             Given:
@@ -765,12 +765,10 @@ def test_test_module__invalid(requests_mock, response_code):
             Then:
                 - Check weather the given credentials are correct or not.
     """
-    from SymantecEDR import test_module
-    with pytest.raises(DemistoException) as e:
-        post_req_url = f'{client._base_url}/atpapi/v2/incidents'
-        requests_mock.get(post_req_url, headers=client.headers)
-        test_module(client)
-        assert e.value.res.status_code == response_code
+    with pytest.raises(Exception) as e:
+        mocker.patch.object(client, 'get_incident', side_effect=[response_code])
+        client.test_module()
+        assert e.res.status_code == response_code
 
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'

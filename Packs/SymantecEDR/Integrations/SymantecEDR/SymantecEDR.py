@@ -673,6 +673,14 @@ class Client(BaseClient):
             json_data=payload
         ).json()
 
+    def test_module(self) -> str:
+        """
+        Returns ok on a successful connection to the Symantec EDR API.
+        Otherwise, an exception should be raised by self._http_request()
+        """
+        self.get_incident({"verb": "query", 'limit': 1})
+        return 'ok'
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -1623,33 +1631,6 @@ def create_payload_for_query(args: dict[str, Any], query_type: Optional[str] = N
 
 
 ''' COMMAND FUNCTIONS '''
-
-
-def test_module(client: Client) -> str:
-    """
-    Tests API connectivity and authentication
-    When 'ok' is returned it indicates the integration works like
-    it is supposed to and connection to the service is successful.
-    Args:
-        client(Client): Client class object
-    Returns:
-        Connection ok
-    """
-    message = ''
-    try:
-        response_json = client.http_request(
-            method='POST',
-            endpoint='/atpapi/v2/incidents',
-            params={},
-            json_data={"verb": "query", 'limit': 1})
-        if response_json:
-            message = 'ok'
-
-    except Exception as e:
-        raise DemistoException(
-            '{e}\nMake sure the Server URL and port are correctly set'
-        ) from e
-    return message
 
 
 def get_domain_file_association_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2691,7 +2672,7 @@ def main() -> None:
         }
         command_output: CommandResults | str
         if command == "test-module":
-            command_output = test_module(client)
+            command_output = client.test_module()
         elif command == 'fetch-incidents':
             incidents = fetch_incidents(client)
             demisto.incidents(incidents)
