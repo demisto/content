@@ -1794,7 +1794,7 @@ def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tu
     from Tests.private_build.upload_packs_private import extract_packs_artifacts
     from tempfile import mkdtemp
     extract_destination_path = mkdtemp()
-    packs_artifacts_path = f'{os.getenv("ARTIFACTS_FOLDER")}/xsoar/content_packs.zip'
+    packs_artifacts_path = f'{os.getenv("ARTIFACTS_FOLDER")}/artifacts/xsoar/content_packs.zip'
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     content_packs_path = f"{extract_destination_path}/content_packs"
 
