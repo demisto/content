@@ -910,7 +910,7 @@ class TestTableToMarkdown:
         Given:
             - A list of dictionaries.
         When:
-            - Calling tableToMarkdown with no given headers and sorting=False.
+            - Calling tableToMarkdown without headers and sorting=False.
         Then:
             - Create a markdown table with the given data and no sorting.
         """
