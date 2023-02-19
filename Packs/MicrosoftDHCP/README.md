@@ -4,11 +4,11 @@ This pack includes Cortex XSIAM content.
 
 ## Configuration on Server Side
 
-1. Start the DHCP administration tool (go to Start, Programs, Administrative Tools, and click **DHCP**).
+1. Start the DHCP administration tool (go to Start > Programs >Administrative Tools, and click **DHCP**).
 2. Right-click the DHCP server, and select **Properties** from the context menu.
 3. Select the **General** tab.
-4. Select the "Enable DHCP audit logging" check box.
-5. Click OK.
+4. Select the **Enable DHCP audit logging** checkbox.
+5. Click **OK**.
 
 
 ## Collect Events from Vendor
