@@ -3391,9 +3391,21 @@ UPDATED_CONTEXT = {
     'list_key_list': ['val1', 'val2', 'val1', 'val2'],
     'list_key_dict': ['val1', 'val2', {'data_key': 'data_val'}]
 }
+UPDATED_CONTEXT_WITH_LIST = {
+    'dict_key': [{
+        'key1': 'val1',
+        'key2': 'val2',
+        'key3': 'val3'
+    }],
+    'int_key': [1, 2],
+    'list_key_str': ['val1', 'val2', 'str_data'],
+    'list_key_list': ['val1', 'val2', 'val1', 'val2'],
+    'list_key_dict': ['val1', 'val2', {'data_key': 'data_val'}]
+}
 
 DATA_MOCK_STRING = "str_data"
 DATA_MOCK_LIST = ['val1', 'val2']
+DATA_MOCK_LIST_OF_DICT = [{'key3': 'val3'}]
 DATA_MOCK_DICT = {
     'data_key': 'data_val'
 }
@@ -3409,6 +3421,7 @@ APPEND_CONTEXT_INPUT = [
 
     (CONTEXT_MOCK, DATA_MOCK_STRING, DICT_KEY, "TypeError"),
     (CONTEXT_MOCK, DATA_MOCK_LIST, DICT_KEY, "TypeError"),
+    (CONTEXT_MOCK, DATA_MOCK_LIST_OF_DICT, DICT_KEY, "key = {}, val = {}".format(DICT_KEY, UPDATED_CONTEXT_WITH_LIST[DICT_KEY])),
     (CONTEXT_MOCK, DATA_MOCK_DICT, DICT_KEY, "key = {}, val = {}".format(DICT_KEY, UPDATED_CONTEXT[DICT_KEY])),
 
     (CONTEXT_MOCK, DATA_MOCK_STRING, 'list_key_str',
@@ -3640,6 +3653,8 @@ VALID_URL_INDICATORS = [
     '2001:0db8:0001:0000:0000:0ab9:C0A8:0102/resource.html',
     '2251:dbc:8fa3:8d3:1f19:8a2e:370:7348/80',
     'https[:]//www.test.com/test',  # defanged colon sign
+    "hxxp[:]//1[.]1[.]1[.]1/test[.]php",  # Defanged URL with ip as a domain
+    "hxxp[:]//test[.]com/test[.]php",  # Defanged URL with a file extension
 ]
 
 
@@ -8535,7 +8550,7 @@ def test_collect_execution_metrics():
 
     expected_command_results = {'APIExecutionMetrics': [{'APICallsCount': 1, 'Type': 'Successful'}],
                                 'Contents': 'Metrics reported successfully.',
-                                'ContentsFormat': 'json',
+                                'ContentsFormat': 'text',
                                 'EntryContext': {},
                                 'HumanReadable': None,
                                 'IgnoreAutoExtract': False,
