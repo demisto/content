@@ -33,4 +33,4 @@ scripttarget: 0
 runonce: false
 tests:
 - No test
-dockerimage: demisto/python3:3.10.9.46807
+dockerimage: demisto/python3:3.10.10.48392
