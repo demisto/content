@@ -223,7 +223,7 @@ def test_filter_attack_pattern_object_by_attack_id(attack_id, attack_pattern_obj
 
 
 @pytest.mark.parametrize('description, expected_result', [
-    ('Test (23)', '1970-01-23T00:00:00'),
+    ('Test (23)', ''),
     ('Test (2020, Mar)', '2020-03-01T00:00:00'),
     ('Test (Test) (2020, Mar)', '2020-03-01T00:00:00'),
     ('Test 2033)', ''),

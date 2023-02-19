@@ -330,8 +330,13 @@ def extract_date_time_from_description(description: str) -> str:
         return date_time_result
     matches = re.findall(EXTRACT_TIMESTAMP_REGEX, description)
     for match in matches:
-        if parsed_date_time := dateparser.parse(match, settings={'RELATIVE_BASE': DEFAULT_YEAR}):
-            date_time_result = datetime.strftime(parsed_date_time, SERVER_DATE_FORMAT)
+        try:
+            int(match)
+            continue
+        except ValueError:
+            pass
+        if date_time_parsed := dateparser.parse(match, settings={'RELATIVE_BASE': DEFAULT_YEAR}):
+            date_time_result = datetime.strftime(date_time_parsed, SERVER_DATE_FORMAT)
             break
     return date_time_result
 
