@@ -2110,6 +2110,23 @@ def member_added_handler(integration_context: dict, request_body: dict, channel_
     set_integration_context(integration_context)
 
 
+def handle_external_user(user_identifier, allow_create_incident, create_incident):
+
+    # external user is not allowed to run any command
+    if not allow_create_incident:
+        data = f"I'm sorry but I was unable to find you as a Cortex XSOAR user " \
+               f"for {user_identifier}. You're not allowed to run any command"
+
+    # allowed creating new incident, but typed something else
+    elif not create_incident:
+        data = "As a non Cortex XSOAR user, you're only allowed to run command:\nnew incident [details]"
+    # allowed to create incident, and tried to create incident
+    else:
+        data = ""
+
+    return data
+
+
 def direct_message_handler(integration_context: dict, request_body: dict, conversation: dict, message: str):
     """
     Handles a direct message sent to the bot
@@ -2137,35 +2154,67 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
 
     allow_external_incidents_creation: bool = demisto.params().get('allow_external_incidents_creation', False)
 
-    lowered_message = message.lower()
-    if lowered_message.find('incident') != -1 and (lowered_message.find('create') != -1
-                                                   or lowered_message.find('open') != -1
-                                                   or lowered_message.find('new') != -1):
-        if user_email:
-            demisto_user = demisto.findUser(email=user_email)
-        else:
-            demisto_user = demisto.findUser(username=username)
+    demisto_user = demisto.findUser(email=user_email) if user_email else demisto.findUser(username=username)
 
-        if not demisto_user and not allow_external_incidents_creation:
-            data = 'You are not allowed to create incidents.'
-        else:
+    lowered_message = message.lower()
+    # the command is to create new incident
+    create_incident = lowered_message.find('incident') != -1 and (lowered_message.find('create') != -1
+                                                                  or lowered_message.find('open') != -1
+                                                                  or lowered_message.find('new') != -1)
+    data = ""
+    if not demisto_user:
+        data = handle_external_user(user_email if user_email else username,
+                                    allow_external_incidents_creation, create_incident)
+    # internal user or external who's trying to create incident
+    if not data:
+        if create_incident:
             data = process_incident_create_message(demisto_user, message)
             formatted_message = urlify_hyperlinks(data)
-    else:
-        try:
-            data = demisto.directMessage(message, username, user_email, allow_external_incidents_creation)
-            return_card = True
-            if data.startswith('`'):  # We got a list of incidents/tasks:
-                data_by_line: list = data.replace('```', '').strip().split('\n')
+        else:
+            try:
+                data = demisto.directMessage(message, username, user_email, allow_external_incidents_creation)
                 return_card = True
-                if data_by_line[0].startswith('Task'):
-                    attachment = process_tasks_list(data_by_line)
-                else:
-                    attachment = process_incidents_list(data_by_line)
-            else:  # Mirror investigation command / unknown direct message
-                attachment = process_mirror_or_unknown_message(data)
-        except Exception as e:
-            data = str(e)
+                if data.startswith('`'):  # We got a list of incidents/tasks:
+                    data_by_line: list = data.replace('```', '').strip().split('\n')
+                    return_card = True
+                    if data_by_line[0].startswith('Task'):
+                        attachment = process_tasks_list(data_by_line)
+                    else:
+                        attachment = process_incidents_list(data_by_line)
+                else:  # Mirror investigation command / unknown direct message
+                    attachment = process_mirror_or_unknown_message(data)
+            except Exception as e:
+                data = str(e)
+
+    # # user is external and not allowed to run any command
+    # if not demisto_user and not allow_external_incidents_creation:
+    #     data = f"I'm sorry but I was unable to find you as a Cortex XSOAR user " \
+    #            f"for {user_email if user_email else username}. You're not allowed to run any command"
+    # # user is external but allowed to create incident
+    # elif not demisto_user and allow_external_incidents_creation:
+    #     # user is not trying to create incident
+    #     if not create_incident:
+    #         data = "As a non Cortex XSOAR user, you're allowed to use command:\nnew incident [details]"
+    #     # user wants to create incident
+    #     elif create_incident:
+    #         data = process_incident_create_message(demisto_user, message)
+    #         formatted_message = urlify_hyperlinks(data)
+    #     else:
+    #         try:
+    #             data = demisto.directMessage(message, username, user_email, allow_external_incidents_creation)
+    #             return_card = True
+    #             if data.startswith('`'):  # We got a list of incidents/tasks:
+    #                 data_by_line: list = data.replace('```', '').strip().split('\n')
+    #                 return_card = True
+    #                 if data_by_line[0].startswith('Task'):
+    #                     attachment = process_tasks_list(data_by_line)
+    #                 else:
+    #                     attachment = process_incidents_list(data_by_line)
+    #             else:  # Mirror investigation command / unknown direct message
+    #                 attachment = process_mirror_or_unknown_message(data)
+    #         except Exception as e:
+    #             data = str(e)
+
     if return_card:
         conversation = {
             'type': 'message',
