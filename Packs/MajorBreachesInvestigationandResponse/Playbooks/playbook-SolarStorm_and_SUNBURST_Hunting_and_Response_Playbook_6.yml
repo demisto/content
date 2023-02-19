@@ -554,6 +554,7 @@ tasks:
               item:
                 value:
                   simple: Endpoint.endpoint_id
+          - operator: uniq
       Endpoint_ip:
         complex:
           root: PANWHunting
