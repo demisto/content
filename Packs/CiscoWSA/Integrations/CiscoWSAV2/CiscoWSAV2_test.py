@@ -142,7 +142,7 @@ def test_access_policy_create_command(
         {
             "policy_name": "test",
             "policy_status": "enable",
-            "identification_profile_name": "global_identification_profile",
+            "identification_profiles": "global_identification_profile",
             "policy_order": "1",
             "policy_description": "test",
         },
@@ -176,7 +176,7 @@ def test_access_policy_update_command(
             "policy_name": "test",
             "new_policy_name": "test",
             "policy_status": "enable",
-            "identification_profile_name": "global_identification_profile",
+            "identification_profiles": "global_identification_profile",
             "policy_order": "2",
             "policy_description": "test description",
         },
@@ -211,6 +211,7 @@ def test_access_policy_protocols_user_agents_update_command(
             "block_custom_user_agents": "test",
             "allow_connect_ports": "22",
             "block_protocols": "http",
+            "settings_status": "custom",
         },
     )
 
@@ -284,6 +285,7 @@ def test_access_policy_applications_update_command(
             "action": "monitor",
             "application": "Blogging",
             "values": "Blogger",
+            "settings_status": "custom",
         },
     )
 
@@ -356,6 +358,7 @@ def test_access_policy_anti_malware_update_command(
             "suspect_user_agent_scanning": "block",
             "block_malware_categories": "Adware",
             "block_other_categories": "Encrypted File",
+            "settings_status": "custom",
         },
     )
 

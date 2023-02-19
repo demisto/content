@@ -82,8 +82,8 @@ class Client(BaseClient):
         self,
         policy_name: str,
         policy_status: str,
-        identification_profile_name: str,
-        policy_order: int,
+        identification_profiles: str,
+        policy_order: int | None,
         policy_description: str | None,
         policy_expiry: str | None,
     ) -> Response:
@@ -93,8 +93,8 @@ class Client(BaseClient):
         Args:
             policy_name (str): Policy name to create.
             policy_status (str): Policy status.
-            identification_profile_name (str): Identification profile name.
-            policy_order (int): Policy order.
+            identification_profiles (str): Identification profile name.
+            policy_order (int | None): Policy order.
             policy_description (str | None): Policy description.
             policy_expiry (str | None): Policy expiration date.
 
@@ -114,8 +114,9 @@ class Client(BaseClient):
                             "identification_profiles": [
                                 {
                                     "auth": "No Authentication",
-                                    "profile_name": identification_profile_name,
+                                    "profile_name": profile,
                                 }
+                                for profile in identification_profiles
                             ],
                         },
                     }
@@ -183,6 +184,7 @@ class Client(BaseClient):
         block_custom_user_agents: List[str] | None,
         allow_connect_ports: List[str] | None,
         block_protocols: List[str] | None,
+        settings_status: str,
     ) -> Response:
         """
         Update access policy's objects settings.
@@ -192,7 +194,7 @@ class Client(BaseClient):
             block_custom_user_agents (List[str] | None): Block custom user agents.
             allow_connect_ports (List[str] | None): Allow connect ports.
             block_protocols (List[str] | None): Block protocols.
-
+            settings_status (str): Settings status for the policy.
         Returns:
             Response: API response from Cisco WSA.
         """
@@ -205,7 +207,7 @@ class Client(BaseClient):
                             "block_custom_user_agents": block_custom_user_agents,
                             "allow_connect_ports": allow_connect_ports,
                             "block_protocols": block_protocols,
-                            "state": "custom",
+                            "state": settings_status,
                         },
                     }
                 ]
@@ -253,7 +255,6 @@ class Client(BaseClient):
             content_rating_status (str | None): Content rating status.
             safe_search_status (str | None): Safe search status.
             unsupported_safe_search_engine (str | None): Unsupported safe search engine.
-
         Returns:
             Response: API response from Cisco WSA.
         """
@@ -285,7 +286,6 @@ class Client(BaseClient):
                 ]
             }
         )
-
         return self._http_request(
             "PUT",
             f"{V3_PREFIX}/web_security/access_policies",
@@ -300,6 +300,7 @@ class Client(BaseClient):
         application: str,
         action: str,
         values: dict[str, Any],
+        settings_status: str,
     ) -> Response:
         """
         Update access policy's applications settings.
@@ -309,6 +310,7 @@ class Client(BaseClient):
             application (str): Application to update.
             action (str): Action to perform on values.
             values (dict[str, Any]): Values to perform action on.
+            settings_status (str): Settings status for the policy.
 
         Returns:
             Response: API response from Cisco WSA.
@@ -323,7 +325,7 @@ class Client(BaseClient):
                             if action == "block"
                             else {action: {value: {} for value in values}},
                         },
-                        "state": "custom",
+                        "state": settings_status,
                     },
                 }
             ]
@@ -365,7 +367,6 @@ class Client(BaseClient):
         access_policies = self.access_policy_list_request(policy_name).get(
             "access_policies", []
         )
-
         if access_policies:
             objects = access_policies[0].get("objects")
             if objects:
@@ -388,7 +389,6 @@ class Client(BaseClient):
                 raise DemistoException("Update failed, objects were not found.")
         else:
             raise DemistoException("Policy was not found.")
-
         return self._http_request(
             "PUT",
             f"{V3_PREFIX}/web_security/access_policies",
@@ -407,6 +407,7 @@ class Client(BaseClient):
         suspect_user_agent_scanning: str | None,
         block_malware_categories: List[str] | None,
         block_other_categories: List[str] | None,
+        settings_status: str,
     ) -> Response:
         """
         Update access policy's applications settings.
@@ -415,12 +416,11 @@ class Client(BaseClient):
             policy_name (str): Policy name to update.
             web_reputation_status (str | None): Web reputation status.
             file_reputation_filtering_status (str | None): File reputation filtering status.
-            file_reputation_action (str | None): Filr reputation action.
+            file_reputation_action (str | None): File reputation action.
             anti_malware_scanning_status (str | None): Anti-malware scanning status.
             suspect_user_agent_scanning (str | None): Suspect uset agent scanning.
             block_malware_categories (List[str] | None): Malware categories to block.
             block_other_categories (List[str] | None): Other categories to block.
-
         Returns:
             Response: API response from Cisco WSA.
         """
@@ -437,7 +437,7 @@ class Client(BaseClient):
                                     file_reputation_action: [
                                         "Known Malicious and High-Risk Files"
                                     ]
-                                },
+                                } if file_reputation_action else {},
                             },
                             "cisco_dvs_amw": {
                                 "amw_scanning": {
@@ -447,13 +447,12 @@ class Client(BaseClient):
                                 "block_malware_categories": block_malware_categories,
                                 "block_other_categories": block_other_categories,
                             },
-                            "state": "custom"
-                        },
+                            "state": settings_status
+                        } if settings_status == "custom" else {"state": settings_status},
                     }
                 ]
             }
         )
-
         return self._http_request(
             "PUT",
             f"{V3_PREFIX}/web_security/access_policies",
@@ -494,7 +493,7 @@ class Client(BaseClient):
         )
 
     def domain_map_create_request(
-        self, domain_name: str, ip_addresses: List[str], order: int
+        self, domain_name: str, ip_addresses: List[str], order: int | None
     ) -> dict[str, Any]:
         """
         Create domain mapping.
@@ -502,7 +501,7 @@ class Client(BaseClient):
         Args:
             domain_name (str): Domain name.
             ip_addresses (List[str]): IP addresses to map to the domain.
-            order (int): Index of domain map in the collection.
+            order (int | None): Index of domain map in the collection.
 
         Returns:
             dict[str, Any]: API response from Cisco WSA.
@@ -593,7 +592,7 @@ class Client(BaseClient):
         profile_name: str,
         status: str,
         description: str,
-        order: int,
+        order: int | None,
         protocols: List[str],
         proxy_ports: List[str] | None,
         members_by_subnet: List[str] | None,
@@ -607,7 +606,7 @@ class Client(BaseClient):
             profile_name (str): Identification profile name.
             status (str): Status - enable/disable.
             description (str): Description of identification profile.
-            order (int): Index of Identification profile in the collection.
+            order (int | None): Index of Identification profile in the collection.
             protocols (List[str]): Protocols - HTTPS/SOCKS.
             proxy_ports (List[str] | None): Proxy ports.
             members_by_subnet (List[str] | None): Members by subnet.
@@ -676,7 +675,7 @@ class Client(BaseClient):
             status (str | None): Status - enable/disable.
             description (str | None): Description of identification profile.
             order (int | None): Index of Identification profile in the collection.
-            protocols (List[str]): Protocols - HTTPS/SOCKS.
+            protocols (List[str] | None): Protocols - HTTPS/SOCKS.
             proxy_ports (List[str] | None): Proxy ports.
             members_by_subnet (List[str] | None): Members by subnet.
             predefined_url_categories (List[str] | None): Predefined URL categories.
@@ -687,9 +686,9 @@ class Client(BaseClient):
         """
 
         organized_protocols = []
-        if "HTTPS" in protocols:
+        if protocols and "HTTPS" in protocols:
             organized_protocols.extend(HTTPS_PROTOCOLS)
-        if "SOCKS" in protocols:
+        if protocols and "SOCKS" in protocols:
             organized_protocols.extend(SOCKS_PROTOCOL)
 
         data = remove_empty_elements(
@@ -764,7 +763,7 @@ def pagination(
 
     if page and page_size:
         offset = (page - 1) * page_size
-        return response[offset : offset + page_size]
+        return response[offset: offset + page_size]
     else:
         return response[:limit]
 
@@ -791,26 +790,27 @@ def organize_policy_object_data(
         ftp_max_object_size_mb (int | None): FTP max object size MB.
     """
     if object_type and object_action and object_values:
-        original_obj_actions = dict_safe_get(objects, ["object_type", object_type])
-        for original_obj_action in original_obj_actions:
-            if original_obj_action == object_action:
-                object_values.extend(
-                    dict_safe_get(objects, ["object_type", object_type, object_action])
-                )
-            else:
-                original_obj_actions[original_obj_action] = [
-                    value
-                    for value in original_obj_actions[original_obj_action]
-                    if value not in object_values
-                ]
 
-        objects["object_type"][object_type].update({object_action: object_values})
+        original_obj_actions = dict_safe_get(objects, ["object_type", object_type])
+        if original_obj_actions:
+            for original_obj_action in original_obj_actions:
+                if original_obj_action == object_action:
+                    object_values.extend(
+                        dict_safe_get(objects, ["object_type", object_type, object_action])
+                    )
+                else:
+                    original_obj_actions[original_obj_action] = [
+                        value
+                        for value in original_obj_actions[original_obj_action]
+                        if value not in object_values
+                    ]
+
+            objects["object_type"][object_type].update({object_action: object_values})
 
     elif any([object_type, object_action, object_values]):
         raise ValueError(
             "object_type, object_action, object_values should be used in conjunction."
         )
-
     if block_custom_mime_types:
         objects["block_custom_mime_types"] = block_custom_mime_types
 
@@ -869,7 +869,7 @@ def access_policy_create_command(
     policy_name = args["policy_name"]
     policy_status = args["policy_status"]
     policy_order = arg_to_number(args["policy_order"])
-    identification_profile_name = args["identification_profile_name"]
+    identification_profiles = argToList(args["identification_profiles"])
     policy_description = args.get("policy_description")
     policy_expiry = args.get("policy_expiry")
 
@@ -877,7 +877,7 @@ def access_policy_create_command(
         policy_name=policy_name,
         policy_status=policy_status,
         policy_order=policy_order,
-        identification_profile_name=identification_profile_name,
+        identification_profiles=identification_profiles,
         policy_description=policy_description,
         policy_expiry=policy_expiry,
     )
@@ -938,12 +938,13 @@ def access_policy_protocols_user_agents_update_command(
     block_custom_user_agents = argToList(args.get("block_custom_user_agents"))
     allow_connect_ports = argToList(args.get("allow_connect_ports"))
     block_protocols = argToList(args.get("block_protocols"))
-
+    settings_status = args['settings_status']
     client.access_policy_protocols_user_agents_update_request(
         policy_name=policy_name,
         block_custom_user_agents=block_custom_user_agents,
         allow_connect_ports=allow_connect_ports,
         block_protocols=block_protocols,
+        settings_status=settings_status,
     )
 
     return CommandResults(
@@ -1016,12 +1017,14 @@ def access_policy_applications_update_command(
     application = args["application"]
     action = args["action"]
     values = argToList(args["values"])
+    settings_status = args['settings_status']
 
     client.access_policy_applications_update_request(
         policy_name=policy_name,
         application=application,
         action=action,
         values=values,
+        settings_status=settings_status,
     )
 
     return CommandResults(
@@ -1088,7 +1091,7 @@ def access_policy_anti_malware_update_command(
     suspect_user_agent_scanning = args.get("suspect_user_agent_scanning")
     block_malware_categories = argToList(args.get("block_malware_categories"))
     block_other_categories = argToList(args.get("block_other_categories"))
-
+    settings_status = args['settings_status']
     client.access_policy_anti_malware_update_request(
         policy_name=policy_name,
         web_reputation_status=web_reputation_status,
@@ -1098,6 +1101,7 @@ def access_policy_anti_malware_update_command(
         suspect_user_agent_scanning=suspect_user_agent_scanning,
         block_malware_categories=block_malware_categories,
         block_other_categories=block_other_categories,
+        settings_status=settings_status,
     )
 
     return CommandResults(
@@ -1312,14 +1316,38 @@ def identification_profiles_list_command(
         headerTransform=string_to_table_header,
         removeNull=True,
     )
-
+    filtered_data = identification_profile_mapper(paginated_response)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="CiscoWSA.IdentificationProfile",
         outputs_key_field="profile_name",
-        outputs=paginated_response,
+        outputs=filtered_data,
         raw_response=paginated_response,
     )
+
+
+def identification_profile_mapper(data: List[dict[str, Any]]) -> List[dict[str, Any]]:
+    filtterd_data = []
+    for profile in data:
+        filtterd_data.append(remove_empty_elements({
+            "status": profile['status'],
+            "profile_name": profile['profile_name'],
+            "description": profile['description'],
+            "protocols": dict_safe_get(profile, ['members', 'protocols']),
+            "order": profile['order'],
+            "UrlCategories": {
+                "predefined": dict_safe_get(profile, ['members', 'url_categories', 'predefined']),
+                "custom": dict_safe_get(profile, ['members', 'url_categories', 'custom']),
+                "uncategorized": dict_safe_get(profile, ['members', 'url_categories', 'uncategorized']),
+            },
+            "ip": dict_safe_get(profile, ['members', 'ip']),
+            "proxy_port": dict_safe_get(profile, ['members', 'proxy_port']),
+            "UserAgents": {
+                "predefined": dict_safe_get(profile, ['members', 'user_agents', 'predefined']),
+                "custom": dict_safe_get(profile, ['members', 'user_agents', 'custom']),
+            },
+        }))
+    return filtterd_data
 
 
 def identification_profiles_create_command(

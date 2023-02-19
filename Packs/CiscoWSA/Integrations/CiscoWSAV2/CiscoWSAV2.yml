@@ -73,7 +73,7 @@ script:
       contextPath: CiscoWSA.AccessPolicy.policy_description
       description: Policy description.
     - type: Unknown
-      contextPath: CiscoWSA.AccessPolicy.membership.identification_profiles
+      contextPath: CiscoWSA.AccessPolicy.membership
       description: Identification Profiles info.
     - type: Unknown
       contextPath: CiscoWSA.AccessPolicy.objects
@@ -85,7 +85,7 @@ script:
       contextPath: CiscoWSA.AccessPolicy.http_rewrite_profile
       description: Policy HTTP rewrite profile settings.
     - type: Unknown
-      contextPath: CiscoWSA.AccessPolicy.avc.applications
+      contextPath: CiscoWSA.AccessPolicy.avc
       description: Application visibility and control.
     - type: Unknown
       contextPath: CiscoWSA.AccessPolicy.url_filtering
@@ -94,7 +94,14 @@ script:
       contextPath: CiscoWSA.AccessPolicy.amw_reputation
       description: Anti-Malware and reputation settings.
   - name: cisco-wsa-access-policy-create
-    description: Create access policy.
+    description: |-
+      Create access policy.
+      By this command you can create the access policy object, in order to define more settings you can use the dependencies commands:
+      cisco-wsa-access-policy-protocols-user-agents-update (Update Protocols and User Agents policy for access policy).
+      cisco-wsa-access-policy-url-filtering-update (Update URL filtering policy for access policy).
+      cisco-wsa-access-policy-applications-update (Update applications policy for access policy. only applicable for global_policy).
+      cisco-wsa-access-policy-objects-update (Update objects policy for access policy).
+      cisco-wsa-access-policy-anti-malware-update (Update anti malware policy for access policy).
     arguments:
     - name: policy_name
       description: Policy name.
@@ -120,10 +127,10 @@ script:
       description: Policy expiry date, format MM/DD/YYYY HH:MM, e.g. 01/25/2023 08:30
       required: false
       isArray: false
-    - name: identification_profile_name
-      description: Valid identification profile name.
+    - name: identification_profiles
+      description: Comma-separated list of valid identification profile name.
       required: true
-      isArray: false
+      isArray: true
   - name: cisco-wsa-access-policy-update
     description: Update access policy.
     arguments:
@@ -162,28 +169,41 @@ script:
       description: Policy name to update.
       required: true
       isArray: false
+    - name: settings_status
+      description: Settings status for the Protocols and User Agents.
+      defaultValue: custom
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - custom
+      - use_global
+      - disable
     - name: block_custom_user_agents
       description: |-
-        Custom user agents to block, in regular expression format.
+        Comma-separated list of custom user agents to block, in regular expression format.
         Pattern examples:
         All Firefox versions: "Mozilla/.* Gecko/.* Firefox/"	
         Firefox versions 1.5.x: "Mozilla/.* Gecko/.* Firefox/1\.5"	
         All Internet Explorer versions: "Mozilla/.*compatible; MSIE"
         Internet Explorer version 5.5: "Mozilla/.*compatible; MSIE 5\.5"
         Specific user agent: Mozilla/4.0 (compatible; MSIE 5.5;): "Mozilla/4.0 \(compatible; MSIE 5.5;\)"
+        Relevant while settings_status is custom.
       required: false
       isArray: true
     - name: allow_connect_ports
       description: |-
+        Comma-separated list of HTTP connect ports.
         HTTP CONNECT enables applications to tunnel outbound traffic over HTTP,
         unless the protocol is blocked above.
         Traffic tunneled through HTTP CONNECT will not be scanned,
         except for SSL ports (specified on Security Services > HTTPS Proxy)
-        e.g. 1-65535,20,21
+        e.g. 1-65535,20,21.
+        Relevant while settings_status is custom.
       required: false
       isArray: true
     - name: block_protocols
-      description: Block network protocols.
+      description: Block network protocols. Relevant while settings_status is custom.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -205,9 +225,9 @@ script:
       predefined:
       - block
       - monitor
-      - allow
+      - warn
     - name: predefined_categories
-      description: Predefined categories.
+      description: Comma-separated list of predefined categories (dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories).
       required: false
       isArray: true
     - name: youtube_categories_action
@@ -220,24 +240,24 @@ script:
       - monitor
       - allow
     - name: youtube_categories
-      description: Youtube categories.
+      description: Comma-separated list of youtube categories.
       required: false
       isArray: true
     - name: custom_categories_action
-      description: Policy description to update.
+      description: Custom categories action.
       required: false
       isArray: false
       auto: PREDEFINED
       predefined:
       - block
       - monitor
-      - allow
+      - warn
     - name: custom_categories
-      description: Policy description to update.
+      description: Comma-separated list of custom categories (dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories).
       required: false
       isArray: true
     - name: uncategorized_url
-      description: Uncategorized url action
+      description: Uncategorized url action.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -312,6 +332,15 @@ script:
       description: Policy name to update.
       required: true
       isArray: false
+    - name: settings_status
+      description: Applications sttings status.
+      defaultValue: custom
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - custom
+      - use_global
     - name: application
       description: Application type to perform action on.
       required: true
@@ -346,7 +375,7 @@ script:
       - monitor
       - block
     - name: values
-      description: Application values to perform action on.
+      description: Comma-separated list of application values to perform action on.
       required: true
       isArray: true
   - name: cisco-wsa-access-policy-objects-update
@@ -384,7 +413,7 @@ script:
       - allow
       - inspect
     - name: object_values
-      description: Object values to perform action on.
+      description: Comma-separated list of object values to perform action on.
       required: false
       isArray: true
     - name: block_custom_mime_types
@@ -406,6 +435,15 @@ script:
       description: Policy name to update.
       required: true
       isArray: false
+    - name: settings_status
+      description: Settings status for the Anti malware.
+      defaultValue: custom
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - custom
+      - use_global
     - name: web_reputation_status
       description: |-
         Web Reputation Filters will automatically block transactions with a low Web Reputation score.
@@ -451,6 +489,8 @@ script:
     - name: suspect_user_agent_scanning
       description: |-
         Suspect user agent scanning action.
+        Requiered while anti_malware_scanning_status is enable.
+        Not Relevant while anti_malware_scanning_status is disable.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -459,7 +499,7 @@ script:
       - scan
       - none
     - name: block_malware_categories
-      description: Malware categories to block.
+      description: Comma-separated list of malware categories to block. Requiered while anti_malware_scanning_status is enable. Not Relevant while anti_malware_scanning_status is disable.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -480,7 +520,7 @@ script:
       - Virus
       - Worm
     - name: block_other_categories
-      description: Other categories to block.
+      description: Comma-separated list of other categories to block. Requiered while anti_malware_scanning_status is enable. Not Relevant while anti_malware_scanning_status is disable.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -492,7 +532,7 @@ script:
     description: Delete access policy.
     arguments:
     - name: policy_names
-      description: Comma separated policy names to delete.
+      description: Comma-separated list of policy names to delete.
       required: true
       isArray: true
   - name: cisco-wsa-domain-map-list
@@ -501,12 +541,12 @@ script:
       Domain maps are DNS mappings of domain to IP addresses.
     arguments:
     - name: domain_names
-      description: Comma separated domain names to retrieve.
+      description: Comma-separated list of domain names to retrieve.
       required: false
       isArray: true
     - name: ip_addresses
       description: |-
-        Comma separated IP addresses to search for.
+        Comma-separated list of  IP addresses to search for.
         This argument will retrieve the domain map record if one of the IP addresses specified is mapped to the domain. 
       required: false
       isArray: true
@@ -547,7 +587,7 @@ script:
       required: true
       isArray: false
     - name: ip_addresses
-      description: IP addresses to map for the domain.
+      description: Comma-separated list of IP addresses to map for the domain.
       required: true
       isArray: true
   - name: cisco-wsa-domain-map-update
@@ -567,7 +607,7 @@ script:
       isArray: false
     - name: ip_addresses
       description: |-
-        IP addresses to map for the domain.
+        Comma-separated list of IP addresses to map for the domain.
         Updating this will overwrite the existing IP addresses.
       required: false
       isArray: true
@@ -575,7 +615,7 @@ script:
     description: Delete domain map.
     arguments:
     - name: domain_names
-      description: Domain names to delete.
+      description: Comma-separated list of domain names to delete.
       required: true
       isArray: true
   - name: cisco-wsa-identification-profiles-list
@@ -584,7 +624,7 @@ script:
       Identification Profiles	are classifications	of users, defining authentication requirements.
     arguments:
     - name: profile_names
-      description: Comma separated profile names to retrieve.
+      description: Comma-separated list of profile names to retrieve.
       required: false
       isArray: true
     - name: page
@@ -608,10 +648,37 @@ script:
       description: Identification Profile status.
     - type: String
       contextPath: CiscoWSA.IdentificationProfile.profile_name
-      description: Identification Profile name
+      description: Identification Profile name.
     - type: String
       contextPath: CiscoWSA.IdentificationProfile.description
-      description: Identification Profile description
+      description: Identification Profile description.
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.protocols
+      description: Identification Profile protocol.
+    - type: Number
+      contextPath: CiscoWSA.IdentificationProfile.order
+      description: Identification Profile order in the list.
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.UrlCategories.predefined
+      description: Identification Profile predefined URL categories.
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.UrlCategories.custom
+      description: Identification Profile custom URL categoriesץ
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.UrlCategories.uncategorized
+      description: Identification Profile uncategorized URL categories status.
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.ip
+      description: Identification Profile IP.
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.proxy_port
+      description: Identification Profile proxy port.
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.UserAgents.predefined
+      description: User-agent predefined.
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.UserAgents.custom
+      description: User-agent custom.
   - name: cisco-wsa-identification-profiles-create
     description: Create identification profile.
     arguments:
@@ -637,10 +704,10 @@ script:
         Identification profile order, index of Identification profile in the collection.
         Not applicable for global_identification_profile.
       defaultValue: 1
-      required: true
+      required: false
       isArray: false
     - name: protocols
-      description: Network protocols of identification profile.
+      description: Comma-separated list of network protocols of identification profile.
       required: false
       defaultValue: HTTPS
       isArray: true
@@ -650,6 +717,7 @@ script:
       - SOCKS
     - name: proxy_ports
       description: |- 
+        Comma-separated list of proxy ports.
         Membership is defined by proxy port for forward connections,
         where certain clients have been configured to use a specific connecting port.
         For transparent connections, membership by proxy port applies to the port of the destination URL.
@@ -658,21 +726,21 @@ script:
       required: false
       isArray: true
     - name: members_by_subnet
-      description: Define Members by Subnet. e.g. 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5
+      description: Comma-separated list of members by Subnet. e.g. 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5
       required: false
       isArray: true
     - name: predefined_url_categories
       description: |- 
-        Select URL Categories to use as membership criteria.
+        Comma-separated list of URL Categories to use as membership criteria.
         Leave blank if membership by URL Category is not needed.
-        You can list available options with cisco-wsa-url-categories-list command.
+        (dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories).
       required: false
       isArray: true
     - name: custom_url_categories
       description: |- 
-        Select URL Categories to use as membership criteria.
+        Comma-separated list of URL Categories to use as membership criteria.
         Leave blank if membership by URL Category is not needed.
-        You can list available options with cisco-wsa-url-categories-list command.
+        (dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories).
       required: false
       isArray: true
   - name: cisco-wsa-identification-profiles-update
@@ -705,7 +773,7 @@ script:
       required: false
       isArray: false
     - name: protocols
-      description: Network protocols of identification profile.
+      description: Comma-separated list of network protocols of identification profile.
       required: false
       defaultValue: HTTPS
       isArray: true
@@ -715,6 +783,7 @@ script:
       - SOCKS
     - name: proxy_ports
       description: |- 
+        Comma-separated list of proxy ports.
         Membership is defined by proxy port for forward connections,
         where certain clients have been configured to use a specific connecting port.
         For transparent connections, membership by proxy port applies to the port of the destination URL.
@@ -723,28 +792,28 @@ script:
       required: false
       isArray: true
     - name: members_by_subnet
-      description: Define Members by Subnet. e.g. 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5
+      description: Comma-separated list of members by Subnet. e.g. 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5
       required: false
       isArray: true
     - name: predefined_url_categories
       description: |- 
-        Select URL Categories to use as membership criteria.
+        Comma-separated list of URL Categories to use as membership criteria.
         Leave blank if membership by URL Category is not needed.
-        You can list available options with cisco-wsa-url-categories-list command.
+        (dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories).
       required: false
       isArray: true
     - name: custom_url_categories
       description: |- 
-        Select URL Categories to use as membership criteria.
+        Comma-separated list of URL Categories to use as membership criteria.
         Leave blank if membership by URL Category is not needed.
-        You can list available options with cisco-wsa-url-categories-list command.
+        (dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories).
       required: false
       isArray: true
   - name: cisco-wsa-identification-profiles-delete
     description: Delete identification profiles.
     arguments:
     - name: profile_names
-      description: Profile names to delete.
+      description: Comma-separated list of profile names to delete.
       required: true
       isArray: true
   - name: cisco-wsa-url-categories-list
