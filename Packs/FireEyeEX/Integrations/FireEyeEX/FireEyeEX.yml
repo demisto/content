@@ -1,4 +1,4 @@
-category: Network Security
+category: Email
 commonfields:
   id: FireEye Email Security
   version: -1

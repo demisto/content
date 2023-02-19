@@ -1,4 +1,4 @@
-category: Network Security
+category: Email
 commonfields:
   id: MimecastV2
   version: -1
