@@ -3195,7 +3195,7 @@ script:
       type: Number
     arguments: []
     description: Provides information about the tenant.
-  dockerimage: demisto/python3:3.10.9.46807
+  dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
   runonce: false
   script: ''
