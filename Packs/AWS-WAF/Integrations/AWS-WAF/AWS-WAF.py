@@ -365,15 +365,16 @@ def delete_rule_group_command(client: boto3.client, args) -> CommandResults:
 def create_rule_group_command(client: boto3.client, args) -> CommandResults:
     tag_keys = argToList(args.get('tag_key')) or []
     tag_values = argToList(args.get('tag_value')) or []
+    name = args.get('name', '')
 
     visibility_config = {
                     'CloudWatchMetricsEnabled': argToBoolean(args.get('cloud_watch_metrics_enabled', '')) or True,
-                    'MetricName': args.get('metric_name', ''),
+                    'MetricName': args.get('metric_name', '') or name,
                     'SampledRequestsEnabled': argToBoolean(args.get('sampled_requests_enabled', '')) or True
                 }
 
     kwargs = {
-        'Name': args.get('name', ''),
+        'Name': name,
         'Scope': args.get('scope', ''),
         'Capacity': arg_to_number(args.get('capacity', '')),
         'VisibilityConfig': visibility_config
