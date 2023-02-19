@@ -12,7 +12,6 @@ GREY = "rgb(197, 197, 197)"
 BLUE = "rgb(149, 188, 201)"
 
 FORMATS = ["bar", "pie"]
-#FORMATS = ["bar", "pie", "line", "duration", "number"]
 LAYOUTS = ["horizontal", "vertical"]
 
 
