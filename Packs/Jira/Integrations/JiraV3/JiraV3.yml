@@ -45,7 +45,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The attachments' ID.
+      description: A CSV list of the attachments' ID.
       isArray: true
       name: attachment_id
       required: true

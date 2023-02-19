@@ -103,9 +103,9 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
     def test_instance_connection(self) -> None:
         pass
 
-    def http_request_with_access_token(self, method, headers: Dict[str, str] = None, url_suffix='', params=None, data=None,
+    def http_request_with_access_token(self, method, headers: Dict[str, str] | None = None, url_suffix='', params=None, data=None,
                                        json_data=None, resp_type='json', ok_codes=None, full_url='',
-                                       files: Dict[str, Any] = None):
+                                       files: Dict[str, Any] | None = None):
         if headers is None:
             headers = {}
         access_token = self.get_access_token()
@@ -137,21 +137,23 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
 
     # Board Requests
     @abstractmethod
-    def get_issues_from_backlog(self, board_id: str, jql_query: str = None,
-                                start_at: int = None, max_results: int = None) -> Dict[str, Any]:
+    def get_issues_from_backlog(self, board_id: str, jql_query: str | None = None,
+                                start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
         pass
 
     @abstractmethod
-    def get_issues_from_board(self, board_id: str, jql_query: str = None,
-                              start_at: int = None, max_results: int = None) -> Dict[str, Any]:
+    def get_issues_from_board(self, board_id: str, jql_query: str | None = None,
+                              start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
         pass
 
     @abstractmethod
-    def get_sprints_from_board(self, board_id: str, start_at: int = None, max_results: int = None) -> Dict[str, Any]:
+    def get_sprints_from_board(self, board_id: str, start_at: int | None = None,
+                               max_results: int | None = None) -> Dict[str, Any]:
         pass
 
     @abstractmethod
-    def get_epics_from_board(self, board_id: str, done: str, start_at: int = None, max_results: int = None) -> Dict[str, Any]:
+    def get_epics_from_board(self, board_id: str, done: str, start_at: int | None = None,
+                             max_results: int | None = None) -> Dict[str, Any]:
         pass
 
     @abstractmethod
@@ -159,8 +161,8 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_boards(self, board_type: str = None, project_key_id: str = None, board_name: str = None,
-                   start_at: int = None, max_results: int = None) -> Dict[str, Any]:
+    def get_boards(self, board_type: str | None = None, project_key_id: str | None = None, board_name: str | None = None,
+                   start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
         pass
 
     @abstractmethod
@@ -168,13 +170,13 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_issues_from_sprint(self, sprint_id: str, start_at: int = None, max_results: int = None,
-                               jql_query: str = None) -> Dict[str, Any]:
+    def get_issues_from_sprint(self, sprint_id: str, start_at: int | None = None, max_results: int | None = None,
+                               jql_query: str | None = None) -> Dict[str, Any]:
         pass
 
     @abstractmethod
-    def get_sprint_issues_from_board(self, sprint_id: str, board_id: str, start_at: int = None,
-                                     max_results: int = None, jql_query: str = None) -> Dict[str, Any]:
+    def get_sprint_issues_from_board(self, sprint_id: str, board_id: str, start_at: int | None = None,
+                                     max_results: int | None = None, jql_query: str | None = None) -> Dict[str, Any]:
         pass
 
     @abstractmethod
@@ -232,8 +234,8 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_epic_issues(self, epic_id_or_key: str, start_at: int = None, max_results: int = None,
-                        jql_query: str = None) -> Dict[str, Any]:
+    def get_epic_issues(self, epic_id_or_key: str, start_at: int | None = None, max_results: int | None = None,
+                        jql_query: str | None = None) -> Dict[str, Any]:
         pass
 
     @abstractmethod
@@ -246,7 +248,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
 
     # Attachments Requests
     @ abstractmethod
-    def add_attachment(self, issue_id_or_key: str, files: Dict[str, Any] = None) -> List[Dict[str, Any]]:
+    def add_attachment(self, issue_id_or_key: str, files: Dict[str, Any] | None = None) -> List[Dict[str, Any]]:
         pass
 
     @ abstractmethod
@@ -386,8 +388,8 @@ class JiraCloudClient(JiraBaseClient):
         set_integration_context(integration_context)
 
     # Board Requests
-    def get_issues_from_backlog(self, board_id: str, jql_query: str = None,
-                                start_at: int = None, max_results: int = None) -> Dict[str, Any]:
+    def get_issues_from_backlog(self, board_id: str, jql_query: str | None = None,
+                                start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
         query_params = assign_params(
             jql=jql_query,
             startAt=start_at,
@@ -399,8 +401,8 @@ class JiraCloudClient(JiraBaseClient):
             params=query_params
         )
 
-    def get_issues_from_board(self, board_id: str, jql_query: str = None,
-                              start_at: int = None, max_results: int = None) -> Dict[str, Any]:
+    def get_issues_from_board(self, board_id: str, jql_query: str | None = None,
+                              start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
         query_params = assign_params(
             jql=jql_query,
             startAt=start_at,
@@ -412,7 +414,8 @@ class JiraCloudClient(JiraBaseClient):
             params=query_params
         )
 
-    def get_sprints_from_board(self, board_id: str, start_at: int = None, max_results: int = None) -> Dict[str, Any]:
+    def get_sprints_from_board(self, board_id: str, start_at: int | None = None,
+                               max_results: int | None = None) -> Dict[str, Any]:
         query_params = assign_params(
             startAt=start_at,
             maxResults=max_results
@@ -423,7 +426,8 @@ class JiraCloudClient(JiraBaseClient):
             params=query_params
         )
 
-    def get_epics_from_board(self, board_id: str, done: str, start_at: int = None, max_results: int = None) -> Dict[str, Any]:
+    def get_epics_from_board(self, board_id: str, done: str, start_at: int | None = None,
+                             max_results: int | None = None) -> Dict[str, Any]:
         query_params = assign_params(
             startAt=start_at,
             maxResults=max_results,
@@ -441,8 +445,8 @@ class JiraCloudClient(JiraBaseClient):
             url_suffix=f'rest/agile/1.0/board/{board_id}',
         )
 
-    def get_boards(self, board_type: str = None, project_key_id: str = None, board_name: str = None,
-                   start_at: int = None, max_results: int = None) -> Dict[str, Any]:
+    def get_boards(self, board_type: str | None = None, project_key_id: str | None = None, board_name: str | None = None,
+                   start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
         query_params = assign_params(
             type=board_type,
             projectKeyOrId=project_key_id,
@@ -488,8 +492,8 @@ class JiraCloudClient(JiraBaseClient):
             resp_type='response',
         )
 
-    def get_issues_from_sprint(self, sprint_id: str, start_at: int = None, max_results: int = None,
-                               jql_query: str = None) -> Dict[str, Any]:
+    def get_issues_from_sprint(self, sprint_id: str, start_at: int | None = None, max_results: int | None = None,
+                               jql_query: str | None = None) -> Dict[str, Any]:
         query_params = assign_params(
             jql=jql_query,
             startAt=start_at,
@@ -501,8 +505,9 @@ class JiraCloudClient(JiraBaseClient):
             params=query_params
         )
 
-    def get_sprint_issues_from_board(self, sprint_id: str, board_id: str, start_at: int = None, max_results: int = None,
-                                     jql_query: str = None) -> Dict[str, Any]:
+    def get_sprint_issues_from_board(self, sprint_id: str, board_id: str, start_at: int | None = None,
+                                     max_results: int | None = None,
+                                     jql_query: str | None = None) -> Dict[str, Any]:
         query_params = assign_params(
             jql=jql_query,
             startAt=start_at,
@@ -598,8 +603,8 @@ class JiraCloudClient(JiraBaseClient):
                                                   params=query_params)
         return res
 
-    def get_epic_issues(self, epic_id_or_key: str, start_at: int = None, max_results: int = None,
-                        jql_query: str = None) -> Dict[str, Any]:
+    def get_epic_issues(self, epic_id_or_key: str, start_at: int | None = None, max_results: int | None = None,
+                        jql_query: str | None = None) -> Dict[str, Any]:
         query_params = assign_params(
             jql=jql_query,
             startAt=start_at,
@@ -626,7 +631,7 @@ class JiraCloudClient(JiraBaseClient):
         )
 
     # Attachments Requests
-    def add_attachment(self, issue_id_or_key: str, files: Dict[str, Any] = None) -> List[Dict[str, Any]]:
+    def add_attachment(self, issue_id_or_key: str, files: Dict[str, Any] | None = None) -> List[Dict[str, Any]]:
         headers = {
             'X-Atlassian-Token': 'no-check',
         }
@@ -660,7 +665,7 @@ class JiraOnPremClient(JiraBaseClient):
 
 
 # Utility functions
-def prepare_pagination_args(page: int = None, page_size: int = None, limit: int = None) -> Dict[str, int]:
+def prepare_pagination_args(page: int | None = None, page_size: int | None = None, limit: int | None = None) -> Dict[str, int]:
     if page or page_size:
         page = page or 0
         page_size = page_size or 50
