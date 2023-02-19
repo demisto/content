@@ -326,7 +326,7 @@ def get_mapping_fields() -> Dict[str, str]:
 
 
 def main() -> None:
-    params = demisto.params() 
+    params = demisto.params()
     command = demisto.command()
     message_regex: Optional[str] = params.get('message_regex')
     certificate = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('identifier'))
