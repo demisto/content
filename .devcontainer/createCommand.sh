@@ -20,5 +20,5 @@ echo "PYTHONPATH=""$path"":$PYTHONPATH" >> .env
 echo "MYPYPATH=""$path"":$MYPYPATH" >> .env
 
 echo "Setting up content dependencies"
-poetry install
+poetry install --with native
 npm install

@@ -12,6 +12,7 @@ from CommonServerPython import DemistoException, CommandResults
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 import dateparser
 import test_data.fetch_incidents_input as fetch_incidents_input
+import test_data.mock_rules as mock_rules
 from freezegun import freeze_time
 
 integration_firewall_params = {
@@ -1007,7 +1008,7 @@ class TestPanoramaListApplicationsCommand:
         mocker.patch('Panorama.get_pan_os_major_version', return_value=panorama_version)
 
         res = mocker.patch('demistomock.results')
-        panorama_list_applications_command(predefined='false')
+        panorama_list_applications_command({'predefined': 'false'})
 
         assert res.call_args.args[0]['Contents'] == {
             '@name': 'test-playbook-app', '@loc': 'Lab-Devices', 'subcategory': 'infrastructure',
@@ -1135,6 +1136,9 @@ def test_apply_security_profiles_command_main_flow(mocker):
 
 class TestPanoramaEditRuleCommand:
     EDIT_SUCCESS_RESPONSE = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE = {
+        'response': {'@status': 'success', 'result': 'Successfully added comment for xpath'}
+    }
 
     @staticmethod
     @pytest.fixture()
@@ -1254,11 +1258,12 @@ class TestPanoramaEditRuleCommand:
         assert http_req_mocker.call_args.kwargs.get('body').get('element') == '<disabled>no</disabled>'
 
     @staticmethod
-    def test_edit_rule_main_flow(mocker):
+    def test_edit_rule_main_flow_disable_rule(mocker):
         """
         Given
-         - integrations parameters.
+         - panorama integrations parameters.
          - pan-os-edit-rule command arguments including device_group.
+         - arguments to disable the rule
 
         When -
             running the pan-os-edit-rule command through the main flow
@@ -1301,12 +1306,60 @@ class TestPanoramaEditRuleCommand:
             'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}
         }
 
+    @staticmethod
+    def test_edit_rule_main_flow_update_audit_comment(mocker):
+        """
+        Given
+         - panorama integrations parameters.
+         - pan-os-edit-rule command arguments including device_group.
+         - arguments to edit audit comment of a rule
 
-def test_panorama_edit_address_group_command_main_flow(mocker):
+        When -
+            running the pan-os-edit-rule command through the main flow
+
+        Then
+         - make sure the context output is returned as expected.
+         - make sure the device group gets overriden by the command arguments.
+        """
+        from Panorama import main
+
+        mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+        mocker.patch.object(
+            demisto,
+            'args',
+            return_value={
+                "rulename": "test",
+                "element_to_change": "audit-comment",
+                "element_value": "some string",
+                "behaviour": "replace",
+                "pre_post": "pre-rulebase",
+                "device-group": "new device group"
+            }
+        )
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-rule')
+        request_mock = mocker.patch(
+            'Panorama.http_request', return_value=TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
+        )
+
+        res = mocker.patch('demistomock.results')
+        main()
+
+        # make sure that device group is getting overriden by the device-group from command arguments.
+        assert request_mock.call_args.kwargs['body'] == {
+            'type': 'op',
+            'cmd': "<set><audit-comment><xpath>/config/devices/entry[@name='localhost.localdomain']/device-group"
+                   "/entry[@name='new device group']/pre-rulebase/security/rules/entry[@name='test']"
+                   "</xpath><comment>some string</comment></audit-comment></set>",
+            'key': 'thisisabogusAPIKEY!'
+        }
+        assert res.call_args.args[0]['Contents'] == TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
+
+
+def test_panorama_edit_address_group_command_main_flow_edit_description(mocker):
     """
     Given
      - integrations parameters.
-     - pan-os-edit-address-group command arguments including device_group
+     - pan-os-edit-address-group command arguments including device_group and description to add.
 
     When -
         running the pan-os-edit-address-group command through the main flow
@@ -1342,6 +1395,46 @@ def test_panorama_edit_address_group_command_main_flow(mocker):
         'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}
     }
     assert res.call_args.args[0]['HumanReadable'] == 'Address Group test was edited successfully.'
+
+
+def test_panorama_edit_address_group_command_remove_single_address(mocker):
+    """
+    Given
+     - pan-os-edit-address-group command arguments including a single address to remove.
+
+    When
+     - running the pan-os-edit-address-group command through the main flow
+
+    Then
+     - make sure an exception is raised because address group must always have at least one address.
+    """
+    import Panorama
+
+    Panorama.DEVICE_GROUP = integration_panorama_params['device_group']
+
+    mocker.patch(
+        'Panorama.http_request',
+        return_value={
+            'response': {
+                '@status': 'success', 'result': {
+                    'entry': {
+                        '@name': 'test5',
+                        'static': {'member': ['5.5.5.5']},
+                        'description': 'dfdf'
+                    }
+                }
+            }
+        }
+    )
+
+    with pytest.raises(DemistoException) as exc_info:
+        Panorama.panorama_edit_address_group_command(
+            {'name': 'test', 'device-group': 'Shared', 'type': 'static', 'element_to_remove': '5.5.5.5'}
+        )
+
+    assert exc_info.type == DemistoException
+    assert exc_info.value.message == "cannot remove ['5.5.5.5'] addresses from address group test, " \
+                                     "address-group test must have at least one address in its configuration"
 
 
 @pytest.mark.parametrize(
@@ -3856,13 +3949,13 @@ class TestPanOSListNatRulesCommand:
                 'Name': 'test', 'Tags': 'test tag', 'SourceZone': '1.1.1.1', 'DestinationZone': '1.1.1.1',
                 'SourceAddress': 'any', 'DestinationAddress': 'any', 'DestinationInterface': None,
                 'Service': 'any', 'Description': None, 'SourceTranslation': None, 'DynamicDestinationTranslation': None,
-                'DestinationTranslation': None
+                'DestinationTranslation': None, 'Disabled': 'yes'
             },
             {
                 'Name': 'test-2', 'Tags': None, 'SourceZone': '2.2.2.2', 'DestinationZone': '2.2.2.2',
                 'SourceAddress': 'any', 'DestinationAddress': 'any', 'DestinationInterface': None,
                 'Service': 'any', 'Description': None, 'SourceTranslation': None, 'DynamicDestinationTranslation': None,
-                'DestinationTranslation': None
+                'DestinationTranslation': None, 'Disabled': 'no'
             }
         ]
 
@@ -4949,19 +5042,19 @@ class TestPanOSListPBFRulesCommand:
                     }
                 },
                 'EnforceSymmetricReturn': {'nexthop-address-list': {'entry': {'@name': '1.1.1.1'}}, 'enabled': 'yes'},
-                'Target': {'negate': 'no'}, 'Application': '3pc', 'Service': 'application-default'
+                'Target': {'negate': 'no'}, 'Application': '3pc', 'Service': 'application-default', 'Disabled': None
             },
             {
                 'Name': 'test2', 'Description': None, 'Tags': None, 'SourceZone': ['1.1.1.1', '2.2.2.2'],
                 'SourceInterface': None, 'SourceAddress': 'any', 'SourceUser': 'any', 'DestinationAddress': 'any',
                 'Action': {'no-pbf': {}}, 'EnforceSymmetricReturn': {'enabled': 'no'}, 'Target': {'negate': 'no'},
-                'Application': 'any', 'Service': 'any'
+                'Application': 'any', 'Service': 'any', 'Disabled': "yes"
             },
             {
                 'Name': 'test3', 'Description': None, 'Tags': None, 'SourceZone': None, 'SourceInterface': 'a2',
                 'SourceAddress': 'any', 'SourceUser': 'any', 'DestinationAddress': 'any',
                 'Action': {'discard': {}}, 'EnforceSymmetricReturn': {'enabled': 'no'}, 'Target': {'negate': 'no'},
-                'Application': 'any', 'Service': 'any'
+                'Application': 'any', 'Service': 'any', 'Disabled': "no"
             }
         ]
 
@@ -5018,8 +5111,8 @@ class TestPanOSListPBFRulesCommand:
         expected_context = [
             {
                 'Name': 'test', 'Description': 'this is a test description', 'Tags': ['test tag', 'dag_test_tag'],
-                'SourceZone': '1.1.1.1', 'SourceInterface': None, 'SourceAddress': '1.1.1.1', 'SourceUser': 'pre-logon',
-                'DestinationAddress': '1.1.1.1',
+                'SourceZone': '1.1.1.1', 'SourceInterface': None, 'Disabled': None, 'SourceAddress': '1.1.1.1',
+                'SourceUser': 'pre-logon', 'DestinationAddress': '1.1.1.1',
                 'Action': {
                     'forward': {
                         'nexthop': {'ip-address': '2.2.2.2'},
@@ -6288,3 +6381,11 @@ class TestFetchIncidentsFlows:
         assert last_id_dict.get('X_log_type', '') == '000000002'
         assert last_fetch_dict.get('Y_log_type', '') == '2022-01-01 13:00:00'
         assert last_id_dict.get('Y_log_type', '') == '000000002'
+
+
+@pytest.mark.parametrize('name_match, name_contain, filters, expected_result',
+                         mock_rules.get_mock_rules_and_application)
+def test_build_xpath_filter(name_match, name_contain, filters, expected_result):
+    from Panorama import build_xpath_filter
+    mock_result = build_xpath_filter(name_match, name_contain, filters)
+    assert mock_result == expected_result

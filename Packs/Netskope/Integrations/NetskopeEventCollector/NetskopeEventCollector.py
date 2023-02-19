@@ -243,9 +243,8 @@ def main() -> None:  # pragma: no cover
         client = Client(base_url, token, api_version, verify_certificate, proxy)
 
         last_run = demisto.getLastRun()
-        if not last_run:
-            first_fetch = int(arg_to_datetime(first_fetch).timestamp())  # type: ignore[union-attr]
-            last_run = {event_type: first_fetch for event_type in ALL_SUPPORTED_EVENT_TYPES}
+        first_fetch = int(arg_to_datetime(first_fetch).timestamp())  # type: ignore[union-attr]
+        last_run = {event_type: last_run.get(event_type, first_fetch) for event_type in ALL_SUPPORTED_EVENT_TYPES}
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.

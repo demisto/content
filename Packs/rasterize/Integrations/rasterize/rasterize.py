@@ -676,13 +676,14 @@ def rasterize_html_command():
     r_type = args.get('type', 'png')
     file_name = args.get('file_name', 'email')
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
+    wait_time = int(args.get('wait_time', 0))
 
     file_name = f'{file_name}.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
     file_path = demisto.getFilePath(entry_id).get('path')
     os.rename(f'./{file_path}', 'file.html')
 
     output = rasterize(path=f"file://{os.path.realpath('file.html')}", width=w, height=h, r_type=r_type,
-                       full_screen=full_screen)
+                       full_screen=full_screen, wait_time=wait_time)
 
     res = fileResult(filename=file_name, data=output)
     if r_type == 'png':

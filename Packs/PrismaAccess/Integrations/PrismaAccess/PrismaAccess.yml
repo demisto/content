@@ -56,8 +56,8 @@ script:
       default: true
       description: Username to logout. (Without domain name - e.g. jsmith)
     - name: domain
-      required: true
-      description: Domain name of the user to logout.
+      required: false
+      description: Domain name of the user to logout. For some users, this field is required.
     - name: computer
       required: true
       description: Computer name to logout.
@@ -92,7 +92,7 @@ script:
       description: Active Users on Prisma Access
     description: Query currently active users.
     deprecated: true
-  dockerimage: demisto/netmiko:1.0.0.36109
+  dockerimage: demisto/netmiko:1.0.0.47037
   runonce: false
   subtype: python3
 fromversion: 5.0.0

@@ -10,12 +10,12 @@ configuration:
   type: 0
 - display: ID (received from the admin consent - see Detailed Instructions (?)
   name: auth_id
-  required: true
+  required: false
   type: 4
 - display: Token (received from the admin consent - see Detailed Instructions (?)
     section)
   name: tenant_id
-  required: true
+  required: false
   type: 4
 - display: Key (received from the admin consent - see Detailed Instructions (?)
   name: enc_key
@@ -31,6 +31,20 @@ configuration:
   name: private_key
   required: false
   type: 14
+- additionalinfo: Relevant only if the integration is running on Azure VM. 
+    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
+    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
+    For additional information, see the Help tab.
+  display: Use Azure Managed Identities
+  name: use_managed_identities
+  required: false
+  type: 8
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Default user
   name: default_user
   required: false
@@ -810,7 +824,7 @@ script:
       description: "A URL for an online meeting, used only when an organizer specifies\
         \ an event as an online meeting, such as a Skype meeting. Read-only."
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.42817
+  dockerimage: demisto/crypto:1.0.0.47103
   isfetch: false
   longRunning: false
   longRunningPort: false

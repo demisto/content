@@ -312,5 +312,6 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "description": "Custom layout for Recorded Future Attack Surface Intelligence Incident type"
+    "description": "Custom layout for Recorded Future Attack Surface Intelligence Incident type",
+    "marketplaces": ["xsoar"]
 }
