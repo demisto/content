@@ -420,12 +420,12 @@ def test_fetch_incidents(mocker, requests_mock):
 
 @freeze_time("2021-01-22 15:30:22.222")
 def test_fetch_incidents_does_not_add_new_incident(mocker, requests_mock):
-    """Unit test
+    """
+    Verify that the fetch incidents does not add a new incident if the last incident is older than the last fetch.
     Given
     - a first_fetch time (of 40 days)
     When
     - we mock the fetch incidents flow
-    - we mock the fetch incidents flow is called twice
     Then
     - Validate that the second fetch does not add a new older incident.
     """
@@ -456,6 +456,6 @@ def test_fetch_incidents_does_not_add_new_incident(mocker, requests_mock):
                       json=incidents_data.get('first'))
 
     incidents, last_fetch = fetch_incidents(client, {})
-    # Now we should see the last fetch changed
+    # Now we should see the last fetch didn't change.
     assert last_fetch == 1611322333333
     assert len(incidents) == 0
