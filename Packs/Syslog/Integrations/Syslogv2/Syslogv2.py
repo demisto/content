@@ -331,7 +331,8 @@ def main() -> None:
     message_regex: Optional[str] = params.get('message_regex')
     certificate = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('identifier'))
                    or params.get('certificate', None))
-    private_key = params.get('creds_certificate', {}).get('password') or params.get('private_key', None)
+    private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
+                   or params.get('private_key', ''))
     port: Union[Optional[str], int] = params.get('longRunningPort')
     try:
         port = int(params.get('longRunningPort'))

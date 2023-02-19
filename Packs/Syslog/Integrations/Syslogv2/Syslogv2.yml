@@ -6,23 +6,25 @@ commonfields:
   id: Syslog v2
   version: -1
 configuration:
-- display: Certificate File as Text
+- display: certificate
   name: creds_certificate
   required: false
   type: 9
-  displaypassword: Key File as Text
+  displaypassword: Private Key
 - additionalinfo: Required for TLS
   display: Certificate
   name: certificate
   required: false
   type: 12
-  hidden: true
+  section: Connect
+  advanced: true
 - additionalinfo: Required for TLS
   display: Private Key
   name: private_key
   required: false
   type: 4
-  hidden: true
+  section: Connect
+  advanced: true
 - display: Message Regex Filter For Incidents Creation.
   name: message_regex
   required: false
