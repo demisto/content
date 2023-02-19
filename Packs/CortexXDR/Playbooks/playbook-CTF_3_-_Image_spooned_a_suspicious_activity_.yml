@@ -431,8 +431,8 @@ tasks:
     task:
       id: fffa1f2a-559c-4ae9-8ce2-ad5aaf5c5914
       version: -1
-      name: Oh, snap!!! - where are all the other tasks that we need???
-      description: Seems like SecOps did that again and forgot to add all the required items for us to go and check the image... Maybe running OCR can help us here?
+      name: Oh, Snap!!! - Where are all the other tasks that we need?
+      description: Seems like SecOps did it again? It seems someone forgot to add all the required items for us to go and check the image… Maybe running Optical Character Recognition (OCR) can help us here?
       type: regular
       iscommand: false
       brand: ""
@@ -494,7 +494,7 @@ tasks:
       id: d8abe179-60e4-4f0e-8c8c-517847d83785
       version: -1
       name: Soooooo who is the person behind this attack?
-      description: 'To answer this - please run the CTF #3 automation/script with the provided answer'
+      description: 'In order to answer this you will need to run the CTF #3 automation/script with the provided answer'
       type: regular
       iscommand: false
       brand: ""
