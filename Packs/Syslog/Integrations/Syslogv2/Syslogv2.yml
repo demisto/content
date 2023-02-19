@@ -6,18 +6,23 @@ commonfields:
   id: Syslog v2
   version: -1
 configuration:
-- name: certificate
-  display: Certificate
-  additionalinfo: Required for TLS
-  type: 12
+- display: Certificate File as Text
+  name: creds_certificate
   required: false
-  section: Connect
-- display: Private Key
-  additionalinfo: Required for TLS
+  type: 9
+  displaypassword: Key File as Text
+- additionalinfo: Required for TLS
+  display: Certificate File as Text
+  name: certificate
+  required: false
+  type: 12
+  hidden: true
+- additionalinfo: Required for TLS
+  display: Key File as Text
   name: private_key
   required: false
-  type: 14
-  section: Connect
+  type: 4
+  hidden: true
 - display: Message Regex Filter For Incidents Creation.
   name: message_regex
   required: false
@@ -52,7 +57,7 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/syslog:1.0.0.46362
+  dockerimage: demisto/syslog:1.0.0.48267
   feed: false
   longRunning: true
   longRunningPort: true
