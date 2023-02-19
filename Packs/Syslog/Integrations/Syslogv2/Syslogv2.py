@@ -326,13 +326,13 @@ def get_mapping_fields() -> Dict[str, str]:
 
 
 def main() -> None:
-    params = demisto.params()
+    params = demisto.params() 
     command = demisto.command()
     message_regex: Optional[str] = params.get('message_regex')
     certificate = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('identifier'))
-                   or params.get('certificate', None))
+                   or params.get('certificate'))
     private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
-                   or params.get('private_key', ''))
+                   or params.get('private_key'))
     port: Union[Optional[str], int] = params.get('longRunningPort')
     try:
         port = int(params.get('longRunningPort'))
