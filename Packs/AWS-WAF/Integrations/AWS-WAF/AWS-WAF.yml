@@ -823,8 +823,7 @@ script:
           - 'true'
           - 'false'
       - name: metric_name
-        description: The name of the Amazon CloudWatch metric dimension. The name can contain only the alphanumeric characters, hyphen, and underscore. The name can be from one to 128 characters long. It can't contain whitespace or metric names that are reserved for AWS WAF.
-        defaultValue: 'group_name'
+        description: The name of the Amazon CloudWatch metric dimension. The name can contain only the alphanumeric characters, hyphen, and underscore. The name can be from one to 128 characters long. It can't contain whitespace or metric names that are reserved for AWS WAF. The default will be the same as the group name provided in the name argument.
       - name: sampled_requests_enabled
         description: whether to store a sampling of the web requests that match the rules.
         defaultValue: 'true'
