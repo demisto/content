@@ -496,19 +496,26 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "demisto-py"
-version = "3.2.7"
+version = "3.2.8.dev2"
 description = "A Python library for the Demisto API"
 category = "dev"
 optional = false
 python-versions = ">=3.8"
+develop = false
 
 [package.dependencies]
 certifi = ">=2017.4.17"
-python-dateutil = ">=2.5.3"
+python_dateutil = ">=2.5.3"
 setuptools = ">=21.0.0"
 six = ">=1.10"
 tzlocal = ">=4.0.0,<5.0.0"
 urllib3 = ">=1.26.7"
+
+[package.source]
+type = "git"
+url = "https://github.com/demisto/demisto-py.git"
+reference = "re_create_client_session_timeouts"
+resolved_reference = "b5f5472074886cfba68b3882569c317b497286a2"
 
 [[package]]
 name = "demisto-sdk"
@@ -517,94 +524,101 @@ description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
 python-versions = ">=3.8,<3.11"
+develop = false
 
 [package.dependencies]
-autopep8 = ">=1.6.0,<2.0.0"
-bandit = ">=1.7.4,<2.0.0"
-beautifulsoup4 = ">=4.11.1,<5.0.0"
+autopep8 = "^1.6.0"
+bandit = "^1.7.4"
+beautifulsoup4 = "^4.11.1"
 chardet = ">=4,<6"
-click = ">=8.0.0,<9.0.0"
-colorama = ">=0.4.4,<0.5.0"
-coloredlogs = ">=15.0.1,<16.0.0"
-configparser = ">=5.2.0,<6.0.0"
+click = "^8.0.0"
+colorama = "^0.4.4"
+coloredlogs = "^15.0.1"
+configparser = "^5.2.0"
 coverage = "6.3.2"
-cryptography = ">=36.0.2,<37.0.0"
-dateparser = ">=1.1.1,<2.0.0"
-decorator = ">=5.1.1,<6.0.0"
-demisto-py = ">=3.2.6,<4.0.0"
-dictdiffer = ">=0.9.0,<0.10.0"
-dictor = ">=0.1.9,<0.2.0"
-docker = ">=5.0.3,<6.0.0"
-flake8 = ">=4.0.1,<5.0.0"
-flatten-dict = ">=0.4.2,<0.5.0"
-gitdb = ">=4.0.9,<5.0.0"
-GitPython = ">=3.1.27,<4.0.0"
-giturlparse = ">=0.10.0,<0.11.0"
-google-cloud-storage = ">=2.2.1,<3.0.0"
-imagesize = ">=1.3.0,<2.0.0"
-importlib-resources = ">=5.6.0,<6.0.0"
-inflection = ">=0.5.1,<0.6.0"
-isort = ">=5.10.1,<6.0.0"
-Jinja2 = ">=3.1.1,<4.0.0"
-jsonschema = ">=4.4.0,<5.0.0"
-klara = ">=0.6.3,<0.7.0"
-MarkupSafe = ">=2.1.1,<3.0.0"
-mergedeep = ">=1.3.4,<2.0.0"
-mypy = ">=0.982,<0.983"
-neo4j = ">=4.4.8,<5.0.0"
-networkx = ">=2.7.1,<3.0.0"
-nltk = ">=3.7,<4.0"
-ordered-set = ">=4.1.0,<5.0.0"
-orjson = ">=3.8.3,<4.0.0"
+cryptography = "^36.0.2"
+dateparser = "^1.1.1"
+decorator = "^5.1.1"
+demisto-py = {git = "https://github.com/demisto/demisto-py.git", rev = "re_create_client_session_timeouts"}
+dictdiffer = "^0.9.0"
+dictor = "^0.1.9"
+docker = "^5.0.3"
+flake8 = "^4.0.1"
+flatten-dict = "^0.4.2"
+gitdb = "^4.0.9"
+GitPython = "^3.1.27"
+giturlparse = "^0.10.0"
+google-cloud-storage = "^2.2.1"
+imagesize = "^1.3.0"
+importlib-resources = "^5.6.0"
+inflection = "^0.5.1"
+isort = "^5.10.1"
+Jinja2 = "^3.1.1"
+jsonschema = "^4.4.0"
+klara = "^0.6.3"
+MarkupSafe = "^2.1.1"
+mergedeep = "^1.3.4"
+mypy = "^0.982"
+neo4j = "^4.4.8"
+networkx = "^2.7.1"
+nltk = "^3.7"
+ordered-set = "^4.1.0"
+orjson = "^3.8.3"
 packaging = "<22"
-paramiko = ">=2.11.0,<3.0.0"
+paramiko = "^2.11.0"
 Pebble = ">=4.6.3,<6.0.0"
-pipenv = ">=2022.3.28,<2023.0.0"
-prettytable = ">=3.2.0,<4.0.0"
-pydantic = ">=1.10,<2.0"
-pykwalify = ">=1.8.0,<2.0.0"
+pipenv = "^2022.3.28"
+prettytable = "^3.2.0"
+pydantic = "^1.10"
+pykwalify = "^1.8.0"
 pylint = "2.12.2"
-PyPDF2 = ">=1.28.6,<2.0.0"
-pyspellchecker = ">=0.6.3,<0.7.0"
-pytest-freezegun = ">=0.4.2,<0.5.0"
-python-dotenv = ">=0.20.0,<0.21.0"
-requests = ">=2.27.1,<3.0.0"
-"ruamel.yaml" = ">=0.17.21,<0.18.0"
-slackclient = ">=2.9.3,<3.0.0"
+PyPDF2 = "^1.28.6"
+pyspellchecker = "^0.6.3"
+pytest-freezegun = "^0.4.2"
+python-dotenv = "^0.20.0"
+requests = "^2.27.1"
+"ruamel.yaml" = "^0.17.21"
+slackclient = "^2.9.3"
 tabulate = ">=0.8.9,<0.10.0"
-typed-ast = ">=1.5.2,<2.0.0"
+typed-ast = "^1.5.2"
 typer = {version = ">=0.6.1,<0.8.0", extras = ["all"]}
 types-chardet = ">=4.0.3,<6.0.0"
-types-dateparser = ">=1.1.0,<2.0.0"
-types-decorator = ">=5.1.8,<6.0.0"
+types-dateparser = "^1.1.0"
+types-decorator = "^5.1.8"
 types-emoji = ">=1.2.7,<3.0.0"
-types-filelock = ">=3.2.5,<4.0.0"
-types-futures = ">=3.3.8,<4.0.0"
-types-ipaddress = ">=1.0.8,<2.0.0"
-types-Markdown = ">=3.3.21,<4.0.0"
-types-mock = ">=4.0.15,<5.0.0"
-types-paramiko = ">=2.8.17,<3.0.0"
-types-pkg-resources = ">=0.1.3,<0.2.0"
-types-protobuf = ">=3.19.15,<4.0.0"
-types-PyMySQL = ">=1.0.15,<2.0.0"
-types-python-dateutil = ">=2.8.10,<3.0.0"
+types-filelock = "^3.2.5"
+types-futures = "^3.3.8"
+types-ipaddress = "^1.0.8"
+types-Markdown = "^3.3.21"
+types-mock = "^4.0.15"
+types-paramiko = "^2.8.17"
+types-pkg-resources = "^0.1.3"
+types-protobuf = "^3.19.15"
+types-PyMySQL = "^1.0.15"
+types-python-dateutil = "^2.8.10"
 types-pytz = ">=2021.3.6,<2023.0.0"
 types-pyvmomi = ">=7.0.6,<9.0.0"
-types-PyYAML = ">=6.0.5,<7.0.0"
+types-PyYAML = "^6.0.5"
 types-requests = "2.28.11"
 types-setuptools = ">=65.6.0.1,<68.0.0.0"
-types-six = ">=1.16.12,<2.0.0"
+types-six = "^1.16.12"
 types-tabulate = ">=0.8.6,<0.10.0"
-types-ujson = ">=5.6.0.0,<6.0.0.0"
-typing-extensions = ">=4.1.1,<5.0.0"
-ujson = ">=5.1.0,<6.0.0"
-urllib3 = ">=1.26.9,<2.0.0"
-vulture = ">=2.3,<3.0"
-wcmatch = ">=8.3,<9.0"
-yamlordereddictloader = ">=0.4.0,<0.5.0"
+types-ujson = "^5.6.0.0"
+typing-extensions = "^4.1.1"
+ujson = "^5.1.0"
+urllib3 = "^1.26.9"
+vulture = "^2.3"
+wcmatch = "^8.3"
+yamlordereddictloader = "^0.4.0"
 
 [package.extras]
 build = ["gsutil (==5.17)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/demisto/demisto-sdk.git"
+reference = "test_session_timeouts_demisto_py"
+resolved_reference = "17295b5a2ff3a1d8f32c076ef5bd1538cf5e1bfc"
 
 [[package]]
 name = "deprecated"
@@ -3440,7 +3454,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "c5068a924f818123ff9cd0c5d52e690ac5bace808d9493bb429885562ef8252b"
+content-hash = "5cefb4d82249c4c293599b423c6ae118423674a900f1f389eaa2f55f3db41b34"
 
 [metadata.files]
 aiodns = [
@@ -3938,14 +3952,8 @@ defusedxml = [
     {file = "defusedxml-0.7.1-py2.py3-none-any.whl", hash = "sha256:a352e7e428770286cc899e2542b6cdaedb2b4953ff269a210103ec58f6198a61"},
     {file = "defusedxml-0.7.1.tar.gz", hash = "sha256:1bb3032db185915b62d7c6209c5a8792be6a32ab2fedacc84e01b52c51aa3e69"},
 ]
-demisto-py = [
-    {file = "demisto-py-3.2.7.tar.gz", hash = "sha256:5b41a9d7b03fc4d36f25bfd1929c31d2974805101426885f7650c321f992472c"},
-    {file = "demisto_py-3.2.7-py3-none-any.whl", hash = "sha256:32e48931970d6b5aa69f525edf10fb6e9ee4c190c88e7c6db57f84790d2b6b86"},
-]
-demisto-sdk = [
-    {file = "demisto_sdk-1.10.2-py3-none-any.whl", hash = "sha256:9495035348a652f941211f1329283de7e317fa694482a5301c54039fc102988d"},
-    {file = "demisto_sdk-1.10.2.tar.gz", hash = "sha256:05dd2fbf8c3da483ddb0b430f6dd4d1d7bc31e320ffb26453b3afef3a50a255a"},
-]
+demisto-py = []
+demisto-sdk = []
 deprecated = [
     {file = "Deprecated-1.2.13-py2.py3-none-any.whl", hash = "sha256:64756e3e14c8c5eea9795d93c524551432a0be75629f8f29e67ab8caf076c76d"},
     {file = "Deprecated-1.2.13.tar.gz", hash = "sha256:43ac5335da90c31c24ba028af536a91d41d53f9e6901ddb021bcc572ce44e38d"},
@@ -6126,6 +6134,7 @@ wcmatch = [
     {file = "wcmatch-8.4.1.tar.gz", hash = "sha256:b1f042a899ea4c458b7321da1b5e3331e3e0ec781583434de1301946ceadb943"},
 ]
 wcwidth = [
+    {file = "wcwidth-0.2.6-py2.py3-none-any.whl", hash = "sha256:795b138f6875577cd91bba52baf9e445cd5118fd32723b460e30a0af30ea230e"},
     {file = "wcwidth-0.2.6.tar.gz", hash = "sha256:a5220780a404dbe3353789870978e472cfe477761f06ee55077256e509b156d0"},
 ]
 webdriver-manager = [
