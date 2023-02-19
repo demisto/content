@@ -19,7 +19,7 @@ filter
     xdm.logon.type = authentication_method_reference,
     xdm.event.type = event_type,
     xdm.logon.logon_guid = login_key,
-    xdm.event.outcome = login_status,
+    xdm.event.description = login_status,
     xdm.source.user.badge_id = organization_id,
     xdm.network.session_id = session_key,
     xdm.source.ipv4 = source_ip,
