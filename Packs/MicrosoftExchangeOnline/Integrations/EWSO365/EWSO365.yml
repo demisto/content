@@ -820,7 +820,8 @@ script:
       description: The extension of the file.
       type: String
   - arguments:
-    - description: Email addresses for the 'To' field. Supports comma-separated values.
+    - default: true
+      description: Email addresses for the 'To' field. Supports comma-separated values.
       isArray: true
       name: to
     - description: Email addresses for the 'Cc' field. Supports comma-separated values.
