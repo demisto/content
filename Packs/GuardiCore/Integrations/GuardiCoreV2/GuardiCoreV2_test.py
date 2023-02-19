@@ -419,7 +419,7 @@ def test_fetch_incidents(mocker, requests_mock):
 
 
 @freeze_time("2021-01-22 15:30:22.222")
-def test_fetch_incidents_fails(mocker, requests_mock):
+def test_fetch_incidents_does_not_add_new_incident(mocker, requests_mock):
     """Unit test
     Given
     - a first_fetch time (of 40 days)
@@ -427,11 +427,7 @@ def test_fetch_incidents_fails(mocker, requests_mock):
     - we mock the fetch incidents flow
     - we mock the fetch incidents flow is called twice
     Then
-    - Validate that the last_fetch is correct (unix time of 40 days)
-    - Validate that the first incident returned has a correct id
-    - Validate that the length of the incidents is correct
-    - Validate that the last_fetch is the last incident fetched
-    - Validate that the incidents are all fetched (only 1 new one)
+    - Validate that the second fetch does not add a new older incident.
     """
     from GuardiCoreV2 import Client, fetch_incidents
     from CommonServerPython import \
