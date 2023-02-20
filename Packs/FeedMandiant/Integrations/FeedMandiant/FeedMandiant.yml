@@ -188,7 +188,7 @@ script:
     description: Get mandiant indicators.
     execution: false
     name: feed-mandiant-get-indicators
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.10.47713
   feed: true
   isfetch: false
   longRunning: false
