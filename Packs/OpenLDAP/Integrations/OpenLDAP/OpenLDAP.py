@@ -20,7 +20,7 @@ class LdapClient:
         :type kwargs: ``dict``
         :param kwargs: Initialize params for ldap client
     """
-    A = 5
+
     OPENLDAP = 'OpenLDAP'
     ACTIVE_DIRECTORY = 'Active Directory'
     GROUPS_TOKEN = 'primaryGroupToken'
