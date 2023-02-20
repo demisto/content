@@ -392,11 +392,11 @@ def main() -> None:
             if should_push_events:
                 if detections:
                     demisto.info(f"Sending {len(detections)} detections to XSIAM...")
-                    send_events_to_xsiam(detections, vendor=VENDOR, product=VENDOR)
+                    send_events_to_xsiam(detections, vendor=VENDOR, product=client.endpoints[0])
                     demisto.info(f"{len(detections)} detections sent to XSIAM.")
                 if audits:
                     demisto.info(f"Sending {len(audits)} audits to XSIAM...")
-                    send_events_to_xsiam(audits, vendor=VENDOR, product=VENDOR)
+                    send_events_to_xsiam(audits, vendor=VENDOR, product=client.endpoints[1])
                     demisto.info(f"{len(audits)} audits sent to XSIAM.")
 
         else:
