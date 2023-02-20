@@ -261,7 +261,7 @@
         },
         {
             "integrations": "EwsExtension",
-            "playbookID": "O365 - EWS - Extension - Test",
+            "playbookID": "playbook-EWS_O365_Extension_test",
             "fromversion": "6.0.0",
             "timeout": 500
         },
@@ -3598,7 +3598,7 @@
         },
         {
             "integrations": "EWS Extension Online Powershell v2",
-            "playbookID": "EWS Extension: Powershell Online V2 Test",
+            "playbookID": "playbook-O365-EWS-Extension-Powershell-Online-V2-Test",
             "fromversion": "6.0.0",
             "toversion": "6.0.9",
             "timeout": 250
