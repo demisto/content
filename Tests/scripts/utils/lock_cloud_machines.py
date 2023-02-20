@@ -92,19 +92,23 @@ def check_job_status(token: str, job_id: str):
 
 def remove_build_from_queue(storage_bucket: any, lock_repository_name: str, job_id: str):
     """deletes a lock queue file """
-    blob = storage_bucket.blob(f'{lock_repository_name}/queue-ga-lock-{job_id}')
+    file_path = f'{lock_repository_name}/queue-ga-lock-{job_id}'
+    blob = storage_bucket.blob(file_path)
     try:
         blob.delete()
-    except Exception:
+    except Exception as err:
+        logging.info(f'when we try to delete a build_from_queue = {file_path}, we get an error: {str(err)}')
         pass
 
 
 def remove_machine_lock_file(storage_bucket: any, lock_repository_name: str, machine_name: str, job_id: str):
     """deletes a lock machine file """
-    blob = storage_bucket.blob(f'{lock_repository_name}/{machine_name}-lock-{job_id}')
+    file_path = f'{lock_repository_name}/{machine_name}-lock-{job_id}'
+    blob = storage_bucket.blob(file_path)
     try:
         blob.delete()
-    except Exception:
+    except Exception as err:
+        logging.info(f'when we try to delete a lock machine file = {file_path}, we get an error: {str(err)}')
         pass
 
 
