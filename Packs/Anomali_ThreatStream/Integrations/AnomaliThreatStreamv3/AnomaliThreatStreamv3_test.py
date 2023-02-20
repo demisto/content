@@ -16,7 +16,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def util_tmp_json_file(mock_object, file_name):
+def util_tmp_json_file(mock_object, file_name: str):
     tmp_dir = mkdtemp()
     file_name = f'{file_name}.txt'
     file_obj = {
@@ -492,7 +492,7 @@ class TestImportCommands:
 
         # validate
         json_data = Client.http_request.call_args[1]['json']['meta']
-        assert all(key in json_data for key in expected_meta_data_keys)
+        assert set(expected_meta_data_keys).issubset(json_data.keys())
         for key in expected_meta_data_changed:
             assert json_data[key] == expected_meta_data_changed[key]
         assert result == 'The data was imported successfully.'

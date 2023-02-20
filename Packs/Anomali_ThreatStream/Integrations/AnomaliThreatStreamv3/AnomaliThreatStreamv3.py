@@ -999,7 +999,7 @@ def import_ioc_without_approval(client: Client, file_id, classification, confide
     except Exception:
         raise DemistoException(f'{THREAT_STREAM} - Entry {file_id} does not contain a file.')
     meta = ioc_to_import.get('meta', {})
-    meta_from_params = assign_params(
+    meta |= assign_params(
         classification=classification,
         confidence=confidence,
         allow_unresolved=argToBoolean(allow_unresolved),
@@ -1009,8 +1009,7 @@ def import_ioc_without_approval(client: Client, file_id, classification, confide
         tags=tags,
         trustedcircles=trustedcircles
     )
-    for key in meta_from_params.copy():
-        meta.update({key: meta_from_params[key]})
+
     ioc_to_import.update({"meta": meta})
     client.http_request("PATCH", "v1/intelligence/", json=ioc_to_import, resp_type='text')
     return "The data was imported successfully."
