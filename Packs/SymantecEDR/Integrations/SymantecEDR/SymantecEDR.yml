@@ -1521,6 +1521,12 @@ script:
       required: false
       secret: false
     - default: false
+      description: 'Returns specific md5 type deny list policy for the specified md5 value. If no value is specified then all md5 type deny list policies will be returned. Example:a457c5c52bcbe376ac0bd6a4fad6054f.'
+      isArray: false
+      name: md5
+      required: false
+      secret: false
+    - default: false
       description: 'Returns list of URL type deny list policies that match the specified pattern value. If no value is specified, then all URL type deny list policies will be returned. \n\nNote: URL strings must be specified in encoded URL format.'
       isArray: false
       name: url
@@ -1619,7 +1625,7 @@ script:
       default: false
       description: "The operation to take on a specified incident.\n- add_comment: Add comments to the incident.\n- close_incident: Close incident. \n- update_resolution: Update resolution of the closed incident."
       isArray: false
-      name: action_type
+      name: operation
       predefined:
       - add_comment
       - close_incident
@@ -1636,7 +1642,7 @@ script:
       description: |
         For add comments: The value should contain a user defined comment. The maximum length of the comment is 512 characters.
 
-        For update resolution of a closed incident: Any one of supported resolution values:
+        For update resolution of a closed incident: Any one of supported resolution value:
         0 = INSUFFICIENT_DATA. The incident does not have sufficient information to make a determination.
         1 = SECURITY_RISK. The incident indicates a true security threat.
         2 = FALSE_POSITIVE. The incident has been incorrectly reported as a security threat.

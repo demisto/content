@@ -398,7 +398,6 @@ class Client(BaseClient):
         request_data: list[dict[str, Any]] = [
             {'op': 'add', 'path': f'/{uuid}/comments', 'value': value}
         ]
-        # json.dumps([payload])
         return self.http_request(
             method='PATCH',
             endpoint='/atpapi/v2/incidents',
@@ -949,7 +948,6 @@ def parse_event_object_data(data: dict[str, Any]) -> dict:
     Returns:
         event_dict: Event Json Data
     """
-    # event_dict: dict[str, Any] = {}
     if not data:
         # Return empty dictionary
         return {}
@@ -1020,9 +1018,7 @@ def system_activity_readable_output(results: list[dict], title: str) -> tuple[st
         markdown: A string representation of the Markdown table
     """
     # Applicable events : 1, 20, 21, 1000
-    # Human readable output
     summary_data = []
-    # Context dat
     context_data = []
 
     for data in results:
@@ -1030,7 +1026,7 @@ def system_activity_readable_output(results: list[dict], title: str) -> tuple[st
         event_data['severity_id'] = EVENT_SEVERITY.get(str(event_data.get('severity_id')))
         event_data['atp_node_role'] = EVENT_NODE_ROLE.get(str(event_data.get('atp_node_role')))
         event_data['status_id'] = EVENT_STATUS.get(str(event_data.get('status_id')))
-        # ------------- Symantec EDR Console logging System Activity -------
+        # Symantec EDR Console logging System Activity
         system_activity = {
             'time': event_data.get('device_time', ''),
             'type_id': event_data.get('type_id', ''),
@@ -1096,14 +1092,12 @@ def incident_readable_output(results: list[dict], title: Optional[str] = None) -
         state = data.get('state', '')
         resolution = data.get('resolution', '')
         incident = {
-            # EDR CONSOLE Headers : ID , Description, incident Created, Detection Type, Last Updated,priority
             'incident_id': data.get('atp_incident_id', ''),
             'description': data.get('summary', ''),
             'incident_created': data.get('device_time', ''),
             'detection_type': data.get('detection_type', ''),
             'last_updated': data.get('updated', ''),
             'priority': INCIDENT_PRIORITY_LEVEL.get(str(priority), ''),
-            # ------------------
             'incident_state': INCIDENT_STATUS.get(str(state), ''),
             'atp_rule_id': data.get('atp_rule_id'),
             'rule_name': data.get('rule_name'),
@@ -1242,7 +1236,6 @@ def generic_readable_output(results: list[dict], title: str) -> str:
      """
     readable_output = []
     for data in results:
-        # ignore_key_list: list[str] = []
         row = extract_raw_data(data, [])
         readable_output.append(row)
 
@@ -1519,25 +1512,34 @@ def create_params_query(args: dict) -> dict:
     Returns:
         Return arguments dict.
     """
+    limit, offset = get_query_limit(args)
+    query_params: dict = {'limit': limit, 'offset': offset}
+
+    if denylist_id := args.get('denylist_id'):
+        query_params['id'] = arg_to_number(denylist_id)
+
+    if allowlist_id := args.get('allowlist_id'):
+        query_params['id'] = arg_to_number(allowlist_id)
+
     if ip := args.get('ip'):
         check_valid_indicator_value('ip', ip)
+        query_params['ip'] = ip
+
+    if url := args.get('url'):
+        query_params['url'] = url
+
+    if domain := args.get('domain'):
+        query_params['domain'] = domain
 
     if md5 := args.get('md5'):
         check_valid_indicator_value('md5', md5)
+        query_params['md5'] = md5
 
     if sha256 := args.get('sha256'):
         check_valid_indicator_value('sha256', sha256)
+        query_params['sha256'] = sha256
 
-    limit, offset = get_query_limit(args)
-    return {
-        'limit': limit,
-        'offset': offset,
-        'ip': ip,
-        'url': args.get('url'),
-        'sha256': sha256,
-        'id': arg_to_number(args.get('allowlist_id'), arg_name='allowlist_id'),
-        'domain': args.get('domain')
-    }
+    return query_params
 
 
 def check_valid_indicator_value(indicator_type: str, indicator_value: str) -> bool:
@@ -1605,10 +1607,13 @@ def create_payload_for_query(args: dict[str, Any], query_type: Optional[str] = N
     Returns:
         payload (dict): Return payload for request body
     """
-    if query_type in {'allow_list', 'deny_list'}:
+    if query_type in ('allow_list', 'deny_list'):
         limit = arg_to_number(args.get('limit'))
-        if limit is not None and (limit < 10 or limit > 1000):
-            raise ValueError('Invalid input limit: Value between Minimum = 10 , Maximum = 1000')
+        page_size = arg_to_number(args.get('page_size'))
+        if (limit and limit < 10) or (page_size and page_size < 10):
+            raise ValueError('Invalid input limit or page_size. '
+                             'For Deny and Allow list specify limit/page_size range '
+                             '>= greater than 10 and <= less than 1000')
         payload = create_params_query(args)
     else:
         payload = create_content_query(args)
@@ -1943,7 +1948,9 @@ def patch_incident_update_command(client: Client, args: dict[str, Any]) -> Comma
           that contains an updated
               result.
     """
-    action = args.get('action_type')
+    action = args.get('operation')
+    update_value = args.get('value', '')
+
     if action not in INCIDENT_PATCH_ACTION:
         raise ValueError(f'Invalid Incident Patch Operation: Supported values are : {INCIDENT_PATCH_ACTION}')
 
@@ -1953,12 +1960,11 @@ def patch_incident_update_command(client: Client, args: dict[str, Any]) -> Comma
     if uuid := get_incident_uuid(client, args):
         # Incident Add Comment
         if action == 'add_comment':
-            value = args.get('value', '')
-            if not value:
-                raise ValueError('No Incident comment found. Enter incident comment add to incident')
+            if not update_value:
+                raise ValueError('Missing comment. Enter argument value="Free text up to 512 characters"')
 
             action_desc = 'Add Comment'
-            response = client.add_incident_comment(uuid, value)
+            response = client.add_incident_comment(uuid, update_value)
             status = response.status_code
 
             # Incident Close Incident
@@ -1970,9 +1976,9 @@ def patch_incident_update_command(client: Client, args: dict[str, Any]) -> Comma
             # Incident Update Resolution
         elif action == 'update_resolution':
             action_desc = 'Update Status'
-            if not args.get('value'):
-                raise ValueError(f'Invalid Incident Resolution value. provide integer value'
-                                 f'Resolution supported values were {INCIDENT_RESOLUTION}')
+            if not update_value or INCIDENT_RESOLUTION.get(str(update_value)) is None:
+                raise ValueError(f'Missing/Invalid Incident Resolution value. '
+                                 f'Enter any one of these resolution supported value {INCIDENT_RESOLUTION}')
             response = client.update_incident(uuid, int(args.get('value', 0)))
             status = response.status_code
 
@@ -2111,7 +2117,7 @@ def get_allow_list_command(client: Client, args: dict[str, Any]) -> CommandResul
     limit = int(payload.get('limit', ''))
 
     raw_response = client.get_allow_list(payload)
-    title = compile_command_title_string('Allow List Policy', args, int(raw_response.get('total', 0)))
+    title = compile_command_title_string('Allow List Policy', args, len(raw_response.get('result', [])))
 
     if page_result := get_data_of_current_page(raw_response.get('result', []), offset, limit):
         readable_output = generic_readable_output(page_result, title)
@@ -2143,7 +2149,7 @@ def get_deny_list_command(client: Client, args: dict[str, Any]) -> CommandResult
     limit = int(payload.get('limit', ''))
 
     raw_response = client.get_deny_list(payload)
-    title = compile_command_title_string('Deny List Policy', args, raw_response.get('total', 0))
+    title = compile_command_title_string('Deny List Policy', args, len(raw_response.get('result', [])))
 
     if page_result := get_data_of_current_page(raw_response.get('result', []), offset, limit):
         readable_output = generic_readable_output(page_result, title)
@@ -2542,7 +2548,7 @@ def run_polling_command(client: Client, args: dict, cmd: str, status_func: Calla
     outputs = status_func(client, args).outputs
     status = outputs.get('status')
     if status == 'Completed':
-        # # action was completed
+        # action completed
         if global_integration_context := demisto.getIntegrationContext():
             global_integration_context.pop('command_id')
             demisto.setIntegrationContext(global_integration_context)
