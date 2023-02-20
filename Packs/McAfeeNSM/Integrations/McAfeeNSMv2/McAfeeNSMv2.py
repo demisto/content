@@ -3,6 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
+
 import urllib3
 from typing import Dict, Any
 import base64
