@@ -194,8 +194,20 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
 }
 
 RULE_FILTERS = ('nat-type', 'action')
-
-
+APPILICATION_FILTERS = ('risk', 'category', 'subcategory', 'technology')
+CHARACTERISTICS_LIST=('virus-ident', 
+'file-type-ident', 
+'evasive-behavior', 
+'consume-big-bandwidth', 
+'used-by-malware', 
+'able-to-transfer-file', 
+'has-known-vulnerability', 
+'tunnel-other-application', 
+'prone-to-misuse', 
+'pervasive-use', 
+'data-ident', 
+'file-forward',
+'is-saas')
 class PAN_OS_Not_Found(Exception):
     """ PAN-OS Error. """
 
@@ -414,11 +426,11 @@ def do_pagination(
     page_size: int = DEFAULT_LIMIT_PAGE_SIZE,
     limit: int = DEFAULT_LIMIT_PAGE_SIZE
 ):
-    if page is not None:
+    if isinstance(entries,list) and page is not None:
         if page <= 0:
             raise DemistoException(f'page {page} must be a positive number')
         entries = entries[(page - 1) * page_size:page_size * page]  # do pagination
-    else:
+    elif isinstance(entries,list):
         entries = entries[:limit]
 
     return entries
@@ -692,13 +704,15 @@ def get_pan_os_major_version() -> int:
     return major_version
 
 
-def build_xpath_filter(rule_name: str = None, filters: dict = None) -> str:
+def build_xpath_filter(name_match: str = None, name_contains: str = None, filters: dict = None) -> str:
     xpath_prefix = ''
-    if rule_name:
-        xpath_prefix = f"@name='{rule_name}'"
+    if name_match:
+        xpath_prefix = f"@name='{name_match}'"
+    if name_contains:
+        xpath_prefix = f"contains(@name,'{name_contains}')"
     if filters:
         for key, value in filters.items():
-            if key in RULE_FILTERS:
+            if key in RULE_FILTERS or key in APPILICATION_FILTERS:
                 if xpath_prefix:
                     xpath_prefix += 'and'
                 xpath_prefix += f"({key}='{value}')"
@@ -707,6 +721,11 @@ def build_xpath_filter(rule_name: str = None, filters: dict = None) -> str:
                     if xpath_prefix:
                         xpath_prefix += 'and'
                     xpath_prefix += f"(tag/member='{tag}')"
+            if key == 'characteristics':
+                for characteristic in value:
+                    if xpath_prefix:
+                        xpath_prefix += 'and'
+                    xpath_prefix += f"({characteristic}='yes')"
     return xpath_prefix
 
 
@@ -718,7 +737,6 @@ def filter_rules_by_status(disabled: str, rules: list) -> list:
 
 
 ''' FUNCTIONS'''
-
 
 def panorama_test(fetch_params):
     """
@@ -3483,7 +3501,7 @@ def panorama_list_rules(xpath: str, name: str = None, filters: dict = None, quer
 
     if query:
         params["xpath"] = f'{params["xpath"]}[{query}]'
-    elif xpath_filter := build_xpath_filter(name, filters):
+    elif xpath_filter := build_xpath_filter(name_match=name, filters=filters):
         params["xpath"] = f'{params["xpath"]}[{xpath_filter}]'
 
     result = http_request(
@@ -4122,41 +4140,69 @@ def prettify_applications_arr(applications_arr: Union[List[dict], dict]):
         applications_arr = [applications_arr]
     for i in range(len(applications_arr)):
         application = applications_arr[i]
+        application_characteristics_list=[]
+        for characteristics_name,value in application.items():
+            if characteristics_name in CHARACTERISTICS_LIST and value=='yes':
+                application_characteristics_list.append(str(characteristics_name))
         pretty_application_arr.append({
+            'Category': application.get('category'),
             'SubCategory': application.get('subcategory'),
             'Risk': application.get('risk'),
             'Technology': application.get('technology'),
             'Name': application.get('@name'),
             'Description': application.get('description'),
+            'Characteristics': application_characteristics_list,
             'Id': application.get('@id'),
         })
     return pretty_application_arr
 
 
 @logger
-def panorama_list_applications(predefined: bool) -> Union[List[dict], dict]:
+def panorama_list_applications(args:Dict[str, str], predefined: bool) -> Union[List[dict], dict]:
     major_version = get_pan_os_major_version()
     params = {
         'type': 'config',
         'action': 'get',
         'key': API_KEY
     }
+    filters = assign_params(
+        risk=args.get('risk'),
+        category=args.get('category'),
+        subcategory=args.get('sub_category'),
+        technology=args.get('technology'),
+        characteristics=argToList(args.get('characteristics')),
+    )
+    name_match = args.get('name_match')
+    demisto.debug('name_match',name_match)
+    name_contain = args.get('name_contain')
+    if name_match and name_contain:
+        raise Exception('Please specify only one of name_match/name_contain')
+    xpath_filter = build_xpath_filter(name_match,name_contain,filters)
+    demisto.debug("xpath_filter", xpath_filter)
     if predefined:  # if predefined = true, no need for device group.
         if major_version < 9:
             raise Exception('Listing predefined applications is only available for PAN-OS 9.X and above versions.')
         else:
-            params['xpath'] = '/config/predefined/application'
+                if xpath_filter:
+                    params['xpath'] = f'/config/predefined/application/entry[{xpath_filter}]'
+                else:
+                    params['xpath'] = '/config/predefined/application'
     else:
         # if device-group was provided it will be set in initialize_instance function.
-        params['xpath'] = XPATH_OBJECTS + "application/entry"
-
+        if xpath_filter:
+            params['xpath'] = XPATH_OBJECTS + f"application/entry[{xpath_filter}]"
+        else:
+            params['xpath'] = XPATH_OBJECTS + "application/entry"
+    demisto.debug(params['xpath'])
     result = http_request(
         URL,
         'POST',
         body=params
     )
     applications_api_response = result['response']['result']
-    if predefined:
+    if filters or name_match or name_contain:
+        applications = applications_api_response.get('entry') or []
+    elif predefined:
         applications = applications_api_response.get('application', {}).get('entry') or []
     else:
         applications = applications_api_response.get('entry') or []
@@ -4166,21 +4212,25 @@ def panorama_list_applications(predefined: bool) -> Union[List[dict], dict]:
     return applications
 
 
-def panorama_list_applications_command(predefined: Optional[str] = None):
+def panorama_list_applications_command(args:Dict[str, str]):
     """
     List all applications
     """
-    predefined = predefined == 'true'
-    applications_arr = panorama_list_applications(predefined)
-    applications_arr_output = prettify_applications_arr(applications_arr)
-    headers = ['Id', 'Name', 'Risk', 'Category', 'SubCategory', 'Technology', 'Description']
+    predefined = args.get('predefined') == 'true'
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('page_size')) or DEFAULT_LIMIT_PAGE_SIZE
+    limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT_PAGE_SIZE
+    applications_arr = panorama_list_applications(args,predefined)
+    entries = do_pagination(applications_arr, page=page, page_size=page_size, limit=limit)
+    applications_arr_output = prettify_applications_arr(entries)
+    headers = ['Id', 'Name', 'Risk', 'Category', 'SubCategory', 'Technology', 'Description', 'Characteristics']
 
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': applications_arr,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Applications', t=applications_arr_output, headers=headers),
+        'HumanReadable': tableToMarkdown('Applications', t=applications_arr_output, headers=headers, removeNull=True),
         'EntryContext': {
             "Panorama.Applications(val.Name == obj.Name)": applications_arr_output
         }
@@ -11707,7 +11757,7 @@ def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] =
 
     if query:
         _xpath = f"{_xpath}/rules/entry[{query}]"
-    elif xpath_filter := build_xpath_filter(name, filters):
+    elif xpath_filter := build_xpath_filter(name_match=name, filters=filters):
         _xpath = f"{_xpath}/rules/entry[{xpath_filter}]"
 
     if element:
@@ -12480,7 +12530,7 @@ def build_pbf_xpath(name, pre_post, element_to_change=None, filters: dict = None
 
     if query:
         _xpath = f"{_xpath}/rules/entry[{query}]"
-    elif xpath_filter := build_xpath_filter(name, filters):
+    elif xpath_filter := build_xpath_filter(name_match=name, filters=filters):
         _xpath = f"{_xpath}/rules/entry[{xpath_filter}]"
 
     if element_to_change:
@@ -13539,7 +13589,7 @@ def main(): # pragma: no cover
 
         # Application
         elif command == 'panorama-list-applications' or command == 'pan-os-list-applications':
-            panorama_list_applications_command(args.get('predefined'))
+            panorama_list_applications_command(args)
 
         # Test security policy match
         elif command == 'panorama-security-policy-match' or command == 'pan-os-security-policy-match':
