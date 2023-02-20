@@ -128,7 +128,7 @@ def main():
     storage_client = storage.Client.from_service_account_json(options.service_account)
     storage_bucket = storage_client.bucket('xsoar-ci-artifacts')
     lock_repository_name = f'{options.gcs_locks_path.split("/")[-1]}'
-    number_machines_to_lock = options.number_machines_to_lock
+    number_machines_to_lock = int(options.number_machines_to_lock)
 
     logging.info('adding job_id to the queue')
     adding_build_to_the_queue(storage_bucket, lock_repository_name, options.ci_job_id)
