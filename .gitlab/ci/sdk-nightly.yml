@@ -91,7 +91,7 @@ demisto-sdk-nightly:xsoar-prepare-testing-bucket:
   tags:
     - gke
   rules:
-    - *.sdk-nightly-schedule-rule-inner
+    *.sdk-nightly-schedule-rule-inner
   extends:
     - .default-job-settings
     - xsoar-prepare-testing-bucket
@@ -113,7 +113,7 @@ demisto-sdk-nightly:mpv2-prepare-testing-bucket:
   tags:
     - gke
   rules:
-    - *.sdk-nightly-schedule-rule-inner
+    *.sdk-nightly-schedule-rule-inner
   extends:
     - .default-job-settings
     - mpv2-prepare-testing-bucket
@@ -129,7 +129,7 @@ demisto-sdk-nightly:xpanse-prepare-testing-bucket:
   tags:
     - gke
   rules:
-    - *.sdk-nightly-schedule-rule-inner
+    *.sdk-nightly-schedule-rule-inner
   extends:
     - .default-job-settings
     - xpanse-prepare-testing-bucket
