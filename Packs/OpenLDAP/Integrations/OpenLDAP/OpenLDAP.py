@@ -21,7 +21,7 @@ class LdapClient:
         :param kwargs: Initialize params for ldap client
     """
 
-    OPENLDAP = 'OpenLDAP'
+    OPENLDAP = 'OpenLDAP'    
     ACTIVE_DIRECTORY = 'Active Directory'
     GROUPS_TOKEN = 'primaryGroupToken'
     GROUPS_MEMBER = 'memberOf'
