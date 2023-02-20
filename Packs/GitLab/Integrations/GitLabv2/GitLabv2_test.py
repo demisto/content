@@ -755,11 +755,11 @@ def test_code_search_command(mocker):
 def test_gitlab_pipelines_schedules_list_command(mocker):
     """
     Given:
-        - optinal params, arguments
+        - client and demisto args
     When:
-        - running code_search_command
+        - calling the gitlab_pipelines_schedules_list_command
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - validate that the command results returns properly
     """
     from GitLabv2 import (Client, gitlab_pipelines_schedules_list_command)
     client = Client(project_id=1234,
@@ -782,11 +782,11 @@ def test_gitlab_pipelines_schedules_list_command(mocker):
 def test_gitlab_pipelines_list_command(mocker):
     """
     Given:
-        - optinal params, arguments
+        - client and demisto args
     When:
-        - running code_search_command
+        - calling the gitlab_pipelines_list_command
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - validate that the command results returns properly
     """
     from GitLabv2 import (Client, gitlab_pipelines_list_command)
     client = Client(project_id=1234,
@@ -809,11 +809,11 @@ def test_gitlab_pipelines_list_command(mocker):
 def test_gitlab_jobs_list_command(mocker):
     """
     Given:
-        - optinal params, arguments
+        - client and demisto args
     When:
-        - running code_search_command
+        - calling the gitlab_jobs_list_command
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - validate that the command results returns properly
     """
     from GitLabv2 import (Client, gitlab_jobs_list_command)
     client = Client(project_id=1234,
@@ -839,11 +839,11 @@ def test_gitlab_jobs_list_command(mocker):
 def test_gitlab_artifact_get_command(mocker):
     """
     Given:
-        - optinal params, arguments
+        - client and demisto args
     When:
-        - running code_search_command
+        - calling the gitlab_artifact_get_command
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - validate that the command results returns properly
     """
     from GitLabv2 import (Client, gitlab_artifact_get_command)
     client = Client(project_id=1234,
