@@ -2986,42 +2986,36 @@ def get_mapping_fields_command():
     return mapping_response
 
 
-def update_remote_incident(client: Client, threat_id: str, delta: dict) -> str:
-    if delta.get("sentinelonethreatanalystverdict", None):
-        action = ANALYST_VERDICT.get(delta.get("sentinelonethreatanalystverdict", ""), None)
+def update_remote_incident(client: Client, threat_id: str, sentinelone_analyst_verdict: str,
+                           sentinelone_threat_status: str, closing_notes: str) -> str:
+    if sentinelone_analyst_verdict:
+        action = ANALYST_VERDICT.get(sentinelone_analyst_verdict, None)
         response = client.update_threat_analyst_verdict_request(threat_ids=argToList(threat_id), action=action)
         if response.get("affected") and int(response.get("affected")) > 0:
-            demisto.debug("Successfully updated the threat analyst verdict")
-            note = f"XSOAR - Updated the threat analyst verdict to {delta.get('sentinelonethreatanalystverdict')}"
+            demisto.debug(f"Successfully updated the threat analyst verdict to {action}")
+            note = f"XSOAR - Updated the threat analyst verdict to {sentinelone_analyst_verdict}"
             client.write_threat_note_request(threat_ids=argToList(threat_id), note=note)
         else:
             demisto.debug("Unable to update the analyst verdict")
-    if delta.get("sentinelonethreatstatus", None):
-        action = THREAT_STATUS.get(delta.get("sentinelonethreatstatus", ""), None)
-        response = client.update_threat_status_request(threat_ids=argToList(threat_id), status=action)
-        if response.get("affected") and int(response.get("affected")) > 0:
-            demisto.debug("Successfully updated the threat status")
-            note = f"XSOAR - Updated the threat status to {delta.get('sentinelonethreatstatus')}"
-            client.write_threat_note_request(threat_ids=argToList(threat_id), note=note)
-        else:
-            demisto.debug("Unable to update the analyst verdict")
-    return ""
+    if sentinelone_threat_status:
+        action = THREAT_STATUS.get(sentinelone_threat_status, None)
+        if action == "resolved" and demisto.params().get("close_sentinelone_incident"):
+            response = client.update_threat_status_request(threat_ids=argToList(threat_id), status=action)
+            if response.get("affected") and int(response.get("affected")) > 0:
+                demisto.debug("Successfully updated the threat status and marked as resolved")
+                note = "XSOAR - Marked as resolved \n" + closing_notes
+                client.write_threat_note_request(threat_ids=argToList(threat_id), note=note)
+            else:
+                demisto.debug("Unable to Mark as resolved")
+        if action != "resolved":
+            response = client.update_threat_status_request(threat_ids=argToList(threat_id), status=action)
+            if response.get("affected") and int(response.get("affected")) > 0:
+                demisto.debug(f"Successfully updated the threat status to {action}")
+                note = f"XSOAR - Updated the threat status to {sentinelone_threat_status}"
+                client.write_threat_note_request(threat_ids=argToList(threat_id), note=note)
+            else:
+                demisto.debug("Unable to update the threat status")
 
-
-def close_remote_incident(client: Client, threat_id: str, delta: dict) -> str:
-    """
-    This method will close the remote incident
-    """
-    verdict = ANALYST_VERDICT.get(delta.get("sentinelonethreatanalystverdict", ""), None)
-    if verdict:
-        client.update_threat_analyst_verdict_request(threat_ids=argToList(threat_id), action=verdict)
-    response = client.update_threat_status_request(threat_ids=argToList(threat_id), status="resolved")
-    if response.get("affected") and int(response.get("affected")) > 0:
-        demisto.debug("Successfully updated the threat status and marked as resolved")
-        note = "XSOAR - Marked as resolved \n" + delta.get("closeNotes", "")
-        client.write_threat_note_request(threat_ids=argToList(threat_id), note=note)
-    else:
-        demisto.debug("Unable to mark as resolved")
     return ""
 
 
@@ -3057,11 +3051,11 @@ def update_remote_system_command(client: Client, args: dict) -> str:
     )
     try:
         if parsed_args.incident_changed:
-            if delta.get("closeNotes", None):
-                if demisto.params().get("close_sentinelone_incident"):
-                    close_remote_incident(client, remote_incident_id, delta)
-            else:
-                update_remote_incident(client, remote_incident_id, delta)
+            sentinelone_analyst_verdict = delta.get("sentinelonethreatanalystverdict", None)
+            sentinelone_threat_status = delta.get("sentinelonethreatstatus", None)
+            closing_notes = delta.get("closeNotes", "")
+            update_remote_incident(client, remote_incident_id, sentinelone_analyst_verdict,
+                                   sentinelone_threat_status, closing_notes)
     except Exception as e:
         demisto.error(f'Error in SentinelOne outgoing mirror for incident {remote_incident_id}. '
                       f'Error message: {str(e)}')

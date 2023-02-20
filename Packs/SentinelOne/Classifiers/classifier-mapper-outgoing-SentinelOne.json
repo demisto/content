@@ -6,8 +6,12 @@
         "SentinelOne Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-
-                
+				"sentinelonethreatstatus": {
+					"simple": "incidentStatus"
+				},
+				"sentinelonethreatanalystverdict": {
+					"simple": "analystVerdict"
+				}
             }
         }
     },
