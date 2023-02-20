@@ -1,7 +1,10 @@
+import re
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
+import urllib3
+from urllib.parse import unquote
 ''' IMPORTS '''
 import json
 import shutil
@@ -10,7 +13,7 @@ import random
 import urllib
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS / PARAMS '''
 IS_FETCH = demisto.params().get('isFetch')
@@ -27,7 +30,7 @@ ALERT_UUID_REGEX = re.compile('[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-z
 
 def capitalize_first_letter(raw_dict):
     parsed_dict = {}
-    for key in raw_dict.keys():
+    for key in list(raw_dict.keys()):
         cap_key = key[0].capitalize() + key[1:]
         parsed_dict[cap_key] = raw_dict[key]
 
@@ -61,16 +64,16 @@ def http_request(method, url_suffix, params=None, data=None, files=None, is_json
             except:  # noqa
                 error = res.content
 
-            raise Exception('Error in API call to Fidelis Integration [%d] - %s' % (res.status_code, error))
+            raise Exception(f'Error in API call to Fidelis Integration {res.status_code} - {error}')
         else:
-            raise Exception('Error in API call to Fidelis Integration [%d] - %s' % (res.status_code, res.reason))
+            raise Exception(f'Error in API call to Fidelis Integration {res.status_code} - {res.reason}')
 
     if is_json:
         try:
             return res.json()
 
         except ValueError:
-            return_error('failed to parse json object from response: {}'.format(res.content))
+            return_error(f'failed to parse json object from response: {res.content}')
 
     else:
         return res.content
@@ -90,7 +93,7 @@ def login():
         try:
             res = http_request('POST', url, data=data)
             if res.get('error') is not None:
-                raise requests.HTTPError('Failed to login: {}'.format(res['error']))
+                raise requests.HTTPError(f'Failed to login: {res.get("error")}')
             SESSION_ID = res.get('uid')
         except requests.exceptions.RequestException as e:  # noqa
             return_error('Demisto has encounter a connection error, '
@@ -170,7 +173,7 @@ def generate_time_settings(time_frame=None, start_time=None, end_time=None):
         elif time_frame == 'Last 48 Hours':
             settings['value'] = '48:00:00'
         else:
-            raise ValueError('Could not parse time frame: {}'.format(time_frame))
+            raise ValueError(f'Could not parse time frame: {time_frame}')
 
     elif time_frame == 'Custom':
         settings['key'] = 'custom'
@@ -204,8 +207,7 @@ def update_alertstatus_command():
     }
 
     raw_res = update_alertstatus(data)
-    return_outputs("Alert {} has been updated to {} status".format(alert_id, status.capitalize()),
-                   {}, raw_res)
+    return_outputs(f"Alert {alert_id} has been updated to {status.capitalize()} status", {}, raw_res)
 
 
 @logger
@@ -232,7 +234,7 @@ def get_alert_dpath_command():
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Alert {}'.format(alert_id), context_result, headerTransform=pascalToSpace,
+        'HumanReadable': tableToMarkdown(f'Alert {alert_id}', context_result, headerTransform=pascalToSpace,
                                          removeNull=True),
         'EntryContext': {
             'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
@@ -242,7 +244,7 @@ def get_alert_dpath_command():
 
 @logger
 def get_alert_dpath(alert_id):
-    result = http_request('GET', '/j/rest/v1/alert/dpath/{}/'.format(alert_id))
+    result = http_request('GET', f'/j/rest/v1/alert/dpath/{alert_id}/')
 
     return result
 
@@ -265,7 +267,7 @@ def alert_ef_submission_command():
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Alert {}'.format(alert_id), context_result, headerTransform=pascalToSpace,
+        'HumanReadable': tableToMarkdown(f'Alert {alert_id}', context_result, headerTransform=pascalToSpace,
                                          removeNull=True),
         'EntryContext': {
             'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
@@ -275,7 +277,7 @@ def alert_ef_submission_command():
 
 @logger
 def alert_ef_submission(alert_id):
-    result = http_request('GET', '/j/rest/v1/alert/efsubmit/{}/'.format(alert_id))
+    result = http_request('GET', f'/j/rest/v1/alert/efsubmit/{alert_id}/')
 
     return result
 
@@ -292,7 +294,7 @@ def add_alert_comment_command():
     }
 
     add_alert_comment(alert_id, data)
-    return_outputs("Added this comment: {}\n To alert ID: {}".format(comment, alert_id), {}, {})
+    return_outputs(f"Added this comment: {comment}\n To alert ID: {alert_id}", {}, {})
 
 
 @logger
@@ -321,13 +323,13 @@ def manage_alert_label_command():
 
     bad_res = manage_alert_label(data)
     if bad_res and action == 'Add':
-        return_error("Was not able to add the label {} to alert {}".format(label, alert_id))
+        return_error(f"Was not able to add the label {label} to alert {alert_id}")
 
     elif bad_res and action == 'Remove':
-        return_error("Was not able to remove the label {} to alert {}".format(label, alert_id))
+        return_error(f"Was not able to remove the label {label} to alert {alert_id}")
 
     else:
-        return_outputs("Assigned label: {} to alert {}".format(label, alert_id), {}, {})
+        return_outputs(f"Assigned label: {label} to alert {alert_id}", {}, {})
 
 
 @logger
@@ -348,7 +350,7 @@ def manage_alert_assignuser_command():
     comment = args.get('comment')
 
     data = {
-        'alertIds': ['Console-' + str(conclusion_id)],
+        'alertIds': [f'Console-{conclusion_id}'],
         'assignToUser': assign_user,
         'searchParams': None,
         'byId': True,
@@ -367,7 +369,7 @@ def manage_alert_assignuser_command():
         'ConclusionID': conclusion_id
     }
 
-    return_outputs("Assigned User: {} to alert with conclusion ID {}".format(assign_user, conclusion_id),
+    return_outputs(f"Assigned User: {assign_user} to alert with conclusion ID {conclusion_id}",
                    {'Fidelis.Alert(val.ConclusionID && val.ConclusionID == obj.ConclusionID)': entry_context}, raw_response)
 
 
@@ -384,7 +386,7 @@ def manage_alert_closealert_command():
     resolution = args['resolution']
 
     data = {
-        'alertIds': ['Console-' + str(conclusion_id)],
+        'alertIds': [f'Console-{conclusion_id}'],
         # This field is not used by Fidelis when closing alerts / So setting it doesn't matter
         'searchParams': None,
         'byId': True,
@@ -442,7 +444,7 @@ def get_alert_sessiondata_command():
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Alert {}'.format(alert_id), context_result, headerTransform=pascalToSpace,
+        'HumanReadable': tableToMarkdown(f'Alert {alert_id}', context_result, headerTransform=pascalToSpace,
                                          removeNull=True),
         'EntryContext': {
             'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
@@ -452,7 +454,7 @@ def get_alert_sessiondata_command():
 
 @logger
 def get_alert_sessiondata(alert_id):
-    result = http_request('GET', '/j/rest/v2/event/sessiondata/{}/'.format(alert_id))
+    result = http_request('GET', f'/j/rest/v2/event/sessiondata/{alert_id}/')
 
     return result
 
@@ -473,7 +475,7 @@ def get_alert_ef_command():
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Alert {}'.format(alert_id), context_result, headerTransform=pascalToSpace,
+        'HumanReadable': tableToMarkdown(f'Alert {alert_id}', context_result, headerTransform=pascalToSpace,
                                          removeNull=True),
         'EntryContext': {
             'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
@@ -483,7 +485,7 @@ def get_alert_ef_command():
 
 @logger
 def get_alert_ef(alert_id):
-    result = http_request('GET', '/j/rest/v1/alert/ef/{}/'.format(alert_id))
+    result = http_request('GET', f'/j/rest/v1/alert/ef/{alert_id}/')
 
     return result
 
@@ -506,7 +508,7 @@ def get_alert_forensictext_command():
         'EntryContext': {
             'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
         },
-        'HumanReadable': 'Alert {}'.format(alert_id) + "\nForensic Text: " + str(result)
+        'HumanReadable': f'Alert {alert_id}\nForensic Text: {result}'
     })
 
 
@@ -1064,7 +1066,7 @@ def download_malware_file():
         return_outputs("No File Found", {}, {})
 
     else:
-        decoded_file_name = urllib.unquote(file_name)
+        decoded_file_name = urllib.parse.unquote(file_name)
         results = download_malware_file_request(alert_id)
 
         demisto.results(fileResult(
