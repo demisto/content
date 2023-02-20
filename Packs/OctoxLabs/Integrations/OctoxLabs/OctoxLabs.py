@@ -30,8 +30,6 @@ def run_command(
         "octoxlabs-search-devices": search_devices,
         "octoxlabs-get-device": get_device,
         "octoxlabs-get-queries": get_queries,
-        "octoxlabs-get-query-by-id": get_query_by_id,
-        "octoxlabs-get-query-by-name": get_query_by_name,
     }
     command_function: Optional[Callable] = commands.get(command_name, None)
     if command_function:
@@ -203,56 +201,12 @@ def get_queries(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
                         "created_at",
                         "updated_at",
                         "username",
-                        "is_temporary",
+                        "is_temporary"
                     ],
                 )
                 for q in queries
             ],
         },
-    )
-
-
-def get_query_by_id(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
-    query = octox.get_query_by_id(query_id=args.get("query_id"))
-    return CommandResults(
-        outputs_prefix="OctoxLabs.Query",
-        outputs=convert_to_json(
-            obj=query,
-            keys=[
-                "id",
-                "name",
-                "text",
-                "tags",
-                "count",
-                "is_public",
-                "created_at",
-                "updated_at",
-                "username",
-                "is_temporary",
-            ],
-        ),
-    )
-
-
-def get_query_by_name(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
-    query = octox.get_query_by_name(query_name=args.get("query_name"))
-    return CommandResults(
-        outputs_prefix="OctoxLabs.Query",
-        outputs=convert_to_json(
-            obj=query,
-            keys=[
-                "id",
-                "name",
-                "text",
-                "tags",
-                "count",
-                "is_public",
-                "created_at",
-                "updated_at",
-                "username",
-                "is_temporary",
-            ],
-        ),
     )
 
 

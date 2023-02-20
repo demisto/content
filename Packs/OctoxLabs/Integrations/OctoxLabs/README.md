@@ -1,5 +1,5 @@
 Octox Labs Cyber Security Asset Management platform
-This integration was integrated and tested with version xx of OctoxLabs
+This integration was integrated and tested with version 3.3.0 of OctoxLabs
 
 ## Configure OctoxLabs on Cortex XSOAR
 
@@ -195,66 +195,6 @@ Fetch your queries
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | OctoxLabs.Queries.count | Number | Queries count | 
-| OctoxLabs.Queries.results.id | Number | Query id | 
-| OctoxLabs.Queries.results.name | String | Query name | 
-| OctoxLabs.Queries.results.text | String | Query text | 
-| OctoxLabs.Queries.results.tags | Unknown | List&lt;str&gt; Query tags | 
-| OctoxLabs.Queries.results.count | Number | Query device count | 
-| OctoxLabs.Queries.results.is_public | Boolean | Query is public? | 
-| OctoxLabs.Queries.results.created_at | String | Query created at | 
-| OctoxLabs.Queries.results.updated_at | String | Query updated at | 
-| OctoxLabs.Queries.results.username | String | Query creator | 
-| OctoxLabs.Queries.results.is_temporary | Boolean | Query is temporary | 
-
-### octoxlabs-get-query-by-id
-
-***
-Fetch your queries by id
-
-#### Base Command
-
-`octoxlabs-get-query-by-id`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| query_id | Query id. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| OctoxLabs.Queries.results.id | Number | Query id | 
-| OctoxLabs.Queries.results.name | String | Query name | 
-| OctoxLabs.Queries.results.text | String | Query text | 
-| OctoxLabs.Queries.results.tags | Unknown | List&lt;str&gt; Query tags | 
-| OctoxLabs.Queries.results.count | Number | Query device count | 
-| OctoxLabs.Queries.results.is_public | Boolean | Query is public? | 
-| OctoxLabs.Queries.results.created_at | String | Query created at | 
-| OctoxLabs.Queries.results.updated_at | String | Query updated at | 
-| OctoxLabs.Queries.results.username | String | Query creator | 
-| OctoxLabs.Queries.results.is_temporary | Boolean | Query is temporary | 
-
-### octoxlabs-get-query-by-name
-
-***
-Fetch your queries by id
-
-#### Base Command
-
-`octoxlabs-get-query-by-name`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| query_name | Query name. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
 | OctoxLabs.Queries.results.id | Number | Query id | 
 | OctoxLabs.Queries.results.name | String | Query name | 
 | OctoxLabs.Queries.results.text | String | Query text | 
