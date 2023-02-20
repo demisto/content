@@ -1854,11 +1854,11 @@ def create_data_for_alert_rule(args: Dict[str, Any]) -> Dict[str, Any]:
     return data
 
 
-def create_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any]) -> CommandResults:
+def create_and_update_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any]) -> CommandResults:
     validate_required_arguments_for_alert_rule(args)
 
     data = args.get('rule_json') or create_data_for_alert_rule(args)
-    demisto.debug(f'Try to creating alert rule with the following data: {data}')
+    demisto.debug(f'Try to creating/updating alert rule with the following data: {data}')
 
     response = client.http_request('PUT', f'alertRules/{args.get("rule_name")}', data=data)
 
@@ -1872,7 +1872,7 @@ def create_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any])
         'Enabled': response.get('properties', {}).get('enabled'),
         'Etag': response.get('etag')
     }
-    readable_output = tableToMarkdown('Azure Sentinel Alert Rule successfully created', readable_result)
+    readable_output = tableToMarkdown('Azure Sentinel Alert Rule successfully created/updated', readable_result)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1953,7 +1953,8 @@ def main():
             'azure-sentinel-list-alert-rule': list_alert_rule_command,
             'azure-sentinel-list-alert-rule-template': list_alert_rule_template_command,
             'azure-sentinel-delete-alert-rule': delete_alert_rule_command,
-            'azure-sentinel-create-alert-rule': create_alert_rule_command,
+            'azure-sentinel-create-alert-rule': create_and_update_alert_rule_command,
+            'azure-sentinel-update-alert-rule': create_and_update_alert_rule_command,
             # mirroring commands
             'get-modified-remote-data': get_modified_remote_data_command,
             'get-remote-data': get_remote_data_command,
