@@ -72,9 +72,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - "22"
+      - "23"
     separatecontext: false
     view: |-
       {
@@ -88,49 +90,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
-    taskid: fdf454ba-e56f-4cd8-8a7b-c7a02b3343cf
-    type: regular
-    task:
-      id: fdf454ba-e56f-4cd8-8a7b-c7a02b3343cf
-      version: -1
-      name: Close Investigation
-      description: commands.local.cmd.close.inv
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    scriptarguments:
-      adgroups: {}
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      code42alerttype: {}
-      computermodel: {}
-      emailclassification: {}
-      hiredate: {}
-      homeaddresscity: {}
-      homeaddressstreet2: {}
-      homephone: {}
-      id: {}
-      mobilephone: {}
-      phishingconfirmationstatus: {}
-      phishingsubtype: {}
-      userfirstmiddlename: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 77e0e67a-b609-4e43-8735-04374951b4f5
@@ -152,10 +113,10 @@ tasks:
         simple: "false"
       key:
         simple: inputA
-      stringify: {}
       value:
         simple: abc
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -189,10 +150,10 @@ tasks:
         simple: "false"
       key:
         simple: inputB
-      stringify: {}
       value:
         simple: xyz
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -216,10 +177,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -253,7 +216,6 @@ tasks:
         simple: "false"
       key:
         simple: outputA
-      stringify: {}
       value:
         complex:
           root: inputA
@@ -270,6 +232,7 @@ tasks:
                 value:
                   simple: success
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -310,6 +273,7 @@ tasks:
           right:
             value:
               simple: success
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -333,10 +297,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -360,10 +326,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {

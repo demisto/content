@@ -12,7 +12,8 @@ API_VERSION = '2021-09-01'
 class AKSClient:
     def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com', tenant_id: str = None,
-                 enc_key: str = None, auth_type: str = 'Device Code', redirect_uri: str = None, auth_code: str = None):
+                 enc_key: str = None, auth_type: str = 'Device Code', redirect_uri: str = None, auth_code: str = None,
+                 managed_identities_client_id: str = None):
         AUTH_TYPES_DICT: dict[str, Any] = {
             'Authorization Code': {
                 'grant_type': AUTHORIZATION_CODE,
@@ -46,6 +47,8 @@ class AKSClient:
             enc_key=enc_key,
             redirect_uri=redirect_uri,
             auth_code=auth_code,
+            managed_identities_client_id=managed_identities_client_id,
+            managed_identities_resource_uri=Resources.management_azure,
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.subscription_id = subscription_id
@@ -178,14 +181,18 @@ def test_module(client):
     Performs basic GET request to check if the API is reachable and authentication is successful.
     Returns ok if successful.
     """
-    if demisto.params().get('auth_type') == 'Device Code':
+    params = demisto.params()
+    if params.get('auth_type') == 'Device Code':
         raise Exception("When using device code flow configuration, "
                         "Please enable the integration and run `!azure-ks-auth-start` and `!azure-ks-auth-complete` to "
                         "log in. You can validate the connection by running `!azure-ks-auth-test`\n"
                         "For more details press the (?) button.")
-    elif demisto.params().get('auth_type') == 'Authorization Code':
+    elif params.get('auth_type') == 'Authorization Code':
         raise Exception("When using user auth flow configuration, "
                         "Please enable the integration and run the !azure-ks-auth-test command in order to test it")
+    elif params.get('auth_type') == 'Azure Managed Identities':
+        test_connection(client=client)
+        return 'ok'
 
 
 def main() -> None:
@@ -207,10 +214,13 @@ def main() -> None:
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
             azure_ad_endpoint=params.get('azure_ad_endpoint',
-                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com'
+                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com',
+            managed_identities_client_id=get_azure_managed_identities_client_id(params)
         )
         if command == 'test-module':
             return_results(test_module(client))
+        elif command == 'azure-ks-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
         elif command == 'azure-ks-auth-start':
             return_results(start_auth(client))
         elif command == 'azure-ks-auth-complete':

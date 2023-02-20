@@ -1,10 +1,11 @@
 import json
 import pytest
-from stix2 import TAXIICollectionSource
+from stix2 import TAXIICollectionSource, parse
+
 from test_data.mitre_test_data import ATTACK_PATTERN, COURSE_OF_ACTION, INTRUSION_SET, MALWARE, TOOL, ID_TO_NAME, \
     RELATION, STIX_TOOL, STIX_MALWARE, STIX_ATTACK_PATTERN, MALWARE_LIST_WITHOUT_PREFIX, MALWARE_LIST_WITH_PREFIX, \
     INDICATORS_LIST, NEW_INDICATORS_LIST, MITRE_ID_TO_MITRE_NAME, OLD_ID_TO_NAME, NEW_ID_TO_NAME, RELATIONSHIP_ENTITY, \
-    CAMPAIGN
+    CAMPAIGN, ATTACK_PATTERNS
 
 ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
 NON_ENTERPRISE_COLLECTION_ID = '101010101010101010101010101010101'
@@ -222,11 +223,50 @@ def test_filter_attack_pattern_object_by_attack_id(attack_id, attack_pattern_obj
 
 
 @pytest.mark.parametrize('description, expected_result', [
-    ('Gross, J. (2016, February 23). Operation Dust Storm. Retrieved December 22, 2021.', '2016, February 23'),
+    ('Test (23)', ''),
+    ('Test (2020, Mar)', '2020-03-01T00:00:00'),
+    ('Test (Test) (2020, Mar)', '2020-03-01T00:00:00'),
+    ('Test 2033)', ''),
+    ('Test ()', ''),
+    ('Test (Test)', ''),
+    ('Gross, J. (2016, February 23). Operation Dust Storm. Retrieved December 22, 2021.', '2016-02-23T00:00:00'),
     ('Cisco. (n.d.). Cisco IOS Software Integrity Assurance - Command History. Retrieved October 21, 2020.', ''),
-    ('Citation: Security Affairs Elderwood Sept 2012)', '')
+    ('Citation: Security Affairs Elderwood Sept 2012)', ''),
+    ('Insikt Group (Recorded Future). (2017, May 17).',
+     '2017-05-17T00:00:00'),
+    ('Insikt Group (Recorded Future). (2017, May17).',
+     '2017-05-17T00:00:00'),
+    ('Insikt Group (Recorded Future). (2017,May17).',
+     '2017-05-17T00:00:00'),
+    ('Insikt Group (Recorded Future). (2017,March17).',
+     '2017-03-17T00:00:00'),
+    ('Insikt Group (Recorded Future). (2017, March 17).',
+     '2017-03-17T00:00:00')
 ])
-def test_extract_timestamp_from_description(description, expected_result):
-    from FeedMitreAttackv2 import extract_timestamp_from_description
-    output = extract_timestamp_from_description(description)
+def test_extract_date_time_from_description(description, expected_result):
+    from FeedMitreAttackv2 import extract_date_time_from_description
+    output = extract_date_time_from_description(description)
     assert output == expected_result
+
+
+def test_attack_pattern_reputation_command(mocker):
+    """
+    Given:
+        Some attack patterns to retrieve, with and without sub-technique
+
+    When:
+        Running attack-pattern reputation command
+
+    Then:
+        Returns the wanted attack patterns
+    """
+    from FeedMitreAttackv2 import attack_pattern_reputation_command
+
+    stix_objs = [parse(stix_obj_dict, allow_custom=True) for stix_obj_dict in ATTACK_PATTERNS]
+    mocker.patch('FeedMitreAttackv2.get_mitre_data_by_filter', return_value=stix_objs)
+
+    args = {'attack_pattern': 'Abuse Elevation Control Mechanism, Active Scanning: Wordlist Scanning'}
+    command_results = attack_pattern_reputation_command('', args)
+
+    assert command_results[0].indicator.value == 'Abuse Elevation Control Mechanism'
+    assert command_results[1].indicator.value == 'Active Scanning: Wordlist Scanning'

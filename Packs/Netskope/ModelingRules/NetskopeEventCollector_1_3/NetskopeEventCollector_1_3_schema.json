@@ -4,6 +4,10 @@
       "type": "string",
       "is_array": false
     },
+    "alert_name": {
+      "type": "string",
+      "is_array": false
+    },
     "device": {
       "type": "string",
       "is_array": false
@@ -40,6 +44,10 @@
       "type": "int",
       "is_array": false
     },
+    "conn_duration": {
+      "type": "int",
+      "is_array": false
+    },
     "srcip": {
       "type": "string",
       "is_array": false
@@ -53,6 +61,10 @@
       "is_array": false
     },
     "total_packets": {
+      "type": "int",
+      "is_array": false
+    },
+    "client_bytes": {
       "type": "int",
       "is_array": false
     },
@@ -129,6 +141,98 @@
       "is_array": false
     },
     "sha256": {
+      "type": "string",
+      "is_array": false
+    },
+    "malware_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "malware_name": {
+      "type": "string",
+      "is_array": false
+    },
+    "severity": {
+      "type": "string",
+      "is_array": false
+    },
+    "malware_severity": {
+      "type": "string",
+      "is_array": false
+    },
+    "risk_level": {
+      "type": "string",
+      "is_array": false
+    },
+    "region_name": {
+      "type": "string",
+      "is_array": false
+    },
+    "activity_status": {
+      "type": "string",
+      "is_array": false
+    },
+    "details": {
+      "type": "string",
+      "is_array": false
+    },
+    "domain": {
+      "type": "string",
+      "is_array": false
+    },
+    "web_url": {
+      "type": "string",
+      "is_array": false
+    },
+    "supporting_data": {
+      "type": "string",
+      "is_array": false
+    },
+    "local_md5": {
+      "type": "string",
+      "is_array": false
+    },
+    "local_sha256": {
+      "type": "string",
+      "is_array": false
+    },
+    "object": {
+      "type": "string",
+      "is_array": false
+    },
+    "ur_normalized": {
+      "type": "string",
+      "is_array": false
+    },
+    "user_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "event_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "activity_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "account_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "file_path": {
+      "type": "string",
+      "is_array": false
+    },
+    "title": {
+      "type": "string",
+      "is_array": false
+    },
+    "filename": {
+      "type": "string",
+      "is_array": false
+    },
+    "source_log_event": {
       "type": "string",
       "is_array": false
     }

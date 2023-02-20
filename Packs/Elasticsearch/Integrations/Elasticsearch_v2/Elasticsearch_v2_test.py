@@ -630,7 +630,8 @@ def test_context_creation_es7(params, mocker):
                                                                                size, total_dict, ES_V7_RESPONSE)
 
     assert str(search_context) == MOCK_ES7_SEARCH_CONTEXT
-    assert str(meta_headers) == "['Query', 'took', 'timed_out', 'total', 'max_score', 'Server', 'Page', 'Size']"
+    assert str(meta_headers) == "['Query', 'took', 'timed_out', 'total', 'max_score', " \
+                                "'Server', 'Page', 'Size', 'aggregations']"
     assert str(hit_tables) == MOCK_ES7_HIT_CONTEXT
     assert str(hit_headers) == "['_id', '_index', '_type', '_score', 'Date']"
 
@@ -650,7 +651,8 @@ def test_context_creation_es6(params, mocker):
                                                                                size, total_dict, ES_V6_RESPONSE)
 
     assert str(search_context) == MOCK_ES6_SEARCH_CONTEXT
-    assert str(meta_headers) == "['Query', 'took', 'timed_out', 'total', 'max_score', 'Server', 'Page', 'Size']"
+    assert str(meta_headers) == "['Query', 'took', 'timed_out', 'total', " \
+                                "'max_score', 'Server', 'Page', 'Size', 'aggregations']"
     assert str(hit_tables) == MOCK_ES6_HIT_CONTEXT
     assert str(hit_headers) == "['_id', '_index', '_type', '_score', 'Date']"
 
@@ -920,13 +922,14 @@ def test_get_mapping_fields_command(mocker, indexes, response, expected_result):
 def test_search_command_with_query_dsl(mocker):
     """
     Given
-      - index to the search command
+      - index to the search command with query_dsl
 
     When
     - executing the search command
 
     Then
      - make sure that the index is being taken from the command arguments and not from integration parameters
+     - make sure that the size / page arguments are getting called when using query_dsl
     """
     import Elasticsearch_v2
     Elasticsearch_v2.FETCH_INDEX = 'index from parameter'
@@ -938,3 +941,27 @@ def test_search_command_with_query_dsl(mocker):
     mocker.patch.object(Elasticsearch_v2.Elasticsearch, '__init__', return_value=None)
     Elasticsearch_v2.search_command({})
     assert search_mock.call_args.kwargs['index'] == index_from_arg
+    assert search_mock.call_args.kwargs['size'] == 5
+    assert search_mock.call_args.kwargs['from_'] == 0
+
+
+def test_execute_raw_query(mocker):
+    """
+    Given
+      - index and elastic search objects
+
+    When
+    - executing execute_raw_query function with two response: first an exception and second a correct response.
+
+    Then
+     - make sure that no exception was raised from the function.
+     - make sure the response came back correctly.
+    """
+    import Elasticsearch_v2
+    Elasticsearch_v2.FETCH_INDEX = 'index from parameter'
+    mocker.patch.object(
+        Elasticsearch_v2.Elasticsearch, 'search', return_value=ES_V7_RESPONSE
+    )
+    mocker.patch.object(Elasticsearch_v2.Elasticsearch, '__init__', return_value=None)
+    es = Elasticsearch_v2.elasticsearch_builder({})
+    assert Elasticsearch_v2.execute_raw_query(es, 'dsadf') == ES_V7_RESPONSE

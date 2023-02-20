@@ -2,6 +2,7 @@ category: Endpoint
 commonfields:
   id: CiscoAMP
   version: -1
+deprecated: true
 configuration:
 - defaultvalue: https://api.amp.cisco.com
   display: Server URL
@@ -72,8 +73,8 @@ configuration:
   name: isFetch
   required: false
   type: 8
-description: Cisco Advanced Malware Protection software is designed to prevent, detect, and help remove threats in an efficient manner from computer systems. Threats can take the form of software viruses and other malware such as ransomware, worms, Trojans, spyware, adware, and fileless malware.
-display: Cisco AMP Secure Endpoint
+description: Deprecated. Use Cisco AMP v2 instead.
+display: Cisco AMP (Deprecated)
 name: CiscoAMP
 script:
   commands:

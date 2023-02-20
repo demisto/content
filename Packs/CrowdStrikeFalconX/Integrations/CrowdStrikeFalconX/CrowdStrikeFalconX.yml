@@ -1,4 +1,7 @@
 category: Forensics & Malware Analysis
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: CrowdStrike Falcon X
   version: -1
@@ -9,18 +12,24 @@ configuration:
   name: base_url
   required: false
   type: 0
+  section: Connect
 - display: Client ID
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -34,6 +43,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  section: Collect
 description: Use the CrowdStrike Falcon Intelligence Sandbox integration to submit files, file hashes, URLs, and FTPs for sandbox analysis, and to retrieve reports.
 display: CrowdStrike Falcon Intelligence Sandbox
 name: CrowdStrike Falcon X
@@ -1932,6 +1942,9 @@ script:
     - contextPath: csfalconx.resource.created_timestamp
       description: Analysis start time.
       type: Date
+    - contextPath: csfalconx.resource.url_name
+      description: Submitted URL.
+      type: String
   - arguments:
     - default: false
       description: ID of an artifact, such as an IOC pack, PCAP file, or actor image. Find an artifact ID in a report or summary.
@@ -1956,7 +1969,7 @@ script:
     description: Downloads IOC packs, PCAP files, and other analysis artifacts.
     execution: false
     name: cs-fx-download-ioc
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: false
   longRunning: false

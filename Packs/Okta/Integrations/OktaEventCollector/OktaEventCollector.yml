@@ -1,6 +1,9 @@
 commonfields:
   id: Okta Event Collector
   version: -1
+sectionOrder:
+- Connect
+- Collect
 name: Okta Event Collector
 display: Okta Event Collector
 category: Analytics & SIEM
@@ -10,16 +13,19 @@ configuration:
   name: url
   type: 0
   required: true
+  section: Connect
 - displaypassword: API key
   name: api_key
   hiddenusername: true
   type: 9
   required: true
+  section: Connect
 - display: Number of incidents to fetch per fetch
   name: limit
   type: 0
   defaultvalue: 1000
   required: true
+  section: Collect
 - display: First fetch from API time
   name: after
   type: 15
@@ -34,15 +40,20 @@ configuration:
   - 1 week
   - 1 month
   - 1 year
+  section: Collect
 - display: Trust any certificate (not secure)
   name: verify
   type: 8
   defaultvalue: "true"
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 script:
   script: ""
   type: python
@@ -61,7 +72,7 @@ script:
     description: Manual command to fetch events and display them.
     execution: false
     name: okta-get-events
-  dockerimage: demisto/fastapi:1.0.0.40721
+  dockerimage: demisto/fastapi:1.0.0.43666
   runonce: false
   isfetchevents: true
   subtype: python3

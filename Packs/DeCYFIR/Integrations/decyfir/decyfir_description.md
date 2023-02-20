@@ -1,0 +1,17 @@
+# Partner Contributed Integration
+
+Integration Author:  **Cyfirma Team**.
+
+
+CYFIRMA’s core platform, DeCYFIR, combines cyber threat intelligence with attack surface discovery and digital risk protection to deliver predictive, personalized, contextual, outside-in, and multi-layered cyber-intelligence. 
+With DeCYFIR’s APIs, security teams obtain a complete view of their external threat landscape and receive actionable insights to ensure their cybersecurity posture is robust, resilient, and able to counter emerging cyber threats.
+
+**Authorization:**
+
+To obtain a commercial DeCYFIR API Key, please contact us at this email **_contact@cyfirma.com_**. \
+_Your API key carries all your privileges, so keep it secure and don’t share it with anyone._
+
+
+**Note:**
+Support and maintenance for this integration is provided by **[Cyfirma](https://www.cyfirma.com)**. 
+Please contact us for more details on this email **_contact@cyfirma.com_**.

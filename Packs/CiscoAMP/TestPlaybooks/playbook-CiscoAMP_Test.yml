@@ -3388,4 +3388,5 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.5.0
-description: ''
+description: 'Deprecated. See AMPv2_Test instead (pack deprecated, moved to the AMP pack)'
+deprecated: true
