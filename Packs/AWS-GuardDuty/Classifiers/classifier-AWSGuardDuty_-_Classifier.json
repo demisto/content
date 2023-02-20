@@ -1,7 +1,7 @@
 {
-    "description": "",
+    "description": "Classifies AWSGuardDuty incidents.",
     "feed": false,
-    "id": "classifier-AWSGuardDuty_classifier.json",
+    "id": "AWSGuardDuty - Classifier",
     "keyTypeMap": {
         "AccessKey": "AWS Guard Duty IAM Finding",
         "Container": "AWS Guard Duty Malware Protection Finding",
@@ -10,7 +10,7 @@
         "Instance": "AWS Guard Duty EC2 Finding",
         "S3Bucket": "AWS Guard Duty S3 Finding"
     },
-    "name": "classifier-AWSGuardDuty_classifier.json",
+    "name": "AWSGuardDuty - Classifier",
     "propagationLabels": [
         "all"
     ],
