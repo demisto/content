@@ -87,7 +87,7 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: Try to generate the report to see it's content
+        tooltip: Try to generate the report to see it's content.
         readonly: false
       title: Practicing with Reports
       description: "XSOAR reporting can be a powerful value proposition. \nReports can contain widgets and be customized. \nThey can be used for a variety of tasks, including things such as measurement of efficiency and teamwork. \n\nThere is a flag hidden in one of the reports. Generate a report and try to find it :sunglasses: . \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/status-report-status-update.gif) "
@@ -307,7 +307,7 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: 'hint: Items that are installed by the system will be displayed with '
+        tooltip: 'hint: Items that are installed by the system will be displayed with "system:true"'
         readonly: false
       title: Incident fields
       description: |-
@@ -627,7 +627,7 @@ tasks:
         - simple: Alt/Option
         fieldassociated: ""
         placeholder: ""
-        tooltip: 'If you saw Harry Potter - it''s like the secret chamber but quite not... '
+        tooltip: 'If you saw Harry Potter - it''s like the secret chamber but quite not... You would probably want to check the Server Settings first... '
         readonly: false
       title: View and download logs
       description: "It's pretty common to view logs and troubleshoot any strange issue that the system produces, but in this version, the way of looking at the support logs entirely changed... can you find a way to generate support logs :black_joker:?  \n\n \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/discord-logs-logs.gif)"
