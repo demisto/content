@@ -1828,13 +1828,22 @@ def create_data_for_alert_rule(args: Dict[str, Any]) -> Dict[str, Any]:
         'alertRuleTemplateName': args.get('template_name'),
         'enabled': argToBoolean(args.get('enabled')),
         'displayName': args.get('displayName'),
-        'productFilter': args.get('product_filter'),
+        'productFilter': string_to_table_header(args.get('product_filter')),
         'description': args.get('description'),
         'displayNamesExcludeFilter': args.get('name_exclude_filter'),
-        'displayNamesFilter': args.get(''),
+        'displayNamesFilter': args.get('name_include_filter'),
         'severitiesFilter': args.get('severity_filter'),
+        'query': args.get('query'),
+        'queryFrequency': args.get('query_frequency'),
+        'queryPeriod': args.get('query_period'),
+        'severity': pascalToSpace(args.get('severity')),
+        'suppressionDuration': args.get('suppression_duration'),
+        'suppressionEnabled': argToBoolean(args.get('suppression_enabled', 'false')),
+        'triggerOperator': underscoreToCamelCase(args.get('trigger_operator')),
+        'triggerThreshold': args.get('trigger_threshold'),
+        'tactics': argToList(args.get('tactics')),
+        'techniques': argToList(args.get('techniques')),        
     }
-    remove_nulls_from_dictionary(properties)
 
     data = {
         'kind': underscoreToCamelCase(args.get('kind')),
@@ -1848,19 +1857,13 @@ def create_data_for_alert_rule(args: Dict[str, Any]) -> Dict[str, Any]:
 def create_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any]) -> CommandResults:
     validate_required_arguments_for_alert_rule(args)
 
-    data = {
-        'kind': underscoreToCamelCase(args.get('kind')),
-        'etag': args.get('etag'),
-        'properties': {
-            'alertRuleTemplateName': args.get('template_name'),
-            'enabled': argToBoolean(args.get('enabled'))
-        }
-    }
+    data = args.get('rule_json') or create_data_for_alert_rule(args)
+    demisto.debug(f'Try to creating alert rule with the following data: {data}')
 
     response = client.http_request('PUT', f'alertRules/{args.get("rule_name")}', data=data)
 
     readable_result = {
-        'ID': response.get('id'),
+        'ID': response.get('id').split('/')[-1],
         'Name': response.get('name'),
         'Kind': response.get('kind'),
         'Severity': response.get('properties', {}).get('severity'),
