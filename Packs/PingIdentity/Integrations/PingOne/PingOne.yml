@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: PingOne
 display: PingOne
-category: Identity and Access Management
+category: Authentication & Identity Management
 description: 'Integrates with the PingOne Management API to unlock, create, delete
   and update users. '
 configuration:
