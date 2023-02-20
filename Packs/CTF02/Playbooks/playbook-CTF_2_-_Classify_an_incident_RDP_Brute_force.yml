@@ -154,10 +154,10 @@ tasks:
             Run the following command from your endpoint and enter the received indicator from your command.
 
             MacOS users:
-            curl  -u admin:admin <your tenant URL>/xsoar/instance/execute/edl1\?q\=type:ip%20and%20verdict:malicious%20and%20tags:<Tag from the previous answer>
+            curl  -u admin:admin https://edl-<your tenant uri>/xsoar/instance/execute/edl1\?q\=type:ip%20and%20verdict:malicious%20and%20tags:<Tag from the previous answer>
 
             Windows users (Powershell):
-            (iwr -Uri '<your tenant URL>/xsoar/instance/execute/edl1/?q=type:ip and verdict:malicious and tags:<Tag from the previous answer>' -Headers @{ Authorization = "Basic "+ [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("admin:admin")) }).Content
+            (iwr -Uri 'https://edl-<your tenant uri>/xsoar/instance/execute/edl1/?q=type:ip and verdict:malicious and tags:<Tag from the previous answer>' -Headers @{ Authorization = "Basic "+ [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("admin:admin")) }).Content
 
             Note: *if you are on Windows 10, and see THIS error, start Internet Explorer once, then re-run command*
         required: false
@@ -456,7 +456,7 @@ tasks:
       - id: "1"
         label: ""
         labelarg:
-          simple: 2. How many relationships does the malicious indicator have?
+          simple: How many relationships does the malicious indicator have?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -665,7 +665,7 @@ tasks:
         simple: "04"
       secret:
         complex:
-          root: Threat Camping.Answers
+          root: Threat Campaign.Answers
           accessor: "0"
           transformers:
           - operator: uniq
@@ -930,7 +930,7 @@ tasks:
         simple: "05"
       secret:
         complex:
-          root: Threat Camping.Answers
+          root: Threat Campaign.Answers
           accessor: "1"
           transformers:
           - operator: uniq
