@@ -12,6 +12,9 @@
     "tags": [
         "Palo Alto Networks Products"
     ],
+    "itemPrefix": [
+        "Prisma Cloud"
+    ],
     "created": "2020-05-11T18:00:53Z",
     "useCases": [],
     "keywords": [],
