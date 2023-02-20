@@ -16,15 +16,15 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def util_tmp_json_file():
+def util_tmp_json_file(mock_object, file_name):
     tmp_dir = mkdtemp()
-    file_name = 'test_file.txt'
+    file_name = f'{file_name}.txt'
     file_obj = {
         'name': file_name,
         'path': os.path.join(tmp_dir, file_name)
     }
     with open(file_obj['path'], 'w') as f:
-        json.dump(MOCK_OBJECTS, f)
+        json.dump(mock_object, f)
 
     return file_obj
 
@@ -43,6 +43,38 @@ def mock_client():
 
 MOCK_OBJECTS = {"objects": [{"srcip": "8.8.8.8", "itype": "mal_ip", "confidence": 50},
                             {"srcip": "1.1.1.1", "itype": "apt_ip"}]}
+MOCK_OBJECTS_2 = {
+    "objects": [
+        {
+            "email": "email_test@domain.com",
+            "itype": "compromised_email",
+            "confidence": 50
+        },
+        {
+            "srcip": "78.78.78.67",
+            "classification": "private",
+            "itype": "bot_ip",
+            "confidence": 50,
+            "severity": "low"
+        },
+        {
+            "domain": "szqylwjzq.biz",
+            "classification": "private",
+            "itype": "mal_domain",
+            "confidence": 95,
+            "severity": "very-high"
+        }
+    ],
+    "meta": {
+        "confidence": 50,
+        "classification": "Private",
+        "allow_unresolved": True,
+        "tags": [
+            "test1",
+            "test2"
+        ]
+    }
+}
 
 INDICATOR = [{
     "resource_uri": "/api/v2/intelligence/123456789/",
@@ -367,7 +399,7 @@ class TestImportCommands:
         """
 
         # prepare
-        mocked_file_path = util_tmp_json_file()
+        mocked_file_path = util_tmp_json_file(MOCK_OBJECTS, 'test_file')
         mocker.patch.object(demisto, 'getFilePath', return_value=mocked_file_path)
         mocker.patch.object(Client, 'http_request',
                             return_value={'success': True, 'import_session_id': 'test_session_id'})
@@ -389,7 +421,16 @@ class TestImportCommands:
 
         assert result.outputs == 'test_session_id'
 
-    def test_import_indicator_without_approval__happy_path(self, mocker):
+    @pytest.mark.parametrize(
+        'mock_object, file_name',
+        [
+            (
+                MOCK_OBJECTS,
+                'test_file'
+            )
+        ]
+    )
+    def test_import_indicator_without_approval__happy_path(self, mocker, mock_object, file_name):
         """
         Given:
             - Indicator to import without approval
@@ -402,7 +443,7 @@ class TestImportCommands:
         """
 
         # prepare
-        mocked_file_path = util_tmp_json_file()
+        mocked_file_path = util_tmp_json_file(mock_object, file_name)
         mocker.patch.object(demisto, 'getFilePath', return_value=mocked_file_path)
         mocker.patch.object(Client, 'http_request')
 
@@ -772,7 +813,7 @@ class TestUpdateCommands:
         """
 
         # prepare
-        file_obj = util_tmp_json_file()
+        file_obj = util_tmp_json_file(MOCK_OBJECTS, 'test_file')
         mocker.patch.object(demisto, 'getFilePath', return_value=file_obj)
         mocked_report = dict(success=True, reports=dict(test_platform=dict(id='report_id')))
         mocker.patch.object(Client, 'http_request', return_value=mocked_report)
