@@ -1845,5 +1845,5 @@ script:
   script: '-'
   type: powershell
 tests:
-- O365 - EWS - Extension - Test
+- playbook-EWS_O365_Extension_test
 fromversion: 5.5.0
