@@ -13,7 +13,7 @@ def options_handler():
     Returns: options parsed from input arguments.
 
     """
-    parser = argparse.ArgumentParser(description='Utility for lock ')
+    parser = argparse.ArgumentParser(description='Utility for lock machines')
     parser.add_argument('--service_account', help='Path to gcloud service account.')
     parser.add_argument('--gcs_locks_path', help='Path to lock repo.')
     parser.add_argument('--ci_job_id', help='the job id.')
