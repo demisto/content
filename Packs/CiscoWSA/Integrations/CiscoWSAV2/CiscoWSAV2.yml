@@ -46,12 +46,12 @@ script:
       isArray: true
     - name: page
       description: |-
-        Page number of paginated results.
+        The page number of the results to retrieve.
         Minimum value is 1.
       isArray: false
       required: false
     - name: page_size
-      description: Number of results per page. Maximum value is 100.
+      description: A number of results per page. The maximum value is 100.
       isArray: false
       required: false
     - name: limit
@@ -95,7 +95,7 @@ script:
       description: Anti-Malware and reputation settings.
   - name: cisco-wsa-access-policy-create
     description: |-
-      Create access policy.
+      Create an access policy.
       By this command you can create the access policy object, in order to define more settings you can use the dependencies commands:
       cisco-wsa-access-policy-protocols-user-agents-update (Update Protocols and User Agents policy for access policy).
       cisco-wsa-access-policy-url-filtering-update (Update URL filtering policy for access policy).
@@ -257,7 +257,7 @@ script:
       required: false
       isArray: true
     - name: uncategorized_url
-      description: Uncategorized url action.
+      description: Uncategorized URL action.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -333,7 +333,7 @@ script:
       required: true
       isArray: false
     - name: settings_status
-      description: Applications sttings status.
+      description: Applications settings status.
       defaultValue: custom
       required: false
       isArray: false
@@ -342,7 +342,7 @@ script:
       - custom
       - use_global
     - name: application
-      description: Application type to perform action on.
+      description: Application type to perform the action on.
       required: true
       isArray: false
       auto: PREDEFINED
@@ -375,7 +375,7 @@ script:
       - monitor
       - block
     - name: values
-      description: Comma-separated list of application values to perform action on.
+      description: Comma-separated list of application values to perform the action on.
       required: true
       isArray: true
   - name: cisco-wsa-access-policy-objects-update
@@ -386,7 +386,7 @@ script:
       required: true
       isArray: false
     - name: object_type
-      description: Object type to perform action on.
+      description: Object type to perform the action on.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -403,7 +403,7 @@ script:
     - name: object_action
       description: |-
         Object action.
-        Note: "inspect" and "allow" actions only valid when object type is "Inspectable Archives".
+        Note: "inspect" and "allow" actions are only valid when the object type is "Inspectable Archives".
       required: false
       isArray: false
       auto: PREDEFINED
@@ -413,7 +413,7 @@ script:
       - allow
       - inspect
     - name: object_values
-      description: Comma-separated list of object values to perform action on.
+      description: Comma-separated list of object values to perform the action on.
       required: false
       isArray: true
     - name: block_custom_mime_types
@@ -429,14 +429,14 @@ script:
       required: false
       isArray: false
   - name: cisco-wsa-access-policy-anti-malware-update
-    description: Update anti malware policy for access policy.
+    description: Update anti-malware policy for access policy.
     arguments:
     - name: policy_name
       description: Policy name to update.
       required: true
       isArray: false
     - name: settings_status
-      description: Settings status for the Anti malware.
+      description: Settings status for the Anti-malware.
       defaultValue: custom
       required: false
       isArray: false
@@ -489,8 +489,8 @@ script:
     - name: suspect_user_agent_scanning
       description: |-
         Suspect user agent scanning action.
-        Requiered while anti_malware_scanning_status is enable.
-        Not Relevant while anti_malware_scanning_status is disable.
+        Required while anti_malware_scanning_status is enable.
+        Not Relevant while anti_malware_scanning_status is disabled.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -499,7 +499,7 @@ script:
       - scan
       - none
     - name: block_malware_categories
-      description: Comma-separated list of malware categories to block. Requiered while anti_malware_scanning_status is enable. Not Relevant while anti_malware_scanning_status is disable.
+      description: Comma-separated list of malware categories to block. Required while anti_malware_scanning_status is enabled. Not Relevant while anti_malware_scanning_status is disable.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -520,7 +520,7 @@ script:
       - Virus
       - Worm
     - name: block_other_categories
-      description: Comma-separated list of other categories to block. Requiered while anti_malware_scanning_status is enable. Not Relevant while anti_malware_scanning_status is disable.
+      description: Comma-separated list of other categories to block. Required while anti_malware_scanning_status is enable. Not Relevant while anti_malware_scanning_status is disable.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -537,7 +537,7 @@ script:
       isArray: true
   - name: cisco-wsa-domain-map-list
     description: |-
-      Retrieve domain mappings.
+      Retrieve domains mapping.
       Domain maps are DNS mappings of domain to IP addresses.
     arguments:
     - name: domain_names
@@ -552,12 +552,12 @@ script:
       isArray: true
     - name: page
       description: |-
-        Page number of paginated results.
+        The page number of the results to retrieve.
         Minimum value is 1.
       isArray: false
       required: false
     - name: page_size
-      description: Number of results per page. Maximum value is 100.
+      description: A number of results per page. The maximum value is 100.
       isArray: false
       required: false
     - name: limit
@@ -579,7 +579,7 @@ script:
     description: Create domain mapping for IP addresses.
     arguments:
     - name: domain_name
-      description: Domain name to create.
+      description: The domain name to create.
       required: true
       isArray: false
     - name: order
@@ -594,7 +594,7 @@ script:
     description: Update domain map.
     arguments:
     - name: domain_name
-      description: Domain name to update.
+      description: The domain name to update.
       required: true
       isArray: false
     - name: new_domain_name
@@ -629,12 +629,12 @@ script:
       isArray: true
     - name: page
       description: |-
-        Page number of paginated results.
+        The page number of the results to retrieve.
         Minimum value is 1.
       isArray: false
       required: false
     - name: page_size
-      description: Number of results per page. Maximum value is 100.
+      description: A number of results per page. The maximum value is 100.
       isArray: false
       required: false
     - name: limit
@@ -680,7 +680,7 @@ script:
       contextPath: CiscoWSA.IdentificationProfile.UserAgents.custom
       description: User-agent custom.
   - name: cisco-wsa-identification-profiles-create
-    description: Create identification profile.
+    description: Create an identification profile.
     arguments:
     - name: profile_name
       description: Profile name to create.
