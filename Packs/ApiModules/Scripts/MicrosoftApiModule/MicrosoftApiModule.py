@@ -142,7 +142,7 @@ class MicrosoftClient(BaseClient):
             self.grant_type = grant_type
             self.resource = resource
             if scope is None:
-                scope = '{graph_endpoint}/.default',
+                scope = '{graph_endpoint}/.default'
                 self.scope = scope.format(graph_endpoint=GRAPH_ENDPOINTS[self.endpoint])
             else:
                 self.scope = scope
