@@ -144,6 +144,8 @@ class MicrosoftClient(BaseClient):
             if scope is None:
                 scope = '{graph_endpoint}/.default',
                 self.scope = scope.format(graph_endpoint=GRAPH_ENDPOINTS[self.endpoint])
+            else:
+                self.scope
             self.redirect_uri = redirect_uri
             if certificate_thumbprint and private_key:
                 try:
