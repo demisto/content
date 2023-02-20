@@ -2314,14 +2314,6 @@ class Pack(object):
                             report.update({"preview": preview})
                         folder_collected_items.append(report)
 
-                    elif current_directory == PackFolders.TRIGGERS.value:
-                        folder_collected_items.append({
-                            'id': content_item.get('trigger_id', ''),
-                            'name': content_item.get('trigger_name', ''),
-                            'description': content_item.get('description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
-
                     elif current_directory == PackFolders.WIZARDS.value:
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
