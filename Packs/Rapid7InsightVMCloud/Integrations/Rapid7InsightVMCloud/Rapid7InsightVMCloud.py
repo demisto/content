@@ -143,16 +143,13 @@ def search_assets_command(client: Client, hostname: None, page: str, size: str) 
         size: The number of records per page to retrieve.
 
     """
-    args = demisto.args()
-    host_name = args.get('hostname')
     params = {
-        "page": args.get("page"),
-        "size": args.get("size")
+        "page": page,
+        "size": size
     }
     method = "POST"
     endpoint = "/v4/integration/assets"
-
-    assets = f"asset.name CONTAINS '{host_name}'"
+    assets = f"asset.name CONTAINS '{hostname}'"
     data = {
         "asset": f"{assets}"
 
@@ -224,14 +221,13 @@ def get_scan_engines_command(client: Client, page: int, size: int) -> CommandRes
 
     """
 
-    args = demisto.args()
     method = "GET"
     params = {
-        "page": args.get("page"),
-        "size": args.get("size")
+        "page": page,
+        "size": size
     }
-    endpoint = "/v4/integration/scan/engine"
-    if int(args.get("size")) > 500:
+    endpoint = f"/v4/integration/scan/engine"
+    if int(size) > 500:
         return_error("You're over the maximum size limit(500), please choose a lower size value")
     else:
         response = client.make_request(
@@ -311,13 +307,12 @@ def last_sites_command(client: Client, page: int, size=int) -> CommandResults:
 
     """
 
-    args = demisto.args()
     params = {
-        "page": args.get("page"),
-        "size": args.get("size")
+        "page": page,
+        "size": size
     }
 
-    if int(args.get("size")) > 500:
+    if int(size) > 500:
         return_error("Exceed size limit")
 
     else:
@@ -355,13 +350,12 @@ def search_vulnerabilities_command(client: Client, query: str, page: int, size=i
 
     """
 
-    args = demisto.args()
-    query = args.get("query")
+    query = query
     params = {
-        "page": args.get("page"),
-        "size": args.get("size")
+        "page": page,
+        "size": size
     }
-    if int(args.get("size")) > 500:
+    if int(size) > 500:
         return_error("Exceed size limit")
     else:
         method = "POST"
@@ -391,10 +385,8 @@ def stop_scan_command(client: Client, id: str) -> CommandResults:
         id: The identifier of the stop scan.
 
     """
-    args = demisto.args()
-    scan_id = args.get("id")
     method = "POST"
-    endpoint = f"/v4/integration/scan/{scan_id}/stop"
+    endpoint = f"/v4/integration/scan/{id}/stop"
     try:
         response: Union[Response, Dict] = client.make_request(method=method, url_suffix=endpoint, resp_type="response")
         if isinstance(response, Response) and response.status_code == 202:
