@@ -434,6 +434,7 @@ class Client(BaseClient):
             suspect_user_agent_scanning (str | None): Suspect uset agent scanning.
             block_malware_categories (List[str] | None): Malware categories to block.
             block_other_categories (List[str] | None): Other categories to block.
+            settings_status (str): Application settings status.
         Returns:
             Response: API response from Cisco WSA.
         """
@@ -524,7 +525,7 @@ class Client(BaseClient):
         ]
 
         return self._http_request(
-            "POST", f"{V2_PREFIX}/configure/web_security/domain_map", json_data=data, ok_codes=[HTTPStatus.CREATED]
+            "POST", f"{V2_PREFIX}/configure/web_security/domain_map", json_data=data, ok_codes=[HTTPStatus.OK]
         )
 
     def domain_map_update_request(
@@ -1143,31 +1144,48 @@ def access_policy_delete_command(
         args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
-        Union[List[CommandResults], CommandResults]: readable outputs for XSOAR.
+        Union[List[CommandResults], CommandResults]: Readable outputs for XSOAR.
     """
     policy_names = argToList(args["policy_names"])
 
     response = client.access_policy_delete_request(policy_names)
     if response.status_code == HTTPStatus.MULTI_STATUS:
-        output_data = response.json()
-        command_results_list = []
-        for profile in output_data.get("success_list"):
-            readable_output = (
-                f'Access policy "{profile.get("policy_name")}" '
-                f"was successfully deleted."
-            )
-            command_results_list.append(CommandResults(readable_output=readable_output))
-        for profile in output_data.get("failure_list"):
-            readable_output = (
-                f'Access policy "{profile.get("policy_name")}" '
-                f'deletion failed, message: "{profile.get("message")}".'
-            )
-            command_results_list.append(CommandResults(readable_output=readable_output))
+        return multi_status_delete_handler(response=response,
+                                           obj_key="policy_name",
+                                           readable_obj_name="Access Policy")
 
-        return command_results_list
     return CommandResults(
         readable_output="Access policy profiles successfully."
     )
+
+
+def multi_status_delete_handler(response: Response, obj_key: str, readable_obj_name: str) -> List[CommandResults]:
+    """_summary_
+
+    Args:
+        response (Response): API response from Cisco WSA (with 207 status code).
+        obj_key (str): The key of the argument in the response.
+        readable_obj_name (str): Readable name for the object.
+
+    Returns:
+        List[CommandResults]: Readable outputs for XSOAR.
+    """
+    output_data = response.json()
+    command_results_list = []
+    for profile in output_data.get("success_list"):
+        readable_output = (
+            f'{readable_obj_name} "{profile.get(obj_key)}" '
+            f"was successfully deleted."
+        )
+        command_results_list.append(CommandResults(readable_output=readable_output))
+    for profile in output_data.get("failure_list"):
+        readable_output = (
+            f'{readable_obj_name} "{profile.get(obj_key)}" '
+            f'deletion failed, message: "{profile.get("message")}".'
+        )
+        command_results_list.append(CommandResults(readable_output=readable_output))
+
+    return command_results_list
 
 
 def domain_map_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1307,6 +1325,7 @@ def domain_map_delete_command(
             command_results_list.append(
                 CommandResults(readable_output=readable_output, raw_response=response)
             )
+        return command_results_list
     raise DemistoException(message=response)
 
 
@@ -1479,22 +1498,10 @@ def identification_profiles_delete_command(
     response = client.identification_profiles_delete_request(profile_names)
 
     if response.status_code == HTTPStatus.MULTI_STATUS:
-        output_data = response.json()
-        command_results_list = []
-        for profile in output_data.get("success_list"):
-            readable_output = (
-                f'Identification profile "{profile.get("profile_name")}" '
-                f"was successfully deleted."
-            )
-            command_results_list.append(CommandResults(readable_output=readable_output))
-        for profile in output_data.get("failure_list"):
-            readable_output = (
-                f'Identification profile "{profile.get("profile_name")}" '
-                f'deletion failed, message: "{profile.get("message")}".'
-            )
-            command_results_list.append(CommandResults(readable_output=readable_output))
+        return multi_status_delete_handler(response=response,
+                                           obj_key="profile_name",
+                                           readable_obj_name="Identification profile")
 
-        return command_results_list
     return CommandResults(
         readable_output="Deleted identification profiles successfully."
     )
