@@ -2887,7 +2887,7 @@ inputs:
   playbookInputQuery:
 - key: FinalThreshold
   value:
-    simple: "3"
+    simple: "2"
   required: false
   description: The threshold number of suspicious elements required to determine a 'True Positive' verdict.
   playbookInputQuery:
