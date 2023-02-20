@@ -141,7 +141,7 @@ def main():
             output = parse_nesting_level(nesting_level_to_return, output)
 
         for email in output:
-            if hasattr(email, 'get') and email.get('AttachmentsData'):
+            if email.get('AttachmentsData'):
                 for attachment in email.get('AttachmentsData'):
                     if name := attachment.get('Name'):
                         if content := attachment.get('FileData'):
