@@ -34,11 +34,7 @@ import random
 
 
 good_images = [
-    "https://raw.githubusercontent.com/demisto/content/ctf/Packs/ctf01/doc_files/deadpool-clapping.gif",
-    "https://raw.githubusercontent.com/demisto/content/ctf/Packs/ctf01/doc_files/friends-joey.gif",
-    "https://raw.githubusercontent.com/demisto/content/ctf/Packs/ctf01/doc_files/quality-quality-work.gif",
-    "https://raw.githubusercontent.com/demisto/content/ctf/Packs/ctf01/doc_files/the-rock-dwayne-johnson.gif",
-    "https://raw.githubusercontent.com/demisto/content/ctf/Packs/ctf01/doc_files/you-you-are.gif"
+    "https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/until-next.gif"
     ]
 
 bad_images = [
@@ -53,6 +49,11 @@ HTML_MESSAGE_1 = '''
 <img src="%s" alt="Robot">
 <div style='font-size:18px;'>
 Well Done!!!
+
+Thank you for participating in our XSOAR's workshop. Hope that you have enjoyed the challenge and also gained some knowledge.
+Till next time :)
+
+
 </div>
 ''' %(good_images[random.randint(0,len(good_images)-1)])
 
