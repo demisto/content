@@ -1,4 +1,4 @@
-category: Analytics & SIEM
+category: Email
 commonfields:
   id: Mimecast Event Collector
   version: -1
