@@ -512,7 +512,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.10.2"
+version = "1.10.3"
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
@@ -3440,7 +3440,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "c5068a924f818123ff9cd0c5d52e690ac5bace808d9493bb429885562ef8252b"
+content-hash = "dcf266bc25c990bbbbe5831fc300020f20bf9fc908fe7dbdb750c246a3be1f65"
 
 [metadata.files]
 aiodns = [
@@ -3943,8 +3943,8 @@ demisto-py = [
     {file = "demisto_py-3.2.7-py3-none-any.whl", hash = "sha256:32e48931970d6b5aa69f525edf10fb6e9ee4c190c88e7c6db57f84790d2b6b86"},
 ]
 demisto-sdk = [
-    {file = "demisto_sdk-1.10.2-py3-none-any.whl", hash = "sha256:9495035348a652f941211f1329283de7e317fa694482a5301c54039fc102988d"},
-    {file = "demisto_sdk-1.10.2.tar.gz", hash = "sha256:05dd2fbf8c3da483ddb0b430f6dd4d1d7bc31e320ffb26453b3afef3a50a255a"},
+    {file = "demisto_sdk-1.10.3-py3-none-any.whl", hash = "sha256:f2dfaa87eb7328c7277782d681c34e447ccfd9600b0cde1231979360dba51559"},
+    {file = "demisto_sdk-1.10.3.tar.gz", hash = "sha256:12c6e29b4902c8de68d35966219473590cb0fc29fc0492a94e7d3aa1c118343f"},
 ]
 deprecated = [
     {file = "Deprecated-1.2.13-py2.py3-none-any.whl", hash = "sha256:64756e3e14c8c5eea9795d93c524551432a0be75629f8f29e67ab8caf076c76d"},
@@ -6126,6 +6126,7 @@ wcmatch = [
     {file = "wcmatch-8.4.1.tar.gz", hash = "sha256:b1f042a899ea4c458b7321da1b5e3331e3e0ec781583434de1301946ceadb943"},
 ]
 wcwidth = [
+    {file = "wcwidth-0.2.6-py2.py3-none-any.whl", hash = "sha256:795b138f6875577cd91bba52baf9e445cd5118fd32723b460e30a0af30ea230e"},
     {file = "wcwidth-0.2.6.tar.gz", hash = "sha256:a5220780a404dbe3353789870978e472cfe477761f06ee55077256e509b156d0"},
 ]
 webdriver-manager = [
