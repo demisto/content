@@ -57,6 +57,66 @@ def mock_access_policies_list(client, policy_name):
 """ TESTING INTEGRATION COMMANDS"""
 
 
+def test_fail_handle_request_headers_command_request(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Handle jwt in headers.
+    Given:
+    - User has provided wrong credentials.
+    When:
+    - handle_request_headers_command called.
+    Then:
+    - Ensure relevant error raised.
+    """
+    mock_response = load_mock_response('login_fail.json')
+
+    url = f"{BASE_URL}/{V2_PREFIX}/login"
+    requests_mock.post(url=url, status_code=HTTPStatus.UNAUTHORIZED, json=mock_response)
+    with pytest.raises(DemistoException) as error:
+        mock_client.handle_request_headers()
+    assert "Authorization Error: make sure username and password are set correctly." == str(error.value)
+
+
+def test_handle_request_headers_command_new_request(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Handle jwt in headers.
+    Given:
+    - User has provided valid credentials.
+    When:
+    - handle_request_headers_command command called.
+    Then:
+    - Ensure that the command get a new jwt.
+    """
+    mock_response = load_mock_response('login.json')
+    url = f"{BASE_URL}/{V2_PREFIX}/login"
+    requests_mock.post(url=url, status_code=HTTPStatus.OK, json=mock_response)
+    mock_client.handle_request_headers()
+    assert mock_client._headers["jwtToken"] == "token"
+
+
+def test_handle_request_headers_command_no_request(
+    mock_client,
+):
+    """
+    Scenario: Handle jwt in headers.
+    Given:
+    - User has provided valid credentials.
+    When:
+    - handle_request_headers_command command called.
+    Then:
+    - Ensure that the command use the exist jwt.
+    """
+
+    set_integration_context({"jwt_token": "jwt_token", "jwt_token_issued_time": time.time()})
+    mock_client.handle_request_headers()
+    assert mock_client._headers["jwtToken"] == "jwt_token"
+
+
 @pytest.mark.parametrize(
     "response_file_name,command_arguments,expected_outputs_len",
     [
@@ -129,9 +189,7 @@ def test_access_policy_create_command(
     When:
     - cisco-wsa-access-policy-create command called.
     Then:
-    - Ensure outputs prefix is correct.
-    - Ensure number of items is correct.
-    - Validate outputs' fields.
+     - Ensure that Access policy created.
     """
     from CiscoWSAV2 import access_policy_create_command
 
@@ -158,15 +216,11 @@ def test_fail_access_policy_create_command(
     """
     Scenario: Access policies create.
     Given:
-    - User has provided valid credentials.
-    - User may provided pagination args.
-    - User may Provided filtering arguments.
+    - User has provided wrong arguments.
     When:
     - cisco-wsa-access-policy-create command called.
     Then:
-    - Ensure outputs prefix is correct.
-    - Ensure number of items is correct.
-    - Validate outputs' fields.
+     - Ensure relevant error raised.
     """
     from CiscoWSAV2 import access_policy_create_command
 
