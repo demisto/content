@@ -315,6 +315,9 @@ ignore=IF100
 [file:incidentfield-Original-Alert_Source.json]
 ignore=IF100
 
+[file:3_3_50.md]
+ignore=RN115
+
 [file:incidentfield-Original_Alert_Name.json]
 ignore=IF100
 
