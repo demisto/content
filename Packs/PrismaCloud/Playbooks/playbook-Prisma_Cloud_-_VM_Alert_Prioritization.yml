@@ -636,7 +636,7 @@ tasks:
     task:
       id: 301823fe-1c5b-442a-8417-9263d8f9b225
       version: -1
-      name: Create a Jira ticket
+      name: Create a Jira issue
       description: Creates a new issue in Jira.
       tags:
       - NotificationsAndTicketing
