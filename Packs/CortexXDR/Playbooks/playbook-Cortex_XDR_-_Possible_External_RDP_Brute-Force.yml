@@ -1213,7 +1213,7 @@ tasks:
         complex:
           root: inputs.Username
       timeRange:
-        simple: 6 hours
+        simple: 30 days
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1286,7 +1286,7 @@ tasks:
         complex:
           root: inputs.Hostname
       timeRange:
-        simple: 6 hours
+        simple: 30 days
     separatecontext: true
     continueonerrortype: ""
     loop:
