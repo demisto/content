@@ -951,6 +951,7 @@ tasks:
               else:
                 value:
                   simple: alertJson._all_events.actor_effective_username
+                iscontext: true
               equals: {}
               lhs:
                 value:
@@ -965,6 +966,7 @@ tasks:
               then:
                 value:
                   simple: alertJson._all_events.identity_name
+                iscontext: true
     separatecontext: true
     continueonerrortype: ""
     loop:
