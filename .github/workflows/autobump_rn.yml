@@ -33,7 +33,8 @@ jobs:
       - name: Check conflicts and add release notes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{github.run_id}}
         run: |
           echo "Someone merged to master. Starting to check if conflicts in release notes created."
           cd Utils/github_workflow_scripts
-          poetry run python autobump_rn.py
+          poetry run python autobump_rn.py -g GITHUB_TOKEN -r RUN_ID

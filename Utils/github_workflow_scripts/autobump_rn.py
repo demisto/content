@@ -3,7 +3,7 @@ from enum import Enum
 from pathlib import Path
 from itertools import pairwise
 from packaging.version import Version
-from typing import Tuple, Optional, Set, Dict
+from typing import Tuple, Optional, Set, Dict, List
 import urllib3
 import argparse
 from blessings import Terminal
@@ -30,7 +30,8 @@ t = Terminal()
 ORGANIZATION_NAME = 'demisto'
 REPO_MANE = 'content'
 BASE = 'master'
-
+COMMIT_MESSAGE = 'Bump version to: {}, for {} pack.'
+MERGE_FROM_MASTER_COMMIT_MESSAGE = f'Merged {BASE} into current branch.'
 SKIPPING_MESSAGE = 'Skipping Auto-Bumping release notes.'
 PACKS_DIR = 'Packs'
 PACK_METADATA_FILE = Pack.USER_METADATA
@@ -418,6 +419,48 @@ class AllowedBumpCondition(MetadataCondition):
             return None
 
 
+class PackAutoBumper:
+
+    def __init__(
+            self, pack_id: str,
+            rn_file_path: Path,
+            update_type: UpdateType,
+    ):
+        self._pack_id = pack_id
+        self._last_rn_file_path = rn_file_path
+        self._update_type = update_type
+        self._update_rn_obj = UpdateRN(
+            pack_path=f'Packs/{pack_id}',
+            update_type=update_type.value,
+            modified_files_in_pack=set(),
+            added_files=set(),
+            pack=pack_id,
+            is_force=True,
+        )
+        with open(rn_file_path) as f:
+            self._rn_text = f.read()
+
+    @property
+    def pack_id(self):
+        return self.pack_id
+
+    @property
+    def last_rn_file_path(self):
+        return self._last_rn_file_path
+
+    @property
+    def update_type(self):
+        return self._update_type
+
+    @property
+    def update_rn_obj(self):
+        return self._update_rn_obj
+
+    @property
+    def rn_text(self):
+        return self._rn_text
+
+
 class checkout:
     """Checks out a given branch.
     When the context manager exits, the context manager checks out the
@@ -454,33 +497,26 @@ def arguments_handler():
      """
     parser = argparse.ArgumentParser(description='Autobump release notes version for packs where .')
     parser.add_argument('-g', '--github_token', help='The GitHub token to authenticate the GitHub client.')
+    parser.add_argument('-r', '--run_id', help='The GitHub action run id.')
     return parser.parse_args()
 
 
-def autobump_release_notes(pack_id, update_type):
-    update_rn_obj = UpdateRN(
-        pack_path=f'Packs/{pack_id}',
-        update_type=update_type.value,
-        modified_files_in_pack=set(),
-        added_files=set(),
-        pack=pack_id,
-        is_force=True,
-    )
-    # todo: 1. checkout branch
-    # for each pack:  save previous rn text
-    # 3. merge from master accept master changes https://git-scm.com/docs/git-merge
-    # for each pack:
-    # 4. bump version in metadata file rn (bump_version_number func)
-    # 5. create rn file
-    # 6. paste the saved text
-    # 7. commit changes - commit has build nubmer
-
-    pass
+def autobump_release_notes(packs_to_autobump: List[PackAutoBumper], git_repo: Repo, pr_branch: str, run_id: str):
+    git_repo.git.merge(f'origin/{pr_branch}', '-Xtheirs', '-m', MERGE_FROM_MASTER_COMMIT_MESSAGE)
+    for pack_auto_bumper in packs_to_autobump:
+        # 1. bump version in metadata file rn (bump_version_number func)
+        new_version, metadata_dict = pack_auto_bumper.update_rn_obj.bump_version_number()
+        # 2. write metadata to file
+        # 3. create rn file
+        # 4. paste the saved text
+        git_repo.git.add(f'Packs/{pack_auto_bumper.pack_id}')
+        git_repo.git.commit('-m', COMMIT_MESSAGE.format(run_id, new_version, pack_auto_bumper.pack_id))
 
 
 def main():
     options = arguments_handler()
     github_token = options.github_token
+    run_id = options.run_id
 
     git_repo_obj = Repo(os.getcwd())
     git_repo_obj.remote().fetch()
@@ -489,7 +525,7 @@ def main():
     github_repo_obj: Repository = github_client.get_repo(f'{ORGANIZATION_NAME}/{REPO_MANE}')
 
     for pr in github_repo_obj.get_pulls(state='open', sort='created', base=BASE):
-        print(f'{t.yellow}Looking on pr {pr.number=}: {pr.updated_at=}, {pr.head.ref=}')
+        print(f'{t.yellow}Looking on pr {pr.number=}: {str(pr.updated_at)=}, {pr.head.ref=}')
 
         conditions = [
             LastModifiedCondition(pr=pr, git_repo=git_repo_obj),
@@ -504,6 +540,7 @@ def main():
         if base_cond_result.should_skip:
             continue
 
+        packs_to_autobump = []
         conflicting_packs = base_cond_result.conflicting_packs
         for pack in conflicting_packs:
             origin_md, branch_md, pr_base_md = MetadataCondition.get_metadata_files(
@@ -529,15 +566,27 @@ def main():
             if metadata_cond_result.should_skip:
                 continue
 
-            rn_file: Path = metadata_cond_result.pack_new_rn_file
-            ut: UpdateType = metadata_cond_result.update_type
+            print(f'Adding pack {pack} to autobump its release notes.')
+            packs_to_autobump.append(
+                PackAutoBumper(
+                    pack_id=pack,
+                    rn_file_path=metadata_cond_result.pack_new_rn_file,
+                    update_type=metadata_cond_result.update_type,
+                )
+            )
 
-        print('got here')
-        # with checkout(git_repo_obj, pr_branch):
-        #     autobump_release_notes(packs_rn_to_update_in_this_pr)
+        if packs_to_autobump:
+            with checkout(git_repo_obj, pr.head.ref):
+                autobump_release_notes(
+                    packs_to_autobump=packs_to_autobump,
+                    git_repo=git_repo_obj,
+                    pr_branch=pr.head.ref,
+                    run_id=run_id,
+                )
 
     # todo git push
     # todo: slack notify success or print success logs
+    # todo: comment on PR
     sys.exit(0)
 
 
