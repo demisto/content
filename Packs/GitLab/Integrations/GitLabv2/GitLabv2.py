@@ -4,6 +4,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Dict, Any, List
 import urllib.parse
+import re
 
 PIPELINE_FIELDS_TO_EXTRACT = {'id', 'project_id', 'status', 'ref', 'sha', 'created_at', 'updated_at', 'started_at',
                               'finished_at', 'duration', 'web_url', 'user'}
@@ -1590,7 +1591,7 @@ def gitlab_pipelines_list_command(client: Client, args: Dict[str, Any]) -> Comma
     Returns:
         (CommandResults).
     """
-    project_id = args.get('project_id', '')
+    project_id = args.get('project_id', '') or client.project_id
     pipeline_id = args.get('pipeline_id')
     ref = args.get('ref')
     status = args.get('status')
@@ -1619,7 +1620,7 @@ def gitlab_pipelines_schedules_list_command(client: Client, args: Dict[str, Any]
     Returns:
         (CommandResults).
     """
-    project_id = args.get('project_id', '')
+    project_id = args.get('project_id', '') or client.project_id
     pipeline_schedule_id = args.get('pipeline_schedule_id')
     response = client.get_pipeline_schedules_request(project_id, pipeline_schedule_id)
     response = response if isinstance(response, list) else [response]
@@ -1646,7 +1647,7 @@ def gitlab_jobs_list_command(client: Client, args: Dict[str, Any]) -> CommandRes
     Returns:
         (CommandResults).
     """
-    project_id = args.get('project_id', '')
+    project_id = args.get('project_id', '') or client.project_id
     pipeline_id = args.get('pipeline_id', '')
     response = client.get_pipeline_job_request(project_id, pipeline_id)
     response = response if isinstance(response, list) else [response]
@@ -1674,7 +1675,7 @@ def gitlab_artifact_get_command(client: Client, args: Dict[str, Any]) -> Command
     Returns:
         (CommandResults).
     """
-    project_id = args.get('project_id', '')
+    project_id = args.get('project_id', '') or client.project_id
     job_id = args.get('job_id', '')
     artifact_path_suffix = args.get('artifact_path_suffix', '')
     response = client.get_job_artifact_request(project_id, job_id, artifact_path_suffix)
@@ -1695,6 +1696,18 @@ def gitlab_artifact_get_command(client: Client, args: Dict[str, Any]) -> Command
         outputs=outputs,
         raw_response=response
     )
+
+
+def check_for_html_in_error(e: str):
+    """
+    Args: 
+        e(str): The string of the error
+    Returns:
+        True if an html doc was retured in the error message. 
+        else Flse 
+    """
+    match = re.search(r'<!DOCTYPE html>', e)
+    return bool(match)
 
 
 ''' MAIN FUNCTION '''
@@ -1757,8 +1770,11 @@ def main() -> None:  # pragma: no cover
                 return_results(commands[demisto.command()](client, demisto.args()))
 
     except Exception as e:
+        error_message = str(e)
+        if check_for_html_in_error(error_message):
+            error_message = 'Try checking your Sever Url parameter.'
         return_error(
-            f'Failed to execute {demisto.command()} command. Error: {str(e)}'
+            f'Failed to execute {demisto.command()} command. Error: {error_message}'
         )
 
 

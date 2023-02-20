@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: GitLabv2
+  id: GitLabv2 - Custom
   version: -1
 configuration:
 - display: Server URL (e.g., https://gitlab.com/api/v4)
@@ -27,8 +27,8 @@ configuration:
   required: false
   type: 8
 description: Integration to GitLab API
-display: GitLab v2
-name: GitLabv2
+display: GitLab v2 - Custom
+name: GitLabv2 - Custom
 script:
   commands:
   - name: gitlab-version-get
@@ -3433,7 +3433,7 @@ script:
       description: Project ID from which to retrieve pipelines.
       isArray: false
       name: project_id
-      required: true
+      required: false
       secret: false
     - default: false
       description: ID of specific pipeline from which to retrieve its details.
@@ -3466,7 +3466,6 @@ script:
       - 'scheduled'
       required: false
       secret: false
-    deprecated: true
     description: Gets the details of the pipelines.
     execution: false
     outputs:
@@ -3522,13 +3521,12 @@ script:
       description: Web URL of the user who triggered the pipeline.
       type: String
   - name: gitlab-pipelines-schedules-list
-
     arguments:
     - default: false
       description: Project ID from which to retrieve pipeline schedules.
       isArray: false
       name: project_id
-      required: true
+      required: false
       secret: false
     - default: false
       description: ID of the specific pipeline schedule from which to retrieve its details.
@@ -3536,10 +3534,8 @@ script:
       name: pipeline_schedule_id
       required: false
       secret: false
-    deprecated: true
     description: Gets the details of the pipeline schedules.
     execution: false
-    
     outputs:
     - contextPath: GitLab.PipelineSchedule.id
       description: Pipeline schedule ID.
@@ -3580,7 +3576,7 @@ script:
       description: Project ID from which to retrieve jobs details.
       isArray: false
       name: project_id
-      required: true
+      required: false
       secret: false
     - default: false
       description: ID of the pipeline from which to retrieve its jobs.
@@ -3588,7 +3584,6 @@ script:
       name: pipeline_id
       required: true
       secret: false
-    deprecated: true
     description: Gets job details.
     execution: false
     outputs:
@@ -3643,7 +3638,7 @@ script:
       description: Project ID from which to retrieve an artifact.
       isArray: false
       name: project_id
-      required: true
+      required: false
       secret: false
     - default: false
       description: ID of a specific job from which to retrieve its artifact.
@@ -3656,8 +3651,7 @@ script:
       isArray: false
       name: artifact_path_suffix
       required: true
-      secret: false
-    deprecated: true
+      secret: false 
     description: Gets an artifact from a given artifact path, corresponding to a given job ID.
     execution: false
     outputs:
