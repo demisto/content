@@ -84,7 +84,7 @@ def check_job_status(token: str, job_id: str):
     Returns: the status of the job.
 
     """
-    user_endpoint = f"https://code.pan.run/api/v4/projects/2596/jobs/{job_id}"
+    user_endpoint = f"https://code.pan.run/api/v4/projects/2596/jobs/{job_id}"  # disable-secrets-detection
     headers = {'PRIVATE-TOKEN': token}
     response = requests.get(user_endpoint, headers=headers)
     return response.json().get('status')
@@ -104,7 +104,7 @@ def remove_machine_lock_file(storage_bucket: any, lock_repository_name: str, mac
     blob = storage_bucket.blob(f'{lock_repository_name}/{machine_name}-lock-{job_id}')
     try:
         blob.delete()
-    except Exception as err:
+    except Exception:
         pass
 
 
@@ -123,32 +123,34 @@ def adding_build_to_the_queue(storage_bucket: any, lock_repository_name: str, jo
 def main():
     install_logging('lock_cloud_machines.log', logger=logging)
 
-    logging.info(f'Starting search a CLOUD machine to lock')
+    logging.info('Starting search a CLOUD machine to lock')
     options = options_handler()
     storage_client = storage.Client.from_service_account_json(options.service_account)
     storage_bucket = storage_client.bucket('xsoar-ci-artifacts')
     lock_repository_name = f'{options.gcs_locks_path.split("/")[-1]}'
     number_machines_to_lock = options.number_machines_to_lock
 
-    logging.info(f'adding job_id to the queue')
+    logging.info('adding job_id to the queue')
     adding_build_to_the_queue(storage_bucket, lock_repository_name, options.ci_job_id)
 
     # running until the build is first in queue
     first_in_the_queue = False
     while not first_in_the_queue:
-        logging.info(f'gets all builds in the queue')
-        builds_in_queue = (get_queue_locks_details(storage_client, 'xsoar-ci-artifacts', f'{lock_repository_name}/queue-ga-lock-'))
+        logging.info('gets all builds in the queue')
+        builds_in_queue = (get_queue_locks_details(storage_client, 'xsoar-ci-artifacts',
+                                                   f'{lock_repository_name}/queue-ga-lock-'))
         # sorting the files by time_created
         sorted_builds_in_queue = sorted(builds_in_queue, key=lambda d: d['time_created'], reverse=False)
 
-        my_place_in_the_queue = next((index for (index, d) in enumerate(sorted_builds_in_queue) if d["name"] == options.ci_job_id), None)
+        my_place_in_the_queue = next((index for (index, d) in enumerate(sorted_builds_in_queue)
+                                      if d["name"] == options.ci_job_id), None)
         logging.info(f'my place in the queue is: {my_place_in_the_queue}')
 
         if my_place_in_the_queue == 0:
             first_in_the_queue = True
         else:
             # we check the status of the build that is ahead of me in the queue
-            previous_build = sorted_builds_in_queue[my_place_in_the_queue-1].get('name')
+            previous_build = sorted_builds_in_queue[my_place_in_the_queue - 1].get('name')
             previous_build_status = check_job_status(options.gitlab_status_token, previous_build)
             if previous_build_status != 'running':
                 # delete the lock file of the build because its not running
@@ -156,17 +158,18 @@ def main():
             else:
                 sleep(random.randint(8, 13))
 
-    logging.info(f'Our turn has arrived, Start searching for an empty machine')
+    logging.info('Our turn has arrived, Start searching for an empty machine')
     if options.lock_machine_name:
-        logging.info(f'trying to lock the given machine: {options.lock_machine_name}')
+        logging.info('trying to lock the given machine: {options.lock_machine_name}')
         list_machines = [options.lock_machine_name]
     else:
-        logging.info(f'gets all machines names')
+        logging.info('gets all machines names')
         test_machines_list = storage_bucket.blob(f'{lock_repository_name}/{options.test_machines_list}')
         list_machines = test_machines_list.download_as_string().decode("utf-8").split()
 
     logging.info(f'gets all machines lock files')
-    machines_locks = (get_machines_locks_details(storage_client, 'xsoar-ci-artifacts', f'{lock_repository_name}/', f'{lock_repository_name}/qa2-test-'))
+    machines_locks = (get_machines_locks_details(storage_client, 'xsoar-ci-artifacts', f'{lock_repository_name}/',
+                                                 f'{lock_repository_name}/qa2-test-'))
 
     lock_machine_name = None
     while number_machines_to_lock > 0:
@@ -185,7 +188,7 @@ def main():
                     break
             else:
                 # machine found! create lock file
-                logging.info(f'There is no a lock file')
+                logging.info('There is no a lock file')
                 lock_machine(storage_bucket, lock_repository_name, machine, options.ci_job_id)
                 lock_machine_name = machine
                 number_machines_to_lock -= 1
