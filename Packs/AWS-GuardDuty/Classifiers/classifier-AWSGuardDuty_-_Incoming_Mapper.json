@@ -1,7 +1,7 @@
 {
-    "description": "",
+    "description": "Maps incoming AWSGuardDuty incidents fields.",
     "feed": false,
-    "id": "classifier-mapper-incoming-AWSGuardDuty.json",
+    "id": "AWSGuardDuty - Incoming Mapper",
     "mapping": {
         "AWS Guard Duty EC2 Finding": {
             "dontMapEventToLabels": false,
@@ -834,7 +834,7 @@
             }
         }
     },
-    "name": "classifier-mapper-incoming-AWSGuardDuty.json",
+    "name": "AWSGuardDuty - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.5.0"
