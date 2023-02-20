@@ -49,8 +49,7 @@ def test_list_external_service_command(requests_mock):
             "Authorizatio": "THISISAFAKEKEY",
             "Content-Type": "application/json"
         },
-        proxy=False,
-        auth=None)
+        proxy=False)
 
     args = {
         'domain': 'testdomain.com',
@@ -89,8 +88,7 @@ def test_get_external_service_command(requests_mock):
             "Authorizatio": "THISISAFAKEKEY",
             "Content-Type": "application/json"
         },
-        proxy=False,
-        auth=None)
+        proxy=False)
 
     args = {
         'service_id': '94232f8a-f001-3292-aa65-63fa9d981427'
@@ -129,8 +127,7 @@ def test_list_external_ip_address_range_command(requests_mock):
             "Authorizatio": "THISISAFAKEKEY",
             "Content-Type": "application/json"
         },
-        proxy=False,
-        auth=None)
+        proxy=False)
     args = {}
 
     response = list_external_ip_address_range_command(client, args)
@@ -166,8 +163,7 @@ def test_get_external_ip_address_range_command(requests_mock):
             "Authorizatio": "THISISAFAKEKEY",
             "Content-Type": "application/json"
         },
-        proxy=False,
-        auth=None)
+        proxy=False)
     args = {
         'range_id': '1093124c-ce26-33ba-8fb8-937fecb4c7b6'
     }
@@ -205,8 +201,7 @@ def test_list_asset_internet_exposure_command(requests_mock):
             "Authorizatio": "THISISAFAKEKEY",
             "Content-Type": "application/json"
         },
-        proxy=False,
-        auth=None)
+        proxy=False)
     args = {
         'name': 'testdomain.com'
     }
@@ -244,8 +239,7 @@ def test_get_asset_internet_exposure_command(requests_mock):
             "Authorizatio": "THISISAFAKEKEY",
             "Content-Type": "application/json"
         },
-        proxy=False,
-        auth=None)
+        proxy=False)
     args = {
         'asm_id': 'testdomain.com'
     }
@@ -255,3 +249,41 @@ def test_get_asset_internet_exposure_command(requests_mock):
     assert response.outputs == EXTERNAL_EXPOSURE_RESULTS
     assert response.outputs_prefix == 'ASM.AssetInternetExposure'
     assert response.outputs_key_field == 'asm_ids'
+
+
+def test_list_remediation_rule_command(requests_mock):
+    """Tests list_remediation_rule_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate list_remediation_rule_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'list_remediation_rule_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexAttackSurfaceManagement import Client, list_remediation_rule_command
+
+    from test_data.raw_response import REMEDIATION_RULES_RESPONSE
+    from test_data.expected_results import REMEDIATION_RULES_RESULTS
+    requests_mock.post('https://test.com/api/webapp/public_api/v1/xpanse_remediation_rules/rules/',
+                       json=REMEDIATION_RULES_RESPONSE)
+
+    client = Client(
+        base_url='https://test.com/api/webapp/public_api/v1',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'asm_rule_id': 'RdpServer'
+    }
+
+    response = list_remediation_rule_command(client, args)
+
+    assert response.outputs == REMEDIATION_RULES_RESULTS
+    assert response.outputs_prefix == 'ASM.RemediationRule'
+    assert response.outputs_key_field == 'rule_id'

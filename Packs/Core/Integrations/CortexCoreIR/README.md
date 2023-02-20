@@ -2291,3 +2291,42 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Successfully removed tag test from endpoint(s) ['1234']
+
+### core-endpoint-alias-change
+***
+Gets a list of endpoints according to the passed filters, and changes their alias name. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported).
+
+#### Base Command
+
+`core-endpoint-alias-change`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| status | The status of the endpoint to use as a filter. Possible values are: connected, disconnected. | Optional | 
+| endpoint_id_list | A comma-separated list of endpoint IDs to use as a filter. | Optional | 
+| dist_name | A comma-separated list of distribution package names or installation package names to use as a filter.<br/>Example: dist_name1,dist_name2. | Optional | 
+| ip_list | A comma-separated list of IP addresses to use as a filter.<br/>Example: 8.8.8.8,1.1.1.1. | Optional | 
+| group_name | A comma-separated list of group names to which the agent belongs to use as a filter.<br/>Example: group_name1,group_name2. | Optional | 
+| platform | The endpoint platform to use as a filter. Possible values are: windows, linux, macos, android. | Optional | 
+| alias_name | A comma-separated list of alias names to use as a filter.<br/>Examples: alias_name1,alias_name2. | Optional | 
+| isolate | Specifies whether the endpoint was isolated or unisolated to use as a filter. Possible values are: isolated, unisolated.  Note: This argument returns only the first endpoint that matches. | Optional | 
+| hostname | A comma-separated list of hostnames to use as a filter.<br/>Example: hostname1,hostname2. | Optional | 
+| first_seen_gte | All the agents that were first seen after {first_seen_gte} to use as a filter.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
+| first_seen_lte | All the agents that were first seen before {first_seen_lte} to use as a filter.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
+| last_seen_gte | All the agents that were last seen after {last_seen_gte} to use as a filter.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
+| last_seen_lte | All the agents that were last seen before {last_seen_lte} to use as a filter.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
+| username | The usernames to query for to use as a filter. Accepts a single user, or comma-separated list of usernames. | Optional | 
+| new_alias_name | The alias name to change to. Note: If you send an empty field, (e.g new_alias_name=\"\") the current alias name is deleted.| Required | 
+| scan_status | The scan status of the endpoint to use as a filter. Possible values are: none, pending, in_progress, canceled, aborted, pending_cancellation, success, error. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!core-endpoint-alias-change new_alias_name=test scan_status=success ip_list=1.1.1.1```
+#### Human Readable Output
+
+>The endpoint alias was changed successfully.
+Note: If there is no error in the process, then this is the output even when the specific endpoint does not exist.

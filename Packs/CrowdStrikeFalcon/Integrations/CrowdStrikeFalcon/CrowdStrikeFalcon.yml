@@ -2996,7 +2996,7 @@ script:
       description: The user name
     description: Searches for and fetches the incident behavior for the given incident
       behavior ID
-  dockerimage: demisto/python3:3.10.9.44472
+  dockerimage: demisto/python3:3.10.9.46807
   isfetch: true
   ismappable: true
   isremotesyncin: true

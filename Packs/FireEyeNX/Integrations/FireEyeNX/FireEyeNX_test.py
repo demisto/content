@@ -1026,16 +1026,25 @@ def test_is_supported_context_type_failure(client):
     """
     When is_supported_context_type() method called invalid argument then should return False.
     """
-    assert (
-        client.is_supported_context_type('application/octet-stream') is False
+    assert not (
+        client.is_supported_context_type('image/png')
     )
 
 
-def test_is_supported_context_type_success(client):
+@pytest.mark.parametrize(
+    'context_type',
+    [
+        CONTENT_TYPE_ZIP,
+        "text/csv",
+        "application/pdf",
+        'application/octet-stream'
+    ]
+)
+def test_is_supported_context_type_success(client, context_type):
     """
     When is_supported_context_type() method called valid argument then should return True.
     """
-    assert client.is_supported_context_type(CONTENT_TYPE_ZIP) is True
+    assert client.is_supported_context_type(context_type)
 
 
 @patch('FireEyeNX.Client.http_request')

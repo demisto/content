@@ -1,0 +1,52 @@
+[
+    {
+        "value": "http://www.test.com",
+        "rawJSON": {
+            "type": "URL",
+            "spec_version": "2.1",
+            "id": "indicator--123-123-123-123-123",
+            "created": "2014-06-29T13:49:37.079Z",
+            "modified": "2014-06-29T13:49:37.079Z",
+            "name": "Malicious site hosting downloader",
+            "description": "This organized is test.",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value IN ('http://www.test.com', 'http://www.test2.com')]",
+            "pattern_type": "stix",
+            "valid_from": "2014-06-29T13:49:37.079Z",
+            "value": "http://www.test.com"
+        },
+        "indicator_type": "URL",
+        "customFields": {
+            "description": "This organized is test.",
+            "tags": [
+            ]
+        }
+    },
+    {
+        "value": "http://www.test2.com",
+        "rawJSON": {
+            "type": "URL",
+            "spec_version": "2.1",
+            "id": "indicator--123-123-123-123-123",
+            "created": "2014-06-29T13:49:37.079Z",
+            "modified": "2014-06-29T13:49:37.079Z",
+            "name": "Malicious site hosting downloader",
+            "description": "This organized is test.",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value IN ('http://www.test.com', 'http://www.test2.com')]",
+            "pattern_type": "stix",
+            "valid_from": "2014-06-29T13:49:37.079Z",
+            "value": "http://www.test2.com"
+        },
+        "indicator_type": "URL",
+        "customFields": {
+            "description": "This organized is test.",
+            "tags": [
+            ]
+        }
+    }
+]

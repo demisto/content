@@ -553,8 +553,12 @@ def configure_engine_command():  # pragma: no cover
     engine_type = demisto.args()['type']
     version = demisto.args().get('version')
     folder = demisto.args().get('folder')
+    aws_roles_list = demisto.args().get('aws_roles_list')
+    aws_method = demisto.args().get('aws_method')
+    ttl = demisto.args().get('ttl')
 
-    configure_engine(engine_path, engine_type, version, folder)
+    configure_engine(engine_path, engine_type, version, folder=folder, aws_roles_list=aws_roles_list,
+                     aws_method=aws_method, ttl=ttl)
 
     demisto.results('Engine configured successfully')
 
@@ -565,7 +569,8 @@ def reset_config_command():  # pragma: no cover
     demisto.results('Successfully reset the engines configuration')
 
 
-def configure_engine(engine_path, engine_type, version, folder=None, ttl='3600'):  # pragma: no cover
+def configure_engine(engine_path, engine_type, version, folder=None, ttl='3600', aws_roles_list=None,
+                     aws_method=None):  # pragma: no cover
     engine_conf = {
         'type': engine_type,
         'path': engine_path,
@@ -575,6 +580,10 @@ def configure_engine(engine_path, engine_type, version, folder=None, ttl='3600')
         engine_conf['version'] = str(version)
     if folder:
         engine_conf['folder'] = folder
+    if aws_roles_list:
+        engine_conf['aws_roles_list'] = aws_roles_list
+    if aws_method:
+        engine_conf['aws_method'] = aws_method
 
     ENGINE_CONFIGS.append(engine_conf)
 
