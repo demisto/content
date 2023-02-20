@@ -79,15 +79,6 @@ class VectraClient(BaseClient):
             - `Dict[str, Any]` of detection objects.
         """
 
-        demisto.info(
-            str(
-                {
-                    "page_size": self.max_fetch,
-                    "query_string": f"detection.first_timestamp:[{first_timestamp} to NOW]",
-                }
-            )
-        )
-
         return self._http_request(
             method="GET",
             url_suffix=f"search/{self.endpoints[0]}",
