@@ -3,7 +3,7 @@ filter
     user = null
 | alter
     xdm.event.description = comments,
-    xdm.event.outcome = json_extract_scalar(kind, "$.value"),
+    xdm.alert.subcategory = json_extract_scalar(kind, "$.value"),
     xdm.target.resource.id = to_string(json_extract(assigned_object, "$.id")),
     xdm.target.resource.name = json_extract_scalar(assigned_object, "$.name"),
     xdm.target.resource.type = assigned_object_type;
