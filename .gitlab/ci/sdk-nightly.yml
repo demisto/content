@@ -1,4 +1,4 @@
-.sdk-nightly-schedule-rule:
+.sdk-nightly-schedule-rule: &.sdk-nightly-schedule-rule
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $DEMISTO_SDK_NIGHTLY == "true"'
 
@@ -87,9 +87,11 @@ demisto_sdk_nightly:check_idset_dependent_commands:
 demisto-sdk-nightly:xsoar-prepare-testing-bucket:
   tags:
     - gke
+  rules:
+    - *.sdk-nightly-schedule-rule
   extends:
     - .default-job-settings
-    - .sdk-nightly-schedule-rule
+    - xsoar-prepare-testing-bucket
   variables:
     IFRA_ENV_TYPE: "Server Master"
     KUBERNETES_CPU_REQUEST: 2000m
@@ -98,7 +100,6 @@ demisto-sdk-nightly:xsoar-prepare-testing-bucket:
   needs: []
   stage: prepare-testing-bucket
   script:
-    - !reference [xsoar-prepare-testing-bucket]
     - !reference [.download-demisto-conf]
     - |
       [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
@@ -108,9 +109,11 @@ demisto-sdk-nightly:xsoar-prepare-testing-bucket:
 demisto-sdk-nightly:mpv2-prepare-testing-bucket:
   tags:
     - gke
+  rules:
+    - *.sdk-nightly-schedule-rule
   extends:
     - .default-job-settings
-    - .sdk-nightly-schedule-rule
+    - mpv2-prepare-testing-bucket
   variables:
     IFRA_ENV_TYPE: "Server Master"
     KUBERNETES_CPU_REQUEST: 2000m
@@ -118,16 +121,15 @@ demisto-sdk-nightly:mpv2-prepare-testing-bucket:
     policy: pull-push
   needs: []
   stage: prepare-testing-bucket
-  script:
-    - !reference [mpv2-prepare-testing-bucket]
-    - job-done
 
 demisto-sdk-nightly:xpanse-prepare-testing-bucket:
   tags:
     - gke
+  rules:
+    - *.sdk-nightly-schedule-rule
   extends:
     - .default-job-settings
-    - .sdk-nightly-schedule-rule
+    - xpanse-prepare-testing-bucket
   variables:
     IFRA_ENV_TYPE: "Server Master"
     KUBERNETES_CPU_REQUEST: 2000m
@@ -135,9 +137,6 @@ demisto-sdk-nightly:xpanse-prepare-testing-bucket:
     policy: pull-push
   needs: []
   stage: prepare-testing-bucket
-  script:
-    - !reference [xpanse-prepare-testing-bucket]
-    - job-done
 
 
 demisto-sdk-nightly:run-commands-against-instance:
