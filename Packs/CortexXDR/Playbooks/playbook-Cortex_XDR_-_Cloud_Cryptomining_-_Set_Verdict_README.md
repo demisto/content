@@ -35,4 +35,4 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex XDR - Cryptomining - Set Verdict](../doc_files/Cortex_XDR_-_Cryptomining_-_Set_Verdict.png)
+![Cortex XDR - Cryptojacking - Set Verdict](../doc_files/Cortex_XDR_-_Cryptomining_-_Set_Verdict.png)

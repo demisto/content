@@ -597,12 +597,12 @@ def ip_named_location_list(ms_client: Client, args: dict) -> CommandResults:  # 
         ip_named_locations = []
         for result in results:
             ip_named_location = {
-                'id': result['id'],
-                'display_name': result['displayName'],
-                'time_created': result['createdDateTime'],
-                'time_modified': result['modifiedDateTime'],
-                'is_trusted': result['isTrusted'],
-                'ip_ranges': result['ipRanges']
+                'id': result.get('id'),
+                'display_name': result.get('displayName'),
+                'time_created': result.get('createdDateTime'),
+                'time_modified': result.get('modifiedDateTime'),
+                'is_trusted': result.get('isTrusted'),
+                'ip_ranges': result.get('ipRanges')
             }
             ip_named_locations.append(ip_named_location)
         context = {
@@ -630,15 +630,15 @@ def azure_ad_identity_protection_risky_users_list(ms_client: Client, args: dict)
         risky_users = []
         for result in results:
             risky_user = {
-                'id': result['id'],
-                'isDeleted': result['isDeleted'],
-                'isProcessing': result['isProcessing'],
-                'riskLevel': result['riskLevel'],
-                'riskState': result['riskState'],
-                'riskDetail': result['riskDetail'],
-                'riskLastUpdatedDateTime': result['riskLastUpdatedDateTime'],
-                'userDisplayName': result['userDisplayName'],
-                'userPrincipalName': result['userPrincipalName'],
+                'id': result.get('id'),
+                'isDeleted': result.get('isDeleted'),
+                'isProcessing': result.get('isProcessing'),
+                'riskLevel': result.get('riskLevel'),
+                'riskState': result.get('riskState'),
+                'riskDetail': result.get('riskDetail'),
+                'riskLastUpdatedDateTime': result.get('riskLastUpdatedDateTime'),
+                'userDisplayName': result.get('userDisplayName'),
+                'userPrincipalName': result.get('userPrincipalName'),
             }
             risky_users.append(risky_user)
         context = {
@@ -667,18 +667,18 @@ def azure_ad_identity_protection_risky_users_history_list(ms_client: Client, arg
         risky_users = []
         for result in results:
             risky_user = {
-                'id': result['id'],
-                'isDeleted': result['isDeleted'],
-                'isProcessing': result['isProcessing'],
-                'riskLevel': result['riskLevel'],
-                'riskState': result['riskState'],
-                'riskDetail': result['riskDetail'],
-                'riskLastUpdatedDateTime': result['riskLastUpdatedDateTime'],
-                'userDisplayName': result['userDisplayName'],
-                'userPrincipalName': result['userPrincipalName'],
-                'userId': result['userId'],
-                'initiatedBy': result['initiatedBy'],
-                'activity': result['activity'],
+                'id': result.get('id'),
+                'isDeleted': result.get('isDeleted'),
+                'isProcessing': result.get('isProcessing'),
+                'riskLevel': result.get('riskLevel'),
+                'riskState': result.get('riskState'),
+                'riskDetail': result.get('riskDetail'),
+                'riskLastUpdatedDateTime': result.get('riskLastUpdatedDateTime'),
+                'userDisplayName': result.get('userDisplayName'),
+                'userPrincipalName': result.get('userPrincipalName'),
+                'userId': result.get('userId'),
+                'initiatedBy': result.get('initiatedBy'),
+                'activity': result.get('activity'),
             }
             risky_users.append(risky_user)
         context = {
@@ -707,25 +707,25 @@ def azure_ad_identity_protection_risk_detection_list(ms_client: Client, args: di
         risks = []
         for result in results:
             risk = {
-                'id': result['id'],
-                'requestId': result['requestId'],
-                'correlationId': result['correlationId'],
-                'riskEventType': result['riskEventType'],
-                'riskState': result['riskState'],
-                'riskLevel': result['riskLevel'],
-                'riskDetail': result['riskDetail'],
-                'source': result['source'],
-                'detectionTimingType': result['detectionTimingType'],
-                'activity': result['activity'],
-                'ipAddress': result['ipAddress'],
-                'activityDateTime': result['activityDateTime'],
-                'detectedDateTime': result['detectedDateTime'],
-                'lastUpdatedDateTime': result['lastUpdatedDateTime'],
-                'userId': result['userId'],
-                'userDisplayName': result['userDisplayName'],
-                'userPrincipalName': result['userPrincipalName'],
-                'additionalInfo': result['additionalInfo'],
-                'location': result['location']
+                'id': result.get('id'),
+                'requestId': result.get('requestId'),
+                'correlationId': result.get('correlationId'),
+                'riskEventType': result.get('riskEventType'),
+                'riskState': result.get('riskState'),
+                'riskLevel': result.get('riskLevel'),
+                'riskDetail': result.get('riskDetail'),
+                'source': result.get('source'),
+                'detectionTimingType': result.get('detectionTimingType'),
+                'activity': result.get('activity'),
+                'ipAddress': result.get('ipAddress'),
+                'activityDateTime': result.get('activityDateTime'),
+                'detectedDateTime': result.get('detectedDateTime'),
+                'lastUpdatedDateTime': result.get('lastUpdatedDateTime'),
+                'userId': result.get('userId'),
+                'userDisplayName': result.get('userDisplayName'),
+                'userPrincipalName': result.get('userPrincipalName'),
+                'additionalInfo': result.get('additionalInfo'),
+                'location': result.get('location')
             }
             risks.append(risk)
         context = {
