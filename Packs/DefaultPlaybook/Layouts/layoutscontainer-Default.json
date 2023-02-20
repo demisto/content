@@ -4241,8 +4241,8 @@
         ]
     },
     "group": "incident",
-    "id": "Default_for_release",
-    "name": "Default_for_release",
+    "id": "Default",
+    "name": "Default",
     "system": false,
     "version": -1,
     "fromVersion": "8.2.0",
