@@ -1134,7 +1134,7 @@ def access_policy_anti_malware_update_command(
 
 def access_policy_delete_command(
     client: Client, args: dict[str, Any]
-) -> CommandResults:
+) -> Union[List[CommandResults], CommandResults]:
     """
     Delete access policy.
 
@@ -1143,7 +1143,7 @@ def access_policy_delete_command(
         args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
-        CommandResults: readable outputs for XSOAR.
+        Union[List[CommandResults], CommandResults]: readable outputs for XSOAR.
     """
     policy_names = argToList(args["policy_names"])
 
@@ -1277,6 +1277,9 @@ def domain_map_delete_command(
         client (Client): Cisco WSA API client.
         args (dict[str, Any]): Command arguments from XSOAR.
 
+    Raises:
+        DemistoException: In cases that the response code is 200 and the ouput[res_code] is not 200/206.
+
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
@@ -1304,7 +1307,7 @@ def domain_map_delete_command(
             command_results_list.append(
                 CommandResults(readable_output=readable_output, raw_response=response)
             )
-        return command_results_list
+    raise DemistoException(message=response)
 
 
 def identification_profiles_list_command(

@@ -297,16 +297,16 @@ def test_fail_access_policy_update_command(
 
     with pytest.raises(DemistoException):
         access_policy_update_command(
-                mock_client,
-                {
-                    "policy_name": "test",
-                    "new_policy_name": "test",
-                    "policy_status": "enable",
-                    "identification_profiles": "global_identification_profile",
-                    "policy_order": "2",
-                    "policy_description": "test description",
-                },
-            )
+            mock_client,
+            {
+                "policy_name": "test",
+                "new_policy_name": "test",
+                "policy_status": "enable",
+                "identification_profiles": "global_identification_profile",
+                "policy_order": "2",
+                "policy_description": "test description",
+            },
+        )
 
 
 def test_access_policy_protocols_user_agents_update_command(
