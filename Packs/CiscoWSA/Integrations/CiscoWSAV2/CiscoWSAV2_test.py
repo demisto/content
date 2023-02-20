@@ -628,7 +628,7 @@ def test_domain_map_create_command(
 
     mock_response = load_mock_response("domain_map_create.json")
     url = f"{BASE_URL}/{V2_PREFIX}/configure/web_security/domain_map"
-    requests_mock.post(url=url, json=mock_response, status_code=HTTPStatus.CREATED)
+    requests_mock.post(url=url, json=mock_response, status_code=HTTPStatus.OK)
 
     result = domain_map_create_command(
         mock_client,
@@ -792,7 +792,7 @@ def test_fail_domain_map_delete_command(
 
     result = domain_map_delete_command(
         mock_client,
-        {"domain_names": "test.com,errer1,error2"},
+        {"domain_names": "test.com,error1,error2"},
     )
     assert len(result) == 2
 

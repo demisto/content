@@ -431,7 +431,7 @@ class Client(BaseClient):
             file_reputation_filtering_status (str | None): File reputation filtering status.
             file_reputation_action (str | None): File reputation action.
             anti_malware_scanning_status (str | None): Anti-malware scanning status.
-            suspect_user_agent_scanning (str | None): Suspect uset agent scanning.
+            suspect_user_agent_scanning (str | None): Suspect user agent scanning.
             block_malware_categories (List[str] | None): Malware categories to block.
             block_other_categories (List[str] | None): Other categories to block.
             settings_status (str): Application settings status.
@@ -1159,35 +1159,6 @@ def access_policy_delete_command(
     )
 
 
-def multi_status_delete_handler(response: Response, obj_key: str, readable_obj_name: str) -> List[CommandResults]:
-    """_summary_
-
-    Args:
-        response (Response): API response from Cisco WSA (with 207 status code).
-        obj_key (str): The key of the argument in the response.
-        readable_obj_name (str): Readable name for the object.
-
-    Returns:
-        List[CommandResults]: Readable outputs for XSOAR.
-    """
-    output_data = response.json()
-    command_results_list = []
-    for profile in output_data.get("success_list"):
-        readable_output = (
-            f'{readable_obj_name} "{profile.get(obj_key)}" '
-            f"was successfully deleted."
-        )
-        command_results_list.append(CommandResults(readable_output=readable_output))
-    for profile in output_data.get("failure_list"):
-        readable_output = (
-            f'{readable_obj_name} "{profile.get(obj_key)}" '
-            f'deletion failed, message: "{profile.get("message")}".'
-        )
-        command_results_list.append(CommandResults(readable_output=readable_output))
-
-    return command_results_list
-
-
 def domain_map_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get domain mappings.
@@ -1296,7 +1267,7 @@ def domain_map_delete_command(
         args (dict[str, Any]): Command arguments from XSOAR.
 
     Raises:
-        DemistoException: In cases that the response code is 200 and the ouput[res_code] is not 200/206.
+        DemistoException: In cases that the response code is 200 and the output [res_code] is not 200/206.
 
     Returns:
         CommandResults: readable outputs for XSOAR.
@@ -1375,9 +1346,9 @@ def identification_profiles_list_command(
 
 
 def identification_profile_mapper(data: List[dict[str, Any]]) -> List[dict[str, Any]]:
-    filtterd_data = []
+    filtered_data = []
     for profile in data:
-        filtterd_data.append(remove_empty_elements({
+        filtered_data.append(remove_empty_elements({
             "status": profile['status'],
             "profile_name": profile['profile_name'],
             "description": profile['description'],
@@ -1395,7 +1366,7 @@ def identification_profile_mapper(data: List[dict[str, Any]]) -> List[dict[str, 
                 "custom": dict_safe_get(profile, ['members', 'user_agents', 'custom']),
             },
         }))
-    return filtterd_data
+    return filtered_data
 
 
 def identification_profiles_create_command(
@@ -1544,6 +1515,35 @@ def test_module(client: Client) -> str:
     """
     client.url_categories_list_request()
     return "ok"
+
+
+def multi_status_delete_handler(response: Response, obj_key: str, readable_obj_name: str) -> List[CommandResults]:
+    """_summary_
+
+    Args:
+        response (Response): API response from Cisco WSA (with 207 status code).
+        obj_key (str): The key of the argument in the response.
+        readable_obj_name (str): Readable name for the object.
+
+    Returns:
+        List[CommandResults]: Readable outputs for XSOAR.
+    """
+    output_data = response.json()
+    command_results_list = []
+    for profile in output_data.get("success_list"):
+        readable_output = (
+            f'{readable_obj_name} "{profile.get(obj_key)}" '
+            f"was successfully deleted."
+        )
+        command_results_list.append(CommandResults(readable_output=readable_output))
+    for profile in output_data.get("failure_list"):
+        readable_output = (
+            f'{readable_obj_name} "{profile.get(obj_key)}" '
+            f'deletion failed, message: "{profile.get("message")}".'
+        )
+        command_results_list.append(CommandResults(readable_output=readable_output))
+
+    return command_results_list
 
 
 def main() -> None:
