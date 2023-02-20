@@ -1,4 +1,5 @@
-[
+{
+  "core_packs_list": [
   "Active_Directory_Query",
   "AutoFocus",
   "Base",
@@ -27,4 +28,16 @@
   "Whois",
   "ipinfo",
   "rasterize"
-]
+],
+ "update_core_packs_list": [
+    "Base",
+    "CommonScripts",
+    "CommonPlaybooks",
+    "CommonTypes",
+    "Core",
+    "DemistoRESTAPI",
+    "FiltersAndTransformers",
+    "Palo_Alto_Networks_WildFire",
+    "rasterize"
+  ]
+}

@@ -1,6 +1,7 @@
 [MODEL: dataset=dropbox_dropbox_raw]
 filter
     json_extract_scalar(event_category, "$['.tag']") != "logins"
+| alter actor_type = json_extract_scalar(actor, "$['.tag']")
 | alter
     xdm.event.type = json_extract_scalar(event_category, "$['.tag']"),
     xdm.event.operation_sub_type = json_extract_scalar(event_type, "$['.tag']"),
@@ -13,10 +14,10 @@ filter
     xdm.source.location.city = json_extract_scalar(origin, "$.geo_location.city"),
     xdm.source.location.region = json_extract_scalar(origin, "$.geo_location.region"),
     xdm.source.location.country = json_extract_scalar(origin, "$.geo_location.country"),
-    xdm.target.user.user_type = json_extract_scalar(context, "$['.tag']"),
+    xdm.target.user.groups = arraycreate( coalesce(json_extract_scalar(context, "$['.tag']"),"")),
     xdm.target.user.identifier = json_extract_scalar(context, "$.account_id"),
     xdm.target.user.username = json_extract_scalar(context, "$.display_name"),
-    xdm.source.user.user_type = json_extract_scalar(actor, "$['.tag']"),
+    xdm.source.user.user_type = if(actor_type in ("admin","anonymous","reseller","user"),XDM_CONST.USER_TYPE_REGULAR ,actor_type in ("app","dropbox"),XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,to_string(actor_type)),
     xdm.source.user.username = coalesce(json_extract_scalar(actor, "$.user.display_name"), json_extract_scalar(actor, "$.admin.display_name"), json_extract_scalar(actor, "$.reseller.reseller_name")),
     xdm.source.user.identifier = coalesce(json_extract_scalar(actor, "$.user.account_id"), json_extract_scalar(actor, "$.admin.account_id")),
     xdm.target.resource.value = coalesce(json_extract_scalar(details, "$.new_value['.tag']"), json_extract_scalar(details, "$.certificate_details.sha1_fingerprint"), json_extract_scalar(details, "$.new_certificate_details.sha1_fingerprint")),
@@ -27,6 +28,7 @@ filter
 
 filter
     json_extract_scalar(event_category, "$['.tag']") = "logins"
+| alter actor_type = json_extract_scalar(actor, "$['.tag']")
 | alter
     xdm.event.type = json_extract_scalar(event_category, "$['.tag']"),
     xdm.event.operation_sub_type = json_extract_scalar(event_type, "$['.tag']"),
@@ -36,7 +38,7 @@ filter
     xdm.source.location.city = json_extract_scalar(origin, "$.geo_location.city"),
     xdm.source.location.region = json_extract_scalar(origin, "$.geo_location.region"),
     xdm.source.location.country = json_extract_scalar(origin, "$.geo_location.country"),
-    xdm.source.user.user_type = json_extract_scalar(actor, "$['.tag']"),
+    xdm.source.user.user_type = if(actor_type in ("admin","anonymous","reseller","user"),XDM_CONST.USER_TYPE_REGULAR ,actor_type in ("app","dropbox"),XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,to_string(actor_type)),
     xdm.source.user.first_name = arrayindex(split(coalesce(json_extract_scalar(actor, "$.admin.display_name"), json_extract_scalar(actor, "$.user.display_name"), json_extract_scalar(actor, "$.reseller.reseller_name")), " "), 0),
     xdm.source.user.last_name = arrayindex(split(coalesce(json_extract_scalar(actor, "$.admin.display_name"), json_extract_scalar(actor, "$.user.display_name")), " "), 1),
     xdm.source.user.identifier = coalesce(json_extract_scalar(actor, "$.admin.account_id"), json_extract_scalar(actor, "$.user.account_id")),

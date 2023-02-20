@@ -360,7 +360,7 @@ def main():
         repo.git.commit(m="Added Test file", no_verify=True)
         repo.git.push('--set-upstream',
                       f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@'  # disable-secrets-detection
-                      f'code.pan.run/xsoar/content.git', branch)  # disable-secrets-detection
+                      f'code.pan.run/xsoar/content.git', branch, push_option="ci.skip")  # disable-secrets-detection
         logging.info("Successfuly pushing the branch to Gitlab content repo")
 
     except GitCommandError as e:
