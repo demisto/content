@@ -1842,7 +1842,7 @@ def create_data_for_alert_rule(args: Dict[str, Any]) -> Dict[str, Any]:
         'triggerOperator': underscoreToCamelCase(args.get('trigger_operator')),
         'triggerThreshold': args.get('trigger_threshold'),
         'tactics': argToList(args.get('tactics')),
-        'techniques': argToList(args.get('techniques')),        
+        'techniques': argToList(args.get('techniques'))
     }
 
     data = {
