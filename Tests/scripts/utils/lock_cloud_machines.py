@@ -9,7 +9,6 @@ import argparse
 
 def options_handler():
     """
-
     Returns: options parsed from input arguments.
 
     """
