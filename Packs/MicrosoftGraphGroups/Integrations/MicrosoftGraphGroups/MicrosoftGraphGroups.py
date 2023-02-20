@@ -78,7 +78,7 @@ class MsGraphClient:
                                          base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
                                          redirect_uri=redirect_uri, auth_code=auth_code, grant_type=grant_type,
                                          resource=resource, certificate_thumbprint=certificate_thumbprint,
-                                         private_key=private_key, scope=scope
+                                         private_key=private_key, scope=scope,
                                          managed_identities_client_id=managed_identities_client_id,
                                          managed_identities_resource_uri=Resources.graph)
         self.handle_error = handle_error
