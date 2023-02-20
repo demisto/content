@@ -20,7 +20,6 @@
     "openEnded": false,
     "associatedTypes": [
         "Prisma Cloud",
-        "Prisma Cloud - VM Alert Priortization",
         "Prisma Cloud - VM Alert Prioritization"
     ],
     "associatedToAll": false,
