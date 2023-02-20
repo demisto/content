@@ -1,5 +1,5 @@
-This integration is for search your assets and fetch details them in OctoxLabs Asset Management Platform.
-This integration was integrated and tested with version 3.0.1 of OctoxLabs
+Octox Labs Cyber Security Asset Management platform
+This integration was integrated and tested with version 3.3.0 of OctoxLabs
 
 ## Configure OctoxLabs on Cortex XSOAR
 
@@ -13,17 +13,21 @@ This integration was integrated and tested with version 3.0.1 of OctoxLabs
     | API Key | Your Octox Labs API Key. \(https://github.com/octoxlabs/py-octoxlabs\#getting-started\) | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### octoxlabs-get-adapters
+
 ***
 Fetch octoxlabs all adapters
-
 
 #### Base Command
 
 `octoxlabs-get-adapters`
+
 #### Input
 
 There are no input arguments for this command.
@@ -43,19 +47,19 @@ There are no input arguments for this command.
 | OctoxLabs.Adapters.results.hr_status | String | Adapter human readable status | 
 
 ### octoxlabs-get-connections
+
 ***
 Fetch octoxlabs connections
-
 
 #### Base Command
 
 `octoxlabs-get-connections`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | page | Page number. | Optional | 
-
 
 #### Context Output
 
@@ -71,19 +75,19 @@ Fetch octoxlabs connections
 | OctoxLabs.Connections.results.enabled | Boolean | Connection is enabled? | 
 
 ### octoxlabs-get-discoveries
+
 ***
 Fetch octoxlabs discoveries
-
 
 #### Base Command
 
 `octoxlabs-get-discoveries`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | page | Page number. | Optional | 
-
 
 #### Context Output
 
@@ -98,13 +102,14 @@ Fetch octoxlabs discoveries
 | OctoxLabs.Discoveries.results.progress | Number | Discovery progress | 
 
 ### octoxlabs-get-last-discovery
+
 ***
 Get last success discovery
-
 
 #### Base Command
 
 `octoxlabs-get-last-discovery`
+
 #### Input
 
 There are no input arguments for this command.
@@ -121,13 +126,14 @@ There are no input arguments for this command.
 | OctoxLabs.Discovery.progress | Number | Last discovery progress | 
 
 ### octoxlabs-search-devices
+
 ***
 Search in your devices
-
 
 #### Base Command
 
 `octoxlabs-search-devices`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -138,7 +144,6 @@ Search in your devices
 | size | Size. | Optional | 
 | discovery_id | Specific Discovery Id. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -147,13 +152,14 @@ Search in your devices
 | OctoxLabs.Devices.results | Unknown | List&lt;Dict&gt; Device information | 
 
 ### octoxlabs-get-device
+
 ***
 Fetch your device
-
 
 #### Base Command
 
 `octoxlabs-get-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -161,9 +167,41 @@ Fetch your device
 | hostname | Your device hostname. | Required | 
 | discovery_id | Your device at specific discovery. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | OctoxLabs.Device | Unknown | &lt;Dict&gt; Octoxlabs Device | 
+
+### octoxlabs-get-queries
+
+***
+Fetch your queries
+
+#### Base Command
+
+`octoxlabs-get-queries`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page | Query list page. | Optional | 
+| search | Search text. | Optional | 
+| size | Query list size. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.Queries.count | Number | Queries count | 
+| OctoxLabs.Queries.results.id | Number | Query id | 
+| OctoxLabs.Queries.results.name | String | Query name | 
+| OctoxLabs.Queries.results.text | String | Query text | 
+| OctoxLabs.Queries.results.tags | Unknown | List&lt;str&gt; Query tags | 
+| OctoxLabs.Queries.results.count | Number | Query device count | 
+| OctoxLabs.Queries.results.is_public | Boolean | Query is public? | 
+| OctoxLabs.Queries.results.created_at | String | Query created at | 
+| OctoxLabs.Queries.results.updated_at | String | Query updated at | 
+| OctoxLabs.Queries.results.username | String | Query creator | 
+| OctoxLabs.Queries.results.is_temporary | Boolean | Query is temporary | 
