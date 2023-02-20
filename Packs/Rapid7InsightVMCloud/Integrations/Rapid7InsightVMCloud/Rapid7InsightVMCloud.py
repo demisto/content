@@ -92,7 +92,7 @@ def test_module_command(client: Client, *_) -> str:
         raise DemistoException(f"Error:, {e}")
 
 
-def get_health_check_command(client: Client) -> dict:
+def get_health_check_command(client: Client) -> dict:  # type: ignore
     """
     Endpoints to monitor service health and quality.
 
@@ -110,7 +110,7 @@ def get_health_check_command(client: Client) -> dict:
         return_error('no response')
 
 
-def get_asset_command(client: Client, asset_id: str) -> dict:
+def get_asset_command(client: Client, asset_id: str) -> dict:  # type: ignore
     """
     Returns the assessment and details of an asset (specified by id).
 
@@ -132,7 +132,7 @@ def get_asset_command(client: Client, asset_id: str) -> dict:
         return_error('no response')
 
 
-def search_assets_command(client: Client, hostname: None, page: str, size: str) -> CommandResults:
+def search_assets_command(client: Client, hostname: None, page: str, size: str) -> CommandResults:  # type: ignore
     """
     Returns the inventory, assessment, and summary details for a page of assets.
 
@@ -161,7 +161,7 @@ def search_assets_command(client: Client, hostname: None, page: str, size: str) 
         params=params
     )
     if response:
-        response_data = response.get("data")
+        response_data = response.get("data")  # type: ignore
         markdown = tableToMarkdown(
             'This is required Asset data',
             response_data
@@ -177,7 +177,7 @@ def search_assets_command(client: Client, hostname: None, page: str, size: str) 
         return_error('no response')
 
 
-def get_scan_command(client: Client, scan_id=str) -> CommandResults:
+def get_scan_command(client: Client, scan_id=str) -> CommandResults:  # type: ignore
     """
     Retrieves the scan with the specified identifier.
 
@@ -210,7 +210,7 @@ def get_scan_command(client: Client, scan_id=str) -> CommandResults:
         return_error('no response')
 
 
-def get_scan_engines_command(client: Client, page: int, size: int) -> CommandResults:
+def get_scan_engines_command(client: Client, page: int, size: int) -> CommandResults:  # type: ignore
     """
     Retrieves a page of scan engines.
 
@@ -226,7 +226,7 @@ def get_scan_engines_command(client: Client, page: int, size: int) -> CommandRes
         "page": page,
         "size": size
     }
-    endpoint = f"/v4/integration/scan/engine"
+    endpoint = "/v4/integration/scan/engine"
     if int(size) > 500:
         return_error("You're over the maximum size limit(500), please choose a lower size value")
     else:
@@ -236,7 +236,7 @@ def get_scan_engines_command(client: Client, page: int, size: int) -> CommandRes
             params=params
         )
         if response:
-            response_data = response.get("data")
+            response_data = response.get("data")  # type: ignore
             markdown = tableToMarkdown(
                 'This is Required Scan Information',
                 response_data
@@ -252,7 +252,7 @@ def get_scan_engines_command(client: Client, page: int, size: int) -> CommandRes
             return_error('no response')
 
 
-def start_scan_command(client: Client, asset_id: str, name: str) -> CommandResults:
+def start_scan_command(client: Client, asset_id: str, name: str) -> CommandResults:  # type: ignore
     """
     Starts a scan.
 
@@ -279,7 +279,7 @@ def start_scan_command(client: Client, asset_id: str, name: str) -> CommandResul
         json_data=data
     )
     if response:
-        scan_response = response.get("scans")
+        scan_response = response.get("scans")  # type: ignore
         markdown = tableToMarkdown(
             'This is required Scan Result',
             scan_response
@@ -296,7 +296,7 @@ def start_scan_command(client: Client, asset_id: str, name: str) -> CommandResul
         return_error('no response')
 
 
-def last_sites_command(client: Client, page: int, size=int) -> CommandResults:
+def last_sites_command(client: Client, page: int, size=int) -> CommandResults:  # type: ignore
     """
     Returns the details for sites.
 
@@ -325,7 +325,7 @@ def last_sites_command(client: Client, page: int, size=int) -> CommandResults:
             params=params
         )
         if response:
-            res = response.get("data")
+            res = response.get("data")  # type: ignore
             markdown = tableToMarkdown('List Sites', res, headers)
             result = CommandResults(
                 readable_output=markdown,
@@ -338,7 +338,7 @@ def last_sites_command(client: Client, page: int, size=int) -> CommandResults:
             return_error("no response")
 
 
-def search_vulnerabilities_command(client: Client, query: str, page: int, size=int) -> dict:
+def search_vulnerabilities_command(client: Client, query: str, page: int, size=int) -> dict:  # type: ignore
     """
     Returns all vulnerabilities that can be assessed.
 
