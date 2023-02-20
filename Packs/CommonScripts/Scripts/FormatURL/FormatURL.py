@@ -453,7 +453,6 @@ class URLCheck(object):
             raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
 
         else:
-            # self.output += char
             part += char
             index += 1
 
