@@ -12,7 +12,7 @@
 touch CloudEnvVariables
 
 # copy TestMachines locally for faster perf
-gsutil cp $GCS_LOCKS_PATH/$TEST_MACHINES_LIST $TEST_MACHINES_LIST	# copy file from bucket. machines names.
+gsutil cp gs://xsoar-ci-artifacts/$GCS_LOCKS_PATH/$TEST_MACHINES_LIST $TEST_MACHINES_LIST	# copy file from bucket. machines names.
 export NUM_OF_TEST_MACHINES=`sed -n '$=' $TEST_MACHINES_LIST`	# reads num of lines in file (this is the num of machines)
 
 TEST_MACHINES_LIST_STRING=`cat $TEST_MACHINES_LIST`

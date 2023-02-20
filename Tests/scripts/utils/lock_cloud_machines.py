@@ -130,18 +130,17 @@ def main():
     options = options_handler()
     storage_client = storage.Client.from_service_account_json(options.service_account)
     storage_bucket = storage_client.bucket('xsoar-ci-artifacts')
-    lock_repository_name = f'{options.gcs_locks_path.split("/")[-1]}'
     number_machines_to_lock = int(options.number_machines_to_lock)
 
     logging.info('adding job_id to the queue')
-    adding_build_to_the_queue(storage_bucket, lock_repository_name, options.ci_job_id)
+    adding_build_to_the_queue(storage_bucket, options.gcs_locks_path, options.ci_job_id)
 
     # running until the build is first in queue
     first_in_the_queue = False
     while not first_in_the_queue:
         logging.info('gets all builds in the queue')
         builds_in_queue = (get_queue_locks_details(storage_client, 'xsoar-ci-artifacts',
-                                                   f'{lock_repository_name}/queue-ga-lock-'))
+                                                   f'{options.gcs_locks_path}/queue-ga-lock-'))
         # sorting the files by time_created
         sorted_builds_in_queue = sorted(builds_in_queue, key=lambda d: d['time_created'], reverse=False)
 
@@ -157,7 +156,7 @@ def main():
             previous_build_status = check_job_status(options.gitlab_status_token, previous_build)
             if previous_build_status != 'running':
                 # delete the lock file of the build because its not running
-                remove_build_from_queue(storage_bucket, lock_repository_name, previous_build)
+                remove_build_from_queue(storage_bucket, options.gcs_locks_path, previous_build)
             else:
                 sleep(random.randint(8, 13))
 
@@ -167,12 +166,12 @@ def main():
         list_machines = [options.lock_machine_name]
     else:
         logging.info('gets all machines names')
-        test_machines_list = storage_bucket.blob(f'{lock_repository_name}/{options.test_machines_list}')
+        test_machines_list = storage_bucket.blob(f'{options.gcs_locks_path}/{options.test_machines_list}')
         list_machines = test_machines_list.download_as_string().decode("utf-8").split()
+        random.shuffle(list_machines)
 
     logging.info(f'gets all machines lock files')
-    machines_locks = (get_machines_locks_details(storage_client, 'xsoar-ci-artifacts', f'{lock_repository_name}/',
-                                                 f'{lock_repository_name}/qa2-test-'))
+    machines_locks = get_machines_locks_details(storage_client, 'xsoar-ci-artifacts', f'{options.gcs_locks_path}/', f'{options.gcs_locks_path}/qa2-test-')
 
     lock_machine_name = None
     while number_machines_to_lock > 0:
@@ -184,20 +183,20 @@ def main():
                 logging.info(f'the status of job id: {job_id_of_the_existing_lock} is: {job_id_of_the_existing_lock_status}')
                 if job_id_of_the_existing_lock_status != 'running':
                     # machine found! removing the not relevant lock and create a now one
-                    remove_machine_lock_file(storage_bucket, lock_repository_name, machine, job_id_of_the_existing_lock)
-                    lock_machine(storage_bucket, lock_repository_name, machine, options.ci_job_id)
+                    remove_machine_lock_file(storage_bucket, options.gcs_locks_path, machine, job_id_of_the_existing_lock)
+                    lock_machine(storage_bucket, options.gcs_locks_path, machine, options.ci_job_id)
                     lock_machine_name = machine
                     number_machines_to_lock -= 1
                     break
             else:
                 # machine found! create lock file
                 logging.info('There is no a lock file')
-                lock_machine(storage_bucket, lock_repository_name, machine, options.ci_job_id)
+                lock_machine(storage_bucket, options.gcs_locks_path, machine, options.ci_job_id)
                 lock_machine_name = machine
                 number_machines_to_lock -= 1
                 break
     # remove build from queue
-    remove_build_from_queue(storage_bucket, lock_repository_name, options.ci_job_id)
+    remove_build_from_queue(storage_bucket, options.gcs_locks_path, options.ci_job_id)
 
     f = open(options.response_machine, "w")
     f.write(f"export CLOUD_CHOSEN_MACHINE_ID={lock_machine_name}")
