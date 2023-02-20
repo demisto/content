@@ -24,18 +24,15 @@
   - demisto-sdk upload -i Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json --insecure
   - section_end "Upload Entities to Cortex XSOAR"
 
-
 demisto-sdk-nightly:run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
     - .sdk-nightly-schedule-rule
 
-
 demisto-sdk-nightly:run-validations:
   extends:
     - .run-validations
     - .sdk-nightly-schedule-rule
-
 
 demisto_sdk_nightly:check_idset_dependent_commands:
   tags:
@@ -86,12 +83,10 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - section_end "Calculate Packs Dependencies"
     - job-done
 
-
 demisto-sdk-nightly:xsoar-prepare-testing-bucket:
   tags:
     - gke
-  rules:
-    *.sdk-nightly-schedule-rule-inner
+  rules: *.sdk-nightly-schedule-rule-inner
   extends:
     - .default-job-settings
     - xsoar-prepare-testing-bucket
@@ -112,8 +107,7 @@ demisto-sdk-nightly:xsoar-prepare-testing-bucket:
 demisto-sdk-nightly:mpv2-prepare-testing-bucket:
   tags:
     - gke
-  rules:
-    *.sdk-nightly-schedule-rule-inner
+  rules: *.sdk-nightly-schedule-rule-inner
   extends:
     - .default-job-settings
     - mpv2-prepare-testing-bucket
@@ -128,8 +122,7 @@ demisto-sdk-nightly:mpv2-prepare-testing-bucket:
 demisto-sdk-nightly:xpanse-prepare-testing-bucket:
   tags:
     - gke
-  rules:
-    *.sdk-nightly-schedule-rule-inner
+  rules: *.sdk-nightly-schedule-rule-inner
   extends:
     - .default-job-settings
     - xpanse-prepare-testing-bucket
@@ -141,14 +134,13 @@ demisto-sdk-nightly:xpanse-prepare-testing-bucket:
   needs: []
   stage: prepare-testing-bucket
 
-
 demisto-sdk-nightly:run-commands-against-instance:
   tags:
     - gce # can't run docker in docker on gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
-  services:  # needed for running lint
+  services: # needed for running lint
     - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
       alias: docker
   variables:
@@ -195,7 +187,6 @@ demisto-sdk-nightly:run-commands-against-instance:
     - section_end "Destroy instances"
     - job-done
 
-
 demisto-sdk-nightly:run-end-to-end-tests:
   tags:
     - gce
@@ -234,16 +225,15 @@ demisto-sdk-nightly:fan-in:
   script:
     - echo "fan in"
 
-
 demisto-sdk-nightly:trigger-slack-notify:
   extends:
     - .trigger-slack-notification
     - .sdk-nightly-schedule-rule-always
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
-    WORKFLOW: 'Demisto SDK Nightly'
-    JOB_NAME: 'demisto-sdk-nightly:fan-in'
+    WORKFLOW: "Demisto SDK Nightly"
+    JOB_NAME: "demisto-sdk-nightly:fan-in"
     # Passes the environment variable from the parent pipeline to the child which can be useful for cases
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
-    SLACK_JOB: 'true'
+    SLACK_JOB: "true"
