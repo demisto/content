@@ -105,7 +105,7 @@ def get_health_check_command(client: Client) -> dict:  # type: ignore
     endpoint = "/admin/health"
     response = client.make_request(method=method, url_suffix=endpoint)
     if response:
-        return response
+        return response  # type: ignore
     else:
         return_error('no response')
 
@@ -127,7 +127,7 @@ def get_asset_command(client: Client, asset_id: str) -> dict:  # type: ignore
         url_suffix=endpoint
     )
     if response:
-        return response
+        return response  # type: ignore
     else:
         return_error('no response')
 
@@ -371,7 +371,7 @@ def search_vulnerabilities_command(client: Client, query: str, page: int, size=i
         )
 
         if response:
-            return response
+            return response  # type: ignore
         else:
             return_error('no response')
 
