@@ -5,12 +5,13 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar, Union
 import dateutil.parser
 import demistomock as demisto
 import requests
+import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from funcy import get_in, identity, set_in
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 """ CONSTANTS """
