@@ -1,6 +1,9 @@
-from PrismaCloudV2 import TIME_FILTER_BASE_CASE, ERROR_NOT_ENOUGH_ARGS, ERROR_RELATIVE_TIME_UNIT, ERROR_TO_NOW_TIME_UNIT, ERROR_TOO_MANY_ARGS
+import json
 
-alert = {
+from PrismaCloudV2 import TIME_FILTER_BASE_CASE, ERROR_NOT_ENOUGH_ARGS, ERROR_RELATIVE_TIME_UNIT, ERROR_TO_NOW_TIME_UNIT, \
+    ERROR_TOO_MANY_ARGS, FETCH_DEFAULT_TIME
+
+full_alert = {
     "id": "P-11111",
     "status": "open",
     "reason": "RESOURCE_UPDATED",
@@ -141,6 +144,10 @@ alert = {
         "scannerVersion": "CS_2.0"
     }
 }
+full_incident = {'name': 'Policy name - P-11111',
+                 'occurred': '2022-11-09T18:10:03Z',
+                 'rawJSON': json.dumps(full_alert),
+                 'severity': 3}
 
 ''' HELPER FUNCTIONS TESTS ARGUMENTS '''
 
@@ -169,3 +176,54 @@ with_filters = ('alert.status=open,alert.status=resolved, policy.remediable=true
                  {'name': 'alert.status', 'operator': '=', 'value': 'resolved'},
                  {'name': 'policy.remediable', 'operator': '=', 'value': 'true'}])
 empty_filters = ('', [])
+
+# test_calculate_fetch_time_range
+# arguments: now, first_fetch, look_back, last_run_time, expected_fetch_time_range
+start_at_first_fetch_default = (1676880716607, FETCH_DEFAULT_TIME, None, None, {'type': 'absolute',
+                                                                                'value': {'endTime': 1676880716607,
+                                                                                          'startTime': 1675767600000}})
+start_at_first_fetch2 = (1676880716607, '1 hour', 20, None, {'type': 'absolute',
+                                                             'value': {'endTime': 1676880716607,
+                                                                       'startTime': 1676023200000}})
+start_at_first_fetch = (1676880716607, '1 hour', None, None, {'type': 'absolute',
+                                                              'value': {'endTime': 1676880716607,
+                                                                        'startTime': 1676023200000}})
+start_at_last_run_time_with_look_back = (1676880716607, '2 hours', 20, 1676023200000, {'type': 'absolute',
+                                                                                       'value': {'endTime': 1676880716607,
+                                                                                                 'startTime': 1676022000000}})
+start_at_last_run_time = (1676880716607, '2 hours', 0, 1676023200000, {'type': 'absolute',
+                                                                       'value': {'endTime': 1676880716607,
+                                                                                 'startTime': 1676023200000}})
+
+# incidents for test_filter_alerts and test_alert_to_incident_context
+truncated_alert6 = {'id': 'P-666666', 'alertTime': 1000000120000, 'policy': {'name': 'Policy Six', 'severity': 'medium'}}
+incident6 = {'name': 'Policy Six - P-666666',
+             'occurred': '2001-09-09T01:48:40Z',
+             'rawJSON': '{"id": "P-666666", "alertTime": 1000000120000, "policy": '
+                        '{"name": "Policy Six", "severity": "medium"}}',
+             'severity': 2}
+truncated_alert7 = {'id': 'P-777777', 'alertTime': 1000000130000, 'policy': {'name': 'Policy Seven', 'severity': 'low'}}
+incident7 = {'name': 'Policy Seven - P-777777',
+             'occurred': '2001-09-09T01:48:50Z',
+             'rawJSON': '{"id": "P-777777", "alertTime": 1000000130000, "policy": '
+                        '{"name": "Policy Seven", "severity": "low"}}',
+             'severity': 1}
+truncated_alert_no_policy = {'id': 'P-888888', 'alertTime': 1000000130000}
+incident_no_policy = {'name': 'No policy - P-888888',
+                      'occurred': '2001-09-09T01:48:50Z',
+                      'rawJSON': '{"id": "P-888888", "alertTime": 1000000130000}',
+                      'severity': 0}
+
+# test_filter_alerts
+# arguments: limit, expected_incidents, expected_updated_fetched_ids
+low_limit = (1, [incident6], {'N-111111': 1000000000000,
+                              'P-222222': 999996400000,
+                              'P-666666': 1000000120000})
+exactly_limit = (2, [incident6, incident7], {'N-111111': 1000000000000,
+                                             'P-222222': 999996400000,
+                                             'P-666666': 1000000120000,
+                                             'P-777777': 1000000130000})
+high_limit = (200, [incident6, incident7], {'N-111111': 1000000000000,
+                                            'P-222222': 999996400000,
+                                            'P-666666': 1000000120000,
+                                            'P-777777': 1000000130000})

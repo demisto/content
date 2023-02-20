@@ -503,17 +503,20 @@ def calculate_offset(page_size: int, page_number: int) -> Tuple[int, int]:
 
 def translate_severity(alert: Dict[str, Any]):
     """
-    Translate alert severity to demisto
-    Might take risk grade into account in the future
+    Translate alert severity to XSOAR
     """
     severity = alert.get('policy', {}).get('severity')
+    if severity == 'critical':
+        return IncidentSeverity.CRITICAL
     if severity == 'high':
-        return 3
+        return IncidentSeverity.HIGH
     if severity == 'medium':
-        return 2
+        return IncidentSeverity.MEDIUM
     if severity == 'low':
-        return 1
-    return 0
+        return IncidentSeverity.LOW
+    if severity == 'informational':
+        return IncidentSeverity.INFO
+    return IncidentSeverity.UNKNOWN
 
 
 def expire_stored_ids(fetched_ids: Dict[str, int], updated_last_run_time: int, look_back: int):
@@ -536,7 +539,7 @@ def expire_stored_ids(fetched_ids: Dict[str, int], updated_last_run_time: int, l
     # to avoid duplicate incidents, make sure that when increasing this value, to increase it up to a multiplier of 3 each time
 
     for fetched_id, alert_time in fetched_ids.items():
-        if alert_time > next_fetch_epoch:  # keep if it is later
+        if alert_time >= next_fetch_epoch:  # keep if it is later
             cleaned_cache[fetched_id] = alert_time
     return cleaned_cache
 
@@ -569,7 +572,7 @@ def fetch_request(client: Client, fetched_ids: Dict[str, int], filters: List[str
                                            )
     response_items = response.get('items', [])
     updated_last_run_time = response_items[-1].get('alertTime') if response_items else now  # in epoch
-    incidents = filter_alerts(fetched_ids, response.get('items'), limit)
+    incidents = filter_alerts(fetched_ids, response_items, limit)
 
     while len(incidents) < limit and response.get('nextPageToken') and response.get('items'):
         # only page_token is being used, also sending other arguments because it is not stated clearly in the API documentation
@@ -1545,7 +1548,9 @@ def test_module(client: Client, params: Dict[str, Any]) -> str:
                 return f'Filter "{filter_name}" is not one of the available filters. ' \
                        f'The available filters names can be found by running "prisma-cloud-alert-filter-list" command.'
 
-        arg_to_number(params.get('look_back'), arg_name='Time in minutes to look back when fetching incidents')
+        look_back = arg_to_number(params.get('look_back'), arg_name='Time in minutes to look back when fetching incidents')
+        if look_back and look_back < 0:
+            return 'Time in minutes to look back when fetching incidents must be a positive value, greater than or equal to zero.'
         time_range = calculate_fetch_time_range(now=convert_date_to_unix('now'),
                                                 first_fetch=params.get('first_fetch', FETCH_DEFAULT_TIME))
         alerts = client.alert_search_request(time_range=time_range, filters=filters, detailed='true',

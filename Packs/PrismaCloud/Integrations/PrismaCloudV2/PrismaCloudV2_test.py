@@ -1,5 +1,7 @@
 import pytest
 from unittest.mock import patch
+from freezegun import freeze_time
+
 from CommonServerPython import *  # noqa: F401
 
 from PrismaCloudV2 import Client
@@ -735,3 +737,138 @@ def test_calculate_offset(page_size, page_number, offset):
 
 
 ''' FETCH HELPER FUNCTIONS TESTS '''
+
+
+@pytest.mark.parametrize('given_alert, expected_severity', (({'policy': {'severity': 'high'}}, IncidentSeverity.HIGH),
+                                                            ({'policy': {'severity': 'medium'}}, IncidentSeverity.MEDIUM),
+                                                            ({'policy': {'severity': 'low'}}, IncidentSeverity.LOW),
+                                                            ({'policy': {'severity': 'critical'}}, IncidentSeverity.CRITICAL),
+                                                            ({'policy': {'severity': 'informational'}}, IncidentSeverity.INFO),
+                                                            ({'policy': {'severity': 'other'}}, IncidentSeverity.UNKNOWN),
+                                                            ({'policy': {}}, IncidentSeverity.UNKNOWN),
+                                                            ({}, IncidentSeverity.UNKNOWN),
+                                                            ))
+def test_translate_severity(given_alert, expected_severity):
+    """
+    Given:
+        - An alert with or without the severity of their policy
+    When:
+        - Fetching incident and creating the incident context from a given alert
+    Then:
+        - Returns the right severity for this alert
+    """
+    from PrismaCloudV2 import translate_severity
+    assert translate_severity(given_alert) == expected_severity
+
+
+def test_expire_stored_ids():
+    """
+    Given:
+        - Fetched alerts IDs with their alert time
+        - The next fetch run time according to the last alert time
+        - The fetch look back time given from the user
+    When:
+        - Fetching incident and preparing the values to save for the next run
+    Then:
+        - Returns the fetched alerts IDs with their alert time, that their alert time will be fetched in the next fetch
+    """
+    from PrismaCloudV2 import expire_stored_ids, FETCH_LOOK_BACK_TIME
+    updated_last_run_time = 1000000000000
+    fetched_ids = {'N-111111': 1000000000000,  # same time
+                   'P-222222': 999996400000,  # 1 hour before (FETCH_LOOK_BACK_TIME*3)
+                   'P-333333': 999998800000,  # 20 minutes before
+                   'P-444444': 999996340000,  # 61 minutes before
+                   'N-555555': 999992800000,  # 2 hours before
+                   'N-666666': 999996460000,  # 59 minutes before
+                   }
+
+    expected_fetched_ids = {'N-111111': 1000000000000,  # same time
+                            'P-222222': 999996400000,  # 1 hour before
+                            'P-333333': 999998800000,  # 20 minutes before
+                            'N-666666': 999996460000,  # 59 minutes before
+                            }
+    assert expire_stored_ids(fetched_ids, updated_last_run_time, FETCH_LOOK_BACK_TIME) == expected_fetched_ids
+
+
+@pytest.mark.parametrize('now, first_fetch, look_back, last_run_time, expected_fetch_time_range',
+                         (input_data.start_at_first_fetch_default,
+                          input_data.start_at_first_fetch,
+                          input_data.start_at_first_fetch2,
+                          input_data.start_at_last_run_time_with_look_back,
+                          input_data.start_at_last_run_time,
+                          ))
+@freeze_time("2023-02-10 11:00:00 UTC")
+def test_calculate_fetch_time_range(now, first_fetch, look_back, last_run_time, expected_fetch_time_range):
+    """
+    Given:
+        - All relevant times to calculate the fetch time range
+    When:
+        - Creating the arguments for the fetch incidents request
+    Then:
+        - Returns the right fetch time range for the request
+    """
+    from PrismaCloudV2 import calculate_fetch_time_range
+    assert calculate_fetch_time_range(now, first_fetch, look_back, last_run_time) == expected_fetch_time_range
+
+
+@pytest.mark.parametrize('last_run_epoch_time, look_back_minutes, expected_epoch_time',
+                         ((1676023200000, 20, 1676022000000),
+                          (1676023200000, 60, 1676019600000),
+                          (1676023200000, 0, 1676023200000),
+                          ))
+def test_add_look_back(last_run_epoch_time, look_back_minutes, expected_epoch_time):
+    """
+    Given:
+        - Last run time and time in minutes to look back.
+    When:
+        - Creating the arguments for the fetch incidents request and calculating the time to start fetching from
+    Then:
+        - Returns the right fetch time with look back added to it
+    """
+    from PrismaCloudV2 import add_look_back
+    assert add_look_back(last_run_epoch_time, look_back_minutes) == expected_epoch_time
+
+
+@pytest.mark.parametrize('limit, expected_incidents, expected_updated_fetched_ids',
+                         (input_data.low_limit,
+                          input_data.exactly_limit,
+                          input_data.high_limit,
+                          ))
+def test_filter_alerts(limit, expected_incidents, expected_updated_fetched_ids):
+    """
+    Given:
+        - The IDs that were already fetched, the items in the response from the request and the limit of incidents to return
+    When:
+        - Fetching incidents and filtering the alerts got from Prisma Cloud
+    Then:
+        - Returns the incidents up to the limit given, without those that were already fetched
+    """
+    from PrismaCloudV2 import filter_alerts
+
+    fetched_ids = {'N-111111': 1000000000000,
+                   'P-222222': 999996400000}
+    response_items = [{'id': 'N-111111', 'alertTime': 1000000000000, 'policy': {'name': 'Policy One', 'severity': 'high'}},
+                      input_data.truncated_alert6,
+                      input_data.truncated_alert7]
+
+    assert filter_alerts(fetched_ids, response_items, limit) == expected_incidents
+    assert fetched_ids == expected_updated_fetched_ids
+
+
+@pytest.mark.parametrize('alert, expected_incident_context',
+                         ((input_data.truncated_alert6, input_data.incident6),
+                          (input_data.truncated_alert7, input_data.incident7),
+                          (input_data.truncated_alert_no_policy, input_data.incident_no_policy),
+                          (input_data.full_alert, input_data.full_incident),
+                          ))
+def test_alert_to_incident_context(alert, expected_incident_context):
+    """
+    Given:
+        - An alert as it was got in the response of the request to Prisma Cloud
+    When:
+        - Fetching incidents and creating XSOAR incidents out of them
+    Then:
+        - Returns the incident that was created from the alert given
+    """
+    from PrismaCloudV2 import alert_to_incident_context
+    assert alert_to_incident_context(alert) == expected_incident_context
