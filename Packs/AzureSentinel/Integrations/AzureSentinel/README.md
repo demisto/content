@@ -2164,28 +2164,28 @@ Updates an alert rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rule_name | The alert rule name to update. | Required | 
-| kind | The alert rule kind to update. Possible values are: fusion, microsoft_security_incident_creation, scheduled. | Required | 
-| template_name | The Name of the alert rule template used to update this rule.<br/>Required for Fusion, optional for Scheduled rules.<br/>. | Optional | 
+| rule_name | The alert rule name to create. | Required | 
+| kind | The alert rule kind to create. Possible values are: fusion, microsoft_security_incident_creation, scheduled. | Required | 
+| template_name | The Name of the alert rule template used to create this rule.<br/>Required for Fusion, optional for Scheduled rules. | Optional | 
 | enabled | Determines whether this alert rule is enabled or disabled. Possible values are: yes, no. | Required | 
 | etag | Etag of the azure resource. | Optional | 
-| displayName | The display name for alerts created by this alert rule.<br/>Required for MicrosoftSecurityIncidentCreation and scheduled rules.<br/>. | Optional | 
-| product_filter | The alerts' productName on which the cases will be generated.<br/>Required for MicrosoftSecurityIncidentCreation rules.<br/>. Possible values are: azure_active_directory_identity_protection, azure_advanced_threat_protection, azure_security_center, azure_security_center_for_iot, microsoft_cloud_app_security. | Optional | 
-| description | The description of the alert rule.<br/>Relevant for MicrosoftSecurityIncidentCreation and scheduled rules.<br/>. | Optional | 
-| name_exclude_filter | Alerts' displayNames on which the cases will not be generated.<br/>Relevant for MicrosoftSecurityIncidentCreation rules.<br/>. | Optional | 
-| name_include_filter | Alerts' displayNames on which the cases will be generated.<br/>Relevant for MicrosoftSecurityIncidentCreation rules.<br/>. | Optional | 
-| severity_filter | Alerts' severities on which the cases will be generated.<br/>Relevant for MicrosoftSecurityIncidentCreation rules.<br/>. | Optional | 
-| query | The query that creates alerts for this rule.<br/>Required for scheduled rules.<br/>. | Optional | 
-| query_frequency | The frequency (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) for this alert rule to run.<br/>Required for scheduled rules.<br/>. | Optional | 
-| query_period | The period (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) that this alert rule looks at.<br/>Required for scheduled rules.<br/>. | Optional | 
-| severity | The severity for alerts created by this alert rule.<br/>Required for scheduled rules.<br/>. Possible values are: informational, low, medium, high. | Optional | 
-| suppression_duration | The suppression (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) to wait since the last time this alert rule was triggered.<br/>Required for scheduled rules.<br/>. | Optional | 
-| suppression_enabled | Determines whether the suppression for this alert rule is enabled or disabled.<br/>Required for scheduled rules.<br/>. Possible values are: yes, no. | Optional | 
-| trigger_operator | The operation against the threshold that triggers the alert rule.<br/>Required for scheduled rules.<br/>. Possible values are: equal, greater_than, less_than, not_equal. | Optional | 
-| trigger_threshold | The threshold triggers this alert rule.<br/>Required for scheduled rules.<br/>. | Optional | 
-| tactics | The tactics of the alert rule.<br/>Relevant for scheduled rules.<br/>. | Optional | 
-| techniques | The techniques of the alert rule.<br/>Relevant for scheduled rules.<br/>. | Optional | 
-| rule_json | Option to insert a configured rule json instead of using the arguments.<br/>. | Optional | 
+| displayName | The display name for alerts created by this alert rule.<br/>Required for MicrosoftSecurityIncidentCreation and scheduled rules. | Optional | 
+| product_filter | The alerts' productName on which the cases will be generated.<br/>Required for MicrosoftSecurityIncidentCreation rules.<br/>Possible values are: azure_active_directory_identity_protection, azure_advanced_threat_protection, azure_security_center, azure_security_center_for_iot, microsoft_cloud_app_security. | Optional | 
+| description | The description of the alert rule.<br/>Relevant for MicrosoftSecurityIncidentCreation and scheduled rules. | Optional | 
+| name_exclude_filter | Alerts' displayNames on which the cases will not be generated.<br/>Relevant for MicrosoftSecurityIncidentCreation rules. | Optional | 
+| name_include_filter | Alerts' displayNames on which the cases will be generated.<br/>Relevant for MicrosoftSecurityIncidentCreation rules. | Optional | 
+| severity_filter | Alerts' severities on which the cases will be generated.<br/>Relevant for MicrosoftSecurityIncidentCreation rules. | Optional | 
+| query | The query that creates alerts for this rule.<br/>Required for scheduled rules. | Optional | 
+| query_frequency | The frequency (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) for this alert rule to run.<br/>Required for scheduled rules. | Optional | 
+| query_period | The period (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) that this alert rule looks at.<br/>Required for scheduled rules. | Optional | 
+| severity | The severity for alerts created by this alert rule.<br/>Required for scheduled rules.<br/>Possible values are: informational, low, medium, high. | Optional | 
+| suppression_duration | The suppression (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) to wait since the last time this alert rule was triggered.<br/>Required for scheduled rules. | Optional | 
+| suppression_enabled | Determines whether the suppression for this alert rule is enabled or disabled.<br/>Required for scheduled rules.<br/>Possible values are: yes, no. | Optional | 
+| trigger_operator | The operation against the threshold that triggers the alert rule.<br/>Required for scheduled rules.<br/>Possible values are: equal, greater_than, less_than, not_equal. | Optional | 
+| trigger_threshold | The threshold triggers this alert rule.<br/>Required for scheduled rules. | Optional | 
+| tactics | The tactics of the alert rule.<br/>Relevant for scheduled rules. | Optional | 
+| techniques | The techniques of the alert rule.<br/>Relevant for scheduled rules. | Optional | 
+| rule_json | Option to insert a configured rule json instead of using the arguments. | Optional | 
 | subscription_id | The subscription ID. | Optional | 
 | resource_group_name | The resource group name. | Optional | 
 
