@@ -422,15 +422,48 @@ class TestImportCommands:
         assert result.outputs == 'test_session_id'
 
     @pytest.mark.parametrize(
-        'mock_object, file_name',
+        'mock_object, file_name, args, expected_meta_data_keys, expected_meta_data_changed',
         [
             (
                 MOCK_OBJECTS,
-                'test_file'
+                'test_file',
+                {
+                    'file_id': 'test_file_id',
+                    'classification': 'Private',
+                    'confidence': "50",
+                    'severity': 'low',
+                    'allow_unresolved': True
+                },
+                ('classification', 'confidence', 'severity', 'allow_unresolved'),
+                {
+                    'classification': 'Private',
+                    'confidence': 50,
+                    'severity': 'low',
+                    'allow_unresolved': True
+                }
+            ),
+            (
+                MOCK_OBJECTS_2,
+                'test_file',
+                {
+                    'file_id': 'test_file_id',
+                    'classification': 'Private',
+                    'confidence': "70",
+                    'severity': 'high',
+                    'allow_unresolved': True
+                },
+                ('classification', 'confidence', 'severity', 'allow_unresolved', 'tags'),
+                {'severity': 'high', 'confidence': 70}
             )
         ]
     )
-    def test_import_indicator_without_approval__happy_path(self, mocker, mock_object, file_name):
+    def test_import_indicator_without_approval__happy_path(self,
+                                                           mocker,
+                                                           mock_object: dict,
+                                                           file_name: str,
+                                                           args: dict,
+                                                           expected_meta_data_keys: tuple,
+                                                           expected_meta_data_changed: dict):
         """
         Given:
             - Indicator to import without approval
@@ -450,16 +483,18 @@ class TestImportCommands:
         # run
         result = import_ioc_without_approval(
             mock_client(),
-            file_id='test_file_id',
-            classification='Private',
-            confidence=50,
-            severity='low',
-            allow_unresolved=True,
+            file_id=args['file_id'],
+            classification=args['classification'],
+            confidence=args.get('confidence'),
+            severity=args.get('severity'),
+            allow_unresolved=args.get('allow_unresolved'),
         )
 
         # validate
         json_data = Client.http_request.call_args[1]['json']['meta']
-        assert all(key in json_data for key in ['classification', 'confidence', 'severity', 'allow_unresolved'])
+        assert all(key in json_data for key in expected_meta_data_keys)
+        for key in expected_meta_data_changed:
+            assert json_data[key] == expected_meta_data_changed[key]
         assert result == 'The data was imported successfully.'
 
     @pytest.mark.parametrize(argnames='command', argvalues=[import_ioc_with_approval, import_ioc_without_approval])
