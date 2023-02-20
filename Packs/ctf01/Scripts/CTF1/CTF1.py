@@ -71,8 +71,7 @@ answers = {
     "04" : ["ctf 01","ctf01"],
     "05" : ["reportsarecool"],
     "06" : ["monkey","baboon","ape","gorilla","lemor","chimpanzee","orangutan"],
-    "07" : ["alt/option","alt","option"],
-    "08" : ["demisto","downloads"]
+    "07" : ["alt/option","alt","option"]
 
 }
 
