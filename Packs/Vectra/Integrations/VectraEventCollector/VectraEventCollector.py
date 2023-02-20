@@ -20,7 +20,7 @@ from typing import Dict, Any, Tuple
 """ CONSTANTS """
 
 VENDOR = "Vectra"
-# DETECTION_FIRST_TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S"
+DETECTION_FIRST_TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # 2023-02-08T20:03:29Z
 DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT = "%Y-%m-%dT%H%M"
 AUDIT_FIRST_TIMESTAMP_FORMAT = "%Y-%md%d"
 MOST_RECENT_DETECTION_FIRST_KEY = "first_timestamp"
@@ -79,7 +79,7 @@ class VectraClient(BaseClient):
             - `Dict[str, Any]` of detection objects.
         """
 
-        demisto.log(
+        demisto.info(
             str(
                 {
                     "page_size": self.max_fetch,
@@ -109,6 +109,17 @@ class VectraClient(BaseClient):
 """ HELPER FUNCTIONS """
 
 
+def get_first_fetch_str(first_fetch: datetime = demisto.params().get("first_fetch", "3 days")):
+
+    # TODO docstring
+    """ """
+
+    first_fetch: datetime = arg_to_datetime(arg=first_fetch, arg_name="First fetch time")
+    first_timestamp = first_fetch.strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
+
+    return first_timestamp
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -127,18 +138,18 @@ def test_module(client: VectraClient) -> str:
             `str` `'ok'` if test passed, anything else will raise an exception.
     """
 
-    demisto.debug(f"Testing connection and authentication to {client._base_url}...")
+    demisto.info(f"Testing connection and authentication to {client._base_url}...")
 
     try:
         endpoints: Dict[str, str] = client.get_endpoints()
 
-        demisto.debug(
+        demisto.info(
             f"User has access to the following endpoints returned: {list(endpoints.keys())}"
         )
 
         # Checks that the authenticated user has access to the required endpoints
         if all(ep in endpoints for ep in client.endpoints):
-            demisto.debug("User has access to the all required endpoints.")
+            demisto.info("User has access to the all required endpoints.")
             return "ok"
         else:
             return f"""User doesn't have access to endpoints {client.endpoints}, only to {','.join(list(endpoints.keys()))}.
@@ -159,7 +170,7 @@ def get_detections_cmd(
     )
 
     md = tableToMarkdown(
-        "Detections",
+        f"Detections since {first_timestamp}",
         detections,
         headers=[
             "id",
@@ -189,7 +200,7 @@ def get_detections_cmd(
 
 
 def fetch_events(
-    client: VectraClient, first_fetch: datetime = None
+    client: VectraClient, first_timestamp: str
 ) -> Tuple[Dict[str, Any], Dict[str, Any], Dict[str, str]]:
 
     """
@@ -209,35 +220,28 @@ def fetch_events(
     # TODO paging in case it's needed
     # use "next": "https://apitest.vectracloudlab.com/api/v2.2/detections?min_id=7234&ordering=id&page=2&page_size=10",
 
-    detections: List[Dict[str, Any]] = []
-
-    # First time fetching events
-
-    if first_fetch:
-
-        # Detections API expects minute resolution
-        first_fetch_detection_time = first_fetch.strptime(
-            DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT
-        )
-        detections = client.get_detections(first_timestamp=first_fetch_detection_time).get(
-            "results"
-        )
-
-        # Audits API allows day resolution
-
-    # First time fetching events
-    else:
-        last_max_first_fetch = demisto.getLastRun().get(MOST_RECENT_DETECTION_FIRST_KEY)
-        detections = client.get_detections(first_timestamp=last_max_first_fetch).get("results")
+    detections: List[Dict[str, Any]] = client.get_detections(first_timestamp=first_timestamp).get(
+        "results"
+    )
 
     # detections are ordered by descending first_timestamp therefore we can take the first
     # detection first_timestamp as the next run
-    if detections:
-        last_run = detections[1].get("first_timestamp")
-    else:
-        last_run = datetime.now().strptime(DETECTION_FIRST_TIMESTAMP_FORMAT)
 
-    return detections, [], {MOST_RECENT_DETECTION_FIRST_KEY: last_run}
+    if detections:
+        last_run = datetime.strptime(
+            detections[0].get("first_timestamp"), DETECTION_FIRST_TIMESTAMP_FORMAT
+        )
+
+        # Need to add 1 minute since first_timestamp query is inclusive
+        last_run_str = (last_run + timedelta(minutes=1)).strftime(
+            DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT
+        )
+    else:
+        last_run_str = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
+
+    demisto.info(f"{len(detections)} detections found.")
+
+    return detections, [], {MOST_RECENT_DETECTION_FIRST_KEY: last_run_str}
 
 
 """ MAIN FUNCTION """
@@ -254,7 +258,7 @@ def main() -> None:
     args = demisto.args()
     config = demisto.params()
 
-    demisto.debug(f"Command being called is '{cmd}'")
+    demisto.info(f"Command being called is '{cmd}'")
     try:
 
         client = VectraClient(
@@ -271,12 +275,13 @@ def main() -> None:
 
         elif cmd in ("vectra-get-events", "fetch-events"):
 
-            first_fetch: datetime = arg_to_datetime(
-                arg=config.get("first_fetch", "3 days"), arg_name="First fetch time"
-            )
-
             if cmd == "vectra-get-events":
                 should_push_events = argToBoolean(args.pop("should_push_events"))
+
+                first_fetch: datetime = arg_to_datetime(
+                    arg=config.get("first_fetch", "3 days"), arg_name="First fetch time"
+                )
+                first_timestamp = first_fetch.strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
 
                 detection_res, detections = get_detections_cmd(
                     client=client,
@@ -293,13 +298,36 @@ def main() -> None:
                 # We want to push events to XSIAM when fetch-events is called
                 should_push_events = True
 
-                detections, next_fetch = fetch_events(client=client, first_fetch=first_fetch)
-                demisto.setLastRun(next_fetch)
+                # Not first time running fetch events
+                if demisto.getLastRun():
+                    first_timestamp = demisto.getLastRun().get(MOST_RECENT_DETECTION_FIRST_KEY)
 
-            if should_push_events:
-                demisto.debug(f"Sending {len(detections)} detections to XSIAM...")
+                    demisto.info(f"Fetching detections from {first_timestamp} to now...")
+
+                # First time running fetch events
+                else:
+                    first_fetch: datetime = arg_to_datetime(
+                        arg=config.get("first_fetch", "3 days"), arg_name="First fetch time"
+                    )
+                    first_timestamp = first_fetch.strftime(
+                        DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT
+                    )
+                    demisto.info(
+                        f"First time fetching events, fetching detections from {first_timestamp} to now..."
+                    )
+
+                detections, _, next_fetch = fetch_events(
+                    client=client, first_timestamp=first_timestamp
+                )
+
+                if detections:
+                    demisto.info(f"Setting last run to {str(next_fetch)}...")
+                    demisto.setLastRun(next_fetch)
+
+            if should_push_events and detections:
+                demisto.info(f"Sending {len(detections)} detections to XSIAM...")
                 send_events_to_xsiam(detections, vendor=VENDOR, product=VENDOR)
-                demisto.debug(f"{len(detections)} detections sent to XSIAM.")
+                demisto.info(f"{len(detections)} detections sent to XSIAM.")
 
         else:
             raise NotImplementedError(f"command '{cmd}' is not implemented.")
