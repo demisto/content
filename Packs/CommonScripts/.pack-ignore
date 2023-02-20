@@ -109,6 +109,9 @@ ignore=RN114
 [file:DBotUpdateLogoURLPhishing.yml]
 ignore=SC106
 
+[file:DBotPredictURLPhishing.yml]
+ignore=SC106
+
 [known_words]
 UnzipFile
 ZipStrings
