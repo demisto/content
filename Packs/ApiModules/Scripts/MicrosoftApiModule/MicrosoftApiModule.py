@@ -72,7 +72,7 @@ class MicrosoftClient(BaseClient):
                  refresh_token: str = '',
                  refresh_token_param: Optional[str] = '',
                  auth_code: str = '',
-                 scope: str = '{graph_endpoint}/.default',
+                 scope: str = None,
                  grant_type: str = CLIENT_CREDENTIALS,
                  redirect_uri: str = 'https://localhost/myapp',
                  resource: Optional[str] = '',
@@ -141,7 +141,9 @@ class MicrosoftClient(BaseClient):
             self.auth_code = auth_code
             self.grant_type = grant_type
             self.resource = resource
-            self.scope = scope.format(graph_endpoint=GRAPH_ENDPOINTS[self.endpoint])
+            if scope is None:
+                scope = '{graph_endpoint}/.default',
+                self.scope = scope.format(graph_endpoint=GRAPH_ENDPOINTS[self.endpoint])
             self.redirect_uri = redirect_uri
             if certificate_thumbprint and private_key:
                 try:
