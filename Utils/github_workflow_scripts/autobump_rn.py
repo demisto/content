@@ -3,7 +3,7 @@ from enum import Enum
 from pathlib import Path
 from itertools import pairwise
 from packaging.version import Version
-from typing import List, Tuple, Optional, Set, Dict
+from typing import Tuple, Optional, Set, Dict
 import urllib3
 import argparse
 from blessings import Terminal
@@ -168,8 +168,8 @@ class MetadataCondition(BaseCondition, ABC):
     @staticmethod
     def get_base_commit(branch_git_log: str, pr: PullRequest):
         """ Returns the pr's base commit.
-        We are using github's pr.base.sha commit if the branch was rebased. If pr was rebased,
-        base sha will not appear in git log.
+        We are using github's pr.base.sha commit if the branch was rebased.
+        If pr was rebased, base sha will not appear in git log.
         If pr was never rebased, github's pr.base.sha commit is masters commit in the repo when pr was opened
         (bad behavior - fake base). Then the parent of the first branch commit is the base commit we should use.
 
@@ -267,7 +267,7 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
             self.git_repo.git.merge(f'origin/{pr_branch}', '--no-ff', '--no-commit')
         except GitCommandError as e:
             error = e.stdout
-            conflicting_files = [line.replace('Auto-merging ', '').strip()
+            conflicting_files = [line.replace('Auto-merging ', '').replace('stdout:', '').strip()
                                  for line in error.splitlines() if 'Auto-merging ' in line]
             conflict_only_with_given_files = True
             for file_name in conflicting_files:
