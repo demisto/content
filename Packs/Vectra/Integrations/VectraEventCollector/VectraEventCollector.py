@@ -267,6 +267,7 @@ def fetch_events(
         audits = []
         next_run_audit_str = start
     else:
+        demisto.info(f"Fetching audits from {start} to now...")
         _, audits = get_audits_cmd(client=client, start=start)
 
         # Set next run to tomorrow
@@ -277,6 +278,7 @@ def fetch_events(
         # detections are ordered by descending first_timestamp therefore we can take the first
         # detection first_timestamp as the next run
 
+    demisto.info(f"Fetching detections from {first_timestamp} to now...")
     _, detections = get_detections_cmd(client=client, first_timestamp=first_timestamp)
     if detections:
         next_run_detection = datetime.strptime(
@@ -379,9 +381,6 @@ def main() -> None:
                     )
 
                     start = first_fetch.strftime(AUDIT_START_TIMESTAMP_FORMAT)
-
-                demisto.info(f"Fetching detections from {first_timestamp} to now...")
-                demisto.info(f"Fetching audits from {start} to now...")
 
                 detections, audits, next_fetch = fetch_events(
                     client=client, first_timestamp=first_timestamp, start=start
