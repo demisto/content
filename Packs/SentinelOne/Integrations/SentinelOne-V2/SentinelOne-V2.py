@@ -2987,22 +2987,23 @@ def fetch_handler(client: Client, args: dict):
     args['last_fetch'] = last_fetch
     args['last_fetch_date_string'] = last_fetch_date_string
     args['current_fetch'] = current_fetch
-
-    if len(args.get('fetch_type')) == 1:
-        if 'Alerts' in args.get('fetch_type'):
-            incidents, current_fetch = fetch_alerts(client, args)
-        elif 'Threats' in args.get('fetch_type'):
-            incidents, current_fetch = fetch_threats(client, args)
-    else:
+    
+    fetch_type = args.get('fetch_type')
+    if fetch_type == 'Both': 
         alert_incidents, alert_current_fetch = fetch_alerts(client, args)
         threat_incidents, threat_current_fetch = fetch_threats(client, args)
-
+        
         if alert_current_fetch > threat_current_fetch:
             current_fetch = alert_current_fetch
         else:
             current_fetch = threat_current_fetch
 
         incidents = alert_incidents + threat_incidents
+        
+    elif fetch_type == 'Alerts': 
+        incidents, current_fetch = fetch_alerts(client, args)
+    elif fetch_type == 'Threats':
+        incidents, current_fetch = fetch_threats(client, args)
 
     demisto.setLastRun({'time': current_fetch})
     demisto.incidents(incidents)
