@@ -395,7 +395,7 @@ tasks:
           left:
             value:
               complex:
-                root: PrismaCloud.Permission.Results
+                root: PrismaCloud.Permission
                 accessor: id
             iscontext: true
     - label: High
@@ -411,7 +411,7 @@ tasks:
           left:
             value:
               complex:
-                root: PrismaCloud.Permission.Results
+                root: PrismaCloud.Permission
                 accessor: id
             iscontext: true
     continueonerrortype: ""
