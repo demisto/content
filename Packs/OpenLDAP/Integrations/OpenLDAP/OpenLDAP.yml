@@ -2,7 +2,7 @@ beta: false
 sectionOrder:
 - Connect
 - Collect
-category: Authentication
+category: Authentication & Identity Management
 commonfields:
   id: OpenLDAP
   version: -1

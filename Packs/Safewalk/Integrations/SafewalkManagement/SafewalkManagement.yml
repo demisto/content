@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: SafewalkManagement
 display: Safewalk Management
-category: Authentication
+category: Authentication & Identity Management
 description: Safewalk server integration
 configuration:
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)

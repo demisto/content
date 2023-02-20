@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: HashiCorp Vault
 display: HashiCorp Vault
-category: Authentication
+category: Authentication & Identity Management
 description: Manage Secrets and Protect Sensitive Data through HashiCorp Vault
 configuration:
 - display: HashiCorp server URL (e.g., https://192.168.0.1:8200)

@@ -7,14 +7,14 @@
     "url": "https://supportportal.gemalto.com/csm/?id=portal_home_page",
     "email": "",
     "categories": [
-        "Authentication"
+        "Authentication & Identity Management"
     ],
     "tags": [],
     "useCases": [],
     "keywords": [
         "Fraud",
         "Account",
-        "Authentication",
+        "Authentication & Identity Management",
         "Thales",
         "SafeNet"
     ],
