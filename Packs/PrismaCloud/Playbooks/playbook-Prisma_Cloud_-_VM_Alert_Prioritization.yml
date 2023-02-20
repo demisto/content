@@ -12,8 +12,8 @@ description: |-
   5) Set the incident severity based on the results:
     - LOW - No public IP was found.
     - Medium - Public IP was found, other checks didn't return results.
-    - High - Public IP was found and also on of the other checks returned results.
-    - Critical - Public IP was found and bot of the other checks returned results.
+    - High - Public IP was found and also one of the other checks returned results.
+    - Critical - Public IP was found and both of the other checks returned results.
   6) Notifications and ticketing with 3rd party systems.
   7) Close the incident.
 starttaskid: "0"
@@ -1049,7 +1049,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1100,7 +1100,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1146,7 +1146,7 @@ tasks:
       id: 451ca1d4-666a-46c8-85db-d11aafa3d8fe
       version: -1
       name: Any results for IAM query?
-      description: ' '
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -1191,7 +1191,7 @@ tasks:
       id: 1c83a555-e26c-4c27-8f0f-39dbbd7a8076
       version: -1
       name: Any results for findings query?
-      description: ' '
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -1271,7 +1271,7 @@ tasks:
       id: 434e6363-0a85-4e94-8042-23bbdf56a4fd
       version: -1
       name: Is this a network interface?
-      description: ' '
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -1353,7 +1353,7 @@ tasks:
       id: c892c2c3-39e8-4e86-8c54-767360b1600c
       version: -1
       name: Open Jira issue?
-      description: ' '
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -1400,8 +1400,8 @@ tasks:
     task:
       id: 31a1f2ba-107a-4da3-80f9-9f9928e850fc
       version: -1
-      name: Send a slack message?
-      description: ' '
+      name: Send a Slack message?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -1474,7 +1474,7 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Whether to close the incident after jira/slack issue was opened. Default value is "True".
+  description: Whether to close the incident after Jira/Slack issue was opened. Default value is "True".
   playbookInputQuery:
 - key: SlackChannelName
   value: {}

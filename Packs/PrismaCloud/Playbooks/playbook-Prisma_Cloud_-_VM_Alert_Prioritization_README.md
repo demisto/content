@@ -8,8 +8,8 @@ The flow of this playbook is as following:
 5) Set the incident severity based on the results:
   - LOW - No public IP was found.
   - Medium - Public IP was found, other checks didn't return results.
-  - High - Public IP was found and also on of the other checks returned results.
-  - Critical - Public IP was found and bot of the other checks returned results.
+  - High - Public IP was found and also one of the other checks returned results.
+  - Critical - Public IP was found and both of the other checks returned results.
 6) Notifications and ticketing with 3rd party systems.
 7) Close the incident.
 
@@ -45,13 +45,13 @@ This playbook does not use any sub-playbooks.
 
 ---
 
-| **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| JiraProjectName | The project name with which to associate the issue. |  | Optional |
-| JiraIssueTypeName | The name of the issue type to be opened. |  | Optional |
-| CloseIncidentAfterNotification | Whether to close the incident after jira/slack issue was opened. | True | Optional |
-| SlackChannelName | The name of the Slack channel to which to send the message. |  | Optional |
-| SlackChannelID | The ID of the Slack channel to which to send the message. |  | Optional |
+| **Name** | **Description**                                                  | **Default Value** | **Required** |
+| --- |------------------------------------------------------------------| --- | --- |
+| JiraProjectName | The project name with which to associate the issue.              |  | Optional |
+| JiraIssueTypeName | The name of the issue type to be opened.                         |  | Optional |
+| CloseIncidentAfterNotification | Whether to close the incident after Jira/Slack issue was opened. | True | Optional |
+| SlackChannelName | The name of the Slack channel to which to send the message.      |  | Optional |
+| SlackChannelID | The ID of the Slack channel to which to send the message.        |  | Optional |
 
 ## Playbook Outputs
 
