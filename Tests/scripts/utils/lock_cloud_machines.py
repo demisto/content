@@ -196,7 +196,7 @@ def main():
     # remove build from queue
     remove_build_from_queue(storage_bucket, lock_repository_name, options.ci_job_id)
 
-    f = open(options.response_mashine, "w")
+    f = open(options.response_machine, "w")
     f.write(f"export CLOUD_CHOSEN_MACHINE_ID={lock_machine_name}")
     f.close()
 
