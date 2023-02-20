@@ -92,7 +92,7 @@ configuration:
   type: 4
   hidden: true
   section: Connect
-- display: ""
+- display: Scope (for authorizing the app to use the selected permissions.)
   name: scope
   type: 16
   required: false
