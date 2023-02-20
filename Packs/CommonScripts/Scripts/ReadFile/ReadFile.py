@@ -67,7 +67,7 @@ def read_file(args):
         demisto.results({'Type': entryTypes['note'],
                          'ContentsFormat': formats['text'],
                          'Contents': {'FileData': data},
-                         'HumanReadable': message,
+                         'HumanReadable': message + ":\n" + str(data),
                          'EntryContext': {'FileData': data}
                          })
 
