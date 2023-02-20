@@ -64,7 +64,7 @@ def test_fail_handle_request_headers_command_request(
     """
     Scenario: Handle jwt in headers.
     Given:
-    - User has provided wrong credentials.
+    - User provided wrong credentials.
     When:
     - handle_request_headers_command called.
     Then:
@@ -86,7 +86,7 @@ def test_handle_request_headers_command_new_request(
     """
     Scenario: Handle jwt in headers.
     Given:
-    - User has provided valid credentials.
+    - User provided valid credentials.
     When:
     - handle_request_headers_command command called.
     Then:
@@ -105,7 +105,7 @@ def test_handle_request_headers_command_no_request(
     """
     Scenario: Handle jwt in headers.
     Given:
-    - User has provided valid credentials.
+    - User provided valid credentials.
     When:
     - handle_request_headers_command command called.
     Then:
@@ -154,7 +154,7 @@ def test_access_policy_list_command(
     """
     Scenario: Access policies list.
     Given:
-    - User has provided valid credentials.
+    - User provided valid credentials.
     - User may provided pagination args.
     - User may Provided filtering arguments.
     When:
@@ -183,7 +183,7 @@ def test_access_policy_create_command(
     """
     Scenario: Access policies create.
     Given:
-    - User has provided valid credentials.
+    - User provided valid credentials.
     - User may provided pagination args.
     - User may Provided filtering arguments.
     When:
@@ -216,7 +216,7 @@ def test_fail_access_policy_create_command(
     """
     Scenario: Access policies create.
     Given:
-    - User has provided wrong arguments.
+    - User provided wrong arguments.
     When:
     - cisco-wsa-access-policy-create command called.
     Then:
@@ -248,7 +248,7 @@ def test_access_policy_update_command(
     """
     Scenario: Access policies update.
     Given:
-    - User has provided valid credentials.
+    - User provided valid credentials.
     - User may provided pagination args.
     - User may Provided filtering arguments.
     When:
@@ -282,13 +282,11 @@ def test_fail_access_policy_update_command(
     """
     Scenario: Access policies update.
     Given:
-    - User has provided valid credentials.
-    - User may provided pagination args.
-    - User may Provided filtering arguments.
+    - User provided wrong arguments.
     When:
     - cisco-wsa-access-policy-update command called.
     Then:
-    - Ensure readable output is correct.
+     - Ensure relevant error raised.
     """
     from CiscoWSAV2 import access_policy_update_command
 
@@ -318,7 +316,7 @@ def test_access_policy_protocols_user_agents_update_command(
     """
     Scenario: Access policies protocols and user agents update.
     Given:
-    - User has provided valid credentials.
+    - User provided valid credentials.
     - User may provided pagination args.
     - User may Provided filtering arguments.
     When:
@@ -351,7 +349,7 @@ def test_access_policy_url_filtering_update_command(
     """
     Scenario: Access policies URL filtering update.
     Given:
-    - User has provided valid credentials.
+    - User provided valid credentials.
     - User may provided pagination args.
     - User may Provided filtering arguments.
     When:
@@ -392,7 +390,7 @@ def test_access_policy_applications_update_command(
     """
     Scenario: Access policies applications update.
     Given:
-    - User has provided valid credentials.
+    - User provided valid credentials.
     - User may provided pagination args.
     - User may Provided filtering arguments.
     When:
@@ -426,7 +424,7 @@ def test_access_policy_objects_update_command(
     """
     Scenario: Access policies objects update.
     Given:
-    - User has provided valid credentials.
+    - User provided valid credentials.
     - User may provided pagination args.
     - User may Provided filtering arguments.
     When:
@@ -461,7 +459,7 @@ def test_access_policy_anti_malware_update_command(
     """
     Scenario: Access policies Anti-Malware and Reputation update.
     Given:
-    - User has provided valid credentials.
+    - User provided valid credentials.
     - User may provided pagination args.
     - User may Provided filtering arguments.
     When:
@@ -498,15 +496,13 @@ def test_access_policy_delete_command(
     """
     Scenario: Access policies delete.
     Given:
-    - User has provided valid credentials.
+    - User provided valid credentials.
     - User may provided pagination args.
     - User may Provided filtering arguments.
     When:
     - cisco-wsa-access-policy-delete command called.
     Then:
-    - Ensure outputs prefix is correct.
-    - Ensure number of items is correct.
-    - Validate outputs' fields.
+    - Ensure readable output is correct.
     """
     from CiscoWSAV2 import access_policy_delete_command
 
@@ -531,15 +527,11 @@ def test_fail_access_policy_delete_command(
     """
     Scenario: Access policies delete.
     Given:
-    - User has provided valid credentials.
-    - User may provided pagination args.
-    - User may Provided filtering arguments.
+    - User exist and not exist arguments.
     When:
     - cisco-wsa-access-policy-delete command called.
     Then:
-    - Ensure outputs prefix is correct.
-    - Ensure number of items is correct.
-    - Validate outputs' fields.
+    - Ensure readable output is correct.
     """
     from CiscoWSAV2 import access_policy_delete_command
 
@@ -594,7 +586,7 @@ def test_domain_map_list_command(
     """
     Scenario: Domain map list.
     Given:
-    - User has provided valid credentials.
+    - User provided valid credentials.
     - User may provided pagination args.
     - User may Provided filtering arguments.
     When:
@@ -623,7 +615,7 @@ def test_domain_map_create_command(
     """
     Scenario: Domain map create.
     Given:
-    - User has provided valid credentials.
+    - User provided valid credentials.
     - User may provided pagination args.
     - User may Provided filtering arguments.
     When:
@@ -658,14 +650,11 @@ def test_fail_domain_map_create_command(
     """
     Scenario: Domain map create.
     Given:
-    - User has provided valid credentials.
-    - User may provided pagination args.
-    - User may Provided filtering arguments.
+    - User use wrong arguments.
     When:
     - cisco-wsa-domain-map-create command called.
     Then:
-    - Ensure readable output is correct.
-    - Ensure response code is correct.
+     - Ensure relevant error raised.
     """
     from CiscoWSAV2 import domain_map_create_command
     mock_response = load_mock_response('domain_map_create_fail.json')
@@ -691,7 +680,7 @@ def test_domain_map_update_command(
     """
     Scenario: Domain map update.
     Given:
-    - User has provided valid credentials.
+    - User provided valid credentials.
     - User may provided pagination args.
     - User may Provided filtering arguments.
     When:
@@ -727,14 +716,11 @@ def test_fail_domain_map_update_command(
     """
     Scenario: Domain map update.
     Given:
-    - User has provided valid credentials.
-    - User may provided pagination args.
-    - User may Provided filtering arguments.
+    - User provided wrong arguments.
     When:
     - cisco-wsa-domain-map-update command called.
     Then:
-    - Ensure readable output is correct.
-    - Ensure response code is correct.
+     - Ensure relevant error raised.
     """
     from CiscoWSAV2 import domain_map_update_command
 
@@ -761,7 +747,7 @@ def test_domain_map_delete_command(
     """
     Scenario: Domain map delete.
     Given:
-    - User has provided valid credentials.
+    - User provided valid credentials.
     - User may provided pagination args.
     - User may Provided filtering arguments.
     When:
@@ -792,14 +778,11 @@ def test_fail_domain_map_delete_command(
     """
     Scenario: Domain map delete.
     Given:
-    - User has provided valid credentials.
-    - User may provided pagination args.
-    - User may Provided filtering arguments.
+    - User provided wrong arguments.
     When:
     - cisco-wsa-domain-map-delete command called.
     Then:
-    - Ensure readable output is correct.
-    - Ensure response code is correct.
+     - Ensure relevant error raised.
     """
     from CiscoWSAV2 import domain_map_delete_command
 
@@ -844,7 +827,7 @@ def test_identification_profiles_list_command(
     """
     Scenario: Identification profiles list.
     Given:
-    - User has provided valid credentials.
+    - User provided valid credentials.
     - User may provided pagination args.
     - User may Provided filtering arguments.
     When:
@@ -873,7 +856,7 @@ def test_identification_profiles_create_command(
     """
     Scenario: Identification profile create.
     Given:
-    - User has provided valid credentials.
+    - User provided valid credentials.
     - User may provided pagination args.
     - User may Provided filtering arguments.
     When:
@@ -909,7 +892,7 @@ def test_identification_profiles_update_command(
     """
     Scenario: Identification profile update.
     Given:
-    - User has provided valid credentials.
+    - User provided valid credentials.
     - User may provided pagination args.
     - User may Provided filtering arguments.
     When:
@@ -945,7 +928,7 @@ def test_identification_profiles_delete_command(
     """
     Scenario: Identification profile delete.
     Given:
-    - User has provided valid credentials.
+    - User provided valid credentials.
     - User may provided pagination args.
     - User may Provided filtering arguments.
     When:
@@ -975,9 +958,7 @@ def test_fail_identification_profiles_delete_command(
     """
     Scenario: Identification profile delete.
     Given:
-    - User has provided valid credentials.
-    - User may provided pagination args.
-    - User may Provided filtering arguments.
+    - User provided wrong arguments.
     When:
     - cisco-wsa-identification-profiles-delete command called.
     Then:
@@ -1007,7 +988,7 @@ def test_url_categories_list_command(
     """
     Scenario: URL categories list.
     Given:
-    - User has provided valid credentials.
+    - User provided valid credentials.
     - User may provided pagination args.
     - User may Provided filtering arguments.
     When:
@@ -1057,7 +1038,7 @@ def test_pagination_function(response, arguments, paginated_response):
     """
     Scenario: Paginate response.
     Given:
-    - User has provided pagination arguments.
+    - User provided pagination arguments.
     When:
     - pagination function called.
     Then:
