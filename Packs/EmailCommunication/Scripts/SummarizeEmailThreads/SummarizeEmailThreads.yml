@@ -1,4 +1,3 @@
-category: Email
 commonfields:
   id: SummarizeEmailThreads
   version: -1
