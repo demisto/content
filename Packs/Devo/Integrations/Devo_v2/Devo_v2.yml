@@ -2,9 +2,10 @@ commonfields:
   id: Devo_v2
   version: -1
 name: Devo_v2
-display: Devo v2
+display: Devo v2 (Deprecated)
 category: Analytics & SIEM
-description: Use the Devo v2 integration to query Devo for alerts, lookup tables, and to write to lookup tables.
+deprecated: true
+description: Deprecated. Use the Devo v2 integration instead. 
 configuration:
 - display: Query Server Endpoint (e.g. https://apiv2-us.devo.com/search/query)
   name: reader_endpoint
