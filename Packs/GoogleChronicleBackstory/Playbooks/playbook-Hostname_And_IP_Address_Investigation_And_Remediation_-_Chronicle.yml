@@ -3120,14 +3120,6 @@ tasks:
       Endpoint_hostname:
         complex:
           root: inputs.chronicleasset_hostname
-      Endpoint_id:
-        complex:
-          root: PaloAltoNetworksXDR.Endpoint
-          accessor: endpoint_id
-      Endpoint_ip:
-        complex:
-          root: IP
-          accessor: Address
     separatecontext: true
     loop:
       iscommand: false
