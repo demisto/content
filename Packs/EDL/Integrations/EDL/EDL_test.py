@@ -99,7 +99,7 @@ class TestHelperFunctions:
         import EDL as edl
         edl.EDL_ON_DEMAND_CACHE_PATH = 'test_data/iocs_cache_values_text.txt'
         mocker.patch.object(edl, 'get_integration_context', return_value={})
-        actual_edl = edl.get_edl_on_demand()
+        actual_edl, _ = edl.get_edl_on_demand()
         with open(edl.EDL_ON_DEMAND_CACHE_PATH, 'r') as f:
             expected_edl = f.read()
             assert actual_edl == expected_edl
@@ -121,7 +121,7 @@ class TestHelperFunctions:
         edl.EDL_ON_DEMAND_CACHE_PATH = os.path.join(tmp_dir, 'cache')
         mocker.patch.object(edl, 'get_integration_context', return_value=ctx)
         mocker.patch.object(edl, 'create_new_edl', return_value=expected_edl)
-        actual_edl = edl.get_edl_on_demand()
+        actual_edl, _ = edl.get_edl_on_demand()
         with open(edl.EDL_ON_DEMAND_CACHE_PATH, 'r') as f:
             cached_edl = f.read()
             assert actual_edl == expected_edl == cached_edl
@@ -176,7 +176,7 @@ class TestHelperFunctions:
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=f)
         request_args = edl.RequestArguments(query='', limit=3, url_port_stripping=True, url_protocol_stripping=True,
                                             url_truncate=True)
-        edl_vals = edl.create_new_edl(request_args)
+        edl_vals, _ = edl.create_new_edl(request_args)
 
         assert edl_vals == 'google.com\ndemisto.com\ndemisto.com/qwertqwertyuioplkjhgfdsazxqwertyuiopqwertyuiopq' \
                            'wertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwert' \
@@ -193,7 +193,7 @@ class TestHelperFunctions:
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=f)
         request_args = edl.RequestArguments(out_format='CSV', query='', limit=3, url_port_stripping=True,
                                             url_protocol_stripping=True, url_truncate=True, fields_to_present='name,value')
-        edl_v = edl.create_new_edl(request_args)
+        edl_v, _ = edl.create_new_edl(request_args)
         assert edl_v == '{"value": "https://google.com", "indicator_type": "URL"}\n' \
                         '{"value": "demisto.com:7000", "indicator_type": "URL"}\n' \
                         '{"value": "demisto.com/qwertqwertyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyu' \
@@ -226,7 +226,7 @@ class TestHelperFunctions:
         f = '\n'.join((json.dumps(indicator) for indicator in indicators))
         request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, maximum_cidr_size=2)
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=io.StringIO(f))
-        edl_v = edl.create_new_edl(request_args)
+        edl_v, _ = edl.create_new_edl(request_args)
         expected_values = set()
         for indicator in indicators:
             value = indicator.get('value')
@@ -237,13 +237,13 @@ class TestHelperFunctions:
 
         request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, maximum_cidr_size=8)
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=io.StringIO(f))
-        edl_v = edl.create_new_edl(request_args)
+        edl_v, _ = edl.create_new_edl(request_args)
         assert set(edl_v.split('\n')) == {"1.1.1.1/12", "*.com", "com", "*.co.uk",
                                           "co.uk", "*.google.com", "google.com", "aא.com"}
 
         request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, no_wildcard_tld=True, maximum_cidr_size=13)
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=io.StringIO(f))
-        edl_v = edl.create_new_edl(request_args)
+        edl_v, _ = edl.create_new_edl(request_args)
         assert set(edl_v.split('\n')) == {"*.google.com", "google.com", "aא.com"}
 
     def test_create_json_out_format(self):

@@ -274,7 +274,7 @@ def create_new_edl(request_args: RequestArguments) -> str:
         new_iocs_file.seek(0)
         formatted_indicators = new_iocs_file.read()
     new_iocs_file.close()
-    return formatted_indicators
+    return formatted_indicators, count + 1
 
 
 def replace_field_name_to_output_format(fields: str):
@@ -748,16 +748,22 @@ def get_edl_on_demand():
     """
     ctx = get_integration_context()
     if EDL_ON_DEMAND_KEY in ctx:
+        demisto.debug("Creating new EDL.")
         ctx.pop(EDL_ON_DEMAND_KEY, None)
         request_args = RequestArguments.from_context_json(ctx)
-        edl = create_new_edl(request_args)
+        edl, edl_size = create_new_edl(request_args)
         with open(EDL_ON_DEMAND_CACHE_PATH, 'w') as file:
             file.write(edl)
         set_integration_context(ctx)
     else:
+        demisto.debug("Returning EDL from file.")
         with open(EDL_ON_DEMAND_CACHE_PATH, 'r') as file:
             edl = file.read()
-    return edl
+        edl_size = 0            
+        edl_stripped = edl.strip()
+        if edl_stripped:
+            edl_size = edl_stripped.count('\n') + 1  # add 1 as last line doesn't have a \n
+    return edl, edl_size
 
 
 def validate_basic_authentication(headers: dict, username: str, password: str) -> bool:
@@ -813,12 +819,9 @@ def route_edl() -> Response:
     request_args = get_request_args(request.args, params)
     on_demand = params.get('on_demand')
     created = datetime.now(timezone.utc)
-    edl = get_edl_on_demand() if on_demand else create_new_edl(request_args)
+    edl, edl_size = get_edl_on_demand() if on_demand else create_new_edl(request_args)
     etag = f'"{hashlib.sha1(edl.encode()).hexdigest()}"'    # nosec
     query_time = (datetime.now(timezone.utc) - created).total_seconds()
-    edl_size = 0
-    if edl.strip():
-        edl_size = edl.count('\n') + 1  # add 1 as last line doesn't have a \n
     if len(edl) == 0 and request_args.add_comment_if_empty or edl == ']' and request_args.add_comment_if_empty:
         edl = '# Empty List'
     # if the case there are strings to add to the EDL, add them if the output type is text
