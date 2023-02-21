@@ -14,7 +14,7 @@ This pack contains all of the integrations, automations, and playbooks necessary
 - Supports validation re-scanning to ensure that remediation efforts have been applied successfully.
 - Includes PDF reporting capabilities for preserving and communicating the investigation summary.
 
-### Automated Remediation requirements
+### Automated Remediation Requirements
 
 Automated remediation is only possible when the right conditions are met.  These are the current requirements:
 
@@ -26,6 +26,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - OpenSSH
   - SSH Server
   - SNMP Server
+  - Unclaimed S3 Bucket*
 - Asset is a cloud compute instance:
   - AWS EC2 Instance
   - GCP Compute Engine (VM)
@@ -39,6 +40,8 @@ Automated remediation is only possible when the right conditions are met.  These
 - Indicators of a non-production host:
   - "dev" or related words found in environment-related tags associated with the asset (case insensitive)
   - Has an active "DevelopmentEnvironment" classification from processing of public data
+
+*The `Unclaimed S3 Bucket` attack surface rule ID only requires `AWS-S3` integration to be configured.
 
 ### Playbooks
 
