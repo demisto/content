@@ -348,7 +348,7 @@ def convert_date_to_unix(date_str: str) -> int:
     """
     Convert the given string to milliseconds since epoch.
     """
-    date = dateparser.parse(date_str, settings={"TIMEZONE": "UTC"})
+    date = dateparser.parse(date_str, settings={'TIMEZONE': 'UTC'})
     return int((date - datetime.utcfromtimestamp(0)).total_seconds() * 1000)  # type: ignore[operator]
 
 
@@ -574,6 +574,7 @@ def fetch_request(client: Client, fetched_ids: Dict[str, int], filters: List[str
     updated_last_run_time = response_items[-1].get('alertTime') if response_items else now  # in epoch
     incidents = filter_alerts(fetched_ids, response_items, limit)
 
+    # there is a 'nextPageToken' value even if we already got all the results
     while len(incidents) < limit and response.get('nextPageToken') and response.get('items'):
         # only page_token is being used, also sending other arguments because it is not stated clearly in the API documentation
         response = client.alert_search_request(time_range=time_range,
@@ -585,12 +586,12 @@ def fetch_request(client: Client, fetched_ids: Dict[str, int], filters: List[str
                                                )
         response_items = response.get('items', [])
         updated_last_run_time = response_items[-1].get('alertTime') if response_items else updated_last_run_time
-        incidents.extend(filter_alerts(fetched_ids, response_items, limit))
+        incidents.extend(filter_alerts(fetched_ids, response_items, limit, len(incidents)))
 
     return incidents, fetched_ids, updated_last_run_time
 
 
-def filter_alerts(fetched_ids: Dict[str, int], response_items: List[Dict[str, Any]], limit: int):
+def filter_alerts(fetched_ids: Dict[str, int], response_items: List[Dict[str, Any]], limit: int, num_of_prev_incidents: int = 0):
     incidents = []
 
     for alert in response_items:
@@ -602,7 +603,7 @@ def filter_alerts(fetched_ids: Dict[str, int], response_items: List[Dict[str, An
         incidents.append(alert_to_incident_context(alert))
         fetched_ids[str(alert.get('id'))] = alert.get('alertTime')  # type: ignore[assignment]
 
-        if len(incidents) == limit:
+        if len(incidents) + num_of_prev_incidents == limit:
             break
 
     return incidents

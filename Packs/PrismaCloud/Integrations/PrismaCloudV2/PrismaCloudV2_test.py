@@ -526,7 +526,9 @@ def test_change_timestamp_to_datestring_in_dict():
     assert response_with_timestamp == response_with_datestring
 
 
-def test_convert_date_to_unix():
+@pytest.mark.parametrize('date_str, epoch_date', (('07/11/1998', 900115200000), ('now', 1000000130000)))
+@freeze_time('2001-09-09 01:48:50 UTC')
+def test_convert_date_to_unix(date_str, epoch_date):
     """
     Given:
         - A date in a human readable format
@@ -536,8 +538,7 @@ def test_convert_date_to_unix():
         - The date in milliseconds since epoch format is returned
     """
     from PrismaCloudV2 import convert_date_to_unix
-
-    assert convert_date_to_unix('07/11/1998') == 900115200000
+    assert convert_date_to_unix(date_str) == epoch_date
 
 
 @pytest.mark.parametrize('base_case, unit_value, amount_value, time_from, time_to, expected_output',
@@ -797,7 +798,7 @@ def test_expire_stored_ids():
                           input_data.start_at_last_run_time_with_look_back,
                           input_data.start_at_last_run_time,
                           ))
-@freeze_time("2023-02-10 11:00:00 UTC")
+@freeze_time('2023-02-10 11:00:00 UTC')
 def test_calculate_fetch_time_range(now, first_fetch, look_back, last_run_time, expected_fetch_time_range):
     """
     Given:
@@ -829,10 +830,42 @@ def test_add_look_back(last_run_epoch_time, look_back_minutes, expected_epoch_ti
     assert add_look_back(last_run_epoch_time, look_back_minutes) == expected_epoch_time
 
 
+@pytest.mark.parametrize('limit, request_results, expected_incidents, expected_fetched_ids, expected_updated_last_run_time',
+                         (input_data.low_limit_for_request,
+                          input_data.exactly_limit_for_request,
+                          input_data.more_than_limit_for_request,
+                          input_data.high_limit_for_request,
+                          ))
+@freeze_time('2001-09-09 01:49:00 UTC')
+def test_fetch_request(mocker, prisma_cloud_v2_client, limit, request_results, expected_incidents, expected_fetched_ids,
+                       expected_updated_last_run_time):
+    """
+    Given:
+        - All needed arguments for the fetch request
+    When:
+        - Fetching incidents, doing the request and filtering the alerts got from Prisma Cloud
+    Then:
+        - Returns the incidents up to the limit given, the fetched IDs and the updated last run time according to the limit given
+    """
+    from PrismaCloudV2 import fetch_request
+
+    mocker.patch.object(prisma_cloud_v2_client, '_http_request', side_effect=request_results)
+    fetched_ids = {'P-111111': 1000000110000,
+                   'P-222222': 999996400000}
+    now = 1000000140000
+    assert fetch_request(client=prisma_cloud_v2_client,
+                         fetched_ids=fetched_ids,
+                         filters=[],
+                         limit=limit,
+                         now=now,
+                         time_range={'type': 'absolute', 'value': {'endTime': now, 'startTime': 1000000110000}}) == \
+           (expected_incidents, expected_fetched_ids, expected_updated_last_run_time)
+
+
 @pytest.mark.parametrize('limit, expected_incidents, expected_updated_fetched_ids',
-                         (input_data.low_limit,
-                          input_data.exactly_limit,
-                          input_data.high_limit,
+                         (input_data.low_limit_for_filter,
+                          input_data.exactly_limit_for_filter,
+                          input_data.high_limit_for_filter,
                           ))
 def test_filter_alerts(limit, expected_incidents, expected_updated_fetched_ids):
     """
@@ -872,3 +905,28 @@ def test_alert_to_incident_context(alert, expected_incident_context):
     """
     from PrismaCloudV2 import alert_to_incident_context
     assert alert_to_incident_context(alert) == expected_incident_context
+
+
+@pytest.mark.parametrize('last_run, params, incidents, fetched_ids, updated_last_run_time, '
+                         'expected_fetched_ids, expected_updated_last_run_time',
+                         (input_data.fetch_first_run,
+                          input_data.fetch_no_incidents,
+                          input_data.fetch_with_last_run,
+                          input_data.fetch_with_expiring_ids))
+@freeze_time('2001-09-09 01:48:50 UTC')
+def test_fetch_incidents(mocker, prisma_cloud_v2_client, last_run, params, incidents, fetched_ids, updated_last_run_time,
+                         expected_fetched_ids, expected_updated_last_run_time):
+    """
+    Given:
+        - Last run data and parameters for the fetch request
+    When:
+        - Fetching incidents
+    Then:
+        - Returns the incidents up to the limit given, the fetched IDs and the updated last run time
+        - The updated last run time is the later between the first fetch time and the alert time of the last fetched incident
+    """
+    from PrismaCloudV2 import fetch_incidents
+
+    mocker.patch('PrismaCloudV2.fetch_request', return_value=(incidents, fetched_ids, updated_last_run_time))
+    assert fetch_incidents(prisma_cloud_v2_client, last_run, params) == \
+           (incidents, expected_fetched_ids, expected_updated_last_run_time)

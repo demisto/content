@@ -195,7 +195,18 @@ start_at_last_run_time = (1676880716607, '2 hours', 0, 1676023200000, {'type': '
                                                                        'value': {'endTime': 1676880716607,
                                                                                  'startTime': 1676023200000}})
 
-# incidents for test_filter_alerts and test_alert_to_incident_context
+# incidents for test_filter_alerts and test_alert_to_incident_context and test_fetch_request
+truncated_alert1 = {'id': 'P-111111', 'alertTime': 1000000110000, 'policy': {'name': 'Policy One', 'severity': 'medium'}}
+incident2 = {'name': 'Policy Two - P-222222',
+             'occurred': '2001-09-09T00:28:50Z',
+             'rawJSON': '{"id": "P-222222", "alertTime": 999995330000, "policy": {"name": '
+                        '"Policy Two", "severity": "high"}}',
+             'severity': 3}
+incident3 = {'name': 'Policy Tree - P-333333',
+             'occurred': '2001-09-09T00:28:50Z',
+             'rawJSON': '{"id": "P-333333", "alertTime": 999995330000, "policy": {"name": '
+                        '"Policy Tree", "severity": "informational"}}',
+             'severity': 0.5}
 truncated_alert6 = {'id': 'P-666666', 'alertTime': 1000000120000, 'policy': {'name': 'Policy Six', 'severity': 'medium'}}
 incident6 = {'name': 'Policy Six - P-666666',
              'occurred': '2001-09-09T01:48:40Z',
@@ -216,14 +227,88 @@ incident_no_policy = {'name': 'No policy - P-888888',
 
 # test_filter_alerts
 # arguments: limit, expected_incidents, expected_updated_fetched_ids
-low_limit = (1, [incident6], {'N-111111': 1000000000000,
+low_limit_for_filter = (1, [incident6], {'N-111111': 1000000000000,
+                                         'P-222222': 999996400000,
+                                         'P-666666': 1000000120000})
+exactly_limit_for_filter = (2, [incident6, incident7], {'N-111111': 1000000000000,
+                                                        'P-222222': 999996400000,
+                                                        'P-666666': 1000000120000,
+                                                        'P-777777': 1000000130000})
+high_limit_for_filter = (200, [incident6, incident7], {'N-111111': 1000000000000,
+                                                       'P-222222': 999996400000,
+                                                       'P-666666': 1000000120000,
+                                                       'P-777777': 1000000130000})
+
+# test_fetch_request
+# arguments: limit, request_results, expected_incidents, expected_fetched_ids, expected_updated_last_run_time
+low_limit_for_request = (1,
+                         [{'items': [truncated_alert6], 'nextPageToken': 'token'},
+                          {'items': [truncated_alert7], 'nextPageToken': 'token'},
+                          {'items': []}],
+                         [incident6],
+                         {'P-111111': 1000000110000,
+                          'P-222222': 999996400000,
+                          'P-666666': 1000000120000},
+                         1000000120000)
+exactly_limit_for_request = (2,
+                             [{'items': [truncated_alert6], 'nextPageToken': 'token'},
+                              {'items': [truncated_alert7], 'nextPageToken': 'token'},
+                              {'items': []}],
+                             [incident6, incident7],
+                             {'P-111111': 1000000110000,
                               'P-222222': 999996400000,
-                              'P-666666': 1000000120000})
-exactly_limit = (2, [incident6, incident7], {'N-111111': 1000000000000,
-                                             'P-222222': 999996400000,
-                                             'P-666666': 1000000120000,
-                                             'P-777777': 1000000130000})
-high_limit = (200, [incident6, incident7], {'N-111111': 1000000000000,
-                                            'P-222222': 999996400000,
-                                            'P-666666': 1000000120000,
-                                            'P-777777': 1000000130000})
+                              'P-666666': 1000000120000,
+                              'P-777777': 1000000130000},
+                             1000000130000)
+more_than_limit_for_request = (2,
+                               [{'items': [truncated_alert1, truncated_alert6], 'nextPageToken': 'token'},
+                                {'items': [truncated_alert7, truncated_alert_no_policy], 'nextPageToken': 'token'},
+                                {'items': []}],
+                               [incident6, incident7],
+                               {'P-111111': 1000000110000,
+                                'P-222222': 999996400000,
+                                'P-666666': 1000000120000,
+                                'P-777777': 1000000130000},
+                               1000000130000)
+high_limit_for_request = (10,
+                          [{'items': [truncated_alert6, truncated_alert7], 'nextPageToken': 'token'},
+                           {'items': [truncated_alert_no_policy], 'nextPageToken': 'token'},
+                           {'items': []}],
+                          [incident6, incident7, incident_no_policy],
+                          {'P-111111': 1000000110000,
+                           'P-222222': 999996400000,
+                           'P-666666': 1000000120000,
+                           'P-777777': 1000000130000,
+                           'P-888888': 1000000130000},
+                          1000000130000)
+
+# test_fetch_incidents
+# arguments: last_run, params, incidents, fetched_ids, updated_last_run_time, expected_fetched_ids, expected_updated_last_run_time
+fetch_first_run = ({},
+                   {},
+                   [incident6, incident7, incident_no_policy],
+                   {'P-666666': 1000000120000, 'P-777777': 1000000130000, 'P-888888': 1000000130000},
+                   1000000130000,
+                   {'P-666666': 1000000120000, 'P-777777': 1000000130000, 'P-888888': 1000000130000},
+                   1000000130000)
+fetch_no_incidents = ({},
+                      {'first_fetch': '1 day'},
+                      [],
+                      {},
+                      1000000130000,
+                      {},
+                      1000000130000)
+fetch_with_last_run = ({'time': 999990000000, 'fetched_ids': {}},
+                       {'first_fetch': '1 hour'},
+                       [incident2],
+                       {'P-222222': 999995330000},
+                       999995330000,
+                       {'P-222222': 999995330000},
+                       999996530000)
+fetch_with_expiring_ids = ({'time': 999990000000, 'fetched_ids': {}},
+                           {'first_fetch': '20 minutes', 'look_back': '5'},
+                           [incident3],
+                           {'P-333333': 999995330000},
+                           999995330000,
+                           {},
+                           999998930000)
