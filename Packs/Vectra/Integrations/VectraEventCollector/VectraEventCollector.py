@@ -124,7 +124,7 @@ class VectraClient(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def is_eod() -> bool:
+def is_eod(now: datetime) -> bool:
     """
     Checks whether it's the end of the day (UTC).
     We use this to check whether we should skip requesting audits as they are updated on a daily basis.
@@ -132,7 +132,6 @@ def is_eod() -> bool:
     Returns:
         - `bool` indicating whether we should skip audits.
     """
-    now = datetime.utcnow()
     return now.hour == 23 and now.minute == 59
 
 
@@ -260,7 +259,8 @@ def fetch_events(
     # use "next": "https://apitest.vectracloudlab.com/api/v2.2/detections?min_id=7234&ordering=id&page=2&page_size=10",
 
     # Fetch alerts if it's the end of the day or the first fetch
-    if is_eod() or not demisto.getLastRun():
+    now = datetime.utcnow()
+    if is_eod(now) or not demisto.getLastRun():
         demisto.info(f"Fetching audits from {start} to now...")
         _, audits = get_audits_cmd(client=client, start=start)
 
@@ -270,7 +270,7 @@ def fetch_events(
         )
 
     else:
-        demisto.info("Skipping audits since it's not the end of the day (UTC)")
+        demisto.info(f"Skipping audits since it's not the end of the day (UTC), it's {now}")
         audits = []
         next_run_audit_str = start
 
