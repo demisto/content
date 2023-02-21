@@ -509,7 +509,9 @@ class BranchAutoBumper:
                     pack_auto_bumper.pack_id,
                 ))
                 body += PR_COMMENT.format(pack_auto_bumper.pack_id, new_version, )
-            self.pr.create_issue_comment(body)
+            # todo: uncomment
+            # self.pr.create_issue_comment(body)
+            self.git_repo.git.push()
 
 
 class AutoBumperManager:
@@ -585,7 +587,6 @@ class AutoBumperManager:
                     run_id=self.run_id,
                     pr=pr,
                 ).autobump()
-        # todo: push
 
 
 class checkout:
