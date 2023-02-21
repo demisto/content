@@ -320,6 +320,9 @@ jobs:
     parameters:
       dockerimageflag:
         type: string
+    when:
+      condition: << pipeline.parameters.contrib_branch >>
+
     steps:
       - *attach_workspace
       - *remote_docker
