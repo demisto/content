@@ -296,7 +296,6 @@
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Copy Tests To Artifact Folder"
     - section_start "Validate Files and Yaml"
-    - neo4j start
     - while ! curl --fail http://127.0.0.1:7474 &> /dev/null; do sleep 1; done
  
     - python3 -m demisto_sdk validate -a --post-commit --graph --skip-pack-dependencies
