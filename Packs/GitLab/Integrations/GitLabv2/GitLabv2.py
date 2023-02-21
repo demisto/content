@@ -281,7 +281,7 @@ class Client(BaseClient):
         suffix = f'/projects/{self.project_id}/merge_requests/{merge_request_iid}/notes/{note_id}'
         response = self._http_request('DELETE', suffix, headers=headers, ok_codes=[200, 202, 204], resp_type='text')
         return response
-    
+
     def get_pipeline_request(self, project_id: str, pipeline_id: Optional[str], ref: Optional[str],
                              status: Optional[str]):
         headers = self._headers
@@ -314,7 +314,7 @@ class Client(BaseClient):
         suffix = f'projects/{project_id}/jobs/{job_id}/artifacts/{artifact_path_suffix}'
         return self._http_request('get', suffix, headers=headers, resp_type='text')
 
-    
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -1700,11 +1700,11 @@ def gitlab_artifact_get_command(client: Client, args: Dict[str, Any]) -> Command
 
 def check_for_html_in_error(e: str):
     """
-    Args: 
+    Args:
         e(str): The string of the error
     Returns:
-        True if an html doc was retured in the error message. 
-        else Flse 
+        True if an html doc was retured in the error message.
+        else Flse
     """
     match = re.search(r'<!DOCTYPE html>', e)
     return bool(match)
