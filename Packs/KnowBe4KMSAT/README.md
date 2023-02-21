@@ -10,3 +10,4 @@
 - Pulls user event data from KMSAT
 - Allows adding an external event to a user's timeline inside of KMSAT
 - Allows deleting an event fom a user's timeline inside of KMSAT
+
