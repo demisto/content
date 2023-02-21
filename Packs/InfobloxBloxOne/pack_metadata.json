@@ -1,6 +1,6 @@
 {
     "name": "Infoblox BloxOne",
-    "description": "## FILL MANDATORY FIELD ##",
+    "description": "Infoblox BloxOne",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
