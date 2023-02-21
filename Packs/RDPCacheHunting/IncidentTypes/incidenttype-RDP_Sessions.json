@@ -1,0 +1,29 @@
+{
+    "id": "RDP Sessions",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "RDP Sessions",
+    "prevName": "RDP Sessions",
+    "color": "#CFD0D0",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "1fa5348b-3d9c-4e32-8a7d-7f4d459b050e",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.8.0"
+}

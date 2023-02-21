@@ -1,0 +1,59 @@
+commonfields:
+  id: stringSimilarity
+  version: -1
+name: stringSimilarity
+script: |-
+  import difflib
+  #import Levenshtein
+
+  def main():
+      args = demisto.args()
+      text = args.get('text').split()
+      strings = args.get('list_of_strings')
+      strings_list_to_match = argToList(strings)
+      similiarity_threshold = float(args.get('similiarity_threshold'))
+      data = []
+      checked_tools = {}
+      for tool in strings_list_to_match:
+          for string in text:
+              diff_result = difflib.SequenceMatcher(None, tool.lower(), string.lower()).ratio()
+              #diff_result = difflib.get_close_matches(tool, i, n=1)
+              #if bool(diff_result) == True:
+              if diff_result > similiarity_threshold and len(string) > 3:
+                  item = {"String from list": tool.lower(), "String from text": string.lower(), "similarityRatio": round(diff_result, 2)}
+                  data.append(item)
+      jsonData = json.dumps(data)
+      jsonData = json.loads(jsonData)
+
+      json_results = {
+              "EntryContext": {"similarityCheck": jsonData},
+              "Type": entryTypes['note'],
+              "ContentsFormat": formats['json'],
+              "Contents": jsonData
+          }
+      return_results(json_results)
+
+  if __name__ in ["__builtin__", "builtins", '__main__']:
+      main()
+type: python
+tags: []
+comment: This automation calculates the similarity ratio between a Text and a list of strings and outputs a decimal value between 0.0 and 1.0 (1.0 if the sequences are identical, and 0.0 if they don't have anything in common).
+enabled: true
+args:
+- name: text
+  required: true
+  description: The text to match for strings
+- name: list_of_strings
+  required: true
+  description: A list of strings to match in the text
+  isArray: true
+- name: similiarity_threshold
+  description: The similiarity threshold to show results for, a value between 0 < x >1
+  defaultValue: "0.8"
+scripttarget: 0
+subtype: python3
+runonce: false
+runas: DBotWeakRole
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
