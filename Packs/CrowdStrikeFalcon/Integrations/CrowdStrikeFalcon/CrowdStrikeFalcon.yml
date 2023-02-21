@@ -2975,7 +2975,7 @@ script:
     - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.process_blocked
       description: Process Blocked
     - contextPath: CrowdStrike.Behavior.resources.pattern_disposition_details.handle_operation_downgraded
-      description: ' Handle operation downgraded'
+      description: Handle operation downgraded
     - contextPath: CrowdStrike.Behavior.resources.cmdline
       description: The command line
     - contextPath: CrowdStrike.Behavior.resources.technique

@@ -4303,7 +4303,7 @@ Searches for and fetches the incident behavior for the given incident behavior I
 | CrowdStrike.Behavior.resources.pattern_disposition_details.quarantine_machine | unknown | Quarantine machine | 
 | CrowdStrike.Behavior.resources.pattern_disposition_details.inddet_mask | unknown | Inddet mask | 
 | CrowdStrike.Behavior.resources.pattern_disposition_details.process_blocked | unknown | Process Blocked | 
-| CrowdStrike.Behavior.resources.pattern_disposition_details.handle_operation_downgraded | unknown |  Handle operation downgraded | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.handle_operation_downgraded | unknown | Handle operation downgraded | 
 | CrowdStrike.Behavior.resources.cmdline | unknown | The command line | 
 | CrowdStrike.Behavior.resources.technique | unknown | The technique | 
 | CrowdStrike.Behavior.resources.timestamp | unknown | The timestamp | 
