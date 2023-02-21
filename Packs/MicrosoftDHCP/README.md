@@ -24,42 +24,13 @@ To create or configure the Filebeat collector, use the information described [he
 
 You can configure the vendor and product by replacing [vendor]\_[product]\_raw with *microsoft_dhcp_raw*.
 
-When configuring the instance, you should use a YML file that configures the vendor and product, as shown in the below configuration for the Microsoft DHCP product.
+As cortex XSIAM provides YAML template for DHCP, you can use the following steps to create a collection profile:
 
-Copy and paste the following in the *Filebeat Configuration File* section (inside the relevant profile under the *XDR Collectors Profiles*).
+   1. In Cortex XDR, select Settings → Configurations → XDR Collectors → Profiles → +Add Profile → Windows.
+   2. Select Filebeat profile, Winlogbeat profile, or Settings profile, then click Next.
+   3. Configure the General Information parameters:
+   - Profile Name — Specify a unique Profile Name to identify the profile. The name can contain only letters, numbers, or spaces, and must be no more than 30 characters. The name you choose will be visible from the list of profiles when you configure a policy.
 
+   - Add description here—(Optional) To provide additional context for the purpose or business reason that explains why you are creating the profile, specify a profile description.
 
-
-
-
-#### Filebeat Configuration File
-
-```
-filebeat.inputs:
-  - type: log
-    enabled: true
-    paths:
-      - c:\Windows\System32\dhcp\DhcpSrvLog*.log
-    processors:
-      - drop_event.when.not.regexp.message: "^[0-9]+,.*"
-      - dissect:
-          tokenizer: "%{id},%{date},%{time},%{description},%{ipAddress},%{hostName},%{macAddress},%{userName},%{transactionID},%{qResult},%{probationTime},%{correlationID},%{dhcid},%{vendorClassHex},%{vendorClassASCII},%{userClassHex},%{userClassASCII},%{relayAgentInformation},%{dnsRegError}"
-      - drop_fields:
-          fields: [ "message" ]
-      - add_fields:
-          fields:
-            vendor: "microsoft"
-            product: "dhcp"
-      - add_locale: ~
-      - rename:
-          fields:
-            - from: "event.timezone"
-              to: "dissect.timezone"
-          ignore_missing: true
-          fail_on_error: false
-      - add_tags:
-          tags: [windows_dhcp]
-          target: "xdr_log_type"
-```
-
-**Note**: The above configuration uses the default location of the logs.
+   4. Configure the settings for the profile selected in Step 2 - To add the "DHCP" template, select it and click Add.
