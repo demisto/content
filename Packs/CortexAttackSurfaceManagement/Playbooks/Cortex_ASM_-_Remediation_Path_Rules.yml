@@ -220,10 +220,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 36c20134-874f-4a22-8f5d-01cbca20e1f4
+    taskid: feea4021-9d6c-4b15-8234-e83994ba806c
     type: condition
     task:
-      id: 36c20134-874f-4a22-8f5d-01cbca20e1f4
+      id: feea4021-9d6c-4b15-8234-e83994ba806c
       version: -1
       name: Meets automated remediation requirements?
       description: Determines if the alert meets the criteria for automated remediation.
@@ -300,6 +300,29 @@ tasks:
           right:
             value:
               simple: UnclaimedS3Bucket
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - S3
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
