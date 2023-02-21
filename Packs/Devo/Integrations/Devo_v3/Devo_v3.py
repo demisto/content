@@ -10,7 +10,6 @@ import tempfile
 import urllib.parse
 import re
 import os
-import sys
 from datetime import datetime
 from devo.sender import Lookup, SenderConfigSSL, Sender
 from typing import List, Dict, Set
@@ -741,6 +740,4 @@ try:
     elif demisto.command() == 'devo-write-to-lookup-table':
         demisto.results(write_to_lookup_table_command())
 except Exception as e:
-    exc_type, exc_obj, exc_tb = sys.exc_info()
-    fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-    return_error('Failed to execute command {}. Error: {}, line: {} in file: {}'.format(demisto.command(), str(e), exc_tb.tb_lineno, fname))
+    return_error('Failed to execute command {}. Error: {}'.format(demisto.command(), str(e)))
