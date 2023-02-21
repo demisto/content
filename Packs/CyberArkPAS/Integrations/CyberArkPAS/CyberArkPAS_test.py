@@ -471,7 +471,7 @@ OUTPUT_2 = [
 def test_pas_safe_members_list(mocker, response, count_or_total, expected_output):
     """
     Given:
-        - Response to cyberark-pas-safe-members-list command
+        - Response to cyberark-pas-safe-members-list command (in either the <=V11 version, or the >=V12 format)
         - Expected count/ total value
         - Expected output
     When:
