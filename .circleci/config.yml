@@ -320,7 +320,6 @@ jobs:
     parameters:
       dockerimageflag:
         type: string
-
     steps:
       - *attach_workspace
       - *remote_docker
@@ -378,13 +377,12 @@ workflows:
   version: 2
   commit:
     when:
-      condition: $CIRCLE_BRANCH ==
+      condition: $CIRCLE_BRANCH =~ pull/[0-9]+
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
           requires:
             - Setup Environment
-
           matrix:
             parameters:
               dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "from-yml" ]
