@@ -297,8 +297,7 @@
     - section_end "Copy Tests To Artifact Folder"
     - section_start "Validate Files and Yaml"
     - |
-        ./Tests/scripts/linters_runner.sh
-        ./Tests/scripts/validate.sh
+        python3 -m demisto_sdk validate -a --post-commit --graph --skip-pack-dependencies
     - section_end "Validate Files and Yaml"
     - section_start "Check Spelling"
     - python3 ./Tests/scripts/circleci_spell_checker.py $CI_COMMIT_BRANCH
