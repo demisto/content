@@ -33,6 +33,11 @@
     "Base",
     "CommonScripts",
     "CommonPlaybooks",
-    "CommonTypes"
+    "CommonTypes",
+    "Core",
+    "DemistoRESTAPI",
+    "FiltersAndTransformers",
+    "Palo_Alto_Networks_WildFire",
+    "rasterize"
   ]
 }
