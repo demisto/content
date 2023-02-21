@@ -480,7 +480,7 @@ class BranchAutoBumper:
             git_repo: Repo,
             packs_to_autobump: List[PackAutoBumper],
             run_id: str,
-            ):
+    ):
         assert packs_to_autobump, f'packs_to_autobump in the pr: {pr.number}, cant be empty.'
         self.pr = pr
         self.branch = pr.head.ref
@@ -490,6 +490,7 @@ class BranchAutoBumper:
 
     def autobump(self):
         if self.branch not in ["conflict_in_cs", "conflicts_in_base"]:
+            # todo: delete it
             return
         with checkout(self.git_repo, self.branch):
             self.git_repo.git.merge(f'origin/{self.branch}', '-Xtheirs', '-m', MERGE_FROM_MASTER_COMMIT_MESSAGE)
@@ -578,7 +579,6 @@ class AutoBumperManager:
                     pr=pr,
                 ).autobump()
         # todo: push
-
 
 
 class checkout:
