@@ -265,7 +265,7 @@ def test_add_safe_member_permissions_validate(mocker, permission_exist):
             assert permission.get('Value') == permission_exist
 
 
-OLD_RESPONSE_SAFES_1 = {
+V11_RESPONSE_SAFES_1 = {
     "Safes": [
         {
             "safeUrlId": "Test",
@@ -290,7 +290,7 @@ OLD_RESPONSE_SAFES_1 = {
     "Total": 1769,
     "nextLink": "example.com"
 }
-RESPONSE_SAFES_1 = {
+V12_RESPONSE_SAFES_1 = {
     "value": [
         {
             "safeUrlId": "Test",
@@ -323,8 +323,8 @@ OUTPUT_1 = [{'safeUrlId': 'Test', 'safeName': 'Test', 'safeNumber': 2, 'descript
              'lastModificationTime': 0, 'isExpiredMember': False}]
 
 
-@pytest.mark.parametrize('response, count_or_total, expected_output', [(OLD_RESPONSE_SAFES_1, COUNT_1, OUTPUT_1),
-                                                                       (RESPONSE_SAFES_1, COUNT_1, OUTPUT_1)])
+@pytest.mark.parametrize('response, count_or_total, expected_output', [(V11_RESPONSE_SAFES_1, COUNT_1, OUTPUT_1),
+                                                                       (V12_RESPONSE_SAFES_1, COUNT_1, OUTPUT_1)])
 def test_pas_safes_list(mocker, response, count_or_total, expected_output):
     """
     Given:
@@ -346,7 +346,7 @@ def test_pas_safes_list(mocker, response, count_or_total, expected_output):
     assert results.outputs == expected_output
 
 
-OLD_RESPONSE_MEMBERS_2 = {
+V11_RESPONSE_SAFES_2 = {
     "SafeMembers": [
         {
             "safeUrlId": "",
@@ -386,7 +386,7 @@ OLD_RESPONSE_MEMBERS_2 = {
     ],
     "Total": 8
 }
-RESPONSE_MEMBERS_2 = {
+V12_RESPONSE_SAFES_2 = {
     "value": [
         {
             "safeUrlId": "",
@@ -466,8 +466,8 @@ OUTPUT_2 = [
 ]
 
 
-@pytest.mark.parametrize('response, count_or_total, expected_output', [(OLD_RESPONSE_MEMBERS_2, COUNT_2, OUTPUT_2),
-                                                                       (RESPONSE_MEMBERS_2, COUNT_2, OUTPUT_2)])
+@pytest.mark.parametrize('response, count_or_total, expected_output', [(V11_RESPONSE_SAFES_2, COUNT_2, OUTPUT_2),
+                                                                       (V12_RESPONSE_SAFES_2, COUNT_2, OUTPUT_2)])
 def test_pas_safe_members_list(mocker, response, count_or_total, expected_output):
     """
     Given:
