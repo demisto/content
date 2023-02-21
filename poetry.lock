@@ -619,7 +619,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "test_session_timeouts_demisto_py"
-resolved_reference = "0cece2e9494a8b742b9b30a10e07186e9811c5b3"
+resolved_reference = "95b598dd7783840538cc656ba829c5230cc17398"
 
 [[package]]
 name = "Deprecated"
