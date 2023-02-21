@@ -223,7 +223,7 @@
     - .default-job-settings
   parallel:
     matrix:
-      docker_images: ["native:ga,native:maintenance", "native:dev,from-yml"]
+      docker_images: [native:ga,native:maintenance, native:dev,from-yml]
   script:
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
