@@ -378,16 +378,12 @@ workflows:
   version: 2
   commit:
     when:
-      not:
-        or:
-          - << pipeline.parameters.nightly >>
+      condition: << pipeline.parameters.contrib_branch >>
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
           requires:
             - Setup Environment
-          when:
-            condition: << pipeline.parameters.contrib_branch >>
 
           matrix:
             parameters:
@@ -397,20 +393,3 @@ workflows:
           requires:
             - Setup Environment
 
-  nightly:
-    triggers:
-      - schedule:
-          # should trigger every day at 12 AM UTC (3 AM Israel Time)
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      *nightly_jobs
-
-  nightly_trigger:
-    # will initiate when using the trigger script.
-    when: << pipeline.parameters.nightly >>
-    jobs:
-      *nightly_jobs
