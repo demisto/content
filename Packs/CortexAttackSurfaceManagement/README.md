@@ -116,11 +116,11 @@ Playbook that given the IP address checks if SNMP is enabled or not and returns 
 
 #### Cortex ASM - Decision
 Playbook that returns "RemediationAction" options based on meeting "Automated Remediation Requirements" as well as whether ServiceNowV2 integration is set up.
-![Cortex ASM - Decision](https://raw.githubusercontent.com/demisto/content/7b2f8db22f0be0cc55f8f0663894f459c3b3801e/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Decision.png)
+![Cortex ASM - Decision](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Decision.png)
 
 #### Cortex ASM - Remediation Path Rules
 Playbook that returns "RemediationAction" options based on the return from the Remediation Path Rules API, or defaults to data collection task options from the "Cortex ADM - Decision" sub-playbook.
-![Cortex ASM - Remediation Path Rules](https://raw.githubusercontent.com/demisto/content/7b2f8db22f0be0cc55f8f0663894f459c3b3801e/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Path_Rules.png)
+![Cortex ASM - Remediation Path Rules](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Path_Rules.png)
 
 ### Automation Scripts
 
@@ -144,4 +144,4 @@ This automation identifies whether the service is a "development" server. Develo
 
 #### RemediationPathRuleEvaluation
 This automation attempts to find a matching remediation path rule based on criteria.  If multiple rules match, it will return the most recently created rule.  This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule (Xpanse only).
-![RemediationPathRuleEvaluation](https://raw.githubusercontent.com/demisto/content/7b2f8db22f0be0cc55f8f0663894f459c3b3801e/Packs/CortexAttackSurfaceManagement/doc_files/RemediationPathRuleEvaluation.png)
+![RemediationPathRuleEvaluation](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/RemediationPathRuleEvaluation.png)
