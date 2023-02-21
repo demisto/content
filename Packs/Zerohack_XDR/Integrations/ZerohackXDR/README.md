@@ -7,7 +7,7 @@ This integration was integrated and tested with version 1.0 of Zerohack XDR
 
 ## Create API key on Zerohack XDR for Cortex XSOAR
 
-1. Navigate to **Side Panel** > **Administration** > **Integration** > **Create API**.
+1. Navigate to **Side Panel** > **Administration** > **Integration** > **Key Management**.
 
 
     ![Setup Account](./../../doc_imgs/dashboard_sidepanel.png)
