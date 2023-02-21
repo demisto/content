@@ -4248,3 +4248,68 @@ Retrieve vulnerability details according to the selected filter. Each request re
 | CVE-2021-2222 | HIGH | 2021-09-16T15:12:42Z | 1 |
 
 
+### cs-falcon-get-incident-behavior
+
+***
+Searches for and fetches the incident behavior for the given incident behavior ID
+
+#### Base Command
+
+`cs-falcon-get-incident-behavior`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| behavior_id | The incident behavior ID to search. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Behavior.meta.powered_by | unknown | The incident API | 
+| CrowdStrike.Behavior.meta.query_time | unknown | The query time | 
+| CrowdStrike.Behavior.meta.trace_id | unknown | The trace ID | 
+| CrowdStrike.Behavior.resources.template_instance_id | unknown | The template ID | 
+| CrowdStrike.Behavior.resources.filepath | unknown | The file path | 
+| CrowdStrike.Behavior.resources.tactic_id | unknown | The tactic ID | 
+| CrowdStrike.Behavior.resources.domain | unknown | The domain | 
+| CrowdStrike.Behavior.resources.sha256 | unknown | The sha256 | 
+| CrowdStrike.Behavior.resources.pattern_disposition | unknown | The pattern disposition | 
+| CrowdStrike.Behavior.resources.behavior_id | unknown | The behavior ID | 
+| CrowdStrike.Behavior.resources.incident_id | unknown | The incident ID | 
+| CrowdStrike.Behavior.resources.display_name | unknown | The display name | 
+| CrowdStrike.Behavior.resources.pattern_id | unknown | The pattern ID | 
+| CrowdStrike.Behavior.resources.technique_id | unknown | The technique ID | 
+| CrowdStrike.Behavior.resources.incident_ids | unknown | The incident ID | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.rooting | unknown | Rooting | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.fs_operation_blocked | unknown | FS operation blocked | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.detect | unknown | Detect | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.blocking_unsupported_or_disabled | unknown | Blocking unsupported or disabled | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.kill_action_failed | unknown | Kill action failed | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.bootup_safeguard_enabled | unknown | Bootup safeguard enabled | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.policy_disabled | unknown | Policy disabled | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.kill_parent | unknown | Kill parent | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.suspend_process | unknown | Suspend process | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.critical_process_disabled | unknown | Critical process disabled | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.quarantine_file | unknown | Quarantine file | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.suspend_parent | unknown | Suspend parent | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.kill_process | unknown | Kill process | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.indicator | unknown | Indicator | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.kill_subprocess | unknown | Kill subprocess | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.sensor_only | unknown | Sensor only | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.registry_operation_blocked | unknown | Registry operation blocked | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.operation_blocked | unknown | Operation blocked | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.quarantine_machine | unknown | Quarantine machine | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.inddet_mask | unknown | Inddet mask | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.process_blocked | unknown | Process Blocked | 
+| CrowdStrike.Behavior.resources.pattern_disposition_details.handle_operation_downgraded | unknown |  Handle operation downgraded | 
+| CrowdStrike.Behavior.resources.cmdline | unknown | The command line | 
+| CrowdStrike.Behavior.resources.technique | unknown | The technique | 
+| CrowdStrike.Behavior.resources.timestamp | unknown | The timestamp | 
+| CrowdStrike.Behavior.resources.tactic | unknown | The tactic | 
+| CrowdStrike.Behavior.resources.objective | unknown | The objective | 
+| CrowdStrike.Behavior.resources.compound_tto | unknown | Compound TTO | 
+| CrowdStrike.Behavior.resources.aid | unknown | The resource AID | 
+| CrowdStrike.Behavior.resources.cid | unknown | The resource CID | 
+| CrowdStrike.Behavior.resources.user_name | unknown | The user name | 

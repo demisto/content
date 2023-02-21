@@ -4311,7 +4311,13 @@ def test_get_incident_behavior_command(mocker):
                   '| 1234 | DropAndExecRDPFile | inc:5678 |\n'
 
     mocker.patch("CrowdStrikeFalcon.http_request", return_value=response)
-    mocker.patch("demisto.args", return_value={"behavior_id": "1234"})
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "behavior_id": "1234"
+        }
+    )
 
     result = get_incident_behavior_command()
 
