@@ -1593,8 +1593,7 @@ def get_incident_uuid(client: Client, args: dict[str, Any]) -> str | None:
         raw_data := client.get_incident(payload).get('result', [])
     ):
         raise DemistoException(f'Incident ID {args.get("incident_id")} was not found. '
-                               f'May be incident ID is older than 30 days, '
-                               f'If that is the case try with time range Arguments')
+                               f'If it's older than 30 days, try expanding the time range arguments')
     return raw_data[0].get('uuid')
 
 
