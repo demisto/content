@@ -137,6 +137,8 @@ configuration:
   - Entities
   - Comments
   - Relations
+  section: Collect
+  advanced: true
 - display: Mirroring Direction
   name: mirror_direction
   required: false
@@ -149,6 +151,7 @@ configuration:
   - Incoming And Outgoing
   hidden:
     - marketplacev2
+  section: Collect
 - additionalinfo: When selected, closing the Microsoft Sentinel ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
@@ -157,6 +160,8 @@ configuration:
   type: 8
   hidden:
     - marketplacev2
+  section: Collect
+  advanced: true
 - additionalinfo: When selected, closing the XSOAR incident is mirrored in Microsoft Sentinel.
   defaultvalue: 'false'
   display: Close Mirrored Microsoft Sentinel Ticket
@@ -165,6 +170,8 @@ configuration:
   type: 8
   hidden:
     - marketplacev2
+  section: Collect
+  advanced: true
 description: "Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR)."
 display: Microsoft Sentinel
 name: Azure Sentinel
