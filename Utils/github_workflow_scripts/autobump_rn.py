@@ -355,7 +355,8 @@ class OnlyOneRNPerPackCondition(MetadataCondition):
 
     def _check(self, previous_result: Optional[ConditionResult] = None, **kwargs) -> ConditionResult:
         pack_new_rn_files = [Path(f.filename) for f in self.pr.get_files() if f.status == 'added' and RELEASE_NOTES_DIR
-                             in Path(f.filename).parts and self.pack in Path(f.filename).parts]
+                             in Path(f.filename).parts and self.pack in Path(f.filename).parts and
+                             'md' in Path(f.filename).suffix]
         if len(pack_new_rn_files) != 1:
             return ConditionResult(should_skip=True, reason=self.generate_skip_reason(pack_new_rn_files))
         else:
@@ -498,14 +499,15 @@ class BranchAutoBumper:
         with checkout(self.git_repo, self.branch):
             for pack_auto_bumper in self.packs_to_autobump:
                 pack_auto_bumper.set_pr_changed_rn_related_data()
-            self.git_repo.git.merge(f'origin/{self.branch}', '-Xtheirs', '-m', MERGE_FROM_MASTER_COMMIT_MESSAGE)
+            self.git_repo.git.merge(f'origin/{BASE}', '-Xtheirs', '-m', MERGE_FROM_MASTER_COMMIT_MESSAGE)
             body = PR_COMMENT_TITLE.format(self.github_run_id)
             for pack_auto_bumper in self.packs_to_autobump:
                 new_version = pack_auto_bumper.autobump()
                 self.git_repo.git.add(f'{PACKS_DIR}/{pack_auto_bumper.pack_id}')
-                self.git_repo.git.commit('-m', COMMIT_MESSAGE.format(self.github_run_id,
-                                                                     new_version,
-                                                                     pack_auto_bumper.pack_id))
+                self.git_repo.git.commit('-m', COMMIT_MESSAGE.format(
+                    new_version,
+                    pack_auto_bumper.pack_id,
+                ))
                 body += PR_COMMENT.format(pack_auto_bumper.pack_id, new_version, )
             self.pr.create_issue_comment(body)
 
