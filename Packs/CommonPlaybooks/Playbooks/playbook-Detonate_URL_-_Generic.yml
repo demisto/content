@@ -747,7 +747,7 @@ tasks:
       version: -1
       name: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
       playbookName: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
-      description: 'Detonate one or more files using the CrowdStrike Falcon Intelligence Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data.'
+      description: 'Detonate one or more files using the CrowdStrike Falcon Intelligence Sandbox integration.'
       type: playbook
       iscommand: false
       brand: ""
