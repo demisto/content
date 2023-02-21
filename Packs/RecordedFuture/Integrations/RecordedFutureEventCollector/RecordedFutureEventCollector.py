@@ -50,9 +50,7 @@ def test_module(client: Client):
     Raises exceptions if something goes wrong.
 
     Args:
-        client (Client): HelloWorld client to use.
-        params (dict): Integration parameters.
-        first_fetch_time (int): The first fetch time as configured in the integration params.
+        client (Client): RecordedFuture client to use.
 
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
@@ -76,6 +74,16 @@ def test_module(client: Client):
 
 
 def get_events(client, params: dict) -> list:
+    """
+        Retrieves events using the RecordedFuture API.
+    Args:
+        client (Client): RecordedFuture client to use.
+        params (dict): The params to send to the API basically contains the limit for example {'limit': '1000'}.
+
+    Returns:
+        list: (list) of events that will be created in XSIAM.
+    """
+
     result = client.get_alerts(params)
     events = result.get('data', {}).get('results', [])
 
@@ -91,8 +99,7 @@ def get_events(client, params: dict) -> list:
 def fetch_events(client: Client, **kwargs) -> list:
     """
     Args:
-        client (Client): HelloWorld client to use.
-        last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
+        client (Client): RecordedFuture client to use.
 
     Returns:
         list: (list) of events that will be created in XSIAM.
@@ -124,6 +131,8 @@ def fetch_events(client: Client, **kwargs) -> list:
         demisto.setLastRun({'last_run_time': next_run_time, 'last_run_ids': next_run_event_ids})
 
         return events
+
+    return []
 
 
 ''' HELPER FUNCTIONS '''
@@ -168,24 +177,27 @@ def main() -> None:
         if command == 'test-module':
             test_module(client)
 
-        if command == 'recorded-future-get-events':
-            events = get_events(client, params={'limit': limit})
+        if command in ('recorded-future-get-events', 'fetch-events'):
+            if command == 'recorded-future-get-events':
+                should_push_events = argToBoolean(args.get('should_push_events', False))
+                events = get_events(client, params={'limit': limit})
 
-        if command == 'fetch-events':
-            last_run = demisto.getLastRun().get('last_run_time') or arg_to_datetime(params.get('first_fetch', '3 days'))
-            events = fetch_events(
-                client=client,
-                last_run=last_run,
-                limit=limit
-            )
+            else:  # command == 'fetch-events'
+                should_push_events = True
+                last_run = demisto.getLastRun().get('last_run_time')
+                events = fetch_events(
+                    client=client,
+                    limit=limit,
+                    last_run=last_run or arg_to_datetime(params.get('first_fetch', '3 days')).strftime(DATE_FORMAT)
+                )
 
-        if command == 'fetch-events' or argToBoolean(args.get('should_push_events')):
-            add_time_key_to_events(events)
-            send_events_to_xsiam(
-                events,
-                vendor=VENDOR,
-                product=PRODUCT
-            )
+            if should_push_events:
+                add_time_key_to_events(events)
+                send_events_to_xsiam(
+                    events,
+                    vendor=VENDOR,
+                    product=PRODUCT
+                )
 
     # Log exceptions and return errors
     except Exception as e:
