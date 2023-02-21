@@ -7,6 +7,10 @@ from google.cloud import storage
 import argparse
 
 
+QUEUE_REPO = 'queue'
+MACHINES_LOCKS_REPO = 'machines_locks'
+
+
 def options_handler():
     """
     Returns: options parsed from input arguments.
@@ -49,7 +53,7 @@ def get_queue_locks_details(storage_client: storage.Client, bucket_name: str, pr
     return files
 
 
-def get_machines_locks_details(storage_client: storage.Client, bucket_name: str, lock_repository_name: str, prefix: str):
+def get_machines_locks_details(storage_client: storage.Client, bucket_name: str, prefix: str):
     """
     get a list of all machines locks files.
     Args:
@@ -65,10 +69,11 @@ def get_machines_locks_details(storage_client: storage.Client, bucket_name: str,
     files = []
     found = False
     for blob in blobs:
-        if blob.name.startswith(lock_repository_name):
+        if blob.name.startswith(prefix):
             found = True
-            if blob.name.startswith(prefix):
-                files.append({'machine_name': f'qa2-test-{blob.name.split("-")[5]}', 'job_id': (blob.name.split("-")[-1])})
+            lock_file_name = blob.name.strip(prefix)
+            if lock_file_name:
+                files.append({'machine_name': lock_file_name.split('-lock-')[0], 'job_id': (blob.namelock_file_name.split('-lock-')[1])})
         elif found:
             break
     return files
@@ -91,7 +96,7 @@ def check_job_status(token: str, job_id: str):
 
 def remove_build_from_queue(storage_bucket: any, lock_repository_name: str, job_id: str):
     """deletes a lock queue file """
-    file_path = f'{lock_repository_name}/queue-ga-lock-{job_id}'
+    file_path = f'{lock_repository_name}/{QUEUE_REPO}/{job_id}'
     blob = storage_bucket.blob(file_path)
     try:
         blob.delete()
@@ -113,13 +118,13 @@ def remove_machine_lock_file(storage_bucket: any, lock_repository_name: str, mac
 
 def lock_machine(storage_bucket: any, lock_repository_name: str, machine_name: str, job_id: str):
     """create a lock machine file """
-    blob = storage_bucket.blob(f'{lock_repository_name}/{machine_name}-lock-{job_id}')
+    blob = storage_bucket.blob(f'{lock_repository_name}/{MACHINES_LOCKS_REPO}/{machine_name}-lock-{job_id}')
     blob.upload_from_string('')
 
 
 def adding_build_to_the_queue(storage_bucket: any, lock_repository_name: str, job_id: str):
     """create a lock machine file """
-    blob = storage_bucket.blob(f'{lock_repository_name}/queue-ga-lock-{job_id}')
+    blob = storage_bucket.blob(f'{lock_repository_name}/{QUEUE_REPO}/{job_id}')
     blob.upload_from_string('')
 
 
@@ -139,8 +144,8 @@ def main():
     first_in_the_queue = False
     while not first_in_the_queue:
         logging.info('gets all builds in the queue')
-        builds_in_queue = (get_queue_locks_details(storage_client, 'xsoar-ci-artifacts',
-                                                   f'{options.gcs_locks_path}/queue-ga-lock-'))
+        builds_in_queue = get_queue_locks_details(storage_client, 'xsoar-ci-artifacts',
+                                                  f'{options.gcs_locks_path}/{QUEUE_REPO}/')
         # sorting the files by time_created
         sorted_builds_in_queue = sorted(builds_in_queue, key=lambda d: d['time_created'], reverse=False)
 
@@ -160,7 +165,7 @@ def main():
             else:
                 sleep(random.randint(8, 13))
 
-    logging.info('Our turn has arrived, Start searching for an empty machine')
+    logging.info('Start searching for an empty machine')
     if options.lock_machine_name:
         logging.info('trying to lock the given machine: {options.lock_machine_name}')
         list_machines = [options.lock_machine_name]
@@ -171,7 +176,7 @@ def main():
         random.shuffle(list_machines)
 
     logging.info(f'gets all machines lock files')
-    machines_locks = get_machines_locks_details(storage_client, 'xsoar-ci-artifacts', f'{options.gcs_locks_path}/', f'{options.gcs_locks_path}/qa2-test-')
+    machines_locks = get_machines_locks_details(storage_client, 'xsoar-ci-artifacts', f'{options.gcs_locks_path}/{MACHINES_LOCKS_REPO}/')
     logging.info(f'all machines locks existing : {machines_locks}')
 
     lock_machine_name = None

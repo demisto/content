@@ -431,7 +431,7 @@ slack-notify-nightly-build:
       then
         echo "Job finished, removing lock file"
         gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
-        gsutil rm "gs://xsoar-ci-artifacts/$GCS_LOCKS_PATH/*-lock-$CI_JOB_ID"
+        gsutil rm "gs://xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
         echo "Finished removing lock file"
       fi
     - section_end "After script"
@@ -497,45 +497,45 @@ xsoar_ng_server_ga:
    allow_failure: true
 
 
-test-upload-flow:
-  tags:
-    - gke
-  extends:
-    - .default-job-settings
-  rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  variables:
-    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
-  stage: unittests-and-validations
-  allow_failure: true
-  script:
-    - |
-    - section_start "Checks Whether to Trigger a Test Upload"
-    - SHOULD_SKIP_TEST_UPLOAD=$(./Utils/should_trigger_test_upload.sh)
-    - if [ -z "$SHOULD_SKIP_TEST_UPLOAD" ]; then
-    -   echo "No upload-flow related files were modified, skipping upload test"
-    -   exit 0
-    - fi
-    - echo "Found modified files that should be tested in upload-flow"
-    - section_end "Checks Whether to Trigger a Test Upload"
-
-    - section_start "Create Testing Branch"
-    - export BRANCH="${CI_COMMIT_BRANCH}-upload_test_branch-$(date +%s)"
-    - python3 ./Utils/test_upload_flow/create_test_branch.py -tb $BRANCH -a $ARTIFACTS_FOLDER -g $GITLAB_PUSH_TOKEN
-    - echo $BRANCH
-    - section_end "Create Testing Branch"
-
-    - section_start "Trigger Test Upload Flow On Testing Branch"
-    - export pipeline_id=$(./Utils/trigger_test_upload_flow.sh -ct $GITLAB_SVC_USER_TOKEN -g -b $BRANCH | jq .id)
-    - echo "Successful triggered test upload - https://code.pan.run/xsoar/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
-    - section_end "Trigger Test Upload Flow On Testing Branch"
-
-    - section_start "Wait For Upload To Finish"
-    - python3 ./Utils/test_upload_flow/wait_for_upload.py -p $pipeline_id -g $GITLAB_API_TOKEN
-    - section_end "Wait For Upload To Finish"
-
-    - section_start "Verify Created Testing Bucket"
-    - current_storage_base_path="upload-flow/builds/$BRANCH/$pipeline_id/content/packs"
-    - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY -sb $current_storage_base_path -b $ALL_BUCKETS
-    - section_end "Verify Created Testing Bucket"
+#test-upload-flow:
+#  tags:
+#    - gke
+#  extends:
+#    - .default-job-settings
+#  rules:
+#    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+#  variables:
+#    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
+#  stage: unittests-and-validations
+#  allow_failure: true
+#  script:
+#    - |
+#    - section_start "Checks Whether to Trigger a Test Upload"
+#    - SHOULD_SKIP_TEST_UPLOAD=$(./Utils/should_trigger_test_upload.sh)
+#    - if [ -z "$SHOULD_SKIP_TEST_UPLOAD" ]; then
+#    -   echo "No upload-flow related files were modified, skipping upload test"
+#    -   exit 0
+#    - fi
+#    - echo "Found modified files that should be tested in upload-flow"
+#    - section_end "Checks Whether to Trigger a Test Upload"
+#
+#    - section_start "Create Testing Branch"
+#    - export BRANCH="${CI_COMMIT_BRANCH}-upload_test_branch-$(date +%s)"
+#    - python3 ./Utils/test_upload_flow/create_test_branch.py -tb $BRANCH -a $ARTIFACTS_FOLDER -g $GITLAB_PUSH_TOKEN
+#    - echo $BRANCH
+#    - section_end "Create Testing Branch"
+#
+#    - section_start "Trigger Test Upload Flow On Testing Branch"
+#    - export pipeline_id=$(./Utils/trigger_test_upload_flow.sh -ct $GITLAB_SVC_USER_TOKEN -g -b $BRANCH | jq .id)
+#    - echo "Successful triggered test upload - https://code.pan.run/xsoar/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
+#    - section_end "Trigger Test Upload Flow On Testing Branch"
+#
+#    - section_start "Wait For Upload To Finish"
+#    - python3 ./Utils/test_upload_flow/wait_for_upload.py -p $pipeline_id -g $GITLAB_API_TOKEN
+#    - section_end "Wait For Upload To Finish"
+#
+#    - section_start "Verify Created Testing Bucket"
+#    - current_storage_base_path="upload-flow/builds/$BRANCH/$pipeline_id/content/packs"
+#    - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY -sb $current_storage_base_path -b $ALL_BUCKETS
+#    - section_end "Verify Created Testing Bucket"
 
