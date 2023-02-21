@@ -2689,6 +2689,7 @@ def get_behavior_command():
     ec = {'CrowdStrike.Behavior': entries}
     return create_entry_object(contents=raw_res, ec=ec, hr=hr)
 
+
 def get_incident_behavior_command():
     """
         Gets an incident behavior by ID
@@ -2696,7 +2697,7 @@ def get_incident_behavior_command():
     """
     behavior_id = demisto.args().get('behavior_id')
     body = {'ids': [behavior_id]}
-    response = http_request('POST', '/incidents/entities/behaviors/GET/v1',data=body)
+    response = http_request('POST', '/incidents/entities/behaviors/GET/v1', data=body)
     readable_output = tableToMarkdown(f'CrowdStrike Behavior {behavior_id}', response['resources'])
     ec = {'CrowdStrike.Behavior': response}
     return create_entry_object(contents=response, ec=ec, hr=readable_output)
