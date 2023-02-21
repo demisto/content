@@ -282,3 +282,45 @@ def test_test_module_command(mocker, auth_type, expected_results):
     with pytest.raises(Exception) as e:
         test_module(client)
     assert expected_results in str(e.value)
+
+
+def test_generate_login_url(mocker):
+    """
+    Given:
+        - Self-deployed are true and auth code are the auth flow
+    When:
+        - Calling function azure-data-explorer-generate-login-url
+    Then:
+        - Ensure the generated url are as expected.
+    """
+    # prepare
+    import demistomock as demisto
+    from AzureDataExplorer import main
+    import AzureDataExplorer
+
+    redirect_uri = 'redirect_uri'
+    tenant_id = 'tenant_id'
+    client_id = 'client_id'
+    mocked_params = {
+        'redirect_uri': redirect_uri,
+        'cluster_url': 'https://help.kusto.windows.net',
+        'self_deployed': 'True',
+        'tenant_id': tenant_id,
+        'client_id': client_id,
+        'authentication_type': 'Authorization Code',
+        'credentials': {'identifier': client_id, 'password': 'client_secret'}
+    }
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(demisto, 'command', return_value='azure-data-explorer-generate-login-url')
+    mocker.patch.object(AzureDataExplorer, 'return_results')
+
+    # call
+    main()
+
+    # assert
+    expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
+                   'response_type=code' \
+                   '&scope=offline_access%20https://management.azure.com/.default' \
+                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
+    res = AzureDataExplorer.return_results.call_args[0][0].readable_output
+    assert expected_url in res

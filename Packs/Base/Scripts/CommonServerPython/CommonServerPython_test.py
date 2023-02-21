@@ -887,6 +887,50 @@ class TestTableToMarkdown:
 """
         assert expected_table == table
 
+    @staticmethod
+    def test_no_given_headers_and_sort_headers():
+        """
+        Given:
+            - A list of dictionaries.
+        When:
+            - Calling tableToMarkdown with no given headers and sort_headers=True by default.
+        Then:
+            - Validate that the table is sorted by the keys.
+        """
+        data = [{'c': 1, 'b': 2, 'a': 3}, {'c': 4, 'b': 5, 'a': 6}]
+        table = tableToMarkdown("tableToMarkdown test", data)
+        assert table == ('### tableToMarkdown test\n'
+                         '|a|b|c|\n|---|---|---|\n'
+                         '| 3 | 2 | 1 |\n'
+                         '| 6 | 5 | 4 |\n')
+
+    @staticmethod
+    def test_no_given_headers_and_sort_headers_false():
+        """
+        Given:
+            - A list of dictionaries.
+        When:
+            - Calling tableToMarkdown with no given headers and sort_headers=False.
+        Then:
+            - Python 3: Validate that the table is not sorted by the keys.
+            - Python 2: Validate that the table is sorted by the keys.
+        """
+        data = [{'c': 1, 'b': 2, 'a': 3}, {'c': 4, 'b': 5, 'a': 6}]
+        table = tableToMarkdown("tableToMarkdown test", data, sort_headers=False)
+
+        if IS_PY3:
+            expected_table_unsorted = ('### tableToMarkdown test\n'
+                                       '|c|b|a|\n|---|---|---|\n'
+                                       '| 1 | 2 | 3 |\n'
+                                       '| 4 | 5 | 6 |\n')
+            assert table == expected_table_unsorted
+        else:  # in python 2 sort_headers=False is not working
+            expected_table_sorted = ('### tableToMarkdown test\n'
+                                     '|a|b|c|\n|---|---|---|\n'
+                                     '| 3 | 2 | 1 |\n'
+                                     '| 6 | 5 | 4 |\n')
+            assert table == expected_table_sorted
+
 
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
 def test_url_to_clickable_markdown(data, expected_data):
@@ -3391,9 +3435,21 @@ UPDATED_CONTEXT = {
     'list_key_list': ['val1', 'val2', 'val1', 'val2'],
     'list_key_dict': ['val1', 'val2', {'data_key': 'data_val'}]
 }
+UPDATED_CONTEXT_WITH_LIST = {
+    'dict_key': [{
+        'key1': 'val1',
+        'key2': 'val2',
+        'key3': 'val3'
+    }],
+    'int_key': [1, 2],
+    'list_key_str': ['val1', 'val2', 'str_data'],
+    'list_key_list': ['val1', 'val2', 'val1', 'val2'],
+    'list_key_dict': ['val1', 'val2', {'data_key': 'data_val'}]
+}
 
 DATA_MOCK_STRING = "str_data"
 DATA_MOCK_LIST = ['val1', 'val2']
+DATA_MOCK_LIST_OF_DICT = [{'key3': 'val3'}]
 DATA_MOCK_DICT = {
     'data_key': 'data_val'
 }
@@ -3409,6 +3465,7 @@ APPEND_CONTEXT_INPUT = [
 
     (CONTEXT_MOCK, DATA_MOCK_STRING, DICT_KEY, "TypeError"),
     (CONTEXT_MOCK, DATA_MOCK_LIST, DICT_KEY, "TypeError"),
+    (CONTEXT_MOCK, DATA_MOCK_LIST_OF_DICT, DICT_KEY, "key = {}, val = {}".format(DICT_KEY, UPDATED_CONTEXT_WITH_LIST[DICT_KEY])),
     (CONTEXT_MOCK, DATA_MOCK_DICT, DICT_KEY, "key = {}, val = {}".format(DICT_KEY, UPDATED_CONTEXT[DICT_KEY])),
 
     (CONTEXT_MOCK, DATA_MOCK_STRING, 'list_key_str',
