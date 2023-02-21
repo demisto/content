@@ -1,4 +1,3 @@
-
 from CommonServerPython import *
 import json
 import urllib3
@@ -18,66 +17,29 @@ PRODUCT = 'Intelligence Cloud'
 
 
 class Client(BaseClient):
-    def whoami(self) -> dict[str, Any]:
-
-        return self._http_request(
-            method='get',
-            url_suffix='/info/whoami',
-            timeout=60,
-        )
 
     def _call(self, url_suffix, **kwargs):
-
-        json_data = {
-            'demisto_command': demisto.command(),
-            'demisto_args': demisto.args(),
-        }
-
         request_kwargs = {
-            'method': 'post',
+            'method': 'get',
             'url_suffix': url_suffix,
-            'json_data': json_data,
             'timeout': 90,
             'retries': 3,
-            'status_list_to_retry': STATUS_TO_RETRY
+            'status_list_to_retry': STATUS_TO_RETRY,
         }
-
         request_kwargs.update(kwargs)
 
-        try:
-            response = self._http_request(**request_kwargs)
+        return self._http_request(**request_kwargs)
 
-            if isinstance(response, dict) and response.get('return_error'):
-                # This will raise the Exception or call "demisto.results()" for the error and sys.exit(0).
-                return_error(**response['return_error'])
+    def whoami(self) -> dict[str, Any]:
+        """Check whoami."""
+        return self._call(url_suffix='/info/whoami')
 
-        except DemistoException as err:
-            if '404' in str(err):
-                return CommandResults(
-                    outputs_prefix='',
-                    outputs=dict(),
-                    raw_response=dict(),
-                    readable_output='No results found.',
-                    outputs_key_field='',
-                )
-            else:
-                raise err
-
-        return response
-
-    def fetch_incidents(self, last_run) -> dict[str, Any]:
-        """Fetch incidents."""
-        return self._call(
-            url_suffix=f'/v2/alert/fetch_incidents',
-            json_data={
-                'demisto_last_run': last_run
-            },
-            timeout=120
-        )
-
-    def get_alerts(self) -> dict[str, Any]:
+    def get_alerts(self, params: dict = None) -> dict[str, Any]:
         """Get alerts."""
-        return self._call(url_suffix='/v2/alert/search')
+        return self._call(url_suffix='/alert/search', params=params)
+
+
+''' COMMAND FUNCTIONS '''
 
 
 def test_module(client: Client):
@@ -113,33 +75,68 @@ def test_module(client: Client):
         raise DemistoException(f'Failed due to - {message}')
 
 
-def get_events(client) -> tuple[dict[str, any], CommandResults]:
-    response = client.get_alerts()
-    hr = tableToMarkdown(name='Test Event', t=response)
-    return response, CommandResults(readable_output=hr)
+def get_events(client, params: dict) -> list:
+    result = client.get_alerts(params)
+    events = result.get('data', {}).get('results', [])
+
+    hr = tableToMarkdown(name='Test Event', t=events)
+    return_results(CommandResults(
+        readable_output=hr,
+        raw_response=events
+    ))
+
+    return events
 
 
-def fetch_events(client: Client, last_run: str):
+def fetch_events(client: Client, **kwargs) -> list:
     """
     Args:
         client (Client): HelloWorld client to use.
         last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        first_fetch_time(int): If last_run is None (first time we are fetching), it contains the timestamp in
-            milliseconds on when to start fetching events.
-        alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
+
     Returns:
-        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
-        list: List of events that will be created in XSIAM.
+        list: (list) of events that will be created in XSIAM.
     """
-    response = client.fetch_incidents(last_run)
+    params = {
+        'triggered': f'[{kwargs.get("last_run")}, ]',
+        'orderby': 'triggered',
+        'direction': 'desc',
+        'limit': kwargs.get('limit')
+    }
+    response = client.get_alerts(params)
 
-    if isinstance(response, CommandResults):
-        # 404 case.
-        return
+    if events := response.get('data', {}).get('results'):
+        last_run_event_ids = demisto.getLastRun().get('last_run_ids', set())
+        if last_run_event_ids:
+            events = list(filter(lambda x: x.get('id') not in last_run_event_ids, events))
 
-    if incidents := response.get('incidents'):
-        demisto.setLastRun(response['demisto_last_run'])
-        return incidents
+        # Get the latest triggered time to start fetching the next round from this time.
+        next_run_time = events[-1].get('triggered')
+        # We need the IDs of the events with the same trigger time as the latest,
+        # So that we can remove them in the next fetch, Since we are fetching from this time.
+        next_run_event_ids = {event.get('id') for event in events if event.get('triggered') == next_run_time}
+
+        # In case all events were triggered at the same time and the limit equals their amount,
+        # We should increase the next run time, Otherwise the fetch will get stuck at this time forever.
+        if len(next_run_event_ids) == len(events) == int(kwargs.get('limit')):
+            next_run_time = (dateparser.parse(next_run_time) + timedelta(seconds=1)).strftime(DATE_FORMAT)
+
+        demisto.setLastRun({'last_run_time': next_run_time, 'last_run_ids': next_run_event_ids})
+
+        return events
+
+
+''' HELPER FUNCTIONS '''
+
+
+def add_time_key_to_events(events: list = None):
+    """
+    Adds the _time key to the events.
+    Args:
+        events: list, the events to add the time key to.
+    """
+    for event in events or []:
+        event["_time"] = event.get("triggered")
 
 
 ''' MAIN FUNCTION '''
@@ -153,15 +150,14 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    api_key = params.get('credentials', {}).get('password')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    api_key = params.get('credentials', {}).get('password')
+    headers = {'X-RFToken': api_key}
+    limit = args.get('limit') or params.get('limit') or 1000
 
     demisto.debug(f'Command being called is {command}')
     try:
-        headers = {
-            'X-RFToken': api_key
-        }
         client = Client(
             base_url=BASE_URL,
             headers=headers,
@@ -170,30 +166,26 @@ def main() -> None:
         )
 
         if command == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            test_module(client)
 
-        elif command in ('recorded-future-get-events', 'fetch-events'):
-            if command == 'recorded-future-get-events':
-                should_push_events = argToBoolean(args.pop('should_push_events'))
-                events, results = get_events(client)
-                return_results(results)
+        if command == 'recorded-future-get-events':
+            events = get_events(client, params={'limit': limit})
 
-            else:  # command == 'fetch-events':
-                should_push_events = True
-                last_run = demisto.getLastRun().get('last_run') or arg_to_datetime(params.get('first_fetch', '3 days'))
-                events = fetch_events(
-                    client=client,
-                    last_run=last_run
-                )
+        if command == 'fetch-events':
+            last_run = demisto.getLastRun().get('last_run_time') or arg_to_datetime(params.get('first_fetch', '3 days'))
+            events = fetch_events(
+                client=client,
+                last_run=last_run,
+                limit=limit
+            )
 
-            if should_push_events:
-                send_events_to_xsiam(
-                    events,
-                    vendor=VENDOR,
-                    product=PRODUCT
-                )
+        if command == 'fetch-events' or argToBoolean(args.get('should_push_events')):
+            add_time_key_to_events(events)
+            send_events_to_xsiam(
+                events,
+                vendor=VENDOR,
+                product=PRODUCT
+            )
 
     # Log exceptions and return errors
     except Exception as e:

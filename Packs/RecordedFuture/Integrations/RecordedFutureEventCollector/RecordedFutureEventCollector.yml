@@ -50,7 +50,7 @@ script:
       - 'true'
       - 'false'
       required: true
-    - default: false
+    - defaultValue: 10
       description: Maximum results to return.
       isArray: false
       name: limit
