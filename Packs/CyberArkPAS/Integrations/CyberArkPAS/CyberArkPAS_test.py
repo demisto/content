@@ -325,7 +325,7 @@ OUTPUT_1 = [{'safeUrlId': 'Test', 'safeName': 'Test', 'safeNumber': 2, 'descript
 
 @pytest.mark.parametrize('response, count_or_total, expected_output', [(V11_RESPONSE_SAFES_1, COUNT_1, OUTPUT_1),
                                                                        (V12_RESPONSE_SAFES_1, COUNT_1, OUTPUT_1)])
-def test_pas_safes_list(mocker, response, count_or_total, expected_output):
+def test_pas_safes_list(mocker, response: dict, count_or_total: str, expected_output: list[dict]):
     """
     Given:
         - Response to cyberark-pas-safes-list command
@@ -468,7 +468,7 @@ OUTPUT_2 = [
 
 @pytest.mark.parametrize('response, count_or_total, expected_output', [(V11_RESPONSE_SAFES_2, COUNT_2, OUTPUT_2),
                                                                        (V12_RESPONSE_SAFES_2, COUNT_2, OUTPUT_2)])
-def test_pas_safe_members_list(mocker, response, count_or_total, expected_output):
+def test_pas_safe_members_list(mocker, response: dict, count_or_total: str, expected_output: list[dict]):
     """
     Given:
         - Response to cyberark-pas-safe-members-list command
