@@ -440,18 +440,25 @@ class PackAutoBumper:
             pack=pack_id,
             is_force=True,
         )
-        with open(self._last_rn_file_path) as f:
-            self._rn_text = f.read()
 
-        self._bc_file = Path(str(rn_file_path).replace('md', 'json'))
-        self._has_bc = self._bc_file.is_file()
-        if self._has_bc:
-            with open(self._bc_file) as f:
-                self._bc_text = f.read()
+        # Setting to default. Will be updated once we are checked out to the branch in set_pr_changed_rn_related_data.
+        self._bc_file = Path(str(self._last_rn_file_path).replace('md', 'json'))
+        self._has_bc = False
+        self._rn_text = ''
+        self._bc_text = ''
 
     @property
     def pack_id(self):
         return self.pack_id
+
+    def set_pr_changed_rn_related_data(self):
+        with open(self._last_rn_file_path) as f:
+            self._rn_text = f.read()
+
+        self._has_bc = self._bc_file.is_file()
+        if self._has_bc:
+            with open(self._bc_file) as f:
+                self._bc_text = f.read()
 
     def autobump(self) -> str:
         """ Autobumps packs version:
@@ -462,6 +469,7 @@ class PackAutoBumper:
         5. If there breaking changes file, updating it to the new version
         Returns: (str) new pack version
         """
+        self.set_pr_changed_rn_related_data()
         new_version, metadata_dict = self._update_rn_obj.bump_version_number()
         self._update_rn_obj.write_metadata_to_file(metadata_dict=metadata_dict)
         new_release_notes_path = self._update_rn_obj.get_release_notes_path(new_version)
