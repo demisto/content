@@ -562,13 +562,13 @@ def test_get_user_event(requests_mock):
             Make sure the data contains the user event
     """
 
-    id: str = "513f46ac-c3d7-4682-ad0d-0c149c0728a2"
+    eventId: str = "513f46ac-c3d7-4682-ad0d-0c149c0728a2"
 
     mock_response_data = util_load_json("test_data/user_event_response.json")
     from KnowBe4KMSAT import kmsat_user_event_list_command
 
     requests_mock.get(
-        f"{USER_EVENT_BASE_URL}/events/{id}", json=mock_response_data, status_code=200
+        f"{USER_EVENT_BASE_URL}/events/{eventId}", json=mock_response_data, status_code=200
     )
 
     userEventClient = UserEventClient(
@@ -581,7 +581,7 @@ def test_get_user_event(requests_mock):
         },
     )
 
-    args: dict = {"id": id}
+    args: dict = {"id": eventId}
     result = kmsat_user_event_list_command(userEventClient, args)
 
     assert requests_mock.last_request.headers['X-KB4-Integration'] == "Cortex XSOAR KMSAT"
