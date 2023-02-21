@@ -465,7 +465,6 @@ class PackAutoBumper:
         5. If there breaking changes file, updating it to the new version
         Returns: (str) new pack version
         """
-        self.set_pr_changed_rn_related_data()
         new_version, metadata_dict = self._update_rn_obj.bump_version_number()
         self._update_rn_obj.write_metadata_to_file(metadata_dict=metadata_dict)
         new_release_notes_path = self._update_rn_obj.get_release_notes_path(new_version)
@@ -497,6 +496,8 @@ class BranchAutoBumper:
             # todo: delete it
             return
         with checkout(self.git_repo, self.branch):
+            for pack_auto_bumper in self.packs_to_autobump:
+                pack_auto_bumper.set_pr_changed_rn_related_data()
             self.git_repo.git.merge(f'origin/{self.branch}', '-Xtheirs', '-m', MERGE_FROM_MASTER_COMMIT_MESSAGE)
             body = PR_COMMENT_TITLE.format(self.github_run_id)
             for pack_auto_bumper in self.packs_to_autobump:
