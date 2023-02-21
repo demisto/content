@@ -1,10 +1,10 @@
 {
-    "id": 667542,
+    "id": "667542",
     "employee_number": "19425",
     "first_name": "William",
     "last_name": "Marcoux",
     "job_title": "VP of Sales",
-    "email": "wmarcoux@kb4-demo.com",
+    "email": "example2@kb4-demo.com",
     "phish_prone_percentage": 14.235,
     "phone_number": "555-554-2222",
     "extension": "42",
@@ -12,7 +12,7 @@
     "location": "Office A",
     "division": "Sales",
     "manager_name": "Michael Scott",
-    "manager_email": "mscott@kb4-demo.com",
+    "manager_email": "example3@kb4-demo.com",
     "provisioning_managed": false,
     "provisioning_guid": null,
     "groups": [

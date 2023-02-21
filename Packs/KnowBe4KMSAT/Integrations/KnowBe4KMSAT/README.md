@@ -249,7 +249,7 @@
   "first_name": "William",
   "last_name": "Marcoux",
   "job_title": "VP of Sales",
-  "email": "wmarcoux@kb4-demo.com",
+  "email": "example2@kb4-demo.com",
   "phish_prone_percentage": 14.235,
   "phone_number": "555-554-2222",
   "extension": "42",
@@ -257,7 +257,7 @@
   "location": "Office A",
   "division": "Sales",
   "manager_name": "Michael Scott",
-  "manager_email": "mscott@kb4-demo.com",
+  "manager_email": "example3@kb4-demo.com",
   "provisioning_managed": false,
   "provisioning_guid": null,
   "groups": [
@@ -452,7 +452,7 @@
       "provisioning_guid": null,
       "first_name": "Bob",
       "last_name": "Ross",
-      "email": "bob.r@kb4-demo.com"
+      "email": "example4@kb4-demo.com"
     },
     "template": {
       "id": 2,
@@ -525,7 +525,7 @@
       "provisioning_guid": null,
       "first_name": "Bob",
       "last_name": "Ross",
-      "email": "bob.r@kb4-demo.com"
+      "email": "example4@kb4-demo.com"
     },
     "template": {
       "id": 2,
@@ -781,7 +781,7 @@
     "id": 796742,
     "first_name": "Sarah",
     "last_name": "Thomas",
-    "email": "s_thomas@kb4-demo.com"
+    "email": "example1@kb4-demo.com"
   },
   "campaign_name": "New Employee Policies",
   "enrollment_date": "2019-04-02T15:02:38.000Z",
