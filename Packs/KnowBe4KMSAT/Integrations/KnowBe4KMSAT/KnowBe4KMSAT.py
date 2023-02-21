@@ -805,7 +805,7 @@ def kmsat_phishing_security_tests_failed_recipients_list_command(
     response = client.kmsat_phishing_security_tests_recipients(pst_id, params)
 
     filtered_items_in_page = 0
-    
+
     items_total = len(response)
 
     # Sets paging_end False if the response count is less than the per_page
