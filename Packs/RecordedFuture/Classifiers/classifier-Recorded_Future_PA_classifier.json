@@ -2,6 +2,7 @@
     "description": "",
     "feed": false,
     "id": "Recorded Future Playbook Alert Classifier",
+    "defaultIncidentType": "Recorded Future Playbook Alert",
     "keyTypeMap": {
         "cyber_vulnerability": "Recorded Future Vulnerability",
         "domain_abuse": "Recorded Future Domain Abuse"

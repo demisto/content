@@ -29,7 +29,7 @@
     "columns": [
         {
             "key": "riskscore",
-            "displayName": "RiskScore",
+            "displayName": "Risk Score",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -41,7 +41,7 @@
         },
         {
             "key": "entitycriticality",
-            "displayName": "EntityCriticality",
+            "displayName": "Entity Criticality",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -53,7 +53,7 @@
         },
         {
             "key": "entityname",
-            "displayName": "EntityName",
+            "displayName": "Entity Name",
             "type": "shortText",
             "required": false,
             "script": "",

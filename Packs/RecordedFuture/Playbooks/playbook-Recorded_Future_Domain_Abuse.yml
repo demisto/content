@@ -143,6 +143,8 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
+      alert_ids:
+        simple: ${incident.alertid}
       new_status:
         simple: in-progress
     separatecontext: false
@@ -563,6 +565,8 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
+      alert_ids:
+        simple: ${incident.alertid}
       new_status:
         simple: dismissed
     separatecontext: false

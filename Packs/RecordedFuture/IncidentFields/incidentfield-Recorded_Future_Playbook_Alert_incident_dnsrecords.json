@@ -19,8 +19,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "Recorded Future Domain Abuse",
-        "Recorded Future Vulnerability"
+        "Recorded Future Domain Abuse"
     ],
     "associatedToAll": false,
     "unmapped": false,
@@ -29,7 +28,7 @@
     "columns": [
         {
             "key": "recordtype",
-            "displayName": "RecordType",
+            "displayName": "Record Type",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -41,7 +40,7 @@
         },
         {
             "key": "riskscore",
-            "displayName": "RiskScore",
+            "displayName": "Risk Score",
             "type": "shortText",
             "required": false,
             "script": "",

@@ -1,10 +1,10 @@
 {
-    "id": "incident_whoisrecorddata",
+    "id": "incident_recordedfuturewhoisrecorddata",
     "version": -1,
-    "modified": "2023-02-08T19:25:00.114652201Z",
+    "modified": "2023-02-20T16:25:00.114652201Z",
     "name": "Recorded Future Whois Record Data",
     "ownerOnly": false,
-    "cliName": "whoisrecorddata",
+    "cliName": "recordedfuturewhoisrecorddata",
     "type": "grid",
     "closeForm": false,
     "editForm": true,
@@ -19,8 +19,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "Recorded Future Domain Abuse",
-        "Recorded Future Vulnerability"
+        "Recorded Future Domain Abuse"    
     ],
     "associatedToAll": false,
     "unmapped": false,
@@ -29,7 +28,7 @@
     "columns": [
         {
             "key": "createddate",
-            "displayName": "CreatedDate",
+            "displayName": "Created Date",
             "type": "date",
             "required": false,
             "script": "",
@@ -41,7 +40,7 @@
         },
         {
             "key": "registrarname",
-            "displayName": "RegistrarName",
+            "displayName": "Registrar Name",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -53,7 +52,7 @@
         },
         {
             "key": "contactemail",
-            "displayName": "ContactEmail",
+            "displayName": "Contact Email",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -65,7 +64,7 @@
         },
         {
             "key": "nameservers",
-            "displayName": "NameServers",
+            "displayName": "Name Servers",
             "type": "shortText",
             "required": false,
             "script": "",

@@ -53,12 +53,15 @@ configuration:
     defaultvalue: "65"
     type: 0
     required: false
-  - display: Turn on "Incident Sharing".
-    name: writeback
-    defaultvalue: "true"
-    type: 8
-    required: false
-    additionalinfo: Turning on "Incident Sharing" shares anonymized correlations from playbooks with Recorded Future to improve intelligence quality.
+  - display: Collective Insights Settings
+    name: collective_insights
+    additionalinfo: The Recorded Future Intelligence Cloud aggregates data related to indicators, driving collective insights to better identify threats. Anonymized data is collected for analytical purposes to identify trends and insights with the Intelligence Cloud. Go to the Recorded Future support site to learn more about Collective Insights.
+    defaultvalue: "On"
+    type: 15
+    required: true
+    options:
+      - "On"
+      - "Off"    
   - display: Trust any certificate (not secure)
     name: unsecure
     defaultvalue: "false"
