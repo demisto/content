@@ -124,11 +124,11 @@ script:
       required: true
       isArray: false
     - name: policy_expiry
-      description: Policy expiry date, format MM/DD/YYYY HH:MM, e.g. 01/25/2023 08:30
+      description: Policy expiry date, format yyyy-MM-ddTHH:mm:ssZ, e.g. 2023-02-21T16:16:29Z.
       required: false
       isArray: false
     - name: identification_profiles
-      description: Comma-separated list of valid identification profile name.
+      description: Comma-separated list of valid identification profile name (dependencies - use cisco-wsa-identification-profiles-list command to get all the identification profiles).
       required: true
       isArray: true
   - name: cisco-wsa-access-policy-update
@@ -155,7 +155,7 @@ script:
       required: false
       isArray: false
     - name: policy_expiry
-      description: Policy expiry date, format MM/DD/YYYY HH:MM, e.g. 01/25/2023 08:30
+      description: Policy expiry date, format yyyy-MM-ddTHH:mm:ssZ, e.g. 2023-02-21T16:16:29Z.
       required: false
       isArray: false
     - name: policy_description

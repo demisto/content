@@ -865,10 +865,11 @@ def access_policy_list_command(client: Client, args: dict[str, Any]) -> CommandR
     )
 
     paginated_response = pagination(response=response, args=args)
+    outputs = access_policy_output_handler(response=paginated_response)
 
     readable_output = tableToMarkdown(
         name="Access Policies",
-        t=paginated_response,
+        t=outputs,
         headers=[
             "policy_name",
             "policy_status",
@@ -884,9 +885,19 @@ def access_policy_list_command(client: Client, args: dict[str, Any]) -> CommandR
         readable_output=readable_output,
         outputs_prefix="CiscoWSA.AccessPolicy",
         outputs_key_field="policy_name",
-        outputs=paginated_response,
-        raw_response=paginated_response,
+        outputs=outputs,
+        raw_response=outputs,
     )
+
+
+def access_policy_output_handler(response: List[dict[str, Any]]) -> List[dict[str, Any]]:
+    outputs = []
+    for policy in response:
+        if policy_expiry := policy.get('policy_expiry'):
+            policy['policy_expiry'] = arg_to_datetime(policy_expiry).strftime('%Y-%m-%dT%H:%M:%SZ')
+
+        outputs.append(policy)
+    return outputs
 
 
 def access_policy_create_command(
@@ -902,12 +913,13 @@ def access_policy_create_command(
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
+
     policy_name = args["policy_name"]
     policy_status = args["policy_status"]
     policy_order = arg_to_number(args["policy_order"])
     identification_profiles = argToList(args["identification_profiles"])
     policy_description = args.get("policy_description")
-    policy_expiry = args.get("policy_expiry")
+    policy_expiry = arg_to_datetime(args.get("policy_expiry")).strftime('%m/%d/%Y %H:%M')
 
     client.access_policy_create_request(
         policy_name=policy_name,
@@ -941,7 +953,7 @@ def access_policy_update_command(
     policy_status = args.get("policy_status")
     policy_description = args.get("policy_description")
     policy_order = arg_to_number(args.get("policy_order"))
-    policy_expiry = args.get("policy_expiry")
+    policy_expiry = arg_to_datetime(args.get("policy_expiry")).strftime('%m/%d/%Y %H:%M')
 
     client.access_policy_update_request(
         policy_name=policy_name,
