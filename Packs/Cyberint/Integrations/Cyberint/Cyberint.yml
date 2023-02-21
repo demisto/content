@@ -17,8 +17,8 @@ configuration:
   name: environment
   required: true
   type: 0
-- additionalinfo: Allow to duplicate the alert for each alert CSV file record.
-  display: Duplicate alerts for each alert CSV file record
+- additionalinfo: An incident will be created with the originated Alert details per CSV file record.
+  display: Create an incident per CSV record
   name: duplicate_alert
   required: false
   type: 8

@@ -12,6 +12,7 @@ This integration was integrated and tested with version v1 of cyberint
     | Cyberint Access Token | Cyberint API access token. | True |
     | Cyberint API Environment | Cyberint environment on which the services run \(i.e http://\{environment\}.cyberint.io/...\) | True |
     | Fetch incidents |  | False |
+    | Create an incident per CSV record | An incident will be created with the originated Alert details per CSV file record | False |
     | Fetch Severity | Severities to fetch. If none is chosen, all severity levels will be returned. | False |
     | Fetch Status | Statuses to fetch. If none is chosen, all statuses will be returned. | False |
     | Fetch Environment | Environments to fetch \(comma separated\). If empty, all available environments will be returned. | False |
