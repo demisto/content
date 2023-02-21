@@ -320,8 +320,6 @@ jobs:
     parameters:
       dockerimageflag:
         type: string
-    when:
-      condition: << pipeline.parameters.contrib_branch >>
 
     steps:
       - *attach_workspace
@@ -388,6 +386,9 @@ workflows:
       - Run Unit Testing And Lint:
           requires:
             - Setup Environment
+          when:
+            condition: << pipeline.parameters.contrib_branch >>
+
           matrix:
             parameters:
               dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "from-yml" ]
