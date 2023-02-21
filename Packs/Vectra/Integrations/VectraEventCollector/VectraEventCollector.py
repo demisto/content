@@ -124,18 +124,16 @@ class VectraClient(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def should_skip_audits(start: str) -> bool:
+def is_eod() -> bool:
     """
-    Checks whether we should skip requesting audits they are updated on a daily basis.
-
-    Args:
-        - `start` (`str`): The start range in YYYY-MM-DD to query for audits
+    Checks whether it's the end of the day (UTC).
+    We use this to check whether we should skip requesting audits as they are updated on a daily basis.
 
     Returns:
         - `bool` indicating whether we should skip audits.
     """
-
-    return start == (datetime.now() + timedelta(days=1)).strftime(AUDIT_START_TIMESTAMP_FORMAT)
+    now = datetime.utcnow()
+    return now.hour == 23 and now.minute == 59
 
 
 """ COMMAND FUNCTIONS """
@@ -261,22 +259,23 @@ def fetch_events(
     # TODO paging in case it's needed
     # use "next": "https://apitest.vectracloudlab.com/api/v2.2/detections?min_id=7234&ordering=id&page=2&page_size=10",
 
-    # Since audits are updated daily, we can skip them if they were already updated today
-    if should_skip_audits(start):
-        demisto.info(f"Skipping audits since next fetch is in {start}...")
-        audits = []
-        next_run_audit_str = start
-    else:
+    # Fetch alerts if it's the end of the day or the first fetch
+    if is_eod() or not demisto.getLastRun():
         demisto.info(f"Fetching audits from {start} to now...")
         _, audits = get_audits_cmd(client=client, start=start)
 
         # Set next run to tomorrow
-        next_run_audit_str = (datetime.now() + timedelta(days=1)).strftime(
+        next_run_audit_str = (datetime.utcnow() + timedelta(days=1)).strftime(
             AUDIT_START_TIMESTAMP_FORMAT
         )
 
-        # detections are ordered by descending first_timestamp therefore we can take the first
-        # detection first_timestamp as the next run
+    else:
+        demisto.info("Skipping audits since it's not the end of the day (UTC)")
+        audits = []
+        next_run_audit_str = start
+
+    # detections are ordered bQy descending first_timestamp therefore we can take the first
+    # detection first_timestamp as the next run
 
     demisto.info(f"Fetching detections from {first_timestamp} to now...")
     _, detections = get_detections_cmd(client=client, first_timestamp=first_timestamp)
@@ -290,7 +289,7 @@ def fetch_events(
             DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT
         )
     else:
-        next_run_detection_str = datetime.now().strftime(
+        next_run_detection_str = datetime.utcnow().strftime(
             DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT
         )
 
