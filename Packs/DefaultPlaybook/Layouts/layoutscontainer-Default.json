@@ -2147,13 +2147,13 @@
                         "y": 3
                     }
                 ],
-                "showEmptyFields": false,
+                "showEmptyFields": true,
                 "type": "custom"
             },
             {
                 "hidden": false,
                 "id": "eytv0yxsil",
-                "name": "Cheat Sheet",
+                "name": "Utilities",
                 "sections": [
                     {
                         "description": "Everything you need in order to know if an indicator is malicious or not",
@@ -2164,11 +2164,12 @@
                         "items": [
                             {
                                 "args": {},
-                                "buttonClass": "primary",
+                                "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 1,
                                 "fieldId": "",
                                 "height": 44,
+                                "hexColor": null,
                                 "id": "60483310-94d6-11ed-842c-a3fb82f65f47",
                                 "index": 0,
                                 "listId": "caseinfoid-fea97750-94d4-11ed-b06e-e742e87f6373",
@@ -2179,11 +2180,12 @@
                             },
                             {
                                 "args": {},
-                                "buttonClass": "primary",
+                                "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 1,
                                 "fieldId": "",
                                 "height": 44,
+                                "hexColor": null,
                                 "id": "612f37b0-94d6-11ed-842c-a3fb82f65f47",
                                 "index": 1,
                                 "listId": "caseinfoid-fea97750-94d4-11ed-b06e-e742e87f6373",
@@ -2194,11 +2196,12 @@
                             },
                             {
                                 "args": {},
-                                "buttonClass": "primary",
+                                "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 1,
                                 "fieldId": "",
                                 "height": 44,
+                                "hexColor": null,
                                 "id": "61f260a0-94d6-11ed-842c-a3fb82f65f47",
                                 "index": 2,
                                 "listId": "caseinfoid-fea97750-94d4-11ed-b06e-e742e87f6373",
@@ -2209,11 +2212,12 @@
                             },
                             {
                                 "args": {},
-                                "buttonClass": "primary",
+                                "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 44,
+                                "hexColor": null,
                                 "id": "11b0d5a0-94d5-11ed-b06e-e742e87f6373",
                                 "index": 0,
                                 "listId": "caseinfoid-fea97750-94d4-11ed-b06e-e742e87f6373",
@@ -2224,11 +2228,12 @@
                             },
                             {
                                 "args": {},
-                                "buttonClass": "primary",
+                                "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 44,
+                                "hexColor": null,
                                 "id": "63c32900-94d6-11ed-842c-a3fb82f65f47",
                                 "index": 1,
                                 "listId": "caseinfoid-fea97750-94d4-11ed-b06e-e742e87f6373",
@@ -2253,6 +2258,7 @@
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 44,
+                                "hexColor": null,
                                 "id": "6197d5b0-9664-11ed-9d3b-dbc102f292cd",
                                 "index": 3,
                                 "listId": "caseinfoid-fea97750-94d4-11ed-b06e-e742e87f6373",
@@ -2281,55 +2287,17 @@
                             {
                                 "args": {},
                                 "buttonClass": "primary",
-                                "endCol": 1,
-                                "fieldId": "",
-                                "height": 44,
-                                "id": "66b0ac00-94d6-11ed-842c-a3fb82f65f47",
-                                "index": 0,
-                                "name": "Base64 Encode",
-                                "scriptId": "Base64Encode",
-                                "sectionItemType": "button",
-                                "startCol": 0
-                            },
-                            {
-                                "args": {},
-                                "buttonClass": "primary",
+                                "dropEffect": "move",
                                 "endCol": 1,
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "68bea470-94d6-11ed-842c-a3fb82f65f47",
-                                "index": 1,
+                                "index": 0,
+                                "listId": "caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-bf028900-94d6-11ed-842c-a3fb82f65f47",
                                 "name": "Base64 Decode",
                                 "scriptId": "Base64Decode",
                                 "sectionItemType": "button",
                                 "startCol": 0
-                            },
-                            {
-                                "args": {},
-                                "endCol": 1,
-                                "fieldId": "",
-                                "height": 44,
-                                "id": "277a7fa0-9a64-11ed-b852-e30596ae64d1",
-                                "index": 2,
-                                "name": "Compare SSDeep Hashes",
-                                "scriptId": "SSDeepSimilarity",
-                                "sectionItemType": "button",
-                                "startCol": 0
-                            },
-                            {
-                                "args": {},
-                                "buttonClass": "primary",
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "",
-                                "height": 44,
-                                "id": "45f7ce50-9a51-11ed-b852-e30596ae64d1",
-                                "index": 0,
-                                "listId": "caseinfoid-bf028900-94d6-11ed-842c-a3fb82f65f47",
-                                "name": "Calculate Entropy",
-                                "scriptId": "CalculateEntropy",
-                                "sectionItemType": "button",
-                                "startCol": 1
                             },
                             {
                                 "args": {
@@ -2342,16 +2310,64 @@
                                         "userMarkedRequired": true
                                     }
                                 },
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "8eb95f70-9a5e-11ed-b852-e30596ae64d1",
+                                "index": 1,
+                                "listId": "caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-bf028900-94d6-11ed-842c-a3fb82f65f47",
+                                "name": "Create File From Data",
+                                "scriptId": "FileCreateAndUploadV2",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "277a7fa0-9a64-11ed-b852-e30596ae64d1",
+                                "index": 2,
+                                "listId": "caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-bf028900-94d6-11ed-842c-a3fb82f65f47",
+                                "name": "Compare SSDeep Hashes",
+                                "scriptId": "SSDeepSimilarity",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
                                 "buttonClass": "primary",
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 44,
-                                "id": "8eb95f70-9a5e-11ed-b852-e30596ae64d1",
+                                "id": "66b0ac00-94d6-11ed-842c-a3fb82f65f47",
+                                "index": 0,
+                                "listId": "caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-bf028900-94d6-11ed-842c-a3fb82f65f47",
+                                "name": "Base64 Encode",
+                                "scriptId": "Base64Encode",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "45f7ce50-9a51-11ed-b852-e30596ae64d1",
                                 "index": 1,
                                 "listId": "caseinfoid-bf028900-94d6-11ed-842c-a3fb82f65f47",
-                                "name": "Create File From Data",
-                                "scriptId": "FileCreateAndUploadV2",
+                                "name": "Calculate Entropy",
+                                "scriptId": "CalculateEntropy",
                                 "sectionItemType": "button",
                                 "startCol": 1
                             }
@@ -2506,16 +2522,58 @@
                                         "userMarkedRequired": true
                                     }
                                 },
-                                "buttonClass": "secondary",
+                                "buttonClass": "primary",
                                 "dropEffect": "move",
                                 "endCol": 1,
                                 "fieldId": "",
                                 "height": 44,
+                                "hexColor": null,
                                 "id": "9a9632d0-9678-11ed-9d3b-dbc102f292cd",
                                 "index": 0,
                                 "listId": "caseinfoid-98149100-9678-11ed-9d3b-dbc102f292cd",
                                 "name": "Resolve Shortened URL",
                                 "scriptId": "ResolveShortenedURL",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "urls": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "84790ae0-9a5b-11ed-b852-e30596ae64d1",
+                                "index": 1,
+                                "listId": "caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-98149100-9678-11ed-9d3b-dbc102f292cd",
+                                "name": "Check if URL is Phishing",
+                                "scriptId": "DBotPredictURLPhishing",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "reverseLookup": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "warning",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "dfb43540-9823-11ed-9d3b-dbc102f292cd",
+                                "index": 2,
+                                "listId": "caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-98149100-9678-11ed-9d3b-dbc102f292cd",
+                                "name": "Dig (DNS Lookup)",
+                                "scriptId": "Dig",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -2534,38 +2592,19 @@
                                         "userMarkedRequired": true
                                     }
                                 },
-                                "buttonClass": "secondary",
-                                "dropEffect": "move",
-                                "endCol": 1,
-                                "fieldId": "",
-                                "height": 44,
-                                "id": "35ed5e80-9a60-11ed-b852-e30596ae64d1",
-                                "index": 1,
-                                "listId": "caseinfoid-98149100-9678-11ed-9d3b-dbc102f292cd",
-                                "name": "List URL Redirects",
-                                "scriptId": "HTTPListRedirects",
-                                "sectionItemType": "button",
-                                "startCol": 0
-                            },
-                            {
-                                "args": {
-                                    "reverseLookup": {
-                                        "simple": "",
-                                        "userMarkedRequired": true
-                                    }
-                                },
-                                "buttonClass": "secondary",
+                                "buttonClass": "primary",
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 44,
-                                "id": "dfb43540-9823-11ed-9d3b-dbc102f292cd",
-                                "index": 2,
-                                "listId": "caseinfoid-98149100-9678-11ed-9d3b-dbc102f292cd",
-                                "name": "Dig (DNS Lookup)",
-                                "scriptId": "Dig",
+                                "hexColor": null,
+                                "id": "35ed5e80-9a60-11ed-b852-e30596ae64d1",
+                                "index": 0,
+                                "listId": "caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-98149100-9678-11ed-9d3b-dbc102f292cd",
+                                "name": "List URL Redirects",
+                                "scriptId": "HTTPListRedirects",
                                 "sectionItemType": "button",
-                                "startCol": 0
+                                "startCol": 1
                             },
                             {
                                 "args": {},
@@ -2575,30 +2614,10 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "4c77e590-9a5f-11ed-b852-e30596ae64d1",
-                                "index": 0,
+                                "index": 1,
                                 "listId": "caseinfoid-98149100-9678-11ed-9d3b-dbc102f292cd",
                                 "name": "Un-escape URL",
                                 "scriptId": "FormatURL",
-                                "sectionItemType": "button",
-                                "startCol": 1
-                            },
-                            {
-                                "args": {
-                                    "urls": {
-                                        "simple": "",
-                                        "userMarkedRequired": true
-                                    }
-                                },
-                                "buttonClass": "secondary",
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "",
-                                "height": 44,
-                                "id": "84790ae0-9a5b-11ed-b852-e30596ae64d1",
-                                "index": 1,
-                                "listId": "caseinfoid-98149100-9678-11ed-9d3b-dbc102f292cd",
-                                "name": "Check if URL is Phishing",
-                                "scriptId": "DBotPredictURLPhishing",
                                 "sectionItemType": "button",
                                 "startCol": 1
                             }
@@ -2666,12 +2685,121 @@
                                         }
                                     }
                                 },
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "1e327b60-b1e7-11ed-b06a-8566ac8d928c",
+                                "index": 1,
+                                "listId": "caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-a1fdc3e0-9686-11ed-9d3b-dbc102f292cd",
+                                "name": "Extract Indicators",
+                                "scriptId": "Builtin|||extractIndicators",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "all_files": {
+                                        "simple": "yes"
+                                    },
+                                    "entry_id": {
+                                        "complex": {
+                                            "accessor": "",
+                                            "filters": [],
+                                            "root": "File",
+                                            "transformers": [
+                                                {
+                                                    "args": {
+                                                        "equalTo": {
+                                                            "isContext": true,
+                                                            "value": {
+                                                                "simple": "incident.fileupload.[0].name"
+                                                            }
+                                                        },
+                                                        "field": {
+                                                            "isContext": false,
+                                                            "value": {
+                                                                "simple": "Name"
+                                                            }
+                                                        },
+                                                        "getField": {
+                                                            "isContext": false,
+                                                            "value": {
+                                                                "simple": "EntryID"
+                                                            }
+                                                        },
+                                                        "stringify": {
+                                                            "isContext": false
+                                                        }
+                                                    },
+                                                    "operator": "WhereFieldEquals"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "format": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "2cd82b30-9a57-11ed-b852-e30596ae64d1",
+                                "index": 2,
+                                "listId": "caseinfoid-a1fdc3e0-9686-11ed-9d3b-dbc102f292cd",
+                                "name": "Convert File (using LibreOffice)",
+                                "scriptId": "ConvertFile",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "entryID": {
+                                        "complex": {
+                                            "accessor": "",
+                                            "filters": [],
+                                            "root": "File",
+                                            "transformers": [
+                                                {
+                                                    "args": {
+                                                        "equalTo": {
+                                                            "isContext": true,
+                                                            "value": {
+                                                                "simple": "incident.fileupload.[0].name"
+                                                            }
+                                                        },
+                                                        "field": {
+                                                            "isContext": false,
+                                                            "value": {
+                                                                "simple": "Name"
+                                                            }
+                                                        },
+                                                        "getField": {
+                                                            "isContext": false,
+                                                            "value": {
+                                                                "simple": "EntryID"
+                                                            }
+                                                        },
+                                                        "stringify": {
+                                                            "isContext": false
+                                                        }
+                                                    },
+                                                    "operator": "WhereFieldEquals"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
                                 "buttonClass": "secondary",
                                 "endCol": 1,
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "74b6a4c0-9a63-11ed-b852-e30596ae64d1",
-                                "index": 1,
+                                "index": 3,
                                 "name": "Read File",
                                 "scriptId": "ReadFile",
                                 "sectionItemType": "button",
@@ -2729,7 +2857,7 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "e1e3a7f0-9a5e-11ed-b852-e30596ae64d1",
-                                "index": 2,
+                                "index": 4,
                                 "listId": "caseinfoid-a1fdc3e0-9686-11ed-9d3b-dbc102f292cd",
                                 "name": "Zip File",
                                 "scriptId": "ZipFile",
@@ -2788,7 +2916,7 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "881053b0-9a61-11ed-b852-e30596ae64d1",
-                                "index": 3,
+                                "index": 5,
                                 "listId": "caseinfoid-a1fdc3e0-9686-11ed-9d3b-dbc102f292cd",
                                 "name": "OleTools Analysis",
                                 "scriptId": "Oletools",
@@ -2797,9 +2925,6 @@
                             },
                             {
                                 "args": {
-                                    "all_files": {
-                                        "simple": "yes"
-                                    },
                                     "entry_id": {
                                         "complex": {
                                             "accessor": "",
@@ -2834,122 +2959,19 @@
                                                 }
                                             ]
                                         }
-                                    },
-                                    "format": {
-                                        "simple": "",
-                                        "userMarkedRequired": true
                                     }
                                 },
-                                "buttonClass": "warning",
+                                "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 44,
-                                "id": "2cd82b30-9a57-11ed-b852-e30596ae64d1",
-                                "index": 4,
+                                "hexColor": null,
+                                "id": "c6c4e550-9686-11ed-9d3b-dbc102f292cd",
+                                "index": 3,
                                 "listId": "caseinfoid-a1fdc3e0-9686-11ed-9d3b-dbc102f292cd",
-                                "name": "Convert File (using LibreOffice)",
-                                "scriptId": "ConvertFile",
-                                "sectionItemType": "button",
-                                "startCol": 0
-                            },
-                            {
-                                "args": {
-                                    "entry_id": {
-                                        "complex": {
-                                            "accessor": "",
-                                            "filters": [],
-                                            "root": "File",
-                                            "transformers": [
-                                                {
-                                                    "args": {
-                                                        "equalTo": {
-                                                            "isContext": true,
-                                                            "value": {
-                                                                "simple": "incident.fileupload.[0].name"
-                                                            }
-                                                        },
-                                                        "field": {
-                                                            "isContext": false,
-                                                            "value": {
-                                                                "simple": "Name"
-                                                            }
-                                                        },
-                                                        "getField": {
-                                                            "isContext": false,
-                                                            "value": {
-                                                                "simple": "EntryID"
-                                                            }
-                                                        },
-                                                        "stringify": {
-                                                            "isContext": false
-                                                        }
-                                                    },
-                                                    "operator": "WhereFieldEquals"
-                                                }
-                                            ]
-                                        }
-                                    }
-                                },
-                                "buttonClass": "warning",
-                                "endCol": 2,
-                                "fieldId": "",
-                                "height": 44,
-                                "id": "87222750-9a5a-11ed-b852-e30596ae64d1",
-                                "index": 5,
                                 "name": "Create Indicators From STIX File",
                                 "scriptId": "CreateIndicatorsFromSTIX",
-                                "sectionItemType": "button",
-                                "startCol": 0
-                            },
-                            {
-                                "args": {
-                                    "entryID": {
-                                        "complex": {
-                                            "accessor": "",
-                                            "filters": [],
-                                            "root": "File",
-                                            "transformers": [
-                                                {
-                                                    "args": {
-                                                        "equalTo": {
-                                                            "isContext": true,
-                                                            "value": {
-                                                                "simple": "incident.fileupload.[0].name"
-                                                            }
-                                                        },
-                                                        "field": {
-                                                            "isContext": false,
-                                                            "value": {
-                                                                "simple": "Name"
-                                                            }
-                                                        },
-                                                        "getField": {
-                                                            "isContext": false,
-                                                            "value": {
-                                                                "simple": "EntryID"
-                                                            }
-                                                        },
-                                                        "stringify": {
-                                                            "isContext": false
-                                                        }
-                                                    },
-                                                    "operator": "WhereFieldEquals"
-                                                }
-                                            ]
-                                        }
-                                    }
-                                },
-                                "buttonClass": "primary",
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "",
-                                "height": 44,
-                                "id": "c6c4e550-9686-11ed-9d3b-dbc102f292cd",
-                                "index": 1,
-                                "listId": "caseinfoid-a1fdc3e0-9686-11ed-9d3b-dbc102f292cd",
-                                "name": "Extract Indicators",
-                                "scriptId": "Builtin|||extractIndicators",
                                 "sectionItemType": "button",
                                 "startCol": 1
                             },
@@ -2991,13 +3013,14 @@
                                         }
                                     }
                                 },
-                                "buttonClass": "primary",
+                                "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 44,
+                                "hexColor": null,
                                 "id": "d7576a90-981c-11ed-9d3b-dbc102f292cd",
-                                "index": 2,
+                                "index": 4,
                                 "listId": "caseinfoid-a1fdc3e0-9686-11ed-9d3b-dbc102f292cd",
                                 "name": "Extract Text From Image (OCR)",
                                 "scriptId": "Image OCR|||image-ocr-extract-text",
@@ -3054,13 +3077,14 @@
                                         "userMarkedRequired": true
                                     }
                                 },
-                                "buttonClass": "primary",
+                                "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 44,
+                                "hexColor": null,
                                 "id": "774b5e90-9a51-11ed-b852-e30596ae64d1",
-                                "index": 4,
+                                "index": 5,
                                 "listId": "caseinfoid-a1fdc3e0-9686-11ed-9d3b-dbc102f292cd",
                                 "name": "Extract Strings",
                                 "scriptId": "Strings",
@@ -3092,11 +3116,12 @@
                                         "userMarkedRequired": true
                                     }
                                 },
-                                "buttonClass": "primary",
+                                "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 44,
+                                "hexColor": null,
                                 "id": "b702f940-9a50-11ed-b852-e30596ae64d1",
                                 "index": 0,
                                 "listId": "caseinfoid-a1fdc3e0-9686-11ed-9d3b-dbc102f292cd",
@@ -3128,10 +3153,12 @@
                                         "userMarkedRequired": true
                                     }
                                 },
+                                "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 1,
                                 "fieldId": "",
                                 "height": 44,
+                                "hexColor": null,
                                 "id": "90d30550-a70f-11ed-9dff-dd54b441de4d",
                                 "index": 0,
                                 "listId": "caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-21b034c0-9a5f-11ed-b852-e30596ae64d1",
@@ -3155,10 +3182,12 @@
                                         "userMarkedRequired": true
                                     }
                                 },
+                                "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 44,
+                                "hexColor": null,
                                 "id": "90d30553-a70f-11ed-9dff-dd54b441de4d",
                                 "index": 0,
                                 "listId": "caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-21b034c0-9a5f-11ed-b852-e30596ae64d1",
@@ -3169,12 +3198,14 @@
                             },
                             {
                                 "args": {},
+                                "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 3,
                                 "fieldId": "",
                                 "height": 44,
+                                "hexColor": null,
                                 "id": "90d30551-a70f-11ed-9dff-dd54b441de4d",
-                                "index": 1,
+                                "index": 0,
                                 "listId": "caseinfoid-218ac7e0-9a5e-11ed-b852-e30596ae64d1",
                                 "name": "Get Enabled Integrations",
                                 "scriptId": "GetEnabledInstances",
@@ -3183,10 +3214,12 @@
                             },
                             {
                                 "args": {},
+                                "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 4,
                                 "fieldId": "",
                                 "height": 44,
+                                "hexColor": null,
                                 "id": "90d30552-a70f-11ed-9dff-dd54b441de4d",
                                 "index": 0,
                                 "listId": "caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-218ac7e0-9a5e-11ed-b852-e30596ae64d1",
@@ -3240,11 +3273,12 @@
                             },
                             {
                                 "args": {},
-                                "buttonClass": "error",
+                                "buttonClass": "warning",
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 44,
+                                "hexColor": null,
                                 "id": "bb82ba60-9a63-11ed-b852-e30596ae64d1",
                                 "index": 2,
                                 "listId": "caseinfoid-3e25d520-9a63-11ed-b852-e30596ae64d1",
@@ -4246,8 +4280,5 @@
     "system": false,
     "version": -1,
     "fromVersion": "8.2.0",
-    "marketplaces": [
-    "xsoar"
-    ],
     "description": ""
 }
