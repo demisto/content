@@ -21,6 +21,7 @@ class Client(BaseClient):
         self.username = username
         self.password = password
         self.handle_request_headers()
+        print('ddf')
 
     def handle_request_headers(self):
         """Retrieve and save to integration context JWT token for authorized client class API requests."""
@@ -63,7 +64,7 @@ class Client(BaseClient):
             raise e
 
     def _http_request(self, *args, **kwargs):
-        """HTTP request for Cisco WSA API.
+        """HTTP request handler for Cisco WSA API.
         In some cases, the API status code is 200 but there are errors.
 
         Raises:
@@ -374,6 +375,10 @@ class Client(BaseClient):
             http_or_https_max_object_size_mb (int | None): HTTP(S) max object size MB.
             ftp_max_object_size_mb (int | None): FTP max object size MB.
 
+        Raises:
+            DemistoException: Policy was not found.
+            DemistoException: Update failed, objects were not found.
+
         Returns:
             Response: API response from Cisco WSA.
         """
@@ -507,7 +512,7 @@ class Client(BaseClient):
         )
 
     def domain_map_create_request(
-        self, domain_name: str, ip_addresses: List[str], order: int | None
+        self, domain_name: str, ip_addresses: List[str], order: int
     ) -> dict[str, Any]:
         """
         Create domain mapping.
@@ -515,7 +520,7 @@ class Client(BaseClient):
         Args:
             domain_name (str): Domain name.
             ip_addresses (List[str]): IP addresses to map to the domain.
-            order (int | None): Index of domain map in the collection.
+            order (int): Index of domain map in the collection.
 
         Returns:
             dict[str, Any]: API response from Cisco WSA.
@@ -542,7 +547,7 @@ class Client(BaseClient):
             domain_name (str): Domain name to update.
             new_domain_name (str | None): New domain name.
             ip_addresses (str | None): IP addresses to map.
-            order (str | None): Index of domain map.
+            order (int | None): Index of domain map.
 
         Returns:
             dict[str, Any]: API response from Cisco WSA.
@@ -588,7 +593,7 @@ class Client(BaseClient):
         Get identification profiles.
 
         Args:
-            profile_names (str | None): Profile names to list.
+            profile_names (List[str] | None): Profile names to list.
 
         Returns:
             dict[str, Any]: API response from Cisco WSA.
@@ -771,6 +776,15 @@ class Client(BaseClient):
 def pagination(
     response: List[dict[str, Any]], args: dict[str, Any]
 ) -> List[dict[str, Any]]:
+    """
+    Executing Manual paginate_results (using the page and page size arguments)
+
+    Args:
+        response (List[dict[str, Any]]): API response.
+        args (dict[str, Any]): Command arguments from XSOAR.
+    Returns:
+        List[dict[str, Any]]: Paginated results.
+    """
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size"))
     limit = arg_to_number(args.get("limit", 50))
@@ -1216,7 +1230,8 @@ def domain_map_create_command(client: Client, args: dict[str, Any]) -> CommandRe
     domain_name = args["domain_name"]
     ip_addresses = argToList(args["ip_addresses"])
     order = arg_to_number(args["order"])
-
+    if not order:
+        raise DemistoException('Please enter correct number to order argument.')
     response = client.domain_map_create_request(
         domain_name=domain_name,
         ip_addresses=ip_addresses,
