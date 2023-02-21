@@ -4,7 +4,7 @@ This pack includes Cortex XSIAM content.
 
 ## Configuration on Server Side
 
-1. Start the DHCP administration tool (go to Start > Programs >Administrative Tools, and click **DHCP**).
+1. Start the DHCP administration tool (go to Start → Programs → Administrative Tools, and click **DHCP**).
 2. Right-click the DHCP server, and select **Properties** from the context menu.
 3. Select the **General** tab.
 4. Select the **Enable DHCP audit logging** checkbox.
@@ -26,11 +26,11 @@ You can configure the vendor and product by replacing [vendor]\_[product]\_raw w
 
 As cortex XSIAM provides YAML template for DHCP, you can use the following steps to create a collection profile:
 
-   1. In Cortex XDR, select Settings → Configurations → XDR Collectors → Profiles → +Add Profile → Windows.
-   2. Select Filebeat profile, Winlogbeat profile, or Settings profile, then click Next.
+   1. In XSIAM, select **Settings** → **Configurations** → **XDR Collectors** → **Profiles** → **+Add Profile** → **Windows**.
+   2. Select **Filebeat** profile or **Winlogbeat** profile, then click Next.
    3. Configure the General Information parameters:
    - Profile Name — Specify a unique Profile Name to identify the profile. The name can contain only letters, numbers, or spaces, and must be no more than 30 characters. The name you choose will be visible from the list of profiles when you configure a policy.
 
    - Add description here—(Optional) To provide additional context for the purpose or business reason that explains why you are creating the profile, specify a profile description.
 
-   4. Configure the settings for the profile selected in Step 2 - To add the "DHCP" template, select it and click Add.
+   4. Configure the settings for the profile selected in Step 2 - To add the "DHCP" template, select it and click **Add**.
