@@ -41,7 +41,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - "dev" or related words found in environment-related tags associated with the asset (case insensitive)
   - Has an active "DevelopmentEnvironment" classification from processing of public data
 
-*The `Unclaimed S3 Bucket` attack surface rule ID only requires `AWS-S3` integration to be configured.
+*The `Unclaimed S3 Bucket` attack surface rule ID only requires `AWS-S3` integration to be enabled.
 
 ### Playbooks
 
