@@ -1,8 +1,10 @@
 id: Recorded Future Playbook Alert Details Playbook
 version: 4
 vcShouldKeepItemLegacyProdMachine: false
+description: A default playbook to fetch details of Playbook alert that does not yet have mapping made by Recorded Future
 name: Recorded Future Playbook Alert Details Playbook
 starttaskid: "0"
+fromversion: "6.5.0"
 tasks:
   "0":
     id: "0"
@@ -11,6 +13,7 @@ tasks:
     task:
       id: 05a84883-71da-45c9-81db-5f5cbcba9a21
       version: -1
+      description: Playbook Triggered
       name: ""
       iscommand: false
       brand: ""
