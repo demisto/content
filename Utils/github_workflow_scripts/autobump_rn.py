@@ -429,7 +429,7 @@ class PackAutoBumper:
             rn_file_path: Path,
             update_type: UpdateType,
     ):
-        self._pack_id = pack_id
+        self.pack_id = pack_id
         self._last_rn_file_path = rn_file_path
         self._update_type = update_type
         self._update_rn_obj = UpdateRN(
@@ -446,10 +446,6 @@ class PackAutoBumper:
         self._has_bc = False
         self._rn_text = ''
         self._bc_text = ''
-
-    @property
-    def pack_id(self):
-        return self.pack_id
 
     def set_pr_changed_rn_related_data(self):
         with open(self._last_rn_file_path) as f:
