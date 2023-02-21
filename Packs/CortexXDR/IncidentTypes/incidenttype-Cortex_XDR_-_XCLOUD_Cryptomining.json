@@ -6,7 +6,7 @@
     "name": "Cortex XDR - XCLOUD Cryptojacking",
     "prevName": "Cortex XDR - XCLOUD Cryptomining",
     "color": "#98DCFF",
-    "playbookId": "Cortex XDR - Cloud Cryptomining",
+    "playbookId": "Cortex XDR - Cloud Cryptojacking",
     "hours": 0,
     "days": 0,
     "weeks": 0,
@@ -20,7 +20,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "Cortex XDR - XCLOUD Cryptomining",
+    "layout": "Cortex XDR - XCLOUD Cryptojacking",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",
