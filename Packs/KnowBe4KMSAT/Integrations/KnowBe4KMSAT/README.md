@@ -1062,7 +1062,7 @@
             },
             "processed": "2023-04-1T00:39:40.132Z",
             "api_key": "Test integration"
-        }        
+        }
     ]
 }
 ```
