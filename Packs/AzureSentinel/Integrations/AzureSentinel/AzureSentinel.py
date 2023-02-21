@@ -498,7 +498,7 @@ def add_mirroring_fields(incident: Dict):
     incident['mirror_instance'] = INTEGRATION_INSTANCE
 
 
-def get_modified_remote_data_command(client: AzureSentinelClient, args: Dict[str, Any]):
+def get_modified_remote_data_command(client: AzureSentinelClient, args: Dict[str, Any]) -> GetModifiedRemoteDataResponse:
     """
     Gets the modified remote incidents IDs.
     Args:
@@ -595,7 +595,7 @@ def reopen_in_xsoar(entries: List, remote_incident_id: str):
     })
 
 
-def get_remote_data_command(client: AzureSentinelClient, args: Dict[str, Any]):
+def get_remote_data_command(client: AzureSentinelClient, args: Dict[str, Any]) -> GetRemoteDataResponse:
     """
     Args:
         client: The client object.
@@ -648,8 +648,8 @@ def close_incident_in_remote(delta: Dict[str, Any]) -> bool:
         1. The user asked for it
         2. The closing field is in the delta
 
-    The second is mandatory so we will not send a closing request at all of the mirroring requests that happen after closing an
-    incident (in case where the incident is updated so there is a delta, but it is not the status that was changed).
+    The second is mandatory, so a closing request will not be sent for all mirroring requests that occur after closing an incident
+    (in the case where the incident has been updated, but the status has not been changed).
     """
     closing_field = 'classification'
     return demisto.params().get('close_ticket') and closing_field in delta
@@ -1905,8 +1905,6 @@ def main():
 
         subscription_id = args.get('subscription_id') or params.get('subscriptionID', '')
         resource_group_name = args.get('resource_group_name') or params.get('resourceGroupName', '')
-        if not subscription_id or not resource_group_name:
-            raise ValueError('Subscription ID and Resource Group Name must be provided.')
 
         client = AzureSentinelClient(
             server_url=params.get('server_url') or DEFAULT_AZURE_SERVER_URL,
