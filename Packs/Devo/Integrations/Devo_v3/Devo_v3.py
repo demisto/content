@@ -38,7 +38,7 @@ COUNT_MULTI_TABLE = 0
 COUNT_ALERTS = 0
 USER_ALERT_TABLE = demisto.params().get('table_name', None)
 USER_PREFIX = demisto.params().get('prefix', None)
-INCIDENTS_FETCH_INTERVAL = demisto.params().get('incidentFetchInterval') * 60
+INCIDENTS_FETCH_INTERVAL = demisto.params().get('incidentFetchInterval', 1) * 60
 DEFAULT_ALERT_TABLE = "siem.logtrust.alert.info"
 ALERTS_QUERY = '''
 from
