@@ -265,9 +265,7 @@ def fetch_events(
         _, audits = get_audits_cmd(client=client, start=start)
 
         # Set next run to tomorrow
-        next_run_audit_str = (datetime.utcnow() + timedelta(days=1)).strftime(
-            AUDIT_START_TIMESTAMP_FORMAT
-        )
+        next_run_audit_str = (now + timedelta(days=1)).strftime(AUDIT_START_TIMESTAMP_FORMAT)
 
     else:
         demisto.info(f"Skipping audits since it's not the end of the day (UTC), it's {now}")
