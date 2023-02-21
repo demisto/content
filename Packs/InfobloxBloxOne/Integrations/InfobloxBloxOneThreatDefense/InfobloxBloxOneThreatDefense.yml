@@ -17,7 +17,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: 'BloxOne Threat Defense is a hybrid cybersecurity solution that leverages DNS as the first line of defense to detect and block cyber threats.'
+description: BloxOne Threat Defense is a hybrid cybersecurity solution that leverages DNS as the first line of defense to detect and block cyber threats.
 display: 'Infoblox BloxOne Threat Defense'
 name: InfobloxBloxOneThreatDefense
 script:
@@ -43,7 +43,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The sources to query. Multiple sources can be specified, if no source is specified, the call will search on all available sources. (you can see the list of the available sources by runing **bloxone-td-dossier-source-list**).'
+      description: 'The sources to query. Multiple sources can be specified. If no source is specified, the call will search on all available sources. (You can see the list of the available sources by running bloxone-td-dossier-source-list).'
       isArray: true
       name: sources
       required: false
@@ -74,72 +74,72 @@ script:
       description: 'The Dossier source.'
       type: String
     - contextPath: BloxOneTD.DossierLookup.target
-      description: 'The targeted indicator.'
+      description: The targeted indicator.
       type: String
     - contextPath: BloxOneTD.DossierLookup.task_id
-      description: 'The Dossier task id.'
+      description: The Dossier task ID.
       type: String
     - contextPath: BloxOneTD.DossierLookup.type
       description: 'The indicator type.'
       type: String
   - name: bloxone-td-dossier-source-list
-    description: 'Get available Dossier sources.'
+    description: Get available Dossier sources.
     outputs:
     - contextPath: BloxOneTD.DossierSource
-      description: 'Available Dossier sources.'
+      description: Available Dossier sources.
       type: String
   - arguments:
     - default: false
-      description: 'The free query filter argument.'
+      description: The free query filter argument.
       isArray: false
       name: filter
       required: false
       secret: false
     - default: false
-      description: 'Filter by target domain.'
+      description: Filter by target domain.
       isArray: false
       name: target_domain
       required: false
       secret: false
     - default: false
-      description: Filter by detected at greater then or equal to. you can use ISO format (e.g. '2023-02-14T00:11:22Z') or use a relative time (e.g. "3 days").
+      description: Filter by values that are greater than or equal to the given value. You can use ISO format (e.g. '2023-02-14T00:11:22Z') or use a relative time (e.g. "3 days").
       isArray: false
       name: detected_at
       required: false
       secret: false
     - default: false
-      description: 'Maximum number of results to return from the query. Default is 50.'
+      description: Maximum number of results to return from the query. 
       isArray: false
       name: limit
       required: false
       secret: false
       defaultValue: 50
     - default: false
-      description: 'Return results starting at this offset. should be int - by default is 0'
+      description: Return results starting at this offset. Should be an integer. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
-    description: 'Get Lookalike Domain Lists.'
+    description: Get lookalike domain lists.
     execution: false
     polling: true
     name: bloxone-td-lookalike-domain-list
     outputs:
     - contextPath: BloxOneTD.LookalikeDomain.detected_at
-      description: 'The date of the lookalike detection.'
+      description: The date of the lookalike detection.
       type: Date
     - contextPath: BloxOneTD.LookalikeDomain.lookalike_domain
-      description: 'The lookalike domain.'
+      description: The lookalike domain.
       type: String
     - contextPath: BloxOneTD.LookalikeDomain.lookalike_host
       description: 'The lookalike host.'
       type: String
     - contextPath: BloxOneTD.LookalikeDomain.reason
-      description: 'The reason of the detection.'
+      description: The reason for the detection.
       type: String
     - contextPath: BloxOneTD.LookalikeDomain.target_domain
-      description: 'The domain that was targeted by the lookalike domain.'
+      description: The domain that was targeted by the lookalike domain.
       type: String
   isfetch: false
   runonce: false
