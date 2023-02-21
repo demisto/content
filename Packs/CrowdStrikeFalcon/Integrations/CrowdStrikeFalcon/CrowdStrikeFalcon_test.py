@@ -4291,3 +4291,36 @@ def test_cs_falcon_spotlight_search_vulnerability_host_by_command(mocker):
 
     outputs = cs_falcon_spotlight_list_host_by_vulnerability_command(args)
     assert outputs.readable_output == expected_hr
+
+
+def test_get_incident_behavior_command(mocker):
+    """
+    Given
+     - An behavior ID argument.
+    When
+     - Running the get_incident_behavior_command() command function.
+    Then
+     - Ensure the result is as expected.
+    """
+    from CrowdStrikeFalcon import get_incident_behavior_command
+
+    response = {"resources": [{"behavior_id": "1234", "display_name": "DropAndExecRDPFile", "incident_id": "inc:5678"}]}
+    expected_hr = '### CrowdStrike Behavior 1234\n'\
+                  '|behavior_id|display_name|incident_id|\n' \
+                  '|---|---|---|\n' \
+                  '| 1234 | DropAndExecRDPFile | inc:5678 |\n'
+
+    mocker.patch("CrowdStrikeFalcon.http_request", return_value=response)
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "behavior_id": "1234"
+        }
+    )
+
+    result = get_incident_behavior_command()
+
+    assert result["Contents"] == response
+    assert result["EntryContext"] == {'CrowdStrike.Behavior': response}
+    assert result["HumanReadable"] == expected_hr

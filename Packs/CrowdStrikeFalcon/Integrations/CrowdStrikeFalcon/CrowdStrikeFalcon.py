@@ -2690,6 +2690,19 @@ def get_behavior_command():
     return create_entry_object(contents=raw_res, ec=ec, hr=hr)
 
 
+def get_incident_behavior_command():
+    """
+        Gets an incident behavior by ID
+        :return: EntryObject of get incident behavior command
+    """
+    behavior_id = demisto.args().get('behavior_id')
+    body = {'ids': [behavior_id]}
+    response = http_request('POST', '/incidents/entities/behaviors/GET/v1', data=body)
+    readable_output = tableToMarkdown(f'CrowdStrike Behavior {behavior_id}', response['resources'])
+    ec = {'CrowdStrike.Behavior': response}
+    return create_entry_object(contents=response, ec=ec, hr=readable_output)
+
+
 def search_detections_command():
     """
         Searches for a detection
@@ -4136,6 +4149,8 @@ def main():
             return_results(search_device_command())
         elif command == 'cs-falcon-get-behavior':
             demisto.results(get_behavior_command())
+        elif command == 'cs-falcon-get-incident-behavior':
+            demisto.results(get_incident_behavior_command())
         elif command == 'cs-falcon-search-detection':
             return_results(search_detections_command())
         elif command == 'cs-falcon-resolve-detection':
