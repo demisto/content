@@ -378,7 +378,7 @@ workflows:
   version: 2
   commit:
     when:
-      condition: *get_contribution_pack
+      condition: $CIRCLE_BRANCH ==
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
