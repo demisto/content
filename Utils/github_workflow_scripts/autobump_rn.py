@@ -351,7 +351,7 @@ class MaxVersionCondition(MetadataCondition):
 
 class OnlyOneRNPerPackCondition(MetadataCondition):
     def generate_skip_reason(self, rn_files, **kwargs) -> SkipReason:
-        return SkipReason.MORE_THAN_ONE_RN.format(self.pack, ', '.join(rn_files))
+        return SkipReason.MORE_THAN_ONE_RN.format(self.pack, rn_files)
 
     def _check(self, previous_result: Optional[ConditionResult] = None, **kwargs) -> ConditionResult:
         pack_new_rn_files = [Path(f.filename) for f in self.pr.get_files() if f.status == 'added' and RELEASE_NOTES_DIR
