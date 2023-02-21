@@ -63,7 +63,9 @@ TCP = 'tcp'
 UDP = 'udp'
 TLS = 'tls'
 PROTOCOLS = {TCP, UDP, TLS}
-
+MAX_PORT = 65535
+DEFAULT_TCP_SYSLOG_PORT = 514
+DEFAULT_TLS_SYSLOG_PORT = 6514
 
 '''SyslogHandlerTLS'''
 
@@ -161,9 +163,10 @@ class SyslogManager:
         :return: syslog logger
         """
         if self.protocol == TLS and self.syslog_cert_path:
+            demisto.debug('creating tls logger handler')
             handler = self.init_handler_tls(self.syslog_cert_path)
-            demisto.debug('get handler tls')
         else:
+            demisto.debug('creating tcp/udp logger handler')
             handler = self._get_handler()
         syslog_logger = self._init_logger(handler)
         demisto.debug('logger was created ')
@@ -178,7 +181,6 @@ class SyslogManager:
         return Rfc5424SysLogHandler(address=(self.address, self.port),
                                     facility=self.facility,
                                     socktype=sock_kind,
-                                    timeout=10,
                                     utc_timestamp=True)
 
     def init_handler_tls(self, certfile: str):
@@ -227,24 +229,19 @@ def init_manager(params: dict) -> SyslogManager:
     :return: syslog manager
     """
     address = params.get('address')
-    port = int(params.get('port', 514))
     protocol = params.get('protocol', UDP).lower()
     facility = FACILITY_DICT.get(params.get('facility', 'LOG_SYSLOG'), SysLogHandler.LOG_SYSLOG)
     logging_level = LOGGING_LEVEL_DICT.get(params.get('priority', 'LOG_INFO'), INFO)
     certificate: Optional[str] = (replace_spaces_in_credential(params.get('certificate', {}).get('password'))
                                   or params.get('certificate', None))
     certificate_path: Optional[str] = None
-    max_port = 65535
-    default_port = 6514 if protocol == 'tls' else 514
+    default_port: int = DEFAULT_TLS_SYSLOG_PORT if protocol == 'tls' else DEFAULT_TCP_SYSLOG_PORT
+    port = arg_to_number(params.get('port'), required=False) or default_port
     self_signed_certificate = params.get('self_signed_certificate', False)
     if not address:
         raise DemistoException('A address must be provided.')
-    try:
-        port = int(params.get('port', default_port))
-    except (ValueError, TypeError):
-        raise DemistoException(f'Invalid listen port - {port}. Make sure your port is a number')
-    if port < 0 or max_port < port:
-        raise DemistoException(f'Given port: {port} is not valid and must be between 0-{max_port}')
+    if port and (port < 0 or MAX_PORT < port):
+        raise DemistoException(f'Given port: {port} is not valid and must be between 0-{MAX_PORT}')
     if protocol == 'tls' and not certificate:
         raise DemistoException('A certificate must be provided in TLS protocol.')
     if certificate and protocol == 'tls':
