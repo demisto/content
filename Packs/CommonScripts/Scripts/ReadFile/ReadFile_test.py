@@ -20,7 +20,7 @@ def test_extract_indicators(mocker):
     results = demisto.results.call_args[0][0]
 
     assert results == {'Type': 1, 'ContentsFormat': 'text', 'Contents': {'FileData': 'abcabcabc'},
-                       'HumanReadable': 'Read 9 bytes from file.', 'EntryContext': {'FileData': 'abcabcabc'}}
+                       'HumanReadable': 'Read 9 bytes from file:\nabcabcabc', 'EntryContext': {'FileData': 'abcabcabc'}}
 
 
 def test_extract_indicators_empty_file(mocker):
@@ -87,7 +87,7 @@ def test_read_binary_to_base64(mocker):
         'Contents': {
             'FileData': 'ASNFZ4k='
         },
-        'HumanReadable': 'Read 5 bytes from file.',
+        'HumanReadable': 'Read 5 bytes from file:\nASNFZ4k=',
         'EntryContext': {
             'FileData': 'ASNFZ4k='
         }
@@ -147,7 +147,7 @@ def test_read_utf8_to_json(mocker):
                 'a': 'b'
             }
         },
-        'HumanReadable': 'Read 9 bytes from file.',
+        'HumanReadable': 'Read 9 bytes from file:\n'+str({"a":"b"}),
         'EntryContext': {
             'FileData': {
                 'a': 'b'
@@ -186,7 +186,7 @@ def test_read_utf16be_to_json(mocker):
                 'a': 'b'
             }
         },
-        'HumanReadable': 'Read 10 bytes from file.',
+        'HumanReadable': 'Read 10 bytes from file:\n'+str({"a":"b"}),
         'EntryContext': {
             'FileData': {
                 'a': 'b'
@@ -225,7 +225,7 @@ def test_read_utf16le_to_json(mocker):
                 'a': 'b'
             }
         },
-        'HumanReadable': 'Read 10 bytes from file.',
+        'HumanReadable': 'Read 10 bytes from file:\n'+str({"a":"b"}),
         'EntryContext': {
             'FileData': {
                 'a': 'b'

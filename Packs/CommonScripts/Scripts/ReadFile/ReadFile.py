@@ -62,7 +62,7 @@ def read_file(args):
                                           'FileSize': file_size,
                                           'EOF': eof
                                       },
-                                      readable_output=message))
+                                      readable_output=message + ":\n" + str(data)))
     else:
         demisto.results({'Type': entryTypes['note'],
                          'ContentsFormat': formats['text'],
