@@ -2,7 +2,7 @@ from requests import Response
 from http import HTTPStatus
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
+import copy
 
 JWT_TOKEN_EXPIRATION_PERIOD = 30
 V2_PREFIX = "v2.0"
@@ -21,7 +21,6 @@ class Client(BaseClient):
         self.username = username
         self.password = password
         self.handle_request_headers()
-        print('ddf')
 
     def handle_request_headers(self):
         """Retrieve and save to integration context JWT token for authorized client class API requests."""
@@ -1506,9 +1505,13 @@ def url_categories_list_command(client: Client, args: dict[str, Any]) -> Command
     """
     response = client.url_categories_list_request()
 
+    outputs = categories_output_filter(response=response,
+                                       contain=args.get('contain'),
+                                       type_=args.get('type'))
+
     readable_output = tableToMarkdown(
         name="URL categories",
-        t=response,
+        t=outputs,
         headerTransform=string_to_table_header,
         removeNull=True,
     )
@@ -1516,9 +1519,38 @@ def url_categories_list_command(client: Client, args: dict[str, Any]) -> Command
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="CiscoWSA.UrlCategory",
-        outputs=response,
+        outputs=outputs,
         raw_response=response,
     )
+
+
+def categories_output_filter(response: dict[str, Any], contain: str | None = None, type_: str | None = None) -> dict[str, Any]:
+    """Filter categories response.
+
+    Args:
+        response (dict[str, Any]): API response.
+        contain (str | None, optional): A string that contains in the categories. Defaults to None.
+        type_ (str | None, optional): The type of the categories. Defaults to None.
+
+    Returns:
+        dict[str, Any]: Filtered output.
+    """
+    outputs = {}
+    if all([not contain, not type_]):
+        return response
+    if type_ is not None:
+        response = {type_: response.get(type_)}.copy()
+        if not contain:
+            return response
+    if contain is not None:
+        for key, categories in response.items():
+            for category in categories:
+                if contain in category:
+                    if isinstance(outputs.get(key), list):
+                        outputs[key].append(category)
+                    else:
+                        outputs[key] = [category]
+    return outputs
 
 
 def test_module(client: Client) -> str:
