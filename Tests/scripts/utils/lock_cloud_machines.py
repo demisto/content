@@ -68,7 +68,7 @@ def get_machines_locks_details(storage_client: storage.Client, bucket_name: str,
         if blob.name.startswith(lock_repository_name):
             found = True
             if blob.name.startswith(prefix):
-                files.append({'machine_name': f'qa2-test-{(blob.name.strip(prefix)).split("-")[0]}', 'job_id': (blob.name.strip(prefix)).split("-")[2]})
+                files.append({'machine_name': f'qa2-test-{blob.name.split("-")[5]}', 'job_id': (blob.name.split("-")[-1])})
         elif found:
             break
     return files
@@ -172,6 +172,7 @@ def main():
 
     logging.info(f'gets all machines lock files')
     machines_locks = get_machines_locks_details(storage_client, 'xsoar-ci-artifacts', f'{options.gcs_locks_path}/', f'{options.gcs_locks_path}/qa2-test-')
+    logging.info(f'all machines locks existing : {machines_locks}')
 
     lock_machine_name = None
     while number_machines_to_lock > 0:
