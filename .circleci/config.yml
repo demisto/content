@@ -392,11 +392,11 @@ workflows:
       - Run Validations:
           requires:
             - Setup Environment
-    gitlab:
-      when:
-        not:
-          matches:
-            pattern: "pull/[0-9]+"
-            value: $CIRCLE_BRANCH
-      jobs:
-        - Setup Environment
+  gitlab:
+    when:
+      not:
+        matches:
+          pattern: "pull/[0-9]+"
+          value: $CIRCLE_BRANCH
+    jobs:
+      - Setup Environment
