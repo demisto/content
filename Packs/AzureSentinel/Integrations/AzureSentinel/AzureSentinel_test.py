@@ -17,8 +17,9 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     list_threat_indicator_command, NEXTLINK_DESCRIPTION, process_incidents, fetch_incidents, fetch_incidents_additional_info, \
     get_modified_remote_data_command, get_remote_data_command, get_remote_incident_data, get_mapping_fields_command, \
     update_remote_system_command, update_remote_incident, close_incident_in_remote, update_incident_request, \
-    set_xsoar_incident_entries, build_threat_indicator_data, DEFAULT_SOURCE, \
-    list_alert_rule_command, list_alert_rule_template_command, delete_alert_rule_command
+    set_xsoar_incident_entries, build_threat_indicator_data, DEFAULT_SOURCE, list_alert_rule_command, \
+    list_alert_rule_template_command, delete_alert_rule_command, validate_required_arguments_for_alert_rule, \
+    create_data_for_alert_rule, create_and_update_alert_rule_command
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -1786,3 +1787,120 @@ def test_delete_alert_rule_command(mocker, mock_response, expected_readable_outp
 
     assert command_results.readable_output == expected_readable_output
     assert command_results.outputs == expected_outputs
+
+
+def test_validate_required_arguments_for_alert_rule():
+    """
+    Given
+        - args with all required arguments
+        - args with missing required arguments
+    When
+        - running validate_required_arguments_for_alert_rule
+    Then
+        - if all required arguments are provided, ensure the function returns nothing
+        - if a required argument is missing, ensure the function raises a ValueError
+    """
+    # Test with a fusion alert rule with all required arguments
+    args = {
+        'kind': 'fusion',
+        'rule_name': 'test_fusion_rule',
+        'template_name': 'test_template',
+        'enabled': True
+    }
+    validate_required_arguments_for_alert_rule(args)
+
+    # Test with a scheduled alert rule with all required arguments
+    args = {
+        'kind': 'scheduled',
+        'rule_name': 'test_scheduled_rule',
+        'displayName': 'test_display_name',
+        'enabled': True,
+        'query': 'test_query',
+        'query_frequency': 'test_frequency',
+        'query_period': 'test_period',
+        'severity': 'test_severity',
+        'suppression_duration': 'test_duration',
+        'suppression_enabled': True,
+        'trigger_operator': 'test_operator',
+        'trigger_threshold': 10
+    }
+    validate_required_arguments_for_alert_rule(args)
+
+    # Test with a fusion alert rule with a missing required argument
+    args = {
+        'kind': 'fusion',
+        'rule_name': 'test_fusion_rule',
+        'enabled': True
+    }
+    with pytest.raises(Exception) as e:
+        validate_required_arguments_for_alert_rule(args)
+    assert str(e.value) == '"template_name" is required for "fusion" alert rule.'
+
+    # Test with an unknown alert rule kind
+    args = {
+        'kind': 'unknown',
+        'rule_name': 'test_unknown_rule'
+    }
+    with pytest.raises(Exception) as e:
+        validate_required_arguments_for_alert_rule(args)
+    assert str(e.value) == '"unknown" is not a valid kind for alert rule.'
+
+
+def test_create_data_for_alert_rule():
+    """
+    Given
+        - args
+    When
+        - running create_data_for_alert_rule
+    Then
+        - Ensure the function returns the expected data
+    """
+    args = {
+        'kind': 'fusion',
+        'rule_name': 'test_fusion_rule',
+        'template_name': 'test_template',
+        'enabled': True,
+        'description': None
+    }
+    expected_data = {
+        'kind': 'Fusion',
+        'etag': None,
+        'properties': {
+            'alertRuleTemplateName': 'test_template',
+            'enabled': True
+        }
+    }
+    data = create_data_for_alert_rule(args)
+    assert data == expected_data
+
+
+def test_create_and_update_alert_rule_command(mocker):
+    """
+    Given
+        - client
+        - args with all required arguments
+    When
+        - running create_alert_rule_command
+    Then
+        - Ensure the function returns the expected command results
+    """
+    with open('test_data/create_alert_rule-mock_response.json', 'r') as file:
+        mock_response = json.load(file)
+
+    client = mock_client()
+    mocker.patch.object(client, 'http_request', return_value=mock_response)
+    args = {
+        'kind': 'Fusion',
+        "etag": "3d00c3ca-0000-0100-0000-5d42d5010000",
+        "properties": {
+            "enabled": True,
+            "alertRuleTemplateName": "f71aba3d-28fb-450b-b192-4e76a83015c8"
+        }
+    }
+    mocker.patch('AzureSentinel.validate_required_arguments_for_alert_rule', return_value=None)
+    mocker.patch('AzureSentinel.create_data_for_alert_rule', return_value=args)
+    command_results = create_and_update_alert_rule_command(client, args)
+    assert command_results.outputs == mock_response
+    assert command_results.outputs_prefix == 'AzureSentinel.AlertRule'
+    assert command_results.outputs_key_field == 'name'
+    assert '|ID|Name|Kind|Severity|Display Name|Description|Enabled|Etag|' in command_results.readable_output

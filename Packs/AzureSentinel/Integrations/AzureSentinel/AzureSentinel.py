@@ -45,11 +45,6 @@ DEFAULT_SOURCE = 'Microsoft Sentinel'
 
 THREAT_INDICATORS_HEADERS = ['Name', 'DisplayName', 'Values', 'Types', 'Source', 'Confidence', 'Tags']
 
-ALERT_RULES_HEADERS = ['ID', 'Kind', 'Severity', 'Display Name', 'Description', 'Enabled']
-
-ALERT_RULES_TEMPLATES_HEADERS = ['ID', 'Kind', 'Severity', 'Display Name', 'Description', 'Status', 'Created Date UTC',
-                                 'Last Updated Date UTC', 'Alert Rules Created By Template Count']
-
 # =========== Mirroring Mechanism Globals ===========
 
 MIRROR_DIRECTION_DICT = {
@@ -1731,7 +1726,7 @@ def list_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any]) -
             'Enabled': rule.get('properties', {}).get('enabled')
         } for rule in raw_results]
     tabel_name = 'Azure Sentinel Alert Rules' + (f' ({len(raw_results)} results)' if len(raw_results) > 1 else '')
-    readable_output = tableToMarkdown(tabel_name, readable_result, headers=ALERT_RULES_HEADERS)
+    readable_output = tableToMarkdown(tabel_name, readable_result, sort_headers=False)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1776,7 +1771,7 @@ def list_alert_rule_template_command(client: AzureSentinelClient, args: Dict[str
             'Alert Rules Created By Template Count': rule.get('properties', {}).get('alertRulesCreatedByTemplateCount'),
         } for rule in raw_results]
     tabel_name = 'Azure Sentinel Alert Rule Template' + (f' ({len(raw_results)} results)' if len(raw_results) > 1 else '')
-    readable_output = tableToMarkdown(tabel_name, readable_result, headers=ALERT_RULES_TEMPLATES_HEADERS)
+    readable_output = tableToMarkdown(tabel_name, readable_result, sort_headers=False)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1818,6 +1813,8 @@ def validate_required_arguments_for_alert_rule(args: Dict[str, Any]) -> None:
     }
 
     kind = args.get('kind', '')
+    if kind not in required_args_by_kind:
+        raise DemistoException(f'"{kind}" is not a valid kind for alert rule.')
     for arg in required_args_by_kind.get(kind, []):
         if not args.get(arg):
             raise DemistoException(f'"{arg}" is required for "{kind}" alert rule.')
@@ -1828,7 +1825,7 @@ def create_data_for_alert_rule(args: Dict[str, Any]) -> Dict[str, Any]:
         'alertRuleTemplateName': args.get('template_name'),
         'enabled': argToBoolean(args.get('enabled')),
         'displayName': args.get('displayName'),
-        'productFilter': string_to_table_header(args.get('product_filter')),
+        'productFilter': string_to_table_header(args.get('product_filter', '')),
         'description': args.get('description'),
         'displayNamesExcludeFilter': args.get('name_exclude_filter'),
         'displayNamesFilter': args.get('name_include_filter'),
@@ -1838,20 +1835,19 @@ def create_data_for_alert_rule(args: Dict[str, Any]) -> Dict[str, Any]:
         'queryPeriod': args.get('query_period'),
         'severity': pascalToSpace(args.get('severity')),
         'suppressionDuration': args.get('suppression_duration'),
-        'suppressionEnabled': argToBoolean(args.get('suppression_enabled', 'false')),
+        'suppressionEnabled': argToBoolean(args.get('suppression_enabled')) if args.get('suppression_enabled') else None,
         'triggerOperator': underscoreToCamelCase(args.get('trigger_operator')),
         'triggerThreshold': args.get('trigger_threshold'),
         'tactics': argToList(args.get('tactics')),
         'techniques': argToList(args.get('techniques'))
     }
+    remove_nulls_from_dictionary(properties)
 
-    data = {
+    return {
         'kind': underscoreToCamelCase(args.get('kind')),
         'etag': args.get('etag'),
         'properties': properties
     }
-
-    return data
 
 
 def create_and_update_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any]) -> CommandResults:
@@ -1872,7 +1868,8 @@ def create_and_update_alert_rule_command(client: AzureSentinelClient, args: Dict
         'Enabled': response.get('properties', {}).get('enabled'),
         'Etag': response.get('etag')
     }
-    readable_output = tableToMarkdown('Azure Sentinel Alert Rule successfully created/updated', readable_result)
+    readable_output = tableToMarkdown('Azure Sentinel Alert Rule successfully created/updated', readable_result,
+                                      sort_headers=False)
 
     return CommandResults(
         readable_output=readable_output,
