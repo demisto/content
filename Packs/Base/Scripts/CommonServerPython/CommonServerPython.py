@@ -28,7 +28,6 @@ from abc import abstractmethod
 from distutils.version import LooseVersion
 from threading import Lock
 from inspect import currentframe
-import defusedxml.ElementTree as defused_ET
 
 import demistomock as demisto
 import warnings
@@ -2630,9 +2629,11 @@ def xml2json(xmlstring, options={}, strip_ns=1, strip=1):
     try:
         import defusedxml.ElementTree as defused_ET
         elem = defused_ET.fromstring(xmlstring)
-    except Exception:
+    except ImportError:
+        demisto.debug('defused_ET is not supported, using ET instead.')
         elem = ET.fromstring(xmlstring)
     return elem2json(elem, options, strip_ns=strip_ns, strip=strip)
+
 
 
 def json2xml(json_data, factory=ET.Element):
