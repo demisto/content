@@ -3790,7 +3790,7 @@ class Common(object):
                 file_context['Hashes'].append({'type': 'SSDeep',
                                                'value': self.ssdeep})
 
-            if self.extension: 
+            if self.extension:
                 file_context['Extension'] = self.extension
 
             if self.file_type:
