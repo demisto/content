@@ -36,6 +36,9 @@
                 "AWS Security Hub Provider Fields": {
                     "simple": "FindingProviderFields"
                 },
+                "AWS Security Hub Provider Updated At": {
+                    "simple": "UpdatedAt"
+                },
                 "AWS Security Hub Record State": {
                     "simple": "RecordState"
                 },
@@ -54,6 +57,9 @@
                 "AWS Security Hub Severity": {
                     "simple": "Severity"
                 },
+                "AWS Security Hub Threat Intel Indicators": {
+                    "simple": "ThreatIntelIndicators"
+                },
                 "AWS Security Hub Threats": {
                     "simple": "Threats"
                 },
@@ -65,6 +71,9 @@
                 },
                 "AWS Security Hub Verification State": {
                     "simple": "VerificationState"
+                },
+                "AWS Security Hub Vulnerabilities": {
+                    "simple": "Vulnerabilities"
                 },
                 "AWS Security Hub Workflow Status": {
                     "simple": "Workflow.Status"
@@ -119,10 +128,7 @@
                 },
                 "severity": {
                     "simple": "Severity.Label"
-                },
-                "AWS Security Hub Provider Updated At": {
-					"simple": "UpdatedAt"
-				}
+                }
             }
         },
         "dbot_classification_incident_type_all": {
@@ -157,5 +163,5 @@
     "name": "AWS Security Hub - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.5.0"
+    "fromVersion": "6.8.0"
 }
