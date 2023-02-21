@@ -11,6 +11,8 @@ import re
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+VERSION = demisto.params().get('version', 'V.9x')
+
 ''' CLIENT CLASS '''
 
 
