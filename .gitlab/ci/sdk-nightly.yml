@@ -85,6 +85,7 @@ demisto-sdk-nightly:xsoar-prepare-testing-bucket:
     - gke
   extends:
     - .default-job-settings
+    - .sdk-nightly-schedule-rule
     - xsoar-prepare-testing-bucket
   variables:
     IFRA_ENV_TYPE: "Server Master"
