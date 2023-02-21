@@ -13,17 +13,17 @@ def main():
         if not violations:
             return_results(
                 CommandResults(
-                    readable_output=f"\n#### No violations information available for threat."
+                    readable_output="\n#### No violations information available for threat."
                 )
             )
         else:
-            heading = f"\n# Violations Events Information:"
+            heading = "\n# Violations Events Information:"
 
             headers = [
                 "Eventid", "Violator", "Policyname", "TenantName", "ResourceName", "Riskthreatname", "Ipaddress"
                 "Accountname", "Baseeventid", "Category", "Categoryseverity", "Destinationntdomain", "Deviceexternalid",
                 "Generationtime", "ID", "Invalid", "Jobstarttime", "Message", "Policyname",
-                "TenantID", "Timeline",  "Transactionstring1", "ResourceGroupName", "Resourcegroupid",
+                "TenantID", "Timeline", "Transactionstring1", "ResourceGroupName", "Resourcegroupid",
                 "ResourceType", "Emailsenderdomain", "Requesturl", "Emailrecipient", "Emailsender"
             ]
 

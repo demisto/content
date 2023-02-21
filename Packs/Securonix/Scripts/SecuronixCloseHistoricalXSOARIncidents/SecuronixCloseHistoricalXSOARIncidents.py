@@ -1,5 +1,7 @@
 """Script which closes the existing XSOAR incident whose respective Securonix incident is closed."""
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import traceback
 from datetime import datetime
@@ -22,6 +24,7 @@ def get_securonix_incident_id(incident: Dict[str, Any]) -> Optional[str]:
     for label in incident_labels:
         if label["type"] == "incidentId":
             return label["value"]
+    return None
 
 
 def is_incident_closed_on_securonix(activity_data: List[Dict[str, Any]], close_states_of_securonix: List[str]) -> bool:
@@ -132,9 +135,9 @@ def main():
         timestamp_format = "%Y-%m-%d %H:%M:%S.%f"
 
         if from_time:
-            from_time = datetime.strftime(arg_to_datetime(from_time), timestamp_format)
+            from_time = datetime.strftime(arg_to_datetime(from_time), timestamp_format)  # type: ignore[arg-type]
         if to_time:
-            to_time = datetime.strftime(arg_to_datetime(to_time), timestamp_format)
+            to_time = datetime.strftime(arg_to_datetime(to_time), timestamp_format)  # type: ignore[arg-type]
 
         xsoar_query = 'sourceBrand:Securonix and -type:"Securonix Incident" and -status:closed'
 
@@ -167,7 +170,8 @@ def main():
             for incident in xsoar_incidents:
                 xsoar_incident_id = incident.get("id")
                 sx_incident_id = get_securonix_incident_id(incident=incident)
-                is_closed = close_xsoar_incident(xsoar_incident_id, sx_incident_id, close_states_of_securonix)
+                is_closed = close_xsoar_incident(xsoar_incident_id,
+                                                 sx_incident_id, close_states_of_securonix)  # type: ignore
 
                 if is_closed:
                     close_xsoar_incident_ids.append(xsoar_incident_id)

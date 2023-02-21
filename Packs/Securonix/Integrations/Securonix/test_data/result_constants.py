@@ -482,3 +482,22 @@ EXPECTED_LOOKUP_TABLE_ENTRIES_LIST = {'Securonix.LookupTableEntries(val.lookupun
     }
 ]
 }
+
+EXPECTED_GET_INCIDENT_WORKFLOW = "Incident 123456 workflow is TestWorkFlow."
+
+EXPECTED_GET_INCIDENT_STATUS = "Incident 123456 status is TestStatus."
+
+EXPECTED_GET_INCIDENT_AVAILABLE_ACTIONS = "Incident 123456 available actions: ['CLAIM', 'COMPLETED']."
+
+EXPECTED_ADD_COMMENT_TO_INCIDENT = "Comment was added to the incident 123456 successfully."
+
+EXPECTED_XSOAR_STATE_MAPPING = {
+    'ACTIVE': {
+        'action': 'Start Investigation',
+        'status': 'in progress'
+    },
+    'DONE': {
+        'action': 'Close Incident',
+        'status': 'completed'
+    }
+}

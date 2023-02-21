@@ -736,6 +736,84 @@ RESPONSE_LOOKUP_TABLE_ENTRIES_LIST = [
 ]
 
 
+RESPONSE_GET_INCIDENT_WORKFLOW = {
+    "status": "OK",
+    "messages": [
+        "Get incident workflow for incident ID [123456] - [TestWorkFlow]"
+    ],
+    "result": {
+        "workflow": "TestWorkFlow"
+    }
+}
+
+RESPONSE_GET_INCIDENT_STATUS = {
+    "status": "OK",
+    "messages": [
+        "Get incident status for incident ID [123456] - [TestStatus]"
+    ],
+    "result": {
+        "status": "TestStatus"
+    }
+}
+
+RESPONSE_GET_INCIDENT_AVAILABLE_ACTIONS = {
+    "status": "OK",
+    "messages": [
+        "Get possible actions for incident ID [100289], incident status [Open]"
+    ],
+    "result": [
+        {
+            "actionDetails": [
+                {
+                    "title": "Screen1",
+                    "sections": {
+                        "sectionName": "Comments",
+                        "attributes": [
+                            {
+                                "displayName": "Comments",
+                                "attributeType": "textarea",
+                                "attribute": "15_Comments",
+                                "required": "false"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "actionName": "CLAIM",
+            "status": "CLAIMED"
+        },
+        {
+            "actionDetails": [
+                {
+                    "title": "Screen2",
+                    "sections": {
+                        "sectionName": "Comments",
+                        "attributes": [
+                            {
+                                "displayName": "Comments",
+                                "attributeType": "textarea",
+                                "attribute": "15_Comments",
+                                "required": "false"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "actionName": "COMPLETED",
+            "status": "COMPLETED"
+        }
+    ]
+}
+
+RESPONSE_ADD_COMMENT_TO_INCIDENT = {
+    "status": "OK",
+    "messages": [
+        "Add comment to incident id - [100289]"
+    ],
+    "result": True
+}
+
+
 def get_mock_create_lookup_table_response():
     RESPONSE_CREATE_LOOKUP_TABLE = Response()
     RESPONSE_CREATE_LOOKUP_TABLE.status_code = 200
@@ -749,3 +827,70 @@ def get_mock_attachment_response():
     RESPONSE_GET_INCIDENT_ATTACHMENT_6_4.status_code = 200
     RESPONSE_GET_INCIDENT_ATTACHMENT_6_4._content = b'test file'
     return RESPONSE_GET_INCIDENT_ATTACHMENT_6_4
+
+MIRROR_RESPONSE_GET_INCIDENT_ACTIVITY_HISTORY = {
+    "status": "OK",
+    "messages": [
+        "Get activity stream details for incident ID [2849604490]"
+    ],
+    "result": {
+        "activityStreamData": [
+            {
+                "caseid": "2849604490",
+                "actiontaken": "COMMENTS_ADDED",
+                "status": "Open",
+                "comment": [
+                    {
+                        "Comments": "Incident created while executing playbook - Create Security Incident"
+                    }
+                ],
+                "eventTime": "Jan 12, 2023 7:25:38 AM",
+                "username": "Admin Admin",
+                "currentassignee": "API_TEST_SS",
+                "commentType": [
+                    "text"
+                ],
+                "currWorkflow": "SOCTeamReview",
+                "isPlayBookOutAvailable": False,
+                "creator": "admin"
+            },
+            {
+                "caseid": "2849604490",
+                "actiontaken": "In Progress",
+                "status": "In Progress",
+                "comment": [],
+                "eventTime": "Jan 12, 2023 8:16:22 AM",
+                "lastStatus": "Open",
+                "username": "Test User",
+                "currentassignee": "API_TEST_SS",
+                "pastassignee": "API_TEST_SS",
+                "commentType": [],
+                "prevWorkflow": "Test_XSOAR",
+                "currWorkflow": "Test_XSOAR",
+                "isPlayBookOutAvailable": False,
+                "creator": "test_user"
+            },
+            {
+                "caseid": "2849604490",
+                "actiontaken": "Closed",
+                "status": "Completed",
+                "comment": [],
+                "eventTime": "Jan 12, 2023 8:16:48 AM",
+                "lastStatus": "In Progress",
+                "username": "Test User",
+                "currentassignee": "API_TEST_SS",
+                "pastassignee": "API_TEST_SS",
+                "commentType": [],
+                "prevWorkflow": "Test_XSOAR",
+                "currWorkflow": "Test_XSOAR",
+                "isPlayBookOutAvailable": False,
+                "creator": "test_user"
+            }
+        ]
+    }
+}
+
+MIRROR_ENTRIES = [
+    {'type': None, 'category': None, 'contents': 'This is a comment', 'contentsFormat': None,
+     'tags': ['comments', 'work_notes'], 'note': True, 'user': 'Admin'}
+]

@@ -2,8 +2,6 @@ import json
 
 import demistomock as demisto
 import pytest
-from unittest.mock import patch, Mock, ANY, call
-from http.client import HTTPMessage
 
 from Securonix import reformat_resource_groups_outputs, reformat_outputs, parse_data_arr, Client, list_workflows, \
     get_default_assignee_for_workflow, list_possible_threat_actions, list_resource_groups, list_users, \
@@ -12,7 +10,9 @@ from Securonix import reformat_resource_groups_outputs, reformat_outputs, parse_
     fetch_securonix_threat, list_threats, get_incident_activity_history, list_whitelists, get_whitelist_entry, \
     create_whitelist, delete_lookup_table_config_and_data, add_whitelist_entry, list_lookup_tables, \
     delete_whitelist_entry, add_entry_to_lookup_table, list_lookup_table_entries, create_lookup_table, \
-    get_incident_attachments, list_violation_data
+    get_incident_attachments, list_violation_data, get_incident_workflow, get_incident_status, \
+    get_incident_available_actions, add_comment_to_incident, get_modified_remote_data_command, \
+    get_remote_data_command, update_remote_system, create_xsoar_to_securonix_state_mapping
 
 from test_data.response_constants import RESPONSE_LIST_WORKFLOWS, RESPONSE_DEFAULT_ASSIGNEE, \
     RESPONSE_POSSIBLE_THREAT_ACTIONS, RESPONSE_LIST_RESOURCE_GROUPS, RESPONSE_LIST_USERS, RESPONSE_LIST_INCIDENT, \
@@ -25,7 +25,9 @@ from test_data.response_constants import RESPONSE_LIST_WORKFLOWS, RESPONSE_DEFAU
     get_mock_create_lookup_table_response, \
     RESPONSE_ADD_WHITELIST_ENTRY_6_4, RESPONSE_LOOKUP_TABLE_LIST, RESPONSE_DELETE_WHITELIST_ENTRY, \
     RESPONSE_LOOKUP_TABLE_ENTRY_ADD, RESPONSE_LOOKUP_TABLE_ENTRIES_LIST, get_mock_attachment_response, \
-    RESPONSE_LIST_VIOLATION_6_4
+    RESPONSE_LIST_VIOLATION_6_4, RESPONSE_GET_INCIDENT_WORKFLOW, RESPONSE_GET_INCIDENT_STATUS, \
+    RESPONSE_GET_INCIDENT_AVAILABLE_ACTIONS, RESPONSE_ADD_COMMENT_TO_INCIDENT, \
+    MIRROR_RESPONSE_GET_INCIDENT_ACTIVITY_HISTORY, MIRROR_ENTRIES
 
 from test_data.result_constants import EXPECTED_LIST_WORKFLOWS, EXPECTED_DEFAULT_ASSIGNEE, \
     EXPECTED_POSSIBLE_THREAT_ACTIONS, EXPECTED_LIST_RESOURCE_GROUPS, EXPECTED_LIST_USERS, EXPECTED_LIST_INCIDENT, \
@@ -36,7 +38,9 @@ from test_data.result_constants import EXPECTED_LIST_WORKFLOWS, EXPECTED_DEFAULT
     EXPECTED_DELETE_LOOKUP_TABLE_CONFIG_AND_DATA, EXPECTED_ADD_WHITELIST_ENTRY_6_4, EXPECTED_LOOKUP_TABLE_LIST, \
     EXPECTED_DELETE_WHITELIST_ENTRY, EXPECTED_LOOKUP_TABLE_ENTRY_ADD, EXPECTED_LOOKUP_TABLE_ENTRIES_LIST, \
     EXPECTED_CREATE_LOOKUP_TABLE, \
-    EXPECTED_GET_INCIDENT_ATTACHMENT_HISTORY_6_4, EXPECTED_LIST_VIOLATION_DATA_6_4
+    EXPECTED_GET_INCIDENT_ATTACHMENT_HISTORY_6_4, EXPECTED_LIST_VIOLATION_DATA_6_4, EXPECTED_GET_INCIDENT_WORKFLOW, \
+    EXPECTED_GET_INCIDENT_STATUS, EXPECTED_GET_INCIDENT_AVAILABLE_ACTIONS, EXPECTED_ADD_COMMENT_TO_INCIDENT, \
+    EXPECTED_XSOAR_STATE_MAPPING
 
 
 def test_reformat_resource_groups_outputs():
@@ -289,7 +293,13 @@ def test_module(mocker):
                            'to': "01/17/2023 00:00:20"}, RESPONSE_LIST_VIOLATION_6_4,
      EXPECTED_LIST_VIOLATION_DATA_6_4),
     (get_incident_attachments, {'incident_id': 'test_id'}, get_mock_attachment_response(),
-     EXPECTED_GET_INCIDENT_ATTACHMENT_HISTORY_6_4)
+     EXPECTED_GET_INCIDENT_ATTACHMENT_HISTORY_6_4),
+    (get_incident_workflow, {'incident_id': '123456'}, RESPONSE_GET_INCIDENT_WORKFLOW, EXPECTED_GET_INCIDENT_WORKFLOW),
+    (get_incident_status, {'incident_id': '123456'}, RESPONSE_GET_INCIDENT_STATUS, EXPECTED_GET_INCIDENT_STATUS),
+    (get_incident_available_actions, {'incident_id': '123456'}, RESPONSE_GET_INCIDENT_AVAILABLE_ACTIONS,
+     EXPECTED_GET_INCIDENT_AVAILABLE_ACTIONS),
+    (add_comment_to_incident, {'incident_id': '123456', 'comment': 'testcomment'},
+     RESPONSE_ADD_COMMENT_TO_INCIDENT, EXPECTED_ADD_COMMENT_TO_INCIDENT)
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
     """Unit test for integration commands.
@@ -309,50 +319,93 @@ def test_commands(command, args, response, expected_result, mocker):
         assert expected_result[0].get('File') == result[1].get('File')
     elif command == list_violation_data:
         assert expected_result == result.outputs  # list_violation_data returns CommandResult object
-    elif command == add_whitelist_entry or command == create_lookup_table:
+    elif command == add_whitelist_entry or command == create_lookup_table or command == get_incident_workflow or \
+            command == get_incident_status or command == get_incident_available_actions\
+            or command == add_comment_to_incident:
         assert expected_result == result[0]
     else:
         assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
 
 
-@patch("urllib3.connectionpool.HTTPConnectionPool._get_conn")
-def test_retry_mechanism_in_http_request(getconn_mock):
-    """
-    Given
-    - http_request method
-    When
-    - when response has 5XX and 429 response codes
-    Then
-    - it will perform retry based on passed retry count and delay
-    """
-    getconn_mock.return_value.getresponse.side_effect = [
-        Mock(status=500, msg=HTTPMessage()),
-        Mock(status=429, msg=HTTPMessage()),
-        Mock(status=200, msg=HTTPMessage(), return_value=RESPONSE_GET_INCIDENT),
+def test_get_modified_remote_data(mocker):
+    """Valid incident IDs should be returned by get_modified_remote_data_command."""
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(Client, '_generate_token')
+    client = Client('tenant', 'server_url', 'username', 'password', 'verify', 'proxies', 0, 0, 'Fixed')
+
+    mocker.patch.object(client, 'http_request', return_value=RESPONSE_LIST_INCIDENT)
+    result = get_modified_remote_data_command(client, {'lastUpdate': "2022-02-01T00:00:00Z"})
+
+    assert result.modified_incident_ids == [
+        record.get('incidentId')
+        for record in RESPONSE_LIST_INCIDENT.get('result', {}).get('data', {}).get('incidentItems', [])
     ]
 
-    class DummyClient(Client):
-        """
-        Create DummyClient for overriding _generate_token method
-        """
 
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
+def test_get_remote_data(mocker):
+    """The incident should be updated when get_remote_data command is called."""
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(Client, '_generate_token')
+    client = Client('tenant', 'server_url', 'username', 'password', 'verify', 'proxies', 0, 0, 'Fixed')
 
-        def _generate_token(self) -> str:
-            """
-            Modified _generate_token method
-            """
-            return "1234"
+    args = {'id': '2849604490', 'lastUpdate': 0}
+    mocker.patch.object(client, 'get_incident_request',
+                        return_value=RESPONSE_GET_INCIDENT['result']['data'])
+    mocker.patch.object(client, 'get_incident_activity_history_request',
+                        return_value=MIRROR_RESPONSE_GET_INCIDENT_ACTIVITY_HISTORY['result']['activityStreamData'])
 
-    client = DummyClient('tenant', 'https://server_url', 'username', 'password', False, 'proxies', 2, 1, 'Exponential')
+    res = get_remote_data_command(client, args, ['closed', 'completed'])
 
-    with pytest.raises(Exception):
-        r = get_incident(client, {'incident_id': '1234'})
-        r.raise_for_status()
-
-    assert getconn_mock.return_value.request.mock_calls == [
-        call("GET", "/incident/get?type=metaInfo&incidentId=1234", body=None, headers=ANY),
-        call("GET", "/incident/get?type=metaInfo&incidentId=1234", body=None, headers=ANY),
-        call("GET", "/incident/get?type=metaInfo&incidentId=1234", body=None, headers=ANY),
+    assert res.mirrored_object == RESPONSE_GET_INCIDENT['result']['data']['incidentItems'][0]
+    assert res.entries == [
+        {
+            'Type': 1,
+            'Contents': {
+                'dbotIncidentClose': True,
+                'closeNotes': 'Closing the XSOAR incident as Securonix incident is closed.',
+                'closeReason': 'Resolved'
+            },
+            'ContentsFormat': 'json',
+            'Note': True
+        },
+        {
+            'Type': 1,
+            'Contents': '[Mirrored From Securonix]\nAdded By: Admin Admin\nAdded At'
+                        ': Jan 12, 2023 7:25:38 AM UTC\nComment Content: Incident created'
+                        ' while executing playbook - Create Security Incident',
+            'ContentsFormat': 'text',
+            'Note': True
+        }
     ]
+
+
+def add_comment_to_incident_request(*args):
+    """Side effect function to replicate add_comment_request function."""
+    assert '[Mirrored From XSOAR] XSOAR Incident ID: 345\nAdded By: Admin\nComment: This is a comment' == args[1]
+    return 'Comment was added to the incident successfully.'
+
+
+def test_upload_entries_update_remote_system_command(mocker):
+    """Update remote system command should reflact the entries added to XSOAR incident."""
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(Client, '_generate_token')
+    client = Client('tenant', 'server_url', 'username', 'password', 'verify', 'proxies', 0, 0, 'Fixed')
+
+    args = {'remoteId': '1234', 'data': {'id': '345'}, 'entries': MIRROR_ENTRIES, 'incidentChanged': False, 'delta': {}}
+    mocker.patch.object(client, 'add_comment_to_incident_request', side_effect=add_comment_to_incident_request)
+
+    update_remote_system(client, args)
+
+
+def test_create_xsoar_to_securonix_state_mapping():
+    """Test case scenario for successful execution of create_xsoar_to_securonix_state_mapping."""
+    args = {
+        'active_state_action_mapping': 'Start Investigation',
+        'active_state_status_mapping': 'in progress',
+        'closed_state_action_mapping': 'Close Incident',
+        'closed_state_status_mapping': 'completed'
+    }
+    result = create_xsoar_to_securonix_state_mapping(args)
+
+    assert result.outputs == EXPECTED_XSOAR_STATE_MAPPING
+    assert result.outputs_prefix == "Securonix.StateMapping"

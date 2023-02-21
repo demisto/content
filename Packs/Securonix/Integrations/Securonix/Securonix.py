@@ -673,7 +673,7 @@ class Client(BaseClient):
                 # For Exponential delay we are dividing it by 2 so for error message make it to original value
                 err_msg = 'Max Retries Error: Request attempts with {} retries and with {} seconds {} delay failed.' \
                           '\n{}'.format(self._securonix_retry_count, self._securonix_retry_delay * 2,
-                                         self._securonix_retry_delay_type, reason)
+                                        self._securonix_retry_delay_type, reason)
             demisto.error(err_msg)
             raise Exception(f'{err_msg}\n{exception}')
 
