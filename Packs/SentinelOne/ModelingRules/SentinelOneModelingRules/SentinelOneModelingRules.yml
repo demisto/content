@@ -1,0 +1,5 @@
+fromversion: 6.10.0
+id: sentinelone_modeling_rule
+name: SentinelOne Modeling Rule
+rules: ''
+schema: ''

@@ -1,4 +1,4 @@
-// Development container for Content. Poetry hash a890bf6f485c5d0249171c3f9cafabd7ea73568f4c5461803b12d23c28b9d2e9
+// Development container for Content. Poetry hash 97b4446a28329c24352fcb41ca8570403da0ae3f7434121ab73b1ff83fdec395
 {
 	"name": "XSOAR Content",
 	"build": {
@@ -47,7 +47,7 @@
 					"toversion",
 					"marketplacev",
 					"ciac",
-					"whois"
+					"whois",
 				]
 			},
 			"extensions": [
