@@ -995,6 +995,7 @@ def list_domain_rule_objects_command(client: Client, args: Dict) -> CommandResul
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
+    state: str = args.get('state', 'Enabled')
 
     if (page and not page_size) or (not page and page_size):
         raise Exception('Please provide both page and page_size arguments.')
@@ -1082,6 +1083,7 @@ def create_rule_object_command(client: Client, args: Dict) -> CommandResults:
     address_ip_v_6 = argToList(args.get('address_ip_v.6'))
     from_address_ip_v_6 = args.get('from_address_ip_v.6')
     to_address_ip_v_6 = args.get('to_address_ip_v.6')
+    state: str = args.get('state', 'Enabled')
 
     if (address_ip_v_4 and address_ip_v_6) or (from_address_ip_v_4 and from_address_ip_v_6) or \
             (to_address_ip_v_4 and to_address_ip_v_6):
@@ -1147,7 +1149,7 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
     from_address_ip_v_6 = args.get('from_address_ip_v.6')
     to_address_ip_v_6 = args.get('to_address_ip_v.6')
     is_overwrite = argToBoolean(args.get('is_overwrite', False))
-
+    state: str = args.get('state', 'Enabled')
     response_get = client.get_rule_object_request(rule_id)
     response_get = response_get.get('RuleObjDef', {})
 

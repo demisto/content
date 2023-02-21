@@ -453,7 +453,7 @@ script:
       description: The ID of the policy to delete. To get the policy ID, use the !nsm-list-domain-firewall-policy.
       isArray: false
   - name: nsm-list-domain-rule-object
-    description: Updates the firewall policy details.
+    description: Gets the list of rule objects defined in a particular domain.
     arguments:
     - name: domain_id
       required: true
@@ -486,6 +486,17 @@ script:
       required: false
       isArray: false
       description: The number of records in a page.
+    - name: state
+      required: false
+      description: >
+        Filter the rule objects according to their state.
+
+        Note: This argument is only relevant to version 10x.
+      defaultvalue: Enabled
+      auto: PREDEFINED
+      predefined:
+      - Disabled
+      - Enabled
     outputs:
     - contextPath: NSM.Rule.ruleobjId
       description: The ID of the rule object.
@@ -801,6 +812,17 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: state
+      required: false
+      description: >
+        Whether to enable or disable the rule object.
+
+        Note: This argument is only relevant to version 10x.
+      defaultvalue: Enabled
+      auto: PREDEFINED
+      predefined:
+      - Disabled
+      - Enabled
   - name: nsm-delete-rule-object
     description: Deletes a rule object.
     arguments:

@@ -353,7 +353,7 @@ There is no context output for this command.
 
 ### nsm-list-domain-rule-object
 ***
-Updates the firewall policy details.
+Gets the list of rule objects defined in a particular domain.
 
 
 #### Base Command
