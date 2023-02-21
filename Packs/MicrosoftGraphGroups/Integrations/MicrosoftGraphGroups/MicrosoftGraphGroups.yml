@@ -92,17 +92,6 @@ configuration:
   type: 4
   hidden: true
   section: Connect
-- display: Scope (for authorizing the app to use the selected permissions.)
-  name: scope
-  type: 16
-  required: false
-  options:
-  - Group.Read.All
-  - Group.ReadWrite.All
-  - GroupMember.Read.All
-  - GroupMember.ReadWrite.All
-  - Directory.Read.All
-  - Directory.ReadWrite.All
 description: Microsoft Graph Groups enables you to create and manage different types of groups and group functionality according to your requirements.
 display: Azure Active Directory Groups
 name: Microsoft Graph Groups
