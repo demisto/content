@@ -1563,7 +1563,7 @@ def check_valid_indicator_value(indicator_type: str, indicator_value: str) -> bo
         'md5': md5Regex
     }
     if indicator_type not in hash_to_regex:
-        raise ValueError(f'Indicator {indicator_type} type id not support')
+        raise ValueError(f'Indicator type {indicator_type} is not supported')
 
     if not re.match(hash_to_regex[indicator_type], indicator_value):
         raise ValueError(f'{indicator_value} is not a valid {indicator_type}')
