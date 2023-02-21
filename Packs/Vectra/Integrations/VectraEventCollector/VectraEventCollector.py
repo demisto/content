@@ -306,6 +306,25 @@ def fetch_events(
     )
 
 
+def get_events(
+    client: VectraClient, first_fetch: datetime, limit: int = 100
+) -> Tuple[CommandResults, List[Dict[str, Any]], CommandResults, List[Dict[str, Any]]]:
+
+    # TODO docstring
+    """ """
+
+    detection_res, detections = get_detections_cmd(
+        client=client,
+        first_timestamp=first_fetch.strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT),
+    )
+
+    audits_res, audits = get_audits_cmd(
+        client=client, start=first_fetch.strftime(AUDIT_START_TIMESTAMP_FORMAT)
+    )
+
+    return detection_res, detections, audits_res, audits
+
+
 """ MAIN FUNCTION """
 
 
@@ -343,21 +362,12 @@ def main() -> None:
                 first_fetch: datetime = arg_to_datetime(
                     arg=config.get("first_fetch", "3 days"), arg_name="First fetch time"
                 )
-                first_timestamp = first_fetch.strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
-
-                detection_res, detections = get_detections_cmd(
-                    client=client,
-                    first_timestamp=first_fetch.strftime(
-                        DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT
-                    ),
+                detections_cmd_res, detections, audits_cmd_res, audits = get_events(
+                    client, first_fetch
                 )
 
-                audits_res, audits = get_audits_cmd(
-                    client=client, start=first_fetch.strftime(AUDIT_START_TIMESTAMP_FORMAT)
-                )
-
-                return_results(detection_res)
-                return_results(audits_res)
+                return_results(detections_cmd_res)
+                return_results(audits_cmd_res)
 
             # fetch-events
             else:
