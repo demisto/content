@@ -7,7 +7,7 @@ comment: |-
 commonfields:
   id: NCSCReportDetails
   version: -1
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.10.48392
 enabled: true
 name: NCSCReportDetails
 runonce: false

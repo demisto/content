@@ -21,7 +21,7 @@ comment: |-
 commonfields:
   id: ExpanseGenerateIssueMapWidgetScript
   version: -1
-dockerimage: demisto/chromium:1.0.0.48560
+dockerimage: demisto/chromium:1.0.0.48957
 enabled: true
 name: ExpanseGenerateIssueMapWidgetScript
 runonce: false

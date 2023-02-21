@@ -30,8 +30,7 @@ args:
   predefined:
   - "true"
   - "false"
-  description: If false then the context key will be overwritten. If set to true then
-    the script will append to existing context key
+  description: If false then the context key will be overwritten. If set to true then the script will append to existing context key
   defaultValue: "false"
 - name: errorUnfinished
   auto: PREDEFINED
@@ -45,4 +44,4 @@ runonce: false
 tests:
 - No test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.10.48392

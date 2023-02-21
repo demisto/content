@@ -1,8 +1,7 @@
 args:
 - default: false
   defaultValue: -status:closed
-  description: The query by which to retrieve failed tasks. Optional. The default
-    value is "-status:closed"
+  description: The query by which to retrieve failed tasks. Optional. The default value is "-status:closed"
   isArray: false
   name: query
   required: false
@@ -36,7 +35,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.9.40422
+dockerimage: demisto/python3:3.10.10.48392
 runonce: false
 tests:
 - No tests
