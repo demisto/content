@@ -328,7 +328,7 @@ OUTPUT_1 = [{'safeUrlId': 'Test', 'safeName': 'Test', 'safeNumber': 2, 'descript
 def test_pas_safes_list(mocker, response, count_or_total, expected_output):
     """
     Given:
-        - Response to cyberark-pas-safes-list command
+        - Response to cyberark-pas-safes-list command (in either the API <=v11 version, or the >=v12 format)
         - Expected count/ total value
         - Expected output
     When:
