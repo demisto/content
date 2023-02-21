@@ -1,7 +1,6 @@
 from CommonServerPython import *
 from CommonServerUserPython import *
 import demistomock as demisto
-from time import sleep
 
 
 class BloxOneTDClient(BaseClient):
@@ -23,8 +22,8 @@ class BloxOneTDClient(BaseClient):
                               limit: int = 50, offset: Optional[int] = None) -> List[Dict]:
         url_suffix = '/api/tdlad/v1/lookalike_domains'
         filter_params: Dict[str, Any] = {key: val for key, val in [('_limit', limit), ('_offset', offset)] if val}
-        
-        # i couldn't find a reference in the docs but it seems that one of the following is correct 
+
+        # there is no reference in the docs but it seems that one of the following is correct
         # - the filters combination is OR
         # - we can't filter by more than filter
         # as a result we decided to allow just one filter at a time
@@ -37,7 +36,7 @@ class BloxOneTDClient(BaseClient):
 
         filter_params['_filter'] = _filter
 
-        return self._http_request('GET', url_suffix=url_suffix, params=filter_params).get('results', [])
+        return self._http_request('GET', url_suffix=url_suffix, params=filter_params)['results']
 
     def dossier_lookup_get_create(self, indicator_type: str, value: str, sources: Optional[List[str]] = None) -> str:
         url_suffix = f'/tide/api/services/intel/lookup/indicator/{indicator_type}'
@@ -82,17 +81,17 @@ def dossier_source_list_command(client: BloxOneTDClient) -> CommandResults:
 
 
 def validate_and_format_lookalike_domain_list_args(args: Dict) -> Dict:
-    if 1 == len(list(filter(bool, [args.get('filter'), args.get('target_domain'), args.get('detected_at')]))):
-        raise ValueError(
+    if 1 != len(list(filter(bool, [args.get('filter'), args.get('target_domain'), args.get('detected_at')]))):
+        raise DemistoException(
             "Please provide one of the following arguments 'target_domain', 'detected_at' or 'filter'"
             " (Exactly one of them, more than one is argument is not accepted)."
         )
 
     if args.get('detected_at'):
-        detected_at = dateparser.parse(args['detected_at'])
+        detected_at = dateparser.parse(args['detected_at'], settings={'TIMEZONE': 'UTC', 'TO_TIMEZONE': 'UTC'})
         if detected_at is None:
             raise DemistoException(f"could not parse {args['detected_at']} as a time value.")
-        args['detected_at'] = detected_at.isoformat()
+        args['detected_at'] = detected_at.replace(tzinfo=None).isoformat(timespec='milliseconds')
     return args
 
 
@@ -125,7 +124,7 @@ def dossier_lookup_get_command_results(data: Dict) -> CommandResults:
     )
 
 
-def dossier_lookup_get_schedule_polling_result(args: Dict) -> CommandResults:
+def dossier_lookup_get_schedule_polling_result(args: Dict, first_time: bool = False) -> CommandResults:
     next_run_in_seconds = int(args.get('interval_in_seconds', 10))
     timeout_in_seconds = int(args.get('timeout', 600))
     args['timeout'] = timeout_in_seconds - next_run_in_seconds
@@ -135,24 +134,23 @@ def dossier_lookup_get_schedule_polling_result(args: Dict) -> CommandResults:
         timeout_in_seconds=timeout_in_seconds,
         args=args
     )
+    readable_output = None if not first_time else f"Job '{args['job_id']}' is still running, it may take a little while..."
 
-    return CommandResults(
-        readable_output=f"Job '{args['job_id']}' is still running, it may take a little while...",
-        scheduled_command=scheduled_command
-    )
+    return CommandResults(readable_output=readable_output, scheduled_command=scheduled_command)
 
 
 def dossier_lookup_get_command(client: BloxOneTDClient, args: Dict) -> CommandResults:
     job_id = args.get('job_id')
+    first_time = False
     if job_id is None:
         job_id = client.dossier_lookup_get_create(args['indicator_type'], args['value'], sources=argToList(args.get('sources')))
-        sleep(5)
+        first_time = True
 
     if client.dossier_lookup_get_is_done(job_id):
         data = client.dossier_lookup_get_results(job_id)
         return dossier_lookup_get_command_results(data)
     args['job_id'] = job_id
-    return dossier_lookup_get_schedule_polling_result(args)
+    return dossier_lookup_get_schedule_polling_result(args, first_time)
 
 
 def command_test_module(client: BloxOneTDClient) -> str:
@@ -188,8 +186,9 @@ def main():
             raise NotImplementedError(f'command {command} is not implemented.')
         return_results(results)
     except Exception as e:
-
-        if isinstance(e, DemistoException) and hasattr(e, 'res') and e.res.status_code == 401:  # pylint: disable=E1101
+        auth_error = isinstance(e, DemistoException) and getattr(e, 'res') is not None and \
+            e.res.status_code == 401  # pylint: disable=E1101
+        if auth_error:
             error_msg = 'authentication error'
         else:
             error_msg = f'an error occurred while executing command {command}\nerror: {e}'
