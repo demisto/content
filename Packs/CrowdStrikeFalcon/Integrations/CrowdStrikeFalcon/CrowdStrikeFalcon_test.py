@@ -4304,14 +4304,14 @@ def test_get_incident_behavior_command(mocker):
     """
     from CrowdStrikeFalcon import get_incident_behavior_command
 
-    mocker.patch("CrowdStrikeFalcon.http_request", return_value=response)
-    mocker.patch("demisto.args", return_value={"behavior_id": "1234"})
-
     response = {"resources": [{"behavior_id": "1234", "display_name": "DropAndExecRDPFile", "incident_id": "inc:5678"}]}
     expected_hr = '### CrowdStrike Behavior 1234\n'\
                   '|behavior_id|display_name|incident_id|\n' \
                   '|---|---|---|\n' \
                   '| 1234 | DropAndExecRDPFile | inc:5678 |\n'
+
+    mocker.patch("CrowdStrikeFalcon.http_request", return_value=response)
+    mocker.patch("demisto.args", return_value={"behavior_id": "1234"})
 
     result = get_incident_behavior_command()
 
