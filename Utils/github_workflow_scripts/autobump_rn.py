@@ -30,6 +30,8 @@ t = Terminal()
 ORGANIZATION_NAME = 'demisto'
 REPO_MANE = 'content'
 BASE = 'master'
+PR_COMMENT_TITLE = '### This PR Automatically updated by github action: {}\n'
+PR_COMMENT = 'Pack {} version was automatically bumped to {}. \n'
 COMMIT_MESSAGE = 'Bump version to: {}, for {} pack.'
 MERGE_FROM_MASTER_COMMIT_MESSAGE = f'Merged {BASE} into current branch.'
 SKIPPING_MESSAGE = 'Skipping Auto-Bumping release notes.'
@@ -58,6 +60,7 @@ class SkipReason(str, Enum):
     ALLOWED_BUMP_CONDITION = 'Pack {} version was updated from {} to {} version. Allowed bump only by + 1.'
 
 
+# todo: branch breaking changes
 # todo:dataclass
 class ConditionResult:
     def __init__(
@@ -430,35 +433,152 @@ class PackAutoBumper:
         self._last_rn_file_path = rn_file_path
         self._update_type = update_type
         self._update_rn_obj = UpdateRN(
-            pack_path=f'Packs/{pack_id}',
+            pack_path=f'{PACKS_DIR}/{pack_id}',
             update_type=update_type.value,
             modified_files_in_pack=set(),
             added_files=set(),
             pack=pack_id,
             is_force=True,
         )
-        with open(rn_file_path) as f:
+        with open(self._last_rn_file_path) as f:
             self._rn_text = f.read()
+
+        self._bc_file = Path(str(rn_file_path).replace('md', 'json'))
+        self._has_bc = self._bc_file.is_file()
+        if self._has_bc:
+            with open(self._bc_file) as f:
+                self._bc_text = f.read()
 
     @property
     def pack_id(self):
         return self.pack_id
 
-    @property
-    def last_rn_file_path(self):
-        return self._last_rn_file_path
+    def autobump(self) -> str:
+        """ Autobumps packs version:
+        1. Bumps numeric version of the pack
+        2. Writes new version to metadata
+        3. Creates new release notes file
+        4. Writes previous release notes content to new path
+        5. If there breaking changes file, updating it to the new version
+        Returns: (str) new pack version
+        """
+        new_version, metadata_dict = self._update_rn_obj.bump_version_number()
+        self._update_rn_obj.write_metadata_to_file(metadata_dict=metadata_dict)
+        new_release_notes_path = self._update_rn_obj.get_release_notes_path(new_version)
+        with open(new_release_notes_path, "w") as fp:
+            fp.write(self._rn_text)
+        if self._has_bc:
+            with open(new_release_notes_path.replace('md', 'json'), "w") as fp:
+                fp.write(self._bc_text)
+        return new_version
 
-    @property
-    def update_type(self):
-        return self._update_type
 
-    @property
-    def update_rn_obj(self):
-        return self._update_rn_obj
+class BranchAutoBumper:
+    def __init__(
+            self,
+            pr: PullRequest,
+            git_repo: Repo,
+            packs_to_autobump: List[PackAutoBumper],
+            run_id: str,
+            ):
+        assert packs_to_autobump, f'packs_to_autobump in the pr: {pr.number}, cant be empty.'
+        self.pr = pr
+        self.branch = pr.head.ref
+        self.git_repo = git_repo
+        self.packs_to_autobump = packs_to_autobump
+        self.github_run_id = run_id
 
-    @property
-    def rn_text(self):
-        return self._rn_text
+    def autobump(self):
+        if self.branch not in ["conflict_in_cs", "conflicts_in_base"]:
+            return
+        with checkout(self.git_repo, self.branch):
+            self.git_repo.git.merge(f'origin/{self.branch}', '-Xtheirs', '-m', MERGE_FROM_MASTER_COMMIT_MESSAGE)
+            body = PR_COMMENT_TITLE.format(self.github_run_id)
+            for pack_auto_bumper in self.packs_to_autobump:
+                new_version = pack_auto_bumper.autobump()
+                self.git_repo.git.add(f'{PACKS_DIR}/{pack_auto_bumper.pack_id}')
+                self.git_repo.git.commit('-m', COMMIT_MESSAGE.format(self.github_run_id,
+                                                                     new_version,
+                                                                     pack_auto_bumper.pack_id))
+                body += PR_COMMENT.format(pack_auto_bumper.pack_id, new_version, )
+            self.pr.create_issue_comment(body)
+
+
+class AutoBumperManager:
+    def __init__(
+            self,
+            github_client: Github,
+            github_repo_obj: Repository,
+            git_repo_obj: Repo,
+            run_id: str,
+    ):
+        self.github_client = github_client
+        self.github_repo_obj = github_repo_obj
+        self.git_repo_obj = git_repo_obj
+        self.run_id = run_id
+
+    def manage(self):
+        for pr in self.github_repo_obj.get_pulls(state='open', sort='created', base=BASE):
+            print(f'{t.yellow}Looking on pr {pr.number=}: {str(pr.updated_at)=}, {pr.head.ref=}')
+
+            conditions = [
+                LastModifiedCondition(pr=pr, git_repo=self.git_repo_obj),
+                LabelCondition(pr=pr, git_repo=self.git_repo_obj),
+                AddedRNFilesCondition(pr=pr, git_repo=self.git_repo_obj),
+                HasConflictOnAllowedFilesCondition(pr=pr, git_repo=self.git_repo_obj)
+            ]
+            for c1, c2 in pairwise(conditions):
+                c1.set_next_condition(c2)
+
+            base_cond_result = conditions[0].check()
+            if base_cond_result.should_skip:
+                continue
+
+            packs_to_autobump = []
+            conflicting_packs = base_cond_result.conflicting_packs
+            for pack in conflicting_packs:
+                origin_md, branch_md, pr_base_md = MetadataCondition.get_metadata_files(
+                    pack_id=pack,
+                    pr=pr,
+                    git_repo=self.git_repo_obj,
+                )
+                conditions = [
+                    PackSupportCondition(pack=pack, pr=pr, git_repo=self.git_repo_obj, branch_metadata=branch_md),
+                    MajorChangeCondition(pack=pack, pr=pr, git_repo=self.git_repo_obj, branch_metadata=branch_md,
+                                         origin_base_metadata=origin_md),
+                    MaxVersionCondition(pack=pack, pr=pr, git_repo=self.git_repo_obj, branch_metadata=branch_md,
+                                        origin_base_metadata=origin_md),
+                    OnlyOneRNPerPackCondition(pack=pack, pr=pr, git_repo=self.git_repo_obj),
+                    SameRNMetadataVersionCondition(pack=pack, pr=pr, git_repo=self.git_repo_obj,
+                                                   branch_metadata=branch_md),
+                    AllowedBumpCondition(pack=pack, pr=pr, git_repo=self.git_repo_obj, branch_metadata=branch_md,
+                                         pr_base_metadata=pr_base_md),
+                ]
+                for c1, c2 in pairwise(conditions):
+                    c1.set_next_condition(c2)
+
+                metadata_cond_result = conditions[0].check()
+                if metadata_cond_result.should_skip:
+                    continue
+
+                print(f'{t.yellow}Adding pack {pack} to autobump its release notes.')
+                packs_to_autobump.append(
+                    PackAutoBumper(
+                        pack_id=pack,
+                        rn_file_path=metadata_cond_result.pack_new_rn_file,
+                        update_type=metadata_cond_result.update_type,
+                    )
+                )
+
+            if packs_to_autobump:
+                BranchAutoBumper(
+                    packs_to_autobump=packs_to_autobump,
+                    git_repo=self.git_repo_obj,
+                    run_id=self.run_id,
+                    pr=pr,
+                ).autobump()
+        # todo: push
+
 
 
 class checkout:
@@ -501,18 +621,6 @@ def arguments_handler():
     return parser.parse_args()
 
 
-def autobump_release_notes(packs_to_autobump: List[PackAutoBumper], git_repo: Repo, pr_branch: str, run_id: str):
-    git_repo.git.merge(f'origin/{pr_branch}', '-Xtheirs', '-m', MERGE_FROM_MASTER_COMMIT_MESSAGE)
-    for pack_auto_bumper in packs_to_autobump:
-        # 1. bump version in metadata file rn (bump_version_number func)
-        new_version, metadata_dict = pack_auto_bumper.update_rn_obj.bump_version_number()
-        # 2. write metadata to file
-        # 3. create rn file
-        # 4. paste the saved text
-        git_repo.git.add(f'Packs/{pack_auto_bumper.pack_id}')
-        git_repo.git.commit('-m', COMMIT_MESSAGE.format(run_id, new_version, pack_auto_bumper.pack_id))
-
-
 def main():
     options = arguments_handler()
     github_token = options.github_token
@@ -524,69 +632,15 @@ def main():
     github_client: Github = Github(github_token, verify=False)
     github_repo_obj: Repository = github_client.get_repo(f'{ORGANIZATION_NAME}/{REPO_MANE}')
 
-    for pr in github_repo_obj.get_pulls(state='open', sort='created', base=BASE):
-        print(f'{t.yellow}Looking on pr {pr.number=}: {str(pr.updated_at)=}, {pr.head.ref=}')
+    autobump_manager = AutoBumperManager(
+        github_client=github_client,
+        git_repo_obj=git_repo_obj,
+        github_repo_obj=github_repo_obj,
+        run_id=run_id,
+    )
 
-        conditions = [
-            LastModifiedCondition(pr=pr, git_repo=git_repo_obj),
-            LabelCondition(pr=pr, git_repo=git_repo_obj),
-            AddedRNFilesCondition(pr=pr, git_repo=git_repo_obj),
-            HasConflictOnAllowedFilesCondition(pr=pr, git_repo=git_repo_obj)
-        ]
-        for c1, c2 in pairwise(conditions):
-            c1.set_next_condition(c2)
+    autobump_manager.manage()
 
-        base_cond_result = conditions[0].check()
-        if base_cond_result.should_skip:
-            continue
-
-        packs_to_autobump = []
-        conflicting_packs = base_cond_result.conflicting_packs
-        for pack in conflicting_packs:
-            origin_md, branch_md, pr_base_md = MetadataCondition.get_metadata_files(
-                pack_id=pack,
-                pr=pr,
-                git_repo=git_repo_obj,
-            )
-            conditions = [
-                PackSupportCondition(pack=pack, pr=pr, git_repo=git_repo_obj, branch_metadata=branch_md),
-                MajorChangeCondition(pack=pack, pr=pr, git_repo=git_repo_obj, branch_metadata=branch_md,
-                                     origin_base_metadata=origin_md),
-                MaxVersionCondition(pack=pack, pr=pr, git_repo=git_repo_obj, branch_metadata=branch_md,
-                                    origin_base_metadata=origin_md),
-                OnlyOneRNPerPackCondition(pack=pack, pr=pr, git_repo=git_repo_obj),
-                SameRNMetadataVersionCondition(pack=pack, pr=pr, git_repo=git_repo_obj, branch_metadata=branch_md),
-                AllowedBumpCondition(pack=pack, pr=pr, git_repo=git_repo_obj, branch_metadata=branch_md,
-                                     pr_base_metadata=pr_base_md),
-            ]
-            for c1, c2 in pairwise(conditions):
-                c1.set_next_condition(c2)
-
-            metadata_cond_result = conditions[0].check()
-            if metadata_cond_result.should_skip:
-                continue
-
-            print(f'Adding pack {pack} to autobump its release notes.')
-            packs_to_autobump.append(
-                PackAutoBumper(
-                    pack_id=pack,
-                    rn_file_path=metadata_cond_result.pack_new_rn_file,
-                    update_type=metadata_cond_result.update_type,
-                )
-            )
-
-        if packs_to_autobump:
-            with checkout(git_repo_obj, pr.head.ref):
-                autobump_release_notes(
-                    packs_to_autobump=packs_to_autobump,
-                    git_repo=git_repo_obj,
-                    pr_branch=pr.head.ref,
-                    run_id=run_id,
-                )
-
-    # todo git push
-    # todo: slack notify success or print success logs
-    # todo: comment on PR
     sys.exit(0)
 
 
