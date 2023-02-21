@@ -40,8 +40,7 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(self, base_url, verify, proxy, headers=None, max_fetch=None):
-        self.max_fetch = max_fetch
+    def __init__(self, base_url, verify, proxy, headers=None):
         headers["X-KB4-Integration"] = "Cortex XSOAR KMSAT"
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
@@ -234,8 +233,7 @@ class Client(BaseClient):
 class UserEventClient(BaseClient):
     """Client class to interact with the KMSAT User EventAPI"""
 
-    def __init__(self, base_url, verify, proxy, headers=None, max_fetch=None):
-        self.max_fetch = max_fetch
+    def __init__(self, base_url, verify, proxy, headers=None):
         headers["X-KB4-Integration"] = "Cortex XSOAR KMSAT"
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
@@ -413,10 +411,9 @@ def get_pagination(args: dict):
             list: Returns cleaned params for paging
         """
 
-    params = remove_empty_elements(
+    return remove_empty_elements(
         {"page": args.get("page"), "per_page": args.get("per_page")}
     )
-    return params
 
 
 """ COMMAND FUNCTIONS """
@@ -812,12 +809,9 @@ def kmsat_phishing_security_tests_failed_recipients_list_command(
     items_total = len(response)
 
     # Sets paging_end False if the response count is less than the per_page
-    per_page = 100
-    if (params.get('per_page')):
-        per_page = int(params.get('per_page'))
+    per_page = int(params.get('per_page')) if (params.get('per_page')) else 100
 
-    if(len(response) < per_page):
-        paging_end = True
+    paging_end = len(response) < per_page
 
     data = []
     for i in range(len(response)):
@@ -1015,12 +1009,9 @@ def kmsat_training_enrollments_list_command(
     items_total = len(response)
 
     # Sets paging_end False if the response count is less than the per_page
-    per_page = 100
-    if (params.get('per_page')):
-        per_page = int(params.get('per_page'))
+    per_page = int(params.get('per_page')) if (params.get('per_page')) else 100
 
-    if(len(response) < per_page):
-        paging_end = True
+    paging_end = len(response) < per_page
 
     # Adds only the filtered items to the response with counts
     if status is not None:
@@ -1314,10 +1305,7 @@ def test_module(client: Client, userEventClient: UserEventClient) -> str:
         message = "ok"
     except DemistoException as e:
         if "Forbidden" in str(e) or "Authorization" in str(e):
-            message = (
-                "Authorization Error: make sure Reporting API Key is correctly set"
-                + str(client._headers)
-            )
+            message = f"Authorization Error: make sure Reporting API Key is correctly set{str(client._headers)}"
         else:
             raise e
 
@@ -1326,10 +1314,7 @@ def test_module(client: Client, userEventClient: UserEventClient) -> str:
         message = "ok"
     except DemistoException as e:
         if "Forbidden" in str(e) or "Authorization" in str(e):
-            message = (
-                "Authorization Error: make sure User Event API Key is correctly set"
-                + str(client._headers)
-            )
+            message = f"Authorization Error: make sure Reporting API Key is correctly set{str(client._headers)}"
         else:
             raise e
     return message
@@ -1353,8 +1338,8 @@ def main() -> None:
     demisto.debug(f"Command being called is {command}")
 
     # get the service API url
-    base_url = urljoin(demisto.params()["url"], "/v1")
-    userEvents_base_url = demisto.params()["userEventsUrl"]
+    base_url = urljoin(params.get("url"), "/v1")
+    userEvents_base_url = params.get("userEventsUrl")
 
     # verify api key or credentials are specified
     if not params.get("apikey") or not (
@@ -1375,11 +1360,11 @@ def main() -> None:
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    verify_certificate = not demisto.params().get("insecure", False)
+    verify_certificate = not params.get("insecure", False)
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get("proxy", False)
+    proxy = params.get("proxy", False)
 
     try:
 
@@ -1387,7 +1372,7 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             headers={
-                "Authorization": "Bearer " + key,
+                "Authorization": f"Bearer {key}",
                 "Content-Type": "application/json",
             },
             proxy=proxy,
@@ -1397,7 +1382,7 @@ def main() -> None:
             base_url=userEvents_base_url,
             verify=verify_certificate,
             headers={
-                "Authorization": "Bearer " + userEventsApiKey,
+                "Authorization": f"Bearer {userEventsApiKey}",
                 "Content-Type": "application/json",
             },
             proxy=proxy,

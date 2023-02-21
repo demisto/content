@@ -100,7 +100,7 @@ def test_account_risk_score_history(requests_mock):
 def test_account_groups_risk_score_history(requests_mock):
     """
     Given
-            no params
+            A group ID argument
     When
             Calling https://us.api.knowbe4.com/v1/groups/1/risk_score_history
     Then
@@ -136,7 +136,7 @@ def test_account_groups_risk_score_history(requests_mock):
 def test_groups_members_list(requests_mock):
     """
     Given
-            no params
+            A group ID argument
     When
             Calling https://us.api.knowbe4.com/v1/groups/1/members
     Then
@@ -172,7 +172,7 @@ def test_groups_members_list(requests_mock):
 def test_users_risk_score_history_list(requests_mock):
     """
     Given
-            no params
+            A user ID
     When
             Calling https://us.api.knowbe4.com/v1/users/1/risk_score_history
     Then
@@ -244,7 +244,7 @@ def test_phishing_security_tests_list(requests_mock):
 def test_phishing_security_tests_recipients_list(requests_mock):
     """
     Given
-            no params
+            A phishing security test ID
     When
             Calling https://us.api.knowbe4.com/v1/phishing/security_tests/1/recipients
     Then
@@ -280,7 +280,7 @@ def test_phishing_security_tests_recipients_list(requests_mock):
 def test_phishing_security_tests_failed_recipients_list(requests_mock):
     """
     Given
-            no params
+            A phishing security test ID
     When
             Calling https://us.api.knowbe4.com/v1/phishing/campaigns/1/security_tests
     Then
@@ -325,7 +325,7 @@ def test_phishing_security_tests_failed_recipients_list(requests_mock):
 def test_phishing_campaigns_security_tests_list(requests_mock):
     """
     Given
-            no params
+            A campaign ID
     When
             Calling https://us.api.knowbe4.com/v1/phishing/campaigns/1/security_tests
     Then
@@ -441,8 +441,7 @@ def test_training_enrollments_list(requests_mock):
 def test_status_training_enrollments_list(requests_mock):
     """
     Given
-            no params
-    When
+            A status
             Calling https://us.api.knowbe4.com/v1/training/enrollments
     Then
             Make sure the data contains enrollment_id with expected values
@@ -556,7 +555,7 @@ def test_get_user_events(requests_mock):
 def test_get_user_event(requests_mock):
     """
     Given
-            no params
+            an event ID
     When
             Calling https://api.events.knowbe4.com/events/{id}
     Then
@@ -594,16 +593,16 @@ def test_get_user_event(requests_mock):
 def test_delete_user_event(requests_mock):
     """
     Given
-            no params
+            an Event ID
     When
             Calling https://api.events.knowbe4.com/events/{id}
     Then
             Make sure the data array contains user events
     """
-    id: str = "123-456-789"
+    eventId: str = "123-456-789"
     from KnowBe4KMSAT import kmsat_user_event_delete_command
 
-    requests_mock.delete(f"{USER_EVENT_BASE_URL}/events/{id}", status_code=204)
+    requests_mock.delete(f"{USER_EVENT_BASE_URL}/events/{eventId}", status_code=204)
 
     userEventClient = UserEventClient(
         USER_EVENT_BASE_URL,
@@ -615,29 +614,29 @@ def test_delete_user_event(requests_mock):
         },
     )
 
-    args: dict = {"id": id}
+    args: dict = {"id": eventId}
     result = kmsat_user_event_delete_command(userEventClient, args)
 
-    assert result.readable_output == f"Successfully deleted event: {id}"
+    assert result.readable_output == f"Successfully deleted event: {eventId}"
 
 
 def test_get_user_event_status(requests_mock):
     """
     Given
-            no params
+            an Event ID
     When
             Calling https://api.events.knowbe4.com/statuses/{id}
     Then
             Make sure the data contains the user events
     """
 
-    id: str = "abcdefgh-843c-4fc8-bb2f-decf89876f7b"
+    eventId: str = "abcdefgh-843c-4fc8-bb2f-decf89876f7b"
 
     mock_response_data = util_load_json("test_data/user_event_status_response.json")
     from KnowBe4KMSAT import kmsat_user_event_status_list_command
 
     requests_mock.get(
-        f"{USER_EVENT_BASE_URL}/statuses/{id}", json=mock_response_data, status_code=200
+        f"{USER_EVENT_BASE_URL}/statuses/{eventId}", json=mock_response_data, status_code=200
     )
 
     userEventClient = UserEventClient(
@@ -650,7 +649,7 @@ def test_get_user_event_status(requests_mock):
         },
     )
 
-    args: dict = {"id": id}
+    args: dict = {"id": eventId}
     result = kmsat_user_event_status_list_command(userEventClient, args)
 
     assert requests_mock.last_request.headers['X-KB4-Integration'] == "Cortex XSOAR KMSAT"
@@ -698,7 +697,7 @@ def test_get_user_event_statuses(requests_mock):
 def test_get_pagination():
     """
     Given
-            {"page": 1, "per_page": 10}
+            A page number and the number of results per page.
     When
             Calling get_pagination()
     Then
