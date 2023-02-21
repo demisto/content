@@ -1,5 +1,5 @@
 Octox Labs Cyber Security Asset Management platform
-This integration was integrated and tested with version xx of OctoxLabs
+This integration was integrated and tested with version 3.3.0 of OctoxLabs
 
 ## Configure OctoxLabs on Cortex XSOAR
 
