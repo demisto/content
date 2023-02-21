@@ -5,7 +5,6 @@
     "definitionId": "",
     "description": "Cyberint Classifier",
     "feed": false,
-    "fromServerVersion": "6.0.0",
     "id": "Cyberint - Classifier",
     "incidentSamples": null,
     "indicatorSamples": null,
@@ -25,7 +24,6 @@
     "packName": "Cyberint",
     "sourceClassifierId": "Cyberint - Classifier",
     "system": false,
-    "toServerVersion": "",
     "transformer": {
         "simple": "status"
     },
