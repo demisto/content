@@ -1005,7 +1005,6 @@ def kmsat_training_enrollments_list_command(
 
     data = []
     filtered_items_in_page = 0
-    paging_end = False
     items_total = len(response)
 
     # Sets paging_end False if the response count is less than the per_page
