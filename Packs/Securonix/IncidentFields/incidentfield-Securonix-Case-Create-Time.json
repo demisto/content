@@ -1,0 +1,32 @@
+{
+    "id": "incident_securonixcasecreatetime",
+    "version": -1,
+    "modified": "2023-01-18T13:56:50.066183765+05:30",
+    "name": "Securonix Case Create Time",
+    "ownerOnly": false,
+    "description": "Case event start time.",
+    "cliName": "securonixcasecreatetime",
+    "type": "date",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Securonix Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

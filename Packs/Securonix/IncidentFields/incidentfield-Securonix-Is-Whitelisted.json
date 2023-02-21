@@ -1,0 +1,32 @@
+{
+    "id": "incident_securonixiswhitelisted",
+    "version": -1,
+    "modified": "2023-01-18T13:57:28.515093012+05:30",
+    "name": "Securonix Is Whitelisted",
+    "ownerOnly": false,
+    "description": "Whether the incident is added to the allow list.",
+    "cliName": "securonixiswhitelisted",
+    "type": "boolean",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Securonix Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

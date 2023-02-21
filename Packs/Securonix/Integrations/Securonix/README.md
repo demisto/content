@@ -1,33 +1,165 @@
 ## Overview
-Use the Securonix integration to manage incidents and watchlists.
-Integration was built and tested with SNYPR Versions: 6.2, 6.3, 6.3.1.
+Use the Securonix integration to manage incidents, threats, lookup tables, whitelists and watchlists. Integration was built and tested with SNYPR Versions: 6.4 (Feb 2023 R3 release).
 
 This integration supports both cloud and on-prem instances of Securonix.
-To configure a cloud base instance use the *tenant* parameter only.
-To configure an on-prem instance, use both the *host* and *tenant* parameters.
-For more information, visit: `securonix/etnants/<tenantname>/securonix_home/responses/demisto` 
+To configure a cloud base instance use the *Tenant* parameter only.
+To configure an on-prem instance, use both the *Host* and *Tenant* parameters.
+
+## Use cases
+1. Fetch newly created incidents from Securonix.
+2. Fetch newly created threats from Securonix.
+3. Get, update and create Securonix incidents, add comments and perform actions on the Securonix incidents.
+4. Get, update, create and delete records from the whitelist.
+5. Get, update, create and delete records from the lookup table.
+6. Get, update, and create records from the watchlist.
+
+## Pre-Requisites
+### On Securonix:
+Ensure the integration user satisfies below mentioned pre-requisites:
+1. A role "ROLE_CASE_ADMIN" must be assigned
+2. For the target Securonix platform, enable the "Show Incidents To All Users" option under "INCIDENT MANAGEMENT SETTINGS" as shown below:<br/>
+![Incident Management Settings](../../doc_files/Securonix_User_Roles.png)
 
 ## Configure Securonix on Cortex XSOAR
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Integrations** > **Instances**.
 2. Search for Securonix.
 3. Click **Add instance** to create and configure a new integration instance.
+4. To fetch Securonix Incidents refer to the section "Configuration for fetching Securonix Incident as an XSOAR Incident".
+5. To fetch Securonix Threats refer to the section "Configuration for fetching Securonix Threat as an XSOAR Incident".
 
-| **Parameter** | **Description** | **Required** |
+### Configuration Parameters
+
+| **Parameter Name** | **Help Text** | **Required (Yes / No)** |
 | --- | --- | --- |
-| host | Host (Overrides the default hostname: `https://{tenant}.net/Snypr`) | False |
-| tenant | Tenant | True |
-| username | Username | True |
-| password | Password | True |
-| isFetch | Fetch incidents | False |
-| incident_status | Incidents to fetch | False |
-| default_severity | Set the default incident severity | False |
-| incidentType | Incident type | False |
-| fetch_time | First fetch time range (`<number> <time unit>`, e.g., 1 hour, 30 minutes) | False |
-| max_fetch | The maximum number of incidents to fetch each time. Maximum is 50. | False |
-| unsecure | Trust any certificate (not secure) | False |
-| proxy | Use system proxy settings | False |
+| Host (Overrides the default hostname: `https://{tenant}.net/Snypr`) | | No |
+| Tenant | | Yes |
+| Username | | Yes |
+| Password | | Yes |
+| Type of entity to fetch | The type of Securonix entity to fetch. Supported entities are "Incident" and "Threat". | No |
+| Tenant Name | Name of the tenant to fetch threats from. This parameter is optional for Non MSSP users. | No |
+| Incidents to fetch | Selecting "all" will fetch incidents updated in the given time range.<br/>Selecting "opened" will fetch incidents opened in the given time range.<br/>Selecting "closed" will fetch incidents closed in the given time range.| No |
+| Set the default incident severity | | No |
+| The maximum number of incidents to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200. | | No |
+| Incident Mirroring Direction | The mirroring direction in which to mirror the incidents. You can mirror "Incoming" (from Securonix to XSOAR), "Outgoing" (from XSOAR to Securonix), or in both directions. | No |
+| Close respective Securonix incident after fetching | If enabled, the integration will close the respective Securonix incident after fetching it in XSOAR. Following fields will be required for this functionality:<br/><br/>1. Securonix action name to map with XSOAR's active state for Outgoing mirroring<br/>2. Securonix status to map with XSOAR's active state for Outgoing mirroring<br/>3. Securonix action name to map with XSOAR's closed state for Outgoing mirroring<br/>4. Securonix status to map with XSOAR's closed state for Outgoing mirroring | No |
+| Securonix workflow state(s) that can be considered as Close state in XSOAR for Incoming mirroring | If the Securonix incident is in any one of the state mentioned here, then the incident will be Closed on XSOAR. Supports comma-separated values. | No |
+| Securonix action name to map with XSOAR's active state for Outgoing mirroring | Provide an action name to map with XSOAR's active state. E.g. IN PROGRESS. | No |
+| Securonix status to map with XSOAR's active state for Outgoing mirroring | Provide a workflow status to map with XSOAR's active state. E.g. In Progress. | No |
+| Securonix action name to map with XSOAR's closed state for Outgoing mirroring | Provide an action name to map with XSOAR's Closed state. E.g. CLOSED | No |
+| Securonix status to map with XSOAR's closed state for Outgoing mirroring | Provide a workflow status to map with XSOAR's closed state. E.g. Completed | No |
+| Comment Entry Tag | Choose the tag to add to an entry to mirror it as a comment in Securonix. | No |
+| Securonix Retry Count | Numbers of retries to be performed. (Recommended is 3) | No |
+| Securonix Retry Delay(In Seconds) | The delay between two retries. Range in 30 to 300 Seconds (5 minutes). Anything less than 30 seconds is considered 30 seconds, and anything more than 300 seconds is considered 300 seconds. (Recommended is 30 seconds) | No |
+| Securonix Retry Delay Type | Delay type of retry mechanism. (Recommended is Exponential) | No |
+| Trust any certificate (not secure) | Indicates whether to allow connections without verifying SSL certificate's validity. | No |
+| Use system proxy settings | Indicates whether to use XSOAR's system proxy settings to connect to the API. | No |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Configuration for fetching Securonix Incident as an XSOAR Incident
+To fetch Securonix Incident follow the next steps:<br/>
+1. Select Fetches incidents.
+2. Under Classifier, select "N/A".
+3. Under Incident type, select "Securonix Incident".
+4. Under Mapper (incoming), select "Securonix Incident - Incoming Mapper" for default mapping.
+5. Enter the connection parameters. (Host, Tenant, Username & Password)
+6. Under the Type of entity to fetch, select "Incident".
+7. Select the "Incidents to fetch":
+    - all - This will fetch incidents updated in the given time range.
+    - opened - This will fetch incidents created in the given time range.
+    - closed - This will fetch incidents closed in the given time range.
+8. Update "Set default incident severity", "First Fetch time range" & "Max Fetch Count" based on your requirement.
+9. Select the Incident Mirroring Direction:
+    - Incoming - Mirrors changes from the Securonix incident into the Cortex XSOAR incident.
+    - Outgoing - Mirrors changes from the Cortex XSOAR incident to the Securonix incident.
+    - Incoming And Outgoing - Mirrors changes both Incoming and Outgoing directions on incidents.
+    - None - Turns off incident mirroring.
+10. Enter the relevant values for "State" & "Action" values for mirroring.
+     - Below table indicates which fields are required for the respective mirroring type.
+
+| **Mirroring Type** | **Securonix workflow States for Incoming mirroring** | **Securonix State for XSOAR Active State** | **Securonix Action for XSOAR Active Action** | **Securonix State for XSOAR Closed State** | **Securonix Action for XSOAR Closed Action** | 
+| --- | --- | --- | --- | --- | --- | 
+| Incoming | Yes | No | No | No | No | 
+| Outgoing | No | Yes | Yes | Yes | Yes | 
+| Incoming and Outgoing | Yes | Yes | Yes | Yes | Yes |
+
+10. Enter the relevant Comment Entry Tag.  
+**Note**: This value is mapped to the **dbotMirrorTags** incident field in Cortex XSOAR, which defines how Cortex XSOAR handles comments when you tag them in the War Room. This is required for mirroring comments from Cortex XSOAR to Securonix.
+11. Optional: Check the "Close respective Securonix incident after fetching" parameter, if you want to close the Securonix Incident once it is fetched in the XSOAR.
+Below Parameters are required if this option is checked:
+    - Securonix action name for XSOAR's active state for Outgoing
+    - Securonix status for XSOAR's active state for Outgoing
+    - Securonix action name for XSOAR's close state for Outgoing
+    - Securonix status for XSOAR's close state for Outgoing
+12. Enter the relevant values for Securonix Retry parameters "Count", "Delay" & "Delay Type".
+
+**Notes for mirroring:**
+* This feature is compliant with XSOAR version 6.0 and above.
+* When mirroring incidents, you can make changes in Securonix that will be reflected in Cortex XSOAR, or vice versa. You can also attach files in Securonix Incident which will then be available in the XSOAR incident.
+* The mirroring settings apply only for incidents that are fetched after applying the settings. Pre-existing comments are not fetched/mirrored at the time of incident creation.
+* For mirroring to work flawlessly, a three-state workflow(similar to XSOAR) must be configured on the Securonix Incident side.
+* The mirroring is strictly tied to Incident type "Securonix Incident" & Incoming mapper "Securonix Incident - Incoming Mapper" if you want to change or use your custom incident type/mapper then make sure changes related to these are present.
+* If you want to use the mirror mechanism and you're using custom mappers, then the incoming mapper must contain the following fields: dbotMirrorDirection, dbotMirrorId, dbotMirrorInstance, dbotMirrorTags and securonixcloseincident.
+* To use a custom mapper, you must first duplicate the mapper and update the fields in the copy of the mapper. (Refer to the "Create a custom mapper consisting of the default Securonix mapper" section for more information.
+
+## Configuration for fetching Securonix Threat as an XSOAR Incident
+To fetch Securonix Threat follow the next steps:
+1. Select Fetches incidents.
+2. Under Classifier, select "N/A".
+3. Under Incident type, select Securonix Threat.
+4. Under Mapper (incoming), select Securonix Threat - Incoming Mapper for default mapping.
+5. Under Type of entity to fetch, select Threat.
+6. Enter the Tenant Name in case of MSSP user.
+7. Enter the connection parameters. (Host, Tenant, Username & Password)
+8. Enter the "The maximum number of incidents to fetch each time". The recommended number of threats to fetch is 100 considering the API implications, although 200 is allowed.
+9. Enter the relevant values for Securonix Retry parameters "Count", "Delay" & "Delay Type".
+
+## Create a custom mapper consisting of the default Securonix mapper
+1. Go to the settings -> Object setup -> Incidents.
+2. Navigate to the "Classification and Mapping" tab.
+3. Select the Mapper "Securonix incident - Incoming Mapper".
+4. Create a copy of that mapper and click on it. (You can rename the mapper.)
+5. Under the Incident Type dropdown, verify that the type of Mapper is "Securonix Incident".
+6. Click on "Choose data path" and map it to the custom field:
+    - Find the context field you want to map to this incident field on the right side and click on its value.
+    - Then you will see the path you've selected under your newly added field.
+    - Note: You can also type the path manually.
+7. Click "Save Version".
+8. Created mapper will appear in the drop-down for the "Mapper (incoming)" integration instance settings fields.
+9. Select the newly added mapper at the time of instance configuration.
+
+## Create a custom layout consisting of the default Securonix layout
+1. Go to the settings -> Object setup -> Incidents
+2. Navigate to the "Layouts" tab.
+3. Select the layout "Securonix Incident Information".
+4. Create a copy of that layout and click on it. (You can rename the layout.)
+5. Select the newly created layout and click on edit.
+    - To create a new section, drag and drop the "New Section" widget into the layout.
+    - To add a new field to the layout, navigate to the "Fields and Buttons" section and search for the field. Drag and drop the field widget in the layout.
+6. Once done, select "Save Version".
+7. Navigate to the "Incident Type" tab and select "Securonix Incident" type and detach it.
+8. Attach the newly created layout.
+9. Reattach the same "Incident Type" again else this incident type will not receive any new updates.
+
+**Note:** It is recommended to use out-of-the-box mappers, layout & incident types for better visualization and meaningful mappings. If you are changing any out-of-the-box mappers/layout then it might not render all the fields as per the expectation.
+
+## Troubleshooting
+
+### Receive Notification on an Incident Fetch Error
+The administrator and Cortex XSOAR users on the recipient's list receive a notification when an integration experiences an incident fetch error. Cortex XSOAR users can select their notification method, such as email, from their user preferences. Refer to [this XSOAR documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Receive-Notification-on-an-Incident-Fetch-Error) for more information.
+
+The following are tips for handling issues with mirroring incidents between Securonix and Cortex XSOAR.
+
+| **Issue** | **Recommendation** |
+| --- | --- |
+| Mirroring is not working. | Open Context Data and search for dbot. Confirm the dbot fields are configured correctly either through the mapper for that specific incident type or using setIncident. Specifically, make sure the integration instance is configured correctly for the mirroring direction (Incoming, Outgoing, Both) - dbotMirrorId, dbotMirrorDirection, dbotMirrorInstance, dbotMirrorTags |
+| Comments from before incident creation are not fetched/mirrored. | Mirroring settings apply only for incidents that are fetched after applying the settings.<br/>For example, if a user creates a Securonix incident with added comments and then defines a Securonix integration instance with mirroring in Cortex XSOAR, those comments are not fetched with the incident in Cortex XSOAR. |
+| Incident is not closing. | Verify the integration instance is configured correctly for the Mirrored Securonix action and state fields. |
+| Required fields are not getting sent or not visible in UI. | This may be a mapping issue, specifically if you have used a custom mapper make sure you've covered all the out of box mapper fields. |
+| Comments from XSOAR have not been mirrored in Securonix | Tag is required for mirroring comments from Cortex XSOAR to Securonix. There might be a reason the comment is not tagged as tag needs to be added manually.<br/><br/>Click Actions > Tags and add the "comments" tag (OR the specific tag name which was set up on Instance Configuration). |
+| Viewing masked data on the XSOAR application | If you observe masked data, it is highly likely that 'Masking' is enabled on your Securonix tenant. Please check with your Securonix Administrator for further details. |
+
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -434,7 +566,7 @@ Gets a list of activity data for the specified resource group.
 | --- | --- | --- |
 | from | Start date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss). | Required | 
 | to | End date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss). | Required | 
-| query | Free-text query. For example, query=“resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation”. | Optional | 
+| query | Free-text query. For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation". | Optional | 
 
 
 ##### Context Output
@@ -498,6 +630,7 @@ Gets a list activity data for an account name.
 | from | Start date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss). | Required | 
 | to | End date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss). | Required | 
 | query | Free-text query. For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation"." | Optional | 
+| query_id | Paginate next set of results. | Optional | 
 
 
 ##### Context Output
@@ -994,11 +1127,14 @@ Creates a watchlist in Securonix.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | watchlist_name | The name of the watchlist. | Required | 
+| tenant_name | Name of the tenant the watchlist belongs to.<br/><br/>The tenant name parameter is required for MSSP users. | Optional | 
 
 
 ##### Context Output
-
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Securonix.Watchlists.Watchlistname | String | Name of the Watchlist. | 
+| Securonix.Watchlists.TenantName | String | Tenant Name. | 
 
 ##### Command Example
 ```!securonix-create-watchlist watchlist_name=test_watchlist```
@@ -1177,7 +1313,892 @@ Creates an incident. For more information about the required arguments, see the 
 |---|---|---|---|---|---|---|
 | Users | Open | Policy | 30134 | Critical | Resource: BLUECOAT,Policy: Uploads to personal websites,Threat: Data egress via network uploads | {url} |
 
+
+### securonix-threats-list
+***
+Retrieve a list of threats violated within a specified time range and get details about
+the threat models and policies violated.
+
+##### Base Command
+
+`securonix-threats-list`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| date_from | Start time range for which to return threats (Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ For example: 01 Jan 2023, 01 Feb 2023 04:45:33, 2023-01-26T14:05:44Z) | Required | 
+| date_to | End date/time for which to retrieve threats (Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ For example: 01 Jan 2023, 01 Feb 2023 04:45:33, 2023-01-26T14:05:44Z) Default is current time. | Optional | 
+| page_size | The number of results to retrieve. Default is 10. | Optional | 
+| tenant_name | Name of the tenant to fetch threats from. This parameter is optional for Non MSSP users. | Optional | 
+| offset | Sets the starting index for the returned results. | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Securonix.Threat.TenantID | Number | Tenant ID. | 
+| Securonix.Threat.Tenantname | String | Tenant Name. | 
+| Securonix.Threat.Violator | String | Violator of threat. | 
+| Securonix.Threat.EntityID | String | Threat entity ID. | 
+| Securonix.Threat.Resourcegroupname | String | Name of the resource group. | 
+| Securonix.Threat.ThreatName | String | Threat Name. | 
+| Securonix.Threat.Category | String | Category of threat. | 
+| Securonix.Threat.Resourcename | String | Name of the resource. | 
+| Securonix.Threat.Resourcetype | String | Type of the resource. | 
+| Securonix.Threat.GenerationTime | Date | Date and Time when the threat is generated. | 
+| Securonix.Threat.GenerationTime_Epoch | Number | Epoch time when the threat is generated. | 
+| Securonix.Threat.Policies | Unknown | List of policies violated. | 
+| Securonix.Threat.Policystarttime | Number | Epoch time when the policy is first violated. | 
+| Securonix.Threat.Policyendtime | Number | Epoch time when the policy is last violated. | 
+| Securonix.Threat.Solrquery | String | Spotter query to fetch the related violations. | 
+
+
+##### Command Example
+```!securonix-threats-list date_from="1 day"```
+
+##### Context Example
+```
+{
+    "Securonix": {
+        "Threats": {
+            "TenantID": 2,
+            "Tenantname": "Response-Automation",
+            "Violator": "Activityaccount",
+            "EntityID": "VIOLATOR5-1673852881421",
+            "Resourcegroupname": "RES-PLAYBOOK-DS-AUTOMATION",
+            "ThreatName": "TM_Response-PB-ActivityAccount-Manual",
+            "Category": "NONE",
+            "Resourcename": "RES10-RESOURCE-302184",
+            "Resourcetype": "Res-Playbook",
+            "GenerationTime": "Mon, 16 Jan 2023 @ 01:53:31 AM",
+            "GenerationTime_Epoch": 1673855611090,
+            "Policies": [
+                "Response-PB-ActivityAccount-Manual"
+            ],
+            "policystarttime": 1661161072000,
+            "policyendtime": 1661161072000,
+            "solrquery": "index = violation and ( ( @policyname = \"Response-PB-ActivityAccount-Manual\" and @ipaddress=\"169.114.215.248\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"08/22/2022 04:37:52\" \"08/22/2022 04:37:53\""
+        }
+    }
+}
+```
+
+##### Human Readable Output
+### Threats:
+|ThreatName|EntityID|Violator|Category|Resourcegroupname|Resourcename|Resourcetype|GenerationTime|Policies|TenantID|Tenantname|
+|---|---|---|---|---|---|---|---|---|---|---|
+| TM_Response-PB-ActivityAccount-Manual | VIOLATOR5-1673852881421 | Activityaccount | NONE | RES-PLAYBOOK-DS-AUTOMATION | RES10-RESOURCE-302184 | Res-Playbook | Mon, 16 Jan 2023 @ 01:53:31 AM | Response-PB-ActivityAccount-Manual | 2 | Response-Automation |
+
 ## Limitations
   - The `opened` argument for fetching and listing incidents is currently not filtering only the opened incidents.
     This is an open issue on the vendor side.
   - Until version 6.3.1, the *max_fetch argument is not used. Hence, every *fetch incidents*, only the 10 most recent incidents are going to be fetched.
+
+
+### securonix-incident-activity-history-get
+***
+Retrieves incident activity history for a specified incident.
+
+
+#### Base Command
+
+`securonix-incident-activity-history-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident ID for which to retrieve the activity history. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Securonix.IncidentHistory.caseid | Number | Incident ID. | 
+| Securonix.IncidentHistory.actiontaken | String | The type of action taken. | 
+| Securonix.IncidentHistory.status | String | The status of the incident. | 
+| Securonix.IncidentHistory.comment.Comments | String | Comment text. | 
+| Securonix.IncidentHistory.eventTime | Number | Timestamp in epoch when the action is taken. | 
+| Securonix.IncidentHistory.username | String | Username of the person who carried out the action. | 
+| Securonix.IncidentHistory.currentassignee | String | The current assignee of the incident. | 
+| Securonix.IncidentHistory.commentType | String | The type of the comment. | 
+| Securonix.IncidentHistory.currWorkflow | String | The current workflow of the incident. | 
+| Securonix.IncidentHistory.isPlayBookOutAvailable | Boolean | Whether or not the playbook is available. | 
+| Securonix.IncidentHistory.creator | String | The creator of the activity. | 
+| Securonix.IncidentHistory.lastStatus | String | The previous status of the incident. | 
+| Securonix.IncidentHistory.pastassignee | String | The previous assignee of the incident. | 
+| Securonix.IncidentHistory.prevWorkflow | String | The previous workflow of the incident. | 
+| Securonix.IncidentHistory.attachment | String | The name of the attached file. | 
+| Securonix.IncidentHistory.attachmentType | String | The type of the attachment. | 
+| Securonix.IncidentHistory.playBookOutput.playBookId | Number | The ID of the playbook. | 
+| Securonix.IncidentHistory.playBookOutput.playBookName | String | The name of the playbook. | 
+| Securonix.IncidentHistory.playBookOutput.playRunId | String | The playbook run ID. | 
+| Securonix.IncidentHistory.playBookOutput.executorId | Number | The ID of the executor. | 
+| Securonix.IncidentHistory.playBookOutput.executor | String | The name of the executor. | 
+| Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.taskName | String | The name of the playbook task. | 
+| Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.description | String | The description of the playbook task. | 
+| Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.icon | String | Playbook icon. | 
+| Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.taskId | Number | The ID of the playbook task. | 
+| Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.lastExecutedTime | Date | The last execution time in epoch. | 
+| Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.lastStatus | String | The last status of the playbook. | 
+| Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.executedTask.executionId | String | The execution ID of the playbook. | 
+| Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.executedTask.taskStartTime | Date | The start time of the task. | 
+| Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.executedTask.taskEndTime | Date | The end time of the task. | 
+| Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.executedTask.status | String | The status of the task. | 
+| Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.connectionMetadata | String | Connection metadata. | 
+
+#### Command example
+```!securonix-incident-activity-history-get incident_id=3235505380```
+
+#### Context Example
+```json
+{
+    "Securonix": {
+        "IncidentHistory": [
+            {
+                "caseid": "3235505380",
+                "eventTime": "Jan 18, 2023 2:34:21 AM",
+                "isPlayBookOutAvailable": true,
+                "playBookOutput": {
+                    "executor": "Admin Admin",
+                    "executorId": 41,
+                    "playBookId": 104,
+                    "playBookName": "Create Security Incident",
+                    "playRunId": "5c0f62c1-23b4-4c5a-8c40-0aa9f3def050",
+                    "tasksForParticularRun": [
+                        {
+                            "connectionMetadata": "{\"source\":\"test\"}",
+                            "description": "Create Security incidents",
+                            "executedTask": {
+                                "executionId": "104-c08be5e4-480d-4105-9ed7-232cf902fa83",
+                                "status": "FINISHED",
+                                "taskEndTime": 1674009264968,
+                                "taskInfo": {
+                                    "Incident created": [
+                                        {
+                                            "highlight": false,
+                                            "isurl": false,
+                                            "key": "INCIDENT NUMBER",
+                                            "showonui": true,
+                                            "value": "0724324"
+                                        },
+                                        {
+                                            "highlight": false,
+                                            "isurl": false,
+                                            "key": "sys_id",
+                                            "showonui": false,
+                                            "value": "61a6b780dbeca910dabd266e13961933"
+                                        },
+                                        {
+                                            "highlight": false,
+                                            "isurl": false,
+                                            "key": "lastViolationTime",
+                                            "showonui": false,
+                                            "value": "1674009261355"
+                                        },
+                                        {
+                                            "highlight": false,
+                                            "isurl": true,
+                                            "key": "INCIDENT URL",
+                                            "showonui": true,
+                                            "value": "<URL of Securonix platform>"
+                                        },
+                                        {
+                                            "highlight": false,
+                                            "isurl": false,
+                                            "key": "VIOLATION_COUNT",
+                                            "showonui": true,
+                                            "value": "15"
+                                        }
+                                    ]
+                                },
+                                "taskStartTime": 1674009261396
+                            },
+                            "icon": "test",
+                            "lastExecutedTime": 1674009261396,
+                            "lastStatus": "FINISHED",
+                            "taskId": 104,
+                            "taskName": "Create Security Incident"
+                        }
+                    ]
+                }
+            },
+            {
+                "actiontaken": "CREATED",
+                "caseid": "3235505380",
+                "comment": [
+                    {
+                        "Comments": "Incident created while executing playbook - Create Security Incident"
+                    }
+                ],
+                "commentType": [
+                    "text"
+                ],
+                "creator": "admin",
+                "currWorkflow": "SOCTeamReview",
+                "currentassignee": "API_TEST_SS",
+                "eventTime": "Jan 18, 2023 2:34:22 AM",
+                "isPlayBookOutAvailable": false,
+                "status": "Open",
+                "username": "Admin Admin"
+            },
+            {
+                "actiontaken": "CLOSE AS FIXED",
+                "caseid": "3235505380",
+                "comment": [
+                    {
+                        "Comments": "Incident closed as part of AutoClosure"
+                    }
+                ],
+                "commentType": [
+                    "text"
+                ],
+                "creator": "admin",
+                "currWorkflow": "DEFAULTWORKFLOW",
+                "currentassignee": "API_TEST_SS",
+                "eventTime": "Jan 20, 2023 5:08:42 AM",
+                "isPlayBookOutAvailable": false,
+                "lastStatus": "Open",
+                "pastassignee": "API_TEST_SS",
+                "prevWorkflow": "SOCTeamReview",
+                "status": "COMPLETED",
+                "username": "Admin Admin"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+### Incident activity history for ID: 3235505380
+>|Action Taken|Username|Event Time|Status|Last Status|Comment|Playbook ID|Playbook Name|Playbook Executor|
+>|---|---|---|---|---|---|---|---|---|
+>| CLOSE AS FIXED | Admin Admin | Jan 20, 2023 5:08:42 AM | COMPLETED | Open | Incident closed as part of AutoClosure |  |  |  |
+>| CREATED | Admin Admin | Jan 18, 2023 2:34:22 AM | Open |  | Incident created while executing playbook - Create Security Incident |  |  |  |
+>|  |  | Jan 18, 2023 2:34:21 AM |  |  |  | 104 | Create Security Incident | Admin Admin |
+
+
+### securonix-incident-attachment-get
+***
+Retrieves the attachments available on the Securonix platform.
+
+
+#### Base Command
+
+`securonix-incident-attachment-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident ID for which to retrieve the attachments. | Required | 
+| attachment_type | The type of attachment to retrieve. Supported options are csv, pdf, and txt. Comma-separated values are supported. | Optional |
+| from | Start time for which to retrieve attachments.(Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, yyyy-MM-ddTHH:mm:ss.SSSZ. For example: 01 Jan 2023, 01 Feb 2023 04:45:33, 2023-01-26T14:05:44Z, 2023-01-26T14:05:44.000Z) | Optional |
+| to | End time for which to retrieve attachments.(Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, yyyy-MM-ddTHH:mm:ss.SSSZ. For example: 01 Jan 2023, 01 Feb 2023 04:45:33, 2023-01-26T14:05:44Z, 2023-01-26T14:05:44.000Z) | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | Number | The size of the file in bytes. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA512 | String | The SHA512 hash of the file. | 
+| File.Name | String | The name of the file. | 
+| File.SSDeep | String | The SSDeep hash of the file. | 
+| File.EntryID | String | The entry ID of the file. | 
+| File.Info | String | File information. | 
+| File.Type | String | The file type. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Extension | String | The file extension. |
+| Securonix.Incidents.Attachments.IncidentID | String | Attachment Incident ID.  |
+| Securonix.Incidents.Attachments.Files | Unknown | Attachment File names.  |
+
+#### Command example
+```!securonix-incident-attachment-get incident_id=12345678 from=2023-01-27T07:25:00Z to=2023-01-27T08:25:00Z```
+
+#### Context Example
+```json
+{
+    "Securonix": {
+        "Incidents": {
+            "Attachments": {
+                {
+                    "Files": "REST_API_Categories___SNYPR_6.4.pdf",
+                    "IncidentID": 3422464053
+                }
+            }
+        }
+    },
+    "File": {
+        "Type": "application/pdf",
+        "Size": "6,157,973 bytes",
+        "Info": "PDF document, version 1.4",
+        "MD5": "ee0e57a311beb1c9a326b921625d31e4",
+        "SHA1": "e60bb6364981039bca21285a5c35a41afcbcdbb",
+        "SHA256": "b1c383bb218218b5a816841a7a91f1dcab08c1034d434fcefab70b4d804b7cc",
+        "SHA512": "0c2208f9dd5c65b18fb88dc8dec81c412e2b22b6122f837827079c7dad9b27c5d691a4d09edf3583a8313fae2a7a620c86ff4a186e46273970e542d42ca4bb0",
+        "SSDeep": "98304:EIkHaH04jKTu8dEp/i6fVm+RG9de2VaqhEIrST6k2WLcJVHvLx4jO1mzPyX:BYgjfyE46fbRGze2gTILk+VHvLx719",
+    }
+}
+```
+
+#### Human Readable Output
+
+##### Incident ID: 3235505380
+Uploaded file: REST_API_Categories___SNYPR_6.4.pdfDownload
+>|Property|Type|Size|Info|MD5|SHA1|SHA256|SHA512|SSDeep|
+>|---|---|---|---|---|---|---|---|---|
+>| Value | application/pdf | 6,157,973 bytes | PDF document, version 1.4 | ee0e57a311beb1c9a326b921625d31e4 | ae60bb6364981039bca21285a5c35a41afcbcdbb | 8b1c383bb218218b5a816841a7a91f1dcab08c1034d434fcefab70b4d804b7cc | 60c2208f9dd5c65b18fb88dc8dec81c412e2b22b6122f837827079c7dad9b27c5d691a4d09edf3583a8313fae2a7a620c86ff4a186e46273970e542d42ca4bb0 | 98304:EIkHaH04jKTu8dEp/i6fVm+RG9de2VaqhEIrST6k2WLcJVHvLx4jO1mzPyX:BYgjfyE46fbRGze2gTILk+VHvLx719 |
+
+
+### securonix-whitelists-get
+***
+Gets a list of whitelists.
+
+#### Base Command
+`securonix-whitelists-get`
+
+#### Input
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tenant_name | Name of the tenant the whitelist belongs to.<br/><br/>The tenant name parameter is required for MSSP users. | Optional | 
+
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Securonix.Whitelist.WhitelistName | String | Name of the Whitelist. | 
+| Securonix.Whitelist.TenantName | String | Tenant Name. | 
+| Securonix.Whitelist.WhitelistType | String | Type of the Whitelist. | 
+
+#### Command example
+```!securonix-whitelists-get```
+
+#### Context Example
+```json
+{
+    "Securonix": {
+        "Whitelist": [{
+        "WhitelistName": "Dummy Whitelist 1",
+        "WhitelistType": "Automated",
+        "TenantName": "test_tenant"
+      },
+      {
+        "WhitelistName": "Dummy Whitelist 2",
+        "WhitelistType": "Automated",
+        "TenantName": "test_tenant"
+      }]
+    }
+}
+```
+#### Human Readable Output
+### Whitelist: Dummy Threat Model MM
+|WhitelistName|WhitelistType|TenantName|
+|---|---|---|
+| Dummy Whitelist 1 | Automated | test_tenant |
+| Dummy Whitelist 2 | Automated | test_tenant |
+
+
+### securonix-whitelist-entry-list
+***
+Gets information for the specified whitelist.
+
+
+#### Base Command
+
+`securonix-whitelist-entry-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tenant_name | Name of the tenant the whitelist belongs to.<br/><br/>The tenant name parameter is required for MSSP users. | Optional | 
+| whitelist_name | Name of the whitelist that the user wants to list. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Securonix.Whitelist.WhitelistName | String | Name of the Whitelist. | 
+| Securonix.Whitelist.TenantName | String | Tenant Name. | 
+| Securonix.Whitelist.Entries.Entity/Attribute | String | Entity/Attribute which is whitelisted. | 
+| Securonix.Whitelist.Entries.ExpiryDate | Date | The date when the entity will be removed from the whitelist. | 
+
+#### Command example
+```!securonix-whitelist-entry-list whitelist_name="test_whitelist"```
+
+#### Context Example
+```json
+{
+    "Securonix": {
+        "Whitelist": {
+            "Entries": [
+              {
+                "Entity/Attribute": "TEST123",
+                "ExpiryDate": "09/28/2035 21:21:19"
+              }
+            ],
+            "TenantName": "TenantAug02",
+            "Whitelistname": "test_whitelist"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+### Whitelist: Dummy Threat Model MM
+|Entity/Attribute|ExpiryDate|
+|---|---|
+| TEST123 | 09/28/2035 21:21:19 |
+
+
+
+### securonix-xsoar-state-mapping-get
+***
+Returns the state mapping of XSOAR with Securonix.
+
+
+#### Base Command
+
+`securonix-xsoar-state-mapping-get`
+#### Input
+
+This command does not have any arguments.
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Securonix.StateMapping.ACTIVE.action | String | Securonix action name to map with XSOAR's active state. | 
+| Securonix.StateMapping.ACTIVE.status | String | Securonix status to map with XSOAR's active state. | 
+| Securonix.StateMapping.DONE.action | String | Securonix action name to map with XSOAR's closed state. | 
+| Securonix.StateMapping.DONE.status | String | Securonix status to map with XSOAR's closed state. | 
+
+#### Command example
+```!securonix-xsoar-state-mapping-get```
+
+#### Context Example
+```json
+{
+  "Securonix": {
+    "StateMapping": {
+      "ACTIVE": {
+        "action": "Start Investigation",
+        "status": "in progress"
+      },
+      "DONE": {
+        "action": "Close Incident",
+        "status": "completed"
+      }
+    }
+  }
+}
+```
+
+#### Human Readable Output
+
+### State Mapping:
+|XSOAR Status|Securonix Status|Securonix Action Name|
+|---|---|---|
+| Active | in progress | Start Investigation |
+| Closed | completed | Close Incident |
+
+### securonix-whitelist-create
+***
+Creates a whitelist in Securonix.
+
+
+#### Base Command
+
+`securonix-whitelist-create`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tenant_name | Name of the tenant the whitelist belongs to.<br/><br/>The tenant name parameter is required for MSSP users. | Optional | 
+| whitelist_name | Name of the whitelist that the user wants to create. | Required | 
+| entity_type | Type of entity that the whitelist is intended to hold. | Optional | 
+
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```!securonix-whitelist-create whitelistname="test_whitelist" entity_type="Users"```
+
+##### Context Example
+```
+{}
+```
+
+##### Human Readable Output
+Whitelist test_whitelist was created successfully.
+
+
+### securonix-whitelist-entry-add
+***
+Add entity or attribute to the specified whitelist entry.
+
+
+#### Base Command
+
+`securonix-whitelist-entry-add`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tenant_name | Name of the tenant the whitelist belongs to.<br/><br/>The tenant name parameter is required for MSSP users. | Optional | 
+| whitelist_name | The name of the whitelist to which data is being added.<br/><br/>If whitelist_type is Attribute, then whitelist_name and violation_name should be the same. | Required | 
+| whitelist_type | The type of the whitelist to which data is being added. (Supported Values are Global and Attribute.) | Required | 
+| entity_type | The type of entity being added. (Supported values are Users, Activityaccount, Activityip, Resources).<br/><br/>This parameter is required if whitelist_type is Global. | Optional | 
+| entity_id | ID of the entity being added.<br/><br/>This parameter is required if whitelist_type is Global. | Optional | 
+| expiry_date | The date when the entity will be removed from the whitelist.(In MM/DD/YYYY format) | Optional | 
+| resource_name | The resource name to which the account belongs.<br/><br/>This parameter is required if whitelist_type is Global and entity_type is Activityaccount. | Optional | 
+| resource_group_id | The resource group id to which the account belongs.<br/><br/>This parameter is required if whitelist_type is Global and entity_type is Activityaccount. | Optional | 
+| attribute_name | Name of the attribute being added. (Supported values are source ip, resourcetype,transactionstring)<br/><br/>This parameter is required if whitelist_type is Attribute. | Optional | 
+| attribute_value | The attribute value being added.<br/><br/>This parameter is required if whitelist_type is Attribute. | Optional | 
+| violation_type | Type of the violation. (Supported Values are Policy,ThreatModel,Functionality.)<br/><br/>This parameter is required if whitelist_type is Attribute. | Optional | 
+| violation_name | Name of the violations. (Supported values are Policy names, ThreatModel names, Functionality names)<br/><br/>This parameter is required if whitelist_type is set to Attribute, and is the same as the whitelist name parameter.  | Optional | 
+
+#### Context Output
+
+There is no context output for this command. 
+
+#### Command example
+```!securonix-whitelist-entry-add whitelist_name=whitelistdemo_Activityip whitelist_type=Global tenant_name=test_tenant entity_type=Activityip entity_id=0.0.0.1 expiry_date=04/02/2023```
+
+#### Context example
+```json
+{
+    "status": "OK",
+    "messages": [
+        "entity added to global whitelist Successfully...!"
+    ],
+    "result": []
+}
+```
+
+#### Human Readable Output
+Entity added to global whitelist Successfully.
+
+
+### securonix-lookup-table-create
+***
+Creates a lookup table.
+
+#### Base Command
+
+`securonix-lookup-table-create`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Name of the lookup table to create. | Required | 
+| scope | Scope of the lookup table. This argument is mandatory for MSSP users. | Optional | 
+| tenant_name | Name of the tenant in which to create a lookup table. This argument is mandatory for MSSP users. | Optional | 
+| field_names | A comma-separated string of column names. | Required | 
+| encrypt | A comma-separated string of column names for which data needs to be encrypted. | Optional | 
+| key | A comma-separated string of column names to be used as key | Required | 
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```!securonix-lookup-table-create name=test_lookup_table field_names="samplefield,samplefield2" key="samplefield" tenant_name=test_tenant scope=Global```
+
+##### Context Example
+```
+{}
+```
+
+##### Human Readable Output
+Lookup Table test_lookup_table created successfully
+
+
+### securonix-lookup-table-config-and-data-delete
+***
+Deletes the data and configuration of the provided lookup table.
+
+
+#### Base Command
+
+`securonix-lookup-table-config-and-data-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Name of the lookup table to delete. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Securonix.LookupTable.lookupTableName | String | Name of the lookup table. | 
+| Securonix.LookupTable.isDeleted | Boolean | True, if the lookup table data and configuration deleted successfully. | 
+
+
+##### Command Example
+```!securonix-lookup-table-config-and-data-delete name="test"```
+
+##### Context Example
+```
+{
+  "Securonix": {
+    "LookupTable": {
+      "lookupTableName": "test",
+      "isDeleted": true
+    }
+  }    
+}
+```
+
+##### Human Readable Output
+test and data deleted successfully
+
+
+### securonix-lookup-tables-list
+***
+Retrieves a list of lookup tables available within the Securonix platform.
+
+
+#### Base Command
+
+`securonix-lookup-tables-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| max | Number of records to return. | Optional | 
+| offset | Specify from which record the data should be returned. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Securonix.LookupTable.tenantName | String | Name of the tenant. | 
+| Securonix.LookupTable.lookupTableName | String | Name of the lookup table. | 
+| Securonix.LookupTable.totalRecords | Number | Number of records in the lookup table. | 
+| Securonix.LookupTable.scope | String | Scope of the lookup table. | 
+| Securonix.LookupTable.type | String | Type of the lookup table. | 
+
+#### Command example
+```!securonix-lookup-tables-list max=2 offset=0```
+#### Context Example
+```json
+{
+    "Securonix": {
+        "LookupTable": [
+            {
+                "lookupTableName": "NonBusinessDomains",
+                "scope": "global",
+                "tenantName": "All Tenants",
+                "totalRecords": 2213,
+                "type": "system"
+            },
+            {
+                "lookupTableName": "CompressedFileExtensions",
+                "scope": "meta",
+                "tenantName": "All Tenants",
+                "totalRecords": 240,
+                "type": "system"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Lookup Tables:
+>|Tenant Name|Lookup Table Name|Total Records|Scope|Type of Lookup Table|
+>|---|---|---|---|---|
+>| All Tenants | NonBusinessDomains | 2213 | global | system |
+>| All Tenants | CompressedFileExtensions | 240 | meta | system |
+
+
+
+### securonix-whitelist-entry-delete
+***
+Remove entity or attribute from the specified whitelist entry.
+
+
+#### Base Command
+
+`securonix-whitelist-entry-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tenant_name | Name of the tenant the whitelist belongs to.<br/><br/>The tenant name parameter is required for MSSP user. | Optional | 
+| whitelist_name | Name of the whitelist the user wants to delete the value from. | Required | 
+| whitelist_type | Type of whitelist that user wants to delete from. Possible values are: Global, Attribute. | Optional | 
+| entity_id | Entity ID value that needs to be removed from the whitelist.<br/><br/>This parameter is required if whitelist_type is set to "Global".<br/><br/>Example:<br/>- employeeId for type User<br/>- accountname for type ActivityAccount<br/>- resourcename for type Resources<br/>- ipadress for type IpAddress. | Optional | 
+| attribute_name | Name of the attribute being removed.<br/><br/>This parameter is required if whitelist_type is set to "Attribute".<br/><br/>Example:<br/>- accountname<br/>- transactionstring<br/>- sourcetype. | Optional | 
+| attribute_value | The value of the attribute being removed.<br/><br/>This parameter is required if whitelist_type is "Attribute". | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```!securonix-whitelist-entry-delete whitelistname="test_whitelist" entity_id="test_user"```
+
+##### Context Example
+```
+{}
+```
+
+##### Human Readable Output
+test_user Item removed from whitelist Successfully.
+
+
+### securonix-lookup-table-entries-list
+***
+Retrieves the entries stored in a specified lookup table.
+
+
+#### Base Command
+
+`securonix-lookup-table-entries-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Lookup Table name. | Required | 
+| query | Use to filter the records. | Optional | 
+| attribute | Column name to sort the data. Default is key. | Optional | 
+| max | Number of records to retrieve. Default is 15. | Optional | 
+| offset | Specify from which record the data should be returned. Default is 0. | Optional | 
+| page_num | Specify a value to retrieve records from a specific page. Default is 1. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Securonix.LookupTableEntries.lookupname | String | Name of the lookup table. | 
+| Securonix.LookupTableEntries.tenantid | Number | ID of the tenant. | 
+| Securonix.LookupTableEntries.lookupuniquekey | String | Unique key of the entry. | 
+| Securonix.LookupTableEntries.timestamp | String | The UTC timestamp indicates when the entry was added. | 
+| Securonix.LookupTableEntries.key | String | The value of the key field. | 
+| Securonix.LookupTableEntries.defaultenrichedevent | Unknown | Entry data. | 
+| Securonix.LookupTableEntries.tenantname | String | Name of the tenant. | 
+| Securonix.LookupTableEntries.entry.key | String | Key of the entry. | 
+| Securonix.LookupTableEntries.entry.value | String | Value of the entry. | 
+
+
+#### Command example
+```!securonix-lookup-table-entries-list name=TEST_M max=2```
+
+#### Context Example
+```json
+{
+  "Securonix": {
+    "LookupTableEntries": [
+    {
+      "defaultenrichedevent": [
+        "127.0.0.12",
+        "158267F0BC6E7484E3C0F5964ABE9D2B",
+        "good"
+      ],
+      "entry": [
+        {
+          "key": "reputation",
+          "value": "good"
+        },
+        {
+          "key": "ip",
+          "value": "127.0.0.12"
+        },
+        {
+          "key": "id",
+          "value": "158267F0BC6E7484E3C0F5964ABE9D2B"
+        }
+      ],
+      "key": "158267F0BC6E7484E3C0F5964ABE9D2B",
+      "lookupname": "TEST_M",
+      "lookupuniquekey": "2^~TEST_M|158267F0BC6E7484E3C0F5964ABE9D2B",
+      "tenantid": 2,
+      "tenantname": "novr3nonmssp",
+      "timestamp": "Feb 18, 2023 5:50:16 AM"
+    },
+    {
+      "defaultenrichedevent": [
+        "127.0.0.50",
+        "175A9FFD55480ED376C992AC86ABE3D7",
+        "verybad"
+      ],
+      "entry": [
+        {
+          "key": "reputation",
+          "value": "verybad"
+        },
+        {
+          "key": "ip",
+          "value": "127.0.0.50"
+        },
+        {
+          "key": "id",
+          "value": "175A9FFD55480ED376C992AC86ABE3D7"
+        }
+      ],
+      "key": "175A9FFD55480ED376C992AC86ABE3D7",
+      "lookupname": "TEST_M",
+      "lookupuniquekey": "2^~TEST_M|175A9FFD55480ED376C992AC86ABE3D7",
+      "tenantid": 2,
+      "tenantname": "novr3nonmssp",
+      "timestamp": "Feb 18, 2023 6:01:01 AM"
+    }
+  ]}
+}
+```
+
+#### Human Readable Output
+
+>### Entries:
+>|Key|Lookup Unique Key|Tenant Name|Timestamp|id|ip|reputation|
+>|---|---|---|---|---|---|---|
+>| 158267F0BC6E7484E3C0F5964ABE9D2B | 2^~TEST_M\\|158267F0BC6E7484E3C0F5964ABE9D2B | novr3nonmssp | Feb 18, 2023 5:50:16 AM | 158267F0BC6E7484E3C0F5964ABE9D2B | 127.0.0.12 | good |
+>| 175A9FFD55480ED376C992AC86ABE3D7 | 2^~TEST_M\\|175A9FFD55480ED376C992AC86ABE3D7 | novr3nonmssp | Feb 18, 2023 6:01:01 AM | 175A9FFD55480ED376C992AC86ABE3D7 | 127.0.0.50 | verybad |
+
+
+### securonix-lookup-table-entry-add
+***
+Add entries to the provided lookup table.
+
+
+#### Base Command
+
+`securonix-lookup-table-entry-add`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Lookup Table name to which the data needs to be added. | Required | 
+| tenant_name | Name of the tenant to which the lookup table belongs. This argument is required for MSSP users and if the scope of the lookup table is "Meta". | Optional | 
+| json_data | JSON formatted string containing the field names and values in the below format.<br/><br/>E.g. [{"field1": "Value1", "field2": "Value2"}, {"field1": "Value3", "field2": "Value4"}]. | Optional | 
+| file_entry_id | War room entry of the file. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```!securonix-lookup-table-entry-add name=test_lookup file_entry_id=128@1f9c2de5-8006-4686-8a6a-cc0a17013434```
+
+##### Context Example
+```
+{}
+```
+
+##### Human Readable Output
+Entries added to  test_lookup successfully

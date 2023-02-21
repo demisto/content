@@ -1,0 +1,32 @@
+{
+    "id": "incident_securonixlastupdatedate",
+    "version": -1,
+    "modified": "2023-01-18T13:57:34.203939193+05:30",
+    "name": "Securonix Last Update Date",
+    "ownerOnly": false,
+    "description": "Last update date of the incident in Epoch time.",
+    "cliName": "securonixlastupdatedate",
+    "type": "date",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Securonix Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}
