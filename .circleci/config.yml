@@ -378,7 +378,7 @@ workflows:
   version: 2
   commit:
     when:
-      condition: << pipeline.parameters.contrib_branch >>
+      condition: *get_contribution_pack
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
