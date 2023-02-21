@@ -268,7 +268,10 @@ def fetch_events(
         next_run_audit_str = (now + timedelta(days=1)).strftime(AUDIT_START_TIMESTAMP_FORMAT)
 
     else:
-        demisto.info(f"Skipping audits since it's not the end of the day (UTC), it's {now}")
+        demisto.info(
+            f"""Skipping audits since it's not the end of the day (UTC),
+            it's {now.strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)}"""
+        )
         audits = []
         next_run_audit_str = start
 
@@ -386,7 +389,7 @@ def main() -> None:
                 demisto.info(f"Setting last run to {str(next_fetch)}...")
                 demisto.setLastRun(next_fetch)
 
-            if should_push_events:
+            if should_push_events and (detections or audits):
                 if detections:
                     demisto.info(f"Sending {len(detections)} detections to XSIAM...")
                     send_events_to_xsiam(detections, vendor=VENDOR, product=client.endpoints[0])
@@ -395,6 +398,11 @@ def main() -> None:
                     demisto.info(f"Sending {len(audits)} audits to XSIAM...")
                     send_events_to_xsiam(audits, vendor=VENDOR, product=client.endpoints[1])
                     demisto.info(f"{len(audits)} audits sent to XSIAM.")
+
+            else:
+                demisto.info(
+                    "Either should_push_events=False or there are no audits nor detections to send to XSIAM."
+                )
 
         else:
             raise NotImplementedError(f"command '{cmd}' is not implemented.")
