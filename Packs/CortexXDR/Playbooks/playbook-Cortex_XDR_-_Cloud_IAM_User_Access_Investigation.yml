@@ -541,7 +541,7 @@ tasks:
         Look at any persistence, for example - a new user creation or key, etc.
         Investigate operations performed by the user and examine the executed operations, by who it was executed, on which resource, and the operation status.
         Look at any lateral movement operations. For example, an operation can be = AsumeRole.
-        As an extra validation step, it is recommended to query the user and/or the user’s manager regarding the investigated suspicious activity
+        As an extra validation step, it is recommended to query the user and/or the user’s manager regarding the investigated suspicious activity.
       type: regular
       iscommand: false
       brand: ""
