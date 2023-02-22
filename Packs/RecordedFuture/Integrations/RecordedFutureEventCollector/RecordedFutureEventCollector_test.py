@@ -1,7 +1,8 @@
 from CommonServerPython import *
+from RecordedFutureEventCollector import BASE_URL, DATE_FORMAT
+from freezegun import freeze_time
 import io
 import requests_mock
-from RecordedFutureEventCollector import BASE_URL, DATE_FORMAT
 import pytest
 
 ''' HELPER FUNCTIONS '''
@@ -59,40 +60,43 @@ def test_get_events():
     assert len(mock_events) == 2
 
 
+@freeze_time('2023-02-21T00:00:00.000Z')
 def test_fetch_events(mocker):
     from RecordedFutureEventCollector import Client, fetch_events, demisto
     client = Client(BASE_URL)
     mock_last_run = mocker.patch.object(demisto, 'setLastRun', side_efect=mock_set_last_run)
 
     with requests_mock.Mocker() as m:
-        m.get(f'{BASE_URL}/alert/search', json=util_load_json('test_data/first_fetch.json'))
+        first_mock_request = m.get(f'{BASE_URL}/alert/search', json=util_load_json('test_data/first_fetch.json'))
 
         mock_events = fetch_events(client, limit=2, last_run=arg_to_datetime('3 days').strftime(DATE_FORMAT))
 
     assert len(mock_events) == 2
     assert mock_last_run.call_args[0][0] == {'last_run_time': '2023-02-20T05:04:19.601Z', 'last_run_ids': {'333333'}}
+    assert first_mock_request.last_request.qs.get('triggered')[0].upper() == '[2023-02-18T00:00:00.000000Z,]'
 
     mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run.call_args[0][0])
+    last_run_time = mock_last_run.call_args[0][0].get('last_run_time')
     mock_last_run = mocker.patch.object(demisto, 'setLastRun', side_efect=mock_set_last_run)
 
     with requests_mock.Mocker() as m:
-        m.get(f'{BASE_URL}/alert/search', json=util_load_json('test_data/second_fetch.json'))
+        second_mock_request = m.get(f'{BASE_URL}/alert/search', json=util_load_json('test_data/second_fetch.json'))
 
-        mock_events = fetch_events(client, limit=2, last_run=arg_to_datetime('3 days'))
+        mock_events = fetch_events(client, limit=2, last_run=last_run_time)
 
     assert len(mock_events) == 1
     assert mock_last_run.call_args[0][0] == {'last_run_time': '2023-02-20T05:04:24.673Z', 'last_run_ids': {'555555'}}
+    assert second_mock_request.last_request.qs.get('triggered')[0].upper() == '[2023-02-20T05:04:19.601Z,]'
 
 
 def test_main(mocker):
     from RecordedFutureEventCollector import main, VENDOR, PRODUCT
     mocker.patch.object(demisto, 'command', return_value='recorded-future-get-events')
-    mocker.patch.object(demisto, 'params', return_value={'max_fetch': 1000})
     mocker.patch.object(demisto, 'args', return_value={'should_push_events': True, 'limit': 2})
     events = mocker.patch('RecordedFutureEventCollector.send_events_to_xsiam', side_effect=mock_send_events_to_xsiam)
 
     with requests_mock.Mocker() as m:
-        request_mock = m.get(f'{BASE_URL}/alert/search', json=util_load_json('test_data/first_fetch.json'))
+        mock_request = m.get(f'{BASE_URL}/alert/search', json=util_load_json('test_data/first_fetch.json'))
 
         main()
 
@@ -100,4 +104,4 @@ def test_main(mocker):
     assert events.call_args[0][0][0].get('_time') == events.call_args[0][0][0].get('triggered')
     assert events.call_args[1].get('vendor') == VENDOR
     assert events.call_args[1].get('product') == PRODUCT
-    assert request_mock.last_request.query == 'limit=2'  # Verify that the args limit was taken and not the params limit
+    assert mock_request.last_request.query == 'limit=2'

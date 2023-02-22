@@ -105,7 +105,7 @@ def fetch_events(client: Client, **kwargs) -> list:
         list: (list) of events that will be created in XSIAM.
     """
     params = {
-        'triggered': f'[{kwargs.get("last_run")}, ]',
+        'triggered': f'[{kwargs.get("last_run")},]',
         'orderby': 'triggered',
         'direction': 'desc',
         'limit': kwargs.get('limit')
@@ -163,7 +163,6 @@ def main() -> None:
     proxy = params.get('proxy', False)
     api_key = params.get('credentials', {}).get('password')
     headers = {'X-RFToken': api_key}
-    limit = args.get('limit') or params.get('max_fetch') or 1000
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -180,7 +179,7 @@ def main() -> None:
         if command in ('recorded-future-get-events', 'fetch-events'):
             if command == 'recorded-future-get-events':
                 should_push_events = argToBoolean(args.get('should_push_events', False))
-                events = get_events(client, params={'limit': limit})
+                events = get_events(client, params={'limit': args.get('limit', 10)})
 
             else:  # command == 'fetch-events'
                 should_push_events = True
@@ -188,7 +187,7 @@ def main() -> None:
                     last_run = arg_to_datetime(params.get('first_fetch', '3 days')).strftime(DATE_FORMAT)  # type: ignore
                 events = fetch_events(
                     client=client,
-                    limit=limit,
+                    limit=args.get('limit') or params.get('max_fetch') or 1000,
                     last_run=last_run
                 )
 
