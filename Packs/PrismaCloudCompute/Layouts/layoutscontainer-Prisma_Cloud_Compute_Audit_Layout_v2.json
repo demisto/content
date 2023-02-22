@@ -418,7 +418,7 @@
                                 "index": 1,
                                 "listId": "caseinfoid-d8e8a170-fe17-11ec-8186-47081b53acb3",
                                 "name": "Tag IP or Domain",
-                                "scriptId": "5adcc0b4-c7db-4579-8049-4857568bfb4f",
+                                "scriptId": "TagIndicatorButton",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -792,7 +792,7 @@
                                 "id": "b7143db0-fe18-11ec-8186-47081b53acb3",
                                 "index": 0,
                                 "name": "Email CVE Report",
-                                "scriptId": "27a08129-1f06-4b12-8a24-e585fc2d4fd8",
+                                "scriptId": "CreatePrismaCloudComputeComplianceReportButton",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -811,7 +811,7 @@
                                 "id": "c3342f10-fe18-11ec-8186-47081b53acb3",
                                 "index": 1,
                                 "name": "Email Compliance Report",
-                                "scriptId": "27a08129-1f06-4b12-8a24-e585fc2d4fd8",
+                                "scriptId": "CreatePrismaCloudComputeComplianceReportButton",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             }
