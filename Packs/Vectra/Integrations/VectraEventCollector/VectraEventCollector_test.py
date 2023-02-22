@@ -3,9 +3,10 @@ Unit tests for Vectra Event Collector
 """
 
 import pytest
-from VectraEventCollector import VectraClient
+from VectraEventCollector import VectraClient, is_eod
 from typing import Dict
 import json
+from datetime import datetime
 
 """ Constants """
 BASE_URL = "mock://dev.vectra.ai"
@@ -59,7 +60,7 @@ def test_create_headers():
         - Authentication headers match.
     """
 
-    actual = client.create_headers()
+    actual = client._create_headers()
     expected = {"Content-Type": "application/json", "Authorization": f"Token {PASSWORD}"}
 
     assert "Content-Type" in actual.keys()
@@ -73,5 +74,20 @@ def load_json(path):
         return json.load(f)
 
 
-audits = load_json("./test_data/detections.json")
+""" Helper Functions Tests """
+
+
+@pytest.mark.parametrize(
+    "dt,expected",
+    [
+        (datetime(2023, 2, 22, 10, 55, 13), False),
+        (datetime(2023, 2, 23, 00, 00, 13), False),
+        (datetime(2023, 2, 23, 23, 59, 13), True),
+    ],
+)
+def test_is_eod(dt: datetime, expected: bool):
+    assert is_eod(dt) == expected
+
+
+audits = load_json("./test_data/search_detections.json")
 detections = load_json("./test_data/audits.json")
