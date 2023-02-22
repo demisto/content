@@ -795,7 +795,8 @@ class JiraIssueFieldsParser():
         'fields.updated': get_last_update_context,
         'fields.issuetype': get_issue_type_context,
         'self': get_ticket_link_context,
-        'fields.comment': get_comments_context
+        'fields.comment': get_comments_context,
+        'fields.attachment': get_attachments_context
     }
 
     @classmethod
