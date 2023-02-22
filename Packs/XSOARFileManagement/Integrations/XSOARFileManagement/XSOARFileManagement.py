@@ -1,5 +1,6 @@
 import re
 import time
+from typing import Tuple
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
