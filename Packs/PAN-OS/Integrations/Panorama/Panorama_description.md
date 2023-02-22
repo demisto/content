@@ -52,5 +52,3 @@ The queries that will be included during the fetch are decided according to the 
 This integration supports a default Classifier (Panorama Classifier) and Mapper (Panorama Mapper) that handles incidents returned from the API.
 
 ---
-
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/panorama)
