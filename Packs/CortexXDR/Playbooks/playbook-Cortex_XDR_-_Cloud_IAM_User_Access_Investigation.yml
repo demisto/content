@@ -702,7 +702,7 @@ tasks:
         - Okta
         - AWS IAM
 
-        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations.) For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
       playbookName: Account Enrichment - Generic v2.1
       type: playbook
       iscommand: false
