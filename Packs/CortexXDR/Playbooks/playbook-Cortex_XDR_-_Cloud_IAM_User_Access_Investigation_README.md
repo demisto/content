@@ -42,7 +42,7 @@ LoadJSON
 | AlertName | Alert name. |  | Optional |
 | username | User name. |  | Optional |
 | GCPProjectName | The GCP project name. |  | Optional |
-| IPAddress | IP Address from the XDR Alert. |  | Optional |
+| IPAddress | IP address from the XDR alert. |  | Optional |
 | cloudProvider | The cloud service provider involved. |  | Optional |
 | autoResourceRemediation | Whether to execute the resource remediation flow automatically. | False | Optional |
 | AWS-resourceRemediationType | Choose the remediation type for the instances created.<br/><br/>AWS available types:<br/>Stop - for stopping the instances.<br/>Terminate - for terminating the instances. | Stop | Optional |
