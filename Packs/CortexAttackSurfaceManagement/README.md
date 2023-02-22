@@ -20,23 +20,25 @@ Automated remediation is only possible when the right conditions are met.  These
 
 - One of the following attack surface rule IDs:
   - Insecure OpenSSH
-  - RDP Server
-  - Telnet Server
-  - Unencrypted FTP Server
   - OpenSSH
   - SSH Server
   - SNMP Server
+  - RDP Server
+  - Telnet Server
+  - Unencrypted FTP Server
   - Unclaimed S3 Bucket*
 - Asset is a cloud compute instance:
   - AWS EC2 Instance
-  - GCP Compute Engine (VM)
   - Azure Compute Instance
+  - GCP Compute Engine (VM)
 - Service owner information found through one of the following:
   - AWS IAM
+  - Azure IAM
+  - GCP IAM
+  - Rapid7 InsightVM (Nexpose)
+  - Splunk
   - ServiceNow CMDB
   - Tenable.io Assets
-  - GCP IAM
-  - Azure IAM
 - Indicators of a non-production host:
   - "dev" or related words found in environment-related tags associated with the asset (case insensitive)
   - Has an active "DevelopmentEnvironment" classification from processing of public data
@@ -46,18 +48,22 @@ Automated remediation is only possible when the right conditions are met.  These
 ### Playbooks
 
 - [Cortex ASM - ASM Alert](#cortex-asm---asm-alert)
+- [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
+- [Cortex ASM - Azure Enrichment](#cortex-asm---azure-enrichment)
+- [Cortex ASM - Decision](#cortex-asm---decision)
 - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
 - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
-- [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
-- [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
-- [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
-- [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
-- [Cortex ASM - Remediation](#cortex-asm---remediation)
-- [Cortex ASM - Azure Enrichment](#cortex-asm---azure-enrichment)
 - [Cortex ASM - GCP Enrichment](#cortex-asm---gcp-enrichment)
-- [Cortex ASM - SNMP Check](#cortex-asm---snmp-check)
-- [Cortex ASM - Decision](#cortex-asm---decision)
+- [Cortex ASM - Rapid7 Enrichment](#cortex-asm---rapid7-enrichment)
+- [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
 - [Cortex ASM - Remediation Path Rules](#cortex-asm---remediation-path-rules)
+- [Cortex ASM - Remediation](#cortex-asm---remediation)
+- [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
+- [Cortex ASM - SNMP Check](#cortex-asm---snmp-check)
+
+
+- [Cortex ASM - Splunk Enrichment](#cortex-asm---splunk-enrichment)
+- [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
 
 ### Cortex ASM - ASM Alert
 
@@ -115,12 +121,24 @@ Playbook that given the IP address checks if SNMP is enabled or not and returns 
 ![Cortex ASM - SNMP Check](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_SNMP_Check.png)
 
 #### Cortex ASM - Decision
+
 Playbook that returns "RemediationAction" options based on meeting "Automated Remediation Requirements" as well as whether ServiceNowV2 integration is set up.
 ![Cortex ASM - Decision](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Decision.png)
 
 #### Cortex ASM - Remediation Path Rules
+
 Playbook that returns "RemediationAction" options based on the return from the Remediation Path Rules API, or defaults to data collection task options from the "Cortex ADM - Decision" sub-playbook.
 ![Cortex ASM - Remediation Path Rules](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Path_Rules.png)
+
+#### Cortex ASM - Rapid7 Enrichment
+
+Playbook that given the IP address enriches Rapid7 information relevant to ASM alerts.
+![Cortex ASM - Rapid7 Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Rapid7_Enrichment.png)
+
+#### Cortex ASM - Splunk Enrichment
+
+Playbook that given the IP address enriches Splunk information relevant to ASM alerts.
+![Cortex ASM - Splunk Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Splunk_Enrichment.png)
 
 ### Automation Scripts
 
