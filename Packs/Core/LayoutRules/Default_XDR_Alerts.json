@@ -1,0 +1,43 @@
+{
+  "rule_id": "Default_XDR_Alerts_layout_rule",
+  "layout_id": "Default XDR Alerts",
+  "description": "",
+  "rule_name": "Default XDR Alerts Layout Rule",
+  "alerts_filter": {
+    "filter": {
+      "OR": [
+        {
+            "SEARCH_FIELD": "alert_source",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "XDR Analytics BIOC"
+        },
+        {
+            "SEARCH_FIELD": "alert_source",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "XDR BIOC"
+        },
+        {
+            "SEARCH_FIELD": "alert_source",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "XDR IOC"
+        },
+        {
+            "SEARCH_FIELD": "alert_source",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "XDR Analytics"
+        },
+        {
+            "SEARCH_FIELD": "alert_source",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "XDR Managed Threat Hunting"
+        },
+        {
+            "SEARCH_FIELD": "alert_source",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "XDR Agent"
+        }
+      ]
+    }
+  },
+  "fromVersion": "6.10.0"
+}
