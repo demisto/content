@@ -797,8 +797,6 @@ script:
     description: Delete a specific rule group.
     execution: false
     name: aws-waf-rule-group-delete
-
-
   - arguments:
       - name: name
         description: The rule group name.
@@ -879,6 +877,247 @@ script:
       - contextPath: AWS.Waf.RuleGroup.ARN
         description: The rule group Amazon Resource Name.
         type: String
+  - arguments:
+      - name: group_id
+        description: The rule group id to associate the rule to.
+        required: true
+      - name: group_name
+        description: The rule group name to associate the rule to.
+        required: true
+      - name: rule_name
+        description: The rule name.
+        required: true
+      - name: scope
+        description: The rule scope.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - "CLOUDFRONT"
+          - "REGIONAL"
+      - name: region
+        description: The AWS Region. If not specified the default region will be used.
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - ca-central-1
+          - eu-west-1
+          - eu-central-1
+          - eu-west-2
+          - ap-northeast-1
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-south-1
+          - sa-east-1
+          - eu-north-1
+          - eu-west-3
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: priority
+        description: The rule priority.
+        required: true
+      - name: action
+        description: The rule action.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - "Allow"
+          - "Block"
+          - "Count"
+          - "Captcha"
+          - "Challenge"
+      - name: ip_set_arn
+        description: A comma separated list of the ip set ARN. You can get those values by running the aws-waf-ip-set-list command.
+        isArray: true
+      - name: condition_operator
+        description: The rule condition operator. If more than one value to the ip_set_arn argument is provided, a value must be provided.
+        auto: PREDEFINED
+        predefined:
+          - "And"
+          - "Or"
+          - "Not"
+    deprecated: false
+    description: Create an ip rule.
+    execution: false
+    name: aws-waf-ip-rule-create
+  - arguments:
+      - name: group_id
+        description: The rule group id to associate the rule to.
+        required: true
+      - name: group_name
+        description: The rule group name to associate the rule to.
+        required: true
+      - name: rule_name
+        description: The rule name.
+        required: true
+      - name: scope
+        description: The rule scope.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - "CLOUDFRONT"
+          - "REGIONAL"
+      - name: region
+        description: The AWS Region. If not specified the default region will be used.
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - ca-central-1
+          - eu-west-1
+          - eu-central-1
+          - eu-west-2
+          - ap-northeast-1
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-south-1
+          - sa-east-1
+          - eu-north-1
+          - eu-west-3
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: priority
+        description: The rule priority.
+        required: true
+      - name: action
+        description: The rule action.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - "Allow"
+          - "Block"
+          - "Count"
+          - "Captcha"
+          - "Challenge"
+      - name: country_codes
+        description: A comma separated list of two-character country codes.
+        isArray: true
+    deprecated: false
+    description: Create a country rule.
+    execution: false
+    name: aws-waf-country-rule-create
+
+
+  - arguments:
+      - name: group_id
+        description: The rule group id to associate the rule to.
+        required: true
+      - name: group_name
+        description: The rule group name to associate the rule to.
+        required: true
+      - name: rule_name
+        description: The rule name.
+        required: true
+      - name: scope
+        description: The rule scope.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - "CLOUDFRONT"
+          - "REGIONAL"
+      - name: region
+        description: The AWS Region. If not specified the default region will be used.
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - ca-central-1
+          - eu-west-1
+          - eu-central-1
+          - eu-west-2
+          - ap-northeast-1
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-south-1
+          - sa-east-1
+          - eu-north-1
+          - eu-west-3
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: priority
+        description: The rule priority.
+        required: true
+      - name: action
+        description: The rule action.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - "Allow"
+          - "Block"
+          - "Count"
+          - "Captcha"
+          - "Challenge"
+      - name: match_type
+        description: The string match type.
+        auto: PREDEFINED
+        predefined:
+          - "Exactly Matches String"
+          - "Starts With String"
+          - "Ends With String"
+          - "Contains String"
+          - "Contains Words"
+          - "Matches Regex Pattern Set"
+      - name: string_to_match
+        description: The string to match. If the match_type is Contains Words, a value must be provided.
+      - name: regex_set_arn
+        description: The regex set ARN. You can get those values by running the aws-waf-regex-set-list command. If the match_type is Matches Regex Pattern Set, a value must be provided.
+      - name: web_request_component
+        description: A comma separated list of two-character country codes.
+        auto: PREDEFINED
+        predefined:
+          - "Headers"
+          - "Cookies"
+          - "Query Parameters"
+          - "URI Path"
+          - "Query String"
+          - "Body"
+          - "HTTP Method"
+      - name: oversize_handling
+        description: AWS WAF applies oversize handling to web request contents that are larger than AWS WAF can inspect. If the web_request_component is Headers, Cookies or Body, a value must be provided.
+        auto: PREDEFINED
+        predefined:
+          - "Continue"
+          - "Match"
+          - "No Match"
+      - name: text_transformation
+        description: A comma separated list of two-character country codes.
+        defaultValue: "None"
+        auto: PREDEFINED
+        predefined:
+          - "None"
+          - "Compress White Space"
+          - "HTML Entity Decode"
+          - "Lowercase"
+          - "Cmd Line"
+          - "URL Decode"
+          - "Base64 Decode"
+          - "Hex Decode"
+          - "MD5"
+          - "Replace Comments"
+          - "Escape Seq Decode"
+          - "SQL Hex Decode"
+          - "CSS Decode"
+          - "JS Decode"
+          - "Normalize Path"
+          - "Normalize Path Windows"
+          - "Remove Nulls"
+          - "Replace Nulls"
+          - "Base64 Decode Extension"
+          - "URL Decode Unicode"
+          - "UTF8 To Unicode"
+    deprecated: false
+    description: Create a string match rule.
+    execution: false
+    name: aws-waf-string-match-rule-create
 
 
   isfetch: false

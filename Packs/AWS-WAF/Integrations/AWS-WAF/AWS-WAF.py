@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from AWSApiModule import *  # noqa: E402
+from typing import Callable
 import urllib3.util
 import boto3
 
@@ -16,6 +17,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 SERVICE = 'wafv2'
 OUTPUT_PREFIX = 'AWS.Waf'
+OPERATOR_TO_STATEMENT_OPERATOR = {'And': 'AndStatement', 'Or': 'OrStatement', 'Not': 'NotStatement'}
 
 ''' HELPER FUNCTIONS '''
 
@@ -35,17 +37,80 @@ def get_tags_dict_from_args(tag_keys: list, tag_values: list) -> List[dict]:
 
 
 def build_regex_pattern_object(regex_patterns: list) -> List[dict]:
-    regex_patterns_objects: list = []
-    for regex_pattern in regex_patterns:
-        regex_patterns_objects.append({'RegexString': regex_pattern})
-
+    regex_patterns_objects: list = [
+        {'RegexString': regex_pattern} for regex_pattern in regex_patterns
+    ]
     return regex_patterns_objects
+
+
+def build_visibility_config_object(metric_name: str,
+                                   cloud_watch_metrics_enabled: bool,
+                                   sampled_requests_enabled: bool) -> dict:
+    return {
+        'CloudWatchMetricsEnabled': cloud_watch_metrics_enabled,
+        'MetricName': metric_name,
+        'SampledRequestsEnabled': sampled_requests_enabled
+    }
+
+
+def build_ip_rule_object(args: dict) -> dict:
+    ip_rule: dict = {'Statement': {}}
+    ip_set_arn = argToList(args.get('ip_set_arn')) or []
+    condition_operator = args.get('condition_operator', '')
+    if len(ip_set_arn) > 1 and not condition_operator:
+        raise DemistoException('Please provide a value to the condition_operator argument '
+                               'when ip_set_arn has more than one value.')
+
+    if len(ip_set_arn) == 1:
+        ip_rule['Statement'] = {'IPSetReferenceStatement': {
+            'ARN': ip_set_arn[0]
+        }}
+    elif len(ip_set_arn) > 1:
+        statement_operator = OPERATOR_TO_STATEMENT_OPERATOR[condition_operator]
+        ip_rule['Statement'][statement_operator] = {'Statements': []}
+        for ip_set in ip_set_arn:
+            ip_rule['Statement'][statement_operator]['Statements'].append({'IPSetReferenceStatement': {
+                'ARN': ip_set
+            }})
+
+    return ip_rule
+
+
+def build_country_rule_object(args: dict) -> dict:
+    country_codes = argToList(args.get('country_codes')) or []
+
+    ip_rule: dict = {
+        'Statement': {'GeoMatchStatement': {'CountryCodes': country_codes}}
+    }
+    return ip_rule
+
+
+def build_rule_object(args: dict, rule_group_visibility_config: dict,
+                      build_rule_method: Callable[[dict], dict]) -> dict:
+    name = args.get('rule_name', '')
+    rule_visibility_config = build_visibility_config_object(
+        metric_name=name,
+        cloud_watch_metrics_enabled=rule_group_visibility_config.get('CloudWatchMetricsEnabled'),
+        sampled_requests_enabled=rule_group_visibility_config.get('SampledRequestsEnabled'))
+
+    rule = {
+        'Name': name,
+        'Priority': arg_to_number(args.get('priority', '')) or 0,
+        'Action': {
+            args.get('action'): {}
+        },
+        'VisibilityConfig': rule_visibility_config,
+
+    }
+    rule |= build_rule_method(args)
+
+    return rule
 
 
 ''' COMMAND FUNCTIONS '''
 
 
-def module(client: boto3.client) -> str:
+def connection_test(client: boto3.client) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -150,14 +215,13 @@ def list_ip_set_command(client: boto3.client, args) -> CommandResults:
         kwargs |= {'NextMarker': next_marker}
 
     response = client.list_ip_sets(**kwargs)
-
-    readable_output = tableToMarkdown('List IP Sets', response, is_auto_json_transform=True)
+    ip_sets = response.get('IPSets', [])
+    readable_output = tableToMarkdown('List IP Sets', ip_sets, is_auto_json_transform=True)
+    outputs = {f'{OUTPUT_PREFIX}.IpSet(val.Id === obj.Id)': ip_sets, 'IpSetNextToken': response.get('NextMarker', '')}
 
     return CommandResults(readable_output=readable_output,
-                          outputs=response,
-                          raw_response=response,
-                          outputs_prefix=f'{OUTPUT_PREFIX}.IpSet',
-                          outputs_key_field='Id')
+                          outputs=outputs,
+                          raw_response=response)
 
 
 def delete_ip_set_command(client: boto3.client, args) -> CommandResults:
@@ -235,7 +299,6 @@ def update_regex_set_command(client: boto3.client, args) -> CommandResults:
 
     patterns_to_update = build_regex_pattern_object(argToList(args.get('regex_pattern')))
     overwrite = argToBoolean(args.get('is_overwrite')) or False
-    print(overwrite)
 
     get_response = client.get_regex_pattern_set(**kwargs)
 
@@ -243,9 +306,6 @@ def update_regex_set_command(client: boto3.client, args) -> CommandResults:
     original_patterns = get_response.get('RegexPatternSet', {}).get('RegularExpressionList')
     if not overwrite:
         patterns_to_update.extend(original_patterns)
-
-    print(patterns_to_update)
-    print(original_patterns)
 
     kwargs |= {'LockToken': lock_token, 'RegularExpressionList': patterns_to_update}
 
@@ -271,14 +331,13 @@ def list_regex_set_command(client: boto3.client, args) -> CommandResults:
         kwargs |= {'NextMarker': next_marker}
 
     response = client.list_regex_pattern_sets(**kwargs)
-
-    readable_output = tableToMarkdown('List regex Sets', response, is_auto_json_transform=True)
+    regex_patterns = response.get('RegexPatternSets', [])
+    readable_output = tableToMarkdown('List regex Sets', regex_patterns, is_auto_json_transform=True)
+    outputs = {f'{OUTPUT_PREFIX}.RegexSet(val.Id === obj.Id)': regex_patterns, 'RegexSetNextToken': response.get('NextMarker', '')}
 
     return CommandResults(readable_output=readable_output,
-                          outputs=response,
-                          raw_response=response,
-                          outputs_prefix=f'{OUTPUT_PREFIX}.RegexSet',
-                          outputs_key_field='Id')
+                          outputs=outputs,
+                          raw_response=response)
 
 
 def delete_regex_set_command(client: boto3.client, args) -> CommandResults:
@@ -310,17 +369,16 @@ def list_rule_group_command(client: boto3.client, args) -> CommandResults:
         kwargs |= {'NextMarker': next_marker}
 
     response = client.list_rule_groups(**kwargs)
-
+    rule_groups = response.get('RuleGroups', [])
+    outputs = {f'{OUTPUT_PREFIX}.RuleGroup(val.Id === obj.Id)': rule_groups, 'RuleGroupNextToken': response.get('NextMarker', '')}
     readable_output = tableToMarkdown('List rule groups',
-                                      response.get('RuleGroups', {}),
+                                      rule_groups,
                                       headers=['Name', 'Id', 'ARN', 'Description'],
                                       is_auto_json_transform=True)
 
     return CommandResults(readable_output=readable_output,
-                          outputs=response,
-                          raw_response=response,
-                          outputs_prefix=f'{OUTPUT_PREFIX}.RuleGroup',
-                          outputs_key_field='Id')
+                          outputs=outputs,
+                          raw_response=response)
 
 
 def get_rule_group_command(client: boto3.client, args) -> CommandResults:
@@ -362,22 +420,47 @@ def delete_rule_group_command(client: boto3.client, args) -> CommandResults:
                           raw_response=response)
 
 
+def update_rule(client: boto3.client, args, build_rule_func) -> dict:
+    kwargs = {
+        'Name': args.get('group_name', ''),
+        'Scope': args.get('scope', ''),
+        'Id': args.get('group_id', '')
+    }
+
+    response = client.get_rule_group(**kwargs)
+
+    rule_group = response.get('RuleGroup', {})
+
+    rule_group_visibility_config = rule_group.get('VisibilityConfig', {})
+
+    # TODO change logic so would be good for deletion as well
+
+    rule = build_rule_object(args, rule_group_visibility_config, build_rule_func)
+    rule_group.get('Rules', []).append(rule)
+
+    kwargs |= {'LockToken': response.get('LockToken'),
+               'Rules': rule_group.get('Rules', []),
+               'VisibilityConfig': rule_group_visibility_config
+               }
+
+    return client.update_rule_group(**kwargs)
+
+
 def create_rule_group_command(client: boto3.client, args) -> CommandResults:
     tag_keys = argToList(args.get('tag_key')) or []
     tag_values = argToList(args.get('tag_value')) or []
     name = args.get('name', '')
-
-    visibility_config = {
-                    'CloudWatchMetricsEnabled': argToBoolean(args.get('cloud_watch_metrics_enabled', '')) or True,
-                    'MetricName': args.get('metric_name', '') or name,
-                    'SampledRequestsEnabled': argToBoolean(args.get('sampled_requests_enabled', '')) or True
-                }
+    cloud_watch_metrics_enabled = argToBoolean(args.get('cloud_watch_metrics_enabled', '')) or True
+    metric_name = args.get('metric_name', '') or name
+    sampled_requests_enabled = argToBoolean(args.get('sampled_requests_enabled', '')) or True
 
     kwargs = {
         'Name': name,
         'Scope': args.get('scope', ''),
         'Capacity': arg_to_number(args.get('capacity', '')),
-        'VisibilityConfig': visibility_config
+        'VisibilityConfig': build_visibility_config_object(cloud_watch_metrics_enabled=cloud_watch_metrics_enabled,
+                                                           metric_name=metric_name,
+                                                           sampled_requests_enabled=sampled_requests_enabled)
     }
 
     if description := args.get('description'):
@@ -395,6 +478,26 @@ def create_rule_group_command(client: boto3.client, args) -> CommandResults:
                           raw_response=response,
                           outputs_prefix=f'{OUTPUT_PREFIX}.RuleGroup',
                           outputs_key_field='Id')
+
+
+def create_ip_rule_command(client: boto3.client, args) -> CommandResults:
+    response = update_rule(client, args, build_ip_rule_object)
+
+    readable_output = f'AWS Waf ip rule with id {args.get("Id", "")} was created successfully. ' \
+                      f'Next Lock Token: {response.get("NextLockToken")}'
+
+    return CommandResults(readable_output=readable_output,
+                          raw_response=response)
+
+
+def create_country_rule_command(client: boto3.client, args) -> CommandResults:
+    response = update_rule(client, args, build_country_rule_object)
+
+    readable_output = f'AWS Waf country rule with id {args.get("Id", "")} was created successfully. ' \
+                      f'Next Lock Token: {response.get("NextLockToken")}'
+
+    return CommandResults(readable_output=readable_output,
+                          raw_response=response)
 
 
 ''' MAIN FUNCTION '''
@@ -431,10 +534,8 @@ def main() -> None:
         client = aws_client.aws_session(service=SERVICE, region=args.get('region'))
 
         if demisto.command() == 'test-module':
-            pass
             # This is the call made when pressing the integration test button.
-            # result = connection_test(client)
-            result = ''
+            result = connection_test(client)
 
         elif demisto.command() == 'aws-waf-ip-set-create':
             result = create_ip_set_command(client, args)
@@ -466,6 +567,11 @@ def main() -> None:
             result = delete_rule_group_command(client, args)
         elif demisto.command() == 'aws-waf-rule-group-create':
             result = create_rule_group_command(client, args)
+
+        elif demisto.command() == 'aws-waf-ip-rule-create':
+            result = create_ip_rule_command(client, args)
+        elif demisto.command() == 'aws-waf-country-rule-create':
+            result = create_country_rule_command(client, args)
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} is not implemented in AWS WAF integration.')
