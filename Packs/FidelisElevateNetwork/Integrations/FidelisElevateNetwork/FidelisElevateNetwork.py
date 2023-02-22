@@ -10,7 +10,7 @@ import json
 import shutil
 import requests
 import random
-import urllib
+
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -73,7 +73,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, is_json
             return res.json()
 
         except ValueError:
-            return_error(f'failed to parse json object from response: {res.content}')
+            return_error(f'failed to parse json object from response: {str(res.content)}')
 
     else:
         return res.content
@@ -140,7 +140,7 @@ def get_ioc_filter(ioc):
 def to_fidelis_time_format(t):
     if isinstance(t, STRING_TYPES):
         try:
-            t = datetime.strptime(t, '%Y-%m-%dT%H:%M:%SZ')
+            t = datetime.strptime(str(t), '%Y-%m-%dT%H:%M:%SZ')
         except ValueError:
             t = datetime.strptime(t, '%Y-%m-%dT%H:%M:%S')
 
@@ -521,7 +521,7 @@ def get_alert_forensictext(alert_id):
 
     res = requests.request(
         method='GET',
-        url=SERVER_URL + '/j/rest/v1/alert/file/forensic/text/{}/'.format(alert_id),
+        url=SERVER_URL + f'/j/rest/v1/alert/file/forensic/text/{alert_id}/',
         data=None,
         headers=headers,
         params=None,
@@ -558,7 +558,7 @@ def get_alert_command():
         'ContentsFormat': formats['json'],
         'Contents': alert,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Alert {}'.format(alert_id), output, headerTransform=pascalToSpace,
+        'HumanReadable': tableToMarkdown(f'Alert {alert_id}', output, headerTransform=pascalToSpace,
                                          removeNull=True),
         'EntryContext': {
             'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
@@ -568,7 +568,7 @@ def get_alert_command():
 
 @logger
 def get_alert(alert_id):
-    return http_request('GET', '/j/rest/v1/alert/info/{}/'.format(alert_id))
+    return http_request('GET', f'/j/rest/v1/alert/info/{alert_id}/')
 
 
 def delete_alert_command():
@@ -580,9 +580,9 @@ def delete_alert_command():
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': '\n'.join('Alert ({}) deleted successfully!'.format(_id) for _id in alert_id),
+        'Contents': '\n'.join(f'Alert ({_id}) deleted successfully!' for _id in alert_id),
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': '\n'.join('Alert ({}) deleted successfully!'.format(_id) for _id in alert_id),
+        'HumanReadable': '\n'.join(f'Alert ({_id}) deleted successfully!' for _id in alert_id),
     })
 
 
@@ -621,7 +621,7 @@ def get_malware_data_command():
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Alert {} Malware:'.format(alert_id), result, headerTransform=pascalToSpace),
+        'HumanReadable': tableToMarkdown(f'Alert {alert_id} Malware:', result, headerTransform=pascalToSpace),
         'EntryContext': {
             'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
         },
@@ -630,7 +630,7 @@ def get_malware_data_command():
 
 @logger
 def get_malware_data(alert_id):
-    result = http_request('GET', '/j/rest/v1/alert/malware/{}/'.format(alert_id))
+    result = http_request('GET', f'/j/rest/v1/alert/malware/{alert_id}/')
 
     return result
 
@@ -664,7 +664,7 @@ def get_alert_report_command():
     pdf_content = get_alert_report(alert_id)
 
     demisto.results(fileResult(
-        'Alert_Details_{}.pdf'.format(alert_id),
+        f'Alert_Details_{alert_id}.pdf',
         pdf_content,
         file_type=entryTypes['entryInfoFile']
     ))
@@ -727,7 +727,7 @@ def list_alerts_command():
         'ContentsFormat': formats['json'],
         'Contents': results,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Found {} Alerts:'.format(len(output)), output),
+        'HumanReadable': tableToMarkdown(f'Found {len(output)} Alerts:', output),
         'EntryContext': {
             'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
         },
@@ -834,7 +834,7 @@ def list_alerts_by_ip():
         'Fidelis.Alert(val.ID && val.ID == obj.ID)': output
     }
 
-    return_outputs(tableToMarkdown('Found {} Alerts:'.format(len(output)), output, headers), context, results)
+    return_outputs(tableToMarkdown(f'Found {len(output)} Alerts:', output, headers), context, results)
 
 
 def get_alert_by_uuid():
@@ -854,7 +854,7 @@ def get_alert_by_uuid():
         'Fidelis.Alert(val.ID && val.ID == obj.ID)': output
     }
 
-    return_outputs(tableToMarkdown('Found {} Alerts:'.format(len(output)), output), context, results)
+    return_outputs(tableToMarkdown(f'Found {len(output)} Alerts:', output), context, results)
 
 
 def upload_pcap_command():
@@ -878,7 +878,7 @@ def upload_pcap(component_ip, entry_id):
 
     try:
         with open(file_info['name'], 'rb') as f:
-            http_request('POST', '/j/rest/policy/pcap/upload/{}/'.format(component_ip),
+            http_request('POST', f'/j/rest/policy/pcap/upload/{component_ip}/',
                          files={'uploadFile': f}, is_json=False)
     finally:
         shutil.rmtree(file_info['name'], ignore_errors=True)
@@ -1024,11 +1024,11 @@ def list_metadata():
         'Fidelis.Metadata(val.ID && val.ID == obj.ID)': event_context
     }
 
-    return_outputs(tableToMarkdown('Found {} Metadata:'.format(len(data)), data), context, results)
+    return_outputs(tableToMarkdown(f'Found {len(data)} Metadata:', data), context, results)
 
 
 def request_dpath(alert_id):
-    res = http_request('GET', '/j/rest/v1/alert/dpath/{}/'.format(alert_id))
+    res = http_request('GET', f'/j/rest/v1/alert/dpath/{alert_id}/')
     if res.get('decodingPaths'):
         dpath = res.get('decodingPaths')[0]
         link_path = dpath.get('linkPath')
@@ -1066,7 +1066,7 @@ def download_malware_file():
         return_outputs("No File Found", {}, {})
 
     else:
-        decoded_file_name = urllib.parse.unquote(file_name)
+        decoded_file_name = unquote(file_name)
         results = download_malware_file_request(alert_id)
 
         demisto.results(fileResult(
@@ -1125,15 +1125,15 @@ def fetch_incidents():
 
     latest = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%S')
 
-    demisto.debug('getting alarms since {}'.format(last_fetch))
+    demisto.debug(f'getting alarms since {last_fetch}')
     incidents = []
     items = list_alerts(time_frame='Custom', start_time=last_fetch)
-    demisto.debug('got {} new alarms'.format(len(items)))
+    demisto.debug(f'got {len(items)} new alarms')
     for item in items:
         incident_date = datetime.strptime(item['ALERT_TIME'], '%Y-%m-%d %H:%M:%S')
         incident = {
             'Type': 'Fidelis',
-            'name': '{} {}'.format(item['ALERT_ID'].encode('utf-8'), item['SUMMARY'].encode('utf-8')),
+            'name': f'{item["ALERT_ID"].encode("utf-8")} {item["SUMMARY"].encode("utf-8")}',
             'occurred': incident_date.strftime('%Y-%m-%dT%H:%M:%SZ'),
             'rawJSON': json.dumps(item),
         }
@@ -1154,7 +1154,7 @@ def main():
     try:
         handle_proxy()
         command = demisto.command()
-        LOG('Command being called is {}'.format(command))
+        demisto.debug('Command being called is {}'.format(command))
         login()
         if command == 'test-module':
             test_integration()
