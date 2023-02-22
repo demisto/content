@@ -322,5 +322,7 @@ outputs:
 - contextPath: ExtraHop.Record.Source
   description: Associated transaction records from ExtraHop.
   type: unknown
+marketplaces:
+- xsoar
 tests:
 - ExtraHop_v2-Test

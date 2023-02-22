@@ -370,3 +370,6 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
+marketplaces:
+  - xsoar
+  - marketplacev2

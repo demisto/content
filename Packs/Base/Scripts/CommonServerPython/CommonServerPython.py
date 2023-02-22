@@ -714,11 +714,8 @@ def auto_detect_indicator_type(indicator_value):
     if re.match(ipv6Regex, indicator_value):
         return FeedIndicatorType.IPv6
 
-    if re.match(sha256Regex, indicator_value):
-        return FeedIndicatorType.File
-
-    if re.match(urlRegex, indicator_value):
-        return FeedIndicatorType.URL
+    if re.match(cveRegex, indicator_value):
+        return FeedIndicatorType.CVE
 
     if re.match(md5Regex, indicator_value):
         return FeedIndicatorType.File
@@ -726,14 +723,17 @@ def auto_detect_indicator_type(indicator_value):
     if re.match(sha1Regex, indicator_value):
         return FeedIndicatorType.File
 
-    if re.match(emailRegex, indicator_value):
-        return FeedIndicatorType.Email
-
-    if re.match(cveRegex, indicator_value):
-        return FeedIndicatorType.CVE
+    if re.match(sha256Regex, indicator_value):
+        return FeedIndicatorType.File
 
     if re.match(sha512Regex, indicator_value):
         return FeedIndicatorType.File
+
+    if re.match(emailRegex, indicator_value):
+        return FeedIndicatorType.Email
+
+    if re.match(urlRegex, indicator_value):
+        return FeedIndicatorType.URL
 
     try:
         tldextract_version = tldextract.__version__
@@ -1913,6 +1913,8 @@ def appendContext(key, data, dedup=False):
         elif isinstance(existing, dict):
             if isinstance(data, dict):
                 new_val = [existing, data]  # type: ignore[assignment]
+            elif isinstance(data, list) and all([isinstance(sub_data, dict) for sub_data in data]):
+                new_val = [existing] + data  # For cases the context have only one value but we append a few values at once.
             else:
                 new_val = data + existing  # will raise a self explanatory TypeError
 
@@ -2096,7 +2098,7 @@ class JsonTransformer:
 
 
 def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None,
-                    date_fields=None, json_transform_mapping=None, is_auto_json_transform=False):
+                    date_fields=None, json_transform_mapping=None, is_auto_json_transform=False, sort_headers=True):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -2130,6 +2132,9 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
 
         :type is_auto_json_transform: ``bool``
         :param is_auto_json_transform: Boolean to try to auto transform complex json
+
+        :type sort_headers: ``bool``
+        :param sort_headers: Sorts the table based on its headers only if the headers parameter is not specified
 
        :return: A string representation of the markdown table
        :rtype: ``str``
@@ -2172,7 +2177,8 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     # in case of headers was not provided (backward compatibility)
     if not headers:
         headers = list(t[0].keys())
-        headers.sort()
+        if sort_headers or not IS_PY3:
+            headers.sort()
 
     if removeNull:
         headers_aux = headers[:]
@@ -3779,7 +3785,7 @@ class Common(object):
                 file_context['Hashes'].append({'type': 'SSDeep',
                                                'value': self.ssdeep})
 
-            if self.extension: 
+            if self.extension:
                 file_context['Extension'] = self.extension
 
             if self.file_type:
@@ -6850,6 +6856,7 @@ class CommandResults:
             exec_metrics = self.execution_metrics
             self.entry_type = EntryType.EXECUTION_METRICS
             raw_response = 'Metrics reported successfully.'
+            content_format = EntryFormat.TEXT
         return_entry = {
             'Type': self.entry_type,
             'ContentsFormat': content_format,
@@ -7579,11 +7586,13 @@ ipv4Regex = r'^(?P<ipv4>(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0
 ipv4cidrRegex = r'^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))$'
 ipv6Regex = r'^(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$'  # noqa: E501
 ipv6cidrRegex = r'^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))$'  # noqa: E501
-emailRegex = r'''(?:[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'''  # noqa: E501
+emailRegex = r'''(?i)(?:[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'''  # noqa: E501
 hashRegex = r'\b[0-9a-fA-F]+\b'
-urlRegex = r"(?i)^[\[({\"']*(?:(?P<url_with_path>(?P<scheme>(?:https?|hxxps?|s?ftps?|meows?)[:-](?:\/\/|\\\\|3A__))?(?P<host>(?P<simple_domain>(?:[\w\-_]+\[?\.\]?)+[^\W\d]{2,})|(?P<ipv4>(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\.){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)|[1])|(?P<HEXIPv4>0\[?x]?[\da-f]{8})|(?P<ipv6>\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))(?P<port>:(?:6[0-5][\d]{3}|[1-5][\d]{4}|[1-9][\d]{,3}))?(?P<path>\/(?:[^?#\s]+\/)*[^?#\s]+)(?P<query>\?[^\s#]*)?(?P<fragment>#[\w\d]*)?)|(?:https?|hxxps?|s?ftps?|meows?)[:-](?:\/\/|\\\\|3A__)(?:(?:[\w\-_]+\[?\.\]?)+[^\W\d]{2,})\/?)[\[({\"']*$"  # noqa: E501
+urlRegex = r'(?i)(?:(?P<url_with_path>(?P<scheme>(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))?(?P<userinfo>[\w]+@)?(?P<host>(?P<simple_domain>(?:(?:[^\W_]|-)+\[?\.\]?)+[^\W\d_-]{2,})|(?P<ipv4>(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\[?[.]]?){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)|[1])|(?P<HEXIPv4>0\[?x]?[\da-f]{8})|(?P<ipv6>\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))(?P<port>:(?:6[0-5][\d]{3}|[1-5][\d]{4}|[1-9][\d]{,3}))?/(?P<path>(?:[\w\/%]+)(?P<extension>\[?[.]]?[^\W\d_-]+))?(?P<query>\?[^\s#]*)?(?P<fragment>#[\w\d]*)?)|(?P<no_path_url>(?:(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))(?:[\w]+@)?(?:(?:[^\W_]+\[?\.\]?)+[^\W\d_-]{2,})[\/.]?))'  # noqa: E501
 domainRegex = r"(?i)(?:(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?((?:[^\\\.@\s\"',(\[:?=]+(?:\.|\[\.\]))+[a-zA-Z]{2,})(?:[_/\s\"',)\]]|[.]\s|%2F|$)"
 cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
+domainRegex = r'(?i)(?P<scheme>(?:http|hxxp|s?ftp)s?(?::|%3A)(?:%2F%2F|//))?(?P<fqdn>(?:(?P<domain>(?:[^\W_]|-)+)\[?\.\]?)+(?P<tld>[^\W\d_-]{2,}))'
+hashRegex = r'\b[0-9a-fA-F]+\b'
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
 sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
 sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
@@ -10762,12 +10771,71 @@ class YMLMetadataCollector:
         return command_wrapper
 
 
-def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url'):
+def xsiam_api_call_with_retries(
+    client,
+    xsiam_url,
+    zipped_data,
+    headers,
+    num_of_attempts,
+    events_error_handler=None
+):
+    """
+    Send the fetched events into the XDR data-collector private api.
+
+    :type client: ``BaseClient``
+    :param client: base client containing the XSIAM url.
+
+    :type xsiam_url: ``str``
+    :param xsiam_url: The URL of XSIAM to send the api request.
+
+    :type zipped_data: ``bytes``
+    :param zipped_data: encoded events
+
+    :type headers: ``dict``
+    :param headers: headers for the request
+
+    :type num_of_attempts: ``int``
+    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes).
+
+    :type events_error_handler: ``callable``
+    :param events_error_handler: error handler function
+
+    :return: Response object
+    :rtype: ``requests.Response``
+    """
+    # retry mechanism in case there is a rate limit (429) from xsiam.
+    status_code = None
+    attempt_num = 1
+    response = None
+
+    while status_code != 200 and attempt_num < num_of_attempts + 1:
+        demisto.debug('Sending events into xsiam, attempt number {attempt_num}'.format(attempt_num=attempt_num))
+        # in the last try we should raise an exception if any error occurred, including 429
+        ok_codes = (200, 429) if attempt_num < num_of_attempts else None
+        response = client._http_request(
+            method='POST',
+            full_url=urljoin(xsiam_url, '/logs/v1/xsiam'),
+            data=zipped_data,
+            headers=headers,
+            error_handler=events_error_handler,
+            ok_codes=ok_codes,
+            resp_type='response'
+        )
+        status_code = response.status_code
+        demisto.debug('received status code: {status_code}'.format(status_code=status_code))
+        if status_code == 429:
+            time.sleep(1)
+        attempt_num += 1
+
+    return response
+
+
+def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3):
     """
     Send the fetched events into the XDR data-collector private api.
 
     :type events: ``Union[str, list]``
-    :param events: The events to send to send to XSIAM server. Should be of the following:
+    :param events: The events to send to XSIAM server. Should be of the following:
         1. List of strings or dicts where each string or dict represents an event.
         2. String containing raw events separated by a new line.
 
@@ -10783,6 +10851,9 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
 
     :type url_key: ``str``
     :param url_key: The param dict key where the integration url is located at. the default is 'url'.
+
+    :type num_of_attempts: ``int``
+    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
 
     :return: None
     :rtype: ``None``
@@ -10864,13 +10935,15 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)
 
-    zipped_data = gzip.compress(data.encode('utf-8'))   # type: ignore[AttributeError,attr-defined]
+    zipped_data = gzip.compress(data.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
     client = BaseClient(base_url=xsiam_url)
-    res = client._http_request(method='POST', full_url=urljoin(xsiam_url, '/logs/v1/xsiam'), data=zipped_data,
-                               headers=headers,
-                               error_handler=events_error_handler)
-    if res.get('error').lower() != 'false':
-        raise DemistoException(header_msg + res.get('error'))
+
+    raw_response = xsiam_api_call_with_retries(
+        client, xsiam_url, zipped_data, headers, num_of_attempts, events_error_handler
+    ).json()
+
+    if raw_response.get('error').lower() != 'false':
+        raise DemistoException(header_msg + raw_response.get('error'))
 
     demisto.updateModuleHealth({'eventsPulled': amount_of_events})
 

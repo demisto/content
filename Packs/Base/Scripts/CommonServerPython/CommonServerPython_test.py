@@ -887,6 +887,50 @@ class TestTableToMarkdown:
 """
         assert expected_table == table
 
+    @staticmethod
+    def test_no_given_headers_and_sort_headers():
+        """
+        Given:
+            - A list of dictionaries.
+        When:
+            - Calling tableToMarkdown with no given headers and sort_headers=True by default.
+        Then:
+            - Validate that the table is sorted by the keys.
+        """
+        data = [{'c': 1, 'b': 2, 'a': 3}, {'c': 4, 'b': 5, 'a': 6}]
+        table = tableToMarkdown("tableToMarkdown test", data)
+        assert table == ('### tableToMarkdown test\n'
+                         '|a|b|c|\n|---|---|---|\n'
+                         '| 3 | 2 | 1 |\n'
+                         '| 6 | 5 | 4 |\n')
+
+    @staticmethod
+    def test_no_given_headers_and_sort_headers_false():
+        """
+        Given:
+            - A list of dictionaries.
+        When:
+            - Calling tableToMarkdown with no given headers and sort_headers=False.
+        Then:
+            - Python 3: Validate that the table is not sorted by the keys.
+            - Python 2: Validate that the table is sorted by the keys.
+        """
+        data = [{'c': 1, 'b': 2, 'a': 3}, {'c': 4, 'b': 5, 'a': 6}]
+        table = tableToMarkdown("tableToMarkdown test", data, sort_headers=False)
+
+        if IS_PY3:
+            expected_table_unsorted = ('### tableToMarkdown test\n'
+                                       '|c|b|a|\n|---|---|---|\n'
+                                       '| 1 | 2 | 3 |\n'
+                                       '| 4 | 5 | 6 |\n')
+            assert table == expected_table_unsorted
+        else:  # in python 2 sort_headers=False is not working
+            expected_table_sorted = ('### tableToMarkdown test\n'
+                                     '|a|b|c|\n|---|---|---|\n'
+                                     '| 3 | 2 | 1 |\n'
+                                     '| 6 | 5 | 4 |\n')
+            assert table == expected_table_sorted
+
 
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
 def test_url_to_clickable_markdown(data, expected_data):
@@ -3391,9 +3435,21 @@ UPDATED_CONTEXT = {
     'list_key_list': ['val1', 'val2', 'val1', 'val2'],
     'list_key_dict': ['val1', 'val2', {'data_key': 'data_val'}]
 }
+UPDATED_CONTEXT_WITH_LIST = {
+    'dict_key': [{
+        'key1': 'val1',
+        'key2': 'val2',
+        'key3': 'val3'
+    }],
+    'int_key': [1, 2],
+    'list_key_str': ['val1', 'val2', 'str_data'],
+    'list_key_list': ['val1', 'val2', 'val1', 'val2'],
+    'list_key_dict': ['val1', 'val2', {'data_key': 'data_val'}]
+}
 
 DATA_MOCK_STRING = "str_data"
 DATA_MOCK_LIST = ['val1', 'val2']
+DATA_MOCK_LIST_OF_DICT = [{'key3': 'val3'}]
 DATA_MOCK_DICT = {
     'data_key': 'data_val'
 }
@@ -3409,6 +3465,7 @@ APPEND_CONTEXT_INPUT = [
 
     (CONTEXT_MOCK, DATA_MOCK_STRING, DICT_KEY, "TypeError"),
     (CONTEXT_MOCK, DATA_MOCK_LIST, DICT_KEY, "TypeError"),
+    (CONTEXT_MOCK, DATA_MOCK_LIST_OF_DICT, DICT_KEY, "key = {}, val = {}".format(DICT_KEY, UPDATED_CONTEXT_WITH_LIST[DICT_KEY])),
     (CONTEXT_MOCK, DATA_MOCK_DICT, DICT_KEY, "key = {}, val = {}".format(DICT_KEY, UPDATED_CONTEXT[DICT_KEY])),
 
     (CONTEXT_MOCK, DATA_MOCK_STRING, 'list_key_str',
@@ -3451,6 +3508,15 @@ INDICATOR_VALUE_AND_TYPE = [
     ('castaneda-thornton.com', 'Domain'),
     ('192.0.0.1', 'IP'),
     ('test@gmail.com', 'Email'),
+    ('test@Demisto.com', 'Email'),
+    ('Test@demisto.com', 'Email'),
+    ('TEST@demisto.com', 'Email'),
+    ('TEST@Demisto.com', 'Email'),
+    ('TEST@DEMISTO.Com', 'Email'),
+    ('TesT@DEMISTO.Com', 'Email'),
+    ('TesT@DemisTO.Com', 'Email'),
+    ('TesT@DeMisTo.CoM', 'Email'),
+    ('TEST@DEMISTO.COM', 'Email'),
     ('e775eb1250137c0b83d4e7c4549c71d6f10cae4e708ebf0b5c4613cbd1e91087', 'File'),
     ('test@yahoo.com', 'Email'),
     ('http://test.com', 'URL'),
@@ -3630,6 +3696,9 @@ VALID_URL_INDICATORS = [
     '2001:db8:85a3:8d3:1319:8a2e:370:7348/80',
     '2001:0db8:0001:0000:0000:0ab9:C0A8:0102/resource.html',
     '2251:dbc:8fa3:8d3:1f19:8a2e:370:7348/80',
+    'https[:]//www.test.com/test',  # defanged colon sign
+    "hxxp[:]//1[.]1[.]1[.]1/test[.]php",  # Defanged URL with ip as a domain
+    "hxxp[:]//test[.]com/test[.]php",  # Defanged URL with a file extension
 ]
 
 
@@ -3654,14 +3723,11 @@ INVALID_URL_INDICATORS = [
     'httn://bla.com/path',
     'google.com*',
     '1.1.1.1',
-    '1.1.1.1/',
     'path/path',
     '1.1.1.1:8080',
-    '1.1.1.1:8080/',
     '1.1.1.1:111112243245/path',
     '3.4.6.92:8080:/test',
     '1.1.1.1:4lll/',
-    '2001:db8:3333:4444:5555:6666:7777:8888/',
     'flake8.pycqa.org',
     'google.com',
     'HTTPS://dsdffd.c',  # not valid tld
@@ -3678,10 +3744,6 @@ INVALID_URL_INDICATORS = [
     '65.23.7.2',
     'k.f.a.f',
     'test/test/test/test',
-    'http://www.example.com/ %20here.html',
-    'http ://www.example.com/ %20here.html',
-    'http://www.example .com/%20here.html',
-    'FTP://Google.test:',
     '',
     'somestring',
     'dsjfshjdfgkjldsh32423123^^&*#@$#@$@!#4',
@@ -3693,16 +3755,13 @@ INVALID_URL_INDICATORS = [
     '2.2.2.2.2/3sad',
     'http://fdsfesd',
     'http://fdsfesd:8080',  # no tld
-    'FLAKE8.dds.asdfd/',
     'FTP://Google.',
     'https://www.',
-    '1.1.1.1/pa klj',
     '1.1.1.1.1/path',
     '2.2.2.2.2/3sad',
     'HTTPS://1.1.1.1..1.1.1.1/path',
     'https://1.1.1.1.1.1.1.1.1.1.1/path',
     '1.1.1.1 .1/path',
-    '123.6.2.2/ path',
     '   test.com',
     'test .com.domain',
     'hxxps://0xAB26:8080/path',  # must be 8 hexa-decimal chars
@@ -3710,7 +3769,6 @@ INVALID_URL_INDICATORS = [
     'https://35.12.5677.143423:443',  # invalid IP address
     'https://4578.2436.1254.7423',  # invalid octal address (must be numbers between 0-7)
     'https://4578.2436.1254.7423:443/p',
-    'https://www.evil.tld/ https://4578.2436.1254.7423:443/p',
     'FTP://foo hXXps://1.1.1.1[.]edu/path',
     'https://216.58.199.78:12345fdsf',
     'https://www.216.58.199.78:sfsdg'
@@ -7117,7 +7175,7 @@ class TestIsDemistoServerGE:
         assert is_demisto_version_ge('5.0.0')
         assert is_demisto_version_ge('4.5.0')
         assert not is_demisto_version_ge('5.5.0')
-        assert get_demisto_version_as_str() == '5.0.0-50000'        
+        assert get_demisto_version_as_str() == '5.0.0-50000'
 
     def test_get_demisto_version_2(self, mocker):
         mocker.patch.object(
@@ -7136,7 +7194,7 @@ class TestIsDemistoServerGE:
         assert is_demisto_version_ge('6.1.0')
         assert is_demisto_version_ge('6.5')
         assert not is_demisto_version_ge('7.0.0')
-        
+
     def test_is_demisto_version_ge_4_5(self, mocker):
         get_version_patch = mocker.patch('CommonServerPython.get_demisto_version')
         get_version_patch.side_effect = AttributeError('simulate missing demistoVersion')
@@ -7762,7 +7820,7 @@ class TestFetchWithLookBack:
             return
         time_aware = 'Z' in result_phase1[0]['created']
         self.LAST_RUN = {}
-        incidents = self.INCIDENTS_TIME_AWARE[:] if time_aware else self.INCIDENTS[:] 
+        incidents = self.INCIDENTS_TIME_AWARE[:] if time_aware else self.INCIDENTS[:]
 
         mocker.patch.object(CommonServerPython, 'get_current_time', return_value=datetime(2022, 4, 1, 11, 0, 0))
         mocker.patch.object(dateparser, 'parse', side_effect=self.mock_dateparser)
@@ -8338,7 +8396,7 @@ class TestSendEventsToXSIAMTest:
     ])
     def test_send_events_to_xsiam_positive(self, mocker, events_use_case):
         """
-        Test for the fetch fetch events function
+        Test for the fetch events function
         Given:
             Case a: a list containing dicts representing events.
             Case b: a list containing strings representing events.
@@ -8372,15 +8430,21 @@ class TestSendEventsToXSIAMTest:
                 - The number of events reported to the module health equals to number of events sent to XSIAM - 2
             Case e:
                 - No request to XSIAM API was made.
-                - The number of events reported to the module health - 0
+                - The number of events reported to the module health - 0.
         """
         if not IS_PY3:
             return
 
         from CommonServerPython import BaseClient
+        from requests import Response
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
         mocker.patch.object(demisto, 'updateModuleHealth')
-        _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value={'error': 'false'})
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
 
         events = self.test_data[events_use_case]['events']
         number_of_events = self.test_data[events_use_case]['number_of_events']
@@ -8415,13 +8479,16 @@ class TestSendEventsToXSIAMTest:
         Then:
             case a:
                 - DemistoException is raised with the empty response message
-                - Error log is created with with the empty response message and status code of 403
+                - Error log is created with the empty response message and status code of 403
+                - Make sure only single api request was sent and that retry mechanism was not triggered
             case b:
                 - DemistoException is raised with the Unauthorized[401] message
-                - Error log is created with with Unauthorized[401] message and status code of 401
+                - Error log is created with Unauthorized[401] message and status code of 401
+                - Make sure only single api request was sent and that retry mechanism was not triggered
             case c:
                 - DemistoException is raised with the empty response message
-                - Error log is created with with the empty response message and status code of 403
+                - Error log is created with the empty response message and status code of 403
+                - Make sure only single api request was sent and that retry mechanism was not triggered
 
         """
         if not IS_PY3:
@@ -8433,13 +8500,13 @@ class TestSendEventsToXSIAMTest:
 
         if isinstance(error_msg, dict):
             status_code = 401
-            requests_mock.post(
+            request_mocker = requests_mock.post(
                 'https://api-url/logs/v1/xsiam', json=error_msg, status_code=status_code, reason='Unauthorized[401]'
             )
             expected_error_msg = 'Unauthorized[401]'
         else:
             status_code = 403
-            requests_mock.post('https://api-url/logs/v1/xsiam', text=None, status_code=status_code)
+            request_mocker = requests_mock.post('https://api-url/logs/v1/xsiam', text=None, status_code=status_code)
             expected_error_msg = 'Received empty response from the server'
 
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
@@ -8456,8 +8523,116 @@ class TestSendEventsToXSIAMTest:
         ):
             send_events_to_xsiam(events=events, vendor='some vendor', product='some product')
 
+        # make sure the request was sent only once and retry mechanism was not triggered
+        assert request_mocker.call_count == 1
+
         error_log_mocker.assert_called_with(
             expected_request_and_response_info.format(status_code=str(status_code), error_received=expected_error_msg))
+
+    @pytest.mark.parametrize(
+        'mocked_responses, expected_request_call_count, expected_error_log_count, should_succeed', [
+            (
+                [
+                    (429, None), (429, None), (429, None)
+                ],
+                3,
+                1,
+                False
+            ),
+            (
+                [
+                    (401, None)
+                ],
+                1,
+                1,
+                False
+            ),
+            (
+                [
+                    (429, None), (429, None), (200, json.dumps({'error': 'false'}).encode('utf-8'))
+                ],
+                3,
+                0,
+                True
+            ),
+            (
+                [
+                    (429, None), (200, json.dumps({'error': 'false'}).encode('utf-8'))
+                ],
+                2,
+                0,
+                True
+            ),
+            (
+                [
+                    (200, json.dumps({'error': 'false'}).encode('utf-8'))
+                ],
+                1,
+                0,
+                True
+            )
+        ]
+    )
+    def test_retries_send_events_to_xsiam_rate_limit(
+        self, mocker, mocked_responses, expected_request_call_count, expected_error_log_count, should_succeed
+    ):
+        """
+        Given:
+            case a: 3 responses indicating about api limit from xsiam (429)
+            case b: 2 responses indicating about unauthorized access from xsiam (401)
+            case c: 2 responses indicating about api limit from xsiam (429) and the third indicating about success
+            case d: 1 response indicating about api limit from xsiam (429) and the second indicating about success
+            case e: 1 response indicating about success from xsiam with no rate limit errors
+
+        When:
+            calling the send_events_to_xsiam function
+
+        Then:
+            case a:
+                - DemistoException is raised
+                - Error log is called 1 time
+                - Make sure 3 api requests were sent by the retry mechanism
+            case b:
+                - DemistoException is raised
+                - Error log is called 1 time
+                - Make sure only 1 api request were sent by the retry mechanism
+            case c:
+                - Error log is not called at all
+                - Make sure only 3 api requests were sent by the retry mechanism
+            case d:
+                - EError log is not called at all
+                - Make sure only 2 api requests were sent by the retry mechanism
+            case e:
+                - Error log is not called at all
+                - Make sure only 1 api request were sent by the retry mechanism
+
+        """
+        if not IS_PY3:
+            return
+
+        import requests
+        mocked_responses_side_effect = []
+        for status_code, text in mocked_responses:
+            api_response = requests.Response()
+            api_response.status_code = status_code
+            api_response._content = text
+            mocked_responses_side_effect.append(api_response)
+
+        request_mock = mocker.patch.object(requests.Session, 'request', side_effect=mocked_responses_side_effect)
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        error_mock = mocker.patch.object(demisto, 'error')
+
+        events = self.test_data['json_events']['events']
+        if should_succeed:
+            send_events_to_xsiam(events=events, vendor='some vendor', product='some product')
+        else:
+            with pytest.raises(DemistoException):
+                send_events_to_xsiam(events=events, vendor='some vendor', product='some product')
+
+        assert error_mock.call_count == expected_error_log_count
+        assert request_mock.call_count == expected_request_call_count
 
 
 class TestIsMetricsSupportedByServer:
@@ -8536,7 +8711,7 @@ def test_collect_execution_metrics():
 
     expected_command_results = {'APIExecutionMetrics': [{'APICallsCount': 1, 'Type': 'Successful'}],
                                 'Contents': 'Metrics reported successfully.',
-                                'ContentsFormat': 'json',
+                                'ContentsFormat': 'text',
                                 'EntryContext': {},
                                 'HumanReadable': None,
                                 'IgnoreAutoExtract': False,

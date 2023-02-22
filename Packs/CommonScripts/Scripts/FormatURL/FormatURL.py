@@ -76,6 +76,7 @@ class URLCheck(object):
         self.query = False
         self.fragment = False
         self.done = False
+        self.quoted = False
 
         if self.original_url:
             self.remove_leading_chars()
@@ -83,8 +84,8 @@ class URLCheck(object):
         else:
             raise URLError("Empty string given")
 
-        if "//" in self.modified_url[:8]:
-            # The URL seems to have a scheme indicated by presence of "//"
+        if any(map(self.modified_url[:8].__contains__, ["//", "%3A", "%3a"])):
+            # The URL seems to have a scheme indicated by presence of "//" or "%3A"
             self.scheme_check()
 
         try:
@@ -118,11 +119,14 @@ class URLCheck(object):
         if not self.done and self.fragment:
             self.fragment_check()
 
+        if self.quoted:
+            self.output = urllib.parse.unquote(self.output)
+
     def __str__(self):
-        return f"{urllib.parse.unquote(self.output)}"
+        return f"{self.output}"
 
     def __repr__(self):
-        return f"{urllib.parse.unquote(self.output)}"
+        return f"{self.output}"
 
     def scheme_check(self):
         """
@@ -138,10 +142,23 @@ class URLCheck(object):
             if char in self.sub_delims:
                 raise URLError(f"Invalid character {char} at position {index}")
 
-            elif char == ":":
+            elif char == "%" or char == ":":
+                # The colon might appear as is or if the URL is quoted as "%3A"
 
-                self.output += char
-                index += 1
+                if char == "%":
+                    # If % is present in the scheme it must be followed by "3A" to represent a colon (":")
+
+                    if self.modified_url[index + 1:index + 3].upper() != "3A":
+                        raise URLError(f"Invalid character {char} at position {index}")
+
+                    else:
+                        self.output += ":"
+                        index += 3
+                        self.quoted = True
+
+                if char == ":":
+                    self.output += char
+                    index += 1
 
                 if self.modified_url[index:index + 2] != "//":
                     # If URL has ascii chars and ':' with no '//' it is invalid
@@ -327,6 +344,7 @@ class URLCheck(object):
 
         if self.check_done(index):
             self.url.path = path
+            self.output += path
             return
 
         if self.modified_url[index] == "?":
@@ -335,6 +353,7 @@ class URLCheck(object):
         elif self.modified_url[index] == "#":
             self.fragment = True
 
+        self.output += path
         self.output += self.modified_url[index]
         index += 1
         self.base = index
@@ -342,7 +361,7 @@ class URLCheck(object):
 
     def query_check(self):
         """
-        Parses and validates the query part of the URL. The query strats after a "?".
+        Parses and validates the query part of the URL. The query starts after a "?".
         """
         index = self.base
         query = ''
@@ -352,6 +371,7 @@ class URLCheck(object):
             query += char
 
         self.url.query = query
+        self.output += query
 
         if self.check_done(index):
             return
@@ -368,13 +388,14 @@ class URLCheck(object):
         """
 
         index = self.base
-        fragmet = ""
+        fragment = ""
 
         while index < len(self.modified_url):
             index, char = self.check_valid_character(index)
-            fragmet += char
+            fragment += char
 
-        self.url.fragment = fragmet
+        self.url.fragment = fragment
+        self.output += fragment
 
     def check_valid_character(self, index: int) -> tuple[int, str]:
         """
@@ -396,24 +417,26 @@ class URLCheck(object):
                 raise URLError(f"Invalid character {char} at position {index}")
 
             else:
-                self.output += char
                 part += char
                 index += 1
 
         elif char in self.brackets:
             # char is a type of bracket or quotation mark
-            if char in self.bracket_pairs:
-                # If the char is an opening bracket set `inside_brackets` flag to True
-                self.inside_brackets = True
-                self.opening_bracket = char
-                self.output += char
-                part += char
-                index += 1
+
+            if index == len(self.modified_url) - 1 and not self.inside_brackets:
+                # Edge case of a bracket or quote at the end of the URL but not part of it
+                return len(self.modified_url), part
 
             elif self.inside_brackets and char == self.bracket_pairs[self.opening_bracket]:
                 # If the char is a closing bracket check that it matches the opening one.
                 self.inside_brackets = False
-                self.output += char
+                part += char
+                index += 1
+
+            elif char in self.bracket_pairs:
+                # If the char is an opening bracket set `inside_brackets` flag to True
+                self.inside_brackets = True
+                self.opening_bracket = char
                 part += char
                 index += 1
 
@@ -430,7 +453,6 @@ class URLCheck(object):
             raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
 
         else:
-            self.output += char
             part += char
             index += 1
 
@@ -501,7 +523,6 @@ class URLCheck(object):
             return True
 
         elif self.modified_url[index] == "/":
-            #
             self.output += self.modified_url[index]
             index += 1
 
@@ -546,8 +567,8 @@ class URLFormatter(object):
     # URL Security Wrappers
     ATP_regex = re.compile('https://.*?\.safelinks\.protection\.outlook\.com/\?url=(.*?)&', re.I)
     fireeye_regex = re.compile('.*?fireeye[.]com.*?&u=(.*)', re.I)
-    proofpoint_regex = re.compile('(?i)(?:proofpoint.com/v[1-2]/(?:url\?u=)?(.*?)(?:&amp|&d|$)|'
-                                  'urldefense[.]\w{2,3}/v3/__(.*?)(?:__;|$))')
+    proofpoint_regex = re.compile('(?i)(?:proofpoint.com/v[1-2]/(?:url\?u=)?(.+?)(?:&amp|&d|$)|'
+                                  'https?(?::|%3A)//urldefense[.]\w{2,3}/v3/__(.+?)(?:__;|$))')
     trendmicro_regex = re.compile('https://.*?trendmicro\.com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&', re.I)
 
     # Scheme slash fixer
@@ -571,7 +592,7 @@ class URLFormatter(object):
         url = self.strip_wrappers(url)
 
         try:
-            self.output = urllib.parse.unquote(URLCheck(url).output)
+            self.output = URLCheck(url).output
 
         except URLError:
             raise
@@ -599,14 +620,18 @@ class URLFormatter(object):
         while wrapper:
             # Will strip multiple wrapped URLs, wrappers are finite the loop will stop once all wrappers were removed
 
+            if "%3A" in url[:8].upper():
+                # If scheme has %3A URL is probably quoted and should be unquoted
+                url = urllib.parse.unquote(url)
+
             if URLFormatter.fireeye_regex.match(url):
-                url = urllib.parse.unquote(URLFormatter.fireeye_regex.findall(url)[0])
+                url = URLFormatter.fireeye_regex.findall(url)[0]
 
             elif URLFormatter.trendmicro_regex.match(url):
-                url = urllib.parse.unquote(URLFormatter.trendmicro_regex.findall(url)[0])
+                url = URLFormatter.trendmicro_regex.findall(url)[0]
 
             elif URLFormatter.ATP_regex.match(url):
-                url = urllib.parse.unquote(URLFormatter.ATP_regex.findall(url)[0])
+                url = URLFormatter.ATP_regex.findall(url)[0]
 
             elif URLFormatter.proofpoint_regex.findall(url):
                 url = URLFormatter.extract_url_proofpoint(URLFormatter.proofpoint_regex.findall(url)[0])
@@ -614,7 +639,8 @@ class URLFormatter(object):
             else:
                 wrapper = False
 
-        return url
+        else:
+            return url
 
     @staticmethod
     def extract_url_proofpoint(url: str) -> str:
