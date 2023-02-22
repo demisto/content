@@ -1,10 +1,6 @@
-import json
 import re
 import time
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
-
 import demistomock as demisto  # noqa: F401
-import requests
 import urllib3
 from CommonServerPython import *  # noqa: F401
 
@@ -50,7 +46,7 @@ class Client(BaseClient):
         }
         response = self._http_request(
             method='POST',
-            url_suffix=f'/entry',
+            url_suffix='/entry',
             json_data=body_content
         )
         return response
@@ -70,7 +66,7 @@ class Client(BaseClient):
         }
         response = self._http_request(
             method='POST',
-            url_suffix=f'/entry/delete/v2',
+            url_suffix='/entry/delete/v2',
             json_data=body_content
         )
         return response
@@ -84,12 +80,12 @@ class Client(BaseClient):
         Returns:
             json -- structure for the API
         """
-        # in case we need to send the full structure
-        #attachment_name = attachment['name']
+        # full structure in comment in case the API change the requirement
+        # attachment_name = attachment['name']
         attachment_path = file_path  # attachment['path']
-        #attachment_type = attachment['type']
-        #attachment_media_file = attachment['showMediaFile']
-        #attachment_description = attachment['description']
+        # attachment_type = attachment['type']
+        # attachment_media_file = attachment['showMediaFile']
+        # attachment_description = attachment['description']
         file_data = {
             "fieldName": field_name,
             "files": {
@@ -215,7 +211,9 @@ def rename_file_command(client: Client, args: dict) -> CommandResults:
     # delete old file
     new_files = delete_file(client, entry_id)
     new_files.append(nfu)
-    return CommandResults(readable_output=f'File {res_name} was renamed to {file_name} under the new entry id {nfu["EntryID"]}', outputs=new_files, outputs_prefix="File")
+    return CommandResults(readable_output=f'File {res_name} was renamed to {file_name} under the new entry id {nfu["EntryID"]}',
+                          outputs=new_files,
+                          outputs_prefix="File")
 
 
 def check_file_command(client: Client, args: dict) -> CommandResults:
@@ -232,15 +230,19 @@ def check_file_command(client: Client, args: dict) -> CommandResults:
         time.sleep(1)  # to let the API execute the request
     try:
         path_res = demisto.getFilePath(entry_id)
-        file_path = path_res.get("path")
+        # file_path = path_res.get("path")
         file_name = path_res.get('name')
         output_tmp = {entry_id: True}
         output_content = {**output_content, **output_tmp}
-        return CommandResults(readable_output=f"File {entry_id} exist !", outputs_prefix="IsFileExists", outputs=output_content)
+        return CommandResults(readable_output=f"File {entry_id} exist under the name {file_name} !",
+                              outputs_prefix="IsFileExists",
+                              outputs=output_content)
     except Exception as err:
         output_tmp = {entry_id: False}
         output_content = {**output_content, **output_tmp}
-        return CommandResults(readable_output=f"File {entry_id} does not exist ! {err}", outputs_prefix="IsFileExists", outputs=output_content)
+        return CommandResults(readable_output=f"File {entry_id} does not exist ! {err}",
+                              outputs_prefix="IsFileExists",
+                              outputs=output_content)
 
 
 def delete_attachment_command(client: Client, args: dict) -> CommandResults:
@@ -308,7 +310,7 @@ def get_file_path_name(file_input: str) -> Tuple[str, str]:
         file_path = path_res.get("path")
         file_name = path_res.get('name')
         return file_path, file_name
-    except Exception as err:
+    except Exception:
         res = re.findall("_(.*)_(.*)", file_input)
         if len(res) > 0:
             path_res = demisto.getFilePath(res[0][0])
@@ -422,5 +424,3 @@ def main() -> None:
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-register_module_line('HelloWorld', 'end', __line__())
