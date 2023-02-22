@@ -61,13 +61,16 @@ script:
     description: Check if entry ID exist
     name: file-management-check-file
     outputs:
-    - contextPath: IsFileExists
+    - description: Dictionary with EntryID as key and boolean if the file exists as value
+      contextPath: IsFileExists
   - arguments:
     - description: File path of the file
       name: filePath
       required: true
-    - name: incidentID
-    - name: fieldName
+    - description: ID of the incident to delete attachment
+      name: incidentID
+    - description: 'Name of the field (type attachment) you want to remove the attachment by default it''s the incident attachment (incident.attachment) field'
+      name: fieldName
     description: Delete the attachment from the incident and from the XSOAR server
     execution: true
     name: file-management-delete-attachment
