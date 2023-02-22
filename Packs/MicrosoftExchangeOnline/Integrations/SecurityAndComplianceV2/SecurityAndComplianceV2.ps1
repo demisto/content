@@ -3,6 +3,7 @@
 $script:INTEGRATION_NAME = "Security And Compliance"
 $script:COMMAND_PREFIX = "o365-sc"
 $script:INTEGRATION_ENTRY_CONTEX = "O365.SecurityAndCompliance.ContentSearch"
+$script:INTEGRATION_ENTRY_COMPLIANCE = "O365.SecurityAndCompliance.ComplianceCase"
 $script:SEARCH_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEX.Search(val.Name && val.Name == obj.Name)"
 $script:SEARCH_ACTION_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEX.SearchAction(val.Name && val.Name == obj.Name)"
 
@@ -702,6 +703,119 @@ class SecurityAndComplianceClient {
             https://docs.microsoft.com/en-us/powershell/module/exchange/get-compliancesearchaction?view=exchange-ps
         #>
     }
+
+    [psobject]ComplianceCaseCreate([string]$case_name, [string]$case_type, [string]$description, [string]$external_id) {
+        # Establish session to remote
+        $this.CreateDelegatedSession("New-ComplianceCase")
+
+        $cmd_params = @{
+            "Name" = $case_name
+            "CaseType" = $case_type
+        }
+        if ($description) {
+            $cmd_params.Description = $description
+        }
+        if ($description) {
+            $cmd_params.ExternalId = $external_id
+        }
+
+        # Execute command
+        $response = New-ComplianceCase @cmd_params
+        # Close session to remote
+        $this.DisconnectSession()
+        return $response
+           <#
+            .DESCRIPTION
+            Create eDiscovery cases in the Microsoft Purview compliance portal.
+
+            .PARAMETER case_name
+            The name of the case to create.
+            .PARAMETER case_type
+            Type of case from a closed list.
+            .PARAMETER description
+            Attach a description to case.
+            .PARAMETER external_id
+            Optional ID or external case number that you can associate with the new compliance case.
+
+            .EXAMPLE
+            $client.ComplianceCaseCreate("case_name", "case_type", "description", "external_id")
+
+            .OUTPUTS
+            psobject - Raw response.
+
+            .LINK
+            https://learn.microsoft.com/en-us/powershell/module/exchange/new-compliancecase?view=exchange-ps
+        #>
+    }
+
+    [psobject]ComplianceCaseList([string]$identity, [string]$case_type, [int]$limit) {
+        # Establish session to remote
+        $this.CreateDelegatedSession("Get-ComplianceCase")
+
+        $cmd_params = @{}
+        if ($identity) {
+            $cmd_params.Identity = $identity
+        }
+        if ($case_type) {
+            $case_type_list = ArgToList($case_type)
+            $response = @()
+            $case_type_list | ForEach-Object{
+                $cmd_params.CaseType = $_
+                $response += Get-ComplianceCase @cmd_params
+            }
+        } else {
+            $response = Get-ComplianceCase @cmd_params
+        }        
+        $response = $response | Select-Object -First $limit
+        # Close session to remote
+        $this.DisconnectSession()
+        return $response
+           <#
+            .DESCRIPTION
+            List different types of compliance cases in the Microsoft Purview compliance portal
+
+            .PARAMETER identity
+            List case with the identity.
+            .PARAMETER case_type
+            List cases of the sepecified case_type.
+
+            .EXAMPLE
+            $client.ComplianceCaseList()
+
+            .OUTPUTS
+            psobject - Raw response.
+
+            .LINK
+            https://learn.microsoft.com/en-us/powershell/module/exchange/get-compliancecase?view=exchange-ps
+        #>
+    }
+
+    [psobject]ComplianceCaseDelete([string]$identity) {
+        # Establish session to remote
+        $this.CreateDelegatedSession("Remove-ComplianceCase")
+
+        # Execute command
+        $response = Remove-ComplianceCase -Identity $identity -Confirm "false"
+        # Close session to remote
+        $this.DisconnectSession()
+        return $response
+           <#
+            .DESCRIPTION
+            Removes compliance cases from the Microsoft Purview compliance portal or the Microsoft Purview compliance portal.
+
+            .PARAMETER identity
+            Identity of the case to remove.
+
+            .EXAMPLE
+            $client.ComplianceCaseDelete("case_identity")
+
+            .OUTPUTS
+            psobject - Raw response.
+
+            .LINK
+            https://learn.microsoft.com/en-us/powershell/module/exchange/remove-compliancecase?view=exchange-ps
+        #>
+    }
 }
 
 #### COMMAND FUNCTIONS ####
@@ -932,6 +1046,41 @@ function ListSearchActionsCommand([SecurityAndComplianceClient]$client, [hashtab
     return $human_readable, $entry_context, $raw_response
 }
 
+function ComplianceCaseCreateCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
+    # Raw response
+    $raw_response = $client.ComplianceCaseCreate($kwargs.case_name, $kwargs.case_type, $kwargs.description, $kwargs.external_id)
+    $human_readable = TableToMarkdown $raw_response "Results of $command"
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_COMPLIANCE" = $raw_response }
+    return $human_readable, $entry_context, $raw_response
+}
+
+function ComplianceCaseListCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
+    # Raw response    
+    $raw_response = $client.ComplianceCaseList($kwargs.identity, $kwargs.case_type, $kwargs.limit)
+    $human_readable = TableToMarkdown $raw_response "Results of $command"
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_COMPLIANCE" = $raw_response }
+    return $human_readable, $entry_context, $raw_response
+}
+
+function ComplianceCaseDeleteCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
+    # Raw response
+    $raw_response = $client.ComplianceCaseDelete()
+    # $human_readable = TableToMarkdown $raw_response "Results of $command"
+    # $entry_context = @{ "$script:INTEGRATION_ENTRY_COMPLIANCE" = $raw_response }
+    return $raw_response
+}
+
+function CaseHoldPolicyCreateCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
+    # Raw response
+    $public_folder_location = ConvertTo-Boolean $kwargs.public_folder_location
+    $enabled = ConvertTo-Boolean $kwargs.enabled
+    $raw_response = $client.CaseHoldPolicyCreate($kwargs.policy_name, $kwargs.caes, $kwargs.comment, $kwargs.exchange_location,
+                                                 $public_folder_location, $kwargs.share_point_location, $enabled)
+    # $human_readable = TableToMarkdown $raw_response "Results of $command"
+    # $entry_context = @{ "$script:INTEGRATION_ENTRY_COMPLIANCE" = $raw_response }
+    return $raw_response
+}
+
 #### INTEGRATION COMMANDS MANAGER ####
 
 function Main {
@@ -987,6 +1136,18 @@ function Main {
             }
             "$script:COMMAND_PREFIX-get-search-action" {
                 ($human_readable, $entry_context, $raw_response, $file_entry) = GetSearchActionCommand $cs_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-compliance-case-create" {
+                ($human_readable, $entry_context, $raw_response, $file_entry) = ComplianceCaseCreateCommand $cs_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-compliance-case-list" {
+                ($human_readable, $entry_context, $raw_response, $file_entry) = ComplianceCaseListCommand $cs_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-compliance-case-delete" {
+                ($human_readable, $entry_context, $raw_response, $file_entry) = ComplianceCaseDeleteCommand $cs_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-case-hold-policy-create" {
+                ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldPolicyCreateCommand $cs_client $command_arguments
             }
         }
         # Return results to Demisto Server

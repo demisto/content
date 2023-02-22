@@ -1072,9 +1072,9 @@ script:
       required: false
       isArray: false  
     - name: case_type
-      description: List sases by type.
+      description: List cases by type.
       required: false
-      isArray: tru
+      isArray: true
       auto: PREDEFINED
       predefined:
       - AdvancedEdiscovery
@@ -1216,7 +1216,7 @@ script:
       type: String
   - name: o365-sc-case-hold-policy-delete
     deprecated: false
-    description:
+    description: Removes case hold policies from the Microsoft Purview compliance portal.
     execution: false
     arguments:
     - name: identity
@@ -1274,7 +1274,7 @@ script:
       type: String
   - name: o365-sc-case-hold-rule-list
     deprecated: false
-    description:
+    description: View case hold rules in the Microsoft Purview compliance portal.
     execution: false
     arguments:
     - name: identify
@@ -1305,7 +1305,7 @@ script:
       type: String
   - name: o365-sc-case-hold-rule-delete
     deprecated: false
-    description:
+    description: Removes case hold rules from the Microsoft Purview compliance portal.
     execution: false
     arguments:
     - name: identity
