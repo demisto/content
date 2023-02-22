@@ -410,8 +410,6 @@ def main() -> None:
             return_results(check_file_command(client, args))
         elif command == 'rename-file':
             return_results(rename_file_command(client, args))
-        elif command == 'edit-file':
-            return_results(edit_file_command(client, args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented')
 
