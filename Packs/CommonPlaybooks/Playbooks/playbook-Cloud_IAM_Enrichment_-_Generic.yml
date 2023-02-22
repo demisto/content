@@ -915,7 +915,7 @@ tasks:
       id: 084173a0-9565-4d4e-899d-6c5cfc275d15
       version: -1
       name: Gsuite Customer ID exists?
-      description: Checks if Gsuite Customer ID exists.
+      description: Checks if the Gsuite Customer ID exists.
       type: condition
       iscommand: false
       brand: ""
