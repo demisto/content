@@ -249,9 +249,9 @@ def check_file_command(client: Client, args: dict) -> CommandResults:
 def delete_attachment_command(client: Client, args: dict) -> CommandResults:
     """Delete an attachment
     Arguments:
-        incidentID {str} -- incident id to upload the file to
+        incidentID {str} -- incident number where the file will be deleted
         filePath {str} -- path of the file
-        fieldName {str} -- name of the field you want to remove the attachment by default it's the incident attachment field
+        fieldName {str} -- name of the field (type attachment) you want to remove the attachment by default it's the incident attachment (incident.attachment) field
     Returns:
         CommandResults -- Readable output
     Note:
