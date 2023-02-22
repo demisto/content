@@ -1157,20 +1157,7 @@ tasks:
       Endpoint_hostname:
         simple: ${incident.hostname}
       Endpoint_id:
-        complex:
-          root: incident
-          accessor: deviceid
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_id
-                iscontext: true
-      Endpoint_ip:
-        complex:
-          root: IP
-          accessor: Address
+        simple: ${incident.deviceid}
     separatecontext: true
     loop:
       iscommand: false
@@ -1197,11 +1184,13 @@ tasks:
       id: eda97e92-1226-4fee-8739-a71cf5fd259b
       version: -1
       name: Isolate Endpoint - Generic V2
+      description: |-
+        This playbook isolates a given endpoint using various endpoint product integrations.
+        Make sure to provide valid playbook inputs for the integration you are using.
       playbookName: Isolate Endpoint - Generic V2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -1226,16 +1215,6 @@ tasks:
               field:
                 value:
                   simple: device
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_id
-                iscontext: true
-      Endpoint_ip:
-        complex:
-          root: IP
-          accessor: Address
     separatecontext: true
     loop:
       iscommand: false
