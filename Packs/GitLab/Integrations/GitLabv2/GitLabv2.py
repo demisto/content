@@ -1772,7 +1772,7 @@ def main() -> None:  # pragma: no cover
     except Exception as e:
         error_message = str(e)
         if check_for_html_in_error(error_message):
-            error_message = 'Try checking your Sever Url parameter.'
+            error_message = 'Try checking your Sever Url integration parameter (e.g. base_path_to_your_gitlab/api/v4).'
         return_error(
             f'Failed to execute {demisto.command()} command. Error: {error_message}'
         )
