@@ -23,7 +23,7 @@ configuration:
   required: true
   type: 0
   section: Connect
-  additionalinfo: The server url used to connect (In the security center, go to Settings >> Clod Apps >> About tab, the API URL is displayed).
+  additionalinfo: In the Security Center, go to Settings > Clod Apps > About tab, where the API URL is displayed.
 - name: creds_token
   type: 9
   displaypassword: User's key to access the API (for legacy method)
