@@ -1634,10 +1634,13 @@ def create_payload_for_query(args: dict[str, Any], query_type: Optional[str] = N
 ''' COMMAND FUNCTIONS '''
 
 
+# def common_wrapper_command(client_func: Callable, cmd_args: dict, readable_title: str,
+#                            context_path: str, output_key_field: str, command_type: str = None,
+#                            is_call_diff_readable_output: bool = False,
+#                            func_readable_output: Callable = generic_readable_output, **kwargs) -> CommandResults:
 def common_wrapper_command(client_func: Callable, cmd_args: dict, readable_title: str,
                            context_path: str, output_key_field: str, command_type: str = None,
-                           is_call_diff_readable_output: bool = False,
-                           func_readable_output: Callable = generic_readable_output, **kwargs) -> CommandResults:
+                           func_readable_output: Callable = None, **kwargs) -> CommandResults:
     """
     Common Wrapper Command for different endpoints
     Args:
@@ -1647,8 +1650,6 @@ def common_wrapper_command(client_func: Callable, cmd_args: dict, readable_title
         context_path: Readable Context Output path
         output_key_field: Outputs key field
         command_type: Load the specific payload
-        is_call_diff_readable_output: Default False, Only pass the Ture in case need to call different
-                    readable output method
         func_readable_output: Optional, call in case of readable output method is different for specific command
         kwargs: In case required other arguments
 
@@ -1670,14 +1671,13 @@ def common_wrapper_command(client_func: Callable, cmd_args: dict, readable_title
     title = compile_command_title_string(readable_title, cmd_args, int(raw_response.get('total', 0)))
 
     if printable_result := get_data_of_current_page(raw_response.get('result', []), offset, limit):
-        if is_call_diff_readable_output:
-            if 'incident_id' in kwargs:
-                readable_output, context_data = func_readable_output(printable_result, title, kwargs['incident_id'])
-            else:
-                readable_output, context_data = func_readable_output(printable_result, title)
-        else:
+        if func_readable_output is None:
             readable_output = generic_readable_output(printable_result, title)
             context_data = printable_result
+        elif 'incident_id' in kwargs:
+            readable_output, context_data = func_readable_output(printable_result, title, kwargs['incident_id'])
+        else:
+            readable_output, context_data = func_readable_output(printable_result, title)
     else:
         readable_output = f'No {readable_title} data to present.'
 
