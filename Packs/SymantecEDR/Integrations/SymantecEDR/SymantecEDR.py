@@ -1587,12 +1587,8 @@ def get_incident_uuid(client: Client, args: dict[str, Any]) -> str | None:
     if search_query := get_incident_filter_query(args):
         payload['query'] = search_query
 
-    if not (
-        raw_data := client.get_incident(payload).get('result', [])
-    ):
-        raise DemistoException(f'Incident ID {args.get("incident_id")} was not found. '
-                               f'If it\'s older than 30 days, try increasing the time range arguments')
-    return raw_data[0].get('uuid')
+    result = client.get_incident(payload).get('result')
+    return result[0].get('uuid') if result else None
 
 
 def create_payload_for_query(args: dict[str, Any], query_type: Optional[str] = None) -> dict:
@@ -1635,10 +1631,6 @@ def create_payload_for_query(args: dict[str, Any], query_type: Optional[str] = N
 ''' COMMAND FUNCTIONS '''
 
 
-# def common_wrapper_command(client_func: Callable, cmd_args: dict, readable_title: str,
-#                            context_path: str, output_key_field: str, command_type: str = None,
-#                            is_call_diff_readable_output: bool = False,
-#                            func_readable_output: Callable = generic_readable_output, **kwargs) -> CommandResults:
 def common_wrapper_command(client_func: Callable, cmd_args: dict, readable_title: str,
                            context_path: str, output_key_field: str, command_type: str = None,
                            func_readable_output: Callable = None, **kwargs) -> CommandResults:
@@ -1867,7 +1859,8 @@ def get_incident_comments_command(client: Client, args: dict[str, Any]) -> Comma
     uuid = get_incident_uuid(client, args)
     incident_id = args.pop("incident_id", None)
     if uuid is None:
-        raise ValueError("Error: No Incident UUID found. Provide valid Incident IDs.")
+        raise ValueError(f'Incident ID {incident_id} was not found. '
+                         f'If it\'s older than 30 days, try increasing the time range arguments')
 
     return common_wrapper_command(
         client_func=client.get_incident_comment,
@@ -1900,36 +1893,35 @@ def patch_incident_update_command(client: Client, args: dict[str, Any]) -> Comma
         raise ValueError(f'Invalid Incident Patch Operation: Supported values are : {INCIDENT_PATCH_ACTION}')
 
     # Get UUID based on incident_id
-    status = 0
-    action_desc = ''
-    if uuid := get_incident_uuid(client, args):
-        # Incident Add Comment
-        if action == 'add_comment':
-            if not update_value:
-                raise ValueError('Missing comment. Enter Free text up to 512 characters')
+    if not (uuid := get_incident_uuid(client, args)):
+        raise ValueError(f'Incident ID {args.get("incident_id")} was not found. '
+                         f'If it\'s older than 30 days, try increasing the time range arguments')
+    # Incident Add Comment
+    if action == 'add_comment':
+        if not update_value:
+            raise ValueError('Missing comment. Enter Free text up to 512 characters')
 
-            action_desc = 'Add Comment'
-            response = client.add_incident_comment(uuid, update_value)
-            status = response.status_code
+        action_desc = 'Add Comment'
+        response = client.add_incident_comment(uuid, update_value)
+        status = response.status_code
 
-            # Incident Close Incident
-        elif action == 'close_incident':
-            action_desc = 'Close Incident'
-            response = client.close_incident(uuid, 4)
-            status = response.status_code
+        # Incident Close Incident
+    elif action == 'close_incident':
+        action_desc = 'Close Incident'
+        response = client.close_incident(uuid, 4)
+        status = response.status_code
 
-            # Incident Update Resolution
-        elif action == 'update_resolution':
-            action_desc = 'Update Status'
-            if not update_value or INCIDENT_RESOLUTION.get(str(update_value)) is None:
-                raise ValueError(f'Missing/Invalid Incident Resolution value. '
-                                 f'Enter any one of these supported value {INCIDENT_RESOLUTION}')
-            response = client.update_incident(uuid, int(args.get('value', 0)))
-            status = response.status_code
-
-        else:
-            raise DemistoException(
-                f'Unable to perform Incident update. Only support the following action {INCIDENT_PATCH_ACTION}')
+        # Incident Update Resolution
+    elif action == 'update_resolution':
+        action_desc = 'Update Status'
+        if not update_value or INCIDENT_RESOLUTION.get(str(update_value)) is None:
+            raise ValueError(f'Missing/Invalid Incident Resolution value. '
+                             f'Enter any one of these supported value {INCIDENT_RESOLUTION}')
+        response = client.update_incident(uuid, int(args.get('value', 0)))
+        status = response.status_code
+    else:
+        raise DemistoException(
+            f'Unable to perform Incident update. Only support the following action {INCIDENT_PATCH_ACTION}')
 
     if status == 204:
         summary_data = {
