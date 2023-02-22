@@ -1022,7 +1022,7 @@ outputs:
   description: Token to specify the next page in the list.
   type: unknown
 - contextPath: MSGraphUser
-  description: MSGraph User information.
+  description: MSGraph user information.
   type: unknown
 - contextPath: MSGraphGroups
   description: MSGraph Groups information.
