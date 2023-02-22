@@ -172,7 +172,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -209,7 +209,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -244,7 +244,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -290,7 +290,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
   "11":
@@ -358,7 +358,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -395,7 +395,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -432,7 +432,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -469,7 +469,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -499,14 +499,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
+          "x": 450,
           "y": 1225
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -691,7 +691,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -732,7 +732,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -771,7 +771,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -808,7 +808,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -844,7 +844,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -949,7 +949,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
 view: |-

@@ -18,19 +18,19 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* aws-iam-list-access-keys-for-user
-* gcp-iam-project-role-list
-* msgraph-groups-list-groups
-* aws-iam-list-attached-user-policies
-* msgraph-user-get
-* gcp-iam-service-account-keys-get
 * gsuite-role-assignment-list
 * aws-iam-get-user
-* gcp-iam-service-accounts-get
 * aws-iam-list-user-policies
-* gsuite-user-get
-* aws-iam-list-groups-for-user
+* gcp-iam-project-role-list
 * msgraph-identity-protection-risky-user-history-list
+* aws-iam-list-access-keys-for-user
+* msgraph-groups-list-groups
+* aws-iam-list-attached-user-policies
+* gcp-iam-service-accounts-get
+* aws-iam-list-groups-for-user
+* msgraph-user-get
+* gsuite-user-get
+* gcp-iam-service-account-keys-get
 
 ## Playbook Inputs
 
