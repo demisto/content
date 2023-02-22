@@ -1113,7 +1113,7 @@ inputs:
   value:
     simple: Last 1 days
   required: false
-  description: 'The Search Time for the QRadar search query. for example:  Last 1 days'
+  description: 'The search time for the QRadar search query. For example:  Last 1 days.'
   playbookInputQuery:
 - key: AzureSearchTime
   value:
