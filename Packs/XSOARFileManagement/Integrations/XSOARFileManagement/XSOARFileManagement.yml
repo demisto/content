@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: Make sure XSOAR config 'External Host Name' is set and let this field empty otherwise set the external ip of XSOAR. Using https://127.0.0.1 don't work.
-  display: Server URL (e.g. https://my.soar.com)
+  display: Server URL (e.g. https://example.net)
   name: url
   required: false
   type: 0
