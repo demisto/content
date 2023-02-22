@@ -8,10 +8,11 @@ description: Use the Jira integration to manage issues and create Cortex XSOAR i
 configuration:
 - name: server_url
   display: Server URL
-  hint: https://www.example.com
+  # hint: https://www.example.com
+  defaultvalue: https://api.atlassian.com/ex/jira
   type: 0
-  required: false
-  additionalinfo: This field is used to configure JIRA OnPrem.
+  required: true
+  additionalinfo: The base URL. For cloud instance, please use the default URL as configured, for OnPrem instance, use your respective domain.
 - name: cloud_id
   display: Cloud ID
   hint: 11223344-a1b2-3b33-c444-def123456789
@@ -772,7 +773,7 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: The number of results to return. Default is 50 and maximum is 5000.
+      description: The maximum number of results to return. Default is 50 and maximum is 5000.
       isArray: false
       name: limit
       hidden: true
@@ -819,11 +820,16 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Use this command to complete the OAuth process so you could do API calls.
+    description: "Use this command to complete the authorization process. After copying the authorization code found in the query
+                  parameter `code` of the callback URL, paste the value in the command as an argument to finish the process."
     execution: false
     name: jira-oauth-complete
   - deprecated: false
-    description: Use this command to start the OAuth process.
+    description: "Use this command to start the authorization process. In order to authorize the instance, first run the command,
+                  and complete the process in the URL that is returned, after that, you will be redirected
+                  to the callback URL where you will copy the authorization code found in the query parameter
+                  `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish
+                  the process."
     execution: false
     name: jira-oauth-start
   - deprecated: false
@@ -906,19 +912,19 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Add description. This argument will be ignored if page or page_size arguments were given. Default value is 50
+      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Add description. Default value is 0
+      description: The page number. Default value is 0
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: Add description. Default value is 50
+      description: The number of requested results per page. Default value is 50
       isArray: false
       name: page_size
       required: false
@@ -1111,19 +1117,19 @@ script:
       - 'kanban'
       - 'simple'
     - default: false
-      description: Add description. This argument will be ignored if page or page_size arguments were given. Default value is 50
+      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Add description. Default value is 0
+      description: The page number. Default value is 0
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: Add description. Default value is 50
+      description: The number of requested results per page. Default value is 50
       isArray: false
       name: page_size
       required: false
@@ -1228,19 +1234,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Add description. This argument will be ignored if page or page_size arguments were given. Default value is 50
+      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Add description. Default value is 0
+      description: The page number. Default value is 0
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: Add description. Default value is 50
+      description: The number of requested results per page. Default value is 50
       isArray: false
       name: page_size
       required: false
@@ -1303,19 +1309,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Add description. This argument will be ignored if page or page_size arguments were given. Default value is 50
+      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Add description. Default value is 0
+      description: The page number. Default value is 0
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: Add description. Default value is 50
+      description: The number of requested results per page. Default value is 50
       isArray: false
       name: page_size
       required: false
@@ -1372,19 +1378,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: Add description. This argument will be ignored if page or page_size arguments were given. Default value is 50
+      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Add description. Default value is 0
+      description: The page number. Default value is 0
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: Add description. Default value is 50
+      description: The number of requested results per page. Default value is 50
       isArray: false
       name: page_size
       required: false
@@ -1446,19 +1452,19 @@ script:
       - 'false'
       - 'true'
     - default: false
-      description: Add description. This argument will be ignored if page or page_size arguments were given. Default value is 50
+      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Add description. Default value is 0
+      description: The page number. Default value is 0
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: Add description. Default value is 50
+      description: The number of requested results per page. Default value is 50
       isArray: false
       name: page_size
       required: false
@@ -1518,19 +1524,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Add description. This argument will be ignored if page or page_size arguments were given. Default value is 50
+      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Add description. Default value is 0
+      description: The page number. Default value is 0
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: Add description. Default value is 50
+      description: The number of requested results per page. Default value is 50
       isArray: false
       name: page_size
       required: false
@@ -1628,19 +1634,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Add description. This argument will be ignored if page or page_size arguments were given. Default value is 50
+      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Add description. Default value is 0
+      description: The page number. Default value is 0
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: Add description. Default value is 50
+      description: The number of requested results per page. Default value is 50
       isArray: false
       name: page_size
       required: false
@@ -1744,7 +1750,7 @@ script:
     description: Use this command to create a link between two issues.
     execution: false
     name: jira-issue-to-issue-link
-  dockerimage: demisto/btfl-soup:1.0.1.45563
+  dockerimage: demisto/btfl-soup:1.0.1.47958
   script: ''
   type: python
   subtype: python3

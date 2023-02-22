@@ -183,7 +183,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
     def issues_to_sprint(self, sprint_id: str, json_data: Dict[str, Any]) -> requests.Response:
         pass
 
-        # Issue Fields Requests
+    # Issue Fields Requests
     @abstractmethod
     def get_issue_fields(self) -> List[Dict[str, Any]]:
         pass
@@ -268,7 +268,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
 class JiraCloudClient(JiraBaseClient):
 
     def __init__(self, proxy: bool, verify: bool, client_id: str, client_secret: str,
-                 callback_url: str, cloud_id: str):
+                 callback_url: str, cloud_id: str, server_url: str):
         self.client_id = client_id
         self.client_secret = client_secret
         self.cloud_id = cloud_id
@@ -287,9 +287,11 @@ class JiraCloudClient(JiraBaseClient):
             # For refresh token
             'offline_access']
         super().__init__(proxy=proxy, verify=verify, callback_url=callback_url,
-                         base_url=f'https://api.atlassian.com/ex/jira/{cloud_id}')
+                         base_url=f'{server_url}/{cloud_id}')
 
     def test_instance_connection(self) -> None:
+        appendContext(key='Ticket.Comments', data={'comment': 'appended comment', 'Id': '1234'})
+        print(demisto.get(demisto.context(), 'Ticket.Comments'))
         self.http_request_with_access_token(method='GET', url_suffix='rest/api/3/myself',
                                             resp_type='json')
 
@@ -664,6 +666,160 @@ class JiraOnPremClient(JiraBaseClient):
         pass
 
 
+class JiraIssueFieldsParser():
+    """This class is in charge of parsing the issue fields returned from a response. The data of the fields are mostly
+    returned as nested dictionaries, and it is not intuitive to retrieve the data of specific fields, therefore, this class
+    helps the parsing process and encapsulates it in one place.
+    """
+
+    @staticmethod
+    def get_id_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+        return {'Id': issue_data.get('id', '') or ''}
+
+    @staticmethod
+    def get_key_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+        return {'Key': issue_data.get('key', '') or ''}
+
+    @staticmethod
+    def get_summary_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+        return {'Summary': demisto.get(issue_data, 'fields.summary', '') or ''}
+
+    @staticmethod
+    def get_status_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+        return {'Status': demisto.get(issue_data, 'fields.status.name', '') or ''}
+
+    @staticmethod
+    def get_priority_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+        return {'Priority': demisto.get(issue_data, 'fields.priority.name', '') or ''}
+
+    @staticmethod
+    def get_project_name_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+        return {'ProjectName': demisto.get(issue_data, 'fields.project.name', '') or ''}
+
+    @staticmethod
+    def get_due_date_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+        return {'DueDate': demisto.get(issue_data, 'fields.duedate', '') or ''}
+
+    @staticmethod
+    def get_created_date_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+        return {'Created': demisto.get(issue_data, 'fields.created', '') or ''}
+
+    @staticmethod
+    def get_labels_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+        return {'Labels': demisto.get(issue_data, 'fields.labels', []) or []}
+
+    @staticmethod
+    def get_last_seen_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+        return {'LastSeen': demisto.get(issue_data, 'fields.lastViewed', '') or ''}
+
+    @staticmethod
+    def get_last_update_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+        return {'LastUpdate': demisto.get(issue_data, 'fields.updated', '') or ''}
+
+    @staticmethod
+    def get_issue_type_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+        return {'IssueType': demisto.get(issue_data, 'fields.issuetype.name', '') or ''}
+
+    @staticmethod
+    def get_ticket_link_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+        return {'TicketLink': issue_data.get('self', '') or ''}
+
+    @staticmethod
+    def get_assignee_context(self, issue_data: Dict[str, Any]) -> Dict[str, Any]:
+        assignee = demisto.get(issue_data, 'fields.assignee', {}) or {}
+        return {'Assignee': f'{assignee.get("displayName","")}({assignee.get("emailAddress", "")})'
+                if assignee else ''}
+
+    @staticmethod
+    def get_creator_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+        creator = demisto.get(issue_data, 'fields.creator', {}) or {}
+        return {'Creator': f'{creator.get("displayName","")}({creator.get("emailAddress", "")})'
+                if creator else ''}
+
+    @staticmethod
+    def get_reporter_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+        reporter = demisto.get(issue_data, 'fields.reporter', {}) or {}
+        return {'Reporter': f'{reporter.get("displayName","")}({reporter.get("emailAddress", "")})'
+                if reporter else ''}
+
+    @staticmethod
+    def get_description_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+        # Since the description can be returned in Atlassian Document Format
+        # (which holds nested dictionaries that includes the content and also metadata about it), we check if the response
+        # returns the fields rendered in HTML format (by accessing the renderedFields).
+        rendered_issue_fields = issue_data.get('renderedFields', {}) or {}
+        return {'Description': BeautifulSoup(rendered_issue_fields.get('description')).get_text() if rendered_issue_fields
+                else (demisto.get(issue_data, 'fields.description', '') or '')}
+
+    @staticmethod
+    def get_attachments_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+        attachments: List[Dict[str, Any]] = [
+            {
+                'Id': attachment.get('id'),
+                'Filename': attachment.get('filename'),
+                'Created': attachment.get('created'),
+                'Size': attachment.get('size'),
+            }
+            for attachment in demisto.get(issue_data, 'fields.attachment', [])
+        ]
+        return {'Attachments': attachments}
+
+    @staticmethod
+    def get_comments_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+        # TODO Fix the parsing of the comments field.
+        if response_comments := issue_data.get('comments', []) or (demisto.get(issue_data, 'fields.comment.comments', []) or []):
+            comments = []
+            for comment in response_comments:
+                comment_body = BeautifulSoup(comment.get('renderedBody')).get_text(
+                ) if comment.get('renderedBody') else comment.get('body')
+                comments.append({
+                    'Id': comment.get('id'),
+                    'Comment': comment_body,
+                    'User': demisto.get(comment, 'author.displayName'),
+                    'Created': comment.get('created')
+                })
+            return {'Comment': comments}
+        return {'Comment': []}
+
+    ISSUE_FIELDS_ID_TO_CONTEXT: Dict[str, Callable] = {
+        'id': get_id_context,
+        'key': get_key_context,
+        'fields.summary': get_summary_context,
+        'fields.status': get_status_context,
+        'fields.priority': get_priority_context,
+        'fields.project': get_priority_context,
+        'fields.duedate': get_due_date_context,
+        'fields.created': get_created_date_context,
+        'fields.labels': get_labels_context,
+        'fields.lastViewed': get_last_update_context,
+        'fields.updated': get_last_update_context,
+        'fields.issuetype': get_issue_type_context,
+        'self': get_ticket_link_context,
+        'fields.comment': get_comments_context
+    }
+
+    @classmethod
+    def get_issue_fields_to_context_from_id(cls, issue_data: Dict[str, Any], issue_fields: List[str]) -> Dict[str, Any]:
+        """_summary_
+
+        Args:
+            issue_data (Dict[str, Any]): The issue response from the API, which holds the data about a specific issue.
+            issue_fields (List[str]): A list of dotted strings, where each dotted string represents a key in issue_data
+            dictionary.
+
+        Returns:
+            Dict[str, Any]: A dictionary that holds human readable mapping of the issues' fields.
+        """
+        issue_fields_context: Dict[str, Any] = {}
+        for issue_field in issue_fields:
+            if issue_field in cls.ISSUE_FIELDS_ID_TO_CONTEXT:
+                issue_fields_context |= cls.ISSUE_FIELDS_ID_TO_CONTEXT[issue_field](issue_data)
+            else:
+                issue_field_id = issue_field.split('.')[-1]
+                issue_fields_context |= {issue_field_id: demisto.get(issue_data, issue_field, {}) or {}}
+        return issue_fields_context
+
+
 # Utility functions
 def prepare_pagination_args(page: int | None = None, page_size: int | None = None, limit: int | None = None) -> Dict[str, int]:
     if page or page_size:
@@ -727,7 +883,7 @@ def create_file_info_from_attachment(client: JiraBaseClient, attachment_id: str,
         res_attachment_metadata = client.get_attachment_metadata(attachment_id=attachment_id)
         attachment_file_name = res_attachment_metadata.get('filename', '')
     res_attachment_content = client.get_attachment_content(attachment_id=attachment_id)
-    return fileResult(filename=attachment_file_name, data=res_attachment_content)
+    return fileResult(filename=attachment_file_name, data=res_attachment_content, file_type=EntryType.ENTRY_INFO_FILE)
 
 
 def create_fields_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_string: str, value: Any) -> Dict[str, Any]:
@@ -827,9 +983,9 @@ def create_issue_update(issue_args: Dict[str, Any], issue_update_mapper: Dict[st
     return issue_fields
 
 
-def response_to_md_and_outputs(data: Dict[str, Any], shared_fields: Dict[str, tuple[str, Any]] = None,
-                               hr_fields: Dict[str, tuple[str, Any]] = None,
-                               outputs_fields: Dict[str, tuple[str, Any]] = None) -> tuple[Dict[str, Any], Dict[str, Any]]:
+def response_to_md_and_outputs(data: Dict[str, Any], shared_fields: Dict[str, tuple[str, Any]] | None = None,
+                               hr_fields: Dict[str, tuple[str, Any]] | None = None,
+                               outputs_fields: Dict[str, tuple[str, Any]] | None = None) -> tuple[Dict[str, Any], Dict[str, Any]]:
     """A dictionary that holds data to be used in the human readable and outputs dictionaries.
 
     Args:
@@ -912,6 +1068,11 @@ def text_to_adf(text: str) -> Dict[str, Any]:
 
 
 def create_issue_md_and_outputs(res: Dict[str, Any]) -> tuple[Dict[str, Any], Dict[str, Any]]:
+    return JiraIssueFieldsParser.get_issue_fields_to_context_from_id(issue_data=res, issue_fields=[
+        'id', 'key', 'fields.summary', 'fields.status', 'fields.issuetype'
+    ]), JiraIssueFieldsParser.get_issue_fields_to_context_from_id(issue_data=res, issue_fields=[
+        'id', 'key', 'fields.summary', 'fields.status', 'fields.issuetype'
+    ])
     markdown_dict, outputs = response_to_md_and_outputs(data=res,
                                                         shared_fields={'Id': ('id', ''),
                                                                        'Key': ('key', ''),
@@ -1174,14 +1335,20 @@ def get_specific_fields_data_from_issue(issue_fields_id_to_name_mapping: Dict[st
     fields_data: Dict[str, Any] = {}
     issue_fields_name_to_id_mapping = {issue_name.lower(): issue_id for issue_id,
                                        issue_name in issue_fields_id_to_name_mapping.items()}
+    issue_fields_id: List[str] = []
     for specific_field in specific_fields:
         if issue_name := issue_fields_id_to_name_mapping.get(specific_field, ''):
-            fields_data[issue_name] = issue_fields.get(specific_field)
+            # TODO Print to user the ID and the corresponding name
+            issue_fields_id.append(f'fields.{specific_field}')
+            # fields_data[issue_name] = issue_fields.get(specific_field)
         elif issue_id := issue_fields_name_to_id_mapping.get(specific_field.lower(), ''):
+            # TODO Print to user the ID and the corresponding name
+            issue_fields_id.append(f'fields.{issue_id}')
             issue_name = issue_fields_id_to_name_mapping.get(issue_id, '')
-            fields_data |= {issue_name: issue_fields.get(issue_id)} if issue_name else {}
+            # fields_data |= {issue_name: issue_fields.get(issue_id)} if issue_name else {}
         else:
             return_warning(f'The field {specific_field} was not found.')
+    fields_data = JiraIssueFieldsParser.get_issue_fields_to_context_from_id(issue_data=issue, issue_fields=issue_fields_id)
     return fields_data
 
 
@@ -1337,24 +1504,14 @@ def get_comments_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
 
 def create_comments_command_results(response_comments: List[Dict[str, Any]],
                                     issue_id_or_key: str, res: Dict[str, Any]) -> CommandResults:
-    comments = []
-    for comment in response_comments:
-        comment_body = BeautifulSoup(comment.get('renderedBody')).get_text(
-        ) if comment.get('renderedBody') else comment.get('body')
-        comments.append({
-            'Id': comment.get('id'),
-            'Comment': comment_body,
-            'User': demisto.get(comment, 'author.displayName'),
-            'Created': comment.get('created')
-        })
     is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
-    outputs: Dict[str, Any] = {'Comments': comments}
+    outputs: Dict[str, Any] = JiraIssueFieldsParser.get_comments_context(issue_data=res)
     if(is_id):
         outputs |= {'Id': issue_id_or_key}
     else:
         extracted_issue_id = extract_issue_id_from_comment_url(comment_url=response_comments[0].get('self', ''))
         outputs |= {'Id': extracted_issue_id, 'Key': issue_id_or_key}
-    human_readable = tableToMarkdown("Comments", comments)
+    human_readable = tableToMarkdown("Comments", outputs.get('Comment', []))
     return CommandResults(
         outputs_prefix='Ticket',
         outputs=outputs,
@@ -1656,9 +1813,10 @@ def sprint_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> 
         context_data_outputs: Dict[str, Any] = {'Ticket': issues_list or []}
         board_id = str(board_id)
         context_data_outputs |= {'id': board_id} if board_id else {}
+        context_data_outputs |= {'sprintId': sprint_id}
         return CommandResults(
             outputs_prefix='Jira.SprintIssues',
-            outputs_key_field='id' if board_id else None,
+            outputs_key_field=['id', 'sprintId'] if board_id else None,
             outputs=context_data_outputs or None,
             readable_output=tableToMarkdown(name=f'Sprint Issues in board {board_id}', t=markdown_list),
             raw_response=res
@@ -1980,7 +2138,7 @@ def main() -> None:
     callback_url = params.get('callback_url', '')
 
     # OnPrem configuration params
-    server_url = params.get('server_url')
+    server_url = params.get('server_url', 'https://api.atlassian.com/ex/jira')
 
     # Print to demisto.info which Jira instance the user supplied.
     # From param or if automatically
@@ -2023,20 +2181,21 @@ def main() -> None:
     }
     try:
         client: JiraBaseClient
-        if cloud_id and not server_url:
+        if cloud_id:
             client = JiraCloudClient(
                 cloud_id=cloud_id,
                 verify=verify_certificate,
                 proxy=proxy,
                 client_id=client_id,
                 client_secret=client_secret,
-                callback_url=callback_url)
-        elif(server_url and not cloud_id):
+                callback_url=callback_url,
+                server_url=server_url)
+        else:
             # Configure JiraOnPremClient
             # urljoin(url, '/')
             pass
-        else:
-            raise DemistoException('Cloud ID and Server URL cannot be configured at the same time')
+        # else:
+        #     raise DemistoException('Cloud ID and Server URL cannot be configured at the same time')
 
         if command == 'test-module':
             return_results(test_module(client))
