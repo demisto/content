@@ -326,7 +326,7 @@ def get_events(
 """ MAIN FUNCTION """
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:
