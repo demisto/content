@@ -1,0 +1,21 @@
+{
+    "name": "CreateArrayWithDuplicates",
+    "description": "This is a different version of the CreateArray automation that allows duplicate values to be placed into context since JSON doesn't permit duplicate key names. The content is placed under the context key specified by the user, array by default, with a sub-key of array. This allows for arrays with duplicate value names to be stored in context. ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Josh Levine",
+    "url": "",
+    "email": "",
+    "created": "2023-02-22T15:03:54Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "TerminalFin"
+    ]
+}
