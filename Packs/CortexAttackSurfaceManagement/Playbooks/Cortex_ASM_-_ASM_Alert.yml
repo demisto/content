@@ -14,7 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
       - "5"
@@ -45,7 +45,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -70,10 +70,10 @@ tasks:
       id: cf841205-1bc1-4490-89f8-027e330c91d2
       version: -1
       name: Triage and Qualifier Stage
+      description: ''
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "100"
@@ -609,7 +609,6 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: test@email.com
       subject:
         simple: Select Remediation Action
       body:
@@ -682,7 +681,6 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: test@email.com
       subject:
         simple: Select Remediation Action
       body:
@@ -754,7 +752,6 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: test@email.com
       subject:
         simple: Select Remediation Action
       body:
@@ -826,7 +823,6 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: test@email.com
       subject:
         simple: Select Remediation Action
       body:
@@ -2474,7 +2470,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      ' Prompt no AR':
+      Prompt no AR:
       - "34"
       '#default#':
       - "36"
@@ -2578,7 +2574,7 @@ tasks:
           right:
             value:
               simple: Prompt all options
-    - label: ' Prompt no AR'
+    - label: Prompt no AR
       condition:
       - - operator: isEqualString
           left:
@@ -2723,7 +2719,6 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: test@email.com
       subject:
         simple: Select Remediation Action
       body:
@@ -2796,7 +2791,6 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: test@email.com
       subject:
         simple: Select Remediation Action
       body:
