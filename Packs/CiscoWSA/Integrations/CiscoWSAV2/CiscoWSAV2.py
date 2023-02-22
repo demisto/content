@@ -74,7 +74,7 @@ class Client(BaseClient):
             raise DemistoException(message=res)
         return res
 
-    def access_policy_list_request(self, policy_names: str | None) -> dict[str, Any]:
+    def access_policy_list(self, policy_names: str | None) -> dict[str, Any]:
         """
         Access Policies list.
 
@@ -90,7 +90,7 @@ class Client(BaseClient):
             "GET", f"{V3_PREFIX}/web_security/access_policies", params=params
         )
 
-    def access_policy_create_request(
+    def access_policy_create(
         self,
         policy_name: str,
         policy_status: str,
@@ -144,7 +144,7 @@ class Client(BaseClient):
             ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
-    def access_policy_update_request(
+    def access_policy_update(
         self,
         policy_name: str,
         new_policy_name: str | None,
@@ -190,7 +190,7 @@ class Client(BaseClient):
             ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
-    def access_policy_protocols_user_agents_update_request(
+    def access_policy_protocols_user_agents_update(
         self,
         policy_name: str,
         block_custom_user_agents: List[str] | None,
@@ -234,7 +234,7 @@ class Client(BaseClient):
             ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
-    def access_policy_url_filtering_update_request(
+    def access_policy_url_filtering_update(
         self,
         policy_name: str,
         predefined_categories_action: str | None,
@@ -306,7 +306,7 @@ class Client(BaseClient):
             ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
-    def access_policy_applications_update_request(
+    def access_policy_applications_update(
         self,
         policy_name: str,
         application: str,
@@ -351,7 +351,7 @@ class Client(BaseClient):
             ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
-    def access_policy_objects_update_request(
+    def access_policy_objects_update(
         self,
         policy_name: str,
         object_type: str | None,
@@ -380,7 +380,7 @@ class Client(BaseClient):
         Returns:
             Response: API response from Cisco WSA.
         """
-        access_policies = self.access_policy_list_request(policy_name).get(
+        access_policies = self.access_policy_list(policy_name).get(
             "access_policies", []
         )
         if not access_policies:
@@ -413,7 +413,7 @@ class Client(BaseClient):
             ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
-    def access_policy_anti_malware_update_request(
+    def access_policy_anti_malware_update(
         self,
         policy_name: str,
         web_reputation_status: str | None,
@@ -478,7 +478,7 @@ class Client(BaseClient):
             ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
-    def access_policy_delete_request(self, policy_names: str) -> Response:
+    def access_policy_delete(self, policy_names: str) -> Response:
         """
         Delete access policy.
 
@@ -498,7 +498,7 @@ class Client(BaseClient):
         )
         return res
 
-    def domain_map_list_request(self) -> dict[str, Any]:
+    def domain_map_list(self) -> dict[str, Any]:
         """
         List domain mappings.
 
@@ -509,7 +509,7 @@ class Client(BaseClient):
             "GET", f"{V2_PREFIX}/configure/web_security/domain_map"
         )
 
-    def domain_map_create_request(
+    def domain_map_create(
         self, domain_name: str, ip_addresses: List[str], order: int
     ) -> dict[str, Any]:
         """
@@ -531,7 +531,7 @@ class Client(BaseClient):
             "POST", f"{V2_PREFIX}/configure/web_security/domain_map", json_data=data, ok_codes=[HTTPStatus.OK]
         )
 
-    def domain_map_update_request(
+    def domain_map_update(
         self,
         domain_name: str,
         new_domain_name: str | None,
@@ -565,7 +565,7 @@ class Client(BaseClient):
             "PUT", f"{V2_PREFIX}/configure/web_security/domain_map", json_data=data, ok_codes=[HTTPStatus.OK]
         )
 
-    def domain_map_delete_request(self, domain_name: str) -> dict[str, Any]:
+    def domain_map_delete(self, domain_name: str) -> dict[str, Any]:
         """
         Delete domain map.
 
@@ -583,7 +583,7 @@ class Client(BaseClient):
             json_data=data, ok_codes=[HTTPStatus.OK, HTTPStatus.PARTIAL_CONTENT]
         )
 
-    def identification_profiles_list_request(
+    def identification_profiles_list(
         self,
         profile_names: List[str] | None,
     ) -> dict[str, Any]:
@@ -604,7 +604,7 @@ class Client(BaseClient):
             "GET", f"{V3_PREFIX}/web_security/identification_profiles", params=params
         )
 
-    def identification_profiles_create_request(
+    def identification_profiles_create(
         self,
         profile_name: str,
         status: str,
@@ -670,7 +670,7 @@ class Client(BaseClient):
             ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
-    def identification_profiles_update_request(
+    def identification_profiles_update(
         self,
         profile_name: str,
         new_profile_name: str | None,
@@ -739,7 +739,7 @@ class Client(BaseClient):
             ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
-    def identification_profiles_delete_request(self, profile_names: str) -> Response:
+    def identification_profiles_delete(self, profile_names: str) -> Response:
         """
         Delete identification profiles.
 
@@ -759,7 +759,7 @@ class Client(BaseClient):
             ok_codes=[HTTPStatus.NO_CONTENT, HTTPStatus.MULTI_STATUS],
         )
 
-    def url_categories_list_request(self) -> dict[str, Any]:
+    def url_categories_list(self) -> dict[str, Any]:
         """
         List URL categories.
 
@@ -848,7 +848,7 @@ def organize_policy_object_data(
     )
 
 
-def access_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def list_access_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List access policies.
 
@@ -860,7 +860,7 @@ def access_policy_list_command(client: Client, args: dict[str, Any]) -> CommandR
         CommandResults: readable outputs for XSOAR.
     """
     policy_names = args.get("policy_names")
-    response = client.access_policy_list_request(policy_names=policy_names).get(
+    response = client.access_policy_list(policy_names=policy_names).get(
         "access_policies", []
     )
 
@@ -900,7 +900,7 @@ def access_policy_output_handler(response: List[dict[str, Any]]) -> List[dict[st
     return outputs
 
 
-def access_policy_create_command(
+def create_access_policy_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
@@ -919,9 +919,10 @@ def access_policy_create_command(
     policy_order = arg_to_number(args["policy_order"])
     identification_profiles = argToList(args["identification_profiles"])
     policy_description = args.get("policy_description")
-    policy_expiry = arg_to_datetime(args.get("policy_expiry")).strftime('%m/%d/%Y %H:%M')
+    policy_expiry_date = arg_to_datetime(args.get("policy_expiry"))
+    policy_expiry = policy_expiry_date.strftime('%m/%d/%Y %H:%M') if policy_expiry_date else None
 
-    client.access_policy_create_request(
+    client.access_policy_create(
         policy_name=policy_name,
         policy_status=policy_status,
         policy_order=policy_order,
@@ -935,7 +936,7 @@ def access_policy_create_command(
     )
 
 
-def access_policy_update_command(
+def update_access_policy_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
@@ -953,9 +954,10 @@ def access_policy_update_command(
     policy_status = args.get("policy_status")
     policy_description = args.get("policy_description")
     policy_order = arg_to_number(args.get("policy_order"))
-    policy_expiry = arg_to_datetime(args.get("policy_expiry")).strftime('%m/%d/%Y %H:%M')
+    policy_expiry_date = arg_to_datetime(args.get("policy_expiry"))
+    policy_expiry = policy_expiry_date.strftime('%m/%d/%Y %H:%M') if policy_expiry_date else None
 
-    client.access_policy_update_request(
+    client.access_policy_update(
         policy_name=policy_name,
         new_policy_name=new_policy_name,
         policy_status=policy_status,
@@ -969,7 +971,7 @@ def access_policy_update_command(
     )
 
 
-def access_policy_protocols_user_agents_update_command(
+def update_access_policy_protocols_user_agents_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
@@ -987,7 +989,7 @@ def access_policy_protocols_user_agents_update_command(
     allow_connect_ports = argToList(args.get("allow_connect_ports"))
     block_protocols = argToList(args.get("block_protocols"))
     settings_status = args['settings_status']
-    client.access_policy_protocols_user_agents_update_request(
+    client.access_policy_protocols_user_agents_update(
         policy_name=policy_name,
         block_custom_user_agents=block_custom_user_agents,
         allow_connect_ports=allow_connect_ports,
@@ -1000,7 +1002,7 @@ def access_policy_protocols_user_agents_update_command(
     )
 
 
-def access_policy_url_filtering_update_command(
+def update_access_policy_url_filtering_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
@@ -1027,7 +1029,7 @@ def access_policy_url_filtering_update_command(
     safe_search_status = args.get("safe_search_status")
     unsupported_safe_search_engine = args.get("unsupported_safe_search_engine")
 
-    client.access_policy_url_filtering_update_request(
+    client.access_policy_url_filtering_update(
         policy_name=policy_name,
         predefined_categories_action=predefined_categories_action,
         predefined_categories=predefined_categories,
@@ -1048,7 +1050,7 @@ def access_policy_url_filtering_update_command(
     )
 
 
-def access_policy_applications_update_command(
+def update_access_policy_applications_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
@@ -1067,7 +1069,7 @@ def access_policy_applications_update_command(
     values = argToList(args["values"])
     settings_status = args['settings_status']
 
-    client.access_policy_applications_update_request(
+    client.access_policy_applications_update(
         policy_name=policy_name,
         application=application,
         action=action,
@@ -1080,7 +1082,7 @@ def access_policy_applications_update_command(
     )
 
 
-def access_policy_objects_update_command(
+def update_access_policy_objects_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
@@ -1103,7 +1105,7 @@ def access_policy_objects_update_command(
     )
     ftp_max_object_size_mb = arg_to_number(args.get("ftp_max_object_size_mb"))
 
-    client.access_policy_objects_update_request(
+    client.access_policy_objects_update(
         policy_name=policy_name,
         object_type=object_type,
         object_action=object_action,
@@ -1118,7 +1120,7 @@ def access_policy_objects_update_command(
     )
 
 
-def access_policy_anti_malware_update_command(
+def update_access_policy_anti_malware_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
@@ -1140,7 +1142,7 @@ def access_policy_anti_malware_update_command(
     block_malware_categories = argToList(args.get("block_malware_categories"))
     block_other_categories = argToList(args.get("block_other_categories"))
     settings_status = args['settings_status']
-    client.access_policy_anti_malware_update_request(
+    client.access_policy_anti_malware_update(
         policy_name=policy_name,
         web_reputation_status=web_reputation_status,
         file_reputation_filtering_status=file_reputation_filtering_status,
@@ -1157,7 +1159,7 @@ def access_policy_anti_malware_update_command(
     )
 
 
-def access_policy_delete_command(
+def delete_access_policy_command(
     client: Client, args: dict[str, Any]
 ) -> Union[List[CommandResults], CommandResults]:
     """
@@ -1172,7 +1174,7 @@ def access_policy_delete_command(
     """
     policy_names = argToList(args["policy_names"])
 
-    response = client.access_policy_delete_request(policy_names)
+    response = client.access_policy_delete(policy_names)
     if response.status_code == HTTPStatus.MULTI_STATUS:
         return multi_status_delete_handler(response=response,
                                            obj_key="policy_name",
@@ -1183,7 +1185,7 @@ def access_policy_delete_command(
     )
 
 
-def domain_map_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def list_domain_map_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get domain mappings.
 
@@ -1197,7 +1199,7 @@ def domain_map_list_command(client: Client, args: dict[str, Any]) -> CommandResu
     domain_names = argToList(args.get("domain_names"))
     ip_addresses = argToList(args.get("ip_addresses"))
 
-    response = client.domain_map_list_request().get("res_data", [])
+    response = client.domain_map_list().get("res_data", [])
 
     if domain_names or ip_addresses:
         response = [
@@ -1226,7 +1228,7 @@ def domain_map_list_command(client: Client, args: dict[str, Any]) -> CommandResu
     )
 
 
-def domain_map_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def create_domain_map_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Create domain mappings.
 
@@ -1242,7 +1244,7 @@ def domain_map_create_command(client: Client, args: dict[str, Any]) -> CommandRe
     order = arg_to_number(args["order"])
     if not order:
         raise DemistoException('Please enter correct number to order argument.')
-    response = client.domain_map_create_request(
+    response = client.domain_map_create(
         domain_name=domain_name,
         ip_addresses=ip_addresses,
         order=order,
@@ -1253,7 +1255,7 @@ def domain_map_create_command(client: Client, args: dict[str, Any]) -> CommandRe
     return CommandResults(readable_output=readable_output, raw_response=response)
 
 
-def domain_map_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def update_domain_map_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Update domain mappings.
 
@@ -1269,7 +1271,7 @@ def domain_map_update_command(client: Client, args: dict[str, Any]) -> CommandRe
     ip_addresses = argToList(args.get("ip_addresses"))
     order = arg_to_number(args.get("order"))
 
-    response = client.domain_map_update_request(
+    response = client.domain_map_update(
         domain_name=domain_name,
         new_domain_name=new_domain_name,
         ip_addresses=ip_addresses,
@@ -1281,7 +1283,7 @@ def domain_map_update_command(client: Client, args: dict[str, Any]) -> CommandRe
     return CommandResults(readable_output=readable_output, raw_response=response)
 
 
-def domain_map_delete_command(
+def delete_domain_map_command(
     client: Client, args: dict[str, Any]
 ) -> Union[List[CommandResults], CommandResults]:
     """
@@ -1299,7 +1301,7 @@ def domain_map_delete_command(
     """
     domain_name = argToList(args["domain_names"])
 
-    response = client.domain_map_delete_request(domain_name=domain_name)
+    response = client.domain_map_delete(domain_name=domain_name)
     if response.get("res_code") == HTTPStatus.OK:
         readable_output = (
             f'Domain{"s" if len(domain_name) > 1 else ""} "{", ".join(domain_name)}" '
@@ -1325,7 +1327,7 @@ def domain_map_delete_command(
     raise DemistoException(message=response)
 
 
-def identification_profiles_list_command(
+def list_identification_profiles_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
@@ -1340,7 +1342,7 @@ def identification_profiles_list_command(
     """
     profile_names = argToList(args.get("profile_names"))
 
-    response = client.identification_profiles_list_request(
+    response = client.identification_profiles_list(
         profile_names=profile_names
     ).get("identification_profiles", [])
 
@@ -1394,7 +1396,7 @@ def identification_profile_mapper(data: List[dict[str, Any]]) -> List[dict[str, 
     return filtered_data
 
 
-def identification_profiles_create_command(
+def create_identification_profiles_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
@@ -1417,7 +1419,7 @@ def identification_profiles_create_command(
     predefined_url_categories = argToList(args.get("predefined_url_categories"))
     custom_url_categories = argToList(args.get("custom_url_categories"))
 
-    client.identification_profiles_create_request(
+    client.identification_profiles_create(
         status=status,
         description=description,
         profile_name=profile_name,
@@ -1434,7 +1436,7 @@ def identification_profiles_create_command(
     )
 
 
-def identification_profiles_update_command(
+def update_identification_profiles_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
@@ -1458,7 +1460,7 @@ def identification_profiles_update_command(
     predefined_url_categories = argToList(args.get("predefined_url_categories"))
     custom_url_categories = argToList(args.get("custom_url_categories"))
 
-    client.identification_profiles_update_request(
+    client.identification_profiles_update(
         profile_name=profile_name,
         new_profile_name=new_profile_name,
         description=description,
@@ -1476,7 +1478,7 @@ def identification_profiles_update_command(
     )
 
 
-def identification_profiles_delete_command(
+def delete_identification_profiles_command(
     client: Client, args: dict[str, Any]
 ) -> Union[List[CommandResults], CommandResults]:
     """
@@ -1491,7 +1493,7 @@ def identification_profiles_delete_command(
     """
     profile_names = argToList(args.get("profile_names"))
 
-    response = client.identification_profiles_delete_request(profile_names)
+    response = client.identification_profiles_delete(profile_names)
 
     if response.status_code == HTTPStatus.MULTI_STATUS:
         return multi_status_delete_handler(response=response,
@@ -1503,7 +1505,7 @@ def identification_profiles_delete_command(
     )
 
 
-def url_categories_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def list_url_categories_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get URL categories.
 
@@ -1514,7 +1516,7 @@ def url_categories_list_command(client: Client, args: dict[str, Any]) -> Command
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    response = client.url_categories_list_request()
+    response = client.url_categories_list()
 
     outputs = categories_output_filter(response=response,
                                        contain=args.get('contain'),
@@ -1571,7 +1573,7 @@ def test_module(client: Client) -> str:
     Args:
         client (Client): Cisco WSA API client.
     """
-    client.url_categories_list_request()
+    client.url_categories_list()
     return "ok"
 
 
@@ -1618,24 +1620,24 @@ def main() -> None:
     command = demisto.command()
 
     commands = {
-        "cisco-wsa-access-policy-list": access_policy_list_command,
-        "cisco-wsa-access-policy-create": access_policy_create_command,
-        "cisco-wsa-access-policy-update": access_policy_update_command,
-        "cisco-wsa-access-policy-protocols-user-agents-update": access_policy_protocols_user_agents_update_command,
-        "cisco-wsa-access-policy-url-filtering-update": access_policy_url_filtering_update_command,
-        "cisco-wsa-access-policy-applications-update": access_policy_applications_update_command,
-        "cisco-wsa-access-policy-objects-update": access_policy_objects_update_command,
-        "cisco-wsa-access-policy-anti-malware-update": access_policy_anti_malware_update_command,
-        "cisco-wsa-access-policy-delete": access_policy_delete_command,
-        "cisco-wsa-domain-map-list": domain_map_list_command,
-        "cisco-wsa-domain-map-create": domain_map_create_command,
-        "cisco-wsa-domain-map-update": domain_map_update_command,
-        "cisco-wsa-domain-map-delete": domain_map_delete_command,
-        "cisco-wsa-identification-profiles-list": identification_profiles_list_command,
-        "cisco-wsa-identification-profiles-create": identification_profiles_create_command,
-        "cisco-wsa-identification-profiles-update": identification_profiles_update_command,
-        "cisco-wsa-identification-profiles-delete": identification_profiles_delete_command,
-        "cisco-wsa-url-categories-list": url_categories_list_command,
+        "cisco-wsa-access-policy-list": list_access_policy_command,
+        "cisco-wsa-access-policy-create": create_access_policy_command,
+        "cisco-wsa-access-policy-update": update_access_policy_command,
+        "cisco-wsa-access-policy-protocols-user-agents-update": update_access_policy_protocols_user_agents_command,
+        "cisco-wsa-access-policy-url-filtering-update": update_access_policy_url_filtering_command,
+        "cisco-wsa-access-policy-applications-update": update_access_policy_applications_command,
+        "cisco-wsa-access-policy-objects-update": update_access_policy_objects_command,
+        "cisco-wsa-access-policy-anti-malware-update": update_access_policy_anti_malware_command,
+        "cisco-wsa-access-policy-delete": delete_access_policy_command,
+        "cisco-wsa-domain-map-list": list_domain_map_command,
+        "cisco-wsa-domain-map-create": create_domain_map_command,
+        "cisco-wsa-domain-map-update": update_domain_map_command,
+        "cisco-wsa-domain-map-delete": delete_domain_map_command,
+        "cisco-wsa-identification-profiles-list": list_identification_profiles_command,
+        "cisco-wsa-identification-profiles-create": create_identification_profiles_command,
+        "cisco-wsa-identification-profiles-update": update_identification_profiles_command,
+        "cisco-wsa-identification-profiles-delete": delete_identification_profiles_command,
+        "cisco-wsa-url-categories-list": list_url_categories_command,
     }
     try:
         client: Client = Client(

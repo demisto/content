@@ -144,7 +144,7 @@ def test_handle_request_headers_command_no_request(
         ),
     ],
 )
-def test_access_policy_list_command(
+def test_list_access_policy_command(
     response_file_name,
     command_arguments,
     expected_outputs_len,
@@ -164,19 +164,19 @@ def test_access_policy_list_command(
     - Ensure number of items is correct.
     - Validate outputs' fields.
     """
-    from CiscoWSAV2 import access_policy_list_command
+    from CiscoWSAV2 import list_access_policy_command
 
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
     requests_mock.get(url=url, json=mock_response)
 
-    result = access_policy_list_command(mock_client, command_arguments)
+    result = list_access_policy_command(mock_client, command_arguments)
 
     assert result.outputs_prefix == "CiscoWSA.AccessPolicy"
     assert len(result.outputs) == expected_outputs_len
 
 
-def test_access_policy_create_command(
+def test_create_access_policy_command(
     requests_mock,
     mock_client,
 ):
@@ -191,11 +191,11 @@ def test_access_policy_create_command(
     Then:
      - Ensure that Access policy created.
     """
-    from CiscoWSAV2 import access_policy_create_command
+    from CiscoWSAV2 import create_access_policy_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
     requests_mock.post(url=url, status_code=HTTPStatus.NO_CONTENT)
-    result = access_policy_create_command(
+    result = create_access_policy_command(
         mock_client,
         {
             "policy_name": "test",
@@ -209,7 +209,7 @@ def test_access_policy_create_command(
     assert result.readable_output == 'Created "test" access policy successfully.'
 
 
-def test_fail_access_policy_create_command(
+def test_create_fail_access_policy_command(
     requests_mock,
     mock_client,
 ):
@@ -222,14 +222,14 @@ def test_fail_access_policy_create_command(
     Then:
      - Ensure relevant error raised.
     """
-    from CiscoWSAV2 import access_policy_create_command
+    from CiscoWSAV2 import create_access_policy_command
 
     mock_response = load_mock_response('access_policy_create_fail.json')
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
     requests_mock.post(url=url, status_code=HTTPStatus.MULTI_STATUS, json=mock_response)
     with pytest.raises(DemistoException):
-        access_policy_create_command(
+        create_access_policy_command(
             mock_client,
             {
                 "policy_name": "test",
@@ -241,7 +241,7 @@ def test_fail_access_policy_create_command(
         )
 
 
-def test_access_policy_update_command(
+def test_update_access_policy_command(
     requests_mock,
     mock_client,
 ):
@@ -256,11 +256,11 @@ def test_access_policy_update_command(
     Then:
     - Ensure readable output is correct.
     """
-    from CiscoWSAV2 import access_policy_update_command
+    from CiscoWSAV2 import update_access_policy_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
     requests_mock.put(url=url, status_code=HTTPStatus.NO_CONTENT)
-    result = access_policy_update_command(
+    result = update_access_policy_command(
         mock_client,
         {
             "policy_name": "test",
@@ -275,7 +275,7 @@ def test_access_policy_update_command(
     assert result.readable_output == 'Updated "test" access policy successfully.'
 
 
-def test_fail_access_policy_update_command(
+def test_update_fail_access_policy_command(
     requests_mock,
     mock_client,
 ):
@@ -288,7 +288,7 @@ def test_fail_access_policy_update_command(
     Then:
      - Ensure relevant error raised.
     """
-    from CiscoWSAV2 import access_policy_update_command
+    from CiscoWSAV2 import update_access_policy_command
 
     mock_response = load_mock_response('access_policy_create_fail.json')
 
@@ -296,7 +296,7 @@ def test_fail_access_policy_update_command(
     requests_mock.put(url=url, status_code=HTTPStatus.MULTI_STATUS, json=mock_response)
 
     with pytest.raises(DemistoException):
-        access_policy_update_command(
+        update_access_policy_command(
             mock_client,
             {
                 "policy_name": "test",
@@ -309,7 +309,7 @@ def test_fail_access_policy_update_command(
         )
 
 
-def test_access_policy_protocols_user_agents_update_command(
+def test_update_access_policy_protocols_user_agents_command(
     requests_mock,
     mock_client,
 ):
@@ -324,11 +324,11 @@ def test_access_policy_protocols_user_agents_update_command(
     Then:
     - Ensure readable output is correct.
     """
-    from CiscoWSAV2 import access_policy_protocols_user_agents_update_command
+    from CiscoWSAV2 import update_access_policy_protocols_user_agents_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
     requests_mock.put(url=url, status_code=HTTPStatus.NO_CONTENT)
-    result = access_policy_protocols_user_agents_update_command(
+    result = update_access_policy_protocols_user_agents_command(
         mock_client,
         {
             "policy_name": "test",
@@ -342,7 +342,7 @@ def test_access_policy_protocols_user_agents_update_command(
     assert result.readable_output == 'Updated "test" access policy successfully.'
 
 
-def test_access_policy_url_filtering_update_command(
+def test_update_access_policy_url_filtering_command(
     requests_mock,
     mock_client,
 ):
@@ -357,11 +357,11 @@ def test_access_policy_url_filtering_update_command(
     Then:
     - Ensure readable output is correct.
     """
-    from CiscoWSAV2 import access_policy_url_filtering_update_command
+    from CiscoWSAV2 import update_access_policy_url_filtering_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
     requests_mock.put(url=url, status_code=HTTPStatus.NO_CONTENT)
-    result = access_policy_url_filtering_update_command(
+    result = update_access_policy_url_filtering_command(
         mock_client,
         {
             "policy_name": "test",
@@ -383,7 +383,7 @@ def test_access_policy_url_filtering_update_command(
     assert result.readable_output == 'Updated "test" access policy successfully.'
 
 
-def test_access_policy_applications_update_command(
+def test_update_access_policy_applications_command(
     requests_mock,
     mock_client,
 ):
@@ -398,11 +398,11 @@ def test_access_policy_applications_update_command(
     Then:
     - Ensure readable output is correct.
     """
-    from CiscoWSAV2 import access_policy_applications_update_command
+    from CiscoWSAV2 import update_access_policy_applications_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
     requests_mock.put(url=url, status_code=HTTPStatus.NO_CONTENT)
-    result = access_policy_applications_update_command(
+    result = update_access_policy_applications_command(
         mock_client,
         {
             "policy_name": "test",
@@ -416,8 +416,8 @@ def test_access_policy_applications_update_command(
     assert result.readable_output == 'Updated "test" access policy successfully.'
 
 
-@patch("CiscoWSAV2.Client.access_policy_list_request", mock_access_policies_list)
-def test_access_policy_objects_update_command(
+@patch("CiscoWSAV2.Client.access_policy_list", mock_access_policies_list)
+def test_update_access_policy_objects_command(
     requests_mock,
     mock_client,
 ):
@@ -432,11 +432,11 @@ def test_access_policy_objects_update_command(
     Then:
     - Ensure readable output is correct.
     """
-    from CiscoWSAV2 import access_policy_objects_update_command
+    from CiscoWSAV2 import update_access_policy_objects_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
     requests_mock.put(url=url, status_code=HTTPStatus.NO_CONTENT)
-    result = access_policy_objects_update_command(
+    result = update_access_policy_objects_command(
         mock_client,
         {
             "policy_name": "test",
@@ -452,7 +452,7 @@ def test_access_policy_objects_update_command(
     assert result.readable_output == 'Updated "test" access policy successfully.'
 
 
-def test_access_policy_anti_malware_update_command(
+def test_update_access_policy_anti_malware_command(
     requests_mock,
     mock_client,
 ):
@@ -467,11 +467,11 @@ def test_access_policy_anti_malware_update_command(
     Then:
     - Ensure readable output is correct.
     """
-    from CiscoWSAV2 import access_policy_anti_malware_update_command
+    from CiscoWSAV2 import update_access_policy_anti_malware_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
     requests_mock.put(url=url, status_code=HTTPStatus.NO_CONTENT)
-    result = access_policy_anti_malware_update_command(
+    result = update_access_policy_anti_malware_command(
         mock_client,
         {
             "policy_name": "test",
@@ -489,7 +489,7 @@ def test_access_policy_anti_malware_update_command(
     assert result.readable_output == 'Updated "test" access policy successfully.'
 
 
-def test_access_policy_delete_command(
+def test_delete_access_policy_command(
     requests_mock,
     mock_client,
 ):
@@ -504,11 +504,11 @@ def test_access_policy_delete_command(
     Then:
     - Ensure readable output is correct.
     """
-    from CiscoWSAV2 import access_policy_delete_command
+    from CiscoWSAV2 import delete_access_policy_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
     requests_mock.delete(url=url, status_code=HTTPStatus.NO_CONTENT)
-    result = access_policy_delete_command(
+    result = delete_access_policy_command(
         mock_client,
         {
             "policy_names": "test,test2",
@@ -520,7 +520,7 @@ def test_access_policy_delete_command(
     )
 
 
-def test_fail_access_policy_delete_command(
+def test_fail_delete_access_policy_command(
     requests_mock,
     mock_client,
 ):
@@ -533,13 +533,13 @@ def test_fail_access_policy_delete_command(
     Then:
     - Ensure readable output is correct.
     """
-    from CiscoWSAV2 import access_policy_delete_command
+    from CiscoWSAV2 import delete_access_policy_command
 
     mock_response = load_mock_response('access_policy_delete_fail.json')
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
     requests_mock.delete(url=url, status_code=HTTPStatus.MULTI_STATUS, json=mock_response)
-    result = access_policy_delete_command(
+    result = delete_access_policy_command(
         mock_client,
         {
             "policy_names": "test,test2",
@@ -576,7 +576,7 @@ def test_fail_access_policy_delete_command(
         ),
     ],
 )
-def test_domain_map_list_command(
+def test_list_domain_map_command(
     response_file_name,
     command_arguments,
     expected_outputs_len,
@@ -596,19 +596,19 @@ def test_domain_map_list_command(
     - Ensure number of items is correct.
     - Validate outputs' fields.
     """
-    from CiscoWSAV2 import domain_map_list_command
+    from CiscoWSAV2 import list_domain_map_command
 
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/{V2_PREFIX}/configure/web_security/domain_map"
     requests_mock.get(url=url, json=mock_response)
 
-    result = domain_map_list_command(mock_client, command_arguments)
+    result = list_domain_map_command(mock_client, command_arguments)
 
     assert result.outputs_prefix == "CiscoWSA.DomainMap"
     assert len(result.outputs) == expected_outputs_len
 
 
-def test_domain_map_create_command(
+def test_create_domain_map_command(
     requests_mock,
     mock_client,
 ):
@@ -624,13 +624,13 @@ def test_domain_map_create_command(
     - Ensure readable output is correct.
     - Ensure response code is correct.
     """
-    from CiscoWSAV2 import domain_map_create_command
+    from CiscoWSAV2 import create_domain_map_command
 
     mock_response = load_mock_response("domain_map_create.json")
     url = f"{BASE_URL}/{V2_PREFIX}/configure/web_security/domain_map"
     requests_mock.post(url=url, json=mock_response, status_code=HTTPStatus.OK)
 
-    result = domain_map_create_command(
+    result = create_domain_map_command(
         mock_client,
         {
             "domain_name": "test.com",
@@ -643,7 +643,7 @@ def test_domain_map_create_command(
     assert result.raw_response["res_code"] == HTTPStatus.CREATED
 
 
-def test_fail_domain_map_create_command(
+def test_fail_create_domain_map_command(
     requests_mock,
     mock_client,
 ):
@@ -656,14 +656,14 @@ def test_fail_domain_map_create_command(
     Then:
      - Ensure relevant error raised.
     """
-    from CiscoWSAV2 import domain_map_create_command
+    from CiscoWSAV2 import create_domain_map_command
     mock_response = load_mock_response('domain_map_create_fail.json')
 
     url = f"{BASE_URL}/{V2_PREFIX}/configure/web_security/domain_map"
     requests_mock.post(url=url, status_code=HTTPStatus.OK, json=mock_response)
 
     with pytest.raises(DemistoException):
-        domain_map_create_command(
+        create_domain_map_command(
             mock_client,
             {
                 "domain_name": "test.com",
@@ -673,7 +673,7 @@ def test_fail_domain_map_create_command(
         )
 
 
-def test_domain_map_update_command(
+def test_update_domain_map_command(
     requests_mock,
     mock_client,
 ):
@@ -689,13 +689,13 @@ def test_domain_map_update_command(
     - Ensure readable output is correct.
     - Ensure response code is correct.
     """
-    from CiscoWSAV2 import domain_map_update_command
+    from CiscoWSAV2 import update_domain_map_command
 
     mock_response = load_mock_response("domain_map_update.json")
     url = f"{BASE_URL}/{V2_PREFIX}/configure/web_security/domain_map"
     requests_mock.put(url=url, json=mock_response)
 
-    result = domain_map_update_command(
+    result = update_domain_map_command(
         mock_client,
         {
             "domain_name": "test.com",
@@ -709,7 +709,7 @@ def test_domain_map_update_command(
     assert result.raw_response["res_code"] == HTTPStatus.OK
 
 
-def test_fail_domain_map_update_command(
+def test_fail_update_domain_map_command(
     requests_mock,
     mock_client,
 ):
@@ -722,14 +722,14 @@ def test_fail_domain_map_update_command(
     Then:
      - Ensure relevant error raised.
     """
-    from CiscoWSAV2 import domain_map_update_command
+    from CiscoWSAV2 import update_domain_map_command
 
     mock_response = load_mock_response("domain_map_update_fail.json")
     url = f"{BASE_URL}/{V2_PREFIX}/configure/web_security/domain_map"
     requests_mock.put(url=url, json=mock_response)
 
     with pytest.raises(DemistoException):
-        domain_map_update_command(
+        update_domain_map_command(
             mock_client,
             {
                 "domain_name": "test.com",
@@ -740,7 +740,7 @@ def test_fail_domain_map_update_command(
         )
 
 
-def test_domain_map_delete_command(
+def test_delete_domain_map_command(
     requests_mock,
     mock_client,
 ):
@@ -756,13 +756,13 @@ def test_domain_map_delete_command(
     - Ensure readable output is correct.
     - Ensure response code is correct.
     """
-    from CiscoWSAV2 import domain_map_delete_command
+    from CiscoWSAV2 import delete_domain_map_command
 
     mock_response = load_mock_response("domain_map_delete.json")
     url = f"{BASE_URL}/{V2_PREFIX}/configure/web_security/domain_map"
     requests_mock.delete(url=url, json=mock_response)
 
-    result = domain_map_delete_command(
+    result = delete_domain_map_command(
         mock_client,
         {"domain_names": "test.com"},
     )
@@ -771,7 +771,7 @@ def test_domain_map_delete_command(
     assert result.raw_response["res_code"] == HTTPStatus.OK
 
 
-def test_fail_domain_map_delete_command(
+def test_fail_delete_domain_map_command(
     requests_mock,
     mock_client,
 ):
@@ -784,13 +784,13 @@ def test_fail_domain_map_delete_command(
     Then:
      - Ensure relevant error raised.
     """
-    from CiscoWSAV2 import domain_map_delete_command
+    from CiscoWSAV2 import delete_domain_map_command
 
     mock_response = load_mock_response("domain_map_delete_fail.json")
     url = f"{BASE_URL}/{V2_PREFIX}/configure/web_security/domain_map"
     requests_mock.delete(url=url, json=mock_response)
 
-    result = domain_map_delete_command(
+    result = delete_domain_map_command(
         mock_client,
         {"domain_names": "test.com,error1,error2"},
     )
@@ -817,7 +817,7 @@ def test_fail_domain_map_delete_command(
         ),
     ],
 )
-def test_identification_profiles_list_command(
+def test_list_identification_profiles_command(
     response_file_name,
     command_arguments,
     expected_outputs_len,
@@ -837,19 +837,19 @@ def test_identification_profiles_list_command(
     - Ensure number of items is correct.
     - Validate outputs' fields.
     """
-    from CiscoWSAV2 import identification_profiles_list_command
+    from CiscoWSAV2 import list_identification_profiles_command
 
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/identification_profiles"
     requests_mock.get(url=url, json=mock_response)
 
-    result = identification_profiles_list_command(mock_client, command_arguments)
+    result = list_identification_profiles_command(mock_client, command_arguments)
 
     assert result.outputs_prefix == "CiscoWSA.IdentificationProfile"
     assert len(result.outputs) == expected_outputs_len
 
 
-def test_identification_profiles_create_command(
+def test_create_identification_profiles_command(
     requests_mock,
     mock_client,
 ):
@@ -864,12 +864,12 @@ def test_identification_profiles_create_command(
     Then:
     - Ensure readable output is correct.
     """
-    from CiscoWSAV2 import identification_profiles_create_command
+    from CiscoWSAV2 import create_identification_profiles_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/identification_profiles"
     requests_mock.post(url=url, status_code=HTTPStatus.NO_CONTENT)
 
-    result = identification_profiles_create_command(
+    result = create_identification_profiles_command(
         mock_client,
         {
             "profile_name": "test",
@@ -885,7 +885,7 @@ def test_identification_profiles_create_command(
     )
 
 
-def test_identification_profiles_update_command(
+def test_update_identification_profiles_command(
     requests_mock,
     mock_client,
 ):
@@ -900,12 +900,12 @@ def test_identification_profiles_update_command(
     Then:
     - Ensure readable output is correct.
     """
-    from CiscoWSAV2 import identification_profiles_update_command
+    from CiscoWSAV2 import update_identification_profiles_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/identification_profiles"
     requests_mock.put(url=url, status_code=HTTPStatus.NO_CONTENT)
 
-    result = identification_profiles_update_command(
+    result = update_identification_profiles_command(
         mock_client,
         {
             "profile_name": "test",
@@ -921,7 +921,7 @@ def test_identification_profiles_update_command(
     )
 
 
-def test_identification_profiles_delete_command(
+def test_delete_identification_profiles_command(
     requests_mock,
     mock_client,
 ):
@@ -936,12 +936,12 @@ def test_identification_profiles_delete_command(
     Then:
     - Ensure readable output is correct.
     """
-    from CiscoWSAV2 import identification_profiles_delete_command
+    from CiscoWSAV2 import delete_identification_profiles_command
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/identification_profiles"
     requests_mock.delete(url=url, status_code=HTTPStatus.NO_CONTENT)
 
-    result = identification_profiles_delete_command(
+    result = delete_identification_profiles_command(
         mock_client,
         {
             "profile_names": "test",
@@ -951,7 +951,7 @@ def test_identification_profiles_delete_command(
     assert result.readable_output == "Deleted identification profiles successfully."
 
 
-def test_fail_identification_profiles_delete_command(
+def test_delete_fail_identification_profiles_command(
     requests_mock,
     mock_client,
 ):
@@ -964,14 +964,14 @@ def test_fail_identification_profiles_delete_command(
     Then:
     - Ensure readable output is correct.
     """
-    from CiscoWSAV2 import identification_profiles_delete_command
+    from CiscoWSAV2 import delete_identification_profiles_command
 
     mock_response = load_mock_response("identification_profiles_delete_fail.json")
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/identification_profiles"
     requests_mock.delete(url=url, status_code=HTTPStatus.MULTI_STATUS, json=mock_response)
 
-    result = identification_profiles_delete_command(
+    result = delete_identification_profiles_command(
         mock_client,
         {
             "profile_names": "test,test2,test3",
@@ -981,7 +981,7 @@ def test_fail_identification_profiles_delete_command(
     assert len(result) == 3
 
 
-def test_url_categories_list_command(
+def test_list_url_categories_command(
     requests_mock,
     mock_client,
 ):
@@ -998,13 +998,13 @@ def test_url_categories_list_command(
     - Ensure number of items is correct.
     - Validate outputs' fields.
     """
-    from CiscoWSAV2 import url_categories_list_command
+    from CiscoWSAV2 import list_url_categories_command
 
     mock_response = load_mock_response("url_categories_list.json")
     url = f"{BASE_URL}/{V3_PREFIX}/generic_resources/url_categories"
     requests_mock.get(url=url, json=mock_response)
 
-    result = url_categories_list_command(mock_client, {})
+    result = list_url_categories_command(mock_client, {})
 
     assert result.outputs_prefix == "CiscoWSA.UrlCategory"
     assert len(result.outputs["predefined"]) == 106
