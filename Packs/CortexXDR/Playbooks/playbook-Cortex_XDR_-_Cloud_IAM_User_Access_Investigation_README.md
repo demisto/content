@@ -65,7 +65,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | LoginCountry | The Country from which the user logged in. |  | Optional |
 | SIEMFailedLogonSearch | Whether to search for failed logon logs from SIEM? Can be False or True. | True | Optional |
 | ThreatLogSearch | Whether to search for threat logs from PAN-OS? Can be False or True. | True | Optional |
-| XDRAlertSearch | Whether to search for Related alerts from XDR? Can be False or True. | True | Optional |
+| XDRAlertSearch | Whether to search for related alerts from XDR? Can be False or True. | True | Optional |
 | OktaSearch | Whether to search for logs from Okta? Can be False or True. | True | Optional |
 | XDRUsernameField | Cortex XDR user name field. | identity_name | Optional |
 | QRadarSearchTime | The search time for the QRadar search query. For example:  Last 1 days. | Last 1 days | Optional |
