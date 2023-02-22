@@ -16,7 +16,6 @@ DEFAULT_TIMEOUT = 600
 
 # Symantec TOKEN timeout 60 minutes
 SESSION_TIMEOUT_SEC = 3600
-ISO8601_L_FORMAT = '%Y-%m-%dT%H:%M:%S.%L'
 ISO8601_F_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 INTEGRATION_CONTEXT_NAME = 'SymantecEDR'
 DEFAULT_OFFSET = 0
@@ -393,7 +392,7 @@ class Client(BaseClient):
             return response json
         """
         if len(value) > 512:
-            raise ValueError('The maximum length of comment is 512 characters')
+            raise ValueError('The maximum allowed length of a comment is 512 characters')
 
         request_data: list[dict[str, Any]] = [
             {'op': 'add', 'path': f'/{uuid}/comments', 'value': value}
@@ -1015,7 +1014,8 @@ def system_activity_readable_output(results: list[dict], title: str) -> tuple[st
         results (list): Symantec Association Results data
         title (str): Title string
     Returns:
-        markdown: A string representation of the Markdown table
+        Human Readable table
+        Content output
     """
     # Applicable events : 1, 20, 21, 1000
     summary_data = []
@@ -1044,14 +1044,15 @@ def system_activity_readable_output(results: list[dict], title: str) -> tuple[st
     return markdown, context_data
 
 
-def endpoint_instance_readable_output(results: list[dict], title: str) -> str:
+def endpoint_instance_readable_output(results: list[dict], title: str) -> tuple[str, list]:
     """
     Convert to XSOAR Readable output for entities endpoints instance
     Args:
         results (list): Symantec Association Results data
         title (str): Title string
     Returns:
-        A string representation of the Markdown table
+        Human Readable table
+        Content output
     """
 
     summary_data = []
@@ -1068,15 +1069,11 @@ def endpoint_instance_readable_output(results: list[dict], title: str) -> str:
         summary_data.append(endpoint_instance)
 
     headers = extract_headers_for_readable_output(summary_data)
-    return tableToMarkdown(
-        title,
-        camelize(summary_data, "_"),
-        headers=headers,
-        removeNull=True
-    )
+    markdown = tableToMarkdown(title, camelize(summary_data, "_"), headers=headers, removeNull=True)
+    return markdown, summary_data
 
 
-def incident_readable_output(results: list[dict], title: Optional[str] = None) -> tuple[str, list]:
+def incident_readable_output(results: list[dict], title: str) -> tuple[str, list]:
     """
     Convert to User Readable output for Incident resources
     Args:
@@ -1156,7 +1153,7 @@ def audit_event_readable_output(results: list[dict], title: str) -> tuple[str, l
     return markdown, context_data
 
 
-def incident_event_readable_output(results: list[dict], title: Optional[str] = None) -> tuple[str, list]:
+def incident_event_readable_output(results: list[dict], title: str) -> tuple[str, list]:
     """
     Convert to User Readable output for Event for Incident resources
     Args:
@@ -1255,7 +1252,7 @@ def extract_raw_data(result: list | dict, ignore_key: list, prefix: str = None) 
      """
     dataset: dict = {}
     if not isinstance(result, (dict, list)):
-        raise ValueError(f'Unexpected data type {type(result)}:: must be either list or dict.\ndata={result}')
+        raise ValueError(f'Unexpected data type {type(result)}:: must be either a list or dict.\ndata={result}')
 
     raw_data = {k: v for attribute in result for (k, v) in attribute.items()} if isinstance(result, list) \
         else result
@@ -1593,7 +1590,7 @@ def get_incident_uuid(client: Client, args: dict[str, Any]) -> str | None:
         raw_data := client.get_incident(payload).get('result', [])
     ):
         raise DemistoException(f'Incident ID {args.get("incident_id")} was not found. '
-                               f'If it\'s older than 30 days, try expanding the time range arguments')
+                               f'If it\'s older than 30 days, try increasing the time range arguments')
     return raw_data[0].get('uuid')
 
 
@@ -1611,8 +1608,8 @@ def create_payload_for_query(args: dict[str, Any], query_type: Optional[str] = N
         page_size = arg_to_number(args.get('page_size'))
         if (limit and limit < 10) or (page_size and page_size < 10):
             raise ValueError('Invalid input limit or page_size. '
-                             'For Deny and Allow list specify limit/page_size range '
-                             '>= greater than 10 and <= less than 1000')
+                             'For the Deny and Allow list specify the limit/page_size range '
+                             'The value must be >= 10 and <= 1000.')
         payload = create_params_query(args)
     else:
         payload = create_content_query(args)
@@ -1637,6 +1634,63 @@ def create_payload_for_query(args: dict[str, Any], query_type: Optional[str] = N
 ''' COMMAND FUNCTIONS '''
 
 
+def common_wrapper_command(client_func: Callable, cmd_args: dict, readable_title: str,
+                           context_path: str, output_key_field: str, command_type: str = None,
+                           is_call_diff_readable_output: bool = False,
+                           func_readable_output: Callable = generic_readable_output, **kwargs) -> CommandResults:
+    """
+    Common Wrapper Command for different endpoints
+    Args:
+        client_func: Call client method e.g. client.list_domain_file
+        cmd_args: Command arguments, usually passed from ``demisto.args()``.
+        readable_title: Readable Output title
+        context_path: Readable Context Output path
+        output_key_field: Outputs key field
+        command_type: Load the specific payload
+        is_call_diff_readable_output: Default False, Only pass the Ture in case need to call different
+                    readable output method
+        func_readable_output: Optional, call in case of readable output method is different for specific command
+        kwargs: In case required other arguments
+
+    Returns:
+        CommandResults: A ``CommandResults`` object
+    """
+    context_data: list = []
+    payload = create_payload_for_query(cmd_args, command_type)
+    offset = int(payload.pop('offset', ''))
+    limit = int(payload.get('limit', ''))
+
+    if 'uuid' in kwargs:
+        raw_response = client_func(payload, kwargs['uuid'])
+    elif 'sha2' in kwargs:
+        raw_response = client_func(payload, kwargs['sha2'])
+    else:
+        raw_response = client_func(payload)
+
+    title = compile_command_title_string(readable_title, cmd_args, int(raw_response.get('total', 0)))
+
+    if printable_result := get_data_of_current_page(raw_response.get('result', []), offset, limit):
+        if is_call_diff_readable_output:
+            if 'incident_id' in kwargs:
+                readable_output, context_data = func_readable_output(printable_result, title, kwargs['incident_id'])
+            else:
+                readable_output, context_data = func_readable_output(printable_result, title)
+        else:
+            readable_output = generic_readable_output(printable_result, title)
+            context_data = printable_result
+    else:
+        readable_output = f'No {readable_title} data to present.'
+
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{context_path}',
+        outputs_key_field=output_key_field,
+        readable_output=readable_output,
+        outputs=context_data,
+        raw_response=raw_response,
+        ignore_auto_extract=True
+    )
+
+
 def get_domain_file_association_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List of Domain and File association
@@ -1646,27 +1700,13 @@ def get_domain_file_association_list_command(client: Client, args: dict[str, Any
     Returns:
         CommandResults: A ``CommandResults`` object
     """
-    payload = create_payload_for_query(args, 'association')
-    offset = int(payload.pop('offset', ''))
-    limit = int(payload.get('limit', ''))
-
-    raw_response = client.list_domain_file(payload)
-
-    title = compile_command_title_string('Domain File Association', args, int(raw_response.get('total', 0)))
-
-    if printable_result := get_data_of_current_page(raw_response.get('result', []), offset, limit):
-        readable_output = generic_readable_output(printable_result, title)
-    else:
-        readable_output = 'No Domain and File association data to present.'
-
-    return CommandResults(
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.DomainFileAssociation',
-        outputs_key_field='',
-        readable_output=readable_output,
-        outputs=printable_result,
-        raw_response=raw_response,
-        ignore_auto_extract=True
-    )
+    return common_wrapper_command(
+        client_func=client.list_domain_file,
+        cmd_args=args,
+        readable_title='Domain File Association',
+        context_path='DomainFileAssociation',
+        output_key_field='sha2',
+        command_type='association')
 
 
 def get_endpoint_domain_association_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1679,26 +1719,13 @@ def get_endpoint_domain_association_list_command(client: Client, args: dict[str,
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    payload = create_payload_for_query(args, 'association')
-    offset = int(payload.pop('offset', ''))
-    limit = int(payload.get('limit', ''))
-
-    raw_response = client.list_endpoint_domain(payload)
-    title = compile_command_title_string('Endpoint Domain Association', args, int(raw_response.get('total', 0)))
-
-    if printable_result := get_data_of_current_page(raw_response.get('result', []), offset, limit):
-        readable_output = generic_readable_output(printable_result, title)
-    else:
-        readable_output = 'No Endpoint Domain association data to present.'
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.EndpointDomainAssociation',
-        outputs_key_field='',
-        outputs=printable_result,
-        raw_response=raw_response,
-        ignore_auto_extract=True
-    )
+    return common_wrapper_command(
+        client_func=client.list_endpoint_domain,
+        cmd_args=args,
+        readable_title='Endpoint Domain Association',
+        context_path='EndpointDomainAssociation',
+        output_key_field='device_uid',
+        command_type='association')
 
 
 def get_endpoint_file_association_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1711,26 +1738,13 @@ def get_endpoint_file_association_list_command(client: Client, args: dict[str, A
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    payload = create_payload_for_query(args, 'association')
-    offset = int(payload.pop('offset', ''))
-    limit = int(payload.get('limit', ''))
-
-    raw_response = client.list_endpoint_file(payload)
-    title = compile_command_title_string('Endpoint File Association', args, int(raw_response.get('total', 0)))
-
-    if printable_result := get_data_of_current_page(raw_response.get('result', []), offset, limit):
-        readable_output = generic_readable_output(printable_result, title)
-    else:
-        readable_output = 'No Endpoint File association data to present.'
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.EndpointFileAssociation',
-        outputs_key_field='',
-        outputs=printable_result,
-        raw_response=raw_response,
-        ignore_auto_extract=True
-    )
+    return common_wrapper_command(
+        client_func=client.list_endpoint_file,
+        cmd_args=args,
+        readable_title='Endpoint File Association',
+        context_path='EndpointFileAssociation',
+        output_key_field='sha2',
+        command_type='association')
 
 
 def get_audit_event_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1743,27 +1757,15 @@ def get_audit_event_command(client: Client, args: dict[str, Any]) -> CommandResu
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    context_data: list = []
-    payload = create_payload_for_query(args, 'event')
-    offset = int(payload.pop('offset', ''))
-    limit = int(payload.get('limit', ''))
-
-    raw_response = client.get_audit_event(payload)
-    title = compile_command_title_string('Audit Event', args, int(raw_response.get('total', 0)))
-
-    if page_result := get_data_of_current_page(raw_response.get('result', []), offset, limit):
-        readable_output, context_data = audit_event_readable_output(page_result, title)
-    else:
-        readable_output = 'No Audit Event data to present.'
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.AuditEvent',
-        outputs_key_field='event_uuid',
-        outputs=context_data,
-        raw_response=raw_response,
-        ignore_auto_extract=True
-    )
+    return common_wrapper_command(
+        client_func=client.get_audit_event,
+        cmd_args=args,
+        readable_title='Audit Event',
+        context_path='AuditEvent',
+        output_key_field='event_uuid',
+        command_type='event',
+        is_call_diff_readable_output=True,
+        func_readable_output=audit_event_readable_output)
 
 
 def get_event_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1776,27 +1778,15 @@ def get_event_list_command(client: Client, args: dict[str, Any]) -> CommandResul
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    context_data: list = []
-    payload = create_payload_for_query(args, 'event')
-    offset = int(payload.pop('offset', ''))
-    limit = int(payload.get('limit', ''))
-
-    raw_response = client.get_event_list(payload)
-    title = compile_command_title_string('Event', args, int(raw_response.get('total', 0)))
-
-    if page_result := get_data_of_current_page(raw_response.get('result', []), offset, limit):
-        readable_output, context_data = incident_event_readable_output(page_result, title)
-    else:
-        readable_output = 'No Event data to present.'
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Event',
-        outputs_key_field='event_uuid',
-        outputs=context_data,
-        raw_response=raw_response,
-        ignore_auto_extract=True
-    )
+    return common_wrapper_command(
+        client_func=client.get_event_list,
+        cmd_args=args,
+        readable_title='Event',
+        context_path='Event',
+        output_key_field='event_uuid',
+        command_type='event',
+        is_call_diff_readable_output=True,
+        func_readable_output=incident_event_readable_output)
 
 
 def get_system_activity_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1809,27 +1799,15 @@ def get_system_activity_command(client: Client, args: dict[str, Any]) -> Command
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    context_data: list = []
-    payload = create_payload_for_query(args, 'event')
-    offset = int(payload.pop('offset', ''))
-    limit = int(payload.get('limit', ''))
-
-    raw_response = client.get_system_activity(payload)
-    title = compile_command_title_string('System Activities', args, int(raw_response.get('total', 0)))
-
-    if page_result := get_data_of_current_page(raw_response.get('result', []), offset, limit):
-        readable_output, context_data = system_activity_readable_output(page_result, title)
-    else:
-        readable_output = 'No Endpoint Instances data to present.'
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.SystemActivity',
-        outputs_key_field='uuid',
-        outputs=context_data,
-        raw_response=raw_response,
-        ignore_auto_extract=True
-    )
+    return common_wrapper_command(
+        client_func=client.get_system_activity,
+        cmd_args=args,
+        readable_title='System Activities',
+        context_path='SystemActivity',
+        output_key_field='uuid',
+        command_type='event',
+        is_call_diff_readable_output=True,
+        func_readable_output=system_activity_readable_output)
 
 
 def get_event_for_incident_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1842,27 +1820,15 @@ def get_event_for_incident_list_command(client: Client, args: dict[str, Any]) ->
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    context_data: list = []
-    payload = create_payload_for_query(args, 'event')
-    offset = int(payload.pop('offset', ''))
-    limit = int(payload.get('limit', ''))
-
-    raw_response = client.get_event_for_incident(payload)
-    title = compile_command_title_string('Event for Incident', args, int(raw_response.get('total', 0)))
-
-    if page_result := get_data_of_current_page(raw_response.get('result', []), offset, limit):
-        readable_output, context_data = incident_event_readable_output(page_result, title)
-    else:
-        readable_output = 'No Event for Incidents data to present.'
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.IncidentEvent',
-        outputs_key_field='event_uuid',
-        outputs=context_data,
-        raw_response=raw_response,
-        ignore_auto_extract=True
-    )
+    return common_wrapper_command(
+        client_func=client.get_event_for_incident,
+        cmd_args=args,
+        readable_title='Event for Incident',
+        context_path='IncidentEvent',
+        output_key_field='event_uuid',
+        command_type='event',
+        is_call_diff_readable_output=True,
+        func_readable_output=incident_event_readable_output)
 
 
 def get_incident_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1875,26 +1841,15 @@ def get_incident_list_command(client: Client, args: dict[str, Any]) -> CommandRe
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    context_data: list = []
-    payload = create_payload_for_query(args, 'incident')
-    offset = int(payload.pop('offset', ''))
-    limit = int(payload.get('limit', ''))
-
-    raw_response = client.get_incident(payload)
-    title = compile_command_title_string('Incident', args, int(raw_response.get('total', 0)))
-
-    if page_result := get_data_of_current_page(raw_response.get('result', []), offset, limit):
-        readable_output, context_data = incident_readable_output(page_result, title)
-    else:
-        readable_output = 'No Incidents data to present.'
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Incident',
-        outputs_key_field='apt_incident_id',
-        outputs=context_data,
-        raw_response=raw_response
-    )
+    return common_wrapper_command(
+        client_func=client.get_incident,
+        cmd_args=args,
+        readable_title='Incident',
+        context_path='Incident',
+        output_key_field='apt_incident_id',
+        command_type='incident',
+        is_call_diff_readable_output=True,
+        func_readable_output=incident_readable_output)
 
 
 def get_incident_comments_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1907,33 +1862,22 @@ def get_incident_comments_command(client: Client, args: dict[str, Any]) -> Comma
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    context_data: list = []
     # Get UUID based on incident_id
     uuid = get_incident_uuid(client, args)
     incident_id = args.pop("incident_id", None)
     if uuid is None:
         raise ValueError("Error: No Incident UUID found. Provide valid Incident IDs.")
 
-    payload = create_payload_for_query(args, 'incident')
-    offset = int(payload.pop('offset', ''))
-    limit = int(payload.get('limit', ''))
-
-    raw_response = client.get_incident_comment(payload, uuid)
-    title = compile_command_title_string('Incident Comment', args, int(raw_response.get('total', 0)))
-
-    if page_result := get_data_of_current_page(raw_response.get('result', []), offset, limit):
-        readable_output, context_data = incident_comment_readable_output(page_result, title, incident_id)
-    else:
-        readable_output = 'No Incident Comments data to present.'
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.IncidentComment',
-        outputs_key_field='',
-        outputs=context_data,
-        raw_response=raw_response,
-        ignore_auto_extract=True
-    )
+    return common_wrapper_command(
+        client_func=client.get_incident_comment,
+        cmd_args=args,
+        readable_title='Domain Instances',
+        context_path='DomainInstances',
+        output_key_field='data_source_url_domain',
+        command_type='incident',
+        is_call_diff_readable_output=True,
+        func_readable_output=incident_comment_readable_output,
+        **{"uuid": uuid, "incident_id": incident_id})
 
 
 def patch_incident_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1960,7 +1904,7 @@ def patch_incident_update_command(client: Client, args: dict[str, Any]) -> Comma
         # Incident Add Comment
         if action == 'add_comment':
             if not update_value:
-                raise ValueError('Missing comment. Enter argument value="Free text up to 512 characters"')
+                raise ValueError('Missing comment. Enter Free text up to 512 characters')
 
             action_desc = 'Add Comment'
             response = client.add_incident_comment(uuid, update_value)
@@ -1977,13 +1921,13 @@ def patch_incident_update_command(client: Client, args: dict[str, Any]) -> Comma
             action_desc = 'Update Status'
             if not update_value or INCIDENT_RESOLUTION.get(str(update_value)) is None:
                 raise ValueError(f'Missing/Invalid Incident Resolution value. '
-                                 f'Enter any one of these resolution supported value {INCIDENT_RESOLUTION}')
+                                 f'Enter any one of these supported value {INCIDENT_RESOLUTION}')
             response = client.update_incident(uuid, int(args.get('value', 0)))
             status = response.status_code
 
         else:
             raise DemistoException(
-                f'Unable to perform Incident update. Only support by following action {INCIDENT_PATCH_ACTION}')
+                f'Unable to perform Incident update. Only support the following action {INCIDENT_PATCH_ACTION}')
 
     if status == 204:
         summary_data = {
@@ -2014,26 +1958,13 @@ def get_file_instance_command(client: Client, args: dict[str, Any]) -> CommandRe
     if sha2 := args.get('file_sha2'):
         check_valid_indicator_value('sha256', sha2)
 
-    payload = create_payload_for_query(args)
-    offset = int(payload.pop('offset', ''))
-    limit = int(payload.get('limit', ''))
-
-    raw_response = client.get_file_instance(payload, sha2)
-    title = compile_command_title_string('File Instances', args, int(raw_response.get('total', 0)))
-
-    if page_result := get_data_of_current_page(raw_response.get('result', []), offset, limit):
-        readable_output = generic_readable_output(page_result, title)
-    else:
-        readable_output = 'No File Instance data to present.'
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.FileInstance',
-        outputs_key_field='sha2',
-        outputs=page_result,
-        raw_response=raw_response,
-        ignore_auto_extract=True
-    )
+    return common_wrapper_command(
+        client_func=client.get_file_instance,
+        cmd_args=args,
+        readable_title='File Instances',
+        context_path='FileInstance',
+        output_key_field='sha2',
+        **{"sha2": sha2})
 
 
 def get_domain_instance_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2046,27 +1977,14 @@ def get_domain_instance_command(client: Client, args: dict[str, Any]) -> Command
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    context_data: list = []
-    payload = create_payload_for_query(args)
-    offset = int(payload.pop('offset', ''))
-    limit = int(payload.get('limit', ''))
-
-    raw_response = client.get_domain_instance(payload)
-    title = compile_command_title_string('Domain Instances', args, int(raw_response.get('total', 0)))
-
-    if page_result := get_data_of_current_page(raw_response.get('result', []), offset, limit):
-        readable_output, context_data = domain_instance_readable_output(page_result, title)
-    else:
-        readable_output = 'No Domain Instances data to present.'
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.DomainInstances',
-        outputs_key_field='',
-        outputs=context_data,
-        raw_response=raw_response,
-        ignore_auto_extract=True
-    )
+    return common_wrapper_command(
+        client_func=client.get_domain_instance,
+        cmd_args=args,
+        readable_title='Domain Instances',
+        context_path='DomainInstances',
+        output_key_field='data_source_url_domain',
+        is_call_diff_readable_output=True,
+        func_readable_output=domain_instance_readable_output)
 
 
 def get_endpoint_instance_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2079,26 +1997,14 @@ def get_endpoint_instance_command(client: Client, args: dict[str, Any]) -> Comma
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    payload = create_payload_for_query(args)
-    offset = int(payload.pop('offset', ''))
-    limit = int(payload.get('limit', ''))
-
-    raw_response = client.get_endpoint_instance(payload)
-    title = compile_command_title_string('Endpoint Instances', args, int(raw_response.get('total', 0)))
-
-    if page_result := get_data_of_current_page(raw_response.get('result', []), offset, limit):
-        readable_output = endpoint_instance_readable_output(page_result, title)
-    else:
-        readable_output = 'No Endpoint Instances data to present.'
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.EndpointInstances',
-        outputs_key_field='',
-        outputs=page_result,
-        raw_response=raw_response,
-        ignore_auto_extract=True
-    )
+    return common_wrapper_command(
+        client_func=client.get_endpoint_instance,
+        cmd_args=args,
+        readable_title='Endpoint Instances',
+        context_path='EndpointInstances',
+        output_key_field='device_uid',
+        is_call_diff_readable_output=True,
+        func_readable_output=endpoint_instance_readable_output)
 
 
 def get_allow_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2111,26 +2017,13 @@ def get_allow_list_command(client: Client, args: dict[str, Any]) -> CommandResul
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    payload = create_payload_for_query(args, 'allow_list')
-    offset = int(payload.pop('offset', ''))
-    limit = int(payload.get('limit', ''))
-
-    raw_response = client.get_allow_list(payload)
-    title = compile_command_title_string('Allow List Policy', args, len(raw_response.get('result', [])))
-
-    if page_result := get_data_of_current_page(raw_response.get('result', []), offset, limit):
-        readable_output = generic_readable_output(page_result, title)
-    else:
-        readable_output = 'No Endpoint Instances data to present.'
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.AllowListPolicy',
-        outputs_key_field='',
-        outputs=page_result,
-        raw_response=raw_response,
-        ignore_auto_extract=True
-    )
+    return common_wrapper_command(
+        client_func=client.get_allow_list,
+        cmd_args=args,
+        readable_title='Allow List Policy',
+        context_path='AllowListPolicy',
+        output_key_field='id',
+        command_type='allow_list')
 
 
 def get_deny_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2143,26 +2036,13 @@ def get_deny_list_command(client: Client, args: dict[str, Any]) -> CommandResult
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    payload = create_payload_for_query(args, 'deny_list')
-    offset = int(payload.pop('offset', ''))
-    limit = int(payload.get('limit', ''))
-
-    raw_response = client.get_deny_list(payload)
-    title = compile_command_title_string('Deny List Policy', args, len(raw_response.get('result', [])))
-
-    if page_result := get_data_of_current_page(raw_response.get('result', []), offset, limit):
-        readable_output = generic_readable_output(page_result, title)
-    else:
-        readable_output = 'No Endpoint Instances data to present.'
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.DenyListPolicy',
-        outputs_key_field='',
-        outputs=page_result,
-        raw_response=raw_response,
-        ignore_auto_extract=True
-    )
+    return common_wrapper_command(
+        client_func=client.get_deny_list,
+        cmd_args=args,
+        readable_title='Deny List Policy',
+        context_path='DenyListPolicy',
+        output_key_field='id',
+        command_type='deny_list')
 
 
 def get_endpoint_command(client: Client, args: dict[str, Any], command: str) -> CommandResults:
@@ -2199,7 +2079,7 @@ def get_endpoint_command(client: Client, args: dict[str, Any], command: str) -> 
             action_type = 'Delete Endpoint'
         else:
             raise DemistoException('Invalid Arguments. '
-                                   'Both "device_id" and "sha2" arguments is required for endpoint delete action')
+                                   'Both "device_id" and "sha2" arguments are required for endpoint delete action')
     elif command == 'symantec-edr-endpoint-isolate':
         action_type = 'Isolate Endpoint'
         raw_response = client.get_isolate_endpoint(device_uid)
@@ -2311,7 +2191,7 @@ def fetch_incidents(client: Client) -> list:
 
     incidents, events_result, comments_result = [], [], []
     if result:
-        _, incidents_context = incident_readable_output(result)
+        _, incidents_context = incident_readable_output(result, 'Incident')
 
         for incident in incidents_context:
             incident_id = incident.get('incident_id')
@@ -2395,7 +2275,7 @@ def get_sandbox_verdict(client: Client, args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.SandboxVerdict',
-        outputs_key_field='',
+        outputs_key_field='sha2',
         outputs=response_verdict,
         raw_response=response_verdict
     )
@@ -2621,7 +2501,6 @@ def main() -> None:
                         fetch_status=fetch_status, fetch_priority=fetch_priority)
 
         demisto.info(f'Command being called is {demisto.command()}')
-
         commands = {
 
             # Command Status
@@ -2691,7 +2570,7 @@ def main() -> None:
         elif command in commands:
             command_output = commands[command](client, args)
         else:
-            raise NotImplementedError(f"command {command} is not supported")
+            raise NotImplementedError(f"Command {command} is not supported")
 
         return_results(command_output)
 

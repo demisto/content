@@ -24,6 +24,9 @@ from SymantecEDR import Client, get_file_instance_command, get_domain_instance_c
 
 
 def util_load_json(path):
+    """
+    Utility Json Load Method
+    """
     with open(path) as f:
         return json.loads(f.read())
 
@@ -139,7 +142,8 @@ def test_get_domain_instance_command(mocker, raw_response, expected):
     """
     args = {"limit": 1}
     mocker.patch.object(client, 'get_domain_instance', side_effect=[raw_response])
-    with open(os.path.join("test_data", "command_readable_output/endpoint_domain_instance_readable_output.md"), 'r') as f:
+    with open(os.path.join("test_data", "command_readable_output/endpoint_domain_instance_readable_output.md"), 'r') \
+            as f:
         readable_output = f.read()
     command_results = get_domain_instance_command(client, args)
 
@@ -443,7 +447,8 @@ def test_get_incident_uuid(mocker, raw_response, expected):
     assert uuid == expected
 
 
-@pytest.mark.parametrize('raw_incident, uuid_result', [(INCIDENT_LIST_RESPONSE, '9d6f2100-7158-11ed-da26-000000000001')])
+@pytest.mark.parametrize('raw_incident, uuid_result',
+                         [(INCIDENT_LIST_RESPONSE, '9d6f2100-7158-11ed-da26-000000000001')])
 @pytest.mark.parametrize('raw_response, expected', [(INCIDENT_COMMENT_RESPONSE, INCIDENT_COMMENT_RESPONSE)])
 def test_get_incident_comments_command(mocker, raw_incident, uuid_result, raw_response, expected):
     """
@@ -711,7 +716,7 @@ def test_check_valid_indicator_value(indicator_type, indicator_value, expected_r
 
 
 @pytest.mark.parametrize('indicator_type, indicator_value, expected_err_msg', [
-    ('domains', 'abcd123', 'Indicator domains type id not support'),
+    ('domains', 'abcd123', 'Indicator type domains is not supported'),
     ('urls', '123245', '123245 is not a valid urls'),
     ('ip', 'google.1234', 'google.1234 is not a valid IP'),
     ('sha256', 'abcde34', 'abcde34 is not a valid sha256'),
