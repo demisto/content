@@ -1044,7 +1044,7 @@ outputs:
   description: AWS IAM - User attached policies.
   type: unknown
 - contextPath: MSGraphGroup
-  description: MSGraph Group information.
+  description: MSGraph group information.
   type: unknown
 quiet: true
 tests:
