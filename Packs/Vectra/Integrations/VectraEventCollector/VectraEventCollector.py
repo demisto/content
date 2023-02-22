@@ -263,9 +263,7 @@ def fetch_events(
     if is_eod(now) or not demisto.getLastRun():
         demisto.info(f"Fetching audits from {start} to now...")
         _, audits = get_audits_cmd(client=client, start=start)
-
-        # Set next run to tomorrow
-        next_run_audit_str = (now + timedelta(days=1)).strftime(AUDIT_START_TIMESTAMP_FORMAT)
+        next_run_audit_str = now.strftime(AUDIT_START_TIMESTAMP_FORMAT)
 
     else:
         demisto.info(
