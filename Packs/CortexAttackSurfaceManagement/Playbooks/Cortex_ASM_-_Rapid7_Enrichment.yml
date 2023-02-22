@@ -1,20 +1,20 @@
-id: Cortex ASM - Rapid7 Enrichment
-version: -1
+id: 13aedd39-f014-4272-8c28-fc9d57285b55
+version: 2
+vcShouldKeepItemLegacyProdMachine: false
 name: Cortex ASM - Rapid7 Enrichment
 description: Given the IP address this playbook enriches Rapid7 InsightVM (Nexpose) information relevant to ASM alerts.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a90c8d51-8fbb-4f87-8d02-c2387d6517c7
+    taskid: 806c021a-3cbc-4873-8462-6f0d82ea9589
     type: start
     task:
-      id: a90c8d51-8fbb-4f87-8d02-c2387d6517c7
+      id: 806c021a-3cbc-4873-8462-6f0d82ea9589
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 0af4d63c-d0e1-4ef3-82f5-c7e36b57d847
+    taskid: ef3d2596-6f23-4e7d-8a37-15b156dbc4e8
     type: playbook
     task:
-      id: 0af4d63c-d0e1-4ef3-82f5-c7e36b57d847
+      id: ef3d2596-6f23-4e7d-8a37-15b156dbc4e8
       version: -1
       name: Rapid7 - Nexpose - Enrichment
       description: Given an IP address, this playbook searches Rapid7 Nexpose assets for an asset with the associated IP address to retrieve asset information and proceeds to return all associated tags with it.
@@ -52,7 +52,8 @@ tasks:
       - "8"
     scriptarguments:
       IP:
-        simple: 10.0.101.47
+        complex:
+          root: inputs.IPAddress
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -76,10 +77,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: d905a99d-6496-4762-8f7d-bbb9025ea867
+    taskid: 943eee35-18c2-4e9b-8908-8213d129acf7
     type: regular
     task:
-      id: d905a99d-6496-4762-8f7d-bbb9025ea867
+      id: 943eee35-18c2-4e9b-8908-8213d129acf7
       version: -1
       name: Set service owner grid field
       description: |-
@@ -142,10 +143,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 59fc63aa-bdca-4bf3-8836-5bdab4833dca
+    taskid: fb1cacd3-25cd-48f2-8a06-01e20a4e794c
     type: regular
     task:
-      id: 59fc63aa-bdca-4bf3-8836-5bdab4833dca
+      id: fb1cacd3-25cd-48f2-8a06-01e20a4e794c
       version: -1
       name: Get current time
       description: |
@@ -175,16 +176,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 5ffb3e16-b51a-43a3-8357-3d1ea819967d
+    taskid: 8afe4467-0fe7-4cf3-8944-6386c85ed6e1
     type: title
     task:
-      id: 5ffb3e16-b51a-43a3-8357-3d1ea819967d
+      id: 8afe4467-0fe7-4cf3-8944-6386c85ed6e1
       version: -1
       name: Service Owner
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -206,16 +206,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: daed6fde-84a2-41f2-880c-227562686678
+    taskid: d32754fc-a96d-4d46-8086-7890c8b26c4c
     type: title
     task:
-      id: daed6fde-84a2-41f2-880c-227562686678
+      id: d32754fc-a96d-4d46-8086-7890c8b26c4c
       version: -1
       name: Set Field
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -239,16 +238,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: de691057-c636-4d26-8ace-06d44ca89c03
+    taskid: 1c8f7c85-e214-4608-8a5a-d3a28172d8b5
     type: title
     task:
-      id: de691057-c636-4d26-8ace-06d44ca89c03
+      id: 1c8f7c85-e214-4608-8a5a-d3a28172d8b5
       version: -1
       name: System IDs
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -270,10 +268,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 6a7c02ab-9497-4a55-8dd2-3c5e2d78d343
+    taskid: 9af0bceb-433a-435b-8361-9025979378f7
     type: regular
     task:
-      id: 6a7c02ab-9497-4a55-8dd2-3c5e2d78d343
+      id: 9af0bceb-433a-435b-8361-9025979378f7
       version: -1
       name: Set system IDs grid field (OS)
       description: |-
@@ -317,16 +315,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 4451575f-23d4-44de-8a2d-a8dd29feca5e
+    taskid: 6b63e611-0406-4043-88e5-641f3f226a5c
     type: title
     task:
-      id: 4451575f-23d4-44de-8a2d-a8dd29feca5e
+      id: 6b63e611-0406-4043-88e5-641f3f226a5c
       version: -1
       name: Tags
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -348,10 +345,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 3280e23e-53af-4e6e-89f1-cd4e3fdf9bfd
+    taskid: 584a50a3-1587-4b81-856e-619f243eb55b
     type: condition
     task:
-      id: 3280e23e-53af-4e6e-89f1-cd4e3fdf9bfd
+      id: 584a50a3-1587-4b81-856e-619f243eb55b
       version: -1
       name: Is Rapid7 Nexpose enabled?
       description: Determines if the "Rapid7 Nexpose" integration instance is enabled in order to find assets and asset tags.
@@ -409,10 +406,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: e7ee59e8-38e0-4bda-8793-1d1c6baf1e6a
+    taskid: 07254726-4d56-42b1-8331-0abcb531706d
     type: regular
     task:
-      id: e7ee59e8-38e0-4bda-8793-1d1c6baf1e6a
+      id: 07254726-4d56-42b1-8331-0abcb531706d
       version: -1
       name: Set system IDs grid field (Asset Site)
       description: |-
@@ -456,10 +453,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 41065143-8132-4548-8546-e5cd7176d47d
+    taskid: 38626073-3c49-4b3c-8882-23dde4445d88
     type: regular
     task:
-      id: 41065143-8132-4548-8546-e5cd7176d47d
+      id: 38626073-3c49-4b3c-8882-23dde4445d88
       version: -1
       name: Set system IDs grid field (Asset Name)
       description: |-
@@ -503,16 +500,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 40418b1d-8197-4f81-8b86-045d10e1f0d2
+    taskid: f16d0e4a-b3d1-46cc-89a5-0b4a3f3b9ab7
     type: title
     task:
-      id: 40418b1d-8197-4f81-8b86-045d10e1f0d2
+      id: f16d0e4a-b3d1-46cc-89a5-0b4a3f3b9ab7
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -531,10 +527,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 924f0922-10c0-402d-83ea-3e014b8d65cd
+    taskid: 27db8980-cfb1-4999-85e1-79efff8acfdf
     type: condition
     task:
-      id: 924f0922-10c0-402d-83ea-3e014b8d65cd
+      id: 27db8980-cfb1-4999-85e1-79efff8acfdf
       version: -1
       name: Was there an asset from Rapid7?
       description: Checks if the Nexpose Asset object exists.
@@ -576,10 +572,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 1ed33bf8-25f9-41bd-81ff-f633f6b6c7f9
+    taskid: c945c272-bc4c-4829-8fa3-1c6a722997d6
     type: condition
     task:
-      id: 1ed33bf8-25f9-41bd-81ff-f633f6b6c7f9
+      id: c945c272-bc4c-4829-8fa3-1c6a722997d6
       version: -1
       name: Was there asset tags from Rapid7?
       description: Checks if the Nexpose AssetTag object exists.
@@ -621,10 +617,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: beee02f2-dec8-4bb7-8c03-a0510cab024c
+    taskid: b971196e-d62d-446c-8b48-dabe3ed2d9ea
     type: condition
     task:
-      id: beee02f2-dec8-4bb7-8c03-a0510cab024c
+      id: b971196e-d62d-446c-8b48-dabe3ed2d9ea
       version: -1
       name: Was there an owner asset tag from Rapid7?
       description: Checks if the Nexpose AssetTag object exists with an "owner" tag.
@@ -674,10 +670,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 21fff23c-9294-4f10-873a-b1e66039c241
+    taskid: 0ee49a95-239a-4839-823d-ff066c9fe6a0
     type: regular
     task:
-      id: 21fff23c-9294-4f10-873a-b1e66039c241
+      id: 0ee49a95-239a-4839-823d-ff066c9fe6a0
       version: -1
       name: Set tags grid field
       description: |-
@@ -741,10 +737,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 262c354c-73da-4cea-80ba-ff53ae134a2f
+    taskid: 812d1c96-14a2-43a9-8355-188826551ef1
     type: condition
     task:
-      id: 262c354c-73da-4cea-80ba-ff53ae134a2f
+      id: 812d1c96-14a2-43a9-8355-188826551ef1
       version: -1
       name: Is an OS value set for asset?
       description: Checks if the Operating Service is set in the Nexpose Asset object.
@@ -782,10 +778,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 19f35e26-217c-48a1-8d18-e98236413952
+    taskid: 7d89f6fe-aed3-47c0-8c08-916c29feb8c3
     type: condition
     task:
-      id: 19f35e26-217c-48a1-8d18-e98236413952
+      id: 7d89f6fe-aed3-47c0-8c08-916c29feb8c3
       version: -1
       name: Is a name value set for asset?
       description: Checks if the Name is set in the Nexpose Asset object.
@@ -827,10 +823,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 15606879-162c-46ac-81a8-6f7a48f77c25
+    taskid: 9634f7cd-1be3-44d9-8101-efe484163ff7
     type: condition
     task:
-      id: 15606879-162c-46ac-81a8-6f7a48f77c25
+      id: 9634f7cd-1be3-44d9-8101-efe484163ff7
       version: -1
       name: Is a site value set for asset?
       description: Checks if the Site is set in the Nexpose Asset object.
@@ -894,7 +890,17 @@ view: |-
       }
     }
   }
-inputs: []
+inputs:
+- key: IPAddress
+  value:
+    complex:
+      root: alert
+      accessor: remoteip
+      transformers:
+      - operator: uniq
+  required: true
+  description: IP addresses to enrich.
+  playbookInputQuery:
 outputs: []
 fromversion: 6.8.0
 tests:

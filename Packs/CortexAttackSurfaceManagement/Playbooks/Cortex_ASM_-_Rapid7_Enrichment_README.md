@@ -24,7 +24,10 @@ This playbook does not use any commands.
 ## Playbook Inputs
 
 ---
-There are no inputs for this playbook.
+
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| IPAddress | IP addresses to enrich. | alert.remoteip | Required |
 
 ## Playbook Outputs
 
