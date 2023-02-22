@@ -1103,15 +1103,14 @@ def fetch_indicators(client: MandiantClient, args: Dict = None) -> List:
     Returns:
         List of all indicators
     """
-    args = args if args else {}
-    limit = int(args.get("limit", client.limit))
+    limit = client.limit
     # Cap maximum number of indicators to 1000
     if limit > 1000:
         limit = 1000
 
-    metadata = argToBoolean(args.get("indicatorMetadata", client.metadata))
-    enrichment = argToBoolean(args.get("indicatorRelationships", client.enrichment))
-    types = argToList(args.get("type", client.types))
+    metadata = argToBoolean(client.metadata)
+    enrichment = argToBoolean(client.enrichment)
+    types = argToList(client.types)
 
     first_fetch = client.first_fetch
 
@@ -1139,7 +1138,7 @@ def fetch_indicators(client: MandiantClient, args: Dict = None) -> List:
     return result
 
 
-def batch_fetch_indicators(client: MandiantClient, args: Dict = None):
+def batch_fetch_indicators(client: MandiantClient):
     """
     For each type the fetch indicator command will:
         1. Fetch a list of indicators from the Mandiant Threat Intelligence API
@@ -1150,13 +1149,11 @@ def batch_fetch_indicators(client: MandiantClient, args: Dict = None):
         NOTE: This requires an additional 3 API calls per indicator
     Args:
         client (MandiantClient): client
-        args (Dict): If provided, these arguments override those in the `client`
     Returns:
         List of all indicators
     """
-    args = args if args else {}
 
-    result = fetch_indicators(client=client, args=args)
+    result = fetch_indicators(client=client)
 
     for b in batch(result, batch_size=2000):
         demisto.createIndicators(b)
@@ -1166,7 +1163,7 @@ def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
     args = args if args else {}
     indicator_value: str = args["indicator_value"]
 
-    INDICATOR_TYPE_MAP = {"ipv4": "ip", "fqdn": "domain", "url": "url", "md5": "file"}
+    INDICATOR_TYPE_MAP: dict[str, str] = {"ipv4": "ip", "fqdn": "domain", "url": "url", "md5": "file"}
 
     indicators_list = client.get_indicators_by_value(indicator_value=indicator_value)
     indicators = [
@@ -1181,7 +1178,7 @@ def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
 
     return CommandResults(
         content_format=formats["json"],
-        outputs_prefix=INDICATOR_TYPE_MAP[indicators_list[0]["type"]],
+        outputs_prefix=f"MANDIANTTI.{INDICATOR_TYPE_MAP[indicators_list[0]['type']].upper()}",
         outputs=indicators,
         outputs_key_field="name",
     )
@@ -1253,7 +1250,7 @@ def fetch_campaign(client: MandiantClient, args: Dict = None):
     return CommandResults(
         content_format=formats["json"],
         outputs=indicator_list,
-        outputs_prefix="MANDIANTTI.Malware",
+        outputs_prefix="MANDIANTTI.Campaign",
         outputs_key_field="name",
         ignore_auto_extract=True,
     )
@@ -1279,7 +1276,7 @@ def fetch_reputation(client: MandiantClient, args: Dict = None):
     demisto.createIndicators(indicators)
 
     return CommandResults(
-        outputs=indicators, outputs_prefix=input_type, ignore_auto_extract=True
+        outputs=indicators, outputs_prefix=f"MANDIANTTI.{input_type.upper()}", ignore_auto_extract=True
     )
 
 
@@ -1359,21 +1356,25 @@ def main() -> None:
         )
 
         command_map: Dict[str, Callable] = {
-            "test-module": test_module,
-            "threat-intelligence-get-indicators": fetch_indicators,
-            "fetch-indicators": batch_fetch_indicators,
-            "get-indicator": fetch_indicator_by_value,
-            "get-actor": fetch_threat_actor,
-            "get-malware": fetch_malware_family,
-            "get-campaign": fetch_campaign,
+            "mati-get-indicator": fetch_indicator_by_value,
+            "mati-get-actor": fetch_threat_actor,
+            "mati-get-malware": fetch_malware_family,
+            "mati-get-campaign": fetch_campaign,
             "file": fetch_reputation,
             "ip": fetch_reputation,
             "url": fetch_reputation,
             "domain": fetch_reputation,
             "cve": fetch_reputation,
         }
+        params_only_cmds: Dict[str, Callable] = {
+            "test-module": test_module,
+            "fetch-indicators": batch_fetch_indicators,
+        }
 
-        return_results(command_map[command](client, args))
+        if command in command_map:
+            return_results(command_map[command](client, args))
+        elif command in params_only_cmds:
+            return_results(params_only_cmds[command](client))
 
     # Log exceptions and return errors
     except Exception as e:

@@ -156,63 +156,12 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: 'Integrate with Mandiant Advantage'
+description: 'Enrich Indicators of Compromise, and fetch information about Actors, Malware Families, and Campaigns from Mandiant Advantage.'
 display: Mandiant Advantage Threat Intelligence
 name: Mandiant Advantage Threat Intelligence
 script:
   commands:
-  - name: threat-intelligence-get-indicators
-    arguments:
-    - default: true
-      description: Update context.
-      isArray: false
-      name: update_context
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of indicators to fetch.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: Whether to retrieve additional data for each indicator.
-      isArray: false
-      name: indicatorMetadata
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: Whether to create indicator relationships.
-      isArray: false
-      name: indicatorRelationships
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: Malware,Indicators,Actors
-      description: The type of indicators to fetch.
-      isArray: true
-      name: type
-      predefined:
-      - Malware
-      - Indicators
-      - Actors
-      required: true
-      secret: false
-    deprecated: false
-    description: Get Mandiant indicators
-    execution: false
-  - name: get-indicator
+  - name: mati-get-indicator
     arguments:
     - default: true
       description: Value of the indicator to look up.  Can be URL, domain name, IP
@@ -224,7 +173,41 @@ script:
     deprecated: false
     description: Get information about a single Indicator of Compromise from Mandiant
     execution: false
-  - name: get-actor
+    outputs:
+      - contextPath: MANDIANTTI.IP.score
+        description: The Severity Score of the IP indicator
+        type: Number
+      - contextPath: MANDIANTTI.IP.fields.ip
+        description: The IP address of the IP indicator
+        type: String
+      - contextPath: MANDIANTTI.FILE.score
+        description: The Severity Score of the File indicator
+        type: Number
+      - contextPath: MANDIANTTI.FILE.fields.md5
+        description: The MD5 Hash associated with the File indicator
+        type: String
+      - contextPath: MANDIANTTI.FILE.fields.sha256
+        description: The SHA256 Hash associated with the File indicator
+        type: String
+      - contextPath: MANDIANTTI.FILE.fields.sha1
+        description: The SHA1 Hash associated with the File indicator
+        type: String
+      - contextPath: MANDIANTTI.DOMAIN.score
+        description: The Severity Score of the Domain indicator
+        type: Number
+      - contextPath: MANDIANTTI.DOMAIN.fields.dns
+        description: The DNS record value for the Domain indicator
+        type: String
+      - contextPath: MANDIANTTI.DOMAIN.fields.domain
+        description: The domain name for the Domain indicator
+        type: String
+      - contextPath: MANDIANTTI.URL.score
+        description: The Severity Score of the URL indicator
+        type: Number
+      - contextPath: MANDIANTTI.URL.fields.url
+        description: The URL value for the Domain indicator
+        type: String
+  - name: mati-get-actor
     arguments:
     - default: true
       description: Name of the actor to look up
@@ -235,7 +218,32 @@ script:
     deprecated: false
     description: Get information about a Threat Actor from Mandiant
     execution: false
-  - name: get-malware
+    outputs:
+      - contextPath: MANDIANTTI.ThreatActor.value
+        description: The name of the ThreatActor
+        type: String
+      - contextPath: MANDIANTTI.ThreatActor.fields.primarymotivation
+        description: The primary motivation of the ThreatActor
+        type: String
+      - contextPath: MANDIANTTI.ThreatActor.fields.tags
+        description: The tags and target industries of the ThreatActor
+        type: String
+      - contextPath: MANDIANTTI.ThreatActor.fields.aliases
+        description: The known aliases of the ThreatActor
+        type: String
+      - contextPath: MANDIANTTI.ThreatActor.fields.targets
+        description: The known targets of the ThreatActor
+        type: String
+      - contextPath: MANDIANTTI.ThreatActor.fields.description
+        description: The description of the ThreatActor
+        type: String
+      - contextPath: MANDIANTTI.ThreatActor.fields.publications.title
+        description: The title of a report associated with the ThreatActor
+        type: String
+      - contextPath: MANDIANTTI.ThreatActor.fields.publications.link
+        description: The link to the report in Mandiant Advantage
+        type: String
+  - name: mati-get-malware
     arguments:
     - default: true
       description: Name of the malware family to look up
@@ -246,6 +254,31 @@ script:
     deprecated: false
     description: Get information about a Malware Family from Mandiant
     execution: false
+    outputs:
+    - contextPath: MANDIANTTI.Malware.value
+      description: The name of the Malware
+      type: String
+    - contextPath: MANDIANTTI.Malware.fields.operatingsystemrefs
+      description: The Operating Systems impacted by the malware
+      type: String
+    - contextPath: MANDIANTTI.Malware.fields.roles
+      description: The known roles of the Malware
+      type: String
+    - contextPath: MANDIANTTI.Malware.fields.description
+      description: The description of the Malware
+      type: String
+    - contextPath: MANDIANTTI.Malware.fields.Is Malware Family
+      description: Whether the Indicator is a Malware Family or a Tool
+      type: String
+    - contextPath: MANDIANTTI.Malware.fields.publications.title
+      description: The name of the Malware
+      type: String
+    - contextPath: MANDIANTTI.Malware.fields.publications.title
+      description: The title of a report associated with the Malware
+      type: String
+    - contextPath: MANDIANTTI.Malware.fields.publications.link
+      description: The link to the report in Mandiant Advantage
+      type: String
   - name: file
     arguments:
     - default: true
@@ -257,6 +290,19 @@ script:
     deprecated: false
     description: Retrieve information about a File Hash from Mandiant
     execution: false
+    outputs:
+    - contextPath: MANDIANTTI.FILE.score
+      description: The Severity Score of the File indicator
+      type: Number
+    - contextPath: MANDIANTTI.FILE.fields.md5
+      description: The MD5 Hash associated with the File indicator
+      type: String
+    - contextPath: MANDIANTTI.FILE.fields.sha256
+      description: The SHA256 Hash associated with the File indicator
+      type: String
+    - contextPath: MANDIANTTI.FILE.fields.sha1
+      description: The SHA1 Hash associated with the File indicator
+      type: String
   - name: ip
     arguments:
     - default: true
@@ -268,6 +314,13 @@ script:
     deprecated: false
     description: Retrieve information about an IP Address from Mandiant
     execution: false
+    outputs:
+    - contextPath: MANDIANTTI.IP.score
+      description: The Severity Score of the IP indicator
+      type: Number
+    - contextPath: MANDIANTTI.IP.fields.ip
+      description: The IP address of the IP indicator
+      type: String
   - name: url
     arguments:
     - default: true
@@ -279,6 +332,13 @@ script:
     deprecated: false
     description: Retrieve information about a URL from Mandiant
     execution: false
+    outputs:
+    - contextPath: MANDIANTTI.URL.score
+      description: The Severity Score of the URL indicator
+      type: Number
+    - contextPath: MANDIANTTI.URL.fields.url
+      description: The URL value for the Domain indicator
+      type: String
   - name: domain
     arguments:
     - default: true
@@ -290,6 +350,16 @@ script:
     deprecated: false
     description: Retrieve information about an FQDN from Mandiant
     execution: false
+    outputs:
+    - contextPath: MANDIANTTI.DOMAIN.score
+      description: The Severity Score of the Domain indicator
+      type: Number
+    - contextPath: MANDIANTTI.DOMAIN.fields.dns
+      description: The DNS record value for the Domain indicator
+      type: String
+    - contextPath: MANDIANTTI.DOMAIN.fields.domain
+      description: The domain name for the Domain indicator
+      type: String
   - name: cve
     arguments:
     - default: true
@@ -301,7 +371,26 @@ script:
     deprecated: false
     description: Retrieve information about a Vulnerability (by CVE) from Mandiant
     execution: false
-  - name: get-campaign
+    outputs:
+      - contextPath: MANDIANTTI.CVE.score
+        description: The Severity Score of the CVE
+        type: Number
+      - contextPath: MANDIANTTI.CVE.id
+        description: The CVE ID
+        type: String
+      - contextPath: MANDIANTTI.CVE.fields.cvss
+        description: The CVSS version of the CVE
+        type: String
+      - contextPath: MANDIANTTI.CVE.fields.cvssvector
+        description: The CVSS vector string for the CVE
+        type: String
+      - contextPath: MANDIANTTI.CVE.fields.cvss2.metric
+        description: The name of the CVSS metric
+        type: String
+      - contextPath: MANDIANTTI.CVE.fields.cvss2.values
+        description: The values of the CVSS metric
+        type: String
+  - name: mati-get-campaign
     arguments:
     - default: true
       description: ID of the campaign to lookup
@@ -312,6 +401,25 @@ script:
     deprecated: false
     description: Retrieve information about a Campaign from Mandiant
     execution: false
+    outputs:
+    - contextPath: MANDIANTTI.Campaign.value
+      description: The name of the Campaign
+      type: String
+    - contextPath: MANDIANTTI.Campaign.fields.actors
+      description: The Threat Actors associated with the Campaign
+      type: String
+    - contextPath: MANDIANTTI.Campaign.fields.description
+      description: The description of the Campaign
+      type: String
+    - contextPath: MANDIANTTI.Campaign.fields.tags
+      description: The industries associated with the Campaign
+      type: String
+    - contextPath: MANDIANTTI.Campaign.fields.publications.title
+      description: The title of a report associated with the Campaign
+      type: String
+    - contextPath: MANDIANTTI.Campaign.fields.publications.link
+      description: The link to the report in Mandiant Advantage
+      type: String
   dockerimage: demisto/python3:3.10.5.31797
   feed: true
   isfetch: false
