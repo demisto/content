@@ -744,7 +744,7 @@ tasks:
       id: 7cf34b5f-d865-46ae-82bd-1d5e0e28c48e
       version: -1
       name: GCP IAM - Get service account information
-      description: 'Lists service accounts in project, or retrieves a specific service accounts information. One of the arguments: ''service_account_name'' or ''project_name''  must be provided.'
+      description: 'Lists service accounts in a project, or retrieves a specific service account information. One of the arguments: ''service_account_name'' or ''project_name''  must be provided.'
       script: '|||gcp-iam-service-accounts-get'
       type: regular
       iscommand: true
