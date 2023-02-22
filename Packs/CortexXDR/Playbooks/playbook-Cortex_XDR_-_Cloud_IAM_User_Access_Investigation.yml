@@ -1077,7 +1077,7 @@ inputs:
 - key: LoginCountry
   value: {}
   required: false
-  description: The Country from which the user logged in.
+  description: The country from which the user logged in.
   playbookInputQuery:
 - key: SIEMFailedLogonSearch
   value:
