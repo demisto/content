@@ -244,8 +244,10 @@ def fetch_events(
     Fetch detections based on whether it's the first fetch or not.
 
     Arguments:
+        - `client` (``VectraClient``): The API client for the Vectra service.
         - `first_timestamp` (``str``): The detection filter.
         - `start` (``str``): The audit filter.
+        - `is_first_fetch` (``bool``): Whether this is the first fetch or not
 
         The arguments default is set to `None` to enable a method overloading for this function.
 
@@ -273,7 +275,7 @@ def fetch_events(
         audits = []
         next_run_audit_str = start
 
-    # detections are ordered bQy descending first_timestamp therefore we can take the first
+    # detections are ordered by descending first_timestamp therefore we can take the first
     # detection first_timestamp as the next run
 
     demisto.info(f"Fetching detections from {first_timestamp} to now...")
