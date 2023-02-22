@@ -130,7 +130,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
+          "x": 1190,
           "y": 1085
         }
       }
@@ -163,7 +163,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
+          "x": 1190,
           "y": 925
         }
       }
@@ -194,7 +194,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
+          "x": 1190,
           "y": 795
         }
       }
@@ -227,7 +227,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
+          "x": 1190,
           "y": 420
         }
       }
@@ -306,7 +306,7 @@ tasks:
       {
         "position": {
           "x": 1860,
-          "y": 1120
+          "y": 1100
         }
       }
     note: false
@@ -337,7 +337,7 @@ tasks:
       {
         "position": {
           "x": 750,
-          "y": 795
+          "y": 815
         }
       }
     note: false
@@ -425,7 +425,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "19"
+      - "28"
     scriptarguments:
       gridfield:
         simple: asmsystemids
@@ -445,7 +445,7 @@ tasks:
       {
         "position": {
           "x": 1880,
-          "y": 1890
+          "y": 1790
         }
       }
     note: false
@@ -492,7 +492,7 @@ tasks:
       {
         "position": {
           "x": 1870,
-          "y": 1500
+          "y": 1440
         }
       }
     note: false
@@ -519,8 +519,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 410,
-          "y": 2120
+          "x": 350,
+          "y": 2360
         }
       }
     note: false
@@ -662,7 +662,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
+          "x": 1190,
           "y": 570
         }
       }
@@ -730,7 +730,7 @@ tasks:
       {
         "position": {
           "x": 750,
-          "y": 925
+          "y": 945
         }
       }
     note: false
@@ -816,7 +816,7 @@ tasks:
       {
         "position": {
           "x": 1630,
-          "y": 1320
+          "y": 1270
         }
       }
     note: false
@@ -840,7 +840,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "19"
+      - "28"
       "yes":
       - "17"
     separatecontext: false
@@ -861,7 +861,99 @@ tasks:
       {
         "position": {
           "x": 1630,
-          "y": 1685
+          "y": 1615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 1912ebc6-0a7a-420e-8fd4-e65653509a64
+    type: regular
+    task:
+      id: 1912ebc6-0a7a-420e-8fd4-e65653509a64
+      version: -1
+      name: Set system IDs grid field (Asset ID)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: Type,ID,Link
+      val1:
+        simple: Rapid7-Asset-ID
+      val2:
+        complex:
+          root: Nexpose.Asset
+          accessor: AssetId
+      val3:
+        simple: N/A
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1880,
+          "y": 2130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: edaad739-cffb-49bf-8b48-b42ee62026e8
+    type: condition
+    task:
+      id: edaad739-cffb-49bf-8b48-b42ee62026e8
+      version: -1
+      name: Is a ID value set for asset?
+      description: Checks if the Site is set in the Nexpose Asset object.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Nexpose.Asset
+                accessor: AssetId
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": 1960
         }
       }
     note: false
@@ -879,18 +971,18 @@ view: |-
       "20_19_#default#": 0.1,
       "20_9_yes": 0.46,
       "21_11_yes": 0.54,
-      "21_19_#default#": 0.1,
-      "22_19_#default#": 0.1,
+      "21_19_#default#": 0.18,
+      "22_19_#default#": 0.12,
       "22_7_yes": 0.47,
       "24_10_yes": 0.6,
       "25_18_yes": 0.55,
-      "26_19_#default#": 0.15
+      "28_19_#default#": 0.1
     },
     "paper": {
       "dimensions": {
-        "height": 2405,
-        "width": 1850,
-        "x": 410,
+        "height": 2645,
+        "width": 1910,
+        "x": 350,
         "y": -220
       }
     }
