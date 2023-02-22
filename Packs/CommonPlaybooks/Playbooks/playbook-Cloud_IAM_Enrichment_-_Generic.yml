@@ -667,7 +667,7 @@ tasks:
       id: 661bcee9-5e78-4ff6-819f-cc35c64d6a9f
       version: -1
       name: G Suite - Get user information
-      description: Retrieve a user's details given a user key
+      description: Retrieve a user's details given a user key.
       script: '|||gsuite-user-get'
       type: regular
       iscommand: true
