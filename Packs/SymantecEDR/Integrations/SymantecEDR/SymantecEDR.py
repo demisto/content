@@ -4,6 +4,7 @@ Symantec Endpoint Detection and Response (EDR) On-Prem integration with Symantec
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 import dateparser
 import urllib3
+import traceback
 from typing import Callable
 
 # Disable insecure warnings
@@ -1877,7 +1878,8 @@ def get_incident_comments_command(client: Client, args: dict[str, Any]) -> Comma
         command_type='incident',
         is_call_diff_readable_output=True,
         func_readable_output=incident_comment_readable_output,
-        **{"uuid": uuid, "incident_id": incident_id})
+        uuid=uuid,
+        incident_id=incident_id)
 
 
 def patch_incident_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1964,7 +1966,7 @@ def get_file_instance_command(client: Client, args: dict[str, Any]) -> CommandRe
         readable_title='File Instances',
         context_path='FileInstance',
         output_key_field='sha2',
-        **{"sha2": sha2})
+        sha2=sha2)
 
 
 def get_domain_instance_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2215,7 +2217,7 @@ def fetch_incidents(client: Client) -> list:
             incidents.append({
                 'name': f'SEDR Incident {incident_id}',
                 'details': incident.get("description"),
-                'severity': XSOAR_SEVERITY_MAP.get(str(incident.get('priority')), 0),
+                'severity': XSOAR_SEVERITY_MAP.get(str(incident.get('priority'))),
                 'occurred': incident.get('incident_created'),
                 'dbotMirrorId': str(incident_id),
                 'rawJSON': json.dumps(
@@ -2576,6 +2578,7 @@ def main() -> None:
 
 # Log exceptions and return errors
     except Exception as e:
+        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError: {e}')
 
 
