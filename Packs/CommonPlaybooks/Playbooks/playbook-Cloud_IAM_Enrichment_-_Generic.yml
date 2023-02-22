@@ -1025,7 +1025,7 @@ outputs:
   description: MSGraph user information.
   type: unknown
 - contextPath: MSGraphGroups
-  description: MSGraph Groups information.
+  description: MSGraph groups information.
   type: unknown
 - contextPath: MSGraph.identityProtection
   description: MSGraph identity Protection - risky user history.
