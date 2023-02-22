@@ -10,26 +10,32 @@ This playbook blocks malicious Indicators using all integrations that are enable
 
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Block File - Generic v2
-* Block Email - Generic
+
 * Block URL - Generic v2
-* Block Domain - Generic
-* Block IP - Generic v3
 * Block Account - Generic v2
+* Block IP - Generic v3
+* Block File - Generic v2
+* Block Domain - Generic
+* Block Email - Generic
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
-This playbook does not use any scripts.
+
+* Set
 
 ### Commands
+
 * setIndicators
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -47,12 +53,12 @@ This playbook does not use any scripts.
 | type | Custom URL category type. Insert "URL List"/ "Category Match". |  | Optional |
 | device-group | Device group for the Custom URL Category \(Panorama instances\). |  | Optional |
 | categories | The list of categories. Relevant from PAN-OS v9.x. |  | Optional |
-| EmailToBlock | The email address that you wish to block. |  | Optional |
-| DomainToBlock | The domain that you wish to block. |  | Optional |
+| EmailToBlock | The email address that you wish to block. | DBotScore.Indicator | Optional |
+| DomainToBlock | The domain that you wish to block. | DBotScore.Indicator | Optional |
 | DomainBlackListID | The Domain List ID to add the Domain to.<br/>product: Proofpoint Threat Response |  | Optional |
 | Tag | Insert a tag name with which indicators will get tagged. This tag can be used later in the External Dynamic Lists integration by using the tag for filtering IPs in the indicator query. |  | Optional |
 | DAG | This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.<br/>Specify the Dynamic Address Group tag name for IPs list handling. |  | Optional |
-| UserVerification | Possible values: True/False.  Default: True.<br/>Whether to provide user verification for blocking those IPs. <br/><br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | True | Optional |
+| UserVerification | Possible values: True/False.  Default: True.<br/>Whether to provide user verification for blocking those IPs. <br/><br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | False | Optional |
 | InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use the default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
 | SiteName | Signal Sciences WAF - Enter the site name for the integration to be applied. The site name can be found in your instance console. |  | Optional |
 | AkamaiNetworkListID | Akamai's WAF network list ID, which is mandatory to be mentioned for the integration. The chosen IPs will be added to this ID. |  | Optional |
@@ -61,8 +67,11 @@ This playbook does not use any scripts.
 | RuleName | The rule name/description that will be presented on the created rule in certain integrations \(if there is a need\).<br/>The supported integrations: PAN-OS, CheckPoint.<br/><br/>Default input- "XSOAR - Block IP playbook - $\{incident.id\}" | XSOAR - Block Indicators playbook - ${incident.id} | Optional |
 | RuleDirection | Determine if a newly created rule should be with the network direction of outbound or inbound blocked traffic.<br/>Possible values: inbound or outbound<br/>Default: outbound | outbound | Optional |
 | EDLServerIP | EDL Server IP Address |  | Optional |
+| AutoBlockIndicators | Possible values: True/False.  Default: True.<br/>Should the given indicators be automatically blocked, or should the user be given the option to choose?<br/><br/>If set to False - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to True - the user will be prompted to select which indicators to block. | True | Optional |
+| FilesToBlock | Array of malicious file hashes to block. | DBotScore.Indicator | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -96,5 +105,7 @@ This playbook does not use any scripts.
 | CheckpointFWRule.Hits.Value | Value of rule hits. | unknown |
 
 ## Playbook Image
+
 ---
+
 ![Block Indicators - Generic v3](../doc_files/Block_Indicators_-_Generic_v3.png)
