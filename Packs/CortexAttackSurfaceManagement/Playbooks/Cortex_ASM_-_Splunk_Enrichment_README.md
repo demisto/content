@@ -14,7 +14,8 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* Set
+* GetTime
+* GridFieldSetup
 
 ### Commands
 
@@ -26,7 +27,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IP | Remote IP in an incident/alert.  | 10.154.1.20 | Required |
+| IP | Remote IP in an incident/alert.  | alert.remoteip | Required |
 
 ## Playbook Outputs
 
