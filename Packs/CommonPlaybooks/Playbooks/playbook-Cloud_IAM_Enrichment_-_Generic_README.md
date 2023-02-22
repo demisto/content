@@ -59,7 +59,7 @@ This playbook does not use any scripts.
 | MSGraph.identityProtection | MSGraph identity protection - risky user history. | unknown |
 | AWS.IAM.Users.AccessKeys.CreateDate | The date when the access key was created. | unknown |
 | AWS.IAM.Users.AccessKeys.UserName | The name of the IAM user that the key is associated with. | unknown |
-| AWS.IAM.Users.Groups | AWS IAM - User groups. | unknown |
+| AWS.IAM.Users.Groups | AWS IAM - user groups. | unknown |
 | AWS.IAM.UserPolicies |  AWS IAM - User inline policies. | unknown |
 | AWS.IAM.AttachedUserPolicies | AWS IAM - User attached policies. | unknown |
 | MSGraphGroup | MSGraph Group information. | unknown |
