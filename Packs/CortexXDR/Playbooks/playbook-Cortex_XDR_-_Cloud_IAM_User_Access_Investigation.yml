@@ -1095,7 +1095,7 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Whether to search for Related alerts from XDR? Can be False or True.
+  description: Whether to search for related alerts from XDR? Can be False or True.
   playbookInputQuery:
 - key: OktaSearch
   value:
