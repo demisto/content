@@ -1,6 +1,5 @@
 id: Recorded Future Playbook Alert Details
-version: 4
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 description: A default playbook to fetch details of Playbook alert that does not yet have mapping made by Recorded Future
 name: Recorded Future Playbook Alert Details
 starttaskid: "0"
@@ -80,3 +79,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)

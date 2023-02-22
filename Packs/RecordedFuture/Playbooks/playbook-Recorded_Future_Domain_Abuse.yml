@@ -1,9 +1,7 @@
 id: Recorded Future Domain Abuse
-version: 26
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Recorded Future Domain Abuse
-description: This playbook was developed as a template to handle the ingestion of
-  Recorded Future Domain Abuse playbook alerts.
+description: This playbook was developed as a template to handle the ingestion of Recorded Future Domain Abuse playbook alerts.
 starttaskid: "0"
 tasks:
   "0":
@@ -16,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -49,8 +48,7 @@ tasks:
       brand: jira-v2
     scriptarguments:
       description:
-        simple: "Summary:\n\nIdentified Domain:\n\nRisk Score:\n\nTargeted Domains:\n\nWhois:\n\nRegistrar
-          Name:\n\nCreated Date:\n\nName Servers: \n\nContact Email: "
+        simple: "Summary:\n\nIdentified Domain:\n\nRisk Score:\n\nTargeted Domains:\n\nWhois:\n\nRegistrar Name:\n\nCreated Date:\n\nName Servers: \n\nContact Email: "
       summary:
         simple: ${incident.name}
     separatecontext: false
@@ -79,6 +77,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -108,6 +107,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -173,6 +173,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -233,6 +234,7 @@ tasks:
       id: 8658cbb4-0654-4130-8d55-09b09ed9ba56
       version: -1
       name: Analyst Prompt
+      description: Manual analyst step to confirm that action is required
       type: collection
       iscommand: false
       brand: ""
@@ -251,13 +253,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -368,6 +370,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -394,6 +397,7 @@ tasks:
       id: 80d58977-6efe-459c-8f4b-2243a7dbc5bd
       version: -1
       name: Analyst Answer
+      description: Answer from the analyst
       type: condition
       iscommand: false
       brand: ""
@@ -439,6 +443,7 @@ tasks:
       id: 4e8c18f2-f54c-4809-83a7-15c6849d373e
       version: -1
       name: What is the Severity?
+      description: Check what the incidents severity is
       type: condition
       iscommand: false
       brand: ""
@@ -530,6 +535,7 @@ tasks:
       id: fdd565ca-dbf7-48fe-8c6e-53a957a2d373
       version: -1
       name: Request a Takedown
+      description: Request a takedown of the domain
       type: regular
       iscommand: false
       brand: ""
@@ -598,3 +604,6 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
