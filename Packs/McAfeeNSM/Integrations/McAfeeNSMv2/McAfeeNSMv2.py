@@ -12,6 +12,7 @@ import re
 urllib3.disable_warnings()
 
 VERSION = demisto.params().get('version', 'V.9x')
+STATE_TO_NUMBER = {"Disabled": 0, "Enabled": 1}
 
 ''' CLIENT CLASS '''
 
@@ -1114,7 +1115,19 @@ def create_rule_object_command(client: Client, args: Dict) -> CommandResults:
 
     d_name, extra_body = create_body_create_rule(rule_type, address, number, from_to_list)
     rule_obj_def = body.get('RuleObjDef', {})
+
+    # creating a different body (payload) for version 10x
+    if VERSION == "V.10x":
+        key_name = list(extra_body.keys())[0]
+        values = extra_body.get(key_name)
+        for address in values:
+            extra_body = {key_name: [{
+                "state": STATE_TO_NUMBER.get(state),
+                "userID": domain,
+                "value": address}]}
+
     rule_obj_def[d_name] = extra_body
+
     response = client.create_rule_object_request(body)
     response = {
         'ruleobjId': response.get('createdResourceId')
