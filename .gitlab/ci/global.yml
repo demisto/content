@@ -296,13 +296,9 @@
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Copy Tests To Artifact Folder"
     - section_start "Validate Files and Yaml"
-    - |
-      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
-        echo "Skipping the -Validate Files and Yaml- step when uploading to a test bucket."
-      else
-        ./Tests/scripts/linters_runner.sh
-        ./Tests/scripts/validate.sh
-      fi
+    - while ! curl --fail http://127.0.0.1:7474 &> /dev/null; do sleep 1; done
+ 
+    - python3 -m demisto_sdk validate -a --post-commit --graph --skip-pack-dependencies
     - section_end "Validate Files and Yaml"
     - section_start "Check Spelling"
     - python3 ./Tests/scripts/circleci_spell_checker.py $CI_COMMIT_BRANCH
