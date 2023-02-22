@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+name: ForcePoint Email Security Modeling Rule
+id: forcePoint_email_security_modeling_rule
+rules: ''
+schema: ''
+tags: ForcePointEmailSecurity

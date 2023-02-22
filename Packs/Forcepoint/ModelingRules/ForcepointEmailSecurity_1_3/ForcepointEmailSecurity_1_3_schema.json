@@ -1,0 +1,152 @@
+{
+    "forcepoint_email_security_raw": {
+      "rt": {
+        "type": "int",
+        "is_array": false
+      },
+      "act": {
+        "type": "string",
+        "is_array": false
+      },
+      "app": {
+        "type": "string",
+        "is_array": false
+      },
+      "cc": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs1": {
+        "type": "string",
+        "is_array": false
+      },
+      "deliveryCode": {
+        "type": "string",
+        "is_array": false
+      },
+      "deliveryCodeInfo": {
+        "type": "string",
+        "is_array": false
+      },
+      "deviceDirection": {
+        "type": "string",
+        "is_array": false
+      },
+      "deviceFacility": {
+        "type": "string",
+        "is_array": false
+      },
+      "deviceProcessName": {
+        "type": "string",
+        "is_array": false
+      },
+      "dst": {
+        "type": "string",
+        "is_array": false
+      },
+      "duser": {
+        "type": "string",
+        "is_array": false
+      },
+      "dvc": {
+        "type": "string",
+        "is_array": false
+      },
+      "dvchost": {
+        "type": "string",
+        "is_array": false
+      },
+      "element": {
+        "type": "string",
+        "is_array": false
+      },
+      "encryptedDelivery": {
+        "type": "string",
+        "is_array": false
+      },
+      "exceptionReason": {
+        "type": "string",
+        "is_array": false
+      },
+      "externalID": {
+        "type": "string",
+        "is_array": false
+      },
+      "fnameAndHash": {
+        "type": "string",
+        "is_array": false
+      },
+      "from": {
+        "type": "string",
+        "is_array": false
+      },
+      "hybridSpamScore": {
+        "type": "string",
+        "is_array": false
+      },
+      "in": {
+        "type": "int",
+        "is_array": false
+      },
+      "localSpamScore": {
+        "type": "string",
+        "is_array": false
+      },
+      "messageID": {
+        "type": "string",
+        "is_array": false
+      },
+      "msg": {
+        "type": "string",
+        "is_array": false
+      },
+      "page": {
+        "type": "string",
+        "is_array": false
+      },
+      "reason": {
+        "type": "string",
+        "is_array": false
+      },
+      "replyTo": {
+        "type": "string",
+        "is_array": false
+      },
+      "spamScore": {
+        "type": "string",
+        "is_array": false
+      },
+      "spfResult": {
+        "type": "string",
+        "is_array": false
+      },
+      "spriv": {
+        "type": "string",
+        "is_array": false
+      },
+      "src": {
+        "type": "string",
+        "is_array": false
+      },
+      "suser": {
+        "type": "string",
+        "is_array": false
+      },
+      "to": {
+        "type": "string",
+        "is_array": false
+      },
+      "trueSrc": {
+        "type": "string",
+        "is_array": false
+      },
+      "url": {
+        "type": "string",
+        "is_array": false
+      },
+      "x-mailer": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

@@ -1,12 +1,88 @@
-[MODEL, dataset="forcepoint_email_security_raw"]
+
+[MODEL: dataset=forcepoint_email_security_raw]
 filter cefName = "Audit Log"
-| alter xdm.event.outcome_reason = act,
-    xdm.source.ipv4 = src,
-    //page ?
-    xdm.source.user.groups = arraycreate(coalesce(spriv,"")),
-    xdm.source.user.username = suser ,
-    xdm.alert.severity = cefSeverity,
-    xdm.observer.vendor = cefDeviceVendor,
+| alter xdm.observer.vendor = cefDeviceVendor,
     xdm.observer.product = cefDeviceProduct,
     xdm.observer.version = cefDeviceVersion,
-    xdm.source.host.ipv4_addresses = arraycreate(coalesce(dvc,"")) 
+    xdm.event.outcome_reason = act,
+    xdm.source.ipv4 = src,
+    xdm.source.user.groups = arraycreate(coalesce(spriv,"")),
+    xdm.source.user.username = suser,
+    xdm.alert.severity = cefSeverity,
+    xdm.source.host.ipv4_addresses = arraycreate(dvc);
+
+filter cefName = "Connection"
+| alter xdm.observer.vendor = cefDeviceVendor,
+    xdm.observer.product = cefDeviceProduct,
+    xdm.observer.version = cefDeviceVersion,
+    xdm.network.ip_protocol = if(app="HOPOPT",XDM_CONST.IP_PROTOCOL_HOPOPT, app="ICMP",XDM_CONST.IP_PROTOCOL_ICMP, app="IGMP",XDM_CONST.IP_PROTOCOL_IGMP, app="GGP",XDM_CONST.IP_PROTOCOL_GGP, app="IP",XDM_CONST.IP_PROTOCOL_IP, app="ST",XDM_CONST.IP_PROTOCOL_ST, app="TCP",XDM_CONST.IP_PROTOCOL_TCP, app="CBT",XDM_CONST.IP_PROTOCOL_CBT, app="EGP",XDM_CONST.IP_PROTOCOL_EGP, app="IGP",XDM_CONST.IP_PROTOCOL_IGP, app="BBN_RCC_MON",XDM_CONST.IP_PROTOCOL_BBN_RCC_MON, app="NVP_II",XDM_CONST.IP_PROTOCOL_NVP_II, app="PUP",XDM_CONST.IP_PROTOCOL_PUP, app="ARGUS",XDM_CONST.IP_PROTOCOL_ARGUS, app="EMCON",XDM_CONST.IP_PROTOCOL_EMCON, app="XNET",XDM_CONST.IP_PROTOCOL_XNET, app="CHAOS",XDM_CONST.IP_PROTOCOL_CHAOS, app="UDP",XDM_CONST.IP_PROTOCOL_UDP, app="MUX",XDM_CONST.IP_PROTOCOL_MUX, app="DCN_MEAS",XDM_CONST.IP_PROTOCOL_DCN_MEAS, app="HMP",XDM_CONST.IP_PROTOCOL_HMP, app="PRM",XDM_CONST.IP_PROTOCOL_PRM, app="XNS_IDP",XDM_CONST.IP_PROTOCOL_XNS_IDP, app="TRUNK_1",XDM_CONST.IP_PROTOCOL_TRUNK_1, app="TRUNK_2",XDM_CONST.IP_PROTOCOL_TRUNK_2, app="LEAF_1",XDM_CONST.IP_PROTOCOL_LEAF_1, app="LEAF_2",XDM_CONST.IP_PROTOCOL_LEAF_2, app="RDP",XDM_CONST.IP_PROTOCOL_RDP, app="IRTP",XDM_CONST.IP_PROTOCOL_IRTP, app="ISO_TP4",XDM_CONST.IP_PROTOCOL_ISO_TP4, app="NETBLT",XDM_CONST.IP_PROTOCOL_NETBLT, app="MFE_NSP",XDM_CONST.IP_PROTOCOL_MFE_NSP, app="MERIT_INP",XDM_CONST.IP_PROTOCOL_MERIT_INP, app="DCCP",XDM_CONST.IP_PROTOCOL_DCCP, app="3PC",XDM_CONST.IP_PROTOCOL_3PC, app="IDPR",XDM_CONST.IP_PROTOCOL_IDPR, app="XTP",XDM_CONST.IP_PROTOCOL_XTP, app="DDP",XDM_CONST.IP_PROTOCOL_DDP, app="IDPR_CMTP",XDM_CONST.IP_PROTOCOL_IDPR_CMTP, app="TP",XDM_CONST.IP_PROTOCOL_TP, app="IL",XDM_CONST.IP_PROTOCOL_IL, app="IPV6",XDM_CONST.IP_PROTOCOL_IPV6, app="SDRP",XDM_CONST.IP_PROTOCOL_SDRP, app="IPV6_ROUTE",XDM_CONST.IP_PROTOCOL_IPV6_ROUTE, app="IPV6_FRAG",XDM_CONST.IP_PROTOCOL_IPV6_FRAG, app="IDRP",XDM_CONST.IP_PROTOCOL_IDRP, app="RSVP",XDM_CONST.IP_PROTOCOL_RSVP, app="GRE",XDM_CONST.IP_PROTOCOL_GRE, app="DSR",XDM_CONST.IP_PROTOCOL_DSR, app="BNA",XDM_CONST.IP_PROTOCOL_BNA, app="ESP",XDM_CONST.IP_PROTOCOL_ESP, app="AH",XDM_CONST.IP_PROTOCOL_AH, app="I_NLSP",XDM_CONST.IP_PROTOCOL_I_NLSP, app="SWIPE",XDM_CONST.IP_PROTOCOL_SWIPE, app="NARP",XDM_CONST.IP_PROTOCOL_NARP, app="MOBILE",XDM_CONST.IP_PROTOCOL_MOBILE, app="TLSP",XDM_CONST.IP_PROTOCOL_TLSP, app="SKIP",XDM_CONST.IP_PROTOCOL_SKIP, app="IPV6_ICMP",XDM_CONST.IP_PROTOCOL_IPV6_ICMP, app="IPV6_NONXT",XDM_CONST.IP_PROTOCOL_IPV6_NONXT, app="IPV6_OPTS",XDM_CONST.IP_PROTOCOL_IPV6_OPTS, app="CFTP",XDM_CONST.IP_PROTOCOL_CFTP, app="SAT_EXPAK",XDM_CONST.IP_PROTOCOL_SAT_EXPAK, app="KRYPTOLAN",XDM_CONST.IP_PROTOCOL_KRYPTOLAN, app="RVD",XDM_CONST.IP_PROTOCOL_RVD, app="IPPC",XDM_CONST.IP_PROTOCOL_IPPC, app="SAT_MON",XDM_CONST.IP_PROTOCOL_SAT_MON, app="VISA",XDM_CONST.IP_PROTOCOL_VISA, app="IPCV",XDM_CONST.IP_PROTOCOL_IPCV, app="CPNX",XDM_CONST.IP_PROTOCOL_CPNX, app="CPHB",XDM_CONST.IP_PROTOCOL_CPHB, app="WSN",XDM_CONST.IP_PROTOCOL_WSN, app="PVP",XDM_CONST.IP_PROTOCOL_PVP, app="BR_SAT_MON",XDM_CONST.IP_PROTOCOL_BR_SAT_MON, app="SUN_ND",XDM_CONST.IP_PROTOCOL_SUN_ND, app="WB_MON",XDM_CONST.IP_PROTOCOL_WB_MON, app="WB_EXPAK",XDM_CONST.IP_PROTOCOL_WB_EXPAK, app="ISO_IP",XDM_CONST.IP_PROTOCOL_ISO_IP, app="VMTP",XDM_CONST.IP_PROTOCOL_VMTP, app="SECURE_VMTP",XDM_CONST.IP_PROTOCOL_SECURE_VMTP, app="VINES",XDM_CONST.IP_PROTOCOL_VINES, app="TTP",XDM_CONST.IP_PROTOCOL_TTP, app="NSFNET_IGP",XDM_CONST.IP_PROTOCOL_NSFNET_IGP, app="DGP",XDM_CONST.IP_PROTOCOL_DGP, app="TCF",XDM_CONST.IP_PROTOCOL_TCF, app="EIGRP",XDM_CONST.IP_PROTOCOL_EIGRP, app="OSPFIGP",XDM_CONST.IP_PROTOCOL_OSPFIGP, app="SPRITE_RPC",XDM_CONST.IP_PROTOCOL_SPRITE_RPC, app="LARP",XDM_CONST.IP_PROTOCOL_LARP, app="MTP",XDM_CONST.IP_PROTOCOL_MTP, app="AX25",XDM_CONST.IP_PROTOCOL_AX25, app="IPIP",XDM_CONST.IP_PROTOCOL_IPIP, app="MICP",XDM_CONST.IP_PROTOCOL_MICP, app="SCC_SP",XDM_CONST.IP_PROTOCOL_SCC_SP, app="ETHERIP",XDM_CONST.IP_PROTOCOL_ETHERIP, app="ENCAP",XDM_CONST.IP_PROTOCOL_ENCAP, app="GMTP",XDM_CONST.IP_PROTOCOL_GMTP, app="IFMP",XDM_CONST.IP_PROTOCOL_IFMP, app="PNNI",XDM_CONST.IP_PROTOCOL_PNNI, app="PIM",XDM_CONST.IP_PROTOCOL_PIM, app="ARIS",XDM_CONST.IP_PROTOCOL_ARIS, app="SCPS",XDM_CONST.IP_PROTOCOL_SCPS, app="QNX",XDM_CONST.IP_PROTOCOL_QNX, app="AN",XDM_CONST.IP_PROTOCOL_AN, app="IPCOMP",XDM_CONST.IP_PROTOCOL_IPCOMP, app="COMPAQ_PEER",XDM_CONST.IP_PROTOCOL_COMPAQ_PEER, app="IPX_IN_IP",XDM_CONST.IP_PROTOCOL_IPX_IN_IP, app="VRRP",XDM_CONST.IP_PROTOCOL_VRRP, app="PGM",XDM_CONST.IP_PROTOCOL_PGM, app="L2TP",XDM_CONST.IP_PROTOCOL_L2TP, app="DDX",XDM_CONST.IP_PROTOCOL_DDX, app="IATP",XDM_CONST.IP_PROTOCOL_IATP, app="STP",XDM_CONST.IP_PROTOCOL_STP, app="SRP",XDM_CONST.IP_PROTOCOL_SRP, app="UTI",XDM_CONST.IP_PROTOCOL_UTI, app="SMP",XDM_CONST.IP_PROTOCOL_SMP, app="SM",XDM_CONST.IP_PROTOCOL_SM, app="PTP",XDM_CONST.IP_PROTOCOL_PTP, app="ISIS",XDM_CONST.IP_PROTOCOL_ISIS, app="FIRE",XDM_CONST.IP_PROTOCOL_FIRE, app="CRTP",XDM_CONST.IP_PROTOCOL_CRTP, app="CRUDP",XDM_CONST.IP_PROTOCOL_CRUDP, app="SSCOPMCE",XDM_CONST.IP_PROTOCOL_SSCOPMCE, app="IPLT",XDM_CONST.IP_PROTOCOL_IPLT, app="SPS",XDM_CONST.IP_PROTOCOL_SPS, app="PIPE",XDM_CONST.IP_PROTOCOL_PIPE, app="SCTP",XDM_CONST.IP_PROTOCOL_SCTP, app="FC",XDM_CONST.IP_PROTOCOL_FC, app="RSVP_E2E_IGNORE",XDM_CONST.IP_PROTOCOL_RSVP_E2E_IGNORE, app="MOBILITY",XDM_CONST.IP_PROTOCOL_MOBILITY, app="UDPLITE",XDM_CONST.IP_PROTOCOL_UDPLITE, app="MPLS_IN_IP",XDM_CONST.IP_PROTOCOL_MPLS_IN_IP,to_string(app)),
+    xdm.source.host.ipv4_addresses = arraycreate(dvc),
+    xdm.source.host.fqdn = dvchost,
+    xdm.email.message_id = externalID,
+    // reason ? - need to check the data inside and map them.
+    xdm.source.ipv4 = src;
+
+filter cefName = "Message"
+| alter xdm.observer.vendor = cefDeviceVendor,
+    xdm.observer.product = cefDeviceProduct,
+    xdm.observer.version = cefDeviceVersion,
+    xdm.email.cc = cc,
+    xdm.target.user.username = duser,
+    xdm.observer.name = dvchost,
+    xdm.network.session_id = externalID,
+    xdm.email.attachment.size =`in`,
+    xdm.email.message_id = messageID,
+    xdm.network.session_id = externalID,
+    xdm.email.sender = suser,
+    xdm.email.recipients = arraycreate(to);
+
+filter cefName = "Policy"
+| alter split_fnameAndHash = split(fnameAndHash,"|"),
+    split_url = split(url,"|")
+| alter xdm.observer.vendor = cefDeviceVendor,
+    xdm.observer.product = cefDeviceProduct,
+    xdm.observer.version = cefDeviceVersion,
+    xdm.event.outcome_reason = act,
+    xdm.alert.original_threat_name = cs1label,
+    xdm.source.process.name = deviceProcessName,
+    xdm.target.user.username = duser,
+    xdm.observer.name = dvchost,
+    xdm.event.outcome_reason = exceptionReason,
+    xdm.email.attachment.filename = arrayindex(split_fnameAndHash,0),
+    xdm.email.attachment.md5 = arrayindex(split_fnameAndHash,1), // don't know if its md5 or sha 256 or other
+    xdm.email.message_id = messageID,
+    xdm.email.sender = suser,
+    xdm.network.http.url = arrayindex(split_url,0);
+    //xdm.network.http.url_category = array_index(split_url,1); // ENUM ! need to check the values
+
+filter cefName = "Delivery"
+| alter xdm.observer.vendor = cefDeviceVendor,
+    xdm.observer.product = cefDeviceProduct,
+    xdm.observer.version = cefDeviceVersion,
+    xdm.event.outcome_reason = act,
+    xdm.network.ip_protocol = if(app="HOPOPT",XDM_CONST.IP_PROTOCOL_HOPOPT, app="ICMP",XDM_CONST.IP_PROTOCOL_ICMP, app="IGMP",XDM_CONST.IP_PROTOCOL_IGMP, app="GGP",XDM_CONST.IP_PROTOCOL_GGP, app="IP",XDM_CONST.IP_PROTOCOL_IP, app="ST",XDM_CONST.IP_PROTOCOL_ST, app="TCP",XDM_CONST.IP_PROTOCOL_TCP, app="CBT",XDM_CONST.IP_PROTOCOL_CBT, app="EGP",XDM_CONST.IP_PROTOCOL_EGP, app="IGP",XDM_CONST.IP_PROTOCOL_IGP, app="BBN_RCC_MON",XDM_CONST.IP_PROTOCOL_BBN_RCC_MON, app="NVP_II",XDM_CONST.IP_PROTOCOL_NVP_II, app="PUP",XDM_CONST.IP_PROTOCOL_PUP, app="ARGUS",XDM_CONST.IP_PROTOCOL_ARGUS, app="EMCON",XDM_CONST.IP_PROTOCOL_EMCON, app="XNET",XDM_CONST.IP_PROTOCOL_XNET, app="CHAOS",XDM_CONST.IP_PROTOCOL_CHAOS, app="UDP",XDM_CONST.IP_PROTOCOL_UDP, app="MUX",XDM_CONST.IP_PROTOCOL_MUX, app="DCN_MEAS",XDM_CONST.IP_PROTOCOL_DCN_MEAS, app="HMP",XDM_CONST.IP_PROTOCOL_HMP, app="PRM",XDM_CONST.IP_PROTOCOL_PRM, app="XNS_IDP",XDM_CONST.IP_PROTOCOL_XNS_IDP, app="TRUNK_1",XDM_CONST.IP_PROTOCOL_TRUNK_1, app="TRUNK_2",XDM_CONST.IP_PROTOCOL_TRUNK_2, app="LEAF_1",XDM_CONST.IP_PROTOCOL_LEAF_1, app="LEAF_2",XDM_CONST.IP_PROTOCOL_LEAF_2, app="RDP",XDM_CONST.IP_PROTOCOL_RDP, app="IRTP",XDM_CONST.IP_PROTOCOL_IRTP, app="ISO_TP4",XDM_CONST.IP_PROTOCOL_ISO_TP4, app="NETBLT",XDM_CONST.IP_PROTOCOL_NETBLT, app="MFE_NSP",XDM_CONST.IP_PROTOCOL_MFE_NSP, app="MERIT_INP",XDM_CONST.IP_PROTOCOL_MERIT_INP, app="DCCP",XDM_CONST.IP_PROTOCOL_DCCP, app="3PC",XDM_CONST.IP_PROTOCOL_3PC, app="IDPR",XDM_CONST.IP_PROTOCOL_IDPR, app="XTP",XDM_CONST.IP_PROTOCOL_XTP, app="DDP",XDM_CONST.IP_PROTOCOL_DDP, app="IDPR_CMTP",XDM_CONST.IP_PROTOCOL_IDPR_CMTP, app="TP",XDM_CONST.IP_PROTOCOL_TP, app="IL",XDM_CONST.IP_PROTOCOL_IL, app="IPV6",XDM_CONST.IP_PROTOCOL_IPV6, app="SDRP",XDM_CONST.IP_PROTOCOL_SDRP, app="IPV6_ROUTE",XDM_CONST.IP_PROTOCOL_IPV6_ROUTE, app="IPV6_FRAG",XDM_CONST.IP_PROTOCOL_IPV6_FRAG, app="IDRP",XDM_CONST.IP_PROTOCOL_IDRP, app="RSVP",XDM_CONST.IP_PROTOCOL_RSVP, app="GRE",XDM_CONST.IP_PROTOCOL_GRE, app="DSR",XDM_CONST.IP_PROTOCOL_DSR, app="BNA",XDM_CONST.IP_PROTOCOL_BNA, app="ESP",XDM_CONST.IP_PROTOCOL_ESP, app="AH",XDM_CONST.IP_PROTOCOL_AH, app="I_NLSP",XDM_CONST.IP_PROTOCOL_I_NLSP, app="SWIPE",XDM_CONST.IP_PROTOCOL_SWIPE, app="NARP",XDM_CONST.IP_PROTOCOL_NARP, app="MOBILE",XDM_CONST.IP_PROTOCOL_MOBILE, app="TLSP",XDM_CONST.IP_PROTOCOL_TLSP, app="SKIP",XDM_CONST.IP_PROTOCOL_SKIP, app="IPV6_ICMP",XDM_CONST.IP_PROTOCOL_IPV6_ICMP, app="IPV6_NONXT",XDM_CONST.IP_PROTOCOL_IPV6_NONXT, app="IPV6_OPTS",XDM_CONST.IP_PROTOCOL_IPV6_OPTS, app="CFTP",XDM_CONST.IP_PROTOCOL_CFTP, app="SAT_EXPAK",XDM_CONST.IP_PROTOCOL_SAT_EXPAK, app="KRYPTOLAN",XDM_CONST.IP_PROTOCOL_KRYPTOLAN, app="RVD",XDM_CONST.IP_PROTOCOL_RVD, app="IPPC",XDM_CONST.IP_PROTOCOL_IPPC, app="SAT_MON",XDM_CONST.IP_PROTOCOL_SAT_MON, app="VISA",XDM_CONST.IP_PROTOCOL_VISA, app="IPCV",XDM_CONST.IP_PROTOCOL_IPCV, app="CPNX",XDM_CONST.IP_PROTOCOL_CPNX, app="CPHB",XDM_CONST.IP_PROTOCOL_CPHB, app="WSN",XDM_CONST.IP_PROTOCOL_WSN, app="PVP",XDM_CONST.IP_PROTOCOL_PVP, app="BR_SAT_MON",XDM_CONST.IP_PROTOCOL_BR_SAT_MON, app="SUN_ND",XDM_CONST.IP_PROTOCOL_SUN_ND, app="WB_MON",XDM_CONST.IP_PROTOCOL_WB_MON, app="WB_EXPAK",XDM_CONST.IP_PROTOCOL_WB_EXPAK, app="ISO_IP",XDM_CONST.IP_PROTOCOL_ISO_IP, app="VMTP",XDM_CONST.IP_PROTOCOL_VMTP, app="SECURE_VMTP",XDM_CONST.IP_PROTOCOL_SECURE_VMTP, app="VINES",XDM_CONST.IP_PROTOCOL_VINES, app="TTP",XDM_CONST.IP_PROTOCOL_TTP, app="NSFNET_IGP",XDM_CONST.IP_PROTOCOL_NSFNET_IGP, app="DGP",XDM_CONST.IP_PROTOCOL_DGP, app="TCF",XDM_CONST.IP_PROTOCOL_TCF, app="EIGRP",XDM_CONST.IP_PROTOCOL_EIGRP, app="OSPFIGP",XDM_CONST.IP_PROTOCOL_OSPFIGP, app="SPRITE_RPC",XDM_CONST.IP_PROTOCOL_SPRITE_RPC, app="LARP",XDM_CONST.IP_PROTOCOL_LARP, app="MTP",XDM_CONST.IP_PROTOCOL_MTP, app="AX25",XDM_CONST.IP_PROTOCOL_AX25, app="IPIP",XDM_CONST.IP_PROTOCOL_IPIP, app="MICP",XDM_CONST.IP_PROTOCOL_MICP, app="SCC_SP",XDM_CONST.IP_PROTOCOL_SCC_SP, app="ETHERIP",XDM_CONST.IP_PROTOCOL_ETHERIP, app="ENCAP",XDM_CONST.IP_PROTOCOL_ENCAP, app="GMTP",XDM_CONST.IP_PROTOCOL_GMTP, app="IFMP",XDM_CONST.IP_PROTOCOL_IFMP, app="PNNI",XDM_CONST.IP_PROTOCOL_PNNI, app="PIM",XDM_CONST.IP_PROTOCOL_PIM, app="ARIS",XDM_CONST.IP_PROTOCOL_ARIS, app="SCPS",XDM_CONST.IP_PROTOCOL_SCPS, app="QNX",XDM_CONST.IP_PROTOCOL_QNX, app="AN",XDM_CONST.IP_PROTOCOL_AN, app="IPCOMP",XDM_CONST.IP_PROTOCOL_IPCOMP, app="COMPAQ_PEER",XDM_CONST.IP_PROTOCOL_COMPAQ_PEER, app="IPX_IN_IP",XDM_CONST.IP_PROTOCOL_IPX_IN_IP, app="VRRP",XDM_CONST.IP_PROTOCOL_VRRP, app="PGM",XDM_CONST.IP_PROTOCOL_PGM, app="L2TP",XDM_CONST.IP_PROTOCOL_L2TP, app="DDX",XDM_CONST.IP_PROTOCOL_DDX, app="IATP",XDM_CONST.IP_PROTOCOL_IATP, app="STP",XDM_CONST.IP_PROTOCOL_STP, app="SRP",XDM_CONST.IP_PROTOCOL_SRP, app="UTI",XDM_CONST.IP_PROTOCOL_UTI, app="SMP",XDM_CONST.IP_PROTOCOL_SMP, app="SM",XDM_CONST.IP_PROTOCOL_SM, app="PTP",XDM_CONST.IP_PROTOCOL_PTP, app="ISIS",XDM_CONST.IP_PROTOCOL_ISIS, app="FIRE",XDM_CONST.IP_PROTOCOL_FIRE, app="CRTP",XDM_CONST.IP_PROTOCOL_CRTP, app="CRUDP",XDM_CONST.IP_PROTOCOL_CRUDP, app="SSCOPMCE",XDM_CONST.IP_PROTOCOL_SSCOPMCE, app="IPLT",XDM_CONST.IP_PROTOCOL_IPLT, app="SPS",XDM_CONST.IP_PROTOCOL_SPS, app="PIPE",XDM_CONST.IP_PROTOCOL_PIPE, app="SCTP",XDM_CONST.IP_PROTOCOL_SCTP, app="FC",XDM_CONST.IP_PROTOCOL_FC, app="RSVP_E2E_IGNORE",XDM_CONST.IP_PROTOCOL_RSVP_E2E_IGNORE, app="MOBILITY",XDM_CONST.IP_PROTOCOL_MOBILITY, app="UDPLITE",XDM_CONST.IP_PROTOCOL_UDPLITE, app="MPLS_IN_IP",XDM_CONST.IP_PROTOCOL_MPLS_IN_IP,to_string(app)),
+    xdm.target.ipv4 = dst,
+    xdm.target.user.username = duser,
+    xdm.observer.name = dvchost,
+    //xdm.auth.kerberos_tgt.encryption_type or xdm.auth.kerberos_tgs.encryption_type = encryptedDelivery,
+    xdm.network.session_id = externalID,
+    xdm.email.message_id = messageID,
+    xdm.source.ipv4 = src;
+
+filter cefName = "Hybrid"
+| alter xdm.observer.vendor = cefDeviceVendor,
+    xdm.observer.product = cefDeviceProduct,
+    xdm.observer.version = cefDeviceVersion,
+    xdm.event.outcome_reason = act,
+    xdm.target.user.username = duser,
+    xdm.observer.name = dvchost,
+    xdm.email.attachment.size =`in`,
+    xdm.email.message_id = messageID,
+    // reason ? - need to check the data inside and map them.
+    xdm.source.ipv4 = src,
+    xdm.source.user.username = suser;
+
+filter cefName = "Console"
+| alter xdm.observer.vendor = cefDeviceVendor,
+    xdm.observer.product = cefDeviceProduct,
+    xdm.observer.version = cefDeviceVersion;
