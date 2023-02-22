@@ -5,11 +5,15 @@ on:
       - .devcontainer/**
       - pyproject.toml
       - poetry.lock
+      - .github/workflows/check-devcontainer.yml
   push:
     branches:
       - master
     paths:
       - .devcontainer/**
+      - pyproject.toml
+      - poetry.lock
+      - .github/workflows/check-devcontainer.yml
 jobs:
   Build-Devcontainer:
     permissions:
@@ -20,21 +24,13 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    - name: Check if pyproject.toml or poetry.lock has been changed
-      id: changed-files-poetry
-      uses: tj-actions/changed-files@v35
-      with:
-        files: |
-          pyproject.toml
-          poetry.lock
     - name: Update .devcontainer.json description
-      if: steps.changed-files-poetry.outputs.any_changed == 'true'
       run: |
         # replace the first line of .devcontainer/devcontainer.json with the new description
         POETRY_LOCK_HASH=${{ hashFiles('poetry.lock') }}
         sed -i "1s/^.*$/\/\/ Development container for Content. Poetry hash $POETRY_LOCK_HASH/" .devcontainer/devcontainer.json 
     - name: commit file
-      if: steps.changed-files-poetry.outputs.any_changed == 'true' && github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/master'
       uses: stefanzweifel/git-auto-commit-action@v4
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

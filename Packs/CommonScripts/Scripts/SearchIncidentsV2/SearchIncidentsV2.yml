@@ -109,7 +109,7 @@ args:
   name: trimevents
   required: false
   secret: false
-  defaultValue: '0'
+  hidden: true
 - default: false
   description: Number of incidents per page (per fetch)
   isArray: false
@@ -202,7 +202,7 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.9.45313
+dockerimage: demisto/python3:3.10.10.47713
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
