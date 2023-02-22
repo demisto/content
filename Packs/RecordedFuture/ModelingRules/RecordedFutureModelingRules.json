@@ -1,0 +1,16 @@
+{
+    "recorded_future_intelligence_cloud_raw": {
+        "rule": {
+            "type": "string",
+            "is_array": false
+        },
+        "title": {
+            "type": "string",
+            "is_array": false
+        },
+        "triggered": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
