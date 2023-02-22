@@ -54,7 +54,7 @@ This playbook does not use any scripts.
 | GCPIAM | GCP IAM information. | unknown |
 | GSuite | GSuite user information. | unknown |
 | GSuite.PageToken | Token to specify the next page in the list. | unknown |
-| MSGraphUser | MSGraph User information. | unknown |
+| MSGraphUser | MSGraph user information. | unknown |
 | MSGraphGroups | MSGraph Groups information. | unknown |
 | MSGraph.identityProtection | MSGraph identity Protection - risky user history. | unknown |
 | AWS.IAM.Users.AccessKeys.CreateDate | The date when the access key was created. | unknown |
