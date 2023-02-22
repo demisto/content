@@ -72,7 +72,7 @@ tasks:
       id: c591b287-7bd4-4606-8b58-43ca0114d204
       version: -1
       name: 'Check your answer #6'
-      description: This should provide answers to the CTF_2 ( RDP BruteForce)
+      description: "Question #6:\nClassify this Incident"
       scriptName: CTF_2_BF
       type: regular
       iscommand: false
@@ -189,7 +189,16 @@ tasks:
       id: 0fb92795-6748-410b-80bc-0a79a8791ced
       version: -1
       name: 'Check your answer #8'
-      description: This should provide answers to the CTF_2 ( RDP BruteForce)
+      description: |-
+        Run the following command from your endpoint and enter the received indicator from your command.
+
+        MacOS users:
+        curl  -u admin:admin https://edl-<your tenant uri>/xsoar/instance/execute/edl1\?q\=type:ip%20and%20verdict:malicious%20and%20tags:<Tag from the previous answer>
+
+        Windows users (Powershell):
+        (iwr -Uri 'https://edl-<your tenant uri>/xsoar/instance/execute/edl1/?q=type:ip and verdict:malicious and tags:<Tag from the previous answer>' -Headers @{ Authorization = "Basic "+ [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("admin:admin")) }).Content
+
+        Note: *if you are on Windows 10, and see THIS error, start Internet Explorer once, then re-run command*
       scriptName: CTF_2_BF
       type: regular
       iscommand: false
@@ -361,7 +370,7 @@ tasks:
       id: e4fd6e15-1902-4610-8a56-d16ba0bb1fd5
       version: -1
       name: 'Check your answer #1'
-      description: This should provide answers to the CTF_2 ( RDP BruteForce)
+      description: "Question #1:\nAre there any playbook errors?"
       scriptName: CTF_2_BF
       type: regular
       iscommand: false
@@ -484,7 +493,7 @@ tasks:
       id: da0e26b8-3acd-4ddd-8336-2fbb9339f26e
       version: -1
       name: 'Check your answer #2'
-      description: This should provide answers to the CTF_2 ( RDP BruteForce)
+      description: "Question #2:\nAre there any playbook errors? "
       scriptName: CTF_2_BF
       type: regular
       iscommand: false
@@ -525,7 +534,7 @@ tasks:
       id: 818d59f0-29d3-4257-84bf-8ee191cf7425
       version: -1
       name: 'Check your answer #3'
-      description: This should provide answers to the CTF_2 ( RDP BruteForce)
+      description: "Question #3:\nHow many relationships does the malicious indicator have?"
       scriptName: CTF_2_BF
       type: regular
       iscommand: false
@@ -652,7 +661,7 @@ tasks:
       id: 1d0237e7-a9ad-4683-81d7-c5b8c23cc6c0
       version: -1
       name: 'Check your answer #4'
-      description: This should provide answers to the CTF_2 ( RDP BruteForce)
+      description: "Question #4:\nBased on the Campaign's Report, what was the year when this campaign was first seen?"
       scriptName: CTF_2_BF
       type: regular
       iscommand: false
@@ -917,7 +926,7 @@ tasks:
       id: 1e9e6d56-7636-4df2-8e72-23d3bca7335a
       version: -1
       name: 'Check your answer #5'
-      description: This should provide answers to the CTF_2 ( RDP BruteForce)
+      description: "Question #5:\nHow many indicators are associated with the campaign?"
       scriptName: CTF_2_BF
       type: regular
       iscommand: false
@@ -1060,7 +1069,7 @@ tasks:
       id: ad47b1e6-f810-4afa-8c14-6b1c71b2e5e5
       version: -1
       name: 'Check your answer #7'
-      description: This should provide answers to the CTF_2 ( RDP BruteForce)
+      description: "Question #7:\nWhat is the malicious indicator tag in our investigation?"
       scriptName: CTF_2_BF
       type: regular
       iscommand: false

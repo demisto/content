@@ -60,7 +60,8 @@ HTML_MESSAGE_BAD = '''
 <img src="%s" alt="Error">
 <div style='font-size:18px;'>
 Nope!!! Try again.
-Remember to overwrite the "secret" argument when you are re-running the task. To re-run the task - please click on the 'Run automation now' :)
+Remember to overwrite the "secret" argument when you are re-running the task (Using the trash-can icon). 
+To re-run this task -> Click on "Complete Task" -> fill out the Secret Value -> click on the 'Run script now' :)
 </div>
 ''' %(bad_images[random.randint(0,len(bad_images)-1)])
 
