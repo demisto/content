@@ -2175,7 +2175,7 @@ script:
       description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
       name: lastUpdate
       required: true
-    description: Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
+    description: Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes.
     name: get-modified-remote-data
   - arguments:
     - description: The remote incident ID.
