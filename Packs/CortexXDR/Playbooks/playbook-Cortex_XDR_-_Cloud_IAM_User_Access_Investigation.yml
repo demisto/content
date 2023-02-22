@@ -994,7 +994,7 @@ inputs:
 
     GCP available types:
     Disable - For disabling the user's access key.
-    Delete - For the deleting user's access key.
+    Delete - For deleting the user's access key.
   playbookInputQuery:
 - key: autoUserRemediation
   value:
