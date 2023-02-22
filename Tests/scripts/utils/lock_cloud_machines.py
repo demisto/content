@@ -131,9 +131,65 @@ def adding_build_to_the_queue(storage_bucket: any, lock_repository_name: str, jo
     blob.upload_from_string('')
 
 
+def get_my_place_in_the_queue(storage_client: storage.Client, gcs_locks_path: str, job_id: str):
+    """
+    get_my_place_in_the_queue
+    Args:
+        storage_client(storage.Client): The GCP storage client.
+        gcs_locks_path(str): the lock repository name.
+        job_id(str): the job id to check.
+
+    Returns: the place in the queue.
+
+    """
+    logging.info('gets all builds in the queue')
+    builds_in_queue = get_queue_locks_details(storage_client, 'xsoar-ci-artifacts', f'{gcs_locks_path}/{QUEUE_REPO}/')
+    # sorting the files by time_created
+    sorted_builds_in_queue = sorted(builds_in_queue, key=lambda d: d['time_created'], reverse=False)
+
+    my_place_in_the_queue = next((index for (index, d) in enumerate(sorted_builds_in_queue) if d["name"] == job_id))
+    previous_build_in_queue = ''
+    if my_place_in_the_queue > 0:
+        previous_build_in_queue = sorted_builds_in_queue[my_place_in_the_queue - 1].get('name')
+    return my_place_in_the_queue, previous_build_in_queue
+
+
+def try_to_lock_machine(storage_bucket: any, machine: str, machines_locks: list, gitlab_status_token: str,
+                        gcs_locks_path: str, job_id: str) -> str:
+    """
+    try to lock machine for the job
+    Args:
+        storage_bucket(google.cloud.storage.bucket.Bucket): google storage bucket where lock machine is stored.
+        machine(str): the machine to lock.
+        machines_locks(srt): all the exiting lock files.
+        gitlab_status_token(str): the gitlab token.
+        gcs_locks_path(str): the lock repository name.
+        job_id(str): the job id to check.
+
+    Returns: the machine name if locked.
+
+    """
+    lock_machine_name = ''
+    job_id_of_the_existing_lock = next((d['job_id'] for d in machines_locks if d["machine_name"] == machine), None)
+    if job_id_of_the_existing_lock:
+        logging.info(f'There is a lock file for job id: {job_id_of_the_existing_lock}')
+        job_id_of_the_existing_lock_status = check_job_status(gitlab_status_token, job_id_of_the_existing_lock)
+        logging.info(f'the status of job id: {job_id_of_the_existing_lock} is: {job_id_of_the_existing_lock_status}')
+        if job_id_of_the_existing_lock_status != 'running':
+            # machine found! removing the not relevant lock and create a now one
+            remove_machine_lock_file(storage_bucket, gcs_locks_path, machine, job_id_of_the_existing_lock)
+            lock_machine(storage_bucket, gcs_locks_path, machine, job_id)
+            lock_machine_name = machine
+    else:
+        # machine found! create lock file
+        logging.info('There is no a lock file')
+        lock_machine(storage_bucket, gcs_locks_path, machine, job_id)
+        lock_machine_name = machine
+    return lock_machine_name
+
+
 def main():
     install_logging('lock_cloud_machines.log', logger=logging)
-
     logging.info('Starting search a CLOUD machine to lock')
     options = options_handler()
     storage_client = storage.Client.from_service_account_json(options.service_account)
@@ -143,24 +199,17 @@ def main():
     logging.info('adding job_id to the queue')
     adding_build_to_the_queue(storage_bucket, options.gcs_locks_path, options.ci_job_id)
 
-    # running until the build is first in queue
+    # running until the build is the first in queue
     first_in_the_queue = False
     while not first_in_the_queue:
-        logging.info('gets all builds in the queue')
-        builds_in_queue = get_queue_locks_details(storage_client, 'xsoar-ci-artifacts',
-                                                  f'{options.gcs_locks_path}/{QUEUE_REPO}/')
-        # sorting the files by time_created
-        sorted_builds_in_queue = sorted(builds_in_queue, key=lambda d: d['time_created'], reverse=False)
-
-        my_place_in_the_queue = next((index for (index, d) in enumerate(sorted_builds_in_queue)
-                                      if d["name"] == options.ci_job_id), None)
+        my_place_in_the_queue, previous_build = get_my_place_in_the_queue(storage_client, options.gcs_locks_path,
+                                                                          options.ci_job_id)
         logging.info(f'my place in the queue is: {my_place_in_the_queue}')
 
         if my_place_in_the_queue == 0:
             first_in_the_queue = True
         else:
             # we check the status of the build that is ahead of me in the queue
-            previous_build = sorted_builds_in_queue[my_place_in_the_queue - 1].get('name')
             previous_build_status = check_job_status(options.gitlab_status_token, previous_build)
             if previous_build_status != 'running':
                 # delete the lock file of the build because its not running
@@ -181,30 +230,17 @@ def main():
     logging.info(f'gets all machines lock files')
     machines_locks = get_machines_locks_details(storage_client, 'xsoar-ci-artifacts',
                                                 options.gcs_locks_path, MACHINES_LOCKS_REPO)
-    logging.info(f'all machines locks existing : {machines_locks}')
 
     lock_machine_name = None
     while number_machines_to_lock > 0:
         for machine in list_machines:
-            job_id_of_the_existing_lock = next((d['job_id'] for d in machines_locks if d["machine_name"] == machine), None)
-            if job_id_of_the_existing_lock:
-                logging.info(f'There is a lock file for job id: {job_id_of_the_existing_lock}')
-                job_id_of_the_existing_lock_status = check_job_status(options.gitlab_status_token, job_id_of_the_existing_lock)
-                logging.info(f'the status of job id: {job_id_of_the_existing_lock} is: {job_id_of_the_existing_lock_status}')
-                if job_id_of_the_existing_lock_status != 'running':
-                    # machine found! removing the not relevant lock and create a now one
-                    remove_machine_lock_file(storage_bucket, options.gcs_locks_path, machine, job_id_of_the_existing_lock)
-                    lock_machine(storage_bucket, options.gcs_locks_path, machine, options.ci_job_id)
-                    lock_machine_name = machine
-                    number_machines_to_lock -= 1
-                    break
-            else:
-                # machine found! create lock file
-                logging.info('There is no a lock file')
-                lock_machine(storage_bucket, options.gcs_locks_path, machine, options.ci_job_id)
-                lock_machine_name = machine
+            lock_machine_name = try_to_lock_machine(storage_bucket, machine, machines_locks,
+                                                    options.gitlab_status_token, options.gcs_locks_path, options.ci_job_id)
+
+            if lock_machine_name:
                 number_machines_to_lock -= 1
                 break
+
     # remove build from queue
     remove_build_from_queue(storage_bucket, options.gcs_locks_path, options.ci_job_id)
 
