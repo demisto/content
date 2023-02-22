@@ -62,6 +62,10 @@
                     {
                         "fieldId": "indicator_trafficlightprotocol",
                         "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_internal",
+                        "isVisible": true
                     }
                 ],
                 "isVisible": true,
