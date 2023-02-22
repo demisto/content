@@ -1622,11 +1622,19 @@ tasks:
       Endpoint_id:
         complex:
           root: PaloAltoNetworksXDREndpoint
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: PaloAltoNetworksXDREndpoint.endpoint_name
+                iscontext: true
+              right:
+                value:
+                  simple: AttackerHostnames
+                iscontext: true
           accessor: endpoint_id
-      Endpoint_ip:
-        complex:
-          root: IP
-          accessor: Address
+          transformers:
+          - operator: uniq
     separatecontext: true
     loop:
       iscommand: false
