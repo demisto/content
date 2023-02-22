@@ -1,4 +1,4 @@
-category: Cloud Services
+category: Email
 sectionOrder:
 - Connect
 - Collect
@@ -2277,7 +2277,7 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.45941
+  dockerimage: demisto/google-api-py3:1.0.0.48565
   isfetch: true
   longRunning: false
   longRunningPort: false
