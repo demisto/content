@@ -1,0 +1,7 @@
+[MODEL: dataset=recorded_future_intelligence_cloud_raw]
+| alter
+	xdm.alert.name = json_extract_scalar(rule, "$.name"),
+	xdm.alert.original_alert_id = json_extract_scalar(rule, "$.id"),
+	xdm.alert.description = title,
+	xdm.event.original_event_type = json_extract_scalar(rule, "$.type"),
+	_time = triggered;
