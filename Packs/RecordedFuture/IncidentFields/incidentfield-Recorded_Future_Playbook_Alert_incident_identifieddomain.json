@@ -1,10 +1,10 @@
 {
-    "id": "incident_identifieddomain",
+    "id": "incident_recordedfutureidentifieddomain",
     "version": -1,
-    "modified": "2023-02-08T19:25:00.114529738Z",
+    "modified": "2023-02-21T19:25:00.114529738Z",
     "name": "Recorded Future Identified Domain",
     "ownerOnly": false,
-    "cliName": "identifieddomain",
+    "cliName": "recordedfutureidentifieddomain",
     "type": "grid",
     "closeForm": false,
     "editForm": true,

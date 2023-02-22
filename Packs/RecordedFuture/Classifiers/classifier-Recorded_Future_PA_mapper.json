@@ -27,7 +27,7 @@
                         ]
                     }
                 },
-                "Identified CVE": {
+                "Recorded Future Identified CVE": {
                     "complex": {
                         "filters": [],
                         "root": "panel_status",
@@ -38,7 +38,7 @@
                         ]
                     }
                 },
-                "Insikt Notes": {
+                "Recorded Future Insikt Notes": {
                     "complex": {
                         "accessor": "insikt_notes",
                         "filters": [],
@@ -50,7 +50,7 @@
                         ]
                     }
                 },
-                "Risk Rule": {
+                "Recorded Future Risk Rule": {
                     "complex": {
                         "accessor": "risk_rules",
                         "filters": [],
@@ -65,7 +65,7 @@
                 "Source Priority": {
                     "simple": "priority"
                 },
-                "Targeted Products": {
+                "Recorded Future Targeted Products": {
                     "complex": {
                         "accessor": "name",
                         "filters": [],
@@ -91,7 +91,7 @@
                 "Alert Name": {
                     "simple": "title"
                 },
-                "DNS Records": {
+                "Recorded Future DNS Records": {
                     "complex": {
                         "accessor": "resolved_record_list",
                         "filters": [],
@@ -106,7 +106,7 @@
                 "Description": {
                     "simple": "panel_evidence_summary.explanation"
                 },
-                "Identified Domain": {
+                "Recorded Future Identified Domain": {
                     "complex": {
                         "filters": [],
                         "root": "panel_status",
@@ -194,7 +194,7 @@
                 "Source Priority": {
                     "simple": "priority"
                 },
-                "Targeted Domains": {
+                "Recorded Future Targeted Domains": {
                     "complex": {
                         "accessor": "targets",
                         "filters": [],

@@ -1,10 +1,10 @@
 {
-    "id": "incident_dnsrecords",
+    "id": "incident_recordedfuturednsrecords",
     "version": -1,
     "modified": "2023-02-09T19:25:00.114457805Z",
     "name": "Recorded Future DNS Records",
     "ownerOnly": false,
-    "cliName": "dnsrecords",
+    "cliName": "recordedfuturednsrecords",
     "type": "grid",
     "closeForm": false,
     "editForm": true,

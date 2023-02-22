@@ -355,7 +355,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "targeteddomains",
+                                "fieldId": "recordedfuturetargeteddomains",
                                 "height": 44,
                                 "id": "d82bd240-9e56-11ed-b9f8-ad2b3063cf68",
                                 "index": 4,
@@ -390,7 +390,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "identifieddomain",
+                                "fieldId": "recordedfutureidentifieddomain",
                                 "height": 106,
                                 "id": "952b3450-a6ed-11ed-90b2-9b36cfb3da56",
                                 "index": 1,
@@ -410,7 +410,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "dnsrecords",
+                                "fieldId": "recordedfuturednsrecords",
                                 "height": 106,
                                 "id": "92054fd0-9e74-11ed-99bc-b7ea0ee552b8",
                                 "index": 3,

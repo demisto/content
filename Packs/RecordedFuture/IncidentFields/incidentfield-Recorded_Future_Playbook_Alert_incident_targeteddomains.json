@@ -1,10 +1,10 @@
 {
-    "id": "incident_targeteddomains",
+    "id": "incident_recordedfuturetargeteddomains",
     "version": -1,
     "modified": "2023-02-08T19:25:00.114585331Z",
     "name": "Recorded Future Targeted Domains",
     "ownerOnly": false,
-    "cliName": "targeteddomains",
+    "cliName": "recordedfuturetargeteddomains",
     "type": "longText",
     "closeForm": false,
     "editForm": true,
