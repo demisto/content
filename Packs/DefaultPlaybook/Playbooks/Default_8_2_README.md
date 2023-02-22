@@ -43,7 +43,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ExtractIndicators | Determines whether indicators in this incident should be extracted manually. If you turned off Auto-extract for the current incident type, you may want to set this value to True. Otherwise indicators from this incident will not be extracted, which will negatively affect the efficacy of the playbook. | True | Optional |
+| ExtractIndicators | Determines whether indicators in this incident should be extracted manually. If you turned off Auto-extract for the current incident type, you may want to set this value to True. Otherwise, indicators from this incident will not be extracted, which will negatively affect the efficacy of the playbook. | True | Optional |
 | MaliciousTagName | The tag to assign for indicators to block. Tagging indicators can be done through the buttons in the incident layout. | malicious | Optional |
 | BenignTagName | The tag to assign for allowed indicators. Tagging indicators can be done through the buttons in the incident layout. | benign | Optional |
 

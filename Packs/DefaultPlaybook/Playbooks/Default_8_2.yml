@@ -156,7 +156,7 @@ tasks:
       id: 24f589f6-d64b-4fcc-8523-6e0d0765821c
       version: -1
       name: Dedup - Generic v4
-      description: "This playbook identifies duplicate incidents using the Cortex XSOAR machine learning method (script).\nIn this playbook, you can choose fields and/or indicators to be compared against other incidents in the Cortex XSOAR database. \n\nNote: To identify similar incidents you must *must* properly define the playbook inputs. "
+      description: "This playbook identifies duplicate incidents using the Cortex XSOAR machine learning method (script).\nIn this playbook, you can choose fields and/or indicators to be compared against other incidents in the Cortex XSOAR database. \n\nNote: To identify similar incidents you *must* properly define the playbook inputs."
       playbookName: Dedup - Generic v4
       type: playbook
       iscommand: false
@@ -463,7 +463,7 @@ tasks:
       id: d1e33868-bfd2-4818-821a-6d0c9cd7485a
       version: -1
       name: Search Endpoints By Hash - Generic V2
-      description: Hunt using available tools
+      description: Hunt using available tools.
       playbookName: Search Endpoints By Hash - Generic V2
       type: playbook
       iscommand: false
@@ -591,7 +591,7 @@ tasks:
       id: bce158dc-0a33-4254-8509-277115b34463
       version: -1
       name: Should extract indicators manually (Auto-extract is off)?
-      description: Checks whether indicators in this incident should be extracted and enriched manually. This should be done if Auto-extracted is switched off for the current incident type. When Auto-extract is turned off for the incident type, it means that indicators will not be extracted from the data mapped to the various incident fields upon the creation of the incident. In that case, in order for the playbook to perform optimally, the indicators have to be extracted explicitly using the extractIndicators command.
+      description: Checks whether indicators in this incident should be extracted and enriched manually. This should be done if Auto-extract is switched off for the current incident type. When Auto-extract is turned off for the incident type, it means that indicators will not be extracted from the data mapped to the various incident fields upon the creation of the incident. In that case, in order for the playbook to perform optimally, the indicators have to be extracted explicitly using the extractIndicators command.
       type: condition
       iscommand: false
       brand: ""
@@ -763,8 +763,8 @@ tasks:
       version: -1
       name: Generate investigation report
       description: |-
-        A script to generate investigation summary report in an automated way
-        Can be used in post-processing flow as well.
+        A script to generate an automated investigation summary report.
+        Can be used in the post-processing flow as well.
       scriptName: GenerateInvestigationSummaryReport
       type: regular
       iscommand: false
@@ -1022,7 +1022,7 @@ tasks:
       version: -1
       name: Save indicator tag values
       description: |-
-        Set multiple keys/values to the context.
+        Set multiple keys/values in the context.
         This also sets an initial value for the "Selected Indicators" incident field.
       scriptName: SetMultipleValues
       type: regular
@@ -1067,7 +1067,7 @@ tasks:
       id: b75662a2-5440-4d64-8635-47c4f552b02d
       version: -1
       name: Review before closing the incident
-      description: Ensure the incident was properly remediated and report the incident if needed, before closing it.
+      description: Ensure the incident was properly remediated and report the incident if needed before closing it.
       type: regular
       iscommand: false
       brand: ""
@@ -1173,7 +1173,7 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Determines whether indicators in this incident should be extracted manually. If you turned off Auto-extract for the current incident type, you may want to set this value to True. Otherwise indicators from this incident will not be extracted, which will negatively affect the efficacy of the playbook.
+  description: Determines whether indicators in this incident should be extracted manually. If you turned off Auto-extract for the current incident type, you may want to set this value to True. Otherwise, indicators from this incident will not be extracted, which will negatively affect the efficacy of the playbook.
   playbookInputQuery:
 - key: MaliciousTagName
   value:
