@@ -2,6 +2,7 @@
 from CommonServerPython import *
 import os
 import re
+import requests
 import json
 from pancloud import QueryService, Credentials, exceptions
 import base64
@@ -11,12 +12,9 @@ from tempfile import gettempdir
 from dateutil import parser
 import demistomock as demisto
 from datetime import timedelta
-import urllib3
-
 
 # disable insecure warnings
-urllib3.disable_warnings()
-
+requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL CONSTS '''
 ACCESS_TOKEN_CONST = 'access_token'  # guardrails-disable-line
