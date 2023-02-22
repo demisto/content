@@ -922,7 +922,7 @@ inputs:
 - key: IPAddress
   value: {}
   required: false
-  description: IP Address from the XDR Alert.
+  description: IP address from the XDR alert.
   playbookInputQuery:
 - key: cloudProvider
   value: {}
