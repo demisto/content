@@ -1,6 +1,5 @@
-import demistomock as demisto
-from CommonServerPython import *
-
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa

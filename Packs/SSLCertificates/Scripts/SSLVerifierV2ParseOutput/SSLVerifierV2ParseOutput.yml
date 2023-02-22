@@ -1,12 +1,11 @@
 args:
 - defaultValue: SSLVerifierV2
-  description: The key from context containing the SSLVerifier Data (Defaults to SSLVerifier)
+  description: The key from context containing the SSLVerifier Data (Defaults to SSLVerifierV2)
   name: SSLVerifierKey
   type: unknown
 - auto: PREDEFINED
   defaultValue: expiring
-  description: The status of certificate to extract (good (> 180 days), warning (<=180
-    days and > 90 days), expiring (<= 90 days))
+  description: The status of certificate to extract (good (> 180 days), warning (<=180 days and > 90 days), expiring (<= 90 days))
   name: StatusType
   predefined:
   - expired
@@ -23,16 +22,11 @@ args:
   - "True"
   - "False"
   type: unknown
-comment: "Parses the output from the !SSLVerifierV2 automation into a markdown table
-  and separate context key . \n\nThis automation uses the SSLVerifierV2 key by default,
-  but a custom context key can be specified in the event extend-context is used with
-  the SSLVerifierV2 automation. \n\nOption to specify whether to output certificates
-  with an expiring, warning, or good status (or all at once). \n\nOption to specify
-  whether or not to output the generated tables to the war room. \n\n"
+comment: "Parses the output from the !SSLVerifierV2 automation into a markdown table and separate context key . \n\nThis automation uses the SSLVerifierV2 key by default, but a custom context key can be specified when extend-context is used inside the task associated with the SSLVerifierV2 automation. \n\nOption to specify whether to output certificates with an expiring, warning, or good status (or all at once). \n\nOption to specify whether or not to output the generated tables to the war room. \n\n"
 commonfields:
   id: SSLVerifierV2_ParseOutput
   version: -1
-dockerimage: demisto/python3:3.10.9.46807
+dockerimage: docker.io/demisto/python3:3.10.9.46807
 enabled: true
 name: SSLVerifierV2_ParseOutput
 outputs:
@@ -43,6 +37,18 @@ outputs:
   description: Certificates expiring in > 180 days
 - contextPath: SSLReport.Warning
   description: Certificates expiring in > 90 days and <= 180 days
+- contextPath: SSLReport.Expired
+  description: Certificates that have expired
+- contextPath: SSLReport.ExpiredTable
+  description: Markdown table containing certificates in expired status
+- contextPath: SSLReport.GoodTable
+  description: Markdown table containing certificates in good status
+- contextPath: SSLReport.WarningTable
+  description: Markdown table containing certificates in warning status
+- contextPath: SSLReport.ExpiringTable
+  description: Markdown table containing certificates in expiring status
+- contextPath: SSLReport.md
+  description: Markdown table for all requested certificate statuses
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -53,3 +59,6 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""

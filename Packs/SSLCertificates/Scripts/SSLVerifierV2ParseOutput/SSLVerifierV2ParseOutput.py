@@ -1,5 +1,5 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 
 def include_keys(dictionary, keys):
@@ -85,7 +85,7 @@ def main():
             results['Good'] = good
             results['GoodTable'] = tblGood
 
-        results['md'] = md  # type: ignore
+        results['md'] = md
 
         return_results(CommandResults(
             outputs_prefix="SSLReport",

@@ -1,6 +1,5 @@
-import demistomock as demisto
-from CommonServerPython import *
-
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from datetime import datetime
 
 
@@ -16,10 +15,10 @@ def create_html_table(headers, certList, listType):
         tableBody += ">\n\t\t\t\t<h2>Certificates expiring in 90 days or less</h2>\n\t\t\t</span>\n\t\t</p>\n"
     elif listType == "warning":
         tableBody += " style=\"color: #ff9900;\">\n\t\t\t\t<strong>Certificates expiring between 91 and 180 days" \
-                     + " from today</strong>\n\t\t\t</span>\n\t\t</p>\n"
+            + " from today</strong>\n\t\t\t</span>\n\t\t</p>\n"
     elif listType == "good":
         tableBody += " style=\"color: #339966;\">\n\t\t\t\t<strong>Certificates expiring more than 180 days from today</strong>" \
-                     + "\n\t\t\t</span>\n\t\t</p>\n"
+            + "\n\t\t\t</span>\n\t\t</p>\n"
 
     # Setup table
     tableBody += "\t\t<table style=\"border-collapse: collapse; width: 100%;\" border=\"1\">\n\t\t\t<tbody>"
@@ -36,8 +35,8 @@ def create_html_table(headers, certList, listType):
     for cert in certList:
         tableBody += "\t\t\t\t<tr>\n\t\t\t\t\t<td style=\"text-align: center;\">" + cert['Domain']
         tableBody += "</td>\n\t\t\t\t\t<td style=\"text-align: center;\">" + cert['ExpirationDate']
-        tableBody += "</td>\n\t\t\t\t\t<td style=\"text-align: center;\">" + str(
-            cert['TimeToExpiration']) + " days</td>" + "\n\t\t\t\t</tr>\n"
+        tableBody += "</td>\n\t\t\t\t\t<td style=\"text-align: center;\">" + str(cert['TimeToExpiration']) + " days</td>" \
+            + "\n\t\t\t\t</tr>\n"
 
     tableBody += "\t\t\t</tbody>\n\t\t</table>\n"
 
@@ -47,6 +46,7 @@ def create_html_table(headers, certList, listType):
 def main():
     try:
         emailHTMLBody = ""
+        results = {}
         headers = ("Site", "Expiration Date", "Days to Expiration")
         good = demisto.get(demisto.context(), "SSLReport.Good")
         warning = demisto.get(demisto.context(), "SSLReport.Warning")
@@ -55,12 +55,11 @@ def main():
 
         # Setup email header
         emailHTMLBody += "<html>\n\t<head>\n\t\t<style>\n\t\t\tp {\n\t\t\t\ttext-align: center;\n\t\t\t}" \
-                         + "\n\t\t\th1 {\n\t\t\t\ttext-align: center;\n\t\t\t\tcolor: #ff0000;\n\t\t\t}" \
-                         + "\n\t\t\th2 {\n\t\t\t\ttext-align: center;\n\t\t\t\tcolor: #ff0000;\n\t\t\t}" \
-                         + "\n\t\t\th3 {\n\t\t\t\ttext-align: center;\n\t\t\t\tcolor: #000000;\n\t\t\t\tfont-weight:" \
-                           " bold;\n\t\t\t\t" + "font-size: 1.5em;\n\t\t\t\ttext-decoration: underline;\n\t\t\t}" \
-                           "</style></head>\n\t<body>\n\t\t<h3>\n" + "\t\t\tSSL Certificate Report for " \
-                         + datetime.today().strftime('%Y/%m/%d') + '\n\t\t</h3>\n'
+            + "\n\t\t\th1 {\n\t\t\t\ttext-align: center;\n\t\t\t\tcolor: #ff0000;\n\t\t\t}" \
+            + "\n\t\t\th2 {\n\t\t\t\ttext-align: center;\n\t\t\t\tcolor: #ff0000;\n\t\t\t}" \
+            + "\n\t\t\th3 {\n\t\t\t\ttext-align: center;\n\t\t\t\tcolor: #000000;\n\t\t\t\tfont-weight: bold;\n\t\t\t\t" \
+            + "font-size: 1.5em;\n\t\t\t\ttext-decoration: underline;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<h3>\n" \
+            + "\t\t\tSSL Certificate Report for " + datetime.today().strftime('%Y/%m/%d') + '\n\t\t</h3>\n'
 
         # Setup tables
         if expired:

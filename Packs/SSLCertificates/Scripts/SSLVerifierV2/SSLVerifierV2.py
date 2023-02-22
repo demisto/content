@@ -1,7 +1,5 @@
-import demistomock as demisto
-from CommonServerPython import *
-from typing import Any
-
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from datetime import datetime
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
@@ -33,8 +31,7 @@ def get_cert_info(hostname: str, port: str):
         varExcept = str(e)
     finally:
         # Expired/Self-Signed/Unable-to-get-local-issuer errors
-        if str.__contains__(varExcept, "certificate has expired") or str.__contains__(varExcept,
-                                                                                      "self signed certificate") \
+        if str.__contains__(varExcept, "certificate has expired") or str.__contains__(varExcept, "self signed certificate") \
                 or str.__contains__(varExcept, "unable to get local issuer certificate"):
             pem_cert = ssl.get_server_certificate((hostname, int(port)))
             cert_bytes = str.encode(pem_cert)
