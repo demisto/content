@@ -8,18 +8,6 @@ from datetime import datetime, date
 import dateparser
 
 
-"""GLOBAL VARIABLES"""
-params = demisto.params()
-AWS_DEFAULT_REGION = params.get('defaultRegion')
-AWS_ROLE_ARN = params.get('role_arn')
-AWS_ROLE_SESSION_NAME = params.get('role_session_name')
-AWS_ROLE_SESSION_DURATION = params.get('sessionDuration')
-AWS_ROLE_POLICY = None
-AWS_ACCESS_KEY_ID = params.get('credentials', {}).get('identifier') or params.get('access_key')
-AWS_SECRET_ACCESS_KEY = params.get('credentials', {}).get('password') or params.get('secret_key')
-VERIFY_CERTIFICATE = not params.get('insecure', True)
-
-
 def get_aws_session(aws_client, args, **kwargs):
 
     return aws_client.aws_session(
