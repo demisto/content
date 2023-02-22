@@ -1,6 +1,3 @@
-This Script is deprecated. Use the ***sandblast-query*** command in **Check Point Threat Emulation (SandBlast)** Integration instead.
-
-
 Uses the Query API to have a client application look for either the analysis report of a specific file on the Check Point Threat Prevention service databases or the status of a file, uploaded for analysis.
 
 ## Script Data

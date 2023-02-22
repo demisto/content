@@ -1,5 +1,4 @@
 <!-- HTML_DOC -->
-<h5>This Integration is deprecated. Use Joe Security v2 Integration instead.</h5>
 <h2>Overview</h2>
 <hr>
 <p>Use the Joe Security Sandbox integration to detect and analyze potentially malicious files.<br>Using the integration you can analyze URL links and sample files on different machine types (Windows, Android, iOS and Mac OS X).</p>

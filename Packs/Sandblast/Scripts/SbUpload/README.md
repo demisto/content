@@ -1,6 +1,3 @@
-This Script is deprecated. Use the ***sandblast-upload** command in **Check Point Threat Emulation (SandBlast)** Integration instead.
-
-
 Uses the Upload API to have a client application request that Check Point Threat Prevention modules scan and analyze a file. When a file is to the service, the file will be encrypted. The file is un-encrypted during analysis, and then deleted.
 
 ## Script Data
