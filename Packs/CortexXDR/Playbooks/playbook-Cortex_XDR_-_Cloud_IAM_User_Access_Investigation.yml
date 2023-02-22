@@ -1083,7 +1083,7 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Whether to search for failed logon logs from Siem? Can be False or True.
+  description: Whether to search for failed logon logs from SIEM? Can be False or True.
   playbookInputQuery:
 - key: ThreatLogSearch
   value:
