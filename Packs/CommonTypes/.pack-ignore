@@ -366,6 +366,9 @@ ignore=BA101
 [file:layoutscontainer-ToolV2.json]
 ignore=BA101
 
+[file:layoutscontainer-HostV2.json]
+ignore=BA101
+
 [known_words]
 SysAid
 longText
