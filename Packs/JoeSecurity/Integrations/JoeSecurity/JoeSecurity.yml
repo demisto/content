@@ -29,7 +29,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Deprecated. No available replacement.
+description: Deprecated. Use Joe Security v2 instead.
 display: Joe Security (Deprecated)
 name: Joe Security
 script:

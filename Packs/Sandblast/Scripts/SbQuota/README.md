@@ -1,3 +1,6 @@
+This Script is deprecated. Use the ***sandblast-quota*** command in **Check Point Threat Emulation (SandBlast)** Integration instead.
+
+
 Uses the Quote API to have the client application get the current license and quota status of the API Key that was used.
 
 ## Script Data
