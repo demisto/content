@@ -3785,7 +3785,7 @@ class Common(object):
                 file_context['Hashes'].append({'type': 'SSDeep',
                                                'value': self.ssdeep})
 
-            if self.extension: 
+            if self.extension:
                 file_context['Extension'] = self.extension
 
             if self.file_type:
@@ -10795,7 +10795,7 @@ def xsiam_api_call_with_retries(
     :param headers: headers for the request
 
     :type num_of_attempts: ``int``
-    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
+    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes).
 
     :type events_error_handler: ``callable``
     :param events_error_handler: error handler function

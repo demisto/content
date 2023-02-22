@@ -7175,7 +7175,7 @@ class TestIsDemistoServerGE:
         assert is_demisto_version_ge('5.0.0')
         assert is_demisto_version_ge('4.5.0')
         assert not is_demisto_version_ge('5.5.0')
-        assert get_demisto_version_as_str() == '5.0.0-50000'        
+        assert get_demisto_version_as_str() == '5.0.0-50000'
 
     def test_get_demisto_version_2(self, mocker):
         mocker.patch.object(
@@ -7194,7 +7194,7 @@ class TestIsDemistoServerGE:
         assert is_demisto_version_ge('6.1.0')
         assert is_demisto_version_ge('6.5')
         assert not is_demisto_version_ge('7.0.0')
-        
+
     def test_is_demisto_version_ge_4_5(self, mocker):
         get_version_patch = mocker.patch('CommonServerPython.get_demisto_version')
         get_version_patch.side_effect = AttributeError('simulate missing demistoVersion')
@@ -7820,7 +7820,7 @@ class TestFetchWithLookBack:
             return
         time_aware = 'Z' in result_phase1[0]['created']
         self.LAST_RUN = {}
-        incidents = self.INCIDENTS_TIME_AWARE[:] if time_aware else self.INCIDENTS[:] 
+        incidents = self.INCIDENTS_TIME_AWARE[:] if time_aware else self.INCIDENTS[:]
 
         mocker.patch.object(CommonServerPython, 'get_current_time', return_value=datetime(2022, 4, 1, 11, 0, 0))
         mocker.patch.object(dateparser, 'parse', side_effect=self.mock_dateparser)
@@ -8430,7 +8430,7 @@ class TestSendEventsToXSIAMTest:
                 - The number of events reported to the module health equals to number of events sent to XSIAM - 2
             Case e:
                 - No request to XSIAM API was made.
-                - The number of events reported to the module health - 0
+                - The number of events reported to the module health - 0.
         """
         if not IS_PY3:
             return
