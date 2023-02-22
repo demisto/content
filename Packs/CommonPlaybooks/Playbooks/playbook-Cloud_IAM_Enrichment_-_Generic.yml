@@ -369,7 +369,7 @@ tasks:
     task:
       id: 219490f3-8185-4975-880b-0ea73d998606
       version: -1
-      name: 'AWS IAM -  List user access keys   '
+      name: AWS IAM - List user access keys
       description: Returns information about the access key IDs associated with the specified IAM user.
       script: AWS - IAM|||aws-iam-list-access-keys-for-user
       type: regular
