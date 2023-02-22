@@ -579,7 +579,7 @@ tasks:
     task:
       id: 656df064-9845-4858-8437-546c2fc64cd5
       version: -1
-      name: 'GCP Enrichment '
+      name: GCP Enrichment
       type: title
       iscommand: false
       brand: ""
