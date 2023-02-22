@@ -517,7 +517,7 @@ tasks:
     task:
       id: 74b022cf-4364-4577-8b6c-86ea90f2c84a
       version: -1
-      name: 'AWS Enrichment '
+      name: AWS Enrichment
       type: title
       iscommand: false
       brand: ""
