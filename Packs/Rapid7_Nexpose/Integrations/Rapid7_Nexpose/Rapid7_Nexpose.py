@@ -5404,7 +5404,7 @@ def main():  # pragma: no cover
         elif command == "nexpose-delete-vulnerability-exception":
             results = delete_vulnerability_exception_command(client=client, vulnerability_exception_id=args.pop("id"))
         elif command == "nexpose-delete-site":
-            results = delete_site_command(client=client, **args)
+            results = delete_site_command(client=client, site_id=args.pop("id", None), **args)
         elif command == "nexpose-disable-shared-credential":
             results = set_assigned_shared_credential_status_command(client=client, enabled=False, **args)
         elif command == "nexpose-download-report":
@@ -5476,7 +5476,7 @@ def main():  # pragma: no cover
             results = start_assets_scan_command(client=client, ip_addresses=args.pop("IPs", None),
                                                 hostnames=args.pop("hostNames", None), **args)
         elif command == "nexpose-start-site-scan":
-            results = start_site_scan_command(client=client, **args)
+            results = start_site_scan_command(client=client, site_id=args.pop("site", None), **args)
         elif command == "nexpose-stop-scan":
             results = update_scan_command(client=client, scan_id=args.pop("id"), scan_status=ScanStatus.STOP)
         else:
