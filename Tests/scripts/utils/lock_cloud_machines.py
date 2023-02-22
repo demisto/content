@@ -53,7 +53,8 @@ def get_queue_locks_details(storage_client: storage.Client, bucket_name: str, pr
     return files
 
 
-def get_machines_locks_details(storage_client: storage.Client, bucket_name: str, lock_repository_name: str, machines_lock_repo: str):
+def get_machines_locks_details(storage_client: storage.Client, bucket_name: str,
+                               lock_repository_name: str, machines_lock_repo: str):
     """
     get a list of all machines locks files.
     Args:
@@ -73,7 +74,8 @@ def get_machines_locks_details(storage_client: storage.Client, bucket_name: str,
             found = True
             lock_file_name = blob.name.strip(f'{lock_repository_name}/{machines_lock_repo}/')
             if lock_file_name:
-                files.append({'machine_name': lock_file_name.split('-lock-')[0], 'job_id': (blob.namelock_file_name.split('-lock-')[1])})
+                files.append({'machine_name': lock_file_name.split('-lock-')[0],
+                              'job_id': (lock_file_name.split('-lock-')[1])})
         elif found:
             break
     return files
@@ -176,7 +178,8 @@ def main():
         random.shuffle(list_machines)
 
     logging.info(f'gets all machines lock files')
-    machines_locks = get_machines_locks_details(storage_client, 'xsoar-ci-artifacts', options.gcs_locks_path, MACHINES_LOCKS_REPO)
+    machines_locks = get_machines_locks_details(storage_client, 'xsoar-ci-artifacts',
+                                                options.gcs_locks_path, MACHINES_LOCKS_REPO)
     logging.info(f'all machines locks existing : {machines_locks}')
 
     lock_machine_name = None
