@@ -1,6 +1,6 @@
 id: Cortex ASM - Enrichment
 version: -1
-name: Cortex ASM - Enrichment_EXPANDR-1613-90
+name: Cortex ASM - Enrichment
 description: Used as a container folder for all enrichments of ASM alerts.
 starttaskid: "0"
 tasks:
