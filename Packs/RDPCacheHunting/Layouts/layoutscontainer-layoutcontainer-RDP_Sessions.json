@@ -76,6 +76,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-field-changed-caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -154,6 +155,7 @@
                         "h": 2,
                         "i": "caseinfoid-field-changed-caseinfoid-38c534a0-0cdc-11ed-89d1-e5ac65360f00",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -232,6 +234,7 @@
                         "h": 2,
                         "i": "caseinfoid-field-changed-caseinfoid-42633610-0cdc-11ed-89d1-e5ac65360f00",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -263,6 +266,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -289,6 +293,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -310,6 +315,7 @@
                         "h": 2,
                         "i": "caseinfoid-field-changed-caseinfoid-06e49f40-0cdf-11ed-89d1-e5ac65360f00",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -323,14 +329,16 @@
                         "y": 2
                     },
                     {
+                        "description": "",
                         "h": 2,
                         "i": "caseinfoid-8c0f6750-0d83-11ed-9e08-b96f717afa75",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
                         "name": "Indicators Type",
-                        "query": "073b80f1-2761-4254-8054-82f197ffebae",
+                        "query": "Indicators-type",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
@@ -350,6 +358,7 @@
                         "h": 2,
                         "i": "caseinfoid-8e64f340-0d87-11ed-a87d-ffc9245ec67b",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -375,6 +384,7 @@
                         "h": 2,
                         "i": "caseinfoid-99427990-0d87-11ed-a87d-ffc9245ec67b",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -391,11 +401,12 @@
                         "h": 2,
                         "i": "caseinfoid-4cf90f60-119a-11ed-bd36-d1bd96220a2e",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
                         "name": "Overall Strings Score",
-                        "query": "7bbe41d2-790f-4fc4-861a-07cddd4ca1f5",
+                        "query": "SetRDPOverallScore",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
@@ -407,6 +418,7 @@
                         "h": 2,
                         "i": "caseinfoid-87b6fcf0-1255-11ed-bd36-d1bd96220a2e",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -435,7 +447,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Bitmap Collage",
-                        "query": "ed7abc1c-9af6-43b8-8eee-15c2ab675d8b",
+                        "query": "DisplayRDPImage",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
@@ -572,14 +584,6 @@
                 "description": "",
                 "fields": [
                     {
-                        "fieldId": "incident_actionsoncampaignincidents",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_actionsonlowsimilarityincidents",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_additionaldata",
                         "isVisible": true
                     },
@@ -644,22 +648,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_campaignclosenotes",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_campaignemailbody",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_campaignemailsenderinstance",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_campaignemailsubject",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_categories",
                         "isVisible": true
                     },
@@ -669,18 +657,6 @@
                     },
                     {
                         "fieldId": "incident_childprocess",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_chronicleassetsupportcontact",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_chronicleautoblockentities",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_chronicleskipentityisolation",
                         "isVisible": true
                     },
                     {
@@ -721,18 +697,6 @@
                     },
                     {
                         "fieldId": "incident_countrycodenumber",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_cvelist",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dbotprediction",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dbotpredictionprobability",
                         "isVisible": true
                     },
                     {
@@ -833,22 +797,6 @@
                     },
                     {
                         "fieldId": "incident_dsts",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emaildeletefrombrand",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emaildeletereason",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emaildeleteresult",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emaildeletetype",
                         "isVisible": true
                     },
                     {
@@ -960,27 +908,11 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_identitytable",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_incidentlink",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_incidentsinfo",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_incomingmirrorerror",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_indicatorstype",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_indicatortypes",
                         "isVisible": true
                     },
                     {
@@ -989,10 +921,6 @@
                     },
                     {
                         "fieldId": "incident_isactive",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lastmirroredintime",
                         "isVisible": true
                     },
                     {
@@ -1033,10 +961,6 @@
                     },
                     {
                         "fieldId": "incident_mobiledevicemodel",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_niststage",
                         "isVisible": true
                     },
                     {
@@ -1120,10 +1044,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_playbookdescription",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_policyactions",
                         "isVisible": true
                     },
@@ -1196,135 +1116,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_sansstage",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_scenario",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_securitypolicymatch",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_selectaction",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_selectcampaignincidents",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_selectlowsimilarityincidents",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowassignedto",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowassignmentgroup",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowattackvector",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowbusinessimpact",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowcaller",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowcallerid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowcategory",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowclosedby",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowcloseddate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowdescription",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowduedate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowescalation",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowimpact",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenownotify",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowopeneddate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowpriority",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowrecordid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowresolutioncode",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowresolutionnotes",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowresolvedtime",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowseverity",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowsircategory",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowsirstate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowstate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowtablename",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowticketnumber",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowurgency",
                         "isVisible": true
                     },
                     {
@@ -1400,14 +1192,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_stringsifter",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_stringssimilarity",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_subcategory",
                         "isVisible": true
                     },
@@ -1421,10 +1205,6 @@
                     },
                     {
                         "fieldId": "incident_tags",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_target",
                         "isVisible": true
                     },
                     {
@@ -1497,18 +1277,6 @@
                     },
                     {
                         "fieldId": "incident_usersid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_xdrmanualseverity",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_xdrmodificationtime",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_xdrstarred",
                         "isVisible": true
                     }
                 ],
