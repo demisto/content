@@ -61,15 +61,15 @@ To setup the mirroring follow these instructions:
 2. Search for **Microsoft Sentinel** and select your integration instance.
 3. Enable **Fetches incidents**.
 4. In the **Mirroring Direction** integration parameter, select in which direction the incidents should be mirrored:
-   * Incoming - Any changes in *Microsoft Sentinel* incidents will be reflected in XSOAR incidents.
-   * Outgoing - Any changes in XSOAR incidents will be reflected in *Microsoft Sentinel*.
-   * Incoming And Outgoing - Changes in XSOAR incidents and *Microsoft Sentinel* incidents will be reflected in both directions.
+   * Incoming - Any changes in *Microsoft Sentinel* incidents will be reflected in Cortex XSOAR incidents.
+   * Outgoing - Any changes in Cortex XSOAR incidents will be reflected in *Microsoft Sentinel*.
+   * Incoming And Outgoing - Changes in Cortex XSOAR incidents and *Microsoft Sentinel* incidents will be reflected in both directions.
    * None - Turns off incident mirroring.
 5. Optional: Check the **Close Mirrored XSOAR Incident** integration parameter to close the Cortex XSOAR incident when the corresponding incident is closed in *Microsoft Sentinel*.
 6. Optional: Check the **Close Mirrored Microsoft Sentinel Ticket** integration parameter to close the *Microsoft Sentinel* incident when the corresponding Cortex XSOAR incident is closed.
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
-**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in XSOAR and *Microsoft Sentinel*.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and *Microsoft Sentinel*.
 
 
 ## Commands

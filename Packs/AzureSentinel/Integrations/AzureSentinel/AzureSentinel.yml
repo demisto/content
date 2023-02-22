@@ -71,13 +71,13 @@ configuration:
 - display: Default Subscription ID
   name: subscriptionID
   required: true
-  additionalinfo: The parameter can be saved as 000-000 and added as an argument to each command, but the test button will fail.
+  additionalinfo: The parameter can be saved as 000-000 and added as an argument to each command, but Test button will fail.
   type: 0
   section: Connect
 - display: Default Resource Group Name
   name: resourceGroupName
   required: true
-  additionalinfo: The parameter can be saved as 000-000 and added as an argument to each command, but the test button will fail.
+  additionalinfo: The parameter can be saved as 000-000 and added as an argument to each command, but the Test button will fail.
   type: 0
   section: Connect
 - display: Workspace Name
@@ -162,7 +162,7 @@ configuration:
     - marketplacev2
   section: Collect
   advanced: true
-- additionalinfo: When selected, closing the XSOAR incident is mirrored in Microsoft Sentinel.
+- additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Microsoft Sentinel.
   defaultvalue: 'false'
   display: Close Mirrored Microsoft Sentinel Ticket
   name: close_ticket
@@ -2184,7 +2184,7 @@ script:
     - defaultValue: '0'
       description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
       name: lastUpdate
-    description: Gets remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
+    description: Gets data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
     name: get-remote-data
   - description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
     name: get-mapping-fields
@@ -2192,7 +2192,7 @@ script:
     name: update-remote-system
   - arguments:
     - default: false
-      description: The rule id, if not given will return all rules.
+      description: The rule ID. If not given, will return all rules.
       isArray: false
       name: rule_id
       required: false
@@ -2231,10 +2231,10 @@ script:
       description: The alert rule kind.
       type: String
     - contextPath: AzureSentinel.AlertRule.etag
-      description: Etag of the azure resource.
+      description: ETag of the Azure resource.
       type: String
     - contextPath: AzureSentinel.AlertRule.properties.alertRuleTemplateName
-      description: The Name of the alert rule template used to create this rule.
+      description: The name of the alert rule template used to create this rule.
       type: Unknown
     - contextPath: AzureSentinel.AlertRule.properties.displayName
       description: The display name for alerts created by this alert rule.
@@ -2261,19 +2261,19 @@ script:
       description: The period (in ISO 8601 duration format) that this alert rule looks at.
       type: String
     - contextPath: AzureSentinel.AlertRule.properties.triggerOperator
-      description: The operation against the threshold that triggers alert rule.
+      description: The operation against the threshold that triggers the alert rule.
       type: String
     - contextPath: AzureSentinel.AlertRule.properties.triggerThreshold
-      description: The threshold triggers this alert rule.
+      description: The threshold that triggers this alert rule.
       type: Number
     - contextPath: AzureSentinel.AlertRule.properties.suppressionDuration
-      description: The suppression (in ISO 8601 duration format) to wait since last time this alert rule been triggered.
+      description: The suppression (in ISO 8601 duration format) to wait since the last time this alert rule was triggered.
       type: String
     - contextPath: AzureSentinel.AlertRule.properties.suppressionEnabled
       description: Determines whether the suppression for this alert rule is enabled or disabled.
       type: Boolean
     - contextPath: AzureSentinel.AlertRule.properties.lastModifiedUtc
-      description: The last time that this alert rule has been modified.
+      description: The last time this alert rule was modified.
       type: Date
     - contextPath: AzureSentinel.AlertRule.properties.eventGroupingSettings.aggregationKind
       description: The event grouping aggregation kinds.
@@ -2282,28 +2282,28 @@ script:
       description: The V3 type of the mapped entity.
       type: String
     - contextPath: AzureSentinel.AlertRule.properties.entityMappings.fieldMappings.identifier
-      description: the V3 identifier of the entity.
+      description: The V3 identifier of the entity.
       type: String
     - contextPath: AzureSentinel.AlertRule.properties.entityMappings.fieldMappings.columnName
-      description: the column name to be mapped to the identifier.
+      description: The column name to be mapped to the identifier.
       type: String
     - contextPath: AzureSentinel.AlertRule.properties.alertDetailsOverride.alertDisplayNameFormat
-      description: the format containing columns name(s) to override the alert name.
+      description: The format containing the columns' name(s) used to override the alert name.
       type: String
     - contextPath: AzureSentinel.AlertRule.properties.alertDetailsOverride.alertDescriptionFormat
-      description: the format containing columns name(s) to override the alert description.
+      description: The format containing columns' name(s) used to override the alert description.
       type: String
     - contextPath: AzureSentinel.AlertRule.properties.alertDetailsOverride.alertTacticsColumnName
-      description: the column name to take the alert tactics from.
+      description: The column name to take the alert tactics from.
       type: Unknown
     - contextPath: AzureSentinel.AlertRule.properties.alertDetailsOverride.alertSeverityColumnName
-      description: the column name to take the alert severity from.
+      description: The column name to take the alert severity from.
       type: Unknown
     - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration.createIncident
       description: Create incidents from alerts triggered by this analytics rule.
       type: Boolean
     - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.enabled
-      description: Grouping enabled.
+      description: Whether grouping is enabled.
       type: Boolean
     - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.reopenClosedIncident
       description: Re-open closed matching incidents.
@@ -2327,14 +2327,14 @@ script:
       description: The alerts' productName on which the cases will be generated.
       type: String
     - contextPath: AzureSentinel.AlertRule.properties.severitiesFilter
-      description: the alerts' severities on which the cases will be generated.
+      description: The alerts' severities on which the cases will be generated.
       type: Unknown
     - contextPath: AzureSentinel.AlertRule.properties.displayNamesFilter
-      description: the alerts' displayNames on which the cases will be generated
+      description: The alerts' displayNames on which the cases will be generated
       type: Unknown
   - arguments:
     - default: false
-      description: The alert rule template id, if not given will return all alert rule templates.
+      description: The alert rule template ID. If not given, will return all alert rule templates.
       isArray: false
       name: template_id
       required: false
@@ -2370,7 +2370,7 @@ script:
       description: The type of the resource.
       type: String
     - contextPath: AzureSentinel.AlertRuleTemplate.kind
-      description: The alert rule kind
+      description: The alert rule kind.
       type: String
     - contextPath: AzureSentinel.AlertRuleTemplate.properties.severity
       description: The severity for alerts created by this alert rule.
@@ -2388,10 +2388,10 @@ script:
       description: The operation against the threshold that triggers alert rule.
       type: String
     - contextPath: AzureSentinel.AlertRuleTemplate.properties.triggerThreshold
-      description: The threshold triggers this alert rule.
+      description: The threshold that triggers this alert rule.
       type: Number
     - contextPath: AzureSentinel.AlertRuleTemplate.properties.displayName
-      description: The display name for alert rule template.
+      description: The display name for the alert rule template.
       type: String
     - contextPath: AzureSentinel.AlertRuleTemplate.properties.description
       description: The description of the alert rule template.
@@ -2400,32 +2400,32 @@ script:
       description: The tactics of the alert rule template.
       type: String
     - contextPath: AzureSentinel.AlertRuleTemplate.properties.lastUpdatedDateUTC
-      description: The time that this alert rule template was last updated.
+      description: The time this alert rule template was last updated.
       type: Date
     - contextPath: AzureSentinel.AlertRuleTemplate.properties.createdDateUTC
-      description: The time that this alert rule template has been added.
+      description: The time this alert rule template was added.
       type: Date
     - contextPath: AzureSentinel.AlertRuleTemplate.properties.status
       description: The alert rule template status.
       type: String
     - contextPath: AzureSentinel.AlertRuleTemplate.properties.version
-      description: The version of this template - in format <a.b.c>, where all are numbers. For example <1.0.2>.
+      description: The version of this template in the format <a.b.c>, where all are numbers. For example <1.0.2>.
       type: String
     - contextPath: AzureSentinel.AlertRuleTemplate.properties.requiredDataConnectors.connectorId
-      description: The connector id that provides the following data types
+      description: The connector ID that provides the following data types
       type: String
     - contextPath: AzureSentinel.AlertRuleTemplate.properties.requiredDataConnectors.dataTypes
       description: The data types used by the alert rule template.
       type: String
     - contextPath: AzureSentinel.AlertRuleTemplate.properties.alertRulesCreatedByTemplateCount
-      description: the number of alert rules that were created by this template.
+      description: The number of alert rules that were created by this template.
       type: Number
     - contextPath: AzureSentinel.AlertRuleTemplate.properties.productFilter
       description: The alerts' productName on which the cases will be generated.
       type: String
   - arguments:
     - default: false
-      description: The alert rule id to delete.
+      description: The alert rule ID to delete.
       isArray: false
       name: rule_id
       required: true
@@ -2468,7 +2468,7 @@ script:
       - scheduled
     - default: false
       description: |
-        The Name of the alert rule template used to create this rule.
+        The name of the alert rule template used to create this rule.
         Required for Fusion, optional for Scheduled rules.
       isArray: false
       name: template_name
@@ -2483,7 +2483,7 @@ script:
       - yes
       - no
     - default: false
-      description: Etag of the azure resource.
+      description: ETag of the Azure resource.
       isArray: false
       name: etag
       required: false
@@ -2603,7 +2603,7 @@ script:
         - not_equal
     - default: false
       description: |
-        The threshold triggers this alert rule.
+        The threshold that triggers this alert rule.
         Required for scheduled rules.
       isArray: false
       name: trigger_threshold
@@ -2624,7 +2624,7 @@ script:
       required: false
     - default: false
       description: |
-        Option to insert a configured rule json instead of using the arguments.
+        Option to insert a configured rule JSON instead of using the arguments.
       isArray: false
       name: rule_json
       required: false
@@ -2650,10 +2650,10 @@ script:
       description: The name of the resource.
       type: String
     - contextPath: AzureSentinel.AlertRule.etag
-      description: Etag of the azure resource.
+      description: ETag of the Azure resource.
       type: String
     - contextPath: AzureSentinel.AlertRule.type
-      description: The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+      description: The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
       type: String
     - contextPath: AzureSentinel.AlertRule.kind
       description: The alert rule kind.
@@ -2665,7 +2665,7 @@ script:
       description: The description of the alert rule.
       type: String
     - contextPath: AzureSentinel.AlertRule.properties.alertRuleTemplateName
-      description: The Name of the alert rule template used to create this rule.
+      description: The name of the alert rule template used to create this rule.
       type: Unknown
     - contextPath: AzureSentinel.AlertRule.properties.tactics
       description: The tactics of the alert rule.
@@ -2677,16 +2677,16 @@ script:
       description: Determines whether this alert rule is enabled or disabled.
       type: Boolean
     - contextPath: AzureSentinel.AlertRule.properties.lastModifiedUtc
-      description: The last time that this alert has been modified.
+      description: The last time that this alert was modified.
       type: Date
     - contextPath: AzureSentinel.AlertRule.properties.productFilter
       description: The alerts' productName on which the cases will be generated.
       type: String
     - contextPath: AzureSentinel.AlertRule.properties.severitiesFilter
-      description: the alerts' severities on which the cases will be generated.
+      description: The alerts' severities on which the cases will be generated.
       type: Unknown
     - contextPath: AzureSentinel.AlertRule.properties.displayNamesFilter
-      description: the alerts' displayNames on which the cases will be generated.
+      description: The alerts' displayNames on which the cases will be generated.
       type: Unknown
     - contextPath: AzureSentinel.AlertRule.properties.query
       description: The query that creates alerts for this rule.
@@ -2698,13 +2698,13 @@ script:
       description: The period (in ISO 8601 duration format) that this alert rule looks at.
       type: String
     - contextPath: AzureSentinel.AlertRule.properties.triggerOperator
-      description: The operation against the threshold that triggers alert rule.
+      description: The operation against the threshold that triggers the alert rule.
       type: String
     - contextPath: AzureSentinel.AlertRule.properties.triggerThreshold
-      description: The threshold triggers this alert rule.
+      description: The threshold that triggers this alert rule.
       type: Number
     - contextPath: AzureSentinel.AlertRule.properties.suppressionDuration
-      description: The suppression (in ISO 8601 duration format) to wait since last time this alert rule been triggered.
+      description: The suppression (in ISO 8601 duration format) to wait since the last time this alert rule was triggered.
       type: String
     - contextPath: AzureSentinel.AlertRule.properties.suppressionEnabled
       description: Determines whether the suppression for this alert rule is enabled or disabled.
@@ -2713,7 +2713,7 @@ script:
       description: The event grouping settings.
       type: Unknown
     - contextPath: AzureSentinel.AlertRule.properties.customDetails
-      description: Dictionary of string key-value pairs of columns to be attached to the alert
+      description: Dictionary of string key-value pairs of columns to be attached to the alert.
       type: Unknown
     - contextPath: AzureSentinel.AlertRule.properties.entityMappings
       description: Array of the entity mappings of the alert rule.
@@ -2722,7 +2722,7 @@ script:
       description: The alert details override settings.
       type: String
     - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration
-      description: The settings of the incidents that created from alerts triggered by this analytics rule.
+      description: The settings of the incidents that were created from alerts triggered by this analytics rule.
       type: Unknown
   - arguments:
     - default: false
@@ -2742,7 +2742,7 @@ script:
       - scheduled
     - default: false
       description: |
-        The Name of the alert rule template used to update this rule.
+        The name of the alert rule template used to update this rule.
         Required for Fusion, optional for Scheduled rules.
       isArray: false
       name: template_name
@@ -2757,7 +2757,7 @@ script:
       - yes
       - no
     - default: false
-      description: Etag of the azure resource.
+      description: ETag of the Azure resource.
       isArray: false
       name: etag
       required: false
@@ -2877,7 +2877,7 @@ script:
         - not_equal
     - default: false
       description: |
-        The threshold triggers this alert rule.
+        The threshold that triggers this alert rule.
         Required for scheduled rules.
       isArray: false
       name: trigger_threshold
@@ -2898,7 +2898,7 @@ script:
       required: false
     - default: false
       description: |
-        Option to insert a configured rule json instead of using the arguments.
+        Option to insert a configured rule JSON instead of using the arguments.
       isArray: false
       name: rule_json
       required: false
@@ -2924,10 +2924,10 @@ script:
       description: The name of the resource.
       type: String
     - contextPath: AzureSentinel.AlertRule.etag
-      description: Etag of the azure resource.
+      description: ETag of the Azure resource.
       type: String
     - contextPath: AzureSentinel.AlertRule.type
-      description: The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+      description: The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
       type: String
     - contextPath: AzureSentinel.AlertRule.kind
       description: The alert rule kind.
@@ -2939,7 +2939,7 @@ script:
       description: The description of the alert rule.
       type: String
     - contextPath: AzureSentinel.AlertRule.properties.alertRuleTemplateName
-      description: The Name of the alert rule template used to update this rule.
+      description: The name of the alert rule template used to update this rule.
       type: Unknown
     - contextPath: AzureSentinel.AlertRule.properties.tactics
       description: The tactics of the alert rule.
@@ -2951,16 +2951,16 @@ script:
       description: Determines whether this alert rule is enabled or disabled.
       type: Boolean
     - contextPath: AzureSentinel.AlertRule.properties.lastModifiedUtc
-      description: The last time that this alert has been modified.
+      description: The last time this alert was modified.
       type: Date
     - contextPath: AzureSentinel.AlertRule.properties.productFilter
       description: The alerts' productName on which the cases will be generated.
       type: String
     - contextPath: AzureSentinel.AlertRule.properties.severitiesFilter
-      description: the alerts' severities on which the cases will be generated.
+      description: The alerts' severities on which the cases will be generated.
       type: Unknown
     - contextPath: AzureSentinel.AlertRule.properties.displayNamesFilter
-      description: the alerts' displayNames on which the cases will be generated.
+      description: The alerts' displayNames on which the cases will be generated.
       type: Unknown
     - contextPath: AzureSentinel.AlertRule.properties.query
       description: The query that creates alerts for this rule.
@@ -2978,7 +2978,7 @@ script:
       description: The threshold triggers this alert rule.
       type: Number
     - contextPath: AzureSentinel.AlertRule.properties.suppressionDuration
-      description: The suppression (in ISO 8601 duration format) to wait since last time this alert rule been triggered.
+      description: The suppression (in ISO 8601 duration format) to wait since the last time this alert rule been triggered.
       type: String
     - contextPath: AzureSentinel.AlertRule.properties.suppressionEnabled
       description: Determines whether the suppression for this alert rule is enabled or disabled.
@@ -2996,7 +2996,7 @@ script:
       description: The alert details override settings.
       type: String
     - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration
-      description: The settings of the incidents that created from alerts triggered by this analytics rule.
+      description: The settings of the incidents that were created from alerts triggered by this analytics rule.
       type: Unknown
   dockerimage: demisto/crypto:1.0.0.48652
   feed: false
