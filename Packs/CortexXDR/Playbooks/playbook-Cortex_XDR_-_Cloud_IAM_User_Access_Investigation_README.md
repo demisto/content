@@ -63,7 +63,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | SplunkLatestTime | The latest time for the Splunk search query. | now | Optional |
 | UserEmail | The user email to search Okta logs. |  | Optional |
 | LoginCountry | The Country from which the user logged in. |  | Optional |
-| SIEMFailedLogonSearch | Whether to search for failed logon logs from Siem? Can be False or True. | True | Optional |
+| SIEMFailedLogonSearch | Whether to search for failed logon logs from SIEM? Can be False or True. | True | Optional |
 | ThreatLogSearch | Whether to search for threat logs from PAN-OS? Can be False or True. | True | Optional |
 | XDRAlertSearch | Whether to search for Related alerts from XDR? Can be False or True. | True | Optional |
 | OktaSearch | Whether to search for logs from Okta? Can be False or True. | True | Optional |
