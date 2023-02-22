@@ -1119,7 +1119,7 @@ inputs:
   value:
     simple: ago(1d)
   required: false
-  description: 'The Search Time for the Azure Log Analytics search query. for example: ago(1d)'
+  description: 'The search time for the Azure Log Analytics search query. For example: ago(1d).'
   playbookInputQuery:
 - key: ASN
   value: {}
