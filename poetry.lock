@@ -612,7 +612,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "authenticate_only_with_api_keys_test_playbooks"
-resolved_reference = "8b4c05b6665e947a795b0cdf316efecd1b904a43"
+resolved_reference = "cec106cece51c1305b1bc16765317f1648c53945"
 
 [[package]]
 name = "Deprecated"

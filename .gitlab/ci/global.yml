@@ -179,7 +179,6 @@
     - npm --version
     - jsdoc2md --version
     - demisto-sdk --version
-    - unset DEMISTO_USERNAME
     - section_end "Build Parameters"
 
 .default-job-settings:
