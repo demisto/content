@@ -43,7 +43,6 @@ script:
     arguments:
     - name: should_push_events
       auto: PREDEFINED
-      defaultvalue: 'false'
       description: If true, the command will create events, otherwise it will only display them.
       isArray: false
       predefined:
@@ -55,9 +54,9 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.7.35188
+  dockerimage: demisto/python3:3.10.10.48392
 marketplaces:
-  - marketplacev2
+- marketplacev2
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
