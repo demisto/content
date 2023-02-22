@@ -88,12 +88,10 @@ SEVERITY_LEVELS_MAP = {
 def alert_to_incident(alert, user_prefix):
     alert_severity = float(1)
     context = f'{user_prefix}context'
-    alert_id = f'{user_prefix}alertId'
     extra_data = f'{user_prefix}extraData'
     event_date = 'eventdate'
     alert_name = alert[context].split('.')[-1]
     alert_description = None
-    alert_details = str(alert[alert_id])
     alert_occurred = demisto_ISO(float(alert[event_date]) / 1000)
     alert_labels = []
 
@@ -122,7 +120,7 @@ def alert_to_incident(alert, user_prefix):
     incident = {
         'name': alert_name,
         'severity': alert_severity,
-        'details': alert_details,
+        'details': alert_description,
         'occurred': alert_occurred,
         'labels': alert_labels,
         'rawJSON': json.dumps(new_alert)
@@ -173,12 +171,12 @@ def check_configuration():
     # Check all settings related if set
     # Basic functionality of integration
     list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT, verify=not ALLOW_INSECURE)
-        .query(HEALTHCHECK_QUERY, start=int(time.time() - 1), stop=int(time.time()), output='dict'))
+         .query(HEALTHCHECK_QUERY, start=int(time.time() - 1), stop=int(time.time()), output='dict'))
 
     if WRITER_RELAY and WRITER_CREDENTIALS:
         creds = get_writer_creds()
         Sender(SenderConfigSSL(address=(WRITER_RELAY, PORT),
-                                key=creds['key'].name, cert=creds['crt'].name, chain=creds['chain'].name))\
+                               key=creds['key'].name, cert=creds['crt'].name, chain=creds['chain'].name))\
             .send(tag=HEALTHCHECK_WRITER_TABLE, msg=f'{HEALTHCHECK_WRITER_RECORD}')
 
     if FETCH_INCIDENTS_FILTER:
@@ -204,9 +202,8 @@ def check_configuration():
 
 def check_type(input, tar_type):
     if tar_type == list and isinstance(input, str) and input.startswith("[") and input.endswith("]"):
-        input = input.replace("[", "").replace("]","").replace("'","")
+        input = input.replace("[", "").replace("]", "").replace("'", "")
         input = input.split(",")
-
 
     if isinstance(input, str):
         input = json.loads(input)
@@ -298,9 +295,9 @@ def get_writer_creds():
 
 def parallel_query_helper(sub_query, append_list, timestamp_from, timestamp_to):
     append_list.extend(list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT,
-                                        verify=not ALLOW_INSECURE)
-                            .query(sub_query, start=float(timestamp_from), stop=float(timestamp_to),
-                                    output='dict', ts_format='iso')))
+                                      verify=not ALLOW_INSECURE)
+                       .query(sub_query, start=float(timestamp_from), stop=float(timestamp_to),
+                       output='dict', ts_format='iso')))
 
 
 ''' FUNCTIONS '''
@@ -310,16 +307,14 @@ def fetch_incidents():
     last_run = demisto.getLastRun()
     user_prefix = f'{USER_PREFIX}_' if USER_PREFIX else ""
     user_alert_table = USER_ALERT_TABLE if USER_ALERT_TABLE else DEFAULT_ALERT_TABLE
-    alert_query = ALERTS_QUERY.format(table_name = user_alert_table, user_prefix = user_prefix)
+    alert_query = ALERTS_QUERY.format(table_name=user_alert_table, user_prefix=user_prefix)
     to_time = time.time()
     from_time = 0.0
-    dedupe_config = None
     alert_id = f'{user_prefix}alertId'
     last_events: List = []
     cur_events: List = []
     final_events: List = []
 
-    alerts_list: Dict = {}
     new_last_run: Dict = {}
 
     if int(FETCH_INCIDENTS_LIMIT) < 5 or int(FETCH_INCIDENTS_LIMIT) > 100:
@@ -337,8 +332,7 @@ def fetch_incidents():
 
         alert_query = f'{alert_query} where {filter_string}'
 
-    alert_query = alert_query + " limit " + str(FETCH_INCIDENTS_LIMIT) #add limit to the query
-
+    alert_query = alert_query + " limit " + str(FETCH_INCIDENTS_LIMIT)  # Add limit to the query
 
     if 'from_time' in last_run:
         from_time = float(last_run['from_time'])
@@ -352,16 +346,15 @@ def fetch_incidents():
     events = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT,
                             verify=not ALLOW_INSECURE, timeout=int(TIMEOUT))
                     .query(alert_query, start=float(from_time), stop=float(to_time),
-                        output='dict', ts_format='timestamp'))
+                           output='dict', ts_format='timestamp'))
 
-    context = f'{user_prefix}context'
     extra_data = f'{user_prefix}extraData'
     event_date = 'eventdate'
 
-    # convert the events to demisto incident
+    # Convert the events to demisto incident
     incidents = []
 
-    #de duplicate events between two consecutive fetches
+    # De-duplicate events between two consecutive fetches
     if 'last_fetch_events' in last_run:
         last_events = last_run.get('last_fetch_events', [])
         for event in events:
@@ -381,15 +374,15 @@ def fetch_incidents():
 
     new_last_run['last_fetch_events'] = cur_events
 
-    #update new_last_run and add the event_date of the last event fetched
+    # Update new_last_run and add the event_date of the last event fetched
     if len(final_events) > 0:
         new_last_run['from_time'] = max(event[event_date] for event in final_events)
     else:
-        new_last_run['from_time'] = to_time #set the to_time to current to_time, if no data recieved
+        new_last_run['from_time'] = to_time  # Set the to_time to current to_time, if no data recieved
 
     demisto.setLastRun(new_last_run)
 
-    # this command will create incidents in Demisto
+    # This command will create incidents in Demisto
     demisto.incidents(incidents)
 
     return incidents
@@ -405,13 +398,12 @@ def run_query_command(offset, items):
     time_range = get_time_range(timestamp_from, timestamp_to)
     to_query = to_query + " offset " + str(offset) + " limit " + str(items)
     results = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT, verify=not ALLOW_INSECURE,
-                            timeout=query_timeout)
-                    .query(to_query, start=float(time_range[0]), stop=float(time_range[1]),
-                            output='dict', ts_format='iso'))
+                             timeout=query_timeout).query(to_query, start=float(time_range[0]),
+                                                          stop=float(time_range[1]), output='dict', ts_format='iso'))
     global COUNT_SINGLE_TABLE
     COUNT_SINGLE_TABLE = len(results)
     querylink = {'DevoTableLink': build_link(to_query, int(1000 * float(time_range[0])),
-                                            int(1000 * float(time_range[1])), linq_base=linq_base)}
+                                             int(1000 * float(time_range[1])), linq_base=linq_base)}
 
     entry = {
         'Type': entryTypes['note'],
@@ -461,7 +453,7 @@ def get_alerts_command(offset, items):
     user_alert_table = user_alert_table if user_alert_table else DEFAULT_ALERT_TABLE
     if user_prefix:
         user_prefix = f'{user_prefix}_'
-    alert_query = ALERTS_QUERY.format(table_name = user_alert_table, user_prefix = user_prefix)
+    alert_query = ALERTS_QUERY.format(table_name=user_alert_table, user_prefix=user_prefix)
 
     query = alert_query + " offset " + str(offset) + " limit " + str(items)
     time_range = get_time_range(timestamp_from, timestamp_to)
@@ -471,24 +463,23 @@ def get_alerts_command(offset, items):
         if alert_filters['type'] == 'AND':
             filter_string = ', '\
                 .join([f'{filt["key"]} {filt["operator"]} "{urllib.parse.quote(filt["value"])}"'
-                        for filt in alert_filters['filters']])
+                      for filt in alert_filters['filters']])
         elif alert_filters['type'] == 'OR':
             filter_string = ' or '\
                 .join([f'{filt["key"]} {filt["operator"]} "{urllib.parse.quote(filt["value"])}"'
-                        for filt in alert_filters['filters']])
+                      for filt in alert_filters['filters']])
         alert_query = f'{alert_query} where {filter_string}'
 
     results = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT,
-                            verify=not ALLOW_INSECURE, timeout=query_timeout)
-                    .query(query, start=float(time_range[0]), stop=float(time_range[1]),
-                            output='dict', ts_format='iso'))
-
+                   verify=not ALLOW_INSECURE, timeout=query_timeout)
+                   .query(query, start=float(time_range[0]), stop=float(time_range[1]),
+                   output='dict', ts_format='iso'))
 
     global COUNT_ALERTS
     COUNT_ALERTS = len(results)
 
     querylink = {'DevoTableLink': build_link(alert_query, int(1000 * float(time_range[0])),
-                                            int(1000 * float(time_range[1])), linq_base=linq_base)}
+                                             int(1000 * float(time_range[1])), linq_base=linq_base)}
 
     extra_data = f'{user_prefix}extraData'
 
@@ -498,8 +489,6 @@ def get_alerts_command(offset, items):
 
         for ed in res[extra_data]:
             res[extra_data][ed] = urllib.parse.unquote_plus(res[extra_data][ed])
-
-
 
     entry = {
         'Type': entryTypes['note'],
@@ -520,7 +509,6 @@ def get_alerts_command(offset, items):
         entry_linq['Devo.QueryLink'] = querylink
         return entry
 
-
     headers = list(results[0].keys())
 
     md = tableToMarkdown('Devo query results', results, headers)
@@ -536,7 +524,7 @@ def get_alerts_command(offset, items):
         entry_linq['EntryContext'] = {
             'Devo.QueryLink': createContext(querylink)
         }
-        
+
     return [entry, entry_linq]
 
 
@@ -561,7 +549,8 @@ def multi_table_query_command(offset, items):
     for table in tables_to_query:
         fields = ds_read.get_types(f'from {table} select *', 'now', 'iso').keys()
         clauses = [f"( isnotnull({field}) and str({field})->\"" + search_token + "\")" for field in fields]
-        sub_queries.append("from " + table + " where" + " or ".join(clauses) + " select *" + " offset " + str(offset) + " limit " + str(items))
+        sub_queries.append("from " + table + " where" + " or ".join(clauses) + " select *" + " offset "
+                           + str(offset) + " limit " + str(items))
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
         for q in sub_queries:
@@ -611,7 +600,7 @@ def write_to_table_command():
             sender.send(tag=table_name, msg=f"{r}")
 
     querylink = {'DevoTableLink': build_link(linq, int(1000 * time.time()) - 3600000,
-                                            int(1000 * time.time()), linq_base=linq_base)}
+                                             int(1000 * time.time()), linq_base=linq_base)}
 
     entry = {
         'Type': entryTypes['note'],
