@@ -1034,23 +1034,9 @@ tasks:
       '#none#':
       - "61"
     scriptarguments:
-      Endpoint_hostname:
-        complex:
-          root: Endpoint
-          accessor: Hostname
       Endpoint_id:
         complex:
           root: inputs.traps_endpoint_id
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_id
-      Endpoint_ip:
-        complex:
-          root: IP
-          accessor: Address
     separatecontext: true
     loop:
       iscommand: false
