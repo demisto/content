@@ -1,3 +1,0 @@
-!recorded-future-playbook-alerts-search category=domain_abuse time-since-update="24 hours"
-!recorded-future-playbook-alerts-update alert-ids=1pwponadn-lajbwdlkbal-adkabwdlkadwn new-status=New
-!recorded-future-playbook-alerts-details alert-ids=<id> panels=""
