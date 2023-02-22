@@ -9,7 +9,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 BASE_URL = 'https://api.recordedfuture.com/v2'
 STATUS_TO_RETRY = [500, 501, 502, 503, 504]
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 VENDOR = 'Recorded Future'
 PRODUCT = 'Intelligence Cloud'
 
@@ -125,8 +125,8 @@ def fetch_events(client: Client, **kwargs) -> list:
 
         # In case all events were triggered at the same time and the limit equals their amount,
         # We should increase the next run time, Otherwise the fetch will get stuck at this time forever.
-        if len(next_run_event_ids) == len(events) == int(kwargs.get('limit')):
-            next_run_time = (dateparser.parse(next_run_time) + timedelta(seconds=1)).strftime(DATE_FORMAT)
+        if len(next_run_event_ids) == len(events) == int(kwargs.get('limit')):  # type: ignore
+            next_run_time = (datetime.strptime(next_run_time, DATE_FORMAT) + timedelta(seconds=1)).strftime(DATE_FORMAT)
 
         demisto.setLastRun({'last_run_time': next_run_time, 'last_run_ids': next_run_event_ids})
 
@@ -163,7 +163,7 @@ def main() -> None:
     proxy = params.get('proxy', False)
     api_key = params.get('credentials', {}).get('password')
     headers = {'X-RFToken': api_key}
-    limit = args.get('limit') or params.get('limit') or 1000
+    limit = args.get('limit') or params.get('max_fetch') or 1000
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -184,11 +184,12 @@ def main() -> None:
 
             else:  # command == 'fetch-events'
                 should_push_events = True
-                last_run = demisto.getLastRun().get('last_run_time')
+                if not (last_run := demisto.getLastRun().get('last_run_time')):
+                    last_run = arg_to_datetime(params.get('first_fetch', '3 days')).strftime(DATE_FORMAT)  # type: ignore
                 events = fetch_events(
                     client=client,
                     limit=limit,
-                    last_run=last_run or arg_to_datetime(params.get('first_fetch', '3 days')).strftime(DATE_FORMAT)
+                    last_run=last_run
                 )
 
             if should_push_events:
