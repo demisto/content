@@ -1298,4 +1298,4 @@ against. That is, log types must be fully qualified and the instance ID is a par
 `<instanceID>.firewall.traffic`
 However in this integration the instance ID is added automatically to the query so the name `firewall.traffic` is a valid table name
 * The SQL syntax supported for queries is `csql`
-* The provided authentication items ([configuration step 4](#configure-cortex-data-lake-on-cortex-xsoar)) are limited for each cortex data lake tenant (but can be shared for different XSOAR instances). Trying to re-generate those items will revoke the first generated set of authentication items.
+* The provided authentication items ([configuration step 4](#configure-cortex-data-lake-on-cortex-xsoar)) are limited for each Cortex Data Lake tenant (but can be shared for different Cortex XSOAR instances). Trying to re-generate those items will revoke the first generated set of authentication items.
