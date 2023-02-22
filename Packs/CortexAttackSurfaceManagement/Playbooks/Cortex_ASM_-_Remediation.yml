@@ -455,7 +455,7 @@ inputs:
   value:
     simple: Remediation-Security-Group
   required: true
-  description: 'The security group that will used for remediating internet exposures. '
+  description: 'The security group that will be used for remediating internet exposures.'
   playbookInputQuery:
 outputs: []
 tests:

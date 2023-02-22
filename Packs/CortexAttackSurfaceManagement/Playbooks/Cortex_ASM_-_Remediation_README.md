@@ -29,7 +29,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| RemediationRule | The security group that will used for remediating internet exposures.  | Remediation-Security-Group | Required |
+| RemediationRule | The security group that will be used for remediating internet exposures.  | Remediation-Security-Group | Required |
 
 ## Playbook Outputs
 
