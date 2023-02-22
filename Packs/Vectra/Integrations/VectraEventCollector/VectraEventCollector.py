@@ -180,9 +180,7 @@ def get_detections_cmd(
 
     # TODO docstring
 
-    detections: List[Dict[str, Any]] = client.get_detections(first_timestamp=first_timestamp).get(
-        "results"
-    )
+    detections: List[Dict[str, Any]] = client.get_detections(first_timestamp=first_timestamp).get("results")  # type: ignore
 
     md = tableToMarkdown(
         f"Detections since {first_timestamp}",
@@ -218,7 +216,7 @@ def get_audits_cmd(client: VectraClient, start: str) -> Tuple[CommandResults, Li
 
     # TODO docstring
 
-    audits: List[Dict[str, Any]] = client.get_audits(start=start).get("audits")
+    audits: List[Dict[str, Any]] = client.get_audits(start=start).get("audits")  # type: ignore
 
     md = tableToMarkdown(f"Audits since {start}", audits)
 
@@ -282,7 +280,7 @@ def fetch_events(
     _, detections = get_detections_cmd(client=client, first_timestamp=first_timestamp)
     if detections:
         next_run_detection = datetime.strptime(
-            detections[0].get("first_timestamp"), DETECTION_FIRST_TIMESTAMP_FORMAT
+            detections[0].get("first_timestamp"), DETECTION_FIRST_TIMESTAMP_FORMAT  # type: ignore
         )
 
         # Need to add 1 minute since first_timestamp query parameter is inclusive
@@ -307,7 +305,7 @@ def fetch_events(
 
 
 def get_events(
-    client: VectraClient, first_fetch: datetime, limit: int = 100
+    client: VectraClient, first_fetch: datetime
 ) -> Tuple[CommandResults, List[Dict[str, Any]], CommandResults, List[Dict[str, Any]]]:
 
     # TODO docstring
@@ -345,7 +343,7 @@ def main() -> None:
         client = VectraClient(
             url=config.get("url"),
             api_key=config.get("credentials", {}).get("password"),
-            fetch_limit=arg_to_number(arg=config.get("fetch_limit")),
+            fetch_limit=arg_to_number(arg=config.get("fetch_limit", 100)),  # type: ignore
             insecure=config.get("insecure"),
             proxy=config.get("proxy"),
         )
@@ -360,7 +358,7 @@ def main() -> None:
                 should_push_events = argToBoolean(args.pop("should_push_events"))
 
                 first_fetch: datetime = arg_to_datetime(
-                    arg=config.get("first_fetch", "3 days"), arg_name="First fetch time"
+                    arg=config.get("first_fetch", "3 days"), arg_name="First fetch time"  # type: ignore
                 )
                 detections_cmd_res, detections, audits_cmd_res, audits = get_events(
                     client, first_fetch
@@ -384,7 +382,7 @@ def main() -> None:
                 # First time running fetch events
                 else:
                     demisto.info("First time fetching events")
-                    first_fetch: datetime = arg_to_datetime(
+                    first_fetch: datetime = arg_to_datetime(  # type: ignore
                         arg=config.get("first_fetch", "3 days"), arg_name="First fetch time"
                     )
                     first_timestamp = first_fetch.strftime(
