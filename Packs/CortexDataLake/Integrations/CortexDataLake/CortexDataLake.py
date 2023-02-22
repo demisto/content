@@ -12,9 +12,12 @@ from tempfile import gettempdir
 from dateutil import parser
 import demistomock as demisto
 from datetime import timedelta
+import urllib3
+
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
+
 
 ''' GLOBAL CONSTS '''
 ACCESS_TOKEN_CONST = 'access_token'  # guardrails-disable-line
