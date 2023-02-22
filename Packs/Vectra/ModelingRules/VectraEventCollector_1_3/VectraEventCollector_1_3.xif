@@ -1,0 +1,26 @@
+[MODEL: dataset="vectra_detections_raw"]
+alter 
+    xdm.alert.original_alert_id = to_string(id),
+    xdm.source.ipv4 = src_ip,
+    xdm.event.description = if(description = null, category), 
+    xdm.alert.original_threat_name = detection_type,
+    xdm.event.tags = arraycreate(tags),
+    xdm.event.is_completed = if(state = "fixed"),
+    xdm.source.host.hostname = json_extract_scalar(src_host, "$.name"),
+    xdm.source.agent.identifier = json_extract_scalar(src_host, "$.id")
+;
+    
+
+[MODEL: dataset="vectra_audits_raw"]
+alter 
+    xdm.event.type = "AUDIT",
+    xdm.source.user.user_type = role ,
+    xdm.source.user.username = user,
+    xdm.event.outcome = if(result = "success", XDM_CONST.OUTCOME_SUCCESS, result = "failure", XDM_CONST.OUTCOME_FAILED, result = null, null, to_string(result)),
+    xdm.target.host.hostname = dvchost,
+    xdm.target.application.version = version,
+    xdm.target.ipv4  = headend_addr,
+    xdm.source.ipv4 = source_ip,
+    xdm.event.description = message,
+    xdm.event.is_completed = if(result != "pending")
+;

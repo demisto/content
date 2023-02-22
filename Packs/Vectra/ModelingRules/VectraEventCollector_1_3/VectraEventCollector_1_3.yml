@@ -1,0 +1,8 @@
+
+
+fromversion: 6.10.0
+id: Vectra_Event_collector
+name: Vectra Event Collector
+rules: ''
+schema: ''
+tags: Vectra Detection Audits
