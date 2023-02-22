@@ -44,6 +44,9 @@ Get Playbook alert details by id.
 | alert_ids | Ids of the playbook alert that should be fetched. | Required | 
 | detail_sections | What evidence sections to include in the fetch, fetches all available if not specified. Possible values are: status, action, summary, log, whois, dns. | Optional | 
 
+##### Command Example
+```!recordedfuture-playbook-alerts-details alert_ids="12312312-1231-1231-1231-123123123123" detail_sections="status,log"```
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -195,6 +198,9 @@ Update the status of one or multiple Playbook alerts
 | alert_ids | Ids of the playbook alerts that will be updated. | Required | 
 | new_status | New status to set for all alerts in alert_ids. Possible values are: new, in-progress, dismissed, resolved. | Required | 
 
+##### Command Example
+```!recordedfuture-playbook-alerts-update alert_ids="12312312-1231-1231-1231-123123123123" new_status="New"```
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -223,6 +229,16 @@ Search playbook alerts based on filters
 | playbook_alert_status | Filter what statuses are fetched, defaults to only new status if not specified. Possible values are: new, in-progress, dismissed, resolved. | Optional | 
 | priority | Actions pritority assigned in Recorded Future. Possible values are: high, moderate, informational. | Optional | 
 | order_search_by | Actions pritority assigned in Recorded Future. Possible values are: updated, created. | Optional | 
+
+##### Command Example
+```!recordedfuture-playbook-alerts-search```
+```!recordedfuture-playbook-alerts-search category=domain_abuse```
+```!recordedfuture-playbook-alerts-search category=vulnerability```
+```!recordedfuture-playbook-alerts-search limit=10```
+```!recordedfuture-playbook-alerts-search playbook_alert_status=in-progress```
+```!recordedfuture-playbook-alerts-search priority=high```
+```!recordedfuture-playbook-alerts-search order_search_by=updated```
+
 
 #### Context Output
 
