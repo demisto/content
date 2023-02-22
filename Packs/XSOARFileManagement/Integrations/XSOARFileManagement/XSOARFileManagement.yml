@@ -46,20 +46,20 @@ script:
       - war room entry
       - incident attachment
     description: Copies a file from this incident to the specified incident. Usefull if you want to manipule file in the preprocessing
-    name: upload-file-to-incident
+    name: file-management-upload-file-to-incident
   - arguments:
     - description: Entry ID of the file
       name: entryID
       required: true
     description: Delete the file from the incident and from the XSOAR server
     execution: true
-    name: delete-file
+    name: file-management-delete-file
   - arguments:
     - description: Entry ID of the file
       name: entryID
       required: true
     description: Check if entry ID exist
-    name: check-file
+    name: file-management-check-file
     outputs:
     - contextPath: IsFileExists
   - arguments:
@@ -70,7 +70,7 @@ script:
     - name: fieldName
     description: Delete the attachment from the incident and from the XSOAR server
     execution: true
-    name: delete-attachment
+    name: file-management-delete-attachment
   - arguments:
     - description: Entry ID of the file to rename
       name: entryID
@@ -79,7 +79,7 @@ script:
       name: newFileName
       required: true
     description: 'Rename a file. Warning: use this only if necessary, it''s HEAVY to run, this will delete and recreate the file with another name !'
-    name: rename-file
+    name: file-management-rename-file
   dockerimage: demisto/python3:3.10.9.46807
   runonce: false
   script: ''
