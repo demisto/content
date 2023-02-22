@@ -237,7 +237,7 @@ def get_audits_cmd(client: VectraClient, start: str) -> Tuple[CommandResults, Li
 
 
 def fetch_events(
-    client: VectraClient, first_timestamp: str, start: str
+    client: VectraClient, first_timestamp: str, start: str, is_first_fetch: bool
 ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], Dict[str, str]]:
 
     """
@@ -260,7 +260,7 @@ def fetch_events(
 
     # Fetch alerts if it's the end of the day or the first fetch
     now = datetime.utcnow()
-    if is_eod(now) or not demisto.getLastRun():
+    if is_eod(now) or is_first_fetch:
         demisto.info(f"Fetching audits from {start} to now...")
         _, audits = get_audits_cmd(client=client, start=start)
         next_run_audit_str = now.strftime(AUDIT_START_TIMESTAMP_FORMAT)
@@ -374,7 +374,8 @@ def main() -> None:
                 should_push_events = True
 
                 # Not first time running fetch events
-                if demisto.getLastRun():
+                is_first_fetch: bool = False if demisto.getLastRun() else True
+                if not is_first_fetch:
                     first_timestamp = demisto.getLastRun().get(DETECTION_NEXT_RUN_KEY)
                     start = demisto.getLastRun().get(AUDIT_NEXT_RUN_KEY)
 
@@ -391,7 +392,10 @@ def main() -> None:
                     start = first_fetch.strftime(AUDIT_START_TIMESTAMP_FORMAT)
 
                 detections, audits, next_fetch = fetch_events(
-                    client=client, first_timestamp=first_timestamp, start=start
+                    client=client,
+                    first_timestamp=first_timestamp,
+                    start=start,
+                    is_first_fetch=is_first_fetch,
                 )
 
                 demisto.info(f"Setting last run to {str(next_fetch)}...")
