@@ -16,11 +16,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * Block URL - Generic v2
-* Block Account - Generic v2
-* Block IP - Generic v3
-* Block File - Generic v2
-* Block Domain - Generic
 * Block Email - Generic
+* Block File - Generic v2
+* Block IP - Generic v3
+* Block Domain - Generic
+* Block Account - Generic v2
 
 ### Integrations
 
@@ -103,6 +103,7 @@ This playbook does not use any integrations.
 | CheckpointFWRule.Hits.Level | Level of rule hits. | unknown |
 | CheckpointFWRule.Hits.Percentage | Percentage of rule hits | unknown |
 | CheckpointFWRule.Hits.Value | Value of rule hits. | unknown |
+| IndicatorsToBlock | Selected indicators to block | unknown |
 
 ## Playbook Image
 

@@ -1579,6 +1579,9 @@ outputs:
   description: Percentage of rule hits
 - contextPath: CheckpointFWRule.Hits.Value
   description: Value of rule hits.
+- contextPath: IndicatorsToBlock
+  description: Selected indicators to block
+  type: unknown
 tests:
 - Block IP - Generic V3_Test
 fromversion: 6.5.0
