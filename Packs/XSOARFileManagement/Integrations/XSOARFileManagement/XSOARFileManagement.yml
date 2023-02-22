@@ -3,7 +3,7 @@ commonfields:
   id: XSOAR File Management
   version: -1
 configuration:
-- additionalinfo: Make sur XSOAR config 'External Host Name' is set and let this field empty otherwise set the external ip of XSOAR. Using https://127.0.0.1 don't work.
+- additionalinfo: Make sure XSOAR config 'External Host Name' is set and let this field empty otherwise set the external ip of XSOAR. Using https://127.0.0.1 don't work.
   display: Server URL (e.g. https://my.soar.com)
   name: url
   required: false
