@@ -983,7 +983,7 @@ inputs:
 
     AWS available types:
     Disable - for disabling the user's access key.
-    Delete - for the user's access key deletion.
+    Delete - for deleting the user's access key.
   playbookInputQuery:
 - key: GCP-accessKeyRemediationType
   value:
