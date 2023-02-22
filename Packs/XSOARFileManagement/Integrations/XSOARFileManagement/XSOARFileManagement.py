@@ -402,8 +402,6 @@ def main() -> None:
             return_results(result)
         elif command == 'upload-file-to-incident':
             return_results(upload_file_command(client, args))
-        elif command == 'test':
-            return_results(test(client, args))
         elif command == 'delete-file':
             return_results(delete_file_command(client, args))
         elif command == 'delete-attachment':
