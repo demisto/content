@@ -62,7 +62,7 @@ This playbook does not use any scripts.
 | AWS.IAM.Users.Groups | AWS IAM - user groups. | unknown |
 | AWS.IAM.UserPolicies |  AWS IAM - User inline policies. | unknown |
 | AWS.IAM.AttachedUserPolicies | AWS IAM - User attached policies. | unknown |
-| MSGraphGroup | MSGraph Group information. | unknown |
+| MSGraphGroup | MSGraph group information. | unknown |
 
 ## Playbook Image
 
