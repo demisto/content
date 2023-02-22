@@ -1,5 +1,5 @@
 fromversion: 6.10.0
-id: Intelligence_Cloud_Recorded_Future_modeling_rule
-name: Intelligence Cloud Recorded Future Modeling Rule
+id: RecordedFutureModelingRule
+name: Recorded Future Modeling Rule
 rules: ''
 schema: ''
