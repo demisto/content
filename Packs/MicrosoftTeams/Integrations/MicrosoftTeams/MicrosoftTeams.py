@@ -88,6 +88,8 @@ GROUP_CHAT_ID_SUFFIX = "@thread.v2"
 ONEONONE_CHAT_ID_SUFFIX = "@unq.gbl.spaces"
 MAX_ITEMS_PER_RESPONSE = 50
 
+EXTERNAL_FORM = "external/form"
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -252,7 +254,10 @@ def urlify_hyperlinks(message: str) -> str:
     # URLify markdown hyperlinks
     urls = re.findall(URL_REGEX, message)
     for url in urls:
-        formatted_message = formatted_message.replace(url, f'[{url}]({url})')
+        if EXTERNAL_FORM in url:
+            formatted_message = formatted_message.replace(url, f'[Microsoft Teams Form]({url})')
+        else:
+            formatted_message = formatted_message.replace(url, f'[{url}]({url})')
     return formatted_message
 
 
@@ -2354,6 +2359,7 @@ def messages() -> Response:
     Main handler for messages sent to the bot
     """
     try:
+        demisto.debug("Microsoft Teams Integration received a message from Teams")
         demisto.debug('Processing POST query...')
         headers: dict = cast(Dict[Any, Any], request.headers)
 
