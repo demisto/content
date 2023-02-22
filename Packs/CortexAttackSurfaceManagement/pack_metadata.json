@@ -19,21 +19,13 @@
         "Palo Alto Networks"
     ],
     "dependencies": {
-        "ServiceNow": {
-            "mandatory": false,
-            "display_name": "ServiceNow"
-        },
-        "Nmap": {
-            "mandatory": false,
-            "display_name": "Nmap"
-        },
-        "Tenable_io": {
-            "mandatory": false,
-            "display_name": "Tenable.io"
-        },
         "AWS-Enrichment-Remediation": {
             "mandatory": false,
             "display_name": "AWS Enrichment and Remediation"
+        },
+        "Azure-Enrichment-Remediation": {
+            "mandatory": false,
+            "display_name": "Azure Enrichment and Remediation"
         },
         "CommonScripts": {
             "mandatory": true,
@@ -43,9 +35,25 @@
             "mandatory": false,
             "display_name": "GCP Enrichment and Remediation"
         },
-        "Azure-Enrichment-Remediation": {
+        "Nmap": {
             "mandatory": false,
-            "display_name": "Azure Enrichment and Remediation"
+            "display_name": "Nmap"
+        },
+        "Rapid7_Nexpose": {
+            "mandatory": false,
+            "display_name": "Rapid7 Nexpose"
+        },
+        "SplunkPy": {
+            "mandatory": false,
+            "display_name": "Splunk"
+        },
+        "ServiceNow": {
+            "mandatory": false,
+            "display_name": "ServiceNow"
+        },
+        "Tenable_io": {
+            "mandatory": false,
+            "display_name": "Tenable.io"
         }
     },
     "marketplaces": [
