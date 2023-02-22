@@ -9,7 +9,7 @@ configuration:
   required: false
   type: 0
 - display: ""
-  displaypassword: Demisto Server API Key
+  displaypassword: XSOAR Server API Key
   hiddenusername: true
   name: creds_apikey
   required: false
