@@ -300,8 +300,8 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-        - 'active'
-        - 'disabled'
+      - 'active'
+      - 'disabled'
     - description: Notes for the user.
       name: notes
       required: false
