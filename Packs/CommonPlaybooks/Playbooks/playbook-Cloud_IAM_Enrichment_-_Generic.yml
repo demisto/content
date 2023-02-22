@@ -1028,7 +1028,7 @@ outputs:
   description: MSGraph groups information.
   type: unknown
 - contextPath: MSGraph.identityProtection
-  description: MSGraph identity Protection - risky user history.
+  description: MSGraph identity protection - risky user history.
   type: unknown
 - contextPath: AWS.IAM.Users.AccessKeys.CreateDate
   description: The date when the access key was created.
