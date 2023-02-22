@@ -1,6 +1,6 @@
 ### Overview
 
-This content pack provides tools for creating automated tests and test cases for XSOAR content and testing within XSOAR. Assessment tools identify potential impacts of an upgrade to a Marketplace content pack, display an XSOAR object's commit history when using  **Save Version**, and list automations used in playbooks.  Testing data is created by pulling incident fields and context from existing incidents, manual updates of individual fields and context keys, and saving data to XSOAR lists for use in tests.  Test cases can be defined that load appropriate test data and execute automation, playbook, and sub-playbook tests.  The **UnitTest** incident type, **UnitTestingLayout** layout, and **UnitTestingTopLevel** playbook provide an example of a content testing environment and use of the testing tools. These objects can be modified as needed for specific testing requirements or guide implementation of a custom content testing environment.
+This content pack provides tools for creating automated tests and test cases for XSOAR content and testing within XSOAR. Assessment tools identify potential impacts of an upgrade to a Marketplace content pack, display an XSOAR object's version history when using  **Save Version**, and list automations used in playbooks.  Playbook analysis provides average and maximum task duration across a range of incidents as well as task runnging status. Test data is created by pulling incident fields and context from existing incidents, manual updates of individual fields and context keys, and saving data to XSOAR lists for use in testing.  Test cases are defined that load appropriate test data and execute automation, playbook, and sub-playbook tests.  The **UnitTest** incident type, **UnitTestingLayout** layout, and **UnitTestingTopLevel** playbook provide an example of a content testing environment and use of the testing tools. These objects can be modified as needed for specific testing requirements or guide implementation of a custom content testing environment.
 
 - Provide guidance for what tests are required for a change
   - Marketplace content pack updates
@@ -121,10 +121,10 @@ The test case XSOAR list to create for the example:
 #### Test Case List Format
 Test cases are defined by content testing commands in an XSOAR list. The following test commands are supported:
 
-- **LoadFields**|\<list name where test incident fields are saved\>
-- **LoadContext**|\<list name where test context are saved\>
-- **Automation**|\<list name with automation commands and their arguments\>
-- **Subplaybook**|\<list name with subplaybooks and their inputs\>
+- **LoadFields**|\<XSOAR list name where test incident fields are saved\>
+- **LoadContext**|\<XSOAR list name where test context are saved\>
+- **Automation**|\<XSOAR list name with automation commands and their arguments\>
+- **Subplaybook**|\<XSOAR list name with subplaybooks and their inputs\>
 - **Playbook**|\<comma separated list of playbook names\>
 
 ### Caveats
@@ -147,24 +147,27 @@ Test cases are defined by content testing commands in an XSOAR list. The followi
 - **UnitTestLayout**
 
 #### Incident Fields
+
 - **contenttestingcontentautomations**
 - **contenttestingcontentdetails**
 - **contenttestingcontentimpacts**
 - **contenttestingcommithistory**
-- **contenttestingunittesthelp**
+- **contenttestingcoverage**
+- **contenttestingpbainfo**
+- **contenttestingdependencies**
 - **contenttestingunittestresults**
 - **contenttestingunittestplaybooks**
 
 #### Assessment Automations
-- **UpgradeCheck**
 - **ChangeHistory**
 - **ListPlaybookAutomationsCommands**
+- **UpgradeCheck**
 
 #### Content Testing Automations
 - **UnitTest**
 - **UnitTestCase**
 - **UnitTestCasePrep**
-- **UnitTestSubplaybookPrep**
+- **UnitTestCoverage**
 - **UnitTestLoadContext**
 - **UnitTestLoadContextList**
 - **UnitTestLoadFields**
@@ -174,6 +177,13 @@ Test cases are defined by content testing commands in an XSOAR list. The followi
 - **UnitTestSaveContextList**
 - **UnitTestSaveFieldsList**
 - **UnitTestSetField**
+- **UnitTestSubplaybookPrep**
+
+#### Playbook Analysis Automations
+- **UnitTestPBAStats**
+- **UnitTestPBATaskAvg**
+- **UnitTestPBATaskMax**
+- **UnitTestPlaybookAnalyzer**
 
 ### Assessment Automations
 
@@ -189,7 +199,7 @@ None
 None
 
 #### ChangeHistory
-This automation searchs for the commit history of all current local changes in XSOAR when using dev to prod and a remote repository.  The commit history is stored in a field (**contenttestingcommithistory**) and displayed in a tab of in the testing incident's layout.  Commit history is created when an XSOAR object such as a playbook is saved using the **Save Version** button.
+This automation searchs for the version history of all current local changes in XSOAR when using dev to prod and a remote repository.  The version history is stored in a field (**contenttestingcommithistory**) and displayed in a tab of in the testing incident's layout.  Version history is created when an XSOAR object such as a playbook is saved using the **Save Version** button.
 
 ##### Inputs
 
@@ -200,7 +210,7 @@ None
 None
 
 #### ListPlaybookAutomationsCommand
-This automation searches playbooks for automation or integration commands used by the playbook and stores them in a field (**contenttestingcontentautomations**) for display in the testing incident layout. This assists identifying playbooks and automations requiring testing as part of a change to XSOAR content.
+This automation searches playbooks for automation or integration commands used by a playbook and stores them in a field (**contenttestingcontentautomations**) for display in the testing incident layout. This assists identifying playbooks and automations requiring testing as part of a change to XSOAR content.
 
 ##### Inputs
 
@@ -222,7 +232,20 @@ This automation runs each type of test, dynamically adds tasks to the testing pl
 |playbook| Playbook to execute, blank if testType is Subplaybook or Automation |
 |addAfter| Playbook task (typically a playbook section header) numeric ID  to add this testing task after |
 |testType| Type of test to run: Playbook, Subplaybook, Automation, Multiselect |
-|listName| XSOAR list name to read sub-playbooks or automations and their inputs or arguments from, blank if testType is Playbook or Multiselect |
+|listName| XSOAR list name to read sub-playbooks or automations and their inputs or arguments from. Blank if testType is Playbook or Multiselect |
+
+##### Outputs
+
+None
+
+#### UnitTestCoverage
+Looks at all the content tests that have been executed using the specified playbook and whether each executable (regular, conditional, sub-playbook, and data collection) task was executed. Places Markdown formatted results in the **contenttestingcoverage** field for display in the incident layout.
+
+##### Inputs
+
+|Argument Name| Description |
+|---|---|
+|playbook| Name of the playbook to assess test coverage  |
 
 ##### Outputs
 
@@ -314,7 +337,7 @@ This automation loads incident fields from an XSOAR list into the current testin
 
 |Argument Name| Description |
 |---|---|
-|list |  XSOAR list name to load incident fields from  |
+|list | XSOAR list name to load incident fields from  |
 
 ##### Outputs
 
@@ -327,8 +350,8 @@ This automation sets an incident field value in the current testing incident.
 
 |Argument Name| Description |
 |---|---|
-|field |  Incident field name to set  |
-|value |  Value to set incident field to  |
+|field | Incident field name to set  |
+|value | Value to set incident field to  |
 
 ##### Outputs
 
@@ -348,7 +371,7 @@ This automation is used if a set of playbooks are provided in a multi-select inc
 None
 
 #### UnitTestSubplaybookPrep
-This automation loads context providing sub-playbook inputs.  The sub-playbook testing list used is the same as used by **UnitTesting**. Context must be preloaded since caching of context updates does not occur until an automation exits. This automation must execute prior to **UnitTesting** executing against the "Subplaybook" type of test.
+This automation loads context providing sub-playbook inputs.  The sub-playbook testing list used is the same as used by **UnitTesting**. Context must be preloaded since caching of context updates does not occur until an automation exits. This automation must execute prior to **UnitTesting** executing against the "Subplaybook" type of test that requires playbook inputs.
 
 ##### Inputs
 
@@ -384,6 +407,72 @@ These automation loads context and incident fields defined in a test case XSOAR 
 |---|---|
 |testName | Test case name (not used) |
 |listName | XSOAR list name to read test case from |
+
+##### Outputs
+
+None
+
+#### UnitTestLoadContext
+This automation loads context from an existing incident into the current testing incident.
+
+##### Inputs
+
+|Argument Name| Description |
+|---|---|
+|id | Incident numeric ID to load context from |
+
+##### Outputs
+
+None
+
+### Playbook Analyzer Automations
+
+#### UnitTestPlaybook Analyzer
+
+Analyzes playbook dependencies on automations and sub-playbooks as well as tasks execution metrics over a set of selected incidents. Generates minumum, average, and maximum execution times for each task in the specified playbook.  Execution statistics are stored in the **PlaybookStatistics** context key for display in the layout. Content dependencies are stored in the **contenttestingdependencies** field and task execution information is stored **contenttestingpbainfo** field for display in the layout.
+
+##### Inputs
+
+|Argument Name| Description |
+|---|---|
+|playbook| Name of the playbook to analyze  |
+|occurred| Incident occurrance time and include in the analysis|
+
+##### Outputs
+
+None
+
+#### UnitTestPBAStats
+
+General dynamic section script that creates and displays a bar widget that shows the task status (running, executed, not started, waiting, and error) counts for tasks from the data in the **PlaybookStatistics** context key.
+
+##### Inputs
+
+None
+
+##### Outputs
+
+None
+
+#### UnitTestPBATaskAvg
+
+General dynamic section script that creates and displays a pie widget of the average task durations for each task in the playbook based on the data in the **PlaybookStatistics** context key.
+
+##### Inputs
+
+None
+
+##### Outputs
+
+None
+
+#### UnitTestPBATaskMax
+
+General dynamic section script that creates and displays a pie widget of the maximum task durations for each task in the playbook based on the data in the **PlaybookStatistics** context key.
+
+##### Inputs
+
+None
 
 ##### Outputs
 
