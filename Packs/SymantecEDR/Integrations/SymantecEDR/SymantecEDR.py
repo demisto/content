@@ -695,7 +695,7 @@ def convert_to_iso8601(timestamp: str) -> str:
     if datetime_from_timestamp := dateparser.parse(timestamp, settings={'TIMEZONE': 'UTC'}):
         return f'{datetime_from_timestamp.strftime(ISO8601_F_FORMAT)[:-3]}Z'
     else:
-        raise ValueError(f'{timestamp} could not be parsed')
+        raise ValueError(f'{timestamp=} could not be parsed')
 
 
 def extract_headers_for_readable_output(summary_data: list[dict]) -> list:
