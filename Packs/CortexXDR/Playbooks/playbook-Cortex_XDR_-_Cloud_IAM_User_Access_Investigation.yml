@@ -1107,7 +1107,7 @@ inputs:
   value:
     simple: identity_name
   required: false
-  description: Cortex XDR User name Field.
+  description: Cortex XDR user name field.
   playbookInputQuery:
 - key: QRadarSearchTime
   value:
