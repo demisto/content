@@ -72,10 +72,11 @@ def get_machines_locks_details(storage_client: storage.Client, bucket_name: str,
     for blob in blobs:
         if blob.name.startswith(lock_repository_name):
             found = True
-            lock_file_name = blob.name.strip(f'{lock_repository_name}/{machines_lock_repo}/')
-            if lock_file_name:
-                files.append({'machine_name': lock_file_name.split('-lock-')[0],
-                              'job_id': (lock_file_name.split('-lock-')[1])})
+            if blob.name.startswith(f'{lock_repository_name}/{machines_lock_repo}'):
+                lock_file_name = blob.name.split('/')[-1]
+                if lock_file_name:
+                    files.append({'machine_name': lock_file_name.split('-lock-')[0],
+                                  'job_id': lock_file_name.split('-lock-')[1]})
         elif found:
             break
     return files
