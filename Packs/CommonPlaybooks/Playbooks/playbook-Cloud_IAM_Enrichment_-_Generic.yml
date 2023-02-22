@@ -1038,7 +1038,7 @@ outputs:
   description: AWS IAM - User groups.
   type: unknown
 - contextPath: AWS.IAM.UserPolicies
-  description: ' AWS IAM - User inline policies.'
+  description: AWS IAM - user inline policies.
   type: unknown
 - contextPath: AWS.IAM.AttachedUserPolicies
   description: AWS IAM - User attached policies.
