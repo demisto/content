@@ -62,6 +62,26 @@ configuration:
   required: false
   type: 4
   hidden: true
+- display: First fetch time interval
+  additionalinfo: The time range to consider for the initial data fetch. (<number>
+    <unit>, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years). Default is 3 days.
+  defaultvalue: 3 days
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- display: Maximum number of incidents to fetch every time
+  defaultvalue: '25'
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+- display: Fetch Analyzer ARN
+  name: analyzerArn
+  additionalinfo: The ARN to fetch findings for
+  defaultvalue: ""
+  type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -70,12 +90,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Fetch Analyzer ARN
-  name: analyzerArn
-  additionalinfo: The ARN to fetch findings for
-  defaultvalue: ""
-  type: 0
-  required: false
 - display: Timeout
   name: timeout
   additionalinfo: The time in seconds till a timeout exception is reached. You can
@@ -94,7 +108,7 @@ configuration:
   required: false
   type: 0
 description: Amazon Web Services IAM Access Analyzer
-display: AWS - AccessAnalyzer (beta)
+display: AWS - AccessAnalyzer
 name: AWS - AccessAnalyzer
 script:
   commands:
@@ -128,9 +142,12 @@ script:
     execution: false
     name: aws-access-analyzer-list-analyzers
     outputs:
-    - contextPath: AWS.AccessAnalyzer.Analyzers.arn
+    - contextPath: AWS.AccessAnalyzer.Analyzers
       description: List of Analyzers and their details.
       type: Unknown
+    - contextPath: AWS.AccessAnalyzer.Analyzers.arn
+      description: The Analyzer arn.
+      type: String
   - arguments:
     - default: false
       description: The ARN of the analyzer to retrieve a list of analyzed resources from.
@@ -190,6 +207,9 @@ script:
     - contextPath: AWS.AccessAnalyzer.Analyzers.Resource
       description: List of analyzed resources.
       type: Unknown
+    - contextPath: AWS.AccessAnalyzer.Analyzers.Resource.resourceArn
+      description: The resource Arn.
+      type: String
   - arguments:
     - default: false
       description: The ARN of the analyzer to retrieve findings from.
@@ -257,9 +277,12 @@ script:
     execution: false
     name: aws-access-analyzer-list-findings
     outputs:
-    - contextPath: AWS.AccessAnalyzer.Findings
+    - contextPath: AWS.AccessAnalyzer.Analyzers.Finding
       description: Access Analyzer findings.
       type: Unknown
+    - contextPath: AWS.AccessAnalyzer.Analyzers.Finding.id
+      description: The Finding ID.
+      type: String
   - arguments:
     - default: false
       description: The ARN of the analyzer to retrieve information from.
@@ -305,6 +328,9 @@ script:
     - contextPath: AWS.AccessAnalyzer.Analyzers.Resource
       description: Analyzed resource detail.
       type: Unknown
+    - contextPath: AWS.AccessAnalyzer.Analyzers.Resource.id
+      description: The Resource id.
+      type: String
   - arguments:
     - default: false
       description: The ARN of the analyzer to retrieve information from.
@@ -350,6 +376,9 @@ script:
     - contextPath: AWS.AccessAnalyzer.Analyzers.Finding
       description: Finding details.
       type: Unknown
+    - contextPath: AWS.AccessAnalyzer.Analyzers.Finding.id
+      description: The Finding ID.
+      type: String
   - arguments:
     - default: false
       description: The ARN of the analyzer to use to scan the policies applied to the specified resource.
@@ -442,7 +471,7 @@ script:
     description: Updates findings with the new values provided in the request.
     execution: false
     name: aws-access-analyzer-update-findings
-  dockerimage: demisto/boto3py3:1.0.0.41082
+  dockerimage: demisto/boto3py3:1.0.0.49126
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -450,6 +479,5 @@ script:
   script: '-'
   subtype: python3
   type: python
-beta: true
 tests:
 - No test
