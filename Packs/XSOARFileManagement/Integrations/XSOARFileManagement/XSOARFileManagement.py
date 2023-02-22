@@ -400,15 +400,15 @@ def main() -> None:
         if command == 'test-module':
             result = test_module(client, params)
             return_results(result)
-        elif command == 'upload-file-to-incident':
+        elif command == 'file-management-upload-file-to-incident':
             return_results(upload_file_command(client, args))
-        elif command == 'delete-file':
+        elif command == 'file-management-delete-file':
             return_results(delete_file_command(client, args))
-        elif command == 'delete-attachment':
+        elif command == 'file-management-delete-attachment':
             return_results(delete_attachment_command(client, args))
-        elif command == 'check-file':
+        elif command == 'file-management-check-file':
             return_results(check_file_command(client, args))
-        elif command == 'rename-file':
+        elif command == 'file-management-rename-file':
             return_results(rename_file_command(client, args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented')
