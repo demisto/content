@@ -98,12 +98,23 @@ def test_test_module(mocker: mock, endpoints: Dict[str, str], expected: str):
     When
             Case A: Calling test-module with list of endpoints which include detections and audits
     Then
-            Make sure that result succeds or not.
+            Make sure that result succeeds or not.
     """
 
-    mocker.patch.object(client, "get_endpoints", return_value=endpoints)
+    mocker.patch.object(client, "_http_request", return_value=endpoints)
     actual = test_module(client)
     assert expected in actual
+
+
+def test_test_module_exception(mocker):
+    # TODO docstring
+
+    mocker.patch.object(client, "_http_request", side_effect=Exception("mocked error"))
+
+    with pytest.raises(Exception) as e:
+        test_module(None)
+
+        assert "Error authenticating" in str(e)
 
 
 def test_get_detections(mocker: mock):
