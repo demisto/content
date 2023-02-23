@@ -1346,16 +1346,13 @@
                                                         }
                                                     },
                                                     "operator": "append"
-                                                },
-                                                {
-                                                    "args": {},
-                                                    "operator": "uniq"
                                                 }
                                             ]
                                         }
                                     },
-                                    "PrivateIPRangeList": {
-                                        "simple": "PrivateIPRanges"
+                                    "PrivateIPsListName": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
                                     }
                                 },
                                 "buttonClass": "warning",
@@ -1416,7 +1413,7 @@
                                 "id": "73fe4d00-9b2e-11ed-806a-bf1c03602b43",
                                 "index": 6,
                                 "name": "Show Private/Public IPs",
-                                "scriptId": "09956a46-8c4c-41fd-8b78-dad1a6dea173",
+                                "scriptId": "IsIPPrivate",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -1716,6 +1713,10 @@
                                             "root": "incident",
                                             "transformers": []
                                         }
+                                    },
+                                    "InternalDomainsListName": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
                                     }
                                 },
                                 "buttonClass": "warning",
@@ -4216,9 +4217,6 @@
     "group": "incident",
     "id": "Default",
     "name": "Default",
-    "marketplaces": [
-        "xsoar"
-    ],
     "system": false,
     "version": -1,
     "fromVersion": "8.2.0",
