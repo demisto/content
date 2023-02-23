@@ -6766,7 +6766,7 @@ class CommandResults:
         if not outputs_key_field:
             self._outputs_key_field = None
         elif isinstance(outputs_key_field, STRING_TYPES):
-            self._outputs_key_field = [outputs_key_field]  # type: ignore[arg-type]
+            self._outputs_key_field = [outputs_key_field]  # type: ignore[list-item]
         elif isinstance(outputs_key_field, list):
             self._outputs_key_field = outputs_key_field
         else:
