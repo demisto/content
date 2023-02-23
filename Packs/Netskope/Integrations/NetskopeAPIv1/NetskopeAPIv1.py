@@ -941,7 +941,7 @@ def main():
                             fetch_events=fetch_events,
                             max_events_fetch=max_events_fetch,
                             event_types=event_types,
-                            alerts_query=demisto.params().get('alert_query'),
+                            alerts_query=demisto.params().get('alerts_query'),
                             events_query=demisto.params().get('events_query'))
         elif command in commands:
             return_results(commands[command](client, demisto.args()))
