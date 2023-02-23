@@ -837,12 +837,6 @@ script:
       required: true
       isArray: true
       defaultValue: ""
-    - default: true
-      description: ''
-      isArray: true
-      name: cve
-      required: true
-      secret: false
     outputs:
     - contextPath: CVE.ID
       description: "The ID of the CVE, for example: CVE-2015-1653."
