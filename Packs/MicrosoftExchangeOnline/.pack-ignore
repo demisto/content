@@ -13,6 +13,9 @@ ignore=IN128,IN145
 [file:SecurityAndComplianceV2.yml]
 ignore=IN145,IN124
 
+[file:EwsExtension.yml]
+ignore=CJ105
+
 [file:SecurityAndCompliance_image.png]
 ignore=BA114
 
