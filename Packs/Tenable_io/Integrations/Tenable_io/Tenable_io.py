@@ -944,9 +944,6 @@ def export_assets_command(args: Dict[str, Any]) -> PollResult:
         PollResult: A result to return to the user which will be set as a CommandResults.
             The result itself will depend on the stage of polling.
     """
-    if not is_demisto_version_ge('6.2.0'):
-        raise DemistoException('This command is not supported for your server version.'
-                               ' Please update your server version to 6.2.0 or later.')
     export_uuid = demisto.args().get('exportUuid')
     if export_uuid:
         demisto.debug(f'export_uuid: {export_uuid}')
@@ -1069,10 +1066,6 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
         PollResult: A result to return to the user which will be set as a CommandResults.
             The result itself will depend on the stage of polling.
     """
-    if not is_demisto_version_ge('6.2.0'):
-        raise DemistoException('This command is not supported for your server version.'
-                               ' Please update your server version to 6.2.0 or later.')
-
     export_uuid = demisto.args().get('exportUuid')
     if export_uuid:
         demisto.debug(f'export_uuid: {export_uuid}')
