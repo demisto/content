@@ -430,21 +430,34 @@ def update_rule(client: boto3.client, args, build_rule_func) -> dict:
     response = client.get_rule_group(**kwargs)
 
     rule_group = response.get('RuleGroup', {})
+    rules = rule_group.get('Rules', [])
 
     rule_group_visibility_config = rule_group.get('VisibilityConfig', {})
 
     # TODO change logic so would be good for deletion as well
-
-    rule = build_rule_object(args, rule_group_visibility_config, build_rule_func)
-    rule_group.get('Rules', []).append(rule)
+    if build_rule_func == 'delete_rule':
+        rule_name = args.get(('rule_name', ''))
+        updated_rules = delete_rule(rule_name, rules)
+    else:
+        rule = build_rule_object(args, rule_group_visibility_config, build_rule_func)
+        updated_rules = rules.copy()
+        updated_rules.append(rule)
 
     kwargs |= {'LockToken': response.get('LockToken'),
-               'Rules': rule_group.get('Rules', []),
+               'Rules': updated_rules,
                'VisibilityConfig': rule_group_visibility_config
                }
 
     return client.update_rule_group(**kwargs)
 
+
+def delete_rule(rule_name: str, rules: list) -> list:
+    updated_rules = rules.copy()
+    for rule in rules:
+        if rule.get('Name') == rule_name:
+            updated_rules.remove(rule)
+            break
+    return updated_rules
 
 def create_rule_group_command(client: boto3.client, args) -> CommandResults:
     tag_keys = argToList(args.get('tag_key')) or []
@@ -495,6 +508,25 @@ def create_country_rule_command(client: boto3.client, args) -> CommandResults:
 
     readable_output = f'AWS Waf country rule with id {args.get("Id", "")} was created successfully. ' \
                       f'Next Lock Token: {response.get("NextLockToken")}'
+
+    return CommandResults(readable_output=readable_output,
+                          raw_response=response)
+
+
+def create_string_match_rule_command(client: boto3.client, args) -> CommandResults:
+    response = update_rule(client, args, build_country_rule_object)
+
+    readable_output = f'AWS Waf string match rule with id {args.get("Id", "")} was created successfully. ' \
+                      f'Next Lock Token: {response.get("NextLockToken")}'
+
+    return CommandResults(readable_output=readable_output,
+                          raw_response=response)
+
+
+def delete_rule_command(client: boto3.client, args) -> CommandResults:
+    response = update_rule(client, args, build_country_rule_object)
+
+    readable_output = f'AWS Waf rule with id {args.get("Id", "")} was deleted successfully.'
 
     return CommandResults(readable_output=readable_output,
                           raw_response=response)
@@ -572,6 +604,10 @@ def main() -> None:
             result = create_ip_rule_command(client, args)
         elif demisto.command() == 'aws-waf-country-rule-create':
             result = create_country_rule_command(client, args)
+        elif demisto.command() == 'aws-waf-string-match-rule-create':
+            result = create_string_match_rule_command(client, args)
+        elif demisto.command() == 'aws-waf-rule-delete':
+            result = delete_rule_command(client, args)
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} is not implemented in AWS WAF integration.')
