@@ -2,5 +2,4 @@
 | alter
 	xdm.alert.name = json_extract_scalar(rule, "$.name"),
 	xdm.alert.original_alert_id = json_extract_scalar(rule, "$.id"),
-	xdm.alert.description = title,
-	_time = triggered;
+	xdm.alert.description = title;
