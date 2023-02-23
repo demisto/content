@@ -58,7 +58,7 @@ class Client(BaseClient):
 
             if isinstance(response, dict) and response.get('return_error'):
                 # This will raise the Exception or call "demisto.results()" for the error and sys.exit(0).
-                return_error(**response)
+                return_error(**response['return_error'])
 
         except DemistoException as err:
             if '404' in str(err):
@@ -160,7 +160,7 @@ class Actions:
             if _key == 'incidents':
                 for incident in _val:
                     attachments = list()
-                    incident_json = json.loads(incident.get("rawJSON"))
+                    incident_json = json.loads(incident.get("rawJSON", "{}"))
                     if incident_json.get("panel_evidence_summary",{}).get("screenshots"):
                         for screenshot_data in incident_json["panel_evidence_summary"]["screenshots"]:
                             file_name = f'{screenshot_data.get("image_id").replace("img:","")}.png'
@@ -184,7 +184,7 @@ class Actions:
         ################## Playbook alerts ####################
         #######################################################
         
-    def playbook_alert_details_command(self) -> Dict[str, Any]:
+    def playbook_alert_details_command(self) -> List[CommandResults]:
         response = self.client.details_playbook_alerts()
         return self._process_result_actions(response=response)
     
@@ -194,7 +194,6 @@ class Actions:
     
     def playbook_alert_search_command(self) -> List[CommandResults]:
         response = self.client.search_playbook_alerts()
-        demisto.results(response)
         return self._process_result_actions(response=response)
 
 

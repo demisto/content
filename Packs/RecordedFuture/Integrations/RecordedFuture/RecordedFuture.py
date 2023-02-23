@@ -157,11 +157,7 @@ class Client(BaseClient):
 
     def _get_writeback_data(self):
 
-        if demisto.params().get('collective_insights') == "Off":
-            # Writeback is OFF.
-            return
-
-        if demisto.callingContext:
+        if demisto.params().get('collective_insights') == "On" and demisto.callingContext:
             calling_context = copy.deepcopy(demisto.callingContext)
             calling_context.get('context', dict()).pop('ExecutionContext', None)
             return calling_context
