@@ -91,14 +91,14 @@ DEVICE_GET_COMMAND_RETURN_FIELDS = [
 ]
 
 DEVICE_GET_LOCATION_COMMAND_RETURN_FIELDS = [
-    "geoData.location.coordinates",
-    "geoData.geoAddress.city",
-    "geoData.geoAddress.state",
-    "geoData.geoAddress.countryCode",
-    "geoData.geoAddress.country",
-    "geoData.locationTechnology",
-    "geoData.accuracy",
-    "geoData.lastUpdate",
+    "geoData.location.point.coordinates",
+    "geoData.location.geoAddress.city",
+    "geoData.location.geoAddress.state",
+    "geoData.location.geoAddress.countryCode",
+    "geoData.location.geoAddress.country",
+    "geoData.location.locationTechnology",
+    "geoData.location.accuracy",
+    "geoData.location.lastUpdateDateTimeUtc",
 ]
 
 
@@ -780,7 +780,7 @@ def parse_geo_location_outputs(response):
         parsed_device['Coordinates'] = geo_data.get('point', {}).get('coordinates')
         parsed_device['LocationTechnology'] = geo_data.get('locationTechnology')
         parsed_device['Accuracy'] = geo_data.get('accuracy')
-        parsed_device['LastUpdate'] = geo_data.get('lastUpdate')
+        parsed_device['LastUpdate'] = geo_data.get('lastUpdateDateTimeUtc')
         parsed_device['City'] = geo_data.get('geoAddress', {}).get('city')
         parsed_device['State'] = geo_data.get('geoAddress', {}).get('state')
         parsed_device['CountryCode'] = geo_data.get('geoAddress', {}).get('countryCode')
