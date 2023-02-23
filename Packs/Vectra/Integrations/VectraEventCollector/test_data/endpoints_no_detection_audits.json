@@ -1,0 +1,6 @@
+{
+  "rules": "mock://dev.vectra.ai/api/v2.2/rules",
+  "hosts": "mock://dev.vectra.ai/api/v2.2/hosts",
+  "groups": "mock://dev.vectra.ai/api/v2.2/groups",
+  "threat_feeds": "mock://dev.vectra.ai/api/v2.2/threatFeeds"
+}

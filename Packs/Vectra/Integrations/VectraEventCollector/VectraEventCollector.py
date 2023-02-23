@@ -14,6 +14,7 @@ import demistomock as demisto
 # import requests
 from CommonServerPython import *
 from typing import Dict, Any, Tuple
+import pytest
 
 # from urllib.parse import quote
 
@@ -138,6 +139,7 @@ def is_eod(now: datetime) -> bool:
 """ COMMAND FUNCTIONS """
 
 
+@pytest.mark.skip("Not a test")
 def test_module(client: VectraClient) -> str:
     """Tests API connectivity and authentication'
 

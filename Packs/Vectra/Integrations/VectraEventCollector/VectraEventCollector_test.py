@@ -3,16 +3,28 @@ Unit tests for Vectra Event Collector
 """
 
 import pytest
-from VectraEventCollector import VectraClient, is_eod
+from unittest import mock
+from VectraEventCollector import VectraClient, is_eod, test_module
 from typing import Dict
 import json
 from datetime import datetime
+from pathlib import Path
 
 """ Constants """
 BASE_URL = "mock://dev.vectra.ai"
 PASSWORD = "9455w0rd"
 client = VectraClient(url=BASE_URL, api_key=PASSWORD)
 
+
+def load_json(path: Path):
+    with open(path, mode="r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+audits = load_json(Path("./test_data/search_detections.json"))
+detections = load_json(Path("./test_data/audits.json"))
+endpoints = load_json(Path("./test_data/endpoints.json"))
+no_access_endpoints = load_json(Path("./test_data/endpoints_no_detection_audits.json"))
 
 """ VectraClient Tests """
 
@@ -26,7 +38,7 @@ client = VectraClient(url=BASE_URL, api_key=PASSWORD)
         ({}, False),
     ],
 )
-def test_auth(mocker, endpoints: Dict[str, str], expected: bool):
+def test_auth(mocker: mock, endpoints: Dict[str, str], expected: bool):
 
     """
     Given:
@@ -69,9 +81,23 @@ def test_create_headers():
     assert actual == expected
 
 
-def load_json(path):
-    with open(path, mode="r", encoding="utf-8") as f:
-        return json.load(f)
+@pytest.mark.parametrize(
+    "endpoints,expected",
+    [(endpoints, "ok"), (no_access_endpoints, "User doesn't have access to endpoints")],
+)
+def test_test_module(mocker: mock, endpoints: Dict[str, str], expected: str):
+    """
+    Given
+            A dictionary of endpoints
+    When
+            Case A: Calling test-module with list of endpoints which include detections and audits
+    Then
+            Make sure that result succeds or not.
+    """
+
+    mocker.patch.object(client, "get_endpoints", return_value=endpoints)
+    actual = test_module(client)
+    assert expected in actual
 
 
 """ Helper Functions Tests """
@@ -87,7 +113,3 @@ def load_json(path):
 )
 def test_is_eod(dt: datetime, expected: bool):
     assert is_eod(dt) == expected
-
-
-audits = load_json("./test_data/search_detections.json")
-detections = load_json("./test_data/audits.json")
