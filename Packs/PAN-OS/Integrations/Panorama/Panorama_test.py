@@ -142,6 +142,24 @@ def test_add_argument_target():
     assert response == expected
 
 
+@pytest.mark.parametrize('disabled, rules_file, expected_results_file',
+                         [
+                             ('yes', 'test_data/filter_rules_sample.json',
+                              'test_data/filter_rules_expected_result.json'),
+                         ])
+def test_filter_rules_by_status(disabled: str, rules_file: str, expected_results_file: str):
+    from Panorama import filter_rules_by_status
+
+    with open(rules_file, 'r') as f:
+        rules = json.loads(f.read())
+
+    with open(expected_results_file, 'r') as f:
+        expected_result = json.loads(f.read())
+
+    result = filter_rules_by_status(disabled, rules)
+    assert result == expected_result
+
+
 def test_prettify_addresses_arr():
     from Panorama import prettify_addresses_arr
     addresses_arr = [{'@name': 'my_name', 'fqdn': 'a.com'},
