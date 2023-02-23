@@ -1,6 +1,4 @@
 # pylint: disable=unsubscriptable-object
-import copy
-from CommonServerPython import *
 ''' IMPORTS '''
 
 import copy
@@ -10,8 +8,6 @@ from contextlib import closing
 import json
 import dateparser
 from typing import Dict, List, Optional, Tuple, Iterable
-
-requests.packages.urllib3.disable_warnings()
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 SEVERITIES = {'low': 1, 'medium': 2, 'high': 3, 'very_high': 4}
