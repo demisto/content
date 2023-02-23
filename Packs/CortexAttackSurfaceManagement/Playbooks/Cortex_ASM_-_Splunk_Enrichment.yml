@@ -418,10 +418,7 @@ inputs:
   required: true
   description: 'Remote IP in an incident/alert. '
   playbookInputQuery:
-outputs:
-- contextPath: asmserviceowner
-  description: This is the potential service owners from splunk results.
-  type: unknown
+outputs: []
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
