@@ -90,7 +90,7 @@ tasks:
         tooltip: Try to generate the report to see it's content. This is so importent to our "CISO".
         readonly: false
       title: Practicing with Reports
-      description: "XSOAR reporting can be a powerful value proposition. \nReports can contain widgets and be customized. \nThey can be used for a variety of tasks, including things such as measurement of efficiency and teamwork. \n\nThere is a flag hidden in one of the reports. Generate a report and try to find it :sunglasses: . \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/status-report-status-update.gif) "
+      description: "XSOAR reporting can be a powerful value proposition. \nReports can contain widgets and be customized. \nThey can be used for a variety of tasks, including things such as measurement of efficiency and teamwork. \n\nThere is a flag hidden in one of the reports (located at the Dashboard and Reports tab). Generate a report and try to find it :sunglasses: . \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/status-report-status-update.gif) "
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -148,7 +148,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: 'Can you find the flag in the playbook tasks? '
+          simple: 'Can you find the flag in the playbook tasks? What is the flag?'
         required: true
         gridcolumns: []
         defaultrows: []
