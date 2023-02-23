@@ -32,10 +32,7 @@ This playbook does not use any integrations.
 ## Playbook Outputs
 
 ---
-
-| **Path** | **Description** | **Type** |
-| --- | --- | --- |
-| asmserviceowner | This is the potential service owners from splunk results. | unknown |
+There are no outputs for this playbook.
 
 ## Playbook Image
 
