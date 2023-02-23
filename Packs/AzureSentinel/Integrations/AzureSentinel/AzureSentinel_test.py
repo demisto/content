@@ -1836,15 +1836,6 @@ def test_validate_required_arguments_for_alert_rule():
         validate_required_arguments_for_alert_rule(args)
     assert str(e.value) == '"template_name" is required for "fusion" alert rule.'
 
-    # Test with an unknown alert rule kind
-    args = {
-        'kind': 'unknown',
-        'rule_name': 'test_unknown_rule'
-    }
-    with pytest.raises(Exception) as e:
-        validate_required_arguments_for_alert_rule(args)
-    assert str(e.value) == '"unknown" is not a valid kind for alert rule.'
-
 
 def test_create_data_for_alert_rule():
     """
@@ -1897,7 +1888,6 @@ def test_create_and_update_alert_rule_command(mocker):
             "alertRuleTemplateName": "f71aba3d-28fb-450b-b192-4e76a83015c8"
         }
     }
-    mocker.patch('AzureSentinel.validate_required_arguments_for_alert_rule', return_value=None)
     mocker.patch('AzureSentinel.create_data_for_alert_rule', return_value=args)
     command_results = create_and_update_alert_rule_command(client, args)
     assert command_results.outputs == mock_response

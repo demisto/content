@@ -2458,10 +2458,12 @@ script:
       required: true
     - auto: PREDEFINED
       default: false
-      description: The alert rule kind to create.
+      description: |
+        The alert rule kind to create.
+        Required for all types.
       isArray: false
       name: kind
-      required: true
+      required: false
       predefined:
       - fusion
       - microsoft_security_incident_creation
@@ -2475,10 +2477,12 @@ script:
       required: false
     - auto: PREDEFINED
       default: false
-      description: Determines whether this alert rule is enabled or disabled.
+      description: |
+        Determines whether this alert rule is enabled or disabled.
+        Required for all types.
       isArray: false
       name: enabled
-      required: true
+      required: false
       predefined:
       - yes
       - no
@@ -2732,10 +2736,12 @@ script:
       required: true
     - auto: PREDEFINED
       default: false
-      description: The alert rule kind to update.
+      description: |
+        The alert rule kind to update.
+        Required for all types.
       isArray: false
       name: kind
-      required: true
+      required: false
       predefined:
       - fusion
       - microsoft_security_incident_creation
@@ -2749,10 +2755,12 @@ script:
       required: false
     - auto: PREDEFINED
       default: false
-      description: Determines whether this alert rule is enabled or disabled.
+      description: |
+        Determines whether this alert rule is enabled or disabled.
+        Required for all types.
       isArray: false
       name: enabled
-      required: true
+      required: false
       predefined:
       - yes
       - no

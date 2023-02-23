@@ -2060,9 +2060,9 @@ Creates a new alert rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_name | The alert rule name to create. | Required | 
-| kind | The alert rule kind to create. Possible values are: fusion, microsoft_security_incident_creation, scheduled. | Required | 
+| kind | The alert rule kind to create. Possible values are: fusion, microsoft_security_incident_creation, scheduled. | Optional | 
 | template_name | The name of the alert rule template used to create this rule.<br/>Required for Fusion, optional for Scheduled rules | Optional | 
-| enabled | Determines whether this alert rule is enabled or disabled. Possible values are: yes, no. | Required | 
+| enabled | Determines whether this alert rule is enabled or disabled. Possible values are: yes, no. | Optional | 
 | etag | ETag of the Azure resource. | Optional | 
 | displayName | The display name for alerts created by this alert rule.<br/>Required for MicrosoftSecurityIncidentCreation and scheduled rules | Optional | 
 | product_filter | The alerts' productName on which the cases will be generated.<br/>Required for MicrosoftSecurityIncidentCreation rules.<br/>Possible values are: azure_active_directory_identity_protection, azure_advanced_threat_protection, azure_security_center, azure_security_center_for_iot, microsoft_cloud_app_security. | Optional | 
@@ -2147,9 +2147,9 @@ Creates a new alert rule.
 #### Human Readable Output
 
 >### Azure Sentinel Alert Rule successfully created/updated
->|ID|Name|Kind|Severity|Display Name|Description|Enabled|Etag|
+>|ID|Name|Kind|Display Name|Enabled|Etag|
 >|---|---|---|---|---|---|---|---|
->| test_name | test_name | MicrosoftSecurityIncidentCreation |  | Testing Display Name |  | true | "09009060-0000-5e60000" |
+>| test_name | test_name | MicrosoftSecurityIncidentCreation | Testing Display Name | true | "09009060-0000-5e60000" |
 
 ### azure-sentinel-update-alert-rule
 
@@ -2165,9 +2165,9 @@ Updates an alert rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_name | The alert rule name to update. | Required | 
-| kind | The alert rule kind to update. Possible values are: fusion, microsoft_security_incident_creation, scheduled. | Required | 
+| kind | The alert rule kind to update. Possible values are: fusion, microsoft_security_incident_creation, scheduled. | Optional | 
 | template_name | The name of the alert rule template used to update this rule.<br/>Required for Fusion, optional for Scheduled rules. | Optional | 
-| enabled | Determines whether this alert rule is enabled or disabled. Possible values are: yes, no. | Required | 
+| enabled | Determines whether this alert rule is enabled or disabled. Possible values are: yes, no. | Optional | 
 | etag | ETag of the Azure resource. | Optional | 
 | displayName | The display name for alerts created by this alert rule.<br/>Required for MicrosoftSecurityIncidentCreation and scheduled rules. | Optional | 
 | product_filter | The alerts' productName on which the cases will be generated.<br/>Required for MicrosoftSecurityIncidentCreation rules.<br/>Possible values are: azure_active_directory_identity_protection, azure_advanced_threat_protection, azure_security_center, azure_security_center_for_iot, microsoft_cloud_app_security. | Optional | 
@@ -2252,6 +2252,6 @@ Updates an alert rule.
 #### Human Readable Output
 
 >### Azure Sentinel Alert Rule successfully created/updated
->|ID|Name|Kind|Severity|Display Name|Description|Enabled|Etag|
+>|ID|Name|Kind|Display Name|Enabled|Etag|
 >|---|---|---|---|---|---|---|---|
->| test_name | test_name | MicrosoftSecurityIncidentCreation |  | Testing updating Display Name |  | true | "097809060-0000-6hd400" |
+>| test_name | test_name | MicrosoftSecurityIncidentCreation | Testing updating Display Name | true | "097809060-0000-6hd400" |

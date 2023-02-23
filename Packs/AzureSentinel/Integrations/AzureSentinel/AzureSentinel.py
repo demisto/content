@@ -1813,14 +1813,14 @@ def validate_required_arguments_for_alert_rule(args: Dict[str, Any]) -> None:
     }
 
     kind = args.get('kind', '')
-    if kind not in required_args_by_kind:
-        raise DemistoException(f'"{kind}" is not a valid kind for alert rule.')
     for arg in required_args_by_kind.get(kind, []):
         if not args.get(arg):
             raise DemistoException(f'"{arg}" is required for "{kind}" alert rule.')
 
 
 def create_data_for_alert_rule(args: Dict[str, Any]) -> Dict[str, Any]:
+    validate_required_arguments_for_alert_rule(args)
+
     properties = {
         'alertRuleTemplateName': args.get('template_name'),
         'enabled': argToBoolean(args.get('enabled')),
@@ -1851,9 +1851,8 @@ def create_data_for_alert_rule(args: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def create_and_update_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any]) -> CommandResults:
-    validate_required_arguments_for_alert_rule(args)
-
-    data = args.get('rule_json') or create_data_for_alert_rule(args)
+    rule_json = json.loads(args.get('rule_json', '')) if args.get('rule_json') else None
+    data = rule_json or create_data_for_alert_rule(args)
     demisto.debug(f'Try to creating/updating alert rule with the following data: {data}')
 
     response = client.http_request('PUT', f'alertRules/{args.get("rule_name")}', data=data)
@@ -1868,7 +1867,9 @@ def create_and_update_alert_rule_command(client: AzureSentinelClient, args: Dict
         'Enabled': response.get('properties', {}).get('enabled'),
         'Etag': response.get('etag')
     }
-    readable_output = tableToMarkdown('Azure Sentinel Alert Rule successfully created/updated', readable_result,
+    readable_output = tableToMarkdown('Azure Sentinel Alert Rule successfully created/updated',
+                                      readable_result,
+                                      removeNull=True,
                                       sort_headers=False)
 
     return CommandResults(
