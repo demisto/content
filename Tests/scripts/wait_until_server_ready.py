@@ -62,8 +62,9 @@ def docker_login(ip: str) -> None:
             f'ssh {SSH_USER}@{ip} cd /home/demisto && sudo -u demisto {container_engine_type} '
             f'login --username {docker_username} --password-stdin'.split(),
             input=docker_password.encode())
-    except Exception:
+    except Exception as e:
         logging.exception(f'Could not login to {container_engine_type} on server {ip}')
+        logging.exception(f'while handling the rquest, encountered the following error: {str(e)}')
 
 
 def main():
