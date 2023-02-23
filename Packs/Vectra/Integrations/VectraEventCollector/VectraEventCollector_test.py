@@ -5,7 +5,7 @@ Unit tests for Vectra Event Collector
 import pytest
 from unittest import mock
 from VectraEventCollector import VectraClient, is_eod, test_module
-from typing import Dict
+from typing import Dict, Any
 import json
 from datetime import datetime
 from pathlib import Path
@@ -21,8 +21,8 @@ def load_json(path: Path):
         return json.load(f)
 
 
-audits = load_json(Path("./test_data/search_detections.json"))
-detections = load_json(Path("./test_data/audits.json"))
+audits = load_json(Path("./test_data/audits.json"))
+detections = load_json(Path("./test_data/search_detections.json"))
 endpoints = load_json(Path("./test_data/endpoints.json"))
 no_access_endpoints = load_json(Path("./test_data/endpoints_no_detection_audits.json"))
 
@@ -100,6 +100,28 @@ def test_test_module(mocker: mock, endpoints: Dict[str, str], expected: str):
     assert expected in actual
 
 
+def test_get_detections(mocker: mock):
+    # TODO docstring
+
+    mocker.patch.object(client, "get_detections", return_value=detections)
+
+    response: Dict[str, Any] = client.get_detections()
+
+    assert isinstance(response, dict)
+    assert not client.max_fetch < response.get("count")
+
+
+def test_get_audits(mocker: mock):
+    # TODO docstring
+
+    mocker.patch.object(client, "get_audits", return_value=audits)
+
+    response: Dict[str, Any] = client.get_audits()
+
+    assert isinstance(response, dict)
+    assert not client.max_fetch < len(response.get("audits"))
+
+
 """ Helper Functions Tests """
 
 
@@ -112,4 +134,7 @@ def test_test_module(mocker: mock, endpoints: Dict[str, str], expected: str):
     ],
 )
 def test_is_eod(dt: datetime, expected: bool):
+
+    # TODO docstring
+
     assert is_eod(dt) == expected
