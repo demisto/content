@@ -153,9 +153,9 @@ def test_function(aws_client, args) -> str:
 
 def get_filters(args):
     return {
-        filed: {"eq": [args.get(filed)]}
-        for filed in ('resourceType', 'status')
-        if args.get(filed)
+        field: {"eq": [args.get(field)]}
+        for field in ('resourceType', 'status')
+        if args.get(field)
     }
 
 

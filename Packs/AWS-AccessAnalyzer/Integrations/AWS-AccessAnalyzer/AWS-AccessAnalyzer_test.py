@@ -98,6 +98,21 @@ def test_list_findings_command(mocker):
     assert findings[1]['updatedAt'] == '2023-02-13T21:28:06'
 
 
+@pytest.mark.parametrize(argnames='filter_args', argvalues=[['resourceType'], ['status'], ['resourceType', 'status']])
+def test_list_findings_command__with_filters(mocker, filter_args):
+    mock_required_fields(mocker,
+                         command_name='aws-access-analyzer-list-findings',
+                         mocked_method_name='list_findings',
+                         method_return_value={'findings': []})
+    mocker.patch.object(demisto, 'args', return_value={filter_arg: 'filter_val' for filter_arg in filter_args})
+
+    AWSAccessAnalyzer.main()
+
+    filters = AWSAccessAnalyzer.get_aws_session().list_findings.call_args[1]['filter']
+    assert all(filters[filter_arg] == {'eq': ['filter_val']} for filter_arg in filter_args)
+    assert len(filters) == len(filter_args)
+
+
 def test_get_analyzed_resource_command(mocker):
     mocked_results = {'resource': {'id': 'test_id_1', 'analyzedAt': datetime.datetime(2023, 2, 13, 21, 28, 4)}}
     mock_required_fields(mocker,
