@@ -1,5 +1,5 @@
 Send messages, create rooms and more, via the Cisco Spark API.
-This integration was integrated and tested with version xx of Cisco Spark
+This integration was integrated and tested with version 6.2.0 of Cisco Spark
 
 ## Configure Cisco Webex Teams on Cortex XSOAR
 
