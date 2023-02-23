@@ -10370,7 +10370,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     else:
         last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
 
-    if look_back and look_back > 0:
+    if look_back > 0:
         if now - last_run_time < timedelta(minutes=look_back):
             last_run_time = now - timedelta(minutes=look_back)
 
