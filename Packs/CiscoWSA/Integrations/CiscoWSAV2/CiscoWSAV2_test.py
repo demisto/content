@@ -515,9 +515,7 @@ def test_delete_access_policy_command(
         },
     )
 
-    assert (
-        result.readable_output == 'Access policy profiles successfully.'
-    )
+    assert result.readable_output == 'Access policy profiles successfully.'
 
 
 def test_fail_delete_access_policy_command(
@@ -880,9 +878,7 @@ def test_create_identification_profiles_command(
         },
     )
 
-    assert (
-        result.readable_output == 'Created identification profile "test" successfully.'
-    )
+    assert result.readable_output == 'Created identification profile "test" successfully.'
 
 
 def test_update_identification_profiles_command(
@@ -916,9 +912,7 @@ def test_update_identification_profiles_command(
         },
     )
 
-    assert (
-        result.readable_output == 'Updated identification profile "test" successfully.'
-    )
+    assert result.readable_output == 'Updated identification profile "test" successfully.'
 
 
 def test_delete_identification_profiles_command(
