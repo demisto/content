@@ -7625,13 +7625,13 @@ class TestFetchWithLookBack:
         """
 
         from CommonServerPython import get_fetch_run_time_range, filter_incidents_by_duplicates_and_limit, \
-            update_last_run_object
+            update_last_run_object, arg_to_number
         date_format = '%Y-%m-%dT%H:%M:%S' + ('Z' if time_aware else '')
         incidents = []
 
         params = demisto.params()
         fetch_limit_param = params.get('limit')
-        look_back = int(params.get('look_back', 0))
+        look_back = arg_to_number(params.get('look_back', 0))
         first_fetch = params.get('first_fetch')
         time_zone = params.get('time_zone', 0)
 
