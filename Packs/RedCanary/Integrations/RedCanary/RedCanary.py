@@ -201,7 +201,6 @@ def get_full_timeline(detection_id, per_page=100):
 
 def process_timeline(detection_id):
     res = get_full_timeline(detection_id)
-    demisto.info(f'##### Full Res ####### \n {res} \n ##################################')
     activities = []
     domains = []
     files = []
@@ -218,7 +217,7 @@ def process_timeline(detection_id):
         if activity['attributes']['type'] == 'process_activity_occurred':
             process = activity['attributes']['process_execution']['attributes'].get('operating_system_process', {}).get('attributes', {})
             if not process:
-                demisto.info('##### process attributes corrupted, skipping additional data. process response:'
+                demisto.debug('##### process attributes corrupted, skipping additional data. process response:'
                              f'{activity.get("attributes", {}).get("process_execution")} #######')
             else:
                 image = process.get('image', {}).get('attributes')
