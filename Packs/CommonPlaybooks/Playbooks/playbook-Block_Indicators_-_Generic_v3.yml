@@ -498,6 +498,7 @@ tasks:
       tags:
         simple: Blocked Indicator In Systems
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
