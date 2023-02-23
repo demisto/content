@@ -40,7 +40,7 @@ Create an XML to update a case.
 ### arcsight-fetch-xml
 
 ***
-Used for testing, should fetch xml file and return Demisto incident object
+Used for testing. Should fetch XML file and return an XSOAR incident object.
 
 #### Base Command
 

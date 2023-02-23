@@ -217,7 +217,7 @@ script:
     description: Create an XML to update a case.
   - name: arcsight-fetch-xml
     arguments: []
-    description: Used for testing, should fetch xml file and return Demisto incident object
+    description: Used for testing. Should fetch XML file and return an XSOAR incident object.
   isfetch: true
   runonce: false
   dockerimage: demisto/python:2.7.18.27799
