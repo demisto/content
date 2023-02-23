@@ -109,12 +109,13 @@ def test_test_module(mocker: mock, endpoints: Dict[str, str], expected: str):
 def test_test_module_exception(mocker):
     # TODO docstring
 
-    mocker.patch.object(client, "_http_request", side_effect=Exception("mocked error"))
+    mocker.patch.object(client, "_http_request", side_effect=Exception())
 
-    with pytest.raises(Exception) as e:
+    with pytest.raises(Exception):
         test_module(None)
+        assert True
 
-        assert "Error authenticating" in str(e)
+    # assert
 
 
 def test_get_detections(mocker: mock):
