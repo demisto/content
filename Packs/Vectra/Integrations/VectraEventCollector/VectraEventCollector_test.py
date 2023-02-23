@@ -15,6 +15,7 @@ from typing import Dict, Any
 import json
 from datetime import datetime
 from pathlib import Path
+from CommonServerPython import *
 
 """ Constants """
 BASE_URL = "mock://dev.vectra.ai"
@@ -89,7 +90,7 @@ def test_create_headers():
 
 @pytest.mark.parametrize(
     "endpoints,expected",
-    [(endpoints, "ok"), (no_access_endpoints, "User doesn't have access to endpoints")],
+    [(endpoints, "ok")],
 )
 def test_test_module(mocker: mock, endpoints: Dict[str, str], expected: str):
     """
@@ -109,12 +110,19 @@ def test_test_module(mocker: mock, endpoints: Dict[str, str], expected: str):
 def test_test_module_exception(mocker):
     # TODO docstring
 
-    mocker.patch.object(client, "_http_request", side_effect=Exception())
+    mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=DemistoException(
+            f"""User doesn't have access to endpoints {client.endpoints}, only to {','.join(list(no_access_endpoints.keys()))}.
+                    Check with your Vectra account administrator."""
+        ),
+    )
 
-    with pytest.raises(Exception):
-        test_module(None)
-        assert True
+    with pytest.raises(DemistoException) as e:
+        test_module(client)
 
+    assert "User doesn't have access to endpoints" in str(e.value)
     # assert
 
 

@@ -14,7 +14,6 @@ import demistomock as demisto
 # import requests
 from CommonServerPython import *
 from typing import Dict, Any, Tuple
-import pytest
 
 # from urllib.parse import quote
 
@@ -139,7 +138,6 @@ def is_eod(now: datetime) -> bool:
 """ COMMAND FUNCTIONS """
 
 
-@pytest.mark.skip("Not a test")
 def test_module(client: VectraClient) -> str:
     """Tests API connectivity and authentication'
 
@@ -157,23 +155,19 @@ def test_module(client: VectraClient) -> str:
 
     demisto.info(f"Testing connection and authentication to {client._base_url}...")
 
-    try:
-        endpoints: Dict[str, str] = client.get_endpoints()
+    endpoints: Dict[str, str] = client.get_endpoints()
 
-        demisto.info(
-            f"User has access to the following endpoints returned: {list(endpoints.keys())}"
-        )
+    demisto.info(f"User has access to the following endpoints returned: {list(endpoints.keys())}")
 
-        # Checks that the authenticated user has access to the required endpoints
-        if all(ep in endpoints for ep in client.endpoints):
-            demisto.info("User has access to the all required endpoints.")
-            return "ok"
-        else:
-            return f"""User doesn't have access to endpoints {client.endpoints}, only to {','.join(list(endpoints.keys()))}.
+    # Checks that the authenticated user has access to the required endpoints
+    if all(ep in endpoints for ep in client.endpoints):
+        demisto.info("User has access to the all required endpoints.")
+        return "ok"
+    else:
+        raise DemistoException(
+            f"""User doesn't have access to endpoints {client.endpoints}, only to {','.join(list(endpoints.keys()))}.
                     Check with your Vectra account administrator."""
-
-    except Exception as e:
-        return f"Error authenticating: {str(e)}"
+        )
 
 
 def get_detections_cmd(
