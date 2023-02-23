@@ -2,7 +2,7 @@ beta: false
 sectionOrder:
 - Connect
 - Collect
-category: Messaging
+category: Messaging and Conferencing
 commonfields:
   id: SlackV3
   version: -1
