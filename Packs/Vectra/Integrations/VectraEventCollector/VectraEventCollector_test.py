@@ -4,7 +4,13 @@ Unit tests for Vectra Event Collector
 
 import pytest
 from unittest import mock
-from VectraEventCollector import VectraClient, is_eod, test_module
+from VectraEventCollector import (
+    VectraClient,
+    is_eod,
+    test_module,
+    DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT,
+    AUDIT_START_TIMESTAMP_FORMAT,
+)
 from typing import Dict, Any
 import json
 from datetime import datetime
@@ -103,9 +109,10 @@ def test_test_module(mocker: mock, endpoints: Dict[str, str], expected: str):
 def test_get_detections(mocker: mock):
     # TODO docstring
 
-    mocker.patch.object(client, "get_detections", return_value=detections)
+    first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
 
-    response: Dict[str, Any] = client.get_detections()
+    mocker.patch.object(client, "_http_request", return_value=detections)
+    response: Dict[str, Any] = client.get_detections(first_timestamp)
 
     assert isinstance(response, dict)
     assert not client.max_fetch < response.get("count")
@@ -114,9 +121,10 @@ def test_get_detections(mocker: mock):
 def test_get_audits(mocker: mock):
     # TODO docstring
 
-    mocker.patch.object(client, "get_audits", return_value=audits)
+    start = datetime.now().strftime(AUDIT_START_TIMESTAMP_FORMAT)
 
-    response: Dict[str, Any] = client.get_audits()
+    mocker.patch.object(client, "_http_request", return_value=audits)
+    response: Dict[str, Any] = client.get_audits(start)
 
     assert isinstance(response, dict)
     assert not client.max_fetch < len(response.get("audits"))
