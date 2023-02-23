@@ -85,7 +85,7 @@ def main():
             results['Good'] = good
             results['GoodTable'] = tblGood
 
-        results['md'] = md
+        results["md"] = md
 
         return_results(CommandResults(
             outputs_prefix="SSLReport",
