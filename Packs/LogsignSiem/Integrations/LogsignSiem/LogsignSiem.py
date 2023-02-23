@@ -6,8 +6,9 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import demistomock as demisto
 from datetime import datetime, timedelta
+import urllib3
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 ''' CONSTANTS '''
