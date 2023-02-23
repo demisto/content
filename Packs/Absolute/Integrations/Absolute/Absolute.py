@@ -865,7 +865,7 @@ def get_device_command(args, client) -> CommandResults:
 
 
 def get_device_location_command(args, client) -> CommandResults:
-    query_string = create_filter_query_from_args(args,change_device_id=True)
+    query_string = create_filter_query_from_args(args, change_device_id=True)
     query_string = parse_return_fields(",".join(DEVICE_GET_LOCATION_COMMAND_RETURN_FIELDS), query_string)
 
     res = client.api_request_absolute('GET', '/v2/reporting/devices', query_string=query_string)
