@@ -184,6 +184,7 @@ def get_findings(aws_client, args):
 
 def get_earliest_fetch_time():
     last_run = demisto.getLastRun()
+    params = demisto.params()
     earliest_fetch_time = last_run and last_run.get('time')
     demisto.debug(f'{last_run=}')
     # Handle first time fetch, fetch incidents retroactively

@@ -13,6 +13,16 @@ def get_mocked_client(mocker):
 
 
 def mock_required_fields(mocker, command_name, mocked_method_name, method_return_value=None):
+    mocked_params = {
+        'defaultRegion': 'test_region',
+        'role_arn': 'test_role_arn',
+        'role_session_name': 'test_role_session_name',
+        'credentials': {
+            'identifier': 'tets_access_key_id',
+            'password': 'test_secret_access_key'
+        }
+    }
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
     mocker.patch.object(demisto, 'command', return_value=command_name)
     mocker.patch.object(AWSAccessAnalyzer, 'return_results')
     mocker.patch.object(get_mocked_client(mocker), mocked_method_name, return_value=method_return_value)
