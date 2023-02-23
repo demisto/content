@@ -1425,7 +1425,7 @@ inputs:
   playbookInputQuery:
 - key: UserVerification
   value:
-    simple: "False"
+    simple: "True"
   required: false
   description: "Possible values: True/False.  Default: True.\nWhether to provide user verification for blocking those IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
   playbookInputQuery:
