@@ -486,17 +486,6 @@ script:
       required: false
       isArray: false
       description: The number of records in a page.
-    - name: state
-      required: false
-      description: >
-        Filter the rule objects according to their state.
-
-        Note: This argument is only relevant to version 10x.
-      defaultvalue: Enabled
-      auto: PREDEFINED
-      predefined:
-      - Disabled
-      - Enabled
     outputs:
     - contextPath: NSM.Rule.ruleobjId
       description: The ID of the rule object.
