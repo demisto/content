@@ -22,9 +22,10 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
-    "columns": [{
+    "columns": [
+        {
             "key": "id",
             "displayName": "id",
             "type": "shortText",
@@ -61,15 +62,10 @@
             "selectValues": null
         }
     ],
-    "defaultRows": [{
-
-        },
-        {
-
-        },
-        {
-
-        }
+    "defaultRows": [
+        {},
+        {},
+        {}
     ],
     "sla": 0,
     "threshold": 72,

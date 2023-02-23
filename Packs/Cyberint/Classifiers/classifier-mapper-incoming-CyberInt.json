@@ -1,28 +1,11 @@
 {
-    "brands": null,
-    "cacheVersn": 0,
-    "defaultIncidentType": "",
-    "definitionId": "",
     "description": "",
     "feed": false,
     "id": "abcd-5678",
-    "incidentSamples": null,
-    "indicatorSamples": null,
-    "instanceIds": null,
-    "itemVersion": "1.0.14",
-    "keyTypeMap": {},
-    "locked": false,
-    "logicalVersion": 14,
     "mapping": {
         "Cyberint Incident": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Alert ID": {
-                    "simple": "ref_id"
-                },
-                "Alert Name": {
-                    "simple": "title"
-                },
                 "CyberInt Alert ID": {
                     "simple": "ref_id"
                 },
@@ -45,14 +28,6 @@
                 "CyberInt Created date": {
                     "simple": "created_date"
                 },
-                "CyberInt Credentials Exposed CSV": {
-                    "complex": {
-                        "accessor": "content",
-                        "filters": [],
-                        "root": "attachments",
-                        "transformers": []
-                    }
-                },
                 "CyberInt Description": {
                     "complex": {
                         "filters": [],
@@ -66,9 +41,6 @@
                 },
                 "CyberInt Expert Analysis": {
                     "simple": "analysis_report.name"
-                },
-                "CyberInt File Type": {
-                    "simple": "attachments.mimetype"
                 },
                 "CyberInt Impact": {
                     "complex": {
@@ -87,9 +59,6 @@
                             }
                         ]
                     }
-                },
-                "CyberInt Payment Card Exposed CSV": {
-                    "simple": "attachments.content"
                 },
                 "CyberInt Recommendation": {
                     "complex": {
@@ -141,35 +110,8 @@
                 "Cyberint Category": {
                     "simple": "category"
                 },
-                "Description": {
-                    "complex": {
-                        "filters": [],
-                        "root": "description",
-                        "transformers": [
-                            {
-                                "operator": "trim"
-                            }
-                        ]
-                    }
-                },
-                "Event Type": {
-                    "simple": "type"
-                },
                 "Source Username": {
                     "simple": "attachments.content.username"
-                },
-                "State": {
-                    "simple": "status"
-                },
-                "Sub Category": {
-                    "simple": "type"
-                },
-                "Tags": {
-                    "complex": {
-                        "filters": [],
-                        "root": "tags",
-                        "transformers": []
-                    }
                 },
                 "occurred": {
                     "complex": {
@@ -192,6 +134,53 @@
                 },
                 "severity": {
                     "simple": "severity"
+                },
+                "Alert ID": {
+                    "simple": "ref_id"
+                },
+                "Alert Name": {
+                    "simple": "title"
+                },
+                "CyberInt Credentials Exposed CSV": {
+                    "complex": {
+                        "accessor": "content",
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": []
+                    }
+                },
+                "CyberInt File Type": {
+                    "simple": "attachments.mimetype"
+                },
+                "CyberInt Payment Card Exposed CSV": {
+                    "simple": "attachments.content"
+                },
+                "Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": [
+                            {
+                                "operator": "trim"
+                            }
+                        ]
+                    }
+                },
+                "Event Type": {
+                    "simple": "type"
+                },
+                "State": {
+                    "simple": "status"
+                },
+                "Sub Category": {
+                    "simple": "type"
+                },
+                "Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -321,9 +310,6 @@
                 "CyberInt Type": {
                     "simple": "type"
                 },
-                "CyberInt Vulnerable CName Record": {
-                    "simple": "alert_data.vulnerable_cname_record"
-                },
                 "Cyberint Category": {
                     "simple": "category"
                 },
@@ -360,6 +346,9 @@
                 "Threat Actor": {
                     "simple": "threat_actor"
                 },
+                "CyberInt Vulnerable CName Record": {
+                    "simple": "alert_data.vulnerable_cname_record"
+                },
                 "occurred": {
                     "complex": {
                         "filters": [],
@@ -393,14 +382,7 @@
         }
     },
     "name": "CyberInt (mapper)",
-    "nameRaw": "CyberInt (mapper)",
-    "packID": "",
-    "packName": "Cyberint",
-    "sourceClassifierId": "abcd-5678",
-    "system": false,
-    "transformer": {},
     "type": "mapping-incoming",
-    "unclassifiedCases": null,
     "version": -1,
     "fromVersion": "6.0.0"
 }

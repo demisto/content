@@ -22,12 +22,12 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
     "fromVersion": "6.0.0",
     "marketplaces": [
-		"xsoar"
-	]
+        "xsoar"
+    ]
 }
