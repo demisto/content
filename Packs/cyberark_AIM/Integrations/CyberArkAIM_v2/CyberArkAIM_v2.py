@@ -6,8 +6,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 # disable insecure warnings
-Integrations/CyberArkAIM_v2/CyberArkAIM_v2.p
-
+import urllib3
+urllib3.disable_warnings()
 
 class Client(BaseClient):
     def __init__(self, server_url: str, use_ssl: bool, proxy: bool, app_id: str, folder: str, safe: str,
