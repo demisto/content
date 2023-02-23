@@ -6,7 +6,6 @@ import traceback
 from datetime import datetime
 from typing import Any, Dict
 from urllib.parse import quote_plus
-import requests
 import urllib3
 import copy
 

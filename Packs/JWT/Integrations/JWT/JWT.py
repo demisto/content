@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-import requests
 import traceback
 from typing import Dict
 import jwt

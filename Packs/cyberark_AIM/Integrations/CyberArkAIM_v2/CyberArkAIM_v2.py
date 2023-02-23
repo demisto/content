@@ -9,6 +9,7 @@ from CommonServerUserPython import *
 import urllib3
 urllib3.disable_warnings()
 
+
 class Client(BaseClient):
     def __init__(self, server_url: str, use_ssl: bool, proxy: bool, app_id: str, folder: str, safe: str,
                  credentials_object: str, username: str, password: str, cert_text: str, key_text: str):
