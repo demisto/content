@@ -1,5 +1,5 @@
 id: f23e09c1-3d03-4e06-8a3a-5dd75978a9d6
-version: 5
+version: 6
 contentitemexportablefields:
   contentitemfields:
     packID: ""
@@ -579,10 +579,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 50e7f69e-a943-43fb-81dc-5ef0c901d6d3
+    taskid: e0246d36-18d3-4142-8117-fc60de36e90e
     type: regular
     task:
-      id: 50e7f69e-a943-43fb-81dc-5ef0c901d6d3
+      id: e0246d36-18d3-4142-8117-fc60de36e90e
       version: -1
       name: Set Logs to Layout
       description: Convert an array to a nice table display. Usually, from the context.
@@ -610,7 +610,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     fieldMapping:
-    - incidentfield: PCC Defender Logs
+    - incidentfield: Prisma Cloud Compute Defender Logs
       output:
         simple: ${LogsTable}
     skipunavailable: false
