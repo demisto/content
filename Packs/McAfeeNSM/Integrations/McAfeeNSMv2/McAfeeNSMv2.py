@@ -591,6 +591,39 @@ def create_body_create_rule(rule_type: str, address: List, number: int,
         }
 
 
+def create_body_create_rule_for_v10(rule_type: str, address: List, number: int,
+                                    from_to_list: list[dict[str, Any | None]], state: str = "Enabled") -> tuple:
+    """ create part of the body for the command create_rule_object
+        Args:
+            rule_type: str - The type of the rule.
+            address: List - A list of addresses, if relevant.
+            number: int - The number of the IPV.
+            from_to_list: List - A list that contains dictionaries with from and do addresses.
+            stste: str - An Enabled or Disabled state. 
+        Returns:
+            Returns the body for the request.
+        """
+    # build a list of dictionaries with the state and the address
+    list_to_send: list[dict] = [
+        {"value": single_address, "state": STATE_TO_NUMBER.get(state)}
+        for single_address in address]
+    # for paremets with a range, we need to add the state to the dictionary
+    from_to_list[0].update({"state": STATE_TO_NUMBER.get(state)})
+
+    if 'HOST' in rule_type:
+        return f'HostIPv{number}', {
+            f'hostIPv{number}AddressList': list_to_send
+        }
+    elif 'ADDRESS_RANGE' in rule_type:
+        return f'IPv{number}AddressRange', {
+            f'IPV{number}RangeList': from_to_list
+        }
+    else:
+        return f'Network_IPV_{number}', {
+            f'networkIPV{number}List': list_to_send
+        }
+
+
 def check_args_create_rule(rule_type: str, address: List, from_address: str, to_address: str, number: int):
     """ Validate the arguments of the function
         Args:
@@ -996,7 +1029,6 @@ def list_domain_rule_objects_command(client: Client, args: Dict) -> CommandResul
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
-    state: str = args.get('state', 'Enabled')
 
     if (page and not page_size) or (not page and page_size):
         raise Exception('Please provide both page and page_size arguments.')
@@ -1112,20 +1144,15 @@ def create_rule_object_command(client: Client, args: Dict) -> CommandResults:
         'FromAddress': from_address,
         'ToAddress': to_address
     }]
-
-    d_name, extra_body = create_body_create_rule(rule_type, address, number, from_to_list)
-    rule_obj_def = body.get('RuleObjDef', {})
-
-    # creating a different body (payload) for version 10x
+    # create the body according to the version of the NSM
     if VERSION == "V.10x":
-        key_name = list(extra_body.keys())[0]
-        values = extra_body.get(key_name)
-        for address in values:
-            extra_body = {key_name: [{
-                "state": STATE_TO_NUMBER.get(state),
-                "userID": domain,
-                "value": address}]}
+        d_name, extra_body = create_body_create_rule_for_v10(rule_type=rule_type, address=address,
+                                                             number=number, from_to_list=from_to_list,
+                                                             state=state)
+    else:
+        d_name, extra_body = create_body_create_rule(rule_type, address, number, from_to_list)
 
+    rule_obj_def = body.get('RuleObjDef', {})
     rule_obj_def[d_name] = extra_body
 
     response = client.create_rule_object_request(body)
@@ -1272,7 +1299,15 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
     address = address_ip_v_4 if address_ip_v_4 else address_ip_v_6
     number = 4 if (address_ip_v_4 or from_to_address_ip_v_4) else 6
     from_to_list = from_to_address_ip_v_4 if from_to_address_ip_v_4 else from_to_address_ip_v_6
-    d_name, extra_body = create_body_create_rule(rule_type, address, number, from_to_list)
+    # create the body according to the version of the NSM
+    if VERSION == "V.10x":
+        d_name, extra_body = create_body_create_rule_for_v10(rule_type=rule_type, address=address,
+                                                             number=number, from_to_list=from_to_list,
+                                                             state=state)
+
+    else:
+        d_name, extra_body = create_body_create_rule(rule_type, address, number, from_to_list)
+
     rule_obj_def = body.get('RuleObjDef', {})
     rule_obj_def[d_name] = extra_body
     client.update_rule_object_request(body, rule_id)
