@@ -5,8 +5,7 @@ from CommonServerPython import *
 # IMPORTS
 # Disable insecure warnings
 
-import urllib3
-urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()
 
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'

@@ -6,11 +6,10 @@ from CommonServerPython import *  # noqa: F401
 # import json
 #
 # import dateparser
+import requests
 
 # Disable insecure warnings
-import urllib3
-urllib3.disable_warnings()
-
+requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'

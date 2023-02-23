@@ -4,8 +4,7 @@ from CommonServerUserPython import *
 #   from typing import Dict
 
 # Disable insecure warnings
-import urllib3
-urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()
 
 
 class Client(BaseClient):
