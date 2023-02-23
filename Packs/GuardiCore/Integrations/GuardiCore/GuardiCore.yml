@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: GuardiCore
 display: GuardiCore
-category: Deception
+category: Deception & Breach Simulation
 description: Data center breach detection
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

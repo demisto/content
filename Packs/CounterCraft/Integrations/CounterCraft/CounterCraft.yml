@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: CounterCraft Deception Director
 display: CounterCraft Deception Director
-category: Deception
+category: Deception & Breach Simulation
 description: CounterCraft Deception Solution detects advanced adversaries. Automate
   counterintelligence campaigns to discover targeted attacks with real-time active
   response.

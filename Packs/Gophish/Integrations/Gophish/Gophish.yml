@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: Gophish
 display: Gophish
-category: Deception
+category: Deception & Breach Simulation
 description: Gophish is a powerful, open-source phishing framework that makes it easy
   to test your organization's exposure to phishing. For Free
 configuration:
