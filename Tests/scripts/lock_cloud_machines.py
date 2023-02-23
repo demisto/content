@@ -227,7 +227,7 @@ def main():
         list_machines = test_machines_list.download_as_string().decode("utf-8").split()
         random.shuffle(list_machines)
 
-    logging.info(f'gets all machines lock files')
+    logging.info('gets all machines lock files')
     machines_locks = get_machines_locks_details(storage_client, 'xsoar-ci-artifacts',
                                                 options.gcs_locks_path, MACHINES_LOCKS_REPO)
 
