@@ -486,7 +486,7 @@ def test_get_device_location_command(mocker, absolute_client):
                         'Country': 'Israel',
                         'CountryCode': 'IL',
                         'ID': '1',
-                        'lastUpdateDateTimeUtc': 1605747972853,
+                        'LastUpdate': 1605747972853,
                         'LocationTechnology': 'gps',
                         'State': 'Israel'},
                        {'Accuracy': 15,
@@ -495,6 +495,6 @@ def test_get_device_location_command(mocker, absolute_client):
                         'Country': 'Israel',
                         'CountryCode': 'IL',
                         'ID': '2',
-                        'lastUpdateDateTimeUtc': 1605747972853,
+                        'LastUpdate': 1605747972853,
                         'LocationTechnology': 'gps',
                         'State': 'Israel'}]
