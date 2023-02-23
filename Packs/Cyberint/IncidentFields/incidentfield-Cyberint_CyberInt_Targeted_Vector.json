@@ -18,7 +18,6 @@
 	"description": "",
 	"editForm": true,
 	"fieldCalcScript": "",
-	"fromServerVersion": "",
 	"group": 0,
 	"hidden": false,
 	"id": "incident_cyberinttargetedvector",
@@ -43,7 +42,6 @@
 	"systemAssociatedTypes": null,
 	"template": "",
 	"threshold": 72,
-	"toServerVersion": "",
 	"type": "multiSelect",
 	"unmapped": false,
 	"unsearchable": false,
@@ -51,5 +49,6 @@
 	"validatedError": "",
 	"validationRegex": "",
 	"version": -1,
-	"x2_fields": ""
+	"x2_fields": "",
+	"fromVersion": "6.0.0"
 }

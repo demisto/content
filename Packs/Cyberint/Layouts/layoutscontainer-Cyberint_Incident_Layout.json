@@ -1118,7 +1118,6 @@
 		]
 	},
 	"edit": null,
-	"fromServerVersion": "6.0.0",
 	"group": "incident",
 	"id": "b094831f-4dc5-495c-8b9e-9be7b0c2723b",
 	"indicatorsDetails": null,
@@ -1132,6 +1131,6 @@
 	"quickView": null,
 	"quickViewV2": null,
 	"system": false,
-	"toServerVersion": "99.99.99",
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.0.0"
 }
