@@ -1,22 +1,42 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-args = demisto.args()
-# !ConvertTableToHTML table=${PrismaCloudCompute.Images.ComplianceIssues} title=`Compliance Results`
-res = demisto.executeCommand("ConvertTableToHTML", {"table": args.get("table"), "title": args.get("title")})
-html = res[0]["EntryContext"]["HTMLTable"]
+def main():
+    args = demisto.args()
 
-body = f"""
-Hello,
+    try:
+        res = demisto.executeCommand("ConvertTableToHTML", {"table": args.get("table"), "title": args.get("title")})
 
-Please see below the details for the compliance report from Prisma Cloud Compute
+        if is_error(res):
+            raise DemistoException(f'Failed to set indicators: {str(get_error(res))}')
 
-{html}
+    except Exception as e:
+        return_error(e)
 
-- DBot
-"""
+    html = res[0]["EntryContext"]["HTMLTable"]
 
+    body = f"""
+    Hello,
 
-# !send-mail
-res = demisto.executeCommand("send-mail", {"to": args.get("to"),
-                             "subject": "IMPORTANT: Prisma Cloud Compute Compliance", "body": body})
-demisto.results(res)
+    Please see below the details for the compliance report from Prisma Cloud Compute
+
+    {html}
+
+    - DBot
+    """
+
+    try:
+        res = demisto.executeCommand("send-mail", {"to": args.get("to"), "subject": "IMPORTANT: Prisma Cloud Compute Compliance", "body": body})
+
+        if is_error(res):
+            raise DemistoException(f'Failed to set indicators: {str(get_error(res))}')
+
+        demisto.results(res)
+        return_results(CommandResults(
+            readable_output=res[0]['Contents']
+        ))
+
+    except Exception as e:
+        return_error(e)
+
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    main()

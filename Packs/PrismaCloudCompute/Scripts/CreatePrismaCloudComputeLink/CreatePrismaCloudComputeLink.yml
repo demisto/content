@@ -5,6 +5,8 @@ args:
 - name: imageName
   required: true
   description: The image name to investigate alerts for.
+- description: The base url of the Prisma Cloud Compute Instance (https://<prisma-ip>:<prisma-port>)
+  name: baseUrl
 commonfields:
   id: CreatePrismaCloudComputeLink
   version: -1
