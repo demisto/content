@@ -109,7 +109,7 @@ Playbook that given the IP address enriches GCP information relevant to ASM aler
 
 Playbook that given the IP address enriches Rapid7 information relevant to ASM alerts.
 
-![Cortex ASM - Rapid7 Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Rapid7_Enrichment.png)
+![Cortex ASM - Rapid7 Enrichment](https://raw.githubusercontent.com/demisto/content/8f2a866b666627cb0c6c7ea860e7f1337b4766b7/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Rapid7_Enrichment.png)
 
 #### Cortex ASM - Remediation Guidance
 
@@ -145,7 +145,7 @@ Playbook that given the IP address checks if SNMP is enabled or not and returns 
 
 Playbook that given the IP address enriches Splunk information relevant to ASM alerts.
 
-![Cortex ASM - Splunk Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Splunk_Enrichment.png)
+![Cortex ASM - Splunk Enrichment](https://raw.githubusercontent.com/demisto/content/8f2a866b666627cb0c6c7ea860e7f1337b4766b7/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Splunk_Enrichment.png)
 
 #### Cortex ASM - Tenable.io Enrichment
 
