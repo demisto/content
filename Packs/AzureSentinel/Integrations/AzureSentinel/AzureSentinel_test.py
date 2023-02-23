@@ -1836,6 +1836,14 @@ def test_validate_required_arguments_for_alert_rule():
         validate_required_arguments_for_alert_rule(args)
     assert str(e.value) == '"template_name" is required for "fusion" alert rule.'
 
+    # Test without a kind argument
+    args = {
+        'rule_name': 'test_unknown_rule'
+    }
+    with pytest.raises(Exception) as e:
+        validate_required_arguments_for_alert_rule(args)
+    assert str(e.value) == 'The "kind" argument is required for alert rule.'
+
 
 def test_create_data_for_alert_rule():
     """

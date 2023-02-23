@@ -1806,13 +1806,15 @@ def delete_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any])
 
 def validate_required_arguments_for_alert_rule(args: Dict[str, Any]) -> None:
     required_args_by_kind = {
-        'fusion': ['rule_name', 'kind', 'template_name', 'enabled'],
-        'microsoft_security_incident_creation': ['rule_name', 'kind', 'displayName', 'enabled', 'product_filter'],
-        'scheduled': ['rule_name', 'kind', 'displayName', 'enabled', 'query', 'query_frequency', 'query_period', 'severity',
+        'fusion': ['rule_name', 'template_name', 'enabled'],
+        'microsoft_security_incident_creation': ['rule_name', 'displayName', 'enabled', 'product_filter'],
+        'scheduled': ['rule_name', 'displayName', 'enabled', 'query', 'query_frequency', 'query_period', 'severity',
                       'suppression_duration', 'suppression_enabled', 'trigger_operator', 'trigger_threshold']
     }
 
     kind = args.get('kind', '')
+    if not kind:
+        raise DemistoException('The "kind" argument is required for alert rule.')
     for arg in required_args_by_kind.get(kind, []):
         if not args.get(arg):
             raise DemistoException(f'"{arg}" is required for "{kind}" alert rule.')
@@ -1823,7 +1825,7 @@ def create_data_for_alert_rule(args: Dict[str, Any]) -> Dict[str, Any]:
 
     properties = {
         'alertRuleTemplateName': args.get('template_name'),
-        'enabled': argToBoolean(args.get('enabled')),
+        'enabled': argToBoolean(args.get('enabled')) if args.get('enabled') else None,
         'displayName': args.get('displayName'),
         'productFilter': string_to_table_header(args.get('product_filter', '')),
         'description': args.get('description'),
