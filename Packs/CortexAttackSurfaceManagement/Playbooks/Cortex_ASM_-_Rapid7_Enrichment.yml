@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: ef3d2596-6f23-4e7d-8a37-15b156dbc4e8
+    taskid: aef3b78c-5ad9-499e-8118-95a664ca9967
     type: playbook
     task:
-      id: ef3d2596-6f23-4e7d-8a37-15b156dbc4e8
+      id: aef3b78c-5ad9-499e-8118-95a664ca9967
       version: -1
       name: Rapid7 - Nexpose - Enrichment
       description: Given an IP address, this playbook searches Rapid7 Nexpose assets for an asset with the associated IP address to retrieve asset information and proceeds to return all associated tags with it.
@@ -71,7 +71,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -577,10 +577,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: c945c272-bc4c-4829-8fa3-1c6a722997d6
+    taskid: 43fc0bf2-9356-4cfe-82a1-fbb96fcf3393
     type: condition
     task:
-      id: c945c272-bc4c-4829-8fa3-1c6a722997d6
+      id: 43fc0bf2-9356-4cfe-82a1-fbb96fcf3393
       version: -1
       name: Was there asset tags from Rapid7?
       description: Checks if the Nexpose AssetTag object exists.
@@ -600,8 +600,16 @@ tasks:
           left:
             value:
               complex:
-                root: Nexpose
-                accessor: AssetTag
+                root: Nexpose.AssetTag
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: Nexpose.AssetTag.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: owner
             iscontext: true
           right:
             value: {}
