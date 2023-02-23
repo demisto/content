@@ -341,6 +341,7 @@ def test_export_assets_command(mocker, args, return_value_export_request_with_ex
     from Tenable_io import export_assets_command
     import Tenable_io
     from test_data.response_and_results import export_assets_response
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
     mocker.patch.object(Tenable_io, 'export_request', return_value={"export_uuid": 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'})
     mocker.patch.object(Tenable_io, 'export_request_with_export_uuid',
                         return_value={"export_uuid": 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'})
@@ -383,6 +384,7 @@ def test_export_vulnerabilities_command(mocker, args, return_value_export_reques
     from Tenable_io import export_vulnerabilities_command
     import Tenable_io
     from test_data.response_and_results import export_vulnerabilities_response
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
     mocker.patch.object(Tenable_io, 'export_request', return_value={"export_uuid": 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'})
     mocker.patch.object(Tenable_io, 'export_request_with_export_uuid',
                         return_value={"export_uuid": 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'})
