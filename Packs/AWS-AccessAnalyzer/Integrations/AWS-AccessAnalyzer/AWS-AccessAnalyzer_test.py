@@ -186,9 +186,6 @@ def test_fetch_incidents_command__various_last_run(mocker, lats_run_obj, expecte
     assert incidents[0]['name'] == f"AWS Access Analyzer Alert - {mocked_results['findings'][0]['id']}"
 
 
-should_use_next_token = True
-
-
 @pytest.mark.parametrize(argnames='next_token, expected_call_count', argvalues=[(None, 1), ('next_token', 2)])
 def test_fetch_incidents_command__with_next_token(mocker, next_token, expected_call_count):
     """
@@ -197,16 +194,14 @@ def test_fetch_incidents_command__with_next_token(mocker, next_token, expected_c
     Then    - validate that get_findings run twice
     """
     def get_mocked_results(**kwargs):
-        global should_use_next_token
         result = {
             'findings': [
                 {'id': 'test_id_1', 'updatedAt': datetime.datetime.now()},
                 {'id': 'test_id_2', 'updatedAt': datetime.datetime.now()}
             ]
         }
-        if next_token and should_use_next_token:
+        if next_token and 'nextToken' not in kwargs:
             result['nextToken'] = next_token
-            should_use_next_token = False
         return result
 
     mock_required_fields(mocker,
@@ -221,7 +216,7 @@ def test_fetch_incidents_command__with_next_token(mocker, next_token, expected_c
     assert AWSAccessAnalyzer.get_aws_session().list_findings.call_count == expected_call_count
 
 
-def test_excpetion_in_test_module(mocker):
+def test_exception_in_test_module(mocker):
     err_msg = 'connection failed.'
     mock_required_fields(mocker,
                          command_name='test-module',
