@@ -3,7 +3,9 @@
 $script:INTEGRATION_NAME = "Security And Compliance"
 $script:COMMAND_PREFIX = "o365-sc"
 $script:INTEGRATION_ENTRY_CONTEX = "O365.SecurityAndCompliance.ContentSearch"
-$script:INTEGRATION_ENTRY_COMPLIANCE = "O365.SecurityAndCompliance.ComplianceCase"
+$script:INTEGRATION_ENTRY_COMPLIANCE_CASE = "O365.SecurityAndCompliance.ComplianceCase"
+$script:INTEGRATION_ENTRY_CASE_HOLD_POLICY = "O365.SecurityAndCompliance.CaseHoldPolicy"
+$script:INTEGRATION_ENTRY_CASE_HOLD_RULE = "O365.SecurityAndCompliance.CaseHoldRule"
 $script:SEARCH_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEX.Search(val.Name && val.Name == obj.Name)"
 $script:SEARCH_ACTION_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEX.SearchAction(val.Name && val.Name == obj.Name)"
 
@@ -778,6 +780,8 @@ class SecurityAndComplianceClient {
             List case with the identity.
             .PARAMETER case_type
             List cases of the sepecified case_type.
+            .PARAMETER limit
+            Limit the amount of results default is 50.
 
             .EXAMPLE
             $client.ComplianceCaseList()
@@ -795,7 +799,7 @@ class SecurityAndComplianceClient {
         $this.CreateDelegatedSession("Remove-ComplianceCase")
 
         # Execute command
-        $response = Remove-ComplianceCase -Identity $identity -Confirm "false"
+        $response = Remove-ComplianceCase -Identity $identity -Confirm:$false
         # Close session to remote
         $this.DisconnectSession()
         return $response
@@ -814,6 +818,248 @@ class SecurityAndComplianceClient {
 
             .LINK
             https://learn.microsoft.com/en-us/powershell/module/exchange/remove-compliancecase?view=exchange-ps
+        #>
+    }
+    
+    [psobject]CaseHoldPolicyCreate([string]$policy_name, [string]$case, [string]$comment, [string]$exchange_location, 
+                                   [string]$public_folder_location, [string]$share_point_location, [bool]$enabled) {
+        # Establish session to remote
+        $this.CreateDelegatedSession("New-CaseHoldPolicy")
+        $cmd_params = @{
+            "Name" = $policy_name
+            "Case" = $case
+            "Enabled" = $enabled
+        }
+        if ($comment) {
+            $cmd_params.Comment = $comment
+        }
+        if ($exchange_location) {
+            $cmd_params.ExchangeLocation = $exchange_location
+        }
+        if ($public_folder_location) {
+            $cmd_params.PublicFolderLocation = $public_folder_location
+        }
+        if ($share_point_location) {
+            $cmd_params.SharePointLocation = $share_point_location
+        }
+        # Execute command
+        $response = New-CaseHoldPolicy @cmd_params
+        # Close session to remote
+        $this.DisconnectSession()
+        return $response
+           <#
+            .DESCRIPTION
+            Creates new case hold policies in the Microsoft Purview compliance portal
+
+            .PARAMETER policy_name
+             Name of a new policy name to create.
+            
+            .PARAMETER case
+            Case to connect the policy to.
+            
+            .PARAMETER comment
+            Attach a comment to the policy.
+            
+            .PARAMETER exchange_location
+            The ExchangeLocation parameter specifies the mailboxes to include in the policy.
+
+            .PARAMETER public_folder_location
+            Specifies that you want to include all public folders in the case hold policy.
+
+            .PARAMETER share_point_location
+            Specifies the SharePoint Online and OneDrive for Business sites to include.
+            
+            .PARAMETER enabled
+            Whether the policy is enabled or disabled.
+
+            .EXAMPLE
+            New-CaseHoldPolicy -Name "Regulation 123 Compliance" -Case "123 Compliance Case" -ExchangeLocation "Kitty Petersen", "Scott Nakamura" -SharePointLocation "https://contoso.sharepoint.com/sites/teams/finance"
+
+            .OUTPUTS
+            psobject - Raw response.
+
+            .LINK
+            https://learn.microsoft.com/en-us/powershell/module/exchange/new-caseholdpolicy?view=exchange-ps
+        #>
+    }
+
+    [psobject]CaseHoldPolicyGet([string]$identity, [string]$case, [bool]$distribution_detail, [bool]$include_bindings){
+        # Establish session to remote
+        $this.CreateDelegatedSession("Get-CaseHoldPolicy")
+        $cmd_params = @{
+            DistributionDetail = $distribution_detail
+            IncludeBindings = $include_bindings
+        }
+        if ($identity) {
+            $cmd_params.Identity = $identity
+        }
+        if ($case) {
+            $cmd_params.Case = $case
+        }
+          # Execute command
+          $response = Get-CaseHoldPolicy @cmd_params
+          # Close session to remote
+          $this.DisconnectSession()
+          return $response
+           <#
+            .DESCRIPTION
+            View existing case hold policies in the Microsoft Purview compliance portal
+
+            .PARAMETER identity
+            Specifies the case hold policy that you want to view.
+
+            .PARAMETER case
+            The Case parameter specifies the case hold policy that you want to view by using the eDiscovery case that's associated with the policy.
+
+            .PARAMETER distribution_detail
+            Returns detailed policy distribution information on the case hold policy.
+
+            .PARAMETER include_bindindgs
+            The ExchangeLocation parameter specifies the mailboxes to include in the policy.
+
+            .EXAMPLE
+            Get-CaseHoldPolicy -Case "Contoso Legal"
+            Get-CaseHoldPolicy -Identity "Regulation 123 Compliance"
+
+            .OUTPUTS
+            psobject - Raw response.
+
+            .LINK
+            https://learn.microsoft.com/en-us/powershell/module/exchange/get-caseholdpolicy?view=exchange-ps
+        #>
+    }
+
+    [psobject]CaseHoldPolicyDelete([string]$identity, [bool]$force_delete){
+        # Establish session to remote
+        $this.CreateDelegatedSession("Remove-CaseHoldPolicy")
+        # Execute command
+        if($force_delete) {
+            $response = Remove-CaseHoldPolicy -Identity $identity -ForceDeletion -Confirm:$false
+        } else {
+            $response = Remove-CaseHoldPolicy -Identity $identity -Confirm:$false
+        }
+        # Close session to remote
+        $this.DisconnectSession()
+        return $response
+        <#
+        .DESCRIPTION
+        Remove case hold policies from the Microsoft Purview compliance portal.
+
+        .PARAMETER identity
+        Specify the case hold policy to remove.
+
+        .PARAMETER distribution_detail
+        Returns detailed policy distribution information on the case hold policy.
+
+        .EXAMPLE
+        Remove-CaseHoldPolicy -Identity "Regulation 123 Compliance"
+
+        .OUTPUTS
+        psobject - Raw response.
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/remove-caseholdpolicy?view=exchange-ps
+        #>
+    }
+
+    [psobject]CaseHoldRuleCreate([string]$rule_name, [string]$policy_name, [string]$query, [string]$comment, [bool]$is_disabled){
+        # Establish session to remote
+        $this.CreateDelegatedSession("New-CaseHoldRule")
+        $cmd_params = @{
+            Name = $rule_name
+            Policy = $policy_name
+            Disabled = $is_disabled
+        }
+        if ($comment) {
+            $cmd_params.Comment = $comment
+        }
+        if ($query) {
+            $cmd_params.ContentMatchQuery = $query
+        }
+        # Execute command
+        $response = New-CaseHoldRule $cmd_params
+        # Close session to remote
+        $this.DisconnectSession()
+        return $response
+        <#
+        .DESCRIPTION
+        Creates new case hold rules in the Microsoft Purview compliance portal.
+
+        .PARAMETER rule_name
+        .PARAMETER policy_name
+        .PARAMETER query
+        .PARAMETER comment
+        .PARAMETER is_disabled
+
+        .EXAMPLE
+        New-CaseHoldRule -Name "2016 Budget Spreadsheets" -Policy "CaseHoldPolicy 16" -ContentMatchQuery "filename:2016 budget filetype:xlsx"
+
+        .OUTPUTS
+        psobject - Raw response.
+
+        .LINK
+        https://learn.microsoft.com/en-us/sharepoint/dev/general-development/keyword-query-language-kql-syntax-reference
+        #>
+    }
+
+    [psobject]CaseHoldRuleList([string]$identity, [string]$policy, [int]$limit){
+        # Establish session to remote
+        $this.CreateDelegatedSession("Get-CaseHoldRule")
+        $cmd_params = @{}
+        if ($identity) {
+            $cmd_params.Identity = $identity
+        }
+        if ($policy) {
+            $cmd_params.Policy = $policy
+        }
+        # Execute command
+        $response = Get-CaseHoldRule $cmd_params
+        # TODO limit
+        # Close session to remote
+        $this.DisconnectSession()
+        return $response
+        <#
+        .DESCRIPTION
+        View case hold rules in the Microsoft Purview compliance portal.
+
+        .PARAMETER identity
+        .PARAMETER policy
+        .PARAMETER limit
+
+        .EXAMPLE
+        Get-CaseHoldRule  -Identity "Test Rule 66"
+
+        .OUTPUTS
+        psobject - Raw response.
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/get-caseholdrule?view=exchange-ps
+        #>
+    }
+
+    [psobject]CaseHoldRuleDelete([string]$identity, [bool]$force_delete){
+        # Establish session to remote
+        $this.CreateDelegatedSession("Remove-CaseHoldRule")
+        # Execute command
+        $response = Remove-CaseHoldRule -Identity $identity -ForceDelete $force_delete -Confirm:$false
+        # Close session to remote
+        $this.DisconnectSession()
+        return $response
+        <#
+        .DESCRIPTION
+        Removes case hold rules from the Microsoft Purview compliance portal.
+
+        .PARAMETER identity
+        .PARAMETER force_delete
+
+        .EXAMPLE
+        Remove-CaseHoldRule -Identity "Test Rule 3" -Confirm:$false 
+
+        .OUTPUTS
+        psobject - Raw response.
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/get-caseholdrule?view=exchange-ps
         #>
     }
 }
@@ -1050,7 +1296,7 @@ function ComplianceCaseCreateCommand([SecurityAndComplianceClient]$client, [hash
     # Raw response
     $raw_response = $client.ComplianceCaseCreate($kwargs.case_name, $kwargs.case_type, $kwargs.description, $kwargs.external_id)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_COMPLIANCE" = $raw_response }
+    $entry_context = @{"$script:INTEGRATION_ENTRY_COMPLIANCE_CASE" = $raw_response }
     return $human_readable, $entry_context, $raw_response
 }
 
@@ -1058,27 +1304,90 @@ function ComplianceCaseListCommand([SecurityAndComplianceClient]$client, [hashta
     # Raw response    
     $raw_response = $client.ComplianceCaseList($kwargs.identity, $kwargs.case_type, $kwargs.limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_COMPLIANCE" = $raw_response }
+    $entry_context = @{"$script:INTEGRATION_ENTRY_COMPLIANCE_CASE(obj.Identity === val.Identity)" = $raw_response}
     return $human_readable, $entry_context, $raw_response
 }
 
 function ComplianceCaseDeleteCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Raw response
-    $raw_response = $client.ComplianceCaseDelete()
-    # $human_readable = TableToMarkdown $raw_response "Results of $command"
-    # $entry_context = @{ "$script:INTEGRATION_ENTRY_COMPLIANCE" = $raw_response }
-    return $raw_response
+    $raw_response = $client.ComplianceCaseDelete($kwargs.identity)
+    # Human readable
+    $human_readable = "$script:INTEGRATION_ENTRY_COMPLIANCE_CASE - Case **$($kwargs.identity)** removed!"
+    # Entry context
+    $entry_context = @{}
+    return $human_readable, $entry_context, $raw_response
 }
 
 function CaseHoldPolicyCreateCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
-    # Raw response
-    $public_folder_location = ConvertTo-Boolean $kwargs.public_folder_location
     $enabled = ConvertTo-Boolean $kwargs.enabled
-    $raw_response = $client.CaseHoldPolicyCreate($kwargs.policy_name, $kwargs.caes, $kwargs.comment, $kwargs.exchange_location,
-                                                 $public_folder_location, $kwargs.share_point_location, $enabled)
-    # $human_readable = TableToMarkdown $raw_response "Results of $command"
-    # $entry_context = @{ "$script:INTEGRATION_ENTRY_COMPLIANCE" = $raw_response }
-    return $raw_response
+    $exchange_location = @()
+    if ($kwargs.exchange_location) {
+        $exchange_location = ArgToList($kwargs.exchange_location) 
+    }
+    $public_folder_location = @()
+    if ($kwargs.public_folder_location) {
+        $public_folder_location = ArgToList($kwargs.public_folder_location) 
+    }
+    $share_point_location = @()
+    if ($kwargs.share_point_location) {
+        $share_point_location = ArgToList($kwargs.share_point_location)
+    }
+    # Raw response
+    $raw_response = $client.CaseHoldPolicyCreate($kwargs.policy_name, $kwargs.case, $kwargs.comment, $exchange_location,
+    $public_folder_location, $share_point_location, $enabled)
+    $entry_context = @{"$script:INTEGRATION_ENTRY_CASE_HOLD_POLICY(obj.Guid === val.Guid)" = $raw_response}
+    $human_readable = TableToMarkdown $raw_response "Results of $command"
+    return $human_readable, $entry_context, $raw_response
+}
+
+function CaseHoldPolicyGetCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
+    if ($kwargs.Identity -And $kwargs.case) {
+        return "Invlid. Include Indentity or Case. Not both."
+    }
+    $distribution_detail = ConvertTo-Boolean $kwargs.distribution_detail
+    $include_bindings = ConvertTo-Boolean $kwargs.include_bindings
+    $raw_response = $client.CaseHoldPolicyGet($kwargs.identity, $kwargs.case, $distribution_detail, $include_bindings)
+    $entry_context = @{"$script:INTEGRATION_ENTRY_CASE_HOLD_POLICY(obj.Guid === val.Guid)" = $raw_response}
+    $human_readable = TableToMarkdown $raw_response "Results of $command"
+    return $human_readable, $entry_context, $raw_response
+}
+
+function CaseHoldPolicyDeleteCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
+    $force_delete = ConvertTo-Boolean $kwargs.force_delete
+    $raw_response = $client.CaseHoldPolicyDelete($kwargs.identity, $force_delete)
+    $human_readable = "$script:INTEGRATION_ENTRY_COMPLIANCE_CASE - Case Hold policy **$($kwargs.identity)** was removed successfully"
+    $entry_context = @{}
+    return $human_readable, $entry_context, $raw_response
+}
+
+function CaseHoldRuleCreateCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
+    $rule_name = $kwargs.rule_name
+    $policy_name = $kwargs.policy_name
+    $query = $kwargs.query
+    $comment = $kwargs.comment
+    $is_disabled = ConvertTo-Boolean $kwargs.is_disabled
+    $raw_response = $client.CaseHoldRuleCreate($rule_name, $policy_name, $query, $comment, $is_disabled)
+    $human_readable = TableToMarkdown $raw_response "Results of $command"
+    $entry_context = @{"$script:INTEGRATION_ENTRY_CASE_HOLD_RULE(obj.Guid === val.Guid)" = $raw_response}
+    return $human_readable, $entry_context, $raw_response
+}
+function CaseHoldRuleListCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
+    $identity = $kwargs.identity
+    $policy = $kwargs.policy
+    $limit = $kwargs.limit
+    $raw_response = $client.CaseHoldRuleList($identity, $policy, $limit)
+    $human_readable = TableToMarkdown $raw_response "Results of $command"
+    $entry_context = @{"$script:INTEGRATION_ENTRY_CASE_HOLD_RULE(obj.Guid === val.Guid)" = $raw_response}
+    return $human_readable, $entry_context, $raw_response
+}
+
+function CaseHoldRuleDeleteCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
+    $identity = $kwargs.identity
+    $force_delete = ConvertTo-Boolean $kwargs.force_delete
+    $raw_response = $client.CaseHoldRuleDelete($identity, $force_delete)
+    $human_readable = "$script:INTEGRATION_ENTRY_COMPLIANCE_CASE - Case Hold rule **$($kwargs.identity)** was removed successfully"
+    $entry_context = @{}
+    return $human_readable, $entry_context, $raw_response
 }
 
 #### INTEGRATION COMMANDS MANAGER ####
@@ -1148,6 +1457,21 @@ function Main {
             }
             "$script:COMMAND_PREFIX-case-hold-policy-create" {
                 ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldPolicyCreateCommand $cs_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-case-hold-policy-get" {
+                ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldPolicyGetCommand $cs_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-case-hold-policy-delete" {
+                ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldPolicyDeleteCommand $cs_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-case-hold-rule-create" {
+                ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldRuleCreateCommand $cs_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-case-hold-rule-list" {
+                ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldRuleListCommand $cs_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-case-hold-rule-delete" {
+                ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldRuleDeleteCommand $cs_client $command_arguments
             }
         }
         # Return results to Demisto Server
