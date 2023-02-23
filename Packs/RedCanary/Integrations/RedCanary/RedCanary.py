@@ -216,7 +216,7 @@ def process_timeline(detection_id):
         additional_data = {}  # type:ignore
 
         if activity['attributes']['type'] == 'process_activity_occurred':
-            process = activity['attributes']['process_execution']['attributes']['operating_system_process'].get('attributes', {})
+            process = activity['attributes']['process_execution']['attributes'].get('operating_system_process', {}).get('attributes', {})
             if not process:
                 demisto.info('##### process attributes corrupted, skipping additional data. process response:'
                              f'{activity.get("attributes", {}).get("process_execution")} #######')
