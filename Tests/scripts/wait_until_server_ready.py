@@ -44,8 +44,8 @@ def download_cloud_init_logs_from_server(ip: str) -> None:
         # downloading cloud-init logs to artifacts
         check_output(f'scp {SSH_USER}@{ip}:{cloud_init_log_path} '
                      f'{ARTIFACTS_FOLDER}/{ip}-cloud_init.log'.split())
-    except Exception:
-        logging.exception(f'Could not download cloud-init file from server {ip}.')
+    except Exception as e:
+        logging.exception(f'Could not download cloud-init file from server {ip}:\n{str(e)}.')
 
 
 def docker_login(ip: str) -> None:
@@ -63,8 +63,7 @@ def docker_login(ip: str) -> None:
             f'login --username {docker_username} --password-stdin'.split(),
             input=docker_password.encode())
     except Exception as e:
-        logging.exception(f'Could not login to {container_engine_type} on server {ip}')
-        logging.exception(f'while handling the rquest, encountered the following error: {str(e)}')
+        logging.exception(f'Could not login to {container_engine_type} on server {ip}:\n{str(e)}')
 
 
 def main():
