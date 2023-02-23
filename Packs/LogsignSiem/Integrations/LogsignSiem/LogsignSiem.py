@@ -1,7 +1,5 @@
 from typing import Dict, List, Tuple
 
-import requests
-
 from CommonServerPython import *
 from CommonServerUserPython import *
 import demistomock as demisto
