@@ -20,8 +20,8 @@ This playbook does not use any scripts.
 ### Commands
 
 * setIndicators
-* xdr-allowlist-files
 * closeInvestigation
+* xdr-allowlist-files
 
 ## Playbook Inputs
 
@@ -45,4 +45,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Cortex XDR - False Positive Incident Handling](../doc_files/Cortex_XDR_-_False_Positive_Incident_Handling.png)
+![Cortex XDR - False Positive Incident Handling_copy](../doc_files/Cortex_XDR_-_False_Positive_Incident_Handling_copy.png)

@@ -540,13 +540,13 @@ tasks:
     task:
       brand: ''
       description: Adds requested files to allow list if they are not already on block list or allow list.
-      id: b38078df-810b-4a60-8084-b01885a7002c
+      id: c234c307-5f23-4cbe-84c1-47349d1bf9f5
       iscommand: true
       name: Create IOCs in Cortex XDR - Approved Hashes
       script: '|||xdr-allowlist-files'
       type: regular
       version: -1
-    taskid: b38078df-810b-4a60-8084-b01885a7002c
+    taskid: c234c307-5f23-4cbe-84c1-47349d1bf9f5
     timertriggers: []
     type: regular
     view: |-
@@ -557,7 +557,6 @@ tasks:
         }
       }
     continueonerrortype: ""
-    continueonerror: true
   "72":
     id: "72"
     taskid: 7bbb5650-b559-44fb-8da4-474260b38087
