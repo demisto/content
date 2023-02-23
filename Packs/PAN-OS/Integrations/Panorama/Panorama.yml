@@ -5344,7 +5344,7 @@ script:
       name: name_contain
       required: false
       isArray: false
-    - description:  The application risk (1 to 5).
+    - description: The application risk (1 to 5).
       auto: PREDEFINED
       name: risk
       required: false
