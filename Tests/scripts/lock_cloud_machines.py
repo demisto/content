@@ -61,7 +61,7 @@ def get_machines_locks_details(storage_client: storage.Client, bucket_name: str,
         storage_client(storage.Client): The GCP storage client.
         bucket_name(str): the bucket name.
         lock_repository_name(str):  the lock_repository_name name.
-        prefix(str): the prefix to search for specific files.
+        machines_lock_repo(str): the machines_lock_repo name.
 
     Returns: list of dicts with the job-id and the time_created of the lock file.
 
