@@ -8,6 +8,8 @@ V2_PREFIX = "v2.0"
 V3_PREFIX = "v3.0"
 HTTPS_PROTOCOLS = ["http", "https", "ftp"]
 SOCKS_PROTOCOL = ["socks"]
+ISO8601_CONFIG = '%Y-%m-%dT%H:%M:%SZ'
+API_DATE_CONFIG = '%m/%d/%Y %H:%M'
 
 
 class Client(BaseClient):
@@ -54,12 +56,12 @@ class Client(BaseClient):
             response = self._http_request("POST", f"{V2_PREFIX}/login", json_data=data)
             return dict_safe_get(response, ["data", "jwtToken"])
 
-        except DemistoException as e:
-            if e.res is not None and e.res.status_code == HTTPStatus.UNAUTHORIZED:
+        except DemistoException as error:
+            if error.res is not None and error.res.status_code == HTTPStatus.UNAUTHORIZED:
                 raise DemistoException(
                     "Authorization Error: make sure username and password are set correctly."
                 )
-            raise e
+            raise error
 
     def _http_request(self, *args, **kwargs):
         """HTTP request handler for Cisco WSA API.
@@ -86,8 +88,10 @@ class Client(BaseClient):
         """
         params = assign_params(policy_names=policy_names)
 
-        return self._http_request(
-            "GET", f"{V3_PREFIX}/web_security/access_policies", params=params
+        return self._http_request("GET",
+                                  f"{V3_PREFIX}/web_security/access_policies",
+                                  params=params,
+                                  ok_codes=[HTTPStatus.OK]
         )
 
     def access_policy_create(
@@ -354,6 +358,7 @@ class Client(BaseClient):
     def access_policy_objects_update(
         self,
         policy_name: str,
+        objects: dict[str, Any],
         object_type: str | None,
         object_action: str | None,
         object_values: List[str] | None,
@@ -366,6 +371,7 @@ class Client(BaseClient):
 
         Args:
             policy_name (str): Policy name to update.
+            objects (dict[str, Any]): Policies objects.
             object_type (str | None): Object type.
             object_action (str | None): Object action.
             object_values (List[str] | None): Object values.
@@ -380,16 +386,6 @@ class Client(BaseClient):
         Returns:
             Response: API response from Cisco WSA.
         """
-        access_policies = self.access_policy_list(policy_name).get(
-            "access_policies", []
-        )
-        if not access_policies:
-            raise DemistoException("Policy was not found.")
-
-        if not access_policies[0].get("objects"):
-            raise DemistoException("Update failed, objects were not found.")
-
-        objects = access_policies[0].get("objects")
         organize_policy_object_data(
             objects=objects,
             object_type=object_type,
@@ -489,14 +485,13 @@ class Client(BaseClient):
             Response: API response from Cisco WSA.
         """
         params = assign_params(policy_names=",".join(policy_names))
-        res = self._http_request(
+        return self._http_request(
             "DELETE",
             f"{V3_PREFIX}/web_security/access_policies",
             params=params,
             resp_type="response",
             ok_codes=[HTTPStatus.NO_CONTENT, HTTPStatus.MULTI_STATUS],
         )
-        return res
 
     def domain_map_list(self) -> dict[str, Any]:
         """
@@ -505,8 +500,10 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from Cisco WSA.
         """
-        return self._http_request(
-            "GET", f"{V2_PREFIX}/configure/web_security/domain_map"
+        return self._http_request("GET",
+                                  f"{V2_PREFIX}/configure/web_security/domain_map",
+                                  ok_codes=[HTTPStatus.OK]
+
         )
 
     def domain_map_create(
@@ -601,7 +598,7 @@ class Client(BaseClient):
         )
 
         return self._http_request(
-            "GET", f"{V3_PREFIX}/web_security/identification_profiles", params=params
+            "GET", f"{V3_PREFIX}/web_security/identification_profiles", params=params, ok_codes=[HTTPStatus.OK]
         )
 
     def identification_profiles_create(
@@ -634,12 +631,6 @@ class Client(BaseClient):
             Response: API response from Cisco WSA.
         """
 
-        organized_protocols = []
-        if "HTTPS" in protocols:
-            organized_protocols.extend(HTTPS_PROTOCOLS)
-        if "SOCKS" in protocols:
-            organized_protocols.extend(SOCKS_PROTOCOL)
-
         data = remove_empty_elements(
             {
                 "identification_profiles": [
@@ -649,7 +640,7 @@ class Client(BaseClient):
                         "status": status,
                         "order": order,
                         "members": {
-                            "protocols": organized_protocols,
+                            "protocols": protocols,
                             "proxy_ports": proxy_ports,
                             "ip": members_by_subnet,
                             "url_categories": {
@@ -702,12 +693,6 @@ class Client(BaseClient):
             Response: API response from Cisco WSA.
         """
 
-        organized_protocols = []
-        if protocols and "HTTPS" in protocols:
-            organized_protocols.extend(HTTPS_PROTOCOLS)
-        if protocols and "SOCKS" in protocols:
-            organized_protocols.extend(SOCKS_PROTOCOL)
-
         data = remove_empty_elements(
             {
                 "identification_profiles": [
@@ -718,7 +703,7 @@ class Client(BaseClient):
                         "status": status,
                         "order": order,
                         "members": {
-                            "protocols": organized_protocols,
+                            "protocols": protocols,
                             "proxy_ports": proxy_ports,
                             "ip": members_by_subnet,
                             "url_categories": {
@@ -739,12 +724,12 @@ class Client(BaseClient):
             ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
-    def identification_profiles_delete(self, profile_names: str) -> Response:
+    def identification_profiles_delete(self, profile_names: List[str]) -> Response:
         """
         Delete identification profiles.
 
         Args:
-            profile_names (str): Identification profile names to delete.
+            profile_names (List[str]): Identification profile names to delete.
 
         Returns:
             Response: API response from Cisco WSA.
@@ -769,83 +754,6 @@ class Client(BaseClient):
         return self._http_request(
             "GET", f"{V3_PREFIX}/generic_resources/url_categories"
         )
-
-
-def pagination(
-    response: List[dict[str, Any]], args: dict[str, Any]
-) -> List[dict[str, Any]]:
-    """
-    Executing Manual paginate_results (using the page and page size arguments)
-
-    Args:
-        response (List[dict[str, Any]]): API response.
-        args (dict[str, Any]): Command arguments from XSOAR.
-    Returns:
-        List[dict[str, Any]]: Paginated results.
-    """
-    page = arg_to_number(args.get("page"))
-    page_size = arg_to_number(args.get("page_size"))
-    limit = arg_to_number(args.get("limit", 50))
-
-    if page and page_size:
-        offset = (page - 1) * page_size
-        return response[offset: offset + page_size]
-    else:
-        return response[:limit]
-
-
-def organize_policy_object_data(
-    objects: dict[str, Any],
-    object_type: str | None,
-    object_action: str | None,
-    object_values: List[str] | None,
-    block_custom_mime_types: List[str] | None,
-    http_or_https_max_object_size_mb: int | None,
-    ftp_max_object_size_mb: int | None,
-):
-    """
-    Organize policy object update data.
-
-    Args:
-        objects (dict[str, Any]): Original objects.
-        object_type (str | None): Object type to update.
-        object_action (str | None): Object action to update.
-        object_values (List[str] | None): Object values to update.
-        block_custom_mime_types (List[str] | None): Block custom MIME types.
-        http_or_https_max_object_size_mb (int | None): HTTP(S) max object size MB.
-        ftp_max_object_size_mb (int | None): FTP max object size MB.
-    """
-    if object_type and object_action and object_values:
-
-        original_obj_actions = dict_safe_get(objects, ["object_type", object_type])
-        if original_obj_actions:
-            for original_obj_action in original_obj_actions:
-                if original_obj_action == object_action:
-                    object_values.extend(
-                        dict_safe_get(objects, ["object_type", object_type, object_action])
-                    )
-                else:
-                    original_obj_actions[original_obj_action] = [
-                        value
-                        for value in original_obj_actions[original_obj_action]
-                        if value not in object_values
-                    ]
-
-            objects["object_type"][object_type].update({object_action: object_values})
-
-    elif any([object_type, object_action, object_values]):
-        raise ValueError(
-            "object_type, object_action, object_values should be used in conjunction."
-        )
-    if block_custom_mime_types:
-        objects["block_custom_mime_types"] = block_custom_mime_types
-
-    objects["max_object_size_mb"] = remove_empty_elements(
-        {
-            "http_or_https": http_or_https_max_object_size_mb,
-            "ftp": ftp_max_object_size_mb,
-        }
-    )
 
 
 def list_access_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -890,16 +798,6 @@ def list_access_policy_command(client: Client, args: dict[str, Any]) -> CommandR
     )
 
 
-def access_policy_output_handler(response: List[dict[str, Any]]) -> List[dict[str, Any]]:
-    outputs = []
-    for policy in response:
-        if policy_expiry := policy.get('policy_expiry'):
-            policy['policy_expiry'] = arg_to_datetime(policy_expiry).strftime('%Y-%m-%dT%H:%M:%SZ')
-
-        outputs.append(policy)
-    return outputs
-
-
 def create_access_policy_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
@@ -920,7 +818,7 @@ def create_access_policy_command(
     identification_profiles = argToList(args["identification_profiles"])
     policy_description = args.get("policy_description")
     policy_expiry_date = arg_to_datetime(args.get("policy_expiry"))
-    policy_expiry = policy_expiry_date.strftime('%m/%d/%Y %H:%M') if policy_expiry_date else None
+    policy_expiry = policy_expiry_date.strftime(API_DATE_CONFIG) if policy_expiry_date else None
 
     client.access_policy_create(
         policy_name=policy_name,
@@ -955,7 +853,7 @@ def update_access_policy_command(
     policy_description = args.get("policy_description")
     policy_order = arg_to_number(args.get("policy_order"))
     policy_expiry_date = arg_to_datetime(args.get("policy_expiry"))
-    policy_expiry = policy_expiry_date.strftime('%m/%d/%Y %H:%M') if policy_expiry_date else None
+    policy_expiry = policy_expiry_date.strftime(API_DATE_CONFIG) if policy_expiry_date else None
 
     client.access_policy_update(
         policy_name=policy_name,
@@ -1105,8 +1003,12 @@ def update_access_policy_objects_command(
     )
     ftp_max_object_size_mb = arg_to_number(args.get("ftp_max_object_size_mb"))
 
+    objects = access_policy_objects_get(client=client,
+                                        policy_name=policy_name)
+
     client.access_policy_objects_update(
         policy_name=policy_name,
+        objects=objects,
         object_type=object_type,
         object_action=object_action,
         object_values=object_values,
@@ -1372,30 +1274,6 @@ def list_identification_profiles_command(
     )
 
 
-def identification_profile_mapper(data: List[dict[str, Any]]) -> List[dict[str, Any]]:
-    filtered_data = []
-    for profile in data:
-        filtered_data.append(remove_empty_elements({
-            "status": profile['status'],
-            "profile_name": profile['profile_name'],
-            "description": profile['description'],
-            "protocols": dict_safe_get(profile, ['members', 'protocols']),
-            "order": profile['order'],
-            "UrlCategories": {
-                "predefined": dict_safe_get(profile, ['members', 'url_categories', 'predefined']),
-                "custom": dict_safe_get(profile, ['members', 'url_categories', 'custom']),
-                "uncategorized": dict_safe_get(profile, ['members', 'url_categories', 'uncategorized']),
-            },
-            "ip": dict_safe_get(profile, ['members', 'ip']),
-            "proxy_port": dict_safe_get(profile, ['members', 'proxy_port']),
-            "UserAgents": {
-                "predefined": dict_safe_get(profile, ['members', 'user_agents', 'predefined']),
-                "custom": dict_safe_get(profile, ['members', 'user_agents', 'custom']),
-            },
-        }))
-    return filtered_data
-
-
 def create_identification_profiles_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
@@ -1413,7 +1291,7 @@ def create_identification_profiles_command(
     status = args["status"]
     description = args["description"]
     order = arg_to_number(args["order"])
-    protocols = argToList(args["protocols"])
+    protocols = protocols_handler(protocols=argToList(args["protocols"]))
     proxy_ports = argToList(args.get("proxy_ports"))
     members_by_subnet = argToList(args.get("members_by_subnet"))
     predefined_url_categories = argToList(args.get("predefined_url_categories"))
@@ -1454,7 +1332,7 @@ def update_identification_profiles_command(
     status = args.get("status")
     description = args.get("description")
     order = arg_to_number(args.get("order"))
-    protocols = argToList(args.get("protocols"))
+    protocols = protocols_handler(protocols=argToList(args.get("protocols")))
     proxy_ports = argToList(args.get("proxy_ports"))
     members_by_subnet = argToList(args.get("members_by_subnet"))
     predefined_url_categories = argToList(args.get("predefined_url_categories"))
@@ -1537,6 +1415,20 @@ def list_url_categories_command(client: Client, args: dict[str, Any]) -> Command
     )
 
 
+def test_module(client: Client) -> str:
+    """
+    Validates the correctness of the instance parameters and connectivity to Cisco WSA API service.
+
+    Args:
+        client (Client): Cisco WSA API client.
+    """
+    client.url_categories_list()
+    return "ok"
+
+
+""" HELPER FUNCTIONS """
+
+
 def categories_output_filter(response: dict[str, Any], contain: str | None = None, type_: str | None = None) -> dict[str, Any]:
     """Filter categories response.
 
@@ -1566,19 +1458,8 @@ def categories_output_filter(response: dict[str, Any], contain: str | None = Non
     return outputs
 
 
-def test_module(client: Client) -> str:
-    """
-    Validates the correctness of the instance parameters and connectivity to Cisco WSA API service.
-
-    Args:
-        client (Client): Cisco WSA API client.
-    """
-    client.url_categories_list()
-    return "ok"
-
-
 def multi_status_delete_handler(response: Response, obj_key: str, readable_obj_name: str) -> List[CommandResults]:
-    """_summary_
+    """Handling with 207 delete code response, in cases that some of the objects deleted and some didn't.
 
     Args:
         response (Response): API response from Cisco WSA (with 207 status code).
@@ -1604,6 +1485,160 @@ def multi_status_delete_handler(response: Response, obj_key: str, readable_obj_n
         command_results_list.append(CommandResults(readable_output=readable_output))
 
     return command_results_list
+
+
+def identification_profile_mapper(data: List[dict[str, Any]]) -> List[dict[str, Any]]:
+    filtered_data = []
+    for profile in data:
+        filtered_data.append(remove_empty_elements({
+            "status": profile['status'],
+            "profile_name": profile['profile_name'],
+            "description": profile['description'],
+            "protocols": dict_safe_get(profile, ['members', 'protocols']),
+            "order": profile['order'],
+            "UrlCategories": {
+                "predefined": dict_safe_get(profile, ['members', 'url_categories', 'predefined']),
+                "custom": dict_safe_get(profile, ['members', 'url_categories', 'custom']),
+                "uncategorized": dict_safe_get(profile, ['members', 'url_categories', 'uncategorized']),
+            },
+            "ip": dict_safe_get(profile, ['members', 'ip']),
+            "proxy_port": dict_safe_get(profile, ['members', 'proxy_port']),
+            "UserAgents": {
+                "predefined": dict_safe_get(profile, ['members', 'user_agents', 'predefined']),
+                "custom": dict_safe_get(profile, ['members', 'user_agents', 'custom']),
+            },
+        }))
+    return filtered_data
+
+
+def access_policy_output_handler(response: List[dict[str, Any]]) -> List[dict[str, Any]]:
+    outputs = []
+    for policy in response:
+        if policy_expiry := policy.get('policy_expiry'):
+            policy['policy_expiry'] = arg_to_datetime(policy_expiry).strftime(ISO8601_CONFIG)
+
+        outputs.append(policy)
+    return outputs
+
+
+def pagination(
+    response: List[dict[str, Any]], args: dict[str, Any]
+) -> List[dict[str, Any]]:
+    """
+    Executing Manual paginate_results (using the page and page size arguments)
+
+    Args:
+        response (List[dict[str, Any]]): API response.
+        args (dict[str, Any]): Command arguments from XSOAR.
+    Returns:
+        List[dict[str, Any]]: Paginated results.
+    """
+    page = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size"))
+    limit = arg_to_number(args.get("limit", 50))
+
+    if page and page_size:
+        offset = (page - 1) * page_size
+        return response[offset: offset + page_size]
+    else:
+        return response[:limit]
+
+
+def organize_policy_object_data(
+    objects: dict[str, Any],
+    object_type: str | None,
+    object_action: str | None,
+    object_values: List[str] | None,
+    block_custom_mime_types: List[str] | None,
+    http_or_https_max_object_size_mb: int | None,
+    ftp_max_object_size_mb: int | None,
+):
+    """
+    Organize policy object update data.
+
+    Args:
+        objects (dict[str, Any]): Original objects.
+        object_type (str | None): Object type to update.
+        object_action (str | None): Object action to update.
+        object_values (List[str] | None): Object values to update.
+        block_custom_mime_types (List[str] | None): Block custom MIME types.
+        http_or_https_max_object_size_mb (int | None): HTTP(S) max object size MB.
+        ftp_max_object_size_mb (int | None): FTP max object size MB.
+    """
+    if object_type and object_action and object_values:
+
+        original_obj_actions = dict_safe_get(objects, ["object_type", object_type])
+        if original_obj_actions:
+            for original_obj_action in original_obj_actions:
+                if original_obj_action == object_action:
+                    object_values.extend(
+                        dict_safe_get(objects, ["object_type", object_type, object_action])
+                    )
+                else:
+                    original_obj_actions[original_obj_action] = [
+                        value
+                        for value in original_obj_actions[original_obj_action]
+                        if value not in object_values
+                    ]
+
+            objects["object_type"][object_type].update({object_action: object_values})
+
+    elif any([object_type, object_action, object_values]):
+        raise ValueError(
+            "object_type, object_action, object_values should be used in conjunction."
+        )
+    if block_custom_mime_types:
+        objects["block_custom_mime_types"] = block_custom_mime_types
+
+    objects["max_object_size_mb"] = remove_empty_elements(
+        {
+            "http_or_https": http_or_https_max_object_size_mb,
+            "ftp": ftp_max_object_size_mb,
+        }
+    )
+
+
+def access_policy_objects_get(client: Client, policy_name: str) -> dict[str, Any]:
+    """Get the objects data of access policy.
+
+    Args:
+        client (Client): Cisco WSA API client.
+        policy_name (str): The access policy name.
+
+    Raises:
+        DemistoException: Policy was not found.
+        DemistoException: Update failed, objects were not found.
+
+    Returns:
+        dict[str, Any]: Objects data.
+    """
+    access_policies = client.access_policy_list(policy_name).get(
+        "access_policies", []
+    )
+    if not access_policies:
+        raise DemistoException("Policy was not found.")
+
+    if not access_policies[0].get("objects"):
+        raise DemistoException("Update failed, objects were not found.")
+
+    return access_policies[0].get("objects")
+
+
+def protocols_handler(protocols: List[str]) -> List[str]:
+    """Protocols handler.
+
+    Args:
+        protocols (List[str]): User chosen protocol.
+
+    Returns:
+        List[str]: Organized protocols list.
+    """
+    organized_protocols = []
+    if "HTTPS" in protocols:
+        organized_protocols.extend(HTTPS_PROTOCOLS)
+    if "SOCKS" in protocols:
+        organized_protocols.extend(SOCKS_PROTOCOL)
+    return organized_protocols
 
 
 def main() -> None:
