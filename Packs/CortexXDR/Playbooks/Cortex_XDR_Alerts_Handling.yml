@@ -721,7 +721,7 @@ tasks:
       IsolateEndpoint:
         simple: "false"
       UserEngagementThreshold:
-        simple: "false"
+        simple: "0"
       Username:
         simple: administrator
     separatecontext: true
