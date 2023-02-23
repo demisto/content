@@ -9,7 +9,8 @@ import jwt
 import uuid
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+import urllib3
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 ''' CONSTANTS '''

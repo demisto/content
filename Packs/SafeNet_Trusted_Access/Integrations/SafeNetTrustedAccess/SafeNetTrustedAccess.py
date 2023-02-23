@@ -12,7 +12,6 @@ import copy
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
