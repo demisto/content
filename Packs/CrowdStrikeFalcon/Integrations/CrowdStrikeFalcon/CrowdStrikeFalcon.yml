@@ -2896,6 +2896,243 @@ script:
     - contextPath: CrowdStrike.VulnerabilityHost.cve.id
       description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD).
       type: String
+  - arguments:
+    - description: Value to match for the exclusion.
+      name: value
+      required: true
+    - description: Comment describing why the exclusions was created.
+      name: comment
+      required: false
+    - description: Group ID(s) explicitly excluded from the exclusion.
+      name: excluded_from
+      required: false
+      isArray: true
+    - description: Group ID(s) impacted by the exclusion.
+      name: groups
+      required: false
+      isArray: true
+    description: Create the ML exclusions.
+    name: cs-falcon-create-ml-exclusion
+    outputs:
+    - contextPath: CrowdStrike.MLExclusion
+      description:
+      type: String
+  - arguments:
+    - description: The ID of the exclusion to update.
+      name: id
+      required: true
+    - description: Value to match for the exclusion.
+      name: value
+      required: true
+    - description: Comment describing why the exclusions was created.
+      name: comment
+      required: false
+    - description: Group ID(s) explicitly excluded from the exclusion.
+      name: excluded_from
+      required: false
+      isArray: true
+    - description: Group ID(s) impacted by the exclusion.
+      name: groups
+      required: false
+      isArray: true
+    description: Update the ML exclusions
+    name: cs-falcon-update-ml-exclusion
+    outputs:
+    - contextPath: CrowdStrike.MLExclusion
+      description:
+      type: String
+  - arguments:
+    - description: Delete the ML exclusions by id
+      defaultValue: The ID of the exclusion to update.
+      name: id
+      required: true
+      isArray: true
+    description:
+    name: cs-falcon-delete-ml-exclusion
+  - arguments:
+    - description: A custom filter in which the exclusions should be filtered. For example `value:”<value>”`.
+      name: filter
+      required: false
+    - description: The value in which the exclusions should be filtered.
+      name: value
+      required: false
+    - description: The IDs of the exclusions to retrieve.
+      name: ids
+      required: false
+      isArray: true
+    - description: The limit of how many exclusions to retrieve.
+      name: limit
+      required: false
+    - description: The offset of how many exclusions to skip.
+      name: offset
+      required: false
+    - auto: PREDEFINED
+      description: Hwo to Sort the retrieved exclusions.
+      name: sort
+      required: false
+      predefined:
+      - applied_globally.asc
+      - applied_globally.desc
+      - created_by.asc
+      - created_by.desc
+      - created_on.asc
+      - created_on.desc
+      - last_modified.asc
+      - last_modified.desc
+      - modified_by.asc
+      - modified_by.desc
+      - value.asc
+      - value.desc
+    description: Get a list of ML Exclusions by specifying their IDs or a filter
+    name: cs-falcon-search-ml-exclusion
+    outputs:
+    - contextPath: CrowdStrike.MLExclusion
+      description:
+      type: String
+  - arguments:
+    - description: Name of the exclusion.
+      name: name
+      required: true
+    - description: Command line regular expression.
+      name: cl_regex
+      required: true
+    - description: Comment describing why the exclusions was created.
+      name: comment
+      required: false
+    - description: Exclusion description.
+      name: description
+      required: true
+    - description: JSON formatted detection template.
+      name: detection_json
+      required: true
+    - description: Group ID(s) impacted by the exclusion.
+      name: groups
+      required: false
+      isArray: true
+    - description: Indicator file name regular expression.
+      name: ifn_regex
+      required: false
+    description: Create the IOA exclusions
+    name: cs-falcon-create-ioa-exclusion
+    outputs:
+    - contextPath: CrowdStrike.IOAExclusion
+      description:
+      type: String
+  - arguments:
+    - description: ID of the exclusion to update.
+      name: id
+      required: true
+    - description: Name of the exclusion.
+      name: name
+      required: false
+    - description: Command line regular expression.
+      name: cl_regex
+      required: false
+    - description: Comment describing why the exclusions was created.
+      name: comment
+      required: false
+    - description: Exclusion description.
+      name: description
+      required: false
+    - description: JSON formatted detection template.
+      name: detection_json
+      required: false
+    - description: Group ID(s) impacted by the exclusion.
+      name: groups
+      required: false
+      isArray: true
+    - description: Indicator file name regular expression.
+      name: ifn_regex
+      required: false
+    description:
+    name: cs-falcon-update-ioa-exclusion
+    outputs:
+    - contextPath: CrowdStrike.IOAExclusion
+      description:
+      type: String
+  - arguments:
+    - description: IDs of the exclusions to be deleted.
+      name: id
+      required: true
+      isArray: true
+    description: Delete the IOA exclusions by id
+    name: cs-falcon-delete-ioa-exclusion
+  - arguments:
+    - description: A custom filter in which the exclusions should be filtered. For example `value:”<value>”`.
+      name: filter
+      required: false
+    - description: The value in which the exclusions should be filtered.
+      name: value
+      required: false
+    - description: The IDs of the exclusions to retrieve.
+      name: ids
+      required: false
+      isArray: true
+    - description: The limit of how many exclusions to retrieve. Default is 50.
+      name: limit
+      required: false
+    - description: The offset of how many exclusions to skip. Default is 0.
+      name: offset
+      required: false
+    description: Get a list of IOA Exclusions by specifying their IDs or a filter
+    name: cs-falcon-search-ioa-exclusion
+    outputs:
+    - contextPath: CrowdStrike.IOAExclusion
+      description:
+      type: String
+  - arguments:
+    - description: The IDs of the quarantined files to retrieve.
+      name: ids
+      required: false
+      isArray: true
+    - auto: PREDEFINED
+      description: Action to perform against the quarantined file.
+      name: action
+      required: true
+      predefined:
+      - delete
+      - release
+      - unrelease
+    - description: A custom filter in which the retrieve quarantined file should be filtered.
+      name: filter
+      required: false
+    - description: The sha256 of the quarantined files to retrieve.
+      name: sha256
+      required: false
+      isArray: true
+    - description: The file name of the quarantined files to retrieve.
+      name: filename
+      required: false
+      isArray: true
+    - description: Filter the retrieved files by state.
+      name: state
+      required: false
+    - description: Filter the retrieved files by hostname.
+      name: hostname
+      required: false
+      isArray: true
+    - description: Filter the retrieved files by username.
+      name: username
+      required: false
+      isArray: true
+    - description: The limit of how many exclusions to retrieve. Default is 50.
+      name: limit
+      required: false
+    - description: The offset of how many exclusions to skip. Default is 0.
+      name: offset
+      required: false
+    description: Get quarantine file metadata by specified ids or a filter.
+    name: cs-falcon-list-quarantined-file
+    outputs:
+    - contextPath: CrowdStrike.QuarantinedFile
+      description:
+      type: String
+  - arguments:
+    - description:
+      defaultValue:
+      name:
+    description: Apply action by quarantine file ids or a filter.
+    name: cs-falcon-apply-quarantine-file-action
   dockerimage: demisto/python3:3.10.9.46807
   isfetch: true
   ismappable: true
