@@ -3539,7 +3539,11 @@ INDICATOR_VALUE_AND_TYPE = [
     ('*castaneda-thornton.com', 'DomainGlob'),
     (
         '53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b',
-        'File')
+        'File'),
+    ('1[.]1[.]1[.]1', 'IP'),
+    ('test[@]test.com', 'Email'),
+    ('https[:]//www[.]test[.]com/abc', 'URL'),
+    ('test[.]com', 'Domain')
 ]
 
 
