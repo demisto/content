@@ -230,19 +230,19 @@
                 "type": "workPlan"
             },
             {
-                "hidden": true,
+                "hidden": false,
                 "id": "evidenceBoard",
                 "name": "Evidence Board",
                 "type": "evidenceBoard"
             },
             {
-                "hidden": true,
+                "hidden": false,
                 "id": "relatedIncidents",
                 "name": "Related Incidents",
                 "type": "relatedIncidents"
             },
             {
-                "hidden": true,
+                "hidden": false,
                 "id": "canvas",
                 "name": "Canvas",
                 "type": "canvas"
