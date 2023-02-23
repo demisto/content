@@ -1,5 +1,5 @@
 A comprehensive asset-centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers, and web applications.
-This integration was integrated and tested with with the January 2023 release of Tenable.io.
+This integration was integrated and tested with January 2023 release of Tenable.io.
 
 ## Configure Tenable.io on Cortex XSOAR
 
@@ -104,16 +104,16 @@ BASIC [16] user permissions and CAN VIEW [16] scan permissions.
 ***
 Launches a scan with existing or custom targets. You can specify custom targets in the command arguments.
 
+#### Base Command
+
+`tenable-io-launch-scan`
+
 #### Limitations
 Three concurrent requests per Tenable.io customer instance.
 Note: This limit is subject to change.
 
 ##### Required Permissions
 SCAN OPERATOR [24] user permissions.
-
-#### Base Command
-
-`tenable-io-launch-scan`
 
 #### Input
 
@@ -145,8 +145,6 @@ SCAN OPERATOR [24] user permissions.
 }
 ```
 
-#### Human Readable Output
-
 >### The requested scan was launched successfully
 >|Id|Targets|Status|
 >|---|---|---|
@@ -158,16 +156,16 @@ SCAN OPERATOR [24] user permissions.
 ***
 Retrieves a scan report for the specified scan.
 
+#### Base Command
+
+`tenable-io-get-scan-report`
+
 #### Limitations
 Three concurrent requests per Tenable.io customer instance.
 Note: This limit is subject to change.
 
 ##### Required Permissions
 BASIC [16] user permissions.
-
-#### Base Command
-
-`tenable-io-get-scan-report`
 
 #### Input
 
@@ -319,7 +317,7 @@ BASIC [16] user permissions.
 
 #### Human Readable Output
 
->### Vulnerability details - 10881
+>### Vulnerability details - fake_id
 >|Name|Severity|Type|Family|Description|Synopsis|FirstSeen|LastSeen|PublicationDate|ModificationDate|VulnerabilityOccurences|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| Name | None | remote | General | Description | Synopsis | 2024-11-07T11:11:05Z | 2024-11-07T11:11:05Z | 2024-11-07T11:11:05Z | 2024-11-07T11:11:05Z | 1 |
@@ -562,7 +560,7 @@ SCAN OPERATOR [24] user permissions and CAN EXECUTE [32] scan permissions.
 ### tenable-io-get-asset-details
 
 ***
-Retrieves details for the specified asset to include custom attributes.
+Retrieves details for the specified asset including custom attributes.
 
 ##### Required Permissions
 BASIC [16] user permissions.
@@ -777,6 +775,7 @@ Two concurrent asset exports per container. Tenable.io also prevents duplicate e
 ##### Required Permissions
 ADMINISTRATOR [64] user permissions.
 
+
 #### Base Command
 
 `tenable-io-export-assets`
@@ -786,12 +785,12 @@ ADMINISTRATOR [64] user permissions.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | chunkSize | Specifies the number of assets per exported chunk. The range is 100-10000. | Required | 
-| intervalInSeconds | How many seconds until the next run. | Optional | 
+| intervalInSeconds | The number of seconds until the next run. | Optional | 
 | timeOut | The timeout for the polling in seconds. | Optional | 
 | createdAt | When specified, the results returned in the list are limited to assets created later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'. | Optional | 
 | updatedAt | When specified, the results returned in the list are limited to assets updated later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'. | Optional | 
 | terminatedAt | When specified, the results returned in the list are limited to assets terminated later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'. | Optional | 
-| isTerminated | When set to true, returns assets which have any value for the terminated_at attribute. | Optional | 
+| isTerminated | When set to true, returns assets which have any value for the terminatedAt attribute. | Optional | 
 | deletedAt | When specified, the results returned in the list are limited to assets deleted later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'. | Optional | 
 | isDeleted | When set to true, returns assets which have any value for the deletedAt attribute. Possible values are: true, false. | Optional | 
 | isLicensed | Specifies whether the asset is included in the asset count for the Tenable.io instance. If true, returns only licensed assets. If false, returns only unlicensed assets. Possible values are: true, false. | Optional | 
@@ -799,16 +798,17 @@ ADMINISTRATOR [64] user permissions.
 | lastAuthenticatedScanTime | When specified, the results returned in the list are limited to assets with a last credentialed scan time later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'. | Optional | 
 | lastAssessed | When specified, the results returned in the list are limited to assets with a last assessed time later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'. | Optional | 
 | serviceNowSysId | If true, returns all assets that have a ServiceNow Sys ID, regardless of value. If false, returns all assets that do not have a ServiceNow Sys ID. Possible values are: true, false. | Optional | 
-| sources | A comma-separated list of sources possible values are: AWS, NESSUS_AGENT, PVS, NESSUS_SCAN, WAS. When specified, the results returned in the list are limited to  assets that have the specified source. | Optional | 
+| sources | A comma-separated list of sources. Possible values are: AWS, NESSUS_AGENT, PVS,NESSUS_SCAN, WAS. When specified, the results returned in the list are limited to assets that have the specified source. | Optional | 
 | hasPluginResults | If true, returns all assets that have a plugin results associated with it. Possible values are: true, false. | Optional | 
 | tagCategory | When specified, the results returned in the list are limited to assets with the specified tag category. | Optional | 
-| tagValue | When specified, the results returned in the list are limited to assets with the specified tag value. | Optional |
+| tagValue | When specified, the results returned in the list are limited to assets with the specified tag value. | Optional | 
+| exportUuid | The export uuid. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TenableIO.Asset.id | String | The UUID of the asset in Tenable.io. Use this value as the unique key for the asset | 
+| TenableIO.Asset.id | String | The UUID of the asset in Tenable.io. Use this value as the unique key for the asset. | 
 | TenableIO.Asset.has_agent | Boolean | Specifies whether a Nessus agent scan identified the asset. | 
 | TenableIO.Asset.has_plugin_results | Boolean | Specifies whether the asset has plugin results associated with it. | 
 | TenableIO.Asset.created_at | Date | The time and date when Tenable.io created the asset record. | 
@@ -824,7 +824,7 @@ ADMINISTRATOR [64] user permissions.
 | TenableIO.Asset.last_authenticated_scan_date | Date | The time and date of the last credentialed scan run on the asset. | 
 | TenableIO.Asset.last_licensed_scan_date | Date | The time and date of the last scan that identified the asset as licensed. Tenable.io categorizes an asset as licensed if a scan of that asset has returned results from a non-discovery plugin within the last 90 days. | 
 | TenableIO.Asset.last_scan_id | String | The UUID of the scan configuration used during the last scan of the asset. | 
-| TenableIO.Asset.last_schedule_id | String | The schedule_uuid for the last scan of the asset. | 
+| TenableIO.Asset.last_schedule_id | String | The schedule id for the last scan of the asset. | 
 | TenableIO.Asset.azure_vm_id | String | The unique identifier of the Microsoft Azure virtual machine instance. For more information, see "Accessing and Using Azure VM Unique ID" in the Microsoft Azure documentation. | 
 | TenableIO.Asset.azure_resource_id | String | The unique identifier of the resource in the Azure Resource Manager. For more information, see the Azure Resource Manager Documentation. | 
 | TenableIO.Asset.gcp_project_id | String | The unique identifier of the virtual machine instance in Google Cloud Platform \(GCP\). | 
@@ -872,11 +872,11 @@ ADMINISTRATOR [64] user permissions.
 | TenableIO.Asset.tags.key | String | The tag category \(the first half of the category:value pair\). | 
 | TenableIO.Asset.tags.value | String | The tag value \(the second half of the category:value pair\). | 
 | TenableIO.Asset.tags.added_by | String | The UUID of the user who assigned the tag to the asset. | 
-| TenableIO.Asset.tags.added_at | Date | The ISO timestamp when the tag was assigned to the asset | 
+| TenableIO.Asset.tags.added_at | Date | The ISO timestamp when the tag was assigned to the asset. | 
 | TenableIO.Asset.network_interfaces.name | String | The name of the interface. | 
 | TenableIO.Asset.network_interfaces.mac_address | String | The MAC addresses of the interface. | 
 | TenableIO.Asset.network_interfaces.ipv6 | String | One or more IPv6 addresses belonging to the interface. | 
-| TenableIO.Asset.network_interfaces.fqdns | String | One or more FQDN belonging to the interface. | 
+| TenableIO.Asset.network_interfaces.fqdns | String | One or more FQDN's belonging to the interface. | 
 | TenableIO.Asset.network_interfaces.ipv4s | String | One or more IPv4 addresses belonging to the interface. | 
 | TenableIO.Asset.acr_score | String | The Asset Criticality Rating \(ACR\) for the asset. | 
 | TenableIO.Asset.exposure_score | String | The Asset Exposure Score \(AES\) for the asset. | 
@@ -1036,6 +1036,7 @@ ADMINISTRATOR [64] user permissions.
 ***
 Retrieves details for the specified asset to include custom attributes.
 
+
 #### Limitations
 Two concurrent vulnerability exports per container. Tenable.io also prevents duplicate exports from running concurrently. For example, export requests with the same filters.
 
@@ -1051,24 +1052,25 @@ ADMINISTRATOR [64] user permissions.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | numAssets | The number of assets used to chunk the vulnerabilities. The range for number of assets in a chunk is 50-5000. | Required | 
-| intervalInSeconds | How many seconds until the next run. | Optional | 
+| intervalInSeconds | The number of seconds until the next run. | Optional | 
 | timeOut | The timeout for the polling in seconds. | Optional | 
-| includeUnlicensed | Specifies whether or not to include unlicensed assets. The default is false when no parameter is specified. Possible values are: true, false. | Optional | 
-| cidrRange | When specified, Restricts the search for vulnerabilities to assets assigned an IP address within the specified CIDR range. | Optional | 
+| includeUnlicensed | Specifies whether or not to include unlicensed assets. Possible values are: true, false. | Optional | 
+| cidrRange | When specified, restricts the search for vulnerabilities to assets assigned an IP address within the specified CIDR range. | Optional | 
 | firstFound | When specified, the results returned in the list are limited to vulnerabilities that were first found between the specified date and now. Date format will be epoch date format or relational expressions like “7 days ago”. | Optional | 
 | lastFixed | When specified, the results returned in the list are limited to vulnerabilities that were fixed between the specified date and now. Date format will be epoch date format or relational expressions like “7 days ago”. | Optional | 
 | lastFound | When specified, the results returned in the list are limited to vulnerabilities that were last found between the specified date and now. Date format will be epoch date format or relational expressions like “7 days ago”. | Optional | 
 | networkId | The ID of the network object associated with scanners that detected the vulnerabilities you want to export. | Optional | 
 | pluginId | A comma-separated list of plugin IDs for which you want to filter the vulnerabilities. | Optional | 
-| pluginType | The plugin type for which you want to filter the vulnerabilities. If not set export includes all vulnerabilities regardless of plugin type. Possible values are: remote, local, combined, settings, summary, third-party, reputation. | Optional | 
+| pluginType | The plugin type for which you want to filter the vulnerabilities. If not set, export includes all vulnerabilities regardless of plugin type. Possible values are: remote, local, combined, settings, summary, third-party, reputation. | Optional | 
 | severity | The severity of the vulnerabilities to include in the export. Defaults to all severity levels. The severity of a vulnerability is defined using the Common Vulnerability Scoring System (CVSS) base score. Supported array values are: info, low, medium, high, critical. | Optional | 
 | since | The start date for the range of data you want to export. Date format will be epoch date format or relational expressions like “7 days ago”. Note: This filter cannot be used in conjunction with the firstFound, lastFound, or lastFixed. | Optional | 
-| state | A Comma-separated list of states of the vulnerabilities you want the export to include. Supported, case-insensitive values are: open, reopened, fixed. This parameter is required if your request includes firstFound, lastFound, or lastFixed parameters. If your request omits this parameter, the export includes default states open and reopened only. | Optional | 
+| state | A comma-separated list of states of the vulnerabilities you want the export to include. Supported, case-insensitive values are: open, reopened, fixed. This parameter is required if your request includes firstFound, lastFound, or lastFixed parameters. If your request omits this parameter, the export includes default states open and reopened only. | Optional | 
 | tagCategory | When specified, the results returned in the list are limited to assets with the specified tag category. | Optional | 
 | tagValue | When specified, the results returned in the list are limited to assets with the specified tag value. | Optional | 
-| vprScoreOperator | An operator which determines the limitation on Vulnerability Priority Rating (VPR), scores value specified at vprScoreValue argument. Supported values are: equal, not equal, lt-lesser, lte-lesser than or equal , gt-greater than , gte-greater than or equal. Possible values are: gte, gt, lte, lt, equal, not equal. | Optional | 
+| vprScoreOperator | An operator that determines the limitation on Vulnerability Priority Rating (VPR), scores value specified at vprScoreValue argument. Supported values are: equal, not equal, lt-lesser, lte-lesser than or equal , gt-greater than , gte-greater than or equal. Possible values are: gte, gt, lte, lt, equal, not equal. | Optional | 
 | vprScoreValue | When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR), score or scores according to the score operator (vprScoreOperator) argument. | Optional | 
-| vprScoreRange | When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR) score range. example value: 2.5-3.5. | Optional |
+| vprScoreRange | When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR) score range. Example value: 2.5-3.5. | Optional | 
+| exportUuid | The export UUID. | Optional | 
 
 #### Context Output
 
@@ -1081,7 +1083,7 @@ ADMINISTRATOR [64] user permissions.
 | TenableIO.Vulnerability.asset.hostname | String | The host name of the asset where a scan found the vulnerability. | 
 | TenableIO.Vulnerability.asset.uuid | String | The UUID of the asset where a scan found the vulnerability. | 
 | TenableIO.Vulnerability.asset.ipv6 | String | The IPv6 address of the asset where a scan found the vulnerability. | 
-| TenableIO.Vulnerability.asset.last_authenticated_results | Date | The last date credentials were used successfully to scan the asset. | 
+| TenableIO.Vulnerability.asset.last_authenticated_results | Date | The last date credentials that were used successfully to scan the asset. | 
 | TenableIO.Vulnerability.asset.last_unauthenticated_results | Date | The last date when the asset was scanned without using credentials | 
 | TenableIO.Vulnerability.asset.mac_address | String | The MAC address of the asset where a scan found the vulnerability. | 
 | TenableIO.Vulnerability.asset.netbios_name | String | The NETBIOS name of the asset where a scan found the vulnerability. | 
@@ -1101,25 +1103,25 @@ ADMINISTRATOR [64] user permissions.
 | TenableIO.Vulnerability.plugin.cvss3_temporal_vector.exploitability | String | The CVSSv3 Exploit Maturity Code \(E\) for the vulnerability the plugin covers. | 
 | TenableIO.Vulnerability.plugin.cvss3_temporal_vector.remediation_level | String | The CVSSv3 Remediation Level \(RL\) temporal metric for the vulnerability the plugin covers. | 
 | TenableIO.Vulnerability.plugin.cvss3_temporal_vector.report_confidence | String | The CVSSv3 Report Confidence \(RC\) temporal metric for the vulnerability the plugin covers. | 
-| TenableIO.Vulnerability.plugin.cvss3_temporal_vector.raw | String | The complete cvss3_temporal_vector metrics and result values for the vulnerability the plugin covers in a condensed and coded format. | 
-| TenableIO.Vulnerability.plugin.cvss3_vector.access_vector | String | The CVSSv2 Attack Vector \(AV\) metric for the vulnerability the plugin covers. | 
+| TenableIO.Vulnerability.plugin.cvss3_temporal_vector.raw | String | The complete CVSSv3 temporal vector metrics and result values for the vulnerability the plugin covers in a condensed and coded format. | 
+| TenableIO.Vulnerability.plugin.cvss3_vector.access_vector | String | The CVSSv3 Attack Vector \(AV\) metric for the vulnerability the plugin covers. | 
 | TenableIO.Vulnerability.plugin.cvss3_vector.access_complexity | String | The CVSSv3 Access Complexity \(AC\) metric for the vulnerability the plugin covers. | 
-| TenableIO.Vulnerability.plugin.cvss3_vector.authentication | String | The CVSSv2 Authentication \(Au\) metric for the vulnerability the plugin covers. | 
+| TenableIO.Vulnerability.plugin.cvss3_vector.authentication | String | The CVSSv3 Authentication \(Au\) metric for the vulnerability the plugin covers. | 
 | TenableIO.Vulnerability.plugin.cvss3_vector.confidentiality_impact | String | The CVSSv3 integrity impact metric for the vulnerability the plugin covers. | 
 | TenableIO.Vulnerability.plugin.cvss3_vector.integrity_impact | String | The CVSSv3 integrity impact metric for the vulnerability the plugin covers. | 
-| TenableIO.Vulnerability.plugin.cvss3_vector.availability_impact | String | The CVSSv2 availability impact metric for the vulnerability the plugin covers. | 
+| TenableIO.Vulnerability.plugin.cvss3_vector.availability_impact | String | The CVSSv3 availability impact metric for the vulnerability the plugin covers. | 
 | TenableIO.Vulnerability.plugin.cvss3_vector.raw | String | The complete cvss3_vector metrics and result values for the vulnerability the plugin covers in a condensed and coded format. | 
 | TenableIO.Vulnerability.plugin.cvss_temporal_vector.exploitability | String | The CVSSv2 Exploitability \(E\) temporal metric for the vulnerability the plugin covers. | 
 | TenableIO.Vulnerability.plugin.cvss_temporal_vector.remediation_level | String | The CVSSv2 Remediation Level \(RL\) temporal metric for the vulnerability the plugin covers. | 
 | TenableIO.Vulnerability.plugin.cvss_temporal_vector.report_confidence | String | The CVSSv2 Report Confidence \(RC\) temporal metric for the vulnerability the plugin covers | 
-| TenableIO.Vulnerability.plugin.cvss_temporal_vector.raw | String | The complete cvss_temporal_vector metrics and result values for the vulnerability the plugin covers in a condensed and coded format. | 
+| TenableIO.Vulnerability.plugin.cvss_temporal_vector.raw | String | The complete CVSS temporal vector metrics and result values for the vulnerability the plugin covers in a condensed and coded format. | 
 | TenableIO.Vulnerability.plugin.cvss_vector.access_vector | String | The CVSSv2 Access Vector \(AV\) metric for the vulnerability the plugin covers. | 
 | TenableIO.Vulnerability.plugin.cvss_vector.access_complexity | String | The CVSSv2 Access Complexity \(AC\) metric for the vulnerability the plugin covers. | 
 | TenableIO.Vulnerability.plugin.cvss_vector.authentication | String | The CVSSv2 Authentication \(Au\) metric for the vulnerability the plugin covers. | 
 | TenableIO.Vulnerability.plugin.cvss_vector.confidentiality_impact | String | The CVSSv2 confidentiality impact metric for the vulnerability the plugin covers. | 
 | TenableIO.Vulnerability.plugin.cvss_vector.integrity_impact | String | The CVSSv2 integrity impact metric for the vulnerability the plugin covers. | 
 | TenableIO.Vulnerability.plugin.cvss_vector.availability_impact | String | The CVSSv2 availability impact metric for the vulnerability the plugin covers. | 
-| TenableIO.Vulnerability.plugin.cvss_vector.raw | String | The complete cvss_vector metrics and result values for the vulnerability the plugin covers in a condensed and coded format. | 
+| TenableIO.Vulnerability.plugin.cvss_vector.raw | String | The complete CVSSv2 vector metrics and result values for the vulnerability the plugin covers in a condensed and coded format. | 
 | TenableIO.Vulnerability.plugin.cvss_base_score | Number | The CVSSv2 base score \(intrinsic and fundamental characteristics of a vulnerability that are constant over time and user environments\). | 
 | TenableIO.Vulnerability.plugin.cvss_temporal_score | Number | The CVSSv2 temporal score \(characteristics of a vulnerability that change over time but not among user environments\). | 
 | TenableIO.Vulnerability.plugin.d2_elliot_name | String | The name of the exploit in the D2 Elliot Web Exploitation framework. | 
@@ -1131,10 +1133,10 @@ ADMINISTRATOR [64] user permissions.
 | TenableIO.Vulnerability.plugin.exploit_framework_exploithub | Boolean | A value specifying whether an exploit exists in the ExploitHub framework. | 
 | TenableIO.Vulnerability.plugin.exploit_framework_metasploit | Boolean | A value specifying whether an exploit exists in the Metasploit framework. | 
 | TenableIO.Vulnerability.plugin.exploitability_ease | String | Description of how easy it is to exploit the issue. | 
-| TenableIO.Vulnerability.plugin.exploited_by_malware | Boolean | The vulnerability discovered by this plugin is known to be exploited by malware. | 
+| TenableIO.Vulnerability.plugin.exploited_by_malware | Boolean | Whether the vulnerability discovered by this plugin is known to be exploited by malware. | 
 | TenableIO.Vulnerability.plugin.exploited_by_nessus | Boolean | A value specifying whether Nessus exploited the vulnerability during the process of identification. | 
 | TenableIO.Vulnerability.plugin.exploithub_sku | String | The SKU number of the exploit in the ExploitHub framework. | 
-| TenableIO.Vulnerability.plugin.family | String | The family to which plugin belongs. | 
+| TenableIO.Vulnerability.plugin.family | String | The family to which the plugin belongs. | 
 | TenableIO.Vulnerability.plugin.family_id | Number | The ID of the plugin family. | 
 | TenableIO.Vulnerability.plugin.has_patch | Boolean | A value specifying whether the vendor has published a patch for the vulnerability. | 
 | TenableIO.Vulnerability.plugin.id | Number | The ID of the plugin that identified the vulnerability. | 
@@ -1144,14 +1146,14 @@ ADMINISTRATOR [64] user permissions.
 | TenableIO.Vulnerability.plugin.name | String | The name of the plugin that identified the vulnerability. | 
 | TenableIO.Vulnerability.plugin.patch_publication_date | String | The date on which the vendor published a patch for the vulnerability. | 
 | TenableIO.Vulnerability.plugin.modification_date | Date | The date on which the plugin was last modified. | 
-| TenableIO.Vulnerability.plugin.publication_date | Date | The date on which the plugin was published | 
+| TenableIO.Vulnerability.plugin.publication_date | Date | The date on which the plugin was published. | 
 | TenableIO.Vulnerability.plugin.risk_factor | String | The risk factor associated with the plugin. Possible values are: Low, Medium, High, or Critical. | 
 | TenableIO.Vulnerability.plugin.see_also | String | Links to external websites that contain helpful information about the vulnerability. | 
 | TenableIO.Vulnerability.plugin.solution | String | Remediation information for the vulnerability. | 
 | TenableIO.Vulnerability.plugin.stig_severity | String | Security Technical Implementation Guide \(STIG\) severity code for the vulnerability. | 
 | TenableIO.Vulnerability.plugin.synopsis | String | Brief description of the plugin or vulnerability. | 
 | TenableIO.Vulnerability.plugin.type | String | The general type of plugin check \(for example, local or remote\). | 
-| TenableIO.Vulnerability.plugin.unsupported_by_vendor | Boolean | Software found by this plugin is unsupported by the software's vendor \(for example, Windows 95 or Firefox 3\). | 
+| TenableIO.Vulnerability.plugin.unsupported_by_vendor | Boolean | Whether software found by this plugin is unsupported by the software's vendor \(for example, Windows 95 or Firefox 3\). | 
 | TenableIO.Vulnerability.plugin.usn | String | Ubuntu security notice that the plugin covers. | 
 | TenableIO.Vulnerability.plugin.version | String | The version of the plugin used to perform the check. | 
 | TenableIO.Vulnerability.plugin.vuln_publication_date | Date | The publication date of the plugin. | 
@@ -1163,7 +1165,7 @@ ADMINISTRATOR [64] user permissions.
 | TenableIO.Vulnerability.plugin.vpr.drivers.age_of_vuln.upper_bound | Number | The upper bound of the range. | 
 | TenableIO.Vulnerability.plugin.vpr.drivers.exploit_code_maturity | String | The relative maturity of a possible exploit for the vulnerability based on the existence, sophistication, and prevalence of exploit intelligence from internal and external sources. | 
 | TenableIO.Vulnerability.plugin.vpr.drivers.cvss3_impact_score | Number | The NVD-provided CVSSv3 impact score for the vulnerability. | 
-| TenableIO.Vulnerability.plugin.vpr.drivers.cvss_impact_score_predicted | Boolean | A value specifying whether Tenable predicted the CVSSv3 impact score for the vulnerability. | 
+| TenableIO.Vulnerability.plugin.vpr.drivers.cvss_impact_score_predicted | Boolean | A value specifying whether Tenable.io predicted the CVSSv3 impact score for the vulnerability. | 
 | TenableIO.Vulnerability.plugin.vpr.drivers.threat_intensity_last28 | String | The relative intensity based on the number and frequency of recently observed threat events related to this vulnerability: Very Low, Low, Medium, High, or Very High. | 
 | TenableIO.Vulnerability.plugin.vpr.drivers.threat_recency | String | A range representing the number of days since a threat event occurred for the vulnerability. | 
 | TenableIO.Vulnerability.plugin.vpr.drivers.threat_recency.lower_bound | String | The lower bound of the range. | 
@@ -1183,7 +1185,7 @@ ADMINISTRATOR [64] user permissions.
 | TenableIO.Vulnerability.severity | String | The severity of the vulnerability as defined using the Common Vulnerability Scoring System \(CVSS\) base score. | 
 | TenableIO.Vulnerability.severity_id | Number | The code for the severity assigned when a user recast the risk associated with the vulnerability. | 
 | TenableIO.Vulnerability.severity_default_id | Number | The code for the severity originally assigned to a vulnerability before a user recast the risk associated with the vulnerability. | 
-| TenableIO.Vulnerability.severity_modification_type | String | he type of modification a user made to the vulnerability's severity. | 
+| TenableIO.Vulnerability.severity_modification_type | String | The type of modification a user made to the vulnerability's severity. | 
 | TenableIO.Vulnerability.first_found | Date | The ISO date when a scan first detected the vulnerability on the asset. | 
 | TenableIO.Vulnerability.last_fixed | Date | The ISO date when a scan no longer detects the previously detected vulnerability on the asset. | 
 | TenableIO.Vulnerability.last_found | Date | The ISO date when a scan last detected the vulnerability on the asset. | 

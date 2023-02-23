@@ -400,7 +400,7 @@ script:
     - description: IP Address of the asset
       name: ip
       required: true
-    description: Retrieves details for the specified asset to include custom attributes.
+    description: Retrieves details for the specified asset including custom attributes.
     name: tenable-io-get-asset-details
     outputs:
     - contextPath: TenableIO.AssetDetails.attributes
@@ -440,7 +440,7 @@ script:
       name: chunkSize
       required: true
       isArray: false
-    - description: How many seconds until the next run.
+    - description: The number of seconds until the next run.
       name: intervalInSeconds
       required: false
       isArray: false
@@ -460,7 +460,7 @@ script:
       name: terminatedAt
       required: false
       isArray: false
-    - description: When set to true, returns assets which have any value for the terminated_at attribute.
+    - description: When set to true, returns assets which have any value for the terminatedAt attribute.
       name: isTerminated
       required: false
       isArray: false
@@ -504,7 +504,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: 'A comma-separated list of sources possible values are: AWS, NESSUS_AGENT, PVS,NESSUS_SCAN, WAS. When specified, the results returned in the list are limited to  assets that have the specified source.'
+    - description: 'A comma-separated list of sources. Possible values are: AWS, NESSUS_AGENT, PVS,NESSUS_SCAN, WAS. When specified, the results returned in the list are limited to assets that have the specified source.'
       name: sources
       required: false
       isArray: true
@@ -532,7 +532,7 @@ script:
     name: tenable-io-export-assets
     outputs:
     - contextPath: TenableIO.Asset.id
-      description: The UUID of the asset in Tenable.io. Use this value as the unique key for the asset
+      description: The UUID of the asset in Tenable.io. Use this value as the unique key for the asset.
       type: String
     - contextPath: TenableIO.Asset.has_agent
       description: Specifies whether a Nessus agent scan identified the asset.
@@ -580,7 +580,7 @@ script:
       description: The UUID of the scan configuration used during the last scan of the asset.
       type: String
     - contextPath: TenableIO.Asset.last_schedule_id
-      description: The schedule_uuid for the last scan of the asset.
+      description: The schedule id for the last scan of the asset.
       type: String
     - contextPath: TenableIO.Asset.azure_vm_id
       description: The unique identifier of the Microsoft Azure virtual machine instance. For more information, see "Accessing and Using Azure VM Unique ID" in the Microsoft Azure documentation.
@@ -724,7 +724,7 @@ script:
       description: The UUID of the user who assigned the tag to the asset.
       type: String
     - contextPath: TenableIO.Asset.tags.added_at
-      description: The ISO timestamp when the tag was assigned to the asset
+      description: The ISO timestamp when the tag was assigned to the asset.
       type: Date
     - contextPath: TenableIO.Asset.network_interfaces.name
       description: The name of the interface.
@@ -736,7 +736,7 @@ script:
       description: One or more IPv6 addresses belonging to the interface.
       type: String
     - contextPath: TenableIO.Asset.network_interfaces.fqdns
-      description: One or more FQDN belonging to the interface.
+      description: One or more FQDN's belonging to the interface.
       type: String
     - contextPath: TenableIO.Asset.network_interfaces.ipv4s
       description: One or more IPv4 addresses belonging to the interface.
@@ -752,7 +752,7 @@ script:
       name: numAssets
       required: true
       isArray: false
-    - description: How many seconds until the next run.
+    - description: The number of seconds until the next run.
       name: intervalInSeconds
       required: false
       isArray: false
@@ -762,13 +762,13 @@ script:
       isArray: false
     - auto: PREDEFINED
       default: false
-      description: Specifies whether or not to include unlicensed assets. The default is false when no parameter is specified.
+      description: Specifies whether or not to include unlicensed assets.
       isArray: false
       name: includeUnlicensed
       predefined:
       - 'true'
       - 'false'
-    - description: When specified, Restricts the search for vulnerabilities to assets assigned an IP address within the specified CIDR range.
+    - description: When specified, restricts the search for vulnerabilities to assets assigned an IP address within the specified CIDR range.
       name: cidrRange
       required: false
       isArray: false
@@ -794,7 +794,7 @@ script:
       isArray: true
     - auto: PREDEFINED
       default: false
-      description: The plugin type for which you want to filter the vulnerabilities. If not set export includes all vulnerabilities regardless of plugin type.
+      description: The plugin type for which you want to filter the vulnerabilities. If not set, export includes all vulnerabilities regardless of plugin type.
       isArray: false
       name: pluginType
       predefined:
@@ -813,7 +813,7 @@ script:
       name: since
       required: false
       isArray: true
-    - description: 'A Comma-separated list of states of the vulnerabilities you want the export to include. Supported, case-insensitive values are: open, reopened, fixed. This parameter is required if your request includes firstFound, lastFound, or lastFixed parameters. If your request omits this parameter, the export includes default states open and reopened only'
+    - description: 'A comma-separated list of states of the vulnerabilities you want the export to include. Supported, case-insensitive values are: open, reopened, fixed. This parameter is required if your request includes firstFound, lastFound, or lastFixed parameters. If your request omits this parameter, the export includes default states open and reopened only.'
       name: state
       required: false
       isArray: true
@@ -827,7 +827,7 @@ script:
       isArray: false
     - auto: PREDEFINED
       default: false
-      description: 'An operator which determines the limitation on Vulnerability Priority Rating (VPR), scores value specified at vprScoreValue argument. Supported values are: equal, not equal, lt-lesser, lte-lesser than or equal , gt-greater than , gte-greater than or equal'
+      description: 'An operator that determines the limitation on Vulnerability Priority Rating (VPR), scores value specified at vprScoreValue argument. Supported values are: equal, not equal, lt-lesser, lte-lesser than or equal , gt-greater than , gte-greater than or equal'
       isArray: false
       name: vprScoreOperator
       predefined:
@@ -841,12 +841,12 @@ script:
       name: vprScoreValue
       required: false
       isArray: true
-    - description: 'When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR) score range. example value: 2.5-3.5'
+    - description: 'When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR) score range. Example value: 2.5-3.5'
       name: vprScoreRange
       required: false
       isArray: false
     - name: exportUuid
-      description: The export uuid.
+      description: The export UUID.
       deprecated: true
     polling: true
     description: Retrieves details for the specified asset to include custom attributes.
@@ -874,7 +874,7 @@ script:
       description: The IPv6 address of the asset where a scan found the vulnerability.
       type: String
     - contextPath: TenableIO.Vulnerability.asset.last_authenticated_results
-      description: The last date credentials were used successfully to scan the asset.
+      description: The last date credentials that were used successfully to scan the asset.
       type: Date
     - contextPath: TenableIO.Vulnerability.asset.last_unauthenticated_results
       description: The last date when the asset was scanned without using credentials
@@ -934,16 +934,16 @@ script:
       description: The CVSSv3 Report Confidence (RC) temporal metric for the vulnerability the plugin covers.
       type: String
     - contextPath: TenableIO.Vulnerability.plugin.cvss3_temporal_vector.raw
-      description: The complete cvss3_temporal_vector metrics and result values for the vulnerability the plugin covers in a condensed and coded format.
+      description: The complete CVSSv3 temporal vector metrics and result values for the vulnerability the plugin covers in a condensed and coded format.
       type: String
     - contextPath: TenableIO.Vulnerability.plugin.cvss3_vector.access_vector
-      description: The CVSSv2 Attack Vector (AV) metric for the vulnerability the plugin covers.
+      description: The CVSSv3 Attack Vector (AV) metric for the vulnerability the plugin covers.
       type: String
     - contextPath: TenableIO.Vulnerability.plugin.cvss3_vector.access_complexity
       description: The CVSSv3 Access Complexity (AC) metric for the vulnerability the plugin covers.
       type: String
     - contextPath: TenableIO.Vulnerability.plugin.cvss3_vector.authentication
-      description: The CVSSv2 Authentication (Au) metric for the vulnerability the plugin covers.
+      description: The CVSSv3 Authentication (Au) metric for the vulnerability the plugin covers.
       type: String
     - contextPath: TenableIO.Vulnerability.plugin.cvss3_vector.confidentiality_impact
       description: The CVSSv3 integrity impact metric for the vulnerability the plugin covers.
@@ -952,7 +952,7 @@ script:
       description: The CVSSv3 integrity impact metric for the vulnerability the plugin covers.
       type: String
     - contextPath: TenableIO.Vulnerability.plugin.cvss3_vector.availability_impact
-      description: The CVSSv2 availability impact metric for the vulnerability the plugin covers.
+      description: The CVSSv3 availability impact metric for the vulnerability the plugin covers.
       type: String
     - contextPath: TenableIO.Vulnerability.plugin.cvss3_vector.raw
       description: The complete cvss3_vector metrics and result values for the vulnerability the plugin covers in a condensed and coded format.
@@ -967,7 +967,7 @@ script:
       description: The CVSSv2 Report Confidence (RC) temporal metric for the vulnerability the plugin covers
       type: String
     - contextPath: TenableIO.Vulnerability.plugin.cvss_temporal_vector.raw
-      description: The complete cvss_temporal_vector metrics and result values for the vulnerability the plugin covers in a condensed and coded format.
+      description: The complete CVSS temporal vector metrics and result values for the vulnerability the plugin covers in a condensed and coded format.
       type: String
     - contextPath: TenableIO.Vulnerability.plugin.cvss_vector.access_vector
       description: The CVSSv2 Access Vector (AV) metric for the vulnerability the plugin covers.
@@ -988,7 +988,7 @@ script:
       description: The CVSSv2 availability impact metric for the vulnerability the plugin covers.
       type: String
     - contextPath: TenableIO.Vulnerability.plugin.cvss_vector.raw
-      description: The complete cvss_vector metrics and result values for the vulnerability the plugin covers in a condensed and coded format.
+      description: The complete CVSSv2 vector metrics and result values for the vulnerability the plugin covers in a condensed and coded format.
       type: String
     - contextPath: TenableIO.Vulnerability.plugin.cvss_base_score
       description: The CVSSv2 base score (intrinsic and fundamental characteristics of a vulnerability that are constant over time and user environments).
@@ -1024,7 +1024,7 @@ script:
       description: Description of how easy it is to exploit the issue.
       type: String
     - contextPath: TenableIO.Vulnerability.plugin.exploited_by_malware
-      description: The vulnerability discovered by this plugin is known to be exploited by malware.
+      description: Whether the vulnerability discovered by this plugin is known to be exploited by malware.
       type: Boolean
     - contextPath: TenableIO.Vulnerability.plugin.exploited_by_nessus
       description: A value specifying whether Nessus exploited the vulnerability during the process of identification.
@@ -1033,7 +1033,7 @@ script:
       description: The SKU number of the exploit in the ExploitHub framework.
       type: String
     - contextPath: TenableIO.Vulnerability.plugin.family
-      description: The family to which plugin belongs.
+      description: The family to which the plugin belongs.
       type: String
     - contextPath: TenableIO.Vulnerability.plugin.family_id
       description: The ID of the plugin family.
@@ -1063,7 +1063,7 @@ script:
       description: The date on which the plugin was last modified.
       type: Date
     - contextPath: TenableIO.Vulnerability.plugin.publication_date
-      description: The date on which the plugin was published
+      description: The date on which the plugin was published.
       type: Date
     - contextPath: TenableIO.Vulnerability.plugin.risk_factor
       description: 'The risk factor associated with the plugin. Possible values are: Low, Medium, High, or Critical.'
@@ -1084,7 +1084,7 @@ script:
       description: The general type of plugin check (for example, local or remote).
       type: String
     - contextPath: TenableIO.Vulnerability.plugin.unsupported_by_vendor
-      description: Software found by this plugin is unsupported by the software's vendor (for example, Windows 95 or Firefox 3).
+      description: Whether software found by this plugin is unsupported by the software's vendor (for example, Windows 95 or Firefox 3).
       type: Boolean
     - contextPath: TenableIO.Vulnerability.plugin.usn
       description: Ubuntu security notice that the plugin covers.
@@ -1120,7 +1120,7 @@ script:
       description: The NVD-provided CVSSv3 impact score for the vulnerability.
       type: Number
     - contextPath: TenableIO.Vulnerability.plugin.vpr.drivers.cvss_impact_score_predicted
-      description: A value specifying whether Tenable predicted the CVSSv3 impact score for the vulnerability.
+      description: A value specifying whether Tenable.io predicted the CVSSv3 impact score for the vulnerability.
       type: Boolean
     - contextPath: TenableIO.Vulnerability.plugin.vpr.drivers.threat_intensity_last28
       description: 'The relative intensity based on the number and frequency of recently observed threat events related to this vulnerability: Very Low, Low, Medium, High, or Very High.'
@@ -1180,7 +1180,7 @@ script:
       description: The code for the severity originally assigned to a vulnerability before a user recast the risk associated with the vulnerability.
       type: Number
     - contextPath: TenableIO.Vulnerability.severity_modification_type
-      description: he type of modification a user made to the vulnerability's severity.
+      description: The type of modification a user made to the vulnerability's severity.
       type: String
     - contextPath: TenableIO.Vulnerability.first_found
       description: The ISO date when a scan first detected the vulnerability on the asset.
