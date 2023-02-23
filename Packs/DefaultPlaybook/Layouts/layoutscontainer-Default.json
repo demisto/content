@@ -76,7 +76,6 @@
                                 "args": {},
                                 "buttonClass": "secondary",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "1f0dbe40-965e-11ed-9d3b-dbc102f292cd",
                                 "index": 6,
@@ -106,7 +105,6 @@
                                 },
                                 "buttonClass": "secondary",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "29902c40-965e-11ed-9d3b-dbc102f292cd",
                                 "index": 7,
@@ -153,7 +151,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "400638f0-8cf1-11ed-840c-ab32eb41887d",
                                 "index": 11,
@@ -288,7 +285,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "64f18430-8cf1-11ed-840c-ab32eb41887d",
                                 "index": 1,
@@ -483,7 +479,6 @@
                                 },
                                 "buttonClass": "error",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "filters": [
                                     [
                                         {
@@ -525,7 +520,6 @@
                                 "buttonClass": "success",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "filters": [
                                     [
                                         {
@@ -758,7 +752,6 @@
                                 "buttonClass": "error",
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "",
                                 "filters": [
                                     [
                                         {
@@ -894,7 +887,6 @@
                                 "buttonClass": "warning",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "filters": [
                                     [
                                         {
@@ -1016,7 +1008,6 @@
                                 "buttonClass": "success",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "filters": [
                                     [
                                         {
@@ -1194,7 +1185,6 @@
                                 "buttonClass": "error",
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "",
                                 "filters": [
                                     [
                                         {
@@ -1279,7 +1269,6 @@
                                 "buttonClass": "error",
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "",
                                 "filters": [
                                     [
                                         {
@@ -1371,7 +1360,6 @@
                                 },
                                 "buttonClass": "warning",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "filters": [
                                     [
                                         {
@@ -1461,7 +1449,6 @@
                                 "buttonClass": "success",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "filters": [
                                     [
                                         {
@@ -1528,7 +1515,6 @@
                                 "buttonClass": "success",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "filters": [
                                     [
                                         {
@@ -1631,7 +1617,6 @@
                                 "buttonClass": "error",
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "",
                                 "filters": [
                                     [
                                         {
@@ -1697,7 +1682,6 @@
                                 "buttonClass": "error",
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "",
                                 "filters": [
                                     [
                                         {
@@ -1737,7 +1721,6 @@
                                 "buttonClass": "warning",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "filters": [
                                     [
                                         {
@@ -1792,7 +1775,6 @@
                                 "buttonClass": "success",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "filters": [
                                     [
                                         {
@@ -1847,7 +1829,6 @@
                                 "buttonClass": "success",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "filters": [
                                     [
                                         {
@@ -2044,7 +2025,6 @@
                                 "buttonClass": "error",
                                 "dropEffect": "move",
                                 "endCol": 3,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "329d2480-a605-11ed-b616-8f0bd799015c",
                                 "index": 0,
@@ -2126,7 +2106,6 @@
                                 "buttonClass": "success",
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "1799bf80-a606-11ed-b616-8f0bd799015c",
                                 "index": 0,
@@ -2167,7 +2146,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "60483310-94d6-11ed-842c-a3fb82f65f47",
@@ -2183,7 +2161,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "612f37b0-94d6-11ed-842c-a3fb82f65f47",
@@ -2199,7 +2176,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "61f260a0-94d6-11ed-842c-a3fb82f65f47",
@@ -2215,7 +2191,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "11b0d5a0-94d5-11ed-b06e-e742e87f6373",
@@ -2231,7 +2206,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "63c32900-94d6-11ed-842c-a3fb82f65f47",
@@ -2256,7 +2230,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "6197d5b0-9664-11ed-9d3b-dbc102f292cd",
@@ -2289,7 +2262,6 @@
                                 "buttonClass": "primary",
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "68bea470-94d6-11ed-842c-a3fb82f65f47",
                                 "index": 0,
@@ -2313,7 +2285,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "8eb95f70-9a5e-11ed-b852-e30596ae64d1",
@@ -2329,7 +2300,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "277a7fa0-9a64-11ed-b852-e30596ae64d1",
@@ -2345,7 +2315,6 @@
                                 "buttonClass": "primary",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "66b0ac00-94d6-11ed-842c-a3fb82f65f47",
                                 "index": 0,
@@ -2360,7 +2329,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "45f7ce50-9a51-11ed-b852-e30596ae64d1",
@@ -2391,7 +2359,6 @@
                                 "args": {},
                                 "buttonClass": "secondary",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "632b55b0-965e-11ed-9d3b-dbc102f292cd",
                                 "index": 0,
@@ -2409,7 +2376,6 @@
                                 },
                                 "buttonClass": "secondary",
                                 "endCol": 1,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "8d134600-9a5d-11ed-b852-e30596ae64d1",
                                 "index": 1,
@@ -2435,7 +2401,6 @@
                                 },
                                 "buttonClass": "primary",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "a4952380-9679-11ed-9d3b-dbc102f292cd",
                                 "index": 2,
@@ -2461,7 +2426,6 @@
                                 },
                                 "buttonClass": "primary",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "31c83520-980b-11ed-9d3b-dbc102f292cd",
                                 "index": 3,
@@ -2480,7 +2444,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "bc976d70-9a5d-11ed-b852-e30596ae64d1",
                                 "index": 1,
@@ -2525,7 +2488,6 @@
                                 "buttonClass": "primary",
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "9a9632d0-9678-11ed-9d3b-dbc102f292cd",
@@ -2546,7 +2508,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "84790ae0-9a5b-11ed-b852-e30596ae64d1",
                                 "index": 1,
@@ -2566,7 +2527,6 @@
                                 "buttonClass": "warning",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "dfb43540-9823-11ed-9d3b-dbc102f292cd",
@@ -2595,7 +2555,6 @@
                                 "buttonClass": "primary",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "35ed5e80-9a60-11ed-b852-e30596ae64d1",
@@ -2611,7 +2570,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "4c77e590-9a5f-11ed-b852-e30596ae64d1",
                                 "index": 1,
@@ -2687,7 +2645,6 @@
                                 },
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "1e327b60-b1e7-11ed-b06a-8566ac8d928c",
                                 "index": 1,
@@ -2745,7 +2702,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "2cd82b30-9a57-11ed-b852-e30596ae64d1",
@@ -2796,7 +2752,6 @@
                                 },
                                 "buttonClass": "secondary",
                                 "endCol": 1,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "74b6a4c0-9a63-11ed-b852-e30596ae64d1",
                                 "index": 3,
@@ -2854,7 +2809,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "e1e3a7f0-9a5e-11ed-b852-e30596ae64d1",
                                 "index": 4,
@@ -2913,7 +2867,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "881053b0-9a61-11ed-b852-e30596ae64d1",
                                 "index": 5,
@@ -2964,7 +2917,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "c6c4e550-9686-11ed-9d3b-dbc102f292cd",
@@ -3016,7 +2968,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "d7576a90-981c-11ed-9d3b-dbc102f292cd",
@@ -3080,7 +3031,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "774b5e90-9a51-11ed-b852-e30596ae64d1",
@@ -3119,7 +3069,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "b702f940-9a50-11ed-b852-e30596ae64d1",
@@ -3156,7 +3105,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "90d30550-a70f-11ed-9dff-dd54b441de4d",
@@ -3185,7 +3133,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "90d30553-a70f-11ed-9dff-dd54b441de4d",
@@ -3201,7 +3148,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 3,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "90d30551-a70f-11ed-9dff-dd54b441de4d",
@@ -3217,7 +3163,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "90d30552-a70f-11ed-9dff-dd54b441de4d",
@@ -3249,7 +3194,6 @@
                                 "args": {},
                                 "buttonClass": "secondary",
                                 "endCol": 1,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "cafaa5d0-9a62-11ed-b852-e30596ae64d1",
                                 "index": 0,
@@ -3262,7 +3206,6 @@
                                 "args": {},
                                 "buttonClass": "secondary",
                                 "endCol": 1,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "4d2c92c0-9a63-11ed-b852-e30596ae64d1",
                                 "index": 1,
@@ -3276,7 +3219,6 @@
                                 "buttonClass": "warning",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "bb82ba60-9a63-11ed-b852-e30596ae64d1",
@@ -3357,7 +3299,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "4db09730-9a60-11ed-b852-e30596ae64d1",
                                 "index": 0,
@@ -3372,7 +3313,6 @@
                                 "buttonClass": "secondary",
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "3db8ee60-9685-11ed-9d3b-dbc102f292cd",
                                 "index": 1,
@@ -3417,7 +3357,6 @@
                             {
                                 "args": {},
                                 "endCol": 2,
-                                "fieldId": "",
                                 "height": 44,
                                 "id": "5f3a2eb0-a70f-11ed-9dff-dd54b441de4d",
                                 "index": 0,
@@ -4278,7 +4217,7 @@
     "id": "Default",
     "name": "Default",
     "marketplaces": [
-    "xsoar"
+        "xsoar"
     ],
     "system": false,
     "version": -1,
