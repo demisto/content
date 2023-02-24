@@ -4,6 +4,8 @@ commonfields:
 name: Recorded Future v2
 display: Recorded Future v2
 category: Data Enrichment & Threat Intelligence
+defaultclassifier: Recorded Future - Classifier
+defaultmapperin: Recorded Future - Incoming Mapper
 image:
 description: Unique threat intel technology that automatically serves up relevant insights in real time.
 configuration:
@@ -102,6 +104,7 @@ configuration:
   - name: incidentType
     display: 'Incident type'
     required: false
+    defaultvalue: Recorded Future Alert
     type: 13
   - display: Maximum number of incidents per fetch
     name: max_fetch
