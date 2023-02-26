@@ -1490,7 +1490,7 @@ def multi_status_delete_handler(response: Response, obj_key: str, readable_obj_n
 def identification_profile_mapper(data: List[dict[str, Any]]) -> List[dict[str, Any]]:
     filtered_data = []
     for profile in data:
-        filtered_data.append(remove_empty_elements({
+        filtered_data.append({
             "status": profile['status'],
             "profile_name": profile['profile_name'],
             "description": profile['description'],
@@ -1507,8 +1507,8 @@ def identification_profile_mapper(data: List[dict[str, Any]]) -> List[dict[str, 
                 "predefined": dict_safe_get(profile, ['members', 'user_agents', 'predefined']),
                 "custom": dict_safe_get(profile, ['members', 'user_agents', 'custom']),
             },
-        }))
-    return filtered_data
+        })
+    return remove_empty_elements(filtered_data)
 
 
 def access_policy_output_handler(response: List[dict[str, Any]]) -> List[dict[str, Any]]:
