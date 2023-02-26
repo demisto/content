@@ -3,8 +3,7 @@ from CommonServerPython import *
 import traceback
 
 # Disable insecure warnings
-import urllib3
-urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()
 
 '''CLIENT CLASS'''
 

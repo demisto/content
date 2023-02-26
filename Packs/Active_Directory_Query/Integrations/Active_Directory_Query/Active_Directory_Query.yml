@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: Active Directory Query v2
 display: Active Directory Query v2
-category: Authentication & Identity Management
+category: Data Enrichment & Threat Intelligence
 description: The Active Directory Query integration enables you to access and manage Active Directory objects (users, contacts, and computers).
 configuration:
 - display: Server IP address (for example, 192.168.0.1)
@@ -804,7 +804,7 @@ script:
       description: Value to set "Password Never Expire".
     description: 'Modifies the AD account attribute "Password Never Expire".'
     execution: true
-  dockerimage: demisto/py3-tools:1.0.0.49159
+  dockerimage: demisto/py3-tools:1.0.0.45904
   runonce: false
   ismappable: true
   isremotesyncout: true
