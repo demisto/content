@@ -138,6 +138,15 @@ def test_handle_request_headers_command_no_request(
         (
             "access_policy_list.json",
             {
+                "page": 1,
+                "page_size": 2,
+                "limit": 2,
+            },
+            2,
+        ),
+        (
+            "access_policy_list.json",
+            {
                 "limit": 2,
             },
             2,
@@ -561,6 +570,15 @@ def test_fail_delete_access_policy_command(
         (
             "domain_map_list.json",
             {
+                "page": 1,
+                "page_size": 3,
+                "limit": 4,
+            },
+            3,
+        ),
+        (
+            "domain_map_list.json",
+            {
                 "limit": 5,
             },
             5,
@@ -800,6 +818,15 @@ def test_fail_delete_domain_map_command(
         (
             "identification_profiles_list.json",
             {
+                "page": 1,
+                "page_size": 4,
+                "limit": 3
+            },
+            4,
+        ),
+        (
+            "identification_profiles_list.json",
+            {
                 "limit": 5,
             },
             5,
@@ -1005,6 +1032,15 @@ def test_list_url_categories_command(
             {
                 "page": 2,
                 "page_size": 2,
+            },
+            ["test2.com", "test3.com"],
+        ),
+        (
+            ["test.com", "test1.com", "test2.com", "test3.com", "test4.com"],
+            {
+                "page": 2,
+                "page_size": 2,
+                "limit": 4
             },
             ["test2.com", "test3.com"],
         ),
