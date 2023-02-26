@@ -28,7 +28,6 @@ s_ip = if(_raw_log ~= "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s
     s_ip_v4 = if(s_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", s_ip, null),
     s_ip_v6 = if(s_ip !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", if(s_ip !~= "-", s_ip, null), null)
 | alter
-    check = "This is a check"
     xdm.event.duration = to_integer(time_taken),
     xdm.source.ipv4 = c_ip_v4,
     xdm.source.ipv6 = c_ip_v6,
