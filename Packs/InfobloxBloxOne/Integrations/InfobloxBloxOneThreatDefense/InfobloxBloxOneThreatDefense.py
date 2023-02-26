@@ -105,9 +105,11 @@ def lookalike_domain_list_command(client: BloxOneTDClient, args: Dict) -> Comman
         limit=int(args.get('limit', 50)),
         offset=int(args.get('offset', 0))
     )
+    readable_outputs = tableToMarkdown('Results', data, headerTransform=camelize_string)
     return CommandResults(
         outputs_prefix='BloxOneTD.LookalikeDomain',
         outputs=data,
+        readable_output=readable_outputs
     )
 
 
