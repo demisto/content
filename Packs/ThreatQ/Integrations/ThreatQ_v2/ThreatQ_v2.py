@@ -185,18 +185,19 @@ def get_generic_context(indicator, generic_context=None):
 def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_response=False, allow_redirects=True,
                make_second_attempt=True):
     api_call_headers = None
+    request_params = params
     if url_suffix != '/token':
         access_token = get_access_token()
         api_call_headers = {'Authorization': 'Bearer ' + access_token}
 
         if not files:
-            params = json.dumps(params)
+            request_params = json.dumps(params)
             api_call_headers.update({'Content-Type': 'application/json'})
 
     response = requests.request(
         method,
         API_URL + url_suffix,
-        data=params,
+        data=request_params,
         headers=api_call_headers,
         verify=USE_SSL,
         files=files,
@@ -205,20 +206,20 @@ def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_resp
 
     if response.status_code >= 400:
 
-        if make_second_attempt and response.status_code == 500:
-            value = params.get("criteria", {}).get("value", {}).get("+equals")
-            if value:  # Trying with an other body
-                params["criteria"]["value"] = value
+        # if make_second_attempt and response.status_code == 500:
+        #     value = params.get("criteria", {}).get("value", {}).get("+equals")
+        #     if value:  # Trying with an other body
+        #         params["criteria"]["value"] = value
 
-                return tq_request(
-                    method=method,
-                    url_suffix=url_suffix,
-                    params=params,
-                    files=files,
-                    retrieve_entire_response=retrieve_entire_response,
-                    allow_redirects=allow_redirects,
-                    make_second_attempt=False
-                )
+        #         return tq_request(
+        #             method=method,
+        #             url_suffix=url_suffix,
+        #             params=params,
+        #             files=files,
+        #             retrieve_entire_response=retrieve_entire_response,
+        #             allow_redirects=allow_redirects,
+        #             make_second_attempt=False
+        #         )
 
         errors_string = get_errors_string_from_bad_request(response, response.status_code)
         error_message = 'Received an error - status code [{0}].\n{1}'.format(response.status_code, errors_string)
@@ -338,7 +339,7 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
             "filters": {"type_name": tq_type}
         }
 
-    url_suffix = '/indicators/query?limit=500&offset=0&sort=id'
+    url_suffix = 'c'
 
     res = tq_request(
         method="POST",
