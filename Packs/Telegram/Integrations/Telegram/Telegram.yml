@@ -12,7 +12,7 @@ configuration:
   required: false
   type: 8
 description: Telegram integration
-display: Telegram (Beta)
+display: Telegram_Beta (Beta)
 name: Telegram_Beta
 script:
   commands:
@@ -43,7 +43,7 @@ script:
     description: List users
     execution: false
     name: telegram-list-users
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.48392
   isfetch: false
   runonce: false
   script: '-'
