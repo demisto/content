@@ -3,13 +3,15 @@ Unit tests for Vectra Event Collector
 """
 
 import pytest
-from unittest import mock
+from pytest_mock import MockerFixture
 from VectraEventCollector import (
     VectraClient,
     is_eod,
     test_module,
     DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT,
     AUDIT_START_TIMESTAMP_FORMAT,
+    get_detections_cmd,
+    get_audits_cmd,
 )
 from typing import Dict, Any
 import json
@@ -28,8 +30,8 @@ def load_json(path: Path):
         return json.load(f)
 
 
-audits = load_json(Path("./test_data/audits.json"))
-detections = load_json(Path("./test_data/search_detections.json"))
+AUDITS = load_json(Path("./test_data/audits.json"))
+DETECTIONS = load_json(Path("./test_data/search_detections.json"))
 endpoints = load_json(Path("./test_data/endpoints.json"))
 no_access_endpoints = load_json(Path("./test_data/endpoints_no_detection_audits.json"))
 
@@ -45,7 +47,7 @@ no_access_endpoints = load_json(Path("./test_data/endpoints_no_detection_audits.
         ({}, False),
     ],
 )
-def test_auth(mocker: mock, endpoints: Dict[str, str], expected: bool):
+def test_auth(mocker: MockerFixture, endpoints: Dict[str, str], expected: bool):
 
     """
     Given:
@@ -92,7 +94,7 @@ def test_create_headers():
     "endpoints,expected",
     [(endpoints, "ok")],
 )
-def test_test_module(mocker: mock, endpoints: Dict[str, str], expected: str):
+def test_test_module(mocker: MockerFixture, endpoints: Dict[str, str], expected: str):
     """
     Given
             A dictionary of endpoints
@@ -126,28 +128,55 @@ def test_test_module_exception(mocker):
     # assert
 
 
-def test_get_detections(mocker: mock):
+def test_get_detections(mocker: MockerFixture):
     # TODO docstring
 
     first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
 
-    mocker.patch.object(client, "_http_request", return_value=detections)
+    mocker.patch.object(client, "_http_request", return_value=DETECTIONS)
     response: Dict[str, Any] = client.get_detections(first_timestamp)
 
     assert isinstance(response, dict)
     assert not client.max_fetch < response.get("count")
 
 
-def test_get_audits(mocker: mock):
+def test_get_audits(mocker: MockerFixture):
     # TODO docstring
 
     start = datetime.now().strftime(AUDIT_START_TIMESTAMP_FORMAT)
 
-    mocker.patch.object(client, "_http_request", return_value=audits)
+    mocker.patch.object(client, "_http_request", return_value=AUDITS)
     response: Dict[str, Any] = client.get_audits(start)
 
     assert isinstance(response, dict)
     assert not client.max_fetch < len(response.get("audits"))
+
+
+""" Command Tests """
+
+
+def test_get_detections_cmd(mocker: MockerFixture):
+    # TODO docstring
+    """ """
+
+    first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
+
+    mocker.patch.object(client, "_http_request", return_value=DETECTIONS)
+    cmd_res, detections = get_detections_cmd(client, first_timestamp)
+
+    assert len(cmd_res.outputs) == len(detections)
+
+
+def test_get_audits_cmd(mocker: MockerFixture):
+    # TODO docstring
+    """ """
+
+    first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
+
+    mocker.patch.object(client, "_http_request", return_value=AUDITS)
+    cmd_res, audits = get_audits_cmd(client, first_timestamp)
+
+    assert len(cmd_res.outputs) == len(audits)
 
 
 """ Helper Functions Tests """
