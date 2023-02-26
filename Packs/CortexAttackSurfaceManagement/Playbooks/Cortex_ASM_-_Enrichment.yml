@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -120
+          "x": 460,
+          "y": -180
         }
       }
     note: false
@@ -68,7 +68,7 @@ tasks:
       {
         "position": {
           "x": 100,
-          "y": 1280
+          "y": 1195
         }
       }
     note: false
@@ -98,8 +98,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 1510
+          "x": 460,
+          "y": 1620
         }
       }
     note: false
@@ -142,7 +142,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 395
+          "y": 345
         }
       }
     note: false
@@ -234,7 +234,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 880
+          "y": 900
         }
       }
     note: false
@@ -294,8 +294,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 10
+          "x": 460,
+          "y": -40
         }
       }
     note: false
@@ -353,8 +353,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -200,
-          "y": 2250
+          "x": 100,
+          "y": 3090
         }
       }
     note: false
@@ -394,8 +394,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 1640
+          "x": 460,
+          "y": 1770
         }
       }
     note: false
@@ -425,8 +425,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 1790
+          "x": 460,
+          "y": 1940
         }
       }
     note: false
@@ -451,7 +451,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "68"
+      - "70"
     scriptarguments:
       IPAddress:
         complex:
@@ -468,8 +468,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 1910
+          "x": 460,
+          "y": 2090
         }
       }
     note: false
@@ -501,7 +501,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 1150
+          "y": 1365
         }
       }
     note: false
@@ -550,8 +550,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
-          "y": 1150
+          "x": 790,
+          "y": 1220
         }
       }
     note: false
@@ -594,7 +594,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 230
+          "y": 170
         }
       }
     note: false
@@ -631,7 +631,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 590
+          "y": 580
         }
       }
     note: false
@@ -671,8 +671,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -200,
-          "y": 2090
+          "x": 100,
+          "y": 2920
         }
       }
     note: false
@@ -712,8 +712,134 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1260,
-          "y": 1150
+          "x": 1020,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: b0d2710b-bcac-4900-8bf7-8dd1500a4645
+    type: title
+    task:
+      id: b0d2710b-bcac-4900-8bf7-8dd1500a4645
+      version: -1
+      name: Splunk Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "71"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: d09a1edb-5425-48dc-8a79-fdeb2d3a23a3
+    type: playbook
+    task:
+      id: d09a1edb-5425-48dc-8a79-fdeb2d3a23a3
+      version: -1
+      name: Cortex ASM - Splunk Enrichment
+      playbookName: Cortex ASM - Splunk Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "73"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: d83f24b5-3369-409c-8346-96cf2bf9b8b5
+    type: playbook
+    task:
+      id: d83f24b5-3369-409c-8346-96cf2bf9b8b5
+      version: -1
+      name: Cortex ASM - Rapid7 Enrichment
+      playbookName: Cortex ASM - Rapid7 Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "68"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 41c89cdf-f1b4-4622-8b6a-b9d5068dfffe
+    type: title
+    task:
+      id: 41c89cdf-f1b4-4622-8b6a-b9d5068dfffe
+      version: -1
+      name: Rapid7 Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "72"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2570
         }
       }
     note: false
@@ -727,18 +853,20 @@ view: |-
   {
     "linkLabelsPosition": {
       "11_1_#default#": 0.2,
-      "1_3_yes": 0.52,
+      "11_66_yes": 0.59,
+      "1_3_yes": 0.24,
       "6_1_#default#": 0.25,
+      "6_67_yes": 0.62,
       "7_1_#default#": 0.35,
       "7_65_GCP": 0.77,
       "7_69_Azure": 0.81
     },
     "paper": {
       "dimensions": {
-        "height": 2435,
-        "width": 1840,
-        "x": -200,
-        "y": -120
+        "height": 3335,
+        "width": 1300,
+        "x": 100,
+        "y": -180
       }
     }
   }
@@ -757,6 +885,6 @@ outputs:
   type: unknown
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
+fromversion: 6.8.0
 contentitemexportablefields:
   contentitemfields: {}
