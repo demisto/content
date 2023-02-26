@@ -228,31 +228,28 @@ references:
         mkdir ./unit-tests
         demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --docker-image << parameters.dockerimageflag >>
 
-    run_lint_for_native_testing: &run_lint_for_native_testing
-      run:
-        parameters:
-          dockerimagetarget:
-            type: string
-        name: Run Lint For Native Content - Docker Image:<< parameters.dockerimagetarget >>
-        when: always
-        no_output_timeout: 5h
-        command: |
-          if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
-            echo "Skipping validations when uploading to a test bucket."
-            exit 0
-          fi
+  run_lint_for_native_testing: &run_lint_for_native_testing
+    run:
+      name: Run Lint For Native Content - Docker Image:<< pipeline.parameters.docker_image_target >>
+      when: always
+      no_output_timeout: 5h
+      command: |
+        if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
+          echo "Skipping validations when uploading to a test bucket."
+          exit 0
+        fi
 
-          echo "demisto-sdk version: $(demisto-sdk --version)"
-          echo "mypy version: $(mypy --version)"
-          echo "flake8 py2 version: $(python2 -m flake8 --version)"
-          echo "flake8 py3 version: $(python3 -m flake8 --version)"
-          echo "bandit py2 version: $(python2 -m bandit --version 2>&1)"
-          echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
-          echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
-          echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
-          mkdir ./unit-tests
-          # demisto-sdk lint -p 8 -a -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --docker-image 'native:target' --docker-image-target << parameters.dockerimagetarget >>
-          demisto-sdk lint -p 8 -a -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --docker-image << parameters.dockerimagetarget >>
+        echo "demisto-sdk version: $(demisto-sdk --version)"
+        echo "mypy version: $(mypy --version)"
+        echo "flake8 py2 version: $(python2 -m flake8 --version)"
+        echo "flake8 py3 version: $(python3 -m flake8 --version)"
+        echo "bandit py2 version: $(python2 -m bandit --version 2>&1)"
+        echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
+        echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
+        echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
+        mkdir ./unit-tests
+        # demisto-sdk lint -p 8 -a -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --docker-image 'native:target' --docker-image-target << pipeline.parameters.docker_image_target >>
+        demisto-sdk lint -p 8 -a -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --docker-image << pipeline.parameters.docker_image_target >>
 
 
   generate_coverage_reports: &generate_coverage_reports
@@ -405,9 +402,6 @@ jobs:
     <<: *container_config
     resource_class: medium
     <<: *environment
-    parameters:
-      dockerimagetarget:
-        type: string
     steps:
       - *attach_workspace
       - *remote_docker
@@ -468,6 +462,4 @@ workflows:
       - Run Lint for Native Image Content:
           requires:
             - Setup Environment
-          parameters:
-            dockerimagetarget: << pipeline.parameters.docker_image_target >>
           name: Run Lint for Native Image Content - Docker Image:<< pipeline.parameters.docker_image_target >>
