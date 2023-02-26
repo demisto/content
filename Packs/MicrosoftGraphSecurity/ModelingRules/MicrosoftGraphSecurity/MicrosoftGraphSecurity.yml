@@ -1,5 +1,5 @@
 fromversion: 6.10.0
-id: Microsoft_Graph_Security_AlertsV2
+id: Microsoft_Graph_Security
 name: Microsoft Graph Security
 rules: ''
 schema: ''
