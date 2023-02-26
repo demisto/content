@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 def run(options):
-    print(f'ppppaaaaattttthhhh: {Path(__file__).absolute().parents[3]}')
+    raise Exception(f'ppppaaaaattttthhhh: {Path(__file__).absolute().parents[3]}')
     PATHS = PathManager(Path(__file__).absolute().parents[3])
     PACK_MANAGER = PackManager(PATHS)
     branch_name = PATHS.content_repo.active_branch.name
