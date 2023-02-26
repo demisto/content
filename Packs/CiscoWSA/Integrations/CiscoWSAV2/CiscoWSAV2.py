@@ -1616,7 +1616,10 @@ def protocols_handler(protocols: List[str]) -> List[str]:
     return organized_protocols
 
 
-def delete_handler(response: dict[str, Any], obj_key: str, readable_obj_name: str, success_readable_output: str) -> CommandResults | List[CommandResults]:
+def delete_handler(response: dict[str, Any],
+                   obj_key: str,
+                   readable_obj_name: str,
+                   success_readable_output: str) -> CommandResults | List[CommandResults]:
     if response.status_code == HTTPStatus.MULTI_STATUS:
         return multi_status_delete_handler(response=response,
                                            obj_key=obj_key,
