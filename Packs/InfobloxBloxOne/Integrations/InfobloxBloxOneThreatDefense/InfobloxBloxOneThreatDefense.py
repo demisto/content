@@ -102,8 +102,8 @@ def lookalike_domain_list_command(client: BloxOneTDClient, args: Dict) -> Comman
         user_filter=args.get('filter'),
         target_domain=args.get('target_domain'),
         detected_at=args.get('detected_at'),
-        limit=int(args.get('limit', 50)),
-        offset=int(args.get('offset', 0))
+        limit=arg_to_number(args.get('limit', 50)),
+        offset=arg_to_number(args.get('offset', 0))
     )
     readable_outputs = tableToMarkdown('Results', data, headerTransform=camelize_string)
     return CommandResults(
@@ -127,8 +127,8 @@ def dossier_lookup_get_command_results(data: Dict) -> CommandResults:
 
 
 def dossier_lookup_get_schedule_polling_result(args: Dict, first_time: bool = False) -> CommandResults:
-    next_run_in_seconds = int(args.get('interval_in_seconds', 10))
-    timeout_in_seconds = int(args.get('timeout', 600))
+    next_run_in_seconds = arg_to_number(args.get('interval_in_seconds', 10))
+    timeout_in_seconds = arg_to_number(args.get('timeout', 600))
     args['timeout'] = timeout_in_seconds - next_run_in_seconds
     scheduled_command = ScheduledCommand(
         command='bloxone-td-dossier-lookup-get',
