@@ -1,5 +1,5 @@
 {
-    "name": "Default Playbook",
+    "name": "Default",
     "description": "Got a unique incident? This Content Pack helps you automate the core steps of enrichment and severity calculation for any kind of incident.",
     "support": "xsoar",
     "currentVersion": "2.0.0",
