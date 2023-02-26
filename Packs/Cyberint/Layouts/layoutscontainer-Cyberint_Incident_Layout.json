@@ -1117,5 +1117,8 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "description": "Cyberint incident layout",
+    "marketplaces": [
+        "xsoar"
+    ],
     "system": false
 }

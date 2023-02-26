@@ -275,7 +275,7 @@
         {}
     ],
     "editForm": true,
-    "fromVersion": "6.8.0",
+    "fromVersion": "6.0.0",
     "group": 0,
     "hidden": false,
     "id": "incident_cyberintpaymentcardexposedcsv",
