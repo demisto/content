@@ -12,8 +12,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 ALL_SUPPORTED_EVENT_TYPES = ['alert', 'application', 'audit', 'network', 'page']
-EVENT_TYPES_V1 = ['application', 'audit', 'network', 'page']  # api version - v1
-EVENT_TYPES_V2 = ALL_SUPPORTED_EVENT_TYPES  # api version v2
+MAX_EVENTS_PAGE_SIZE = 10000
 
 
 ''' CLIENT CLASS '''
@@ -66,16 +65,15 @@ class Client(BaseClient):
             'limit': limit
         }
         response = self._http_request(method='GET', url_suffix=url_suffix, json_data=body)
-        if response.get('status') == 'success':
-            results = response.get('data', [])
-            for event in results:
-                populate_modeling_rule_fields(event, 'alert')
-            return results
-        return []
+        return response
 
     def get_events_request_v2(self, event_type: str, last_run: dict, limit: Optional[int] = None) -> Dict:
         url_suffix = f'events/data/{event_type}'
-        params = {'timeperiod': last_run.get(event_type), 'limit': limit}
+        params = {
+            'starttime': last_run.get(event_type),
+            'endtime': int(datetime.now().timestamp()),
+            'limit': limit,
+        }
         response = self._http_request(method='GET', url_suffix=url_suffix, headers=self.headers, params=params)
         return response
 
@@ -98,10 +96,14 @@ def create_last_run(events: list, last_run: dict) -> dict:  # type: ignore
     A dictionary with the times for the next run
     """
     for event_type in ALL_SUPPORTED_EVENT_TYPES:
-        ordered_events_by_type = get_sorted_events_by_type(events, event_type)
-        events_time = ordered_events_by_type[-1]['timestamp'] if ordered_events_by_type else last_run[event_type]
-        last_run[event_type] = events_time
+        if last_run_for_event_type := get_last_run_for_event_type(event_type, events):
+            last_run[event_type] = last_run_for_event_type
     return last_run
+
+
+def get_last_run_for_event_type(event_type, events):
+    ordered_events_by_type = get_sorted_events_by_type(events, event_type)
+    return ordered_events_by_type[-1]['timestamp'] if ordered_events_by_type else None
 
 
 def populate_modeling_rule_fields(event: dict, event_type: str):
@@ -133,13 +135,34 @@ def get_events_v1(client: Client, last_run: dict, limit: Optional[int] = None) -
         events (list).
     """
     events = []
-    for event_type in EVENT_TYPES_V1:
-        response = client.get_events_request_v1(event_type, last_run, limit)
-        if response.get('status') == 'success':
-            results = response.get('data', [])
-            for event in results:
-                populate_modeling_rule_fields(event, event_type)
-            events.extend(results)
+    for event_type in ALL_SUPPORTED_EVENT_TYPES:
+        event_type_events = []
+        event_type_limit = limit
+        while len(event_type_events) < limit:
+            page_limit = min(event_type_limit, MAX_EVENTS_PAGE_SIZE)
+            if event_type == 'alert':
+                response = client.get_alerts_request_v1(last_run, page_limit)
+            else:
+                response = client.get_events_request_v1(event_type, last_run, page_limit)
+
+            if response.get('status') != 'success':
+                break
+            if not (results := response.get('data', [])):
+                break
+
+            event_type_events.extend(results)
+
+            # prepare for the next iteration
+            event_type_limit -= len(results)
+            if last_run_for_event_type := get_last_run_for_event_type(event_type, event_type_events):
+                last_run[event_type] = last_run_for_event_type
+            # results were less than a page - continue fetching next time
+            if len(results) < MAX_EVENTS_PAGE_SIZE:
+                break
+
+        for event in event_type_events:
+            populate_modeling_rule_fields(event, event_type)
+        events.extend(event_type_events)
 
     return events
 
@@ -148,9 +171,6 @@ def v1_get_events_command(client: Client, args: Dict[str, Any], last_run: dict) 
     limit = arg_to_number(args.get('limit', 20))
 
     events = get_events_v1(client, last_run, limit)
-    alerts = client.get_alerts_request_v1(last_run, limit)
-    if alerts:
-        events.extend(alerts)
 
     for event in events:
         event['timestamp'] = timestamp_to_datestring(event['timestamp'] * 1000)
@@ -179,13 +199,30 @@ def get_events_v2(client, last_run: dict, limit: Optional[int] = None) -> List[A
         events (list).
     """
     events = []
-    for event_type in EVENT_TYPES_V2:
-        response = client.get_events_request_v2(event_type, last_run, limit)
-        if response.get('ok') == 1:
-            results = response.get('result', [])
-            for event in results:
-                populate_modeling_rule_fields(event, event_type)
-            events.extend(results)
+    for event_type in ALL_SUPPORTED_EVENT_TYPES:
+        # et - event_type
+        et_events = []
+        et_limit = limit
+        while len(et_events) < et_limit:
+            page_limit = min(et_limit, MAX_EVENTS_PAGE_SIZE)
+            response = client.get_events_request_v2(event_type, last_run, page_limit)
+            if response.get('ok') != 1:
+                break
+            if not (results := response.get('result', [])):
+                break
+
+            et_events.extend(results)
+
+            # prepare for the next iteration
+            et_limit -= len(results)
+            if et_last_run := get_last_run_for_event_type(event_type, et_events):
+                last_run[event_type] = et_last_run
+            if len(results) < MAX_EVENTS_PAGE_SIZE:
+                break
+        for event in et_events:
+            populate_modeling_rule_fields(event, event_type)
+        events.extend(et_events)
+
     return events
 
 
@@ -213,9 +250,6 @@ def v2_get_events_command(client: Client, args: Dict[str, Any], last_run: dict) 
 def fetch_events_command(client, api_version, last_run, max_fetch):
     if api_version == 'v1':
         events = get_events_v1(client, last_run, max_fetch)
-        alerts = client.get_alerts_request_v1(last_run, max_fetch)
-        if alerts:
-            events.extend(alerts)
     else:
         events = get_events_v2(client, last_run, max_fetch)
 
@@ -235,6 +269,7 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     first_fetch = params.get('first_fetch')
+    # max_fetch = min(arg_to_number(params.get('max_fetch')), 10000)
     max_fetch = arg_to_number(params.get('max_fetch'))
     vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope')
 

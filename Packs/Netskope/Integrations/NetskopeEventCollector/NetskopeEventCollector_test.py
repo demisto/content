@@ -134,9 +134,9 @@ def test_get_events_v2(mocker):
     Then:
         - Make sure only the events returns.
     """
-    from NetskopeEventCollector import get_events_v2, EVENT_TYPES_V2
+    from NetskopeEventCollector import get_events_v2, ALL_SUPPORTED_EVENT_TYPES
     client = Client(BASE_URL, 'netskope_token', 'v2', validate_certificate=False, proxy=False)
     mocker.patch.object(client, 'get_events_request_v2', return_value=EVENTS_RAW_V2)
     response = get_events_v2(client, {}, 1)
-    assert len(response) == len(EVENT_TYPES_V2)
+    assert len(response) == len(ALL_SUPPORTED_EVENT_TYPES)
     assert 'results' not in response
