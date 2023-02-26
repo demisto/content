@@ -1925,6 +1925,20 @@ script:
     - contextPath: InfoFile.Info
       description: Basic information about the file.
       type: string
+  - name: nsm-list-domain-device
+    description: List the devices related to a given domain.
+    arguments:
+    - name: domain_id
+      description: The ID of the domain. To get the domain_id, use the !nsm-get-domains command.
+      required: true
+    - name: limit
+      description: The maximum number of devices to return.
+      defaultvalue: 50
+    - name: all_results
+      description: Return all devices related to the given domain.
+      auto: PREDEFINED
+        - yes
+        - no
   isfetch: false
   runonce: false
   script: '-'

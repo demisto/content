@@ -299,6 +299,16 @@ class Client(BaseClient):
         self.headers['Accept'] = 'application/octet-stream'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body, resp_type='response')
 
+    def list_domain_device_request(self, domain_id):
+        """ Retrieves the list of devices in a domain.
+            Args:
+                domain_id: int - The relevant domain id.
+            Returns:
+                A dictionary with a list of devices.
+        """
+        url_suffix = f'/domain/{domain_id}/device'
+        return self._http_request(method='GET', url_suffix=url_suffix)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -1919,6 +1929,35 @@ def export_pcap_file_command(client: Client, args: Dict) -> List:
     return [file_]
 
 
+def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
+    """_summary_
+
+    Args:
+        client (Client): client - A McAfeeNSM client.
+        args (Dict): - The function arguments.
+    Returns: A CommandResult object with a list of domain devices.
+    """
+    domain_id = int(args.get('domain_id', ''))
+    limit = arg_to_number(args.get('limit', 50))
+    all_results = argToBoolean(args.get('all_results', False))
+    response = client.list_domain_device_request(domain_id)
+    if all_results:
+        devices = response.get('DeviceResponseList')
+    else:
+        devices = response.get('DeviceResponseList')[:limit]
+
+    readable_output = tableToMarkdown(
+        name='Domain devices List', t=devices, removeNull=True
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='NSM.Device',
+        outputs=devices,
+        raw_response=response
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -2009,8 +2048,11 @@ def main() -> None:  # pragma: no cover
         elif demisto.command() == 'nsm-export-pcap-file':
             results_list = export_pcap_file_command(client, demisto.args())
             return_results(results_list)
+        elif demisto.command() == 'nsm-list-domain-device':
+            results = list_domain_device_command(client, demisto.args())
         else:
             raise NotImplementedError('This command is not implemented yet.')
+        return_results(results)
 
     # Log exceptions and return errors
     except Exception as e:
