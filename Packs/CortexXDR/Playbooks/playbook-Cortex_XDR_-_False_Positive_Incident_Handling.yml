@@ -384,13 +384,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.set.indicators
-      id: 657d29d4-4168-4721-8a38-a54d2cbcb3a0
+      id: 01a2d4df-321d-437f-8e07-b59639450be1
       iscommand: true
       name: Tag Indicators
       script: Builtin|||setIndicators
       type: regular
       version: -1
-    taskid: 657d29d4-4168-4721-8a38-a54d2cbcb3a0
+    taskid: 01a2d4df-321d-437f-8e07-b59639450be1
     timertriggers: []
     type: regular
     view: |-
@@ -526,7 +526,7 @@ tasks:
     nexttasks:
       '#none#':
       - '16'
-    note: true
+    note: false
     quietmode: 0
     scriptarguments:
       comment:
@@ -540,13 +540,13 @@ tasks:
     task:
       brand: ''
       description: Adds requested files to allow list if they are not already on block list or allow list.
-      id: c234c307-5f23-4cbe-84c1-47349d1bf9f5
+      id: e1ac8f05-10d6-4c66-8ceb-ec8285087e3a
       iscommand: true
       name: Create IOCs in Cortex XDR - Approved Hashes
       script: '|||xdr-allowlist-files'
       type: regular
       version: -1
-    taskid: c234c307-5f23-4cbe-84c1-47349d1bf9f5
+    taskid: e1ac8f05-10d6-4c66-8ceb-ec8285087e3a
     timertriggers: []
     type: regular
     view: |-

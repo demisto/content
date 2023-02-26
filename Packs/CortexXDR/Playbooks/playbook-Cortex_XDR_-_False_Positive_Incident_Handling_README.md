@@ -19,9 +19,9 @@ This playbook does not use any scripts.
 
 ### Commands
 
+* closeInvestigation
 * setIndicators
 * xdr-allowlist-files
-* closeInvestigation
 
 ## Playbook Inputs
 
