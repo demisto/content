@@ -154,6 +154,17 @@ script:
       - 'false'
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Updates entries in a collection that matches the query or creates a new entry if no entires match the query. Default is false.
+      isArray: false
+      name: upsert
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Updates an entry in a collection.
     execution: false
