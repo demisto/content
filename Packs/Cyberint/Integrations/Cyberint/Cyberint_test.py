@@ -18,7 +18,18 @@ def load_mock_response(file_name: str) -> str:
         return mock_file.read()
 
 
-def test_cyberint_alerts_fetch_command(requests_mock):
+@pytest.fixture()
+def client():
+    from Cyberint import Client
+    return Client(
+        base_url=BASE_URL,
+        access_token='xxx',
+        verify_ssl=None,
+        proxy=None,
+    )
+
+
+def test_cyberint_alerts_fetch_command(requests_mock, client):
     """
     Scenario: List alerts
     Given:
@@ -30,23 +41,20 @@ def test_cyberint_alerts_fetch_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from Cyberint import Client, cyberint_alerts_fetch_command
+    from Cyberint import cyberint_alerts_fetch_command
     mock_response = load_mock_response('csv_example.csv')
     requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-3/attachments/X',
                       json=mock_response)
     mock_response = json.loads(load_mock_response('list_alerts.json'))
     requests_mock.post(f'{BASE_URL}/api/v1/alerts', json=mock_response)
-    client = Client(base_url=BASE_URL,
-                    verify_ssl=False,
-                    access_token='xxx',
-                    proxy=False)
+
     result = cyberint_alerts_fetch_command(client, {})
     assert len(result.outputs) == 3
     assert result.outputs_prefix == 'Cyberint.Alert'
     assert result.outputs[0].get('ref_id') == 'ARG-3'
 
 
-def test_cyberint_alerts_status_update_command(requests_mock):
+def test_cyberint_alerts_status_update_command(requests_mock, client):
     """
     Scenario: Update alert statuses.
     Given:
@@ -59,13 +67,10 @@ def test_cyberint_alerts_status_update_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from Cyberint import Client, cyberint_alerts_status_update
+    from Cyberint import cyberint_alerts_status_update
     mock_response = {}
     requests_mock.put(f'{BASE_URL}/api/v1/alerts/status', json=mock_response)
-    client = Client(base_url=BASE_URL,
-                    verify_ssl=False,
-                    access_token='xxx',
-                    proxy=False)
+
     result = cyberint_alerts_status_update(client, {
         'alert_ref_ids': 'alert1',
         'status': 'acknowledged'
@@ -86,7 +91,7 @@ def test_cyberint_alerts_status_update_command(requests_mock):
     (True),
     (False),
 ])
-def test_fetch_incidents(requests_mock, duplicate_alerts) -> None:
+def test_fetch_incidents(requests_mock, duplicate_alerts, client) -> None:
     """
     Scenario: Fetch incidents.
     Given:
@@ -98,7 +103,7 @@ def test_fetch_incidents(requests_mock, duplicate_alerts) -> None:
      - Ensure number of incidents is correct.
      - Ensure last_fetch is correctly configured according to mock response.
     """
-    from Cyberint import Client, fetch_incidents
+    from Cyberint import fetch_incidents
     mock_response = load_mock_response('csv_example.csv')
     requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-3/attachments/X',
                       json=mock_response)
@@ -111,10 +116,7 @@ def test_fetch_incidents(requests_mock, duplicate_alerts) -> None:
 
     mock_response = json.loads(load_mock_response('list_alerts.json'))
     requests_mock.post(f'{BASE_URL}/api/v1/alerts', json=mock_response)
-    client = Client(base_url=BASE_URL,
-                    verify_ssl=False,
-                    access_token='xxx',
-                    proxy=False)
+
     last_fetch, incidents = fetch_incidents(client, {'last_fetch': 100000000},
                                             '3 days', [], [], [], [], 50,
                                             duplicate_alerts)
@@ -126,7 +128,7 @@ def test_fetch_incidents(requests_mock, duplicate_alerts) -> None:
         'name') == 'Cyberint alert ARG-3: Company Customer Credentials Exposed'
 
 
-def test_fetch_incidents_no_last_fetch(requests_mock):
+def test_fetch_incidents_no_last_fetch(requests_mock, client):
     """
     Scenario: Fetch incidents for the first time, so there is no last_fetch available.
     Given:
@@ -139,7 +141,7 @@ def test_fetch_incidents_no_last_fetch(requests_mock):
      - Ensure number of incidents is correct.
      - Ensure last_fetch is correctly configured according to mock response.
     """
-    from Cyberint import Client, fetch_incidents
+    from Cyberint import fetch_incidents
     mock_response = load_mock_response('csv_example.csv')
     requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-3/attachments/X',
                       json=mock_response)
@@ -152,10 +154,7 @@ def test_fetch_incidents_no_last_fetch(requests_mock):
 
     mock_response = json.loads(load_mock_response('list_alerts.json'))
     requests_mock.post(f'{BASE_URL}/api/v1/alerts', json=mock_response)
-    client = Client(base_url=BASE_URL,
-                    verify_ssl=False,
-                    access_token='xxx',
-                    proxy=False)
+
     last_fetch, incidents = fetch_incidents(client, {'last_fetch': 100000000},
                                             '3 days', [], [], [], [], 50,
                                             False)
@@ -167,7 +166,7 @@ def test_fetch_incidents_no_last_fetch(requests_mock):
         'name') == 'Cyberint alert ARG-3: Company Customer Credentials Exposed'
 
 
-def test_fetch_incidents_empty_response(requests_mock):
+def test_fetch_incidents_empty_response(requests_mock, client):
     """
         Scenario: Fetch incidents but there are no incidents to return.
         Given:
@@ -180,13 +179,10 @@ def test_fetch_incidents_empty_response(requests_mock):
          - Ensure number of incidents is correct (None).
          - Ensure last_fetch is correctly configured according to mock response.
         """
-    from Cyberint import Client, fetch_incidents
+    from Cyberint import fetch_incidents
     mock_response = json.loads(load_mock_response('empty.json'))
     requests_mock.post(f'{BASE_URL}/api/v1/alerts', json=mock_response)
-    client = Client(base_url=BASE_URL,
-                    verify_ssl=False,
-                    access_token='xxx',
-                    proxy=False)
+
     last_fetch, incidents = fetch_incidents(client, {'last_fetch': 100000000},
                                             '3 days', [], [], [], [], 50,
                                             False)
@@ -223,7 +219,7 @@ def test_set_date_pair():
         datetime.fromisocalendar(2020, 2, 1), DATE_FORMAT), end_time)
 
 
-def test_extract_data_from_csv_stream(requests_mock):
+def test_extract_data_from_csv_stream(requests_mock, client):
     """
         Scenario: Extract data out of a downloaded csv file.
         Given:
@@ -235,11 +231,8 @@ def test_extract_data_from_csv_stream(requests_mock):
          - Ensure the wanted fields are found when downloaded.
          - Ensure a sample value matches what is in the sample CSV.
     """
-    from Cyberint import Client, extract_data_from_csv_stream, CSV_FIELDS_TO_EXTRACT
-    client = Client(base_url=BASE_URL,
-                    verify_ssl=False,
-                    access_token='xxx',
-                    proxy=False)
+    from Cyberint import extract_data_from_csv_stream, CSV_FIELDS_TO_EXTRACT
+
     mock_response = load_mock_response('csv_no_username.csv')
     requests_mock.get(f'{BASE_URL}/api/v1/alerts/alert_id/attachments/123',
                       json=mock_response)
@@ -259,7 +252,7 @@ def test_extract_data_from_csv_stream(requests_mock):
     assert result[0]['username'] == 'l1'
 
 
-def test_cyberint_alerts_analysis_report_command(requests_mock):
+def test_cyberint_alerts_analysis_report_command(requests_mock, client):
     """
         Scenario: Retrieve expert analysis report.
         Given:
@@ -271,16 +264,12 @@ def test_cyberint_alerts_analysis_report_command(requests_mock):
          - Ensure that the return Type is file.
          - Ensure the name of the file.
     """
-    from Cyberint import Client, cyberint_alerts_get_analysis_report_command
+    from Cyberint import cyberint_alerts_get_analysis_report_command
 
     with open('test_data/expert_analysis_mock.pdf', 'rb') as pdf_content_mock:
         requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-4/analysis_report',
                           content=pdf_content_mock.read())
 
-    client = Client(base_url=BASE_URL,
-                    verify_ssl=False,
-                    access_token='xxx',
-                    proxy=False)
     result = cyberint_alerts_get_analysis_report_command(
         client, "ARG-4", "expert_analysis_mock.pdf")
     assert result['ContentsFormat'] == 'text'
@@ -288,7 +277,7 @@ def test_cyberint_alerts_analysis_report_command(requests_mock):
     assert result['File'] == "expert_analysis_mock.pdf"
 
 
-def test_cyberint_alerts_get_attachment_command(requests_mock):
+def test_cyberint_alerts_get_attachment_command(requests_mock, client):
     """
          Scenario: Retrieve alert attachment.
          Given:
@@ -300,16 +289,12 @@ def test_cyberint_alerts_get_attachment_command(requests_mock):
           - Ensure that the return Type is file.
           - Ensure the name of the file.
      """
-    from Cyberint import Client, cyberint_alerts_get_attachment_command
+    from Cyberint import cyberint_alerts_get_attachment_command
 
     with open('test_data/attachment_file_mock.png', 'rb') as png_content_mock:
         requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-3/attachments/X',
                           content=png_content_mock.read())
 
-    client = Client(base_url=BASE_URL,
-                    verify_ssl=False,
-                    access_token='xxx',
-                    proxy=False)
     result = cyberint_alerts_get_attachment_command(
         client, "ARG-3", "X", "attachment_file_mock.png")
     assert result['ContentsFormat'] == 'text'
@@ -333,7 +318,7 @@ def test_verify_input_date_format():
     assert result == '2023-02-14 00:00:57Z'
 
 
-def test_test_module(requests_mock):
+def test_test_module(requests_mock, client):
     """
          Scenario: Verify date format.
          Given:
@@ -343,13 +328,10 @@ def test_test_module(requests_mock):
          Then:
           - Ensure that the return date is according to Cyberint format.
      """
-    from Cyberint import Client, test_module
+    from Cyberint import test_module
     mock_response = json.loads(load_mock_response('list_alerts.json'))
     requests_mock.post(f'{BASE_URL}/api/v1/alerts', json=mock_response)
-    client = Client(base_url=BASE_URL,
-                    verify_ssl=False,
-                    access_token='xxx',
-                    proxy=False)
+
     result = test_module(client)
 
     assert result == 'ok'
