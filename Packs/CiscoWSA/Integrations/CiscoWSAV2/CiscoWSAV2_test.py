@@ -991,7 +991,64 @@ def test_delete_fail_identification_profiles_command(
     assert len(result) == 3
 
 
+def test_delete_handler(
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Identification profile delete.
+    Given:
+    - User provided wrong and correct arguments.
+    When:
+    - cisco-wsa-identification-profiles-delete command called.
+    Then:
+    - Ensure readable output is correct.
+    """
+    from CiscoWSAV2 import delete_identification_profiles_command
+
+    mock_response = load_mock_response("identification_profiles_delete_multi.json")
+
+    url = f"{BASE_URL}/{V3_PREFIX}/web_security/identification_profiles"
+    requests_mock.delete(url=url, status_code=HTTPStatus.MULTI_STATUS, json=mock_response)
+
+    result = delete_identification_profiles_command(
+        mock_client,
+        {
+            "profile_names": "bdika,test1234,test3",
+        },
+    )
+
+    assert len(result) == 3
+    assert result[0].readable_output == 'Identification profile "bdika" was successfully deleted.'
+    assert result[1].readable_output == 'Identification profile "test1234" was successfully deleted.'
+    res = 'Identification profile "test343434" deletion failed, message: "profile_name ' + "'test343434' doesn't exist" + '".'
+    assert result[2].readable_output == str(res)
+
+@pytest.mark.parametrize(
+    "command_arguments,expected_predefined_len,expected_custom_len",
+    [
+        (
+            {},
+            106, 1,
+        ),
+        (
+            {"type": "custom"},
+            0, 1,
+        ),
+        (
+            {"type": "predefined"},
+            106, 0,
+        ),
+        (
+            {"contain": "Adu"},
+            1, 0,
+        ),
+    ],
+)
 def test_list_url_categories_command(
+    command_arguments,
+    expected_predefined_len,
+    expected_custom_len,
     requests_mock,
     mock_client,
 ):
@@ -1014,11 +1071,13 @@ def test_list_url_categories_command(
     url = f"{BASE_URL}/{V3_PREFIX}/generic_resources/url_categories"
     requests_mock.get(url=url, json=mock_response)
 
-    result = list_url_categories_command(mock_client, {})
+    result = list_url_categories_command(mock_client, command_arguments)
 
     assert result.outputs_prefix == "CiscoWSA.UrlCategory"
-    assert len(result.outputs["predefined"]) == 106
-    assert len(result.outputs["custom"]) == 1
+    if expected_predefined_len:
+        assert len(result.outputs["predefined"]) == expected_predefined_len
+    if expected_custom_len:
+        assert len(result.outputs["custom"]) == expected_custom_len
 
 
 """ TESTING HELPER FUNCTIONS"""

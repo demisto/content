@@ -91,8 +91,7 @@ class Client(BaseClient):
         return self._http_request("GET",
                                   f"{V3_PREFIX}/web_security/access_policies",
                                   params=params,
-                                  ok_codes=[HTTPStatus.OK]
-        )
+                                  ok_codes=[HTTPStatus.OK])
 
     def access_policy_create(
         self,
@@ -502,9 +501,7 @@ class Client(BaseClient):
         """
         return self._http_request("GET",
                                   f"{V2_PREFIX}/configure/web_security/domain_map",
-                                  ok_codes=[HTTPStatus.OK]
-
-        )
+                                  ok_codes=[HTTPStatus.OK])
 
     def domain_map_create(
         self, domain_name: str, ip_addresses: List[str], order: int
@@ -1620,6 +1617,17 @@ def delete_handler(response: dict[str, Any],
                    obj_key: str,
                    readable_obj_name: str,
                    success_readable_output: str) -> CommandResults | List[CommandResults]:
+    """_summary_
+
+    Args:
+        response (Response): API response from Cisco WSA (with 207 status code).
+        obj_key (str): The key of the argument in the response.
+        readable_obj_name (str): Readable name for the object.
+        success_readable_output (str): Readable output text for success.
+
+    Returns:
+        CommandResults | List[CommandResults]: Readable outputs for XSOAR.
+    """
     if response.status_code == HTTPStatus.MULTI_STATUS:
         return multi_status_delete_handler(response=response,
                                            obj_key=obj_key,
