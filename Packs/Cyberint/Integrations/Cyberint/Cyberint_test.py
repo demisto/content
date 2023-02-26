@@ -331,3 +331,25 @@ def test_verify_input_date_format():
     result = verify_input_date_format('2023-02-14 00:00:57')
 
     assert result == '2023-02-14 00:00:57Z'
+
+
+def test_test_module(requests_mock):
+    """
+         Scenario: Verify date format.
+         Given:
+          - User has provided valid credentials and arguments (date).
+         When:
+          - Using date for commands.
+         Then:
+          - Ensure that the return date is according to Cyberint format.
+     """
+    from Cyberint import Client, test_module
+    mock_response = json.loads(load_mock_response('list_alerts.json'))
+    requests_mock.post(f'{BASE_URL}/api/v1/alerts', json=mock_response)
+    client = Client(base_url=BASE_URL,
+                    verify_ssl=False,
+                    access_token='xxx',
+                    proxy=False)
+    result = test_module(client)
+
+    assert result == 'ok'
