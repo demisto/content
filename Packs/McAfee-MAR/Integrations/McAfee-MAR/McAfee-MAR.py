@@ -296,12 +296,6 @@ def validate_certificates_format():
             "The broker certificate seem to be incorrect as they don't end with '-----END CERTIFICATE-----'")
 
 
-def delete_files():
-    os.remove(broker_ca_bundle)
-    os.remove(cert_file)
-    os.remove(private_key)
-
-
 def main():
     with open(broker_ca_bundle, "w") as text_file:
         text_file.write(demisto.params()['broker_ca_bundle'])
@@ -321,7 +315,6 @@ def main():
             demisto.info('######## executing test command ########')
             test()
             demisto.results('ok')
-            delete_files()
             sys.exit(0)
         elif demisto.command() == 'mar-search':
             results = search_wrapper(
@@ -333,7 +326,6 @@ def main():
                 args.get('filter-value')
             )
             demisto.results(results)
-            delete_files()
             sys.exit(0)
         elif demisto.command() == 'mar-search-multiple':
             results = search_multiple_wrapper(
@@ -344,12 +336,10 @@ def main():
                 args.get('filter-value')
             )
             demisto.results(results)
-            delete_files()
             sys.exit(0)
         elif demisto.command() == 'mar-collectors-list':
             results = mar_collectors_list()
             demisto.results(results)
-            delete_files()
             sys.exit(0)
         elif demisto.command() == 'mar-search-processes':
             results = search_wrapper(
@@ -362,7 +352,6 @@ def main():
                 True
             )
             demisto.results(results)
-            delete_files()
             sys.exit(0)
         elif demisto.command() == 'mar-search-services':
             results = search_wrapper(
@@ -375,7 +364,6 @@ def main():
                 True
             )
             demisto.results(results)
-            delete_files()
             sys.exit(0)
         elif demisto.command() == 'mar-search-win-registry':
             results = search_wrapper(
@@ -388,7 +376,6 @@ def main():
                 True
             )
             demisto.results(results)
-            delete_files()
             sys.exit(0)
         elif demisto.command() == 'mar-search-files':
             results = search_wrapper(
@@ -401,7 +388,6 @@ def main():
                 True
             )
             demisto.results(results)
-            delete_files()
             sys.exit(0)
         elif demisto.command() == 'mar-search-usb-connected-storage-devices':
             results = search_wrapper(
@@ -414,7 +400,6 @@ def main():
                 True
             )
             demisto.results(results)
-            delete_files()
             sys.exit(0)
         elif demisto.command() == 'mar-search-user-profiles':
             results = search_wrapper(
@@ -427,7 +412,6 @@ def main():
                 True
             )
             demisto.results(results)
-            delete_files()
             sys.exit(0)
         elif demisto.command() == 'mar-search-scheduled-tasks':
             results = search_wrapper(
@@ -440,7 +424,6 @@ def main():
                 True
             )
             demisto.results(results)
-            delete_files()
             sys.exit(0)
         elif demisto.command() == 'mar-search-host-info':
             results = search_wrapper(
@@ -453,11 +436,14 @@ def main():
                 True
             )
             demisto.results(results)
-            delete_files()
             sys.exit(0)
     except Exception as error:
         validate_certificates_format()
         return_error(str(error))
+    finally:
+        os.remove(broker_ca_bundle)
+        os.remove(cert_file)
+        os.remove(private_key)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
