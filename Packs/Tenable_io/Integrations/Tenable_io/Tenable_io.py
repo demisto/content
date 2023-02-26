@@ -405,7 +405,7 @@ def test_module():
     return 'ok'
 
 
-def relational_date_to_epoch_date_format(date: Optional[str]) -> Optional[str]:
+def relational_date_to_epoch_date_format(date: Optional[str]) -> Optional[int]:
     """ Retrieves date string or relational expression to date YYYY-MM-DD format.
         Args:
             date: str - date or relational expression.
@@ -414,15 +414,16 @@ def relational_date_to_epoch_date_format(date: Optional[str]) -> Optional[str]:
     """
     if date:
         if date.isnumeric():
-            return date
+            return int(date)
         else:
-            date_datetime = dateparser.parse(date)
-            if date_datetime:
+            date_datetime = dateparser.parse(date)  # parser for human readable dates
+            if date_datetime:  # dateparser.parse returns datetime representing parsed date if successful, else returns None
                 if date := date_datetime.strftime('%Y-%m-%d'):
-                    date = str(int(time.mktime(datetime.strptime(date, "%Y-%m-%d").timetuple())))
+                    date_int = (int(time.mktime(datetime.strptime(date, "%Y-%m-%d").timetuple())))
+                    return date_int
             else:
                 raise DemistoException('Tenable.io: Date format is invalid')
-    return date
+    return None
 
 
 def get_scans_command():
@@ -799,7 +800,7 @@ def request_uuid_export_assets(args: Dict[str, Any]) -> PollResult:
     tag_value = args.get('tagValue')
     request_params = remove_empty_elements(
         {
-            "chunk_size": args.get("chunkSize"),
+            "chunk_size": arg_to_number(args.get("chunkSize")),
             "include_unlicensed": args.get("isLicensed"),
             "filters": {
                 "created_at": relational_date_to_epoch_date_format(
@@ -809,23 +810,27 @@ def request_uuid_export_assets(args: Dict[str, Any]) -> PollResult:
                 "terminated_at": relational_date_to_epoch_date_format(
                     args.get("terminatedAt")
                 ),
-                "is_terminated": args.get("isTerminated"),
+                "is_terminated": argToBoolean(args.get("isTerminated")) if args.get("isTerminated") else None,
                 "deleted_at": relational_date_to_epoch_date_format(args.get("deletedAt")),
-                "is_deleted": args.get("isDeleted"),
-                "is_licensed": args.get("isLicensed"),
-                "first_scan_time": args.get("firstScanTime"),
-                "last_authenticated_scan_time": args.get("lastAuthenticatedScanTime"),
-                "last_assessed": args.get("lastAssessed"),
-                "servicenow_sysid": args.get("serviceNowSysId"),
+                "is_deleted": argToBoolean(args.get("isDeleted")) if args.get("isDeleted") else None,
+                "is_licensed": argToBoolean(args.get("isLicensed")) if args.get("isLicensed") else None,
+                "first_scan_time": relational_date_to_epoch_date_format(args.get("firstScanTime")),
+                "last_authenticated_scan_time": relational_date_to_epoch_date_format(args.get("lastAuthenticatedScanTime")),
+                "last_assessed": relational_date_to_epoch_date_format(args.get("lastAssessed")),
+                "servicenow_sysid": argToBoolean(args.get("serviceNowSysId")) if args.get("serviceNowSysId") else None,
                 "sources": argToList(args.get("sources")),
-                "has_plugin_results": args.get("hasPluginResults"),
+                "has_plugin_results": argToBoolean(args.get("hasPluginResults")) if args.get("hasPluginResults") else None,
             },
         })
-    if not tag_category and not tag_value:
+
+    if (tag_category and not(tag_value)) or (not(tag_category) and tag_value):
+        raise DemistoException('Please specify tagCategory and tagValue')
+    elif tag_category is not None and tag_value is not None:
         if request_params.get('filters'):
             request_params.get('filters')[f'tag.{tag_category}'] = tag_value
-    else:
-        raise DemistoException('Please specify tagCategory and tagValue')
+        else:
+            request_params['filters'] = {f'tag.{tag_category}': tag_value}
+    demisto.debug("request params export assets", request_params)
     api_response = export_request(request_params, 'assets')
     export_uuid = api_response.get('export_uuid')
     demisto.debug(f'export_uuid: {export_uuid}')
@@ -890,15 +895,15 @@ def request_uuid_export_vulnerabilities(args: Dict[str, Any]) -> PollResult:
     tag_value = args.get("tagValue")
     request_params = remove_empty_elements(
         {
-            'num_assets': args.get('numAssets'),
-            'include_unlicensed': args.get('includeUnlicensed'),
+            'num_assets': arg_to_number(args.get('numAssets')),
+            'include_unlicensed': argToBoolean(args.get('includeUnlicensed')) if args.get('includeUnlicensed') else None,
             'filters': {
                 'cidr_range': args.get('cidrRange'),
                 'first_found': relational_date_to_epoch_date_format(args.get('firstFound')),
                 'last_fixed': relational_date_to_epoch_date_format(args.get('lastFixed')),
                 'last_found': relational_date_to_epoch_date_format(args.get('lastFound')),
                 'network_id': args.get('networkId'),
-                'plugin_id': argToList(args.get('pluginId')),
+                'plugin_id': [arg_to_number(x) for x in argToList(args.get('pluginId'))],
                 'plugin_type': argToList(args.get('pluginType')),
                 'severity': argToList(args.get('severity')),
                 'since': relational_date_to_epoch_date_format(args.get('since')),
@@ -907,12 +912,14 @@ def request_uuid_export_vulnerabilities(args: Dict[str, Any]) -> PollResult:
             }
         }
     )
-    if not tag_category and not tag_value:
+    if (tag_category and not(tag_value)) or (not(tag_category) and tag_value):
+        raise DemistoException('Please specify tagCategory and tagValue')
+    elif tag_category is not None and tag_value is not None:
         if request_params.get('filters'):
             request_params.get('filters')[f'tag.{tag_category}'] = tag_value
-    else:
-        raise DemistoException('Please specify tagCategory and tagValue')
-
+        else:
+            request_params['filters'] = {f'tag.{tag_category}': tag_value}
+    demisto.debug("request params export vulnerabilities", request_params)
     api_response = export_request(request_params, 'vulns')
     export_uuid = api_response.get('export_uuid')
     demisto.debug(f'export_uuid: {export_uuid}')
@@ -920,7 +927,7 @@ def request_uuid_export_vulnerabilities(args: Dict[str, Any]) -> PollResult:
         response=None,
         partial_result=CommandResults(
             outputs_prefix="TenableIO.Vulnerability",
-            outputs_key_field="id",
+            outputs_key_field="plugin.cve",
             readable_output="Waiting for export vulnerabilities to finish...",
         ),
         continue_to_poll=True,
@@ -955,7 +962,8 @@ def export_assets_command(args: Dict[str, Any]) -> PollResult:
             return PollResult(command_results)
         elif status == 'PROCESSING' or status == 'QUEUED':
             return PollResult(
-                response=CommandResults(
+                response=None,
+                partial_result=CommandResults(
                     outputs_prefix="TenableIO.Asset",
                     outputs_key_field="id",
                     readable_output="Waiting for export assets to finish...",
@@ -968,7 +976,7 @@ def export_assets_command(args: Dict[str, Any]) -> PollResult:
                 response=CommandResults(
                     outputs_key_field='id',
                     outputs_prefix='TenableIO.Asset',
-                    readable_output=f'TenableIO: ERROR {status}',
+                    readable_output=f'TenableIO: {status}',
                 ),
                 continue_to_poll=False,
             )
@@ -1022,7 +1030,7 @@ def export_vulnerabilities_build_command_result(chunks_details_list: list[dict])
         remove_nulls_from_dictionary(human_readable_to_append)
         human_readable.append(human_readable_to_append)
     return CommandResults(
-        outputs_key_field='asset.uuid',
+        outputs_key_field='plugin.cve',
         outputs_prefix='TenableIO.Vulnerability',
         outputs=chunks_details_list,
         raw_response=chunks_details_list,
@@ -1077,9 +1085,10 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
             return PollResult(command_results)
         elif status == 'PROCESSING' or status == 'QUEUED':
             return PollResult(
-                response=CommandResults(
+                response=None,
+                partial_result=CommandResults(
                     outputs_prefix="TenableIO.Vulnerability",
-                    outputs_key_field="asset.uuid",
+                    outputs_key_field="plugin.cve",
                     readable_output="Waiting for export vulnerabilities to finish...",
                 ),
                 continue_to_poll=True,
@@ -1088,9 +1097,9 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
         else:
             return PollResult(
                 response=CommandResults(
-                    outputs_key_field='asset.uuid',
+                    outputs_key_field='plugin.cve',
                     outputs_prefix='TenableIO.Vulnerability',
-                    readable_output=status,
+                    readable_output=f'TenableIO: {status}',
                 ),
                 continue_to_poll=False,
             )

@@ -784,9 +784,9 @@ ADMINISTRATOR [64] user permissions.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| chunkSize | Specifies the number of assets per exported chunk. The range is 100-10000. | Required | 
-| intervalInSeconds | The number of seconds until the next run. | Optional | 
-| timeOut | The timeout for the polling in seconds. | Optional | 
+| chunkSize | Specifies the number of assets per exported chunk. The range is 100-10000. Default is 100. | Required | 
+| intervalInSeconds | The number of seconds until the next run. Default is 10. | Optional | 
+| timeOut | The timeout for the polling in seconds. Default is 600. | Optional | 
 | createdAt | When specified, the results returned in the list are limited to assets created later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'. | Optional | 
 | updatedAt | When specified, the results returned in the list are limited to assets updated later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'. | Optional | 
 | terminatedAt | When specified, the results returned in the list are limited to assets terminated later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'. | Optional | 
@@ -797,7 +797,7 @@ ADMINISTRATOR [64] user permissions.
 | firstScanTime | When specified, the results returned in the list are limited to assets with a first scan time later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'. | Optional | 
 | lastAuthenticatedScanTime | When specified, the results returned in the list are limited to assets with a last credentialed scan time later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'. | Optional | 
 | lastAssessed | When specified, the results returned in the list are limited to assets with a last assessed time later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'. | Optional | 
-| serviceNowSysId | If true, returns all assets that have a ServiceNow Sys ID, regardless of value. If false, returns all assets that do not have a ServiceNow Sys ID. Possible values are: true, false. | Optional | 
+| serviceNowSysId | If true, returns all assets that have a ServiceNow Sys ID, regardless of value. If false, returns all assets that do not have a ServiceNow Sys ID. Possible values are: true, false. Default is true. | Optional | 
 | sources | A comma-separated list of sources. Possible values are: AWS, NESSUS_AGENT, PVS,NESSUS_SCAN, WAS. When specified, the results returned in the list are limited to assets that have the specified source. | Optional | 
 | hasPluginResults | If true, returns all assets that have a plugin results associated with it. Possible values are: true, false. | Optional | 
 | tagCategory | When specified, the results returned in the list are limited to assets with the specified tag category. | Optional | 
@@ -1051,9 +1051,9 @@ ADMINISTRATOR [64] user permissions.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| numAssets | The number of assets used to chunk the vulnerabilities. The range for number of assets in a chunk is 50-5000. | Required | 
-| intervalInSeconds | The number of seconds until the next run. | Optional | 
-| timeOut | The timeout for the polling in seconds. | Optional | 
+| numAssets | The number of assets used to chunk the vulnerabilities. The range for number of assets in a chunk is 50-5000. Default is 50. | Required | 
+| intervalInSeconds | The number of seconds until the next run. Default is 10. | Optional | 
+| timeOut | The timeout for the polling in seconds. Default is 600. | Optional | 
 | includeUnlicensed | Specifies whether or not to include unlicensed assets. Possible values are: true, false. | Optional | 
 | cidrRange | When specified, restricts the search for vulnerabilities to assets assigned an IP address within the specified CIDR range. | Optional | 
 | firstFound | When specified, the results returned in the list are limited to vulnerabilities that were first found between the specified date and now. Date format will be epoch date format or relational expressions like “7 days ago”. | Optional | 

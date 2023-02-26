@@ -437,14 +437,17 @@ script:
       type: date
   - arguments:
     - description: Specifies the number of assets per exported chunk. The range is 100-10000.
+      defaultValue: 100
       name: chunkSize
       required: true
       isArray: false
     - description: The number of seconds until the next run.
+      defaultValue: 10
       name: intervalInSeconds
       required: false
       isArray: false
     - description: The timeout for the polling in seconds.
+      defaultValue: 600
       name: timeOut
       required: false
       isArray: false
@@ -497,6 +500,7 @@ script:
       required: false
       isArray: false
     - auto: PREDEFINED
+      defaultValue: 'true'
       default: false
       description: If true, returns all assets that have a ServiceNow Sys ID, regardless of value. If false, returns all assets that do not have a ServiceNow Sys ID.
       isArray: false
@@ -749,14 +753,17 @@ script:
       type: String
   - arguments:
     - description: The number of assets used to chunk the vulnerabilities. The range for number of assets in a chunk is 50-5000.
+      defaultValue: 50
       name: numAssets
       required: true
       isArray: false
     - description: The number of seconds until the next run.
+      defaultValue: 10
       name: intervalInSeconds
       required: false
       isArray: false
     - description: The timeout for the polling in seconds.
+      defaultValue: 50
       name: timeOut
       required: false
       isArray: false
@@ -786,6 +793,7 @@ script:
       isArray: false
     - description: The ID of the network object associated with scanners that detected the vulnerabilities you want to export.
       name: networkId
+      defaultValue: '00000000-0000-0000-0000-000000000000'
       required: false
       isArray: false
     - description: A comma-separated list of plugin IDs for which you want to filter the vulnerabilities.

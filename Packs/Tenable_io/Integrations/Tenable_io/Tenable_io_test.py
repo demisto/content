@@ -199,9 +199,9 @@ def test_validate_range(range_str, expected_lower_range_bound, expected_upper_ra
 
 @freeze_time("2012-01-14", tz_offset=-4)
 @pytest.mark.parametrize('date_str, expected_date', [
-    ('1 day ago', '1326326400'),
-    ('2 days ago', '1326240000'),
-    ('1326232800', '1326232800')
+    ('1 day ago', 1326326400),
+    ('2 days ago', 1326240000),
+    ('1326232800', 1326232800)
 ])
 def test_relational_date_to_epoch_date_format(date_str, expected_date):
     """
