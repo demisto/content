@@ -8,9 +8,7 @@ from typing import Dict, Any
 import urllib.parse
 
 # Disable insecure warnings
-import urllib3
-
-urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 ''' CONSTANTS '''
