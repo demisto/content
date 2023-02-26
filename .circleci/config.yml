@@ -376,10 +376,10 @@ jobs:
 workflows:
   version: 2
   commit:
-    when:
-      matches:
-        pattern: "pull/[0-9]+"
-        value: $CIRCLE_BRANCH
+    filters:  # using regex filters requires the entire branch to match
+      branches:
+        only:  # only branches matching the below regex filters will run
+          - "pull/[0-9]+"
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
