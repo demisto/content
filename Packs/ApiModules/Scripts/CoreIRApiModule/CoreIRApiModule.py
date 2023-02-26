@@ -212,6 +212,26 @@ class CoreClient(BaseClient):
         endpoints = reply.get('reply').get('endpoints', [])
         return endpoints
 
+    def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str | None) -> dict:      # pragma: no cover
+        """
+        This func is used to set the alias name of an endpoint.
+
+        args:
+            filters: list of filters to get the endpoints
+            new_alias_name: the new alias name to set
+
+        returns: dict of the response(True if success else error message)
+        """
+
+        request_data = {'filters': filters, 'alias': new_alias_name}
+
+        return self._http_request(
+            method='POST',
+            url_suffix='/endpoints/update_agent_name/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout,
+        )
+
     def isolate_endpoint(self, endpoint_id, incident_id=None):
         request_data = {
             'endpoint_id': endpoint_id,
@@ -1769,6 +1789,63 @@ def get_endpoints_command(client, args):
     )
 
 
+def endpoint_alias_change_command(client: CoreClient, **args) -> CommandResults:
+    # get arguments
+    endpoint_id_list = argToList(args.get('endpoint_id_list'))
+    dist_name_list = argToList(args.get('dist_name'))
+    ip_list = argToList(args.get('ip_list'))
+    group_name_list = argToList(args.get('group_name'))
+    platform_list = argToList(args.get('platform'))
+    alias_name_list = argToList(args.get('alias_name'))
+    isolate = args.get('isolate')
+    hostname_list = argToList(args.get('hostname'))
+    status = args.get('status')
+    scan_status = args.get('scan_status')
+    username_list = argToList(args.get('username'))
+    new_alias_name = args.get('new_alias_name')
+
+    # This is a workaround that is needed because of a specific behaviour of the system
+    # that converts an empty string to a string with double quotes.
+    if new_alias_name == '""':
+        new_alias_name = ""
+
+    first_seen_gte = arg_to_timestamp(
+        arg=args.get('first_seen_gte'),
+        arg_name='first_seen_gte'
+    )
+
+    first_seen_lte = arg_to_timestamp(
+        arg=args.get('first_seen_lte'),
+        arg_name='first_seen_lte'
+    )
+
+    last_seen_gte = arg_to_timestamp(
+        arg=args.get('last_seen_gte'),
+        arg_name='last_seen_gte'
+    )
+
+    last_seen_lte = arg_to_timestamp(
+        arg=args.get('last_seen_lte'),
+        arg_name='last_seen_lte'
+    )
+
+    # create filters
+    filters: list[dict[str, str]] = create_request_filters(
+        status=status, username=username_list, endpoint_id_list=endpoint_id_list, dist_name=dist_name_list,
+        ip_list=ip_list, group_name=group_name_list, platform=platform_list, alias_name=alias_name_list, isolate=isolate,
+        hostname=hostname_list, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
+        last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte, scan_status=scan_status
+    )
+    if not filters:
+        raise DemistoException('Please provide at least one filter.')
+    # importent: the API will return True even if the endpoint does not exist, so its a good idea to check
+    # the results by a get_endpoints command
+    client.set_endpoints_alias(filters=filters, new_alias_name=new_alias_name)
+
+    return CommandResults(
+        readable_output="The endpoint alias was changed successfully.")
+
+
 def unisolate_endpoint_command(client, args):
     endpoint_id = args.get('endpoint_id')
     incident_id = arg_to_number(args.get('incident_id'))
@@ -3267,6 +3344,7 @@ def create_request_filters(
     first_seen_lte=None,
     last_seen_gte=None,
     last_seen_lte=None,
+    scan_status=None,
 ):
     filters = []
 
@@ -3366,6 +3444,13 @@ def create_request_filters(
             'field': 'last_seen',
             'operator': 'lte',
             'value': last_seen_lte
+        })
+
+    if scan_status:
+        filters.append({
+            'field': 'scan_status',
+            'operator': 'IN',
+            'value': [scan_status]
         })
 
     return filters

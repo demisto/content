@@ -1,10 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-import urllib3
 
+import urllib3
 # Disable insecure warnings
-urllib3.disable_warnings()
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
