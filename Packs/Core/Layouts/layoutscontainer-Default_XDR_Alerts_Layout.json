@@ -762,15 +762,6 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "os_actor_process_image_md5",
-                                "height": 26,
-                                "id": "f5a77590-ac7f-11ed-90e1-81bc84c0d1fb",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "osparentsha256",
                                 "height": 26,
                                 "id": "f6f72710-ac7f-11ed-90e1-81bc84c0d1fb",
