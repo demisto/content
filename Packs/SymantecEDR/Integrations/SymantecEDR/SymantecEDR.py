@@ -30,7 +30,6 @@ INVALID_QUERY_ERROR_MSG = 'Invalid query arguments. Either use any optional filt
                           'or explicitly use only "query" argument'
 
 INCIDENT_PATCH_ACTION = ['add_comment', 'close_incident', 'update_resolution']
-SEARCH_QUERY_TYPE = ['domain', 'sha256', 'device_uid']
 INCIDENT_PRIORITY_LEVEL: dict[str, str] = {
     '1': 'Low',
     '2': 'Medium',
@@ -114,6 +113,8 @@ XSOAR_SEVERITY_MAP = {
 # Reverse Incident Priority and State mapping
 REVERSE_INCIDENT_PRIORITY = {v: k for k, v in INCIDENT_PRIORITY_LEVEL.items()}
 REVERSE_INCIDENT_STATE = {v: k for k, v in INCIDENT_STATUS.items()}
+REVERSE_EVENT_SEVERITY = {v.lower(): k for k, v in EVENT_SEVERITY.items()}
+REVERSE_EVENT_STATUS = {v: k for k, v in EVENT_STATUS.items()}
 
 ''' CLIENT CLASS '''
 
@@ -823,9 +824,9 @@ def parse_event_data_sub_object(data: dict[str, Any]) -> dict:
     """
     result: dict = {}
     for key in (
-        'event_data_sepm_server',
-        'event_data_search_config',
-        'event_data_atp_service',
+        'sepm_server',
+        'search_config',
+        'atp_service',
     ):
         if values := data.get(key):
             result |= extract_raw_data(values, [], key)
@@ -1297,12 +1298,10 @@ def get_incident_filter_query(args: dict[str, Any]) -> str:
     Returns:
         Return string.
     """
-    incident_status_dict: dict[str, int] = {'Open': 1, 'Waiting': 2, 'In-Progress': 3, 'Closed': 4}
-    incident_severity_dict: dict[str, int] = {'Low': 1, 'Medium': 2, 'High': 3}
     # Incident Parameters
     ids = arg_to_number(args.get('incident_id', None))
-    priority = incident_severity_dict.get(args.get('priority', None))
-    status = incident_status_dict.get(args.get('status', None))
+    priority = REVERSE_INCIDENT_PRIORITY.get(args.get('priority', None))
+    status = REVERSE_INCIDENT_STATE.get(args.get('status', None))
     query = args.get('query', '')
 
     if query and (ids or priority or status):
@@ -1340,25 +1339,9 @@ def get_event_filter_query(args: dict[str, Any]) -> str:
     Returns:
         Return string.
     """
-    # Activity query Parameters
-    event_severity_mapping: dict[str, int] = {
-        'info': 1,
-        'warning': 2,
-        'minor': 3,
-        'major': 4,
-        'critical': 5,
-        'fatal': 6
-    }
-
-    event_status_mapping: dict[str, int] = {
-        'Unknown': 0,
-        'Success': 1,
-        'Failure': 2
-    }
-
     event_type_id = arg_to_number(args.get('type_id'))
-    severity = event_severity_mapping.get(args.get('severity', ''))
-    status = event_status_mapping.get(args.get('status', ''))
+    severity = REVERSE_EVENT_SEVERITY.get(args.get('severity', ''))
+    status = REVERSE_EVENT_STATUS.get(args.get('status', ''))
     query = args.get('query')
 
     if query and (event_type_id or severity):
@@ -1400,9 +1383,6 @@ def get_association_filter_query(args: dict) -> str:
     query_type = args.get('search_object', '')
     query_value = args.get('search_value', '')
     query = args.get('query', '')
-
-    if query_type and query_type not in SEARCH_QUERY_TYPE:
-        raise DemistoException(f'Invalid Search Type! Only supported type are : {SEARCH_QUERY_TYPE}')
 
     if query and (query_type or query_value):
         raise DemistoException(INVALID_QUERY_ERROR_MSG)
@@ -1628,6 +1608,25 @@ def create_payload_for_query(args: dict[str, Any], query_type: Optional[str] = N
     return payload
 
 
+def validate_command_argument(args: dict[str, Any], cmd_type: str, expected_values: list) -> None:
+    """
+    Validate command arguments based on user input value and expected value.
+
+    Args:
+        - args (dict): Usually passed from ``demisto.args()``.
+        - cmd_type (str): Command argument type.
+        - expected_values (list): Acceptable list of value
+    Raises:
+     ValueError: Raise error if invalid argument found.
+    """
+    arg_value = args.get(cmd_type)
+    if arg_value and arg_value not in expected_values:
+        raise ValueError(
+            f'Invalid {cmd_type}! Only supported types are : {expected_values}'
+        )
+    return
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -1693,6 +1692,7 @@ def get_domain_file_association_list_command(client: Client, args: dict[str, Any
     Returns:
         CommandResults: A ``CommandResults`` object
     """
+
     return common_wrapper_command(
         client_func=client.list_domain_file,
         cmd_args=args,
@@ -1712,6 +1712,7 @@ def get_endpoint_domain_association_list_command(client: Client, args: dict[str,
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
+    validate_command_argument(args, 'search_object', ['device_uid', 'domain'])
     return common_wrapper_command(
         client_func=client.list_endpoint_domain,
         cmd_args=args,
@@ -1731,6 +1732,8 @@ def get_endpoint_file_association_list_command(client: Client, args: dict[str, A
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
+    validate_command_argument(args, 'search_object', ['device_uid', 'sha256'])
+
     return common_wrapper_command(
         client_func=client.list_endpoint_file,
         cmd_args=args,
@@ -1765,12 +1768,13 @@ def get_event_list_command(client: Client, args: dict[str, Any]) -> CommandResul
     """
     Get all events
     Args:
-        client: Symantec EDR on-premise client objectd to use.
+        client: Symantec EDR on-premise client object to use.
         args: all command arguments, usually passed from ``demisto.args()``.
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
+    validate_command_argument(args, 'severity', list(REVERSE_EVENT_SEVERITY.keys()))
     return common_wrapper_command(
         client_func=client.get_event_list,
         cmd_args=args,
@@ -1792,10 +1796,12 @@ def get_system_activity_command(client: Client, args: dict[str, Any]) -> Command
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
+    validate_command_argument(args, 'severity', list(REVERSE_EVENT_SEVERITY.keys()))
+
     return common_wrapper_command(
         client_func=client.get_system_activity,
         cmd_args=args,
-        readable_title='System Activities',
+        readable_title='System Activity',
         context_path='SystemActivity',
         output_key_field='uuid',
         command_type='event',
@@ -1813,6 +1819,7 @@ def get_event_for_incident_list_command(client: Client, args: dict[str, Any]) ->
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
+    validate_command_argument(args, 'severity', list(REVERSE_EVENT_SEVERITY.keys()))
     return common_wrapper_command(
         client_func=client.get_event_for_incident,
         cmd_args=args,
@@ -1834,6 +1841,8 @@ def get_incident_list_command(client: Client, args: dict[str, Any]) -> CommandRe
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
+    validate_command_argument(args, 'priority', list(REVERSE_INCIDENT_PRIORITY.keys()))
+    validate_command_argument(args, 'status', list(REVERSE_INCIDENT_STATE.keys()))
     return common_wrapper_command(
         client_func=client.get_incident,
         cmd_args=args,

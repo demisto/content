@@ -3,24 +3,8 @@ Symantec EDR (On-prem) Integration - Unit Tests file
 """
 # type: ignore
 import pytest
-import json
-import time
-from datetime import datetime, timedelta
-import dateparser
-import os
-
 import CommonServerPython
-from CommonServerPython import DemistoException
-from SymantecEDR import Client, get_file_instance_command, get_domain_instance_command, get_endpoint_instance_command, \
-    get_endpoint_file_association_list_command, get_domain_file_association_list_command, \
-    get_endpoint_domain_association_list_command, get_deny_list_command, get_allow_list_command, \
-    get_event_list_command, get_audit_event_command, get_system_activity_command, get_incident_list_command, \
-    get_event_for_incident_list_command, pagination, PAGE_NUMBER_ERROR_MSG, PAGE_SIZE_ERROR_MSG, \
-    compile_command_title_string, check_valid_indicator_value,\
-    get_endpoint_status_command, get_endpoint_command, get_incident_uuid, convert_to_iso8601, \
-    extract_headers_for_readable_output, get_data_of_current_page, parse_event_object_data, issue_sandbox_command, \
-    check_sandbox_status, get_sandbox_verdict, get_association_filter_query, convert_list_to_str, get_query_limit, \
-    get_incident_comments_command
+from SymantecEDR import *
 
 
 def util_load_json(path):
@@ -53,6 +37,9 @@ ENDPOINT_DOMAIN_ASSOCIATION_RESPONSE = util_load_json('test_data/endpoint_domain
 DENY_LIST_RESPONSE = util_load_json('test_data/deny_list.json')
 ALLOW_LIST_RESPONSE = util_load_json('test_data/deny_list.json')
 EVENT_LIST_RESPONSE = util_load_json('test_data/event_list_data.json')
+EVENT_8001_DATA = util_load_json('test_data/event_typeid_8001_data.json')
+EVENT_8007_DATA = util_load_json('test_data/event_typeid_8007_data.json')
+EVENT_8015_DATA = util_load_json('test_data/event_typeid_8015_data.json')
 AUDIT_EVENT_RESPONSE = util_load_json('test_data/audit_event_data.json')
 SYSTEM_ACTIVITY_RESPONSE = util_load_json('test_data/system_activity.json')
 INCIDENT_LIST_RESPONSE = util_load_json('test_data/incident_list_data.json')
@@ -803,6 +790,118 @@ def test_convert_to_iso8601(date_string, expected_result):
     assert actual_result == str(expected_result)
 
 
+@pytest.mark.parametrize('args, key, expected_result', [
+    ({'start_time': '2023-02-26 10:01:11'}, 'start_time', '2023-02-26T10:01:11.000Z'),
+    ({'end_time': '2023-02-26 00:00:00'}, 'end_time', '2023-02-26T00:00:00.000Z')
+])
+def test_create_content_query(args, key, expected_result):
+    """
+        Tests Create content request body.
+
+            Given:
+                args - command argument.
+            When:
+                - Running the 'create_content_query function'.
+
+            Then:
+                - Checks the output of the content request body function with the start_time, end_time.
+    """
+    payload = create_content_query(args)
+    assert payload.get(key) == str(expected_result)
+
+
+@pytest.mark.parametrize('args, key, expected_result', [
+    ({'denylist_id': 123}, 'id', 123),
+    ({'allowlist_id': 234}, 'id', 234),
+    ({'ip': '127.0.0.1'}, 'ip', '127.0.0.1'),
+    ({'url': 'https://google.com'}, 'url', 'https://google.com'),
+    ({'domain': 'windowsupdate.com'}, 'domain', 'windowsupdate.com'),
+    ({'md5': '4dd18f001ac31d5f48f50f99e4aa1761'}, 'md5', '4dd18f001ac31d5f48f50f99e4aa1761'),
+    ({'sha256': '2b105fb153b1bcd619b95028612b3a93c60b953eef6837d3bb0099e4207aaf6b'},
+     'sha256', '2b105fb153b1bcd619b95028612b3a93c60b953eef6837d3bb0099e4207aaf6b')
+])
+def test_create_params_query(args, key, expected_result):
+    """
+        Tests Create param query.
+
+            Given:
+                args - demisto argument.
+            When:
+                - Running the 'create_params_query function'.
+
+            Then:
+                - Checks the output of the demisto params query with different indicators.
+    """
+    payload = create_params_query(args)
+    assert payload.get(key) == expected_result
+
+
+@pytest.mark.parametrize('args, expected_result', [
+    ({'type_id': 12345}, 'type_id: 12345'),
+    ({'severity': 'info'}, 'severity_id: 1'),
+    ({'status': 'Success'}, 'status_id: 1'),
+    ({'query': "original_name: svchost.exe"}, 'original_name: svchost.exe'),
+])
+def test_get_event_filter_query(args, expected_result):
+    """
+        Tests event query condition.
+
+            Given:
+                args - demisto argument.
+                expected_result - query condition
+            When:
+                - Running the 'get_event_filter_query function'.
+
+            Then:
+                - Checks the output of the demisto args for create query condition.
+    """
+    condition = get_event_filter_query(args)
+    assert condition == expected_result
+
+
+@pytest.mark.parametrize('args, expected_error', [
+    ({'query': "name: svchost.exe", 'type_id': 12345},
+     'Invalid query arguments. Either use any optional filter in lieu of "query" '
+     'or explicitly use only "query" argument')])
+def test_get_event_filter_query_wrong_input(args, expected_error):
+    """
+    Tests get_event_filter_query  function.
+        Given:
+            - event_data test data.
+            - expected output.
+        When:
+            - Running the 'get_event_filter_query '.
+        Then:
+            - Checks expected error message is being raised.
+    """
+    with pytest.raises(DemistoException) as e:
+        get_event_filter_query(args)
+    assert e.value.args[0] == expected_error
+
+
+@pytest.mark.parametrize('args, expected_result', [
+    ({'incident_id': 12345}, 'atp_incident_id: 12345'),
+    ({'priority': 'High'}, 'priority_level: 3'),
+    ({'status': 'Open'}, 'state: 1'),
+    ({'query': "name: svchost.exe"}, 'name: svchost.exe'),
+])
+def test_get_incident_filter_query(args, expected_result):
+    """
+        Tests incident query condition.
+
+            Given:
+                args - demisto argument.
+                expected_result - query condition
+            When:
+                - Running the 'get_incident_filter_query function'.
+
+            Then:
+                - Checks the output of the demisto args for incident query condition.
+    """
+    condition = get_incident_filter_query(args)
+    assert condition == expected_result
+
+
 @pytest.mark.parametrize('raw_response, expected', [(HEADER_LIST, 'Id')])
 def test_extract_headers_for_readable_output(raw_response, expected):
     """
@@ -853,10 +952,215 @@ def test_parse_event_object_data(raw_event_data):
         When:
             - Running the 'parse_event_object_data'.
         Then:
-            -  Checks the output of the command function with the expected output.
+            -  Checks the output of parse event object with the expected output.
     """
     results = parse_event_object_data(raw_event_data.get('result')[0])
     assert results.get('file_file_sha2') == 'c4e078607db2784be7761c86048dffa6f3ef04b551354a32fcdec3b6a3450905'
+    assert results.get('uuid') == '6a79a590-84a9-11ed-f4c8-000000032af2'
+
+
+@pytest.mark.parametrize('raw_event_data', [EVENT_8001_DATA])
+def test_parse_attacks_sub_object(raw_event_data):
+    """
+    Tests parse_attacks_sub_object function.
+        Given:
+            - raw_response test data.
+            - expected output.
+        When:
+            - Running the 'parse_attacks_sub_object'.
+        Then:
+            -  Checks the output of parse event attacks sub object and with expected output.
+    """
+    results = parse_attacks_sub_object(raw_event_data.get('result')[0].get('attacks'))
+    assert results.get('attacks_technique_uid') == 'T1021'
+    assert results.get('attacks_tactic_ids_0') == '8,5'
+    assert results.get('attacks_tactic_uids_0') == 'TA0008,TA0004'
+
+
+@pytest.mark.parametrize('raw_event_data', [EVENT_8001_DATA])
+def test_parse_enriched_data_sub_object(raw_event_data):
+    """
+    Tests parse_enriched_data_sub_object function.
+        Given:
+            - raw_response test data.
+            - expected output.
+        When:
+            - Running the 'parse_enriched_data_sub_object'.
+        Then:
+            -  Checks the output of parse event enriched sub object and with expected output.
+    """
+    results = parse_enriched_data_sub_object(raw_event_data.get('result')[0].get('enriched_data'))
+    assert results.get('enriched_data_suspicion_score') == 50
+    assert results.get('enriched_data_category_id') == 201
+
+
+@pytest.mark.parametrize('event_data, event_key, expected_output', [
+    (EVENT_8007_DATA, 'xattributes_symc_injected', False), (EVENT_8007_DATA, 'xattributes_is_trusted', False)])
+def test_parse_xattributes_sub_object(event_data, event_key, expected_output):
+    """
+    Tests parse_xattributes_sub_object function.
+        Given:
+            - event_data test data.
+            - event_key attribute
+            - expected output.
+        When:
+            - Running the 'parse_xattributes_sub_object'.
+        Then:
+            -  Checks the output of parse event actor xattributes sub object expected output.
+    """
+    results = parse_xattributes_sub_object(event_data.get('result')[0].get('event_actor').get('xattributes'), None)
+    assert results.get(event_key) == expected_output
+
+
+@pytest.mark.parametrize('event_data, event_key, expected_output', [
+    (EVENT_8007_DATA, 'user_sid', 'S-1-5-20'), (EVENT_8007_DATA, 'user_name', 'NETWORK SERVICE')])
+def test_parse_user_sub_object(event_data, event_key, expected_output):
+    """
+    Tests parse_user_sub_object function.
+        Given:
+            - event_data test data.
+            - event_key attribute
+            - expected output.
+        When:
+            - Running the 'parse_user_sub_object'.
+        Then:
+            -  Checks the output of parse event actor user sub object output.
+    """
+    results = parse_user_sub_object(event_data.get('result')[0].get('event_actor').get('user'), None)
+    assert results.get(event_key) == expected_output
+
+
+@pytest.mark.parametrize('event_data, event_key, expected_output', [
+    (EVENT_8007_DATA, 'file_md5', '4dd18f001ac31d5f48f50f99e4aa1761'), (EVENT_8007_DATA, 'file_name', 'svchost.exe')])
+def test_parse_file_sub_object(event_data, event_key, expected_output):
+    """
+    Tests parse_file_sub_object function.
+        Given:
+            - event_data test data.
+            - event_key attribute
+            - expected output.
+        When:
+            - Running the 'parse_file_sub_object'.
+        Then:
+            -  Checks the output of parse event actor file sub object output.
+    """
+    results = parse_file_sub_object(event_data.get('result')[0].get('event_actor').get('file'), None)
+    assert results.get(event_key) == expected_output
+
+
+@pytest.mark.parametrize('event_data, event_key, expected_output', [
+    (EVENT_8007_DATA, 'event_actor_pid', 2888),
+    (EVENT_8007_DATA, 'event_actor_uid', '52D97C3B-A235-F1ED-821C-98261F32744E')])
+def test_parse_event_actor_sub_object(event_data, event_key, expected_output):
+    """
+    Tests parse_event_actor_sub_object function.
+        Given:
+            - event_data test data.
+            - event_key attribute
+            - expected output.
+        When:
+            - Running the 'parse_event_actor_sub_object'.
+        Then:
+            -  Checks the output of parse event actor sub object output.
+    """
+    results = parse_event_actor_sub_object(event_data.get('result')[0].get('event_actor'))
+    assert results.get(event_key) == expected_output
+
+
+@pytest.mark.parametrize('event_data, event_key, expected_output', [
+    (EVENT_8007_DATA, 'connection_bytes_download', 8228),
+    (EVENT_8007_DATA, 'connection_uid', '4000486770828200160')])
+def test_parse_connection_sub_object(event_data, event_key, expected_output):
+    """
+    Tests parse_connection_sub_object function.
+        Given:
+            - event_data test data.
+            - event_key attribute
+            - expected output.
+        When:
+            - Running the 'parse_connection_sub_object'.
+        Then:
+            - Checks the output of parse connection sub object output.
+    """
+    results = parse_connection_sub_object(event_data.get('result')[0].get('connection'))
+    assert results.get(event_key) == expected_output
+
+
+@pytest.mark.parametrize('event_data, event_key, expected_output', [
+    (EVENT_8001_DATA, 'pid', 7260),
+    (EVENT_8001_DATA, 'uid', '346CA85F-B35B-F1ED-821C-98261F32744E')])
+def test_parse_process_sub_object(event_data, event_key, expected_output):
+    """
+    Tests parse_process_sub_object  function.
+        Given:
+            - event_data test data.
+            - event_key attribute
+            - expected output.
+        When:
+            - Running the 'parse_process_sub_object '.
+        Then:
+            - Checks the output of parse process sub object output.
+    """
+    results = parse_process_sub_object(event_data.get('result')[0].get('process'))
+    assert results.get(event_key) == expected_output
+
+
+@pytest.mark.parametrize('event_data, event_key, expected_output', [
+    (EVENT_8015_DATA, 'monitor_source_type_id', 5),
+    (EVENT_8015_DATA, 'monitor_source_facility', 'Microsoft-Windows-Security-Auditing')])
+def test_parse_monitor_source_sub_object(event_data, event_key, expected_output):
+    """
+    Tests parse_monitor_source_sub_object  function.
+        Given:
+            - event_data test data.
+            - event_key attribute
+            - expected output.
+        When:
+            - Running the 'parse_monitor_source_sub_object '.
+        Then:
+            - Checks the output of parse monitor source sub object output.
+    """
+    results = parse_monitor_source_sub_object(event_data.get('result')[0].get('monitor_source'))
+    assert results.get(event_key) == expected_output
+
+
+@pytest.mark.parametrize('event_data, event_key, expected_output', [
+    (SYSTEM_ACTIVITY_RESPONSE, 'sepm_server_db_type', 'MSSQL'),
+    (SYSTEM_ACTIVITY_RESPONSE, 'sepm_server_status', 'healthy'),
+    (SYSTEM_ACTIVITY_RESPONSE, 'search_config_cmd_type', 'edr_search'),
+    (SYSTEM_ACTIVITY_RESPONSE, 'atp_service_service', 'microservice_host')])
+def test_parse_event_data_sub_object(event_data, event_key, expected_output):
+    """
+    Tests parse_event_data_sub_object  function.
+        Given:
+            - event_data test data.
+            - event_key attribute
+            - expected output.
+        When:
+            - Running the 'parse_event_data_sub_object'.
+        Then:
+            - Checks the output of parse system Activity data object output.
+    """
+    results = parse_event_data_sub_object(event_data.get('result')[0].get('data'))
+    assert results.get(event_key) == expected_output
+
+
+@pytest.mark.parametrize('event_data, expected_error', [
+    ('hello', 'Unexpected data type <class \'str\'>:: must be either a list or dict.\ndata=hello')])
+def test_extract_raw_data_wrong_input(event_data, expected_error):
+    """
+    Tests extract_raw_data  function.
+        Given:
+            - event_data test data.
+            - expected output.
+        When:
+            - Running the 'extract_raw_data '.
+        Then:
+            - Checks expected error message is being raised.
+    """
+    with pytest.raises(ValueError) as e:
+        extract_raw_data(event_data, [], None)
+    assert e.value.args[0] == expected_error
 
 
 @pytest.mark.parametrize('raw_response, expected', [(SANDBOX_ISSUE_COMMAND, SANDBOX_ISSUE_COMMAND)])
@@ -1048,3 +1352,29 @@ def test_get_query_limit(param, expected_result):
     (limit, offset) = get_query_limit(param)
     assert limit == expected_result[0], f"Validate limit {limit} == {expected_result[0]}"
     assert offset == expected_result[1], f"Validate offset {offset} == {expected_result[1]}"
+
+
+@pytest.mark.parametrize('raw_data, expected', [(INCIDENT_LIST_RESPONSE, 'SEDR Incident 100010')])
+def test_fetch_incidents(mocker, raw_data, expected):
+    """
+    Tests fetch incidents function.
+
+        Given:
+            - mocker object.
+            - raw_data test data.
+            - expected output.
+
+        When:
+            - Running the 'fetch_incidents'.
+
+        Then:
+            -  Checks the output of the fetch_incidents.
+    """
+    client.fetch_priority = ['High', 'Low', 'Medium']
+    client.fetch_status = ['Open', 'Closed']
+    client.fetch_limit = 1
+    mocker.patch.object(client, 'get_incident', side_effect=[raw_data])
+    incident_list = fetch_incidents(client)
+
+    # results incident list
+    assert incident_list[0].get('name') == expected

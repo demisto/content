@@ -1366,7 +1366,7 @@ script:
       predefined:
       - Open
       - Waiting
-      - In-progress
+      - In-Progress
       - Closed
       required: false
       secret: false
