@@ -204,10 +204,10 @@ def test_get_packs_with_higher_min_version(mocker):
     Then:
         - Assert the returned packs are with higher min version than the server version.
     """
-    from Tests.private_build.upload_packs_private import extract_packs_artifacts
+    import Tests.private_build.upload_packs_private as  upload_packs_private
     import Tests.configure_and_test_integration_instances as configure_and_test_integration_instances
 
-    mocker.patch("extract_packs_artifacts", mock_open(read_data='{"serverMinVersion": "6.6.0"}'))
+    mocker.patch(upload_packs_private, "extract_packs_artifacts", mock_open(read_data='{"serverMinVersion": "6.6.0"}'))
     mocker.patch.object(configure_and_test_integration_instances, "get_json_file",
                         mock_open(read_data='{"serverMinVersion": "6.6.0"}'))
 
