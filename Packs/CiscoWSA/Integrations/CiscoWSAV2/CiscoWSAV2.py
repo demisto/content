@@ -102,7 +102,7 @@ class Client(BaseClient):
         policy_order: int | None,
         policy_description: str | None,
         policy_expiry: str | None,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         Create an access policy.
 
@@ -115,7 +115,7 @@ class Client(BaseClient):
             policy_expiry (str | None): Policy expiration date.
 
         Returns:
-            Response: API response from Cisco WSA.
+            dict[str, Any]: API response from Cisco WSA.
         """
         data = remove_empty_elements(
             {
@@ -156,7 +156,7 @@ class Client(BaseClient):
         policy_description: str | None,
         policy_order: int | None,
         policy_expiry: str | None,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         Update an access policy.
 
@@ -169,7 +169,7 @@ class Client(BaseClient):
             policy_expiry (str | None): Policy expiry.
 
         Returns:
-            Response: API response from Cisco WSA.
+            dict[str, Any]: API response from Cisco WSA.
         """
         data = remove_empty_elements(
             {
@@ -201,7 +201,7 @@ class Client(BaseClient):
         allow_connect_ports: List[str] | None,
         block_protocols: List[str] | None,
         settings_status: str,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         Update access policy's objects settings.
 
@@ -212,7 +212,7 @@ class Client(BaseClient):
             block_protocols (List[str] | None): Block protocols.
             settings_status (str): Settings status for the policy.
         Returns:
-            Response: API response from Cisco WSA.
+            dict[str, Any]: API response from Cisco WSA.
         """
         data = remove_empty_elements(
             {
@@ -253,7 +253,7 @@ class Client(BaseClient):
         content_rating_status: str | None,
         safe_search_status: str | None,
         unsupported_safe_search_engine: str | None,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         Update access policy's URL filtering settings.
 
@@ -272,7 +272,7 @@ class Client(BaseClient):
             safe_search_status (str | None): Safe search status.
             unsupported_safe_search_engine (str | None): Unsupported safe search engine.
         Returns:
-            Response: API response from Cisco WSA.
+            dict[str, Any]: API response from Cisco WSA.
         """
         data = remove_empty_elements(
             {
@@ -317,7 +317,7 @@ class Client(BaseClient):
         action: str,
         values: dict[str, Any],
         settings_status: str,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         Update access policy's applications settings.
 
@@ -329,7 +329,7 @@ class Client(BaseClient):
             settings_status (str): Settings status for the policy.
 
         Returns:
-            Response: API response from Cisco WSA.
+            dict[str, Any]: API response from Cisco WSA.
         """
         data = {
             "access_policies": [
@@ -365,7 +365,7 @@ class Client(BaseClient):
         block_custom_mime_types: List[str] | None,
         http_or_https_max_object_size_mb: int | None,
         ftp_max_object_size_mb: int | None,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         Update access policy's objects settings.
 
@@ -384,7 +384,7 @@ class Client(BaseClient):
             DemistoException: Update failed, objects were not found.
 
         Returns:
-            Response: API response from Cisco WSA.
+            dict[str, Any]: API response from Cisco WSA.
         """
         organize_policy_object_data(
             objects=objects,
@@ -420,7 +420,7 @@ class Client(BaseClient):
         block_malware_categories: List[str] | None,
         block_other_categories: List[str] | None,
         settings_status: str,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         Update access policy's applications settings.
 
@@ -435,7 +435,7 @@ class Client(BaseClient):
             block_other_categories (List[str] | None): Other categories to block.
             settings_status (str): Application settings status.
         Returns:
-            Response: API response from Cisco WSA.
+            dict[str, Any]: API response from Cisco WSA.
         """
         data = remove_empty_elements(
             {
@@ -474,7 +474,7 @@ class Client(BaseClient):
             ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
-    def access_policy_delete(self, policy_names: str) -> Response:
+    def access_policy_delete(self, policy_names: str) -> dict[str, Any]:
         """
         Delete access policy.
 
@@ -482,7 +482,7 @@ class Client(BaseClient):
             policy_names (str): Comma separated policy names to delete.
 
         Returns:
-            Response: API response from Cisco WSA.
+            dict[str, Any]: API response from Cisco WSA.
         """
         params = assign_params(policy_names=",".join(policy_names))
         return self._http_request(
@@ -612,7 +612,7 @@ class Client(BaseClient):
         members_by_subnet: List[str] | None,
         predefined_url_categories: List[str] | None,
         custom_url_categories: List[str] | None,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         Create identification profile.
 
@@ -628,7 +628,7 @@ class Client(BaseClient):
             custom_url_categories (List[str] | None): Custom URL categories.
 
         Returns:
-            Response: API response from Cisco WSA.
+            dict[str, Any]: API response from Cisco WSA.
         """
 
         data = remove_empty_elements(
@@ -673,7 +673,7 @@ class Client(BaseClient):
         members_by_subnet: List[str] | None,
         predefined_url_categories: List[str] | None,
         custom_url_categories: List[str] | None,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         Update identification profile.
 
@@ -690,7 +690,7 @@ class Client(BaseClient):
             custom_url_categories (List[str] | None): Custom URL categories.
 
         Returns:
-            Response: API response from Cisco WSA.
+            dict[str, Any]: API response from Cisco WSA.
         """
 
         data = remove_empty_elements(
@@ -724,7 +724,7 @@ class Client(BaseClient):
             ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
-    def identification_profiles_delete(self, profile_names: List[str]) -> Response:
+    def identification_profiles_delete(self, profile_names: List[str]) -> dict[str, Any]:
         """
         Delete identification profiles.
 
@@ -732,7 +732,7 @@ class Client(BaseClient):
             profile_names (List[str]): Identification profile names to delete.
 
         Returns:
-            Response: API response from Cisco WSA.
+            dict[str, Any]: API response from Cisco WSA.
         """
         params = assign_params(profile_names=",".join(profile_names))
 
