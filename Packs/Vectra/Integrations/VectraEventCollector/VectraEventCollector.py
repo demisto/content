@@ -174,7 +174,17 @@ def get_detections_cmd(
     client: VectraClient, first_timestamp: str
 ) -> Tuple[CommandResults, List[Dict[str, Any]]]:
 
-    # TODO docstring
+    """
+    Command function to retrieve detections.
+
+    Arguments:
+        - `client` (``VectraClient``): An instance of a Vectra API HTTP client.
+        - `first_timestamp` (``str``): Parameter used as starting range to retrieve detections.
+
+    Returns:
+        - `CommandResults` to War Room.
+        - `List[Dict[str, Any]]` of detections.
+    """
 
     detections: List[Dict[str, Any]] = client.get_detections(first_timestamp=first_timestamp).get("results")  # type: ignore
 
@@ -210,7 +220,17 @@ def get_detections_cmd(
 
 def get_audits_cmd(client: VectraClient, start: str) -> Tuple[CommandResults, List[Dict[str, Any]]]:
 
-    # TODO docstring
+    """
+    Command function to retrieve audits.
+
+    Arguments:
+        - `client` (``VectraClient``): An instance of a Vectra API HTTP client.
+        - `start` (``str``): Parameter used as starting range to retrieve detections.
+
+    Returns:
+        - `CommandResults` to War Room.
+        - `List[Dict[str, Any]]` of audits.
+    """
 
     audits: List[Dict[str, Any]] = client.get_audits(start=start).get("audits")  # type: ignore
 
@@ -250,9 +270,6 @@ def fetch_events(
         - `Dict[str, Any]` of the audits
         - `Dict[str, str]` of the next_fetch
     """
-
-    # TODO paging in case it's needed
-    # use "next": "https://apitest.vectracloudlab.com/api/v2.2/detections?min_id=7234&ordering=id&page=2&page_size=10",
 
     # Fetch alerts if it's the end of the day or the first fetch
     now = datetime.utcnow()
@@ -304,8 +321,19 @@ def get_events(
     client: VectraClient, first_fetch: datetime
 ) -> Tuple[CommandResults, List[Dict[str, Any]], CommandResults, List[Dict[str, Any]]]:
 
-    # TODO docstring
-    """ """
+    """
+    Command function to retrieve detections and audits.
+
+    Arguments:
+        - `client` (``VectraClient``): An instance of a Vectra API HTTP client.
+        - `first_fetch` (``datetime``): Parameter used as starting range to retrieve detections.
+
+    Returns:
+        - `CommandResults` of detections to War Room.
+        - `List[Dict[str, Any]]` of detections.
+        - `CommandResults` of audits to War Room.
+        - `List[Dict[str, Any]]` of audits.
+    """
 
     detection_res, detections = get_detections_cmd(
         client=client,
