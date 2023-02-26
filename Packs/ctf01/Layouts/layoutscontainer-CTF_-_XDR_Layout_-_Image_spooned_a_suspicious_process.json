@@ -230,9 +230,9 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "details",
-                                "height": 106,
-                                "id": "incident-details-field",
+                                "fieldId": "description",
+                                "height": 53,
+                                "id": "7073f2c0-b5d2-11ed-8099-43b2b5a1abbb",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
