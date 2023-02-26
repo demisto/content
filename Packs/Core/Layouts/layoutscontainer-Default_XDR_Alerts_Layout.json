@@ -765,7 +765,7 @@
                                 "fieldId": "osparentsha256",
                                 "height": 26,
                                 "id": "f6f72710-ac7f-11ed-90e1-81bc84c0d1fb",
-                                "index": 6,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -774,7 +774,7 @@
                                 "fieldId": "osparentsignature",
                                 "height": 26,
                                 "id": "f7c6d320-ac7f-11ed-90e1-81bc84c0d1fb",
-                                "index": 7,
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -784,7 +784,7 @@
                                 "fieldId": "osparentsigner",
                                 "height": 26,
                                 "id": "f9268a30-ac7f-11ed-90e1-81bc84c0d1fb",
-                                "index": 8,
+                                "index": 7,
                                 "listId": "3podiwrjhh-9e99d860-ac7f-11ed-90e1-81bc84c0d1fb",
                                 "sectionItemType": "field",
                                 "startCol": 0
