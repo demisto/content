@@ -20,7 +20,6 @@ from demisto_sdk.commands.common.tools import get_pack_names_from_files
 from demisto_sdk.commands.update_release_notes.update_rn import UpdateRN
 import os
 
-
 urllib3.disable_warnings()
 
 print = timestamped_print
@@ -59,10 +58,12 @@ class SkipReason(str, Enum):
     MORE_THAN_ONE_RN = 'Pack: {} has more than one added rn {}.'
     DIFFERENT_RN_METADATA_VERSIONS = 'Pack: {} has different rn version {}, and metadata version {}.'
     ALLOWED_BUMP_CONDITION = 'Pack {} version was updated from {} to {} version. Allowed bump only by + 1.'
+    ONLY_VERSION_CHANGED = 'Pack {} metadata file has different keys in master and branch: {} '
 
 
 class ConditionResult:
     """ Result artifacts of the condition that was checked"""
+
     def __init__(
             self,
             should_skip: bool,
@@ -114,6 +115,7 @@ class ConditionResult:
 
 class BaseCondition(ABC):
     """ Base abstract class for conditions"""
+
     def __init__(self, pr: PullRequest, git_repo: Repo):
         self.pr = pr
         self.git_repo = git_repo
@@ -131,10 +133,12 @@ class BaseCondition(ABC):
 
     @abstractmethod
     def generate_skip_reason(self, **kwargs) -> SkipReason:
+        """ Abstract method. Will be over-written by classes that implements Condition."""
         raise NotImplementedError
 
     @abstractmethod
     def _check(self, previous_result: Optional[ConditionResult] = None) -> ConditionResult:
+        """ Abstract method. Will be over-written by classes that implements Condition."""
         raise NotImplementedError
 
     def check(self, previous_result: Optional[ConditionResult] = None) -> ConditionResult:
@@ -198,7 +202,8 @@ class MetadataCondition(BaseCondition, ABC):
         Returns:
             branch_metadata(dict): Pack's metadata as it appears in the branch.
             origin_base_metadata(dict): Pack's metadata as it appears in the base (origin/master).
-            pr_base_metadata(dict): Pack's metadata as it appears in the base of the branch.
+            pr_base_metadata(dict): Pack's metadata as it appears in the base of the branch
+            (master where the branches diverged).
         """
         metadata_path = f'{PACKS_DIR}/{pack_id}/{PACK_METADATA_FILE}'
         origin_base_pack_metadata = load_json(metadata_path)
@@ -212,7 +217,7 @@ class MetadataCondition(BaseCondition, ABC):
 
     @staticmethod
     def get_base_commit(branch_git_log: str, pr: PullRequest):
-        """ Returns the pr's base commit.
+        """ Returns the pr's base commit. (The master where the branches diverged)
         We are using github's pr.base.sha commit if the branch was rebased.
         If pr was rebased, base sha will not appear in git log.
         If pr was never rebased, github's pr.base.sha commit is masters commit in the repo when pr was opened
@@ -468,20 +473,56 @@ class MaxVersionCondition(MetadataCondition):
             return ConditionResult(
                 should_skip=True, reason=self.generate_skip_reason(
                     origin_version=origin_pack_metadata_version,
-                    branch_version=branch_pack_metadata_version)
+                    branch_version=branch_pack_metadata_version,
+                )
+            )
+        else:
+            return ConditionResult(should_skip=False)
+
+
+class OnlyVersionChangedCondition(MetadataCondition):
+    ALLOWED_CHANGED_KEYS = [Metadata.CURRENT_VERSION]
+
+    def __init__(self, pack: str, pr: PullRequest, git_repo: Repo, branch_metadata: Dict, origin_base_metadata: Dict):
+        super().__init__(pack=pack, pr=pr, git_repo=git_repo, branch_metadata=branch_metadata,
+                         origin_base_metadata=origin_base_metadata)
+
+    def generate_skip_reason(self, not_allowed_changed_keys, **kwargs) -> SkipReason:
+        """
+        Args:
+            not_allowed_changed_keys: pack_metadata keys that was changed.
+        Returns: Reason why the condition failed, and pr skipped.
+        """
+        return SkipReason.ONLY_VERSION_CHANGED.format(self.pack, not_allowed_changed_keys)
+
+    def _check(self, previous_result: Optional[ConditionResult] = None, **kwargs) -> ConditionResult:
+        """ Checks if other pack metadata fields changed except ALLOWED CHANGED PACKS.
+        Args:
+            previous_result: previous check artifacts.
+
+        Returns(ConditionResult): whether the condition check pass,
+            or we should skip this pr from auto-bumping its release notes, with the reason why to skip.
+        """
+        not_allowed_changed_keys = [k for k, v in self.branch_metadata.items() if k not in self.ALLOWED_CHANGED_KEYS
+                                    and self.origin_base_metadata.get(k) != v]
+        if not_allowed_changed_keys:
+            return ConditionResult(
+                should_skip=True, reason=self.generate_skip_reason(
+                    not_allowed_changed_keys=not_allowed_changed_keys,
+                )
             )
         else:
             return ConditionResult(should_skip=False)
 
 
 class OnlyOneRNPerPackCondition(MetadataCondition):
-    def generate_skip_reason(self, rn_files, **kwargs) -> SkipReason:
+    def generate_skip_reason(self, rn_files: list, **kwargs) -> SkipReason:
         """
         Args:
             rn_files: release notes files for the pack in current pr.
         Returns: Reason why the condition failed, and pr skipped.
         """
-        return SkipReason.MORE_THAN_ONE_RN.format(self.pack, rn_files)
+        return SkipReason.MORE_THAN_ONE_RN.format(self.pack, [f.filename for f in rn_files])
 
     def _check(self, previous_result: Optional[ConditionResult] = None, **kwargs) -> ConditionResult:
         """ Checks that only one release notes files per pack was added.
@@ -505,7 +546,7 @@ class SameRNMetadataVersionCondition(MetadataCondition):
     def __init__(self, pack: str, pr: PullRequest, git_repo: Repo, branch_metadata: Dict):
         super().__init__(pack=pack, pr=pr, git_repo=git_repo, branch_metadata=branch_metadata)
 
-    def generate_skip_reason(self, rn_version, metadata_version, **kwargs) -> SkipReason:
+    def generate_skip_reason(self, rn_version: Version, metadata_version: Version, **kwargs) -> SkipReason:
         """
         Args:
             rn_version: version of the release notes.
@@ -540,7 +581,7 @@ class AllowedBumpCondition(MetadataCondition):
         super().__init__(pack=pack, pr=pr, git_repo=git_repo, branch_metadata=branch_metadata,
                          pr_base_metadata=pr_base_metadata)
 
-    def generate_skip_reason(self, previous_version, new_version, **kwargs) -> SkipReason:
+    def generate_skip_reason(self, previous_version: Version, new_version: Version, **kwargs) -> SkipReason:
         """
         Args:
             previous_version: previous version of the pack.
@@ -596,6 +637,13 @@ class PackAutoBumper:
             rn_file_path: Path,
             update_type: UpdateType,
     ):
+        """
+        Autobump pack version.
+        Args:
+            pack_id: Pack id to its release notes.
+            rn_file_path: last release notes path.
+            update_type: the update type that was in the pr.
+        """
         self.pack_id = pack_id
         self._last_rn_file_path = rn_file_path
         self._update_type = update_type
@@ -607,7 +655,6 @@ class PackAutoBumper:
             pack=pack_id,
             is_force=True,
         )
-
         # Setting to default. Will be updated once we are checked out to the branch in set_pr_changed_rn_related_data.
         self._bc_file = Path(str(self._last_rn_file_path).replace('md', 'json'))
         self._has_bc = False
@@ -615,6 +662,7 @@ class PackAutoBumper:
         self._bc_text = ''
 
     def set_pr_changed_rn_related_data(self):
+        """Opens release notes and bc changes files and saves its text."""
         with open(self._last_rn_file_path) as f:
             self._rn_text = f.read()
 
@@ -624,13 +672,13 @@ class PackAutoBumper:
                 self._bc_text = f.read()
 
     def autobump(self) -> str:
-        """ Autobumps packs version:
+        """ AutoBumps packs version:
         1. Bumps numeric version of the pack
         2. Writes new version to metadata
         3. Creates new release notes file
         4. Writes previous release notes content to new path
         5. If there breaking changes file, updating it to the new version
-        Returns: (str) new pack version
+        Returns: (str) new pack version.
         """
         new_version, metadata_dict = self._update_rn_obj.bump_version_number()
         self._update_rn_obj.write_metadata_to_file(metadata_dict=metadata_dict)
@@ -640,6 +688,11 @@ class PackAutoBumper:
         if self._has_bc:
             with open(new_release_notes_path.replace('md', 'json'), "w") as fp:
                 fp.write(self._bc_text)
+            with open(self._bc_file) as f:
+                previous_bc_txt = f.read()
+            if previous_bc_txt == self._bc_file:
+                # delete previous bc file, if it was not changed after merge from master
+                os.remove(self._bc_file)
         return new_version
 
 
@@ -651,6 +704,13 @@ class BranchAutoBumper:
             packs_to_autobump: List[PackAutoBumper],
             run_id: str,
     ):
+        """
+        Args:
+            pr: Pull Request related to the branch.
+            git_repo: Git API object
+            packs_to_autobump: Pack that was changed in this PR and need to autobump its versions.
+            run_id: GitHub action run id.
+        """
         assert packs_to_autobump, f'packs_to_autobump in the pr: {pr.number}, cant be empty.'
         self.pr = pr
         self.branch = pr.head.ref
@@ -659,10 +719,17 @@ class BranchAutoBumper:
         self.github_run_id = run_id
 
     def autobump(self):
+        """ AutoBumps version for all relevant packs in the pr:
+        1. Checkouts the branch and saves pr changed related data.
+        2. Merges from BASE and accept `theirs` changes.
+        3. AutoBumps version for each relevant packs.
+        4. Commit changes for each pack.
+        5. Comment on the PR.
+        6. Pushes the changes.
+        """
         if self.branch not in ["conflict_in_cs", "conflicts_in_base"]:
             # todo: delete it
             return
-        # todo: save changes in metadata before
         with checkout(self.git_repo, self.branch):
             for pack_auto_bumper in self.packs_to_autobump:
                 pack_auto_bumper.set_pr_changed_rn_related_data()
@@ -684,17 +751,26 @@ class BranchAutoBumper:
 class AutoBumperManager:
     def __init__(
             self,
-            github_client: Github,
             github_repo_obj: Repository,
             git_repo_obj: Repo,
             run_id: str,
     ):
-        self.github_client = github_client
+        """
+        Args:
+            github_repo_obj: GitHub API repo object.
+            git_repo_obj: Git API repo object.
+            run_id: GitHub action run id.
+        """
         self.github_repo_obj = github_repo_obj
         self.git_repo_obj = git_repo_obj
         self.run_id = run_id
 
     def manage(self):
+        """
+        Iterates over all PR's in the repo, checks if all conditions to update pack version met.
+        If no - skips checks for the pack/branch.
+        If the pack meets all conditions to autobump pack version, it bumps the version.
+        """
         for pr in self.github_repo_obj.get_pulls(state='open', sort='created', base=BASE):
             print(f'{t.yellow}Looking on pr {pr.number=}: {str(pr.updated_at)=}, {pr.head.ref=}')
 
@@ -725,6 +801,8 @@ class AutoBumperManager:
                                          origin_base_metadata=origin_md),
                     MaxVersionCondition(pack=pack, pr=pr, git_repo=self.git_repo_obj, branch_metadata=branch_md,
                                         origin_base_metadata=origin_md),
+                    OnlyVersionChangedCondition(pack=pack, pr=pr, git_repo=self.git_repo_obj, branch_metadata=branch_md,
+                                                origin_base_metadata=origin_md),
                     OnlyOneRNPerPackCondition(pack=pack, pr=pr, git_repo=self.git_repo_obj),
                     SameRNMetadataVersionCondition(pack=pack, pr=pr, git_repo=self.git_repo_obj,
                                                    branch_metadata=branch_md),
@@ -808,7 +886,6 @@ def main():
     github_repo_obj: Repository = github_client.get_repo(f'{ORGANIZATION_NAME}/{REPO_MANE}')
 
     autobump_manager = AutoBumperManager(
-        github_client=github_client,
         git_repo_obj=git_repo_obj,
         github_repo_obj=github_repo_obj,
         run_id=run_id,
