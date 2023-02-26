@@ -529,7 +529,7 @@ script:
       required: false
       isArray: false
     - name: exportUuid
-      description: The export uuid.
+      description: The export UUID.
       deprecated: true
     polling: true
     description: Retrieves details for the specified asset to include custom attributes.
@@ -740,7 +740,7 @@ script:
       description: One or more IPv6 addresses belonging to the interface.
       type: String
     - contextPath: TenableIO.Asset.network_interfaces.fqdns
-      description: One or more FQDN's belonging to the interface.
+      description: One or more FQDNs belonging to the interface.
       type: String
     - contextPath: TenableIO.Asset.network_interfaces.ipv4s
       description: One or more IPv4 addresses belonging to the interface.
@@ -1202,7 +1202,7 @@ script:
     - contextPath: TenableIO.Vulnerability.state
       description: The state of the vulnerability as determined by the Tenable.io state service.
       type: String
-    - contextPath: TenableIO.Vulnerability.indexed_at
+    - contextPath: TenableIO.Vulnerability.indexed
       description: The date and time (in Unix time) when the vulnerability was indexed into Tenable.io.
       type: Date
   feed: false

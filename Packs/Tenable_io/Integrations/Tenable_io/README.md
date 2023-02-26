@@ -876,7 +876,7 @@ ADMINISTRATOR [64] user permissions.
 | TenableIO.Asset.network_interfaces.name | String | The name of the interface. | 
 | TenableIO.Asset.network_interfaces.mac_address | String | The MAC addresses of the interface. | 
 | TenableIO.Asset.network_interfaces.ipv6 | String | One or more IPv6 addresses belonging to the interface. | 
-| TenableIO.Asset.network_interfaces.fqdns | String | One or more FQDN's belonging to the interface. | 
+| TenableIO.Asset.network_interfaces.fqdns | String | One or more FQDNs belonging to the interface. | 
 | TenableIO.Asset.network_interfaces.ipv4s | String | One or more IPv4 addresses belonging to the interface. | 
 | TenableIO.Asset.acr_score | String | The Asset Criticality Rating \(ACR\) for the asset. | 
 | TenableIO.Asset.exposure_score | String | The Asset Exposure Score \(AES\) for the asset. | 
@@ -1190,7 +1190,7 @@ ADMINISTRATOR [64] user permissions.
 | TenableIO.Vulnerability.last_fixed | Date | The ISO date when a scan no longer detects the previously detected vulnerability on the asset. | 
 | TenableIO.Vulnerability.last_found | Date | The ISO date when a scan last detected the vulnerability on the asset. | 
 | TenableIO.Vulnerability.state | String | The state of the vulnerability as determined by the Tenable.io state service. | 
-| TenableIO.Vulnerability.indexed_at | Date | The date and time \(in Unix time\) when the vulnerability was indexed into Tenable.io. | 
+| TenableIO.Vulnerability.indexed | Date | The date and time \(in Unix time\) when the vulnerability was indexed into Tenable.io. | 
 
 #### Command example
 ```!tenable-io-export-vulnerabilities numAssets=500```

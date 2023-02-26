@@ -927,7 +927,6 @@ def request_uuid_export_vulnerabilities(args: Dict[str, Any]) -> PollResult:
         response=None,
         partial_result=CommandResults(
             outputs_prefix="TenableIO.Vulnerability",
-            outputs_key_field="plugin.cve",
             readable_output="Waiting for export vulnerabilities to finish...",
         ),
         continue_to_poll=True,
@@ -1030,7 +1029,6 @@ def export_vulnerabilities_build_command_result(chunks_details_list: list[dict])
         remove_nulls_from_dictionary(human_readable_to_append)
         human_readable.append(human_readable_to_append)
     return CommandResults(
-        outputs_key_field='plugin.cve',
         outputs_prefix='TenableIO.Vulnerability',
         outputs=chunks_details_list,
         raw_response=chunks_details_list,
@@ -1088,7 +1086,6 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
                 response=None,
                 partial_result=CommandResults(
                     outputs_prefix="TenableIO.Vulnerability",
-                    outputs_key_field="plugin.cve",
                     readable_output="Waiting for export vulnerabilities to finish...",
                 ),
                 continue_to_poll=True,
@@ -1097,7 +1094,6 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
         else:
             return PollResult(
                 response=CommandResults(
-                    outputs_key_field='plugin.cve',
                     outputs_prefix='TenableIO.Vulnerability',
                     readable_output=f'TenableIO: {status}',
                 ),
