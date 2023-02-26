@@ -23,6 +23,13 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for AWS - Security Hub.
 3. Click **Add instance** to create and configure a new integration instance.
+4. To ensure that fetch incidents works:
+   1. Select the **Fetches incidents** radio button.
+   2. Under **Incident type**, select AWS Security Hub Finding.
+5. To ensure that mirroring works, ensure that fetch incidents works and then:
+   1. Under **Mapper (incoming)**, select AWS Security Hub - Incoming Mapper.
+   2. Under **Mapper (outgoing)**, select AWS Security Hub - Outgoing Mapper. 
+   3. Under **Incident Mirroring Direction**, select the desired mirroring direction. 
 
     | **Parameter** | **Description**                                                                                                                                                                                                                                                                                                                                   | **Required** |
     |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- | --- |
@@ -47,7 +54,7 @@ For detailed instructions about setting up authentication, see: [AWS Integration
     | Workflow Status | You can set the workflow status of the findings to be fetched or mirrored: "New", "Notified", "Resolved", "Suppressed". For example, if you set the workflow status to "Suppressed", the integration will only fetch or mirror findings with the workflow status of Suppressed.                                                                   | False |
     | Product Name | You can enter a comma-separated list of product names. In order to get the product name, click Integrations in the AWS - Security Hub menu. Use only the product name (the value after the colon (:)) for this parameter.                                                                                                                         | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+6. Click **Test** to validate the URLs, token, and connection.
 
 
 ## Known Limitations
