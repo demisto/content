@@ -1080,9 +1080,7 @@ class CoreClient(BaseClient):
         link = response.get('reply', {}).get('DATA')
         # If the link is None, the API call will result in a 'Connection Timeout Error', so we raise an exception
         if not link:
-            demisto.debug(f'Failed getting response from /scripts/get_script_execution_results_files, {action_id=},'
-                          f' {endpoint_id=}')
-            raise DemistoException('File not found.')
+            raise DemistoException(f'Failed getting response files for {action_id=}, {endpoint_id=}')
         return self._http_request(
             method='GET',
             full_url=link,
