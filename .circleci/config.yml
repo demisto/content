@@ -376,10 +376,10 @@ jobs:
 workflows:
   version: 2
   commit:
-    filters:  # using regex filters requires the entire branch to match
-      branches:
-        only:  # only branches matching the below regex filters will run
-          - "pull/[0-9]+"
+    when:
+      matches:
+        pattern: "pull/[0-9]+"
+        value: $CIRCLE_BRANCH
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
@@ -392,11 +392,21 @@ workflows:
       - Run Validations:
           requires:
             - Setup Environment
-  gitlab:
-    when:
-      not:
-        matches:
-          pattern: "pull/[0-9]+"
-          value: $CIRCLE_BRANCH
+
+  nightly:
+    triggers:
+      - schedule:
+          # should trigger every day at 12 AM UTC (3 AM Israel Time)
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
     jobs:
-      - Setup Environment
+      *nightly_jobs
+
+  nightly_trigger:
+    # will initiate when using the trigger script.
+    when: << pipeline.parameters.nightly >>
+    jobs:
+      *nightly_jobs
