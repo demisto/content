@@ -450,4 +450,4 @@ def test_second_attempt_for_reputation_requests(mocker):
 
     results = tq_request('post', '', params={"criteria": {"value": {"+equals": "foo@demisto.com"}}}, retrieve_entire_response=True)
     assert results.status_code == 200
-    assert results['data'][0]['value'] == 'foo@demisto.com'
+    assert results.json()['data'][0]['value'] == 'foo@demisto.com'
