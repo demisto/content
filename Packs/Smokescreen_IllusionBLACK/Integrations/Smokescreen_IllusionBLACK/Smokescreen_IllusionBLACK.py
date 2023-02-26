@@ -5,7 +5,6 @@ from datetime import timezone
 from typing import List, Dict, Any
 
 import json
-import requests
 
 # Disable insecure warnings
 import urllib3
