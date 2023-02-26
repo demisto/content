@@ -12,6 +12,7 @@ from VectraEventCollector import (
     AUDIT_START_TIMESTAMP_FORMAT,
     get_detections_cmd,
     get_audits_cmd,
+    get_events,
 )
 from typing import Dict, Any
 import json
@@ -183,6 +184,19 @@ def test_get_audits_cmd(mocker: MockerFixture):
     cmd_res, audits = get_audits_cmd(client, first_timestamp)
 
     assert len(cmd_res.outputs) == len(audits)
+
+
+def test_get_events(mocker: MockerFixture):
+    # TODO docstring
+    """"""
+
+    mocker.patch.object(client, "get_detections", return_value=DETECTIONS)
+    mocker.patch.object(client, "get_audits", return_value=AUDITS)
+
+    detection_res, detections, audits_res, audits = get_events(client, datetime.now())
+
+    assert len(detection_res.outputs) == len(detections)
+    assert len(audits_res.outputs) == len(audits)
 
 
 """ Helper Functions Tests """

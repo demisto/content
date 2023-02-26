@@ -319,9 +319,7 @@ def fetch_events(
 
 def get_events(
     client: VectraClient, first_fetch: datetime
-) -> Tuple[
-    CommandResults, List[Dict[str, Any]], CommandResults, List[Dict[str, Any]]
-]:  # pragma: no cover
+) -> Tuple[CommandResults, List[Dict[str, Any]], CommandResults, List[Dict[str, Any]]]:
 
     """
     Command function to retrieve detections and audits.
