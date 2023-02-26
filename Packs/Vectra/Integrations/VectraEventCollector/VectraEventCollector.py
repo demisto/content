@@ -427,7 +427,7 @@ def main() -> None:  # pragma: no cover
                 demisto.info(f"Setting last run to {str(next_fetch)}...")
                 demisto.setLastRun(next_fetch)
 
-            if should_push_events and (detections or audits):
+            if should_push_events:
                 if detections:
                     demisto.info(f"Sending {len(detections)} detections to XSIAM...")
                     send_events_to_xsiam(detections, vendor=VENDOR, product=client.endpoints[0])
@@ -436,11 +436,6 @@ def main() -> None:  # pragma: no cover
                     demisto.info(f"Sending {len(audits)} audits to XSIAM...")
                     send_events_to_xsiam(audits, vendor=VENDOR, product=client.endpoints[1])
                     demisto.info(f"{len(audits)} audits sent to XSIAM.")
-
-            else:
-                demisto.info(
-                    "Either should_push_events=False or there are no audits nor detections to send to XSIAM."
-                )
 
         else:
             raise NotImplementedError(f"command '{cmd}' is not implemented.")
