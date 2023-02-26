@@ -1168,7 +1168,7 @@ script:
     execution: false
     arguments:
     - name: identity
-      description: Identify of the case hold policy to get.
+      description: Identity of the case hold policy to get.
       required: false
       isArray: false 
     - name: case
@@ -1272,7 +1272,7 @@ script:
     description: View case hold rules in the Microsoft Purview compliance portal.
     execution: false
     arguments:
-    - name: identify
+    - name: identity
       description: Get hold rule list by identity.
       required: false
       isArray: false 
