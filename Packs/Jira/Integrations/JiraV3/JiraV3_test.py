@@ -97,33 +97,33 @@ ISSUE_FIELDS_MAPPING_CASES = [
 
 @pytest.mark.parametrize('issue_fields, issue_fields_mapping', ISSUE_FIELDS_MAPPING_CASES)
 def test_get_issue_fields_mapping(mocker, issue_fields, issue_fields_mapping):
-    from JiraV3 import JiraBaseClient, get_issue_fields_mapping
+    from JiraV3 import JiraBaseClient, get_issue_fields_id_to_name_mapping
     mocker.patch.object(JiraBaseClient, 'get_issue_fields', return_value=issue_fields)
     client = jira_base_client_mock()
-    mapping_result, _ = get_issue_fields_mapping(client=client)
+    mapping_result = get_issue_fields_id_to_name_mapping(client=client)
     assert mapping_result == issue_fields_mapping
 
 
 CREATE_ISSUE_QUERY_CASES = [
     (
-        'some_jql_string', ['field_1', 'field_2'], None, None,
-        {'jql': 'some_jql_string', 'startAt': 0, 'maxResults': 50, 'fields': ['field_1', 'field_2'], 'expand': 'renderedFields'},
+        'some_jql_string', None, None,
+        {'jql': 'some_jql_string', 'startAt': 0, 'maxResults': 50, 'expand': 'renderedFields,transitions,names'},
     ),
     (
-        'some_jql_string', ['field_1', 'field_2'], 12, None,
-        {'jql': 'some_jql_string', 'startAt': 12, 'maxResults': 50, 'fields': ['field_1', 'field_2'], 'expand': 'renderedFields'},
+        'some_jql_string', 12, None,
+        {'jql': 'some_jql_string', 'startAt': 12, 'maxResults': 50, 'expand': 'renderedFields,transitions,names'},
     ),
     (
-        'some_jql_string', None, 1, 80,
-        {'jql': 'some_jql_string', 'startAt': 1, 'maxResults': 80, 'expand': 'renderedFields'},
+        'some_jql_string', 1, 80,
+        {'jql': 'some_jql_string', 'startAt': 1, 'maxResults': 80, 'expand': 'renderedFields,transitions,names'},
     )
 ]
 
 
-@pytest.mark.parametrize('jql, specific_fields, start_at, max_results, expected_query_params', CREATE_ISSUE_QUERY_CASES)
-def test_create_query_params(jql, specific_fields, start_at, max_results, expected_query_params):
+@pytest.mark.parametrize('jql, start_at, max_results, expected_query_params', CREATE_ISSUE_QUERY_CASES)
+def test_create_query_params(jql, start_at, max_results, expected_query_params):
     from JiraV3 import create_query_params
-    query_params = create_query_params(jql=jql, specific_fields=specific_fields, start_at=start_at, max_results=max_results)
+    query_params = create_query_params(jql=jql, start_at=start_at, max_results=max_results)
     assert query_params == expected_query_params
 
 

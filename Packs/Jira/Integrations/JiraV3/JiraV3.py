@@ -390,12 +390,12 @@ class JiraCloudClient(JiraBaseClient):
 
     # Query Requests
     def run_query(self, query_params: Dict[str, Any]) -> Dict[str, Any]:
-        query_params |= {'expand': 'renderedFields,transitions,names'}
+        # query_params |= {'expand': 'renderedFields,transitions,names'}
         return self.http_request_with_access_token(
             method='GET', url_suffix='rest/api/3/search', params=query_params
         )
-    # Board Requests
 
+    # Board Requests
     def get_issues_from_backlog(self, board_id: str, jql_query: str | None = None,
                                 start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
         query_params = assign_params(
@@ -558,58 +558,66 @@ class JiraCloudClient(JiraBaseClient):
         )
 
     def delete_comment(self, issue_id_or_key: str, comment_id: str) -> Dict[str, Any]:
-        res = self.http_request_with_access_token(method='DELETE',
-                                                  url_suffix=f'rest/api/3/issue/{issue_id_or_key}/comment/{comment_id}',
-                                                  resp_type='response',
-                                                  )
-        return res
+        return self.http_request_with_access_token(
+            method='DELETE',
+            url_suffix=f'rest/api/3/issue/{issue_id_or_key}/comment/{comment_id}',
+            resp_type='response',
+        )
 
     def edit_comment(self, issue_id_or_key: str, comment_id: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
         query_params = {'expand': 'renderedBody'}
-        res = self.http_request_with_access_token(method='PUT',
-                                                  url_suffix=f'rest/api/3/issue/{issue_id_or_key}/comment/{comment_id}',
-                                                  json_data=json_data,
-                                                  params=query_params)
-        return res
+        return self.http_request_with_access_token(
+            method='PUT',
+            url_suffix=f'rest/api/3/issue/{issue_id_or_key}/comment/{comment_id}',
+            json_data=json_data,
+            params=query_params,
+        )
 
     def get_issue(self, issue_id_or_key: str = '', full_issue_url: str = '') -> Dict[str, Any]:
         query_params = {'expand': 'renderedFields,transitions,names'}
-        res = self.http_request_with_access_token(method='GET', url_suffix=f'rest/api/3/issue/{issue_id_or_key}',
-                                                  params=query_params,
-                                                  full_url=full_issue_url,
-                                                  )
-        return res
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/api/3/issue/{issue_id_or_key}',
+            params=query_params,
+            full_url=full_issue_url,
+        )
 
     def edit_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
-        res = self.http_request_with_access_token(method='PUT', url_suffix=f'rest/api/3/issue/{issue_id_or_key}',
-                                                  json_data=json_data,
-                                                  resp_type='response'
-                                                  )
-        return res
+        return self.http_request_with_access_token(
+            method='PUT',
+            url_suffix=f'rest/api/3/issue/{issue_id_or_key}',
+            json_data=json_data,
+            resp_type='response',
+        )
 
     def delete_issue(self, issue_id_or_key: str) -> requests.Response:
         query_params = {'deleteSubtasks': 'true'}
-        res = self.http_request_with_access_token(method='DELETE', url_suffix=f'rest/api/3/issue/{issue_id_or_key}',
-                                                  params=query_params,
-                                                  resp_type='response',
-                                                  )
-        return res
+        return self.http_request_with_access_token(
+            method='DELETE',
+            url_suffix=f'rest/api/3/issue/{issue_id_or_key}',
+            params=query_params,
+            resp_type='response',
+        )
 
     def create_issue(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
-        res = self.http_request_with_access_token(method='POST', url_suffix='rest/api/3/issue',
-                                                  json_data=json_data)
-        return res
+        return self.http_request_with_access_token(
+            method='POST', url_suffix='rest/api/3/issue', json_data=json_data
+        )
 
     def get_transitions(self, issue_id_or_key: str) -> Dict[str, Any]:
-        res = self.http_request_with_access_token(method='GET', url_suffix=f'rest/api/3/issue/{issue_id_or_key}/transitions')
-        return res
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/api/3/issue/{issue_id_or_key}/transitions',
+        )
 
     def add_comment(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
         query_params = {'expand': 'renderedBody'}
-        res = self.http_request_with_access_token(method='POST', url_suffix=f'rest/api/3/issue/{issue_id_or_key}/comment',
-                                                  json_data=json_data,
-                                                  params=query_params)
-        return res
+        return self.http_request_with_access_token(
+            method='POST',
+            url_suffix=f'rest/api/3/issue/{issue_id_or_key}/comment',
+            json_data=json_data,
+            params=query_params,
+        )
 
     def get_epic_issues(self, epic_id_or_key: str, start_at: int | None = None, max_results: int | None = None,
                         jql_query: str | None = None) -> Dict[str, Any]:
@@ -643,26 +651,31 @@ class JiraCloudClient(JiraBaseClient):
         headers = {
             'X-Atlassian-Token': 'no-check',
         }
-        res = self.http_request_with_access_token(method='POST', url_suffix=f'rest/api/3/issue/{issue_id_or_key}/attachments',
-                                                  files=files,
-                                                  headers=headers)
-        return res
+        return self.http_request_with_access_token(
+            method='POST',
+            url_suffix=f'rest/api/3/issue/{issue_id_or_key}/attachments',
+            files=files,
+            headers=headers,
+        )
 
     def get_attachment_metadata(self, attachment_id: str) -> Dict[str, Any]:
-        res = self.http_request_with_access_token(method='GET', url_suffix=f'rest/api/3/attachment/{attachment_id}')
-        return res
+        return self.http_request_with_access_token(
+            method='GET', url_suffix=f'rest/api/3/attachment/{attachment_id}'
+        )
 
     def get_attachment_content(self, attachment_id: str) -> str:
-        res = self.http_request_with_access_token(method='GET', url_suffix=f'rest/api/3/attachment/content/{attachment_id}',
-                                                  resp_type='content')
-        return res
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/api/3/attachment/content/{attachment_id}',
+            resp_type='content',
+        )
 
     # User Requests
     def get_id_by_attribute(self, attribute: str, max_results: int = 50) -> List[Dict[str, Any]]:
         query = {'query': attribute, 'maxResults': max_results}
-        res = self.http_request_with_access_token(method='GET', url_suffix='rest/api/3/user/search',
-                                                  params=query)
-        return res
+        return self.http_request_with_access_token(
+            method='GET', url_suffix='rest/api/3/user/search', params=query
+        )
 
 
 class JiraOnPremClient(JiraBaseClient):
@@ -771,26 +784,9 @@ class JiraIssueFieldsParser():
         return {'Attachments': attachments}
 
     @staticmethod
-    def get_comments_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
-        # TODO Fix the parsing of the comments field.
-        if response_comments := issue_data.get('comments', []) or (demisto.get(issue_data, 'fields.comment.comments', []) or []):
-            comments = []
-            for comment in response_comments:
-                comment_body = BeautifulSoup(comment.get('renderedBody')).get_text(
-                ) if comment.get('renderedBody') else comment.get('body')
-                comments.append({
-                    'Id': comment.get('id'),
-                    'Comment': comment_body,
-                    'User': demisto.get(comment, 'author.displayName'),
-                    'Created': comment.get('created')
-                })
-            return {'Comment': comments}
-        return {'Comment': []}
-
-    @staticmethod
     def get_raw_field_data_context(issue_data: Dict[str, Any], issue_field_id: str,
                                    issue_fields_id_to_name_mapping: Dict[str, str]) -> Dict[str, Any]:
-        """To return the raw data (not parsed) of the field corresponding to the id issue_field_id. 
+        """To return the raw data (not parsed) of the field corresponding to the id issue_field_id.
 
         Args:
             issue_data (Dict[str, Any]): The issue response from the API.
@@ -800,7 +796,6 @@ class JiraIssueFieldsParser():
             Dict[str, Any]: The raw data of the field.
         """
         issue_field_display_name = issue_fields_id_to_name_mapping.get(issue_field_id) or ''
-        {'issueFieldDisplayName': issue_field_display_name}
         return {issue_field_id: ({'issueFieldDisplayName': issue_field_display_name} if issue_field_display_name else {})
                 | {'rawData': issue_data.get('fields', {}).get(issue_field_id, '') or {}}}
 
@@ -821,7 +816,6 @@ class JiraIssueFieldsParser():
         'updated': get_last_update_context,
         'issuetype': get_issue_type_context,
         'self': get_ticket_link_context,
-        # 'comment': get_comments_context,  # TODO Need to remove
         'attachment': get_attachments_context,
         'description': get_description_context,
         'creator': get_creator_context,
@@ -849,7 +843,6 @@ class JiraIssueFieldsParser():
                 # issue_field_id = issue_field.split('.')[-1]
                 issue_fields_context |= cls.get_raw_field_data_context(issue_data, issue_field_id,
                                                                        issue_fields_id_to_name_mapping)
-                # issue_fields_context |= {issue_field_id: demisto.get(issue_data, issue_field, {}) or {}}
         return issue_fields_context
 
 
@@ -871,24 +864,19 @@ def str_to_number(arg: str, default_value: int) -> int:
     return to_number if (to_number := arg_to_number(arg)) else default_value
 
 
-def create_query_params(jql: str, specific_fields: List[str] | None = None, start_at: int | None = None,
+def create_query_params(jql: str, start_at: int | None = None,
                         max_results: int | None = None) -> Dict[str, Any]:
     start_at = start_at or 0
     max_results = max_results or 50
-    demisto.debug(
-        (f'Querying with: {jql}\nstart_at: {start_at}\nmax_results: {max_results}\n'
-         f'specific_fields: {", ".join(specific_fields) if specific_fields else None}'))
-    query_params = {
+    demisto.debug(f'Querying with: {jql}\nstart_at: {start_at}\nmax_results: {max_results}\n')
+    return {
         'jql': jql,  # The Jira Query Language string, used to search for issues in a project using SQL-like syntax.
         'startAt': start_at,  # The index of the first item to return in a page of results (page offset).
         'maxResults': max_results,  # The maximum number of items to return per page.
         # We supply this query parameter to retrieve some content in HTML format, since Jira uses a format called ADF,
         # and it is easier to parse the content in HTML format, rather than ADF.
-        'expand': 'renderedFields',
+        'expand': 'renderedFields,transitions,names',
     }
-    # if specific_fields:
-    #     query_params['fields'] = specific_fields
-    return query_params
 
 
 def get_issue_fields_id_to_name_mapping(client: JiraBaseClient) -> Dict[str, str]:
@@ -1100,6 +1088,43 @@ def text_to_adf(text: str) -> Dict[str, Any]:
     }
 
 
+def get_specific_fields_ids(issue_data: Dict[str, Any], specific_fields: List[str],
+                            issue_fields_id_to_name_mapping: Dict[str, str]) -> List[str]:
+    # TODO Explain really well what we did here!
+    # TODO Add that if we receive a comment key or id, to return a warning stating that this can be retrieved
+    # with jira-get-comments
+    # We offer the opportunity to insert the field name or ID in order to retrieve the data
+    if 'all' in specific_fields:
+        all_issue_fields_ids: List[str] = list(issue_data.get('fields', {}).keys())
+        if 'comment' in all_issue_fields_ids:
+            all_issue_fields_ids.remove('comment')
+        return ['id', 'key', 'self', *all_issue_fields_ids]
+    issue_fields_name_to_id_mapping = {issue_name.lower(): issue_id for issue_id,
+                                       issue_name in issue_fields_id_to_name_mapping.items()}
+    issue_fields_ids: List[str] = []
+    wrong_issue_fields_ids: List[str] = []
+    for specific_field in specific_fields:
+        if specific_field in issue_fields_id_to_name_mapping:
+            issue_fields_ids.append(specific_field)
+        elif issue_id := issue_fields_name_to_id_mapping.get(specific_field.lower(), ''):
+            issue_fields_ids.append(issue_id)
+        else:
+            wrong_issue_fields_ids.append(specific_field)
+    warning_message = ''
+    if 'comment' in issue_fields_ids:
+        warning_message = 'In order to retrieve the comments of the issue, please run the command `!jira-get-comments`'
+        for issue_field_id in issue_fields_ids:
+            if issue_field_id == 'comment':
+                issue_fields_ids.remove(issue_field_id)
+    if wrong_issue_fields_ids:
+        issue_key = issue_data.get('key', '') or ''
+        warning_message = '\n'.join([f'The field/s [{",".join(wrong_issue_fields_ids)}] was/were not found for issue {issue_key}',
+                                     warning_message])
+    if warning_message:
+        return_warning(warning_message)
+    return issue_fields_ids
+
+
 def create_issue_md_and_outputs_dict(issue_data: Dict[str, Any],
                                      specific_issue_fields: List[str] | None = None,
                                      issue_fields_id_to_name_mapping: Dict[str, str] | None = None) -> tuple[Dict[str, Any], Dict[str, Any]]:
@@ -1224,22 +1249,7 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Co
     max_results = arg_to_number(args.get('max_results', ''))
     headers = args.get('headers', '')
     specific_fields = argToList(args.get('specific_fields', ''))
-    query_specific_fields: List[str] = []
-    specific_fields_set: Set[str] = set()
-    # if specific_fields:
-    #     # We created a set that has the values of the specific_fields list since we are going to use the
-    #     # "in" operator a lot, and it is faster to determine if an object is present in a set than a list.
-    #     specific_fields_set = {field.lower() for field in specific_fields}
-    # issue_fields_id_name_mapping = get_issue_fields_id_to_name_mapping(client=client)
-    # # TODO Should we output the fields that were not found?
-    # # This will hold the mapping between the ids of the issue fields supplied by the user to their human readable names
-    # specific_fields_mapping = {field_key: field_value for
-    #                            field_key, field_value in issue_fields_id_name_mapping.items()
-    #                            if field_value.lower() in specific_fields_set}
-
-    # query_specific_fields = list(specific_fields_mapping.keys())
-    query_params = create_query_params(jql=jql_query, start_at=start_at, max_results=max_results,
-                                       specific_fields=query_specific_fields)
+    query_params = create_query_params(jql=jql_query, start_at=start_at, max_results=max_results)
     res = client.run_query(query_params=query_params)
     if not res:
         return CommandResults(readable_output='No issues matched the query.')
@@ -1299,43 +1309,6 @@ def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Comm
                 raw_response=response
             ))
     return command_results
-
-
-def get_specific_fields_ids(issue_data: Dict[str, Any], specific_fields: List[str],
-                            issue_fields_id_to_name_mapping: Dict[str, str]) -> List[str]:
-    # TODO Explain really well what we did here!
-    # TODO Add that if we receive a comment key or id, to return a warning stating that this can be retrieved
-    # with jira-get-comments
-    # We offer the opportunity to insert the field name or ID in order to retrieve the data
-    if 'all' in specific_fields:
-        all_issue_fields_ids: List[str] = list(issue_data.get('fields', {}).keys())
-        if 'comment' in all_issue_fields_ids:
-            all_issue_fields_ids.remove('comment')
-        return ['id', 'key', 'self', *all_issue_fields_ids]
-    issue_fields_name_to_id_mapping = {issue_name.lower(): issue_id for issue_id,
-                                       issue_name in issue_fields_id_to_name_mapping.items()}
-    issue_fields_ids: List[str] = []
-    wrong_issue_fields_ids: List[str] = []
-    for specific_field in specific_fields:
-        if specific_field in issue_fields_id_to_name_mapping:
-            issue_fields_ids.append(specific_field)
-        elif issue_id := issue_fields_name_to_id_mapping.get(specific_field.lower(), ''):
-            issue_fields_ids.append(issue_id)
-        else:
-            wrong_issue_fields_ids.append(specific_field)
-    warning_message = ''
-    if 'comment' in issue_fields_ids:
-        warning_message = 'In order to retrieve the comments of the issue, please run the command `!jira-get-comments`'
-        for issue_field_id in issue_fields_ids:
-            if issue_field_id == 'comment':
-                issue_fields_ids.remove(issue_field_id)
-    if wrong_issue_fields_ids:
-        issue_key = issue_data.get('key', '') or ''
-        warning_message = '\n'.join([f'The field/s [{",".join(wrong_issue_fields_ids)}] was/were not found for issue {issue_key}',
-                                     warning_message])
-    if warning_message:
-        return_warning(warning_message)
-    return issue_fields_ids
 
 
 def download_issue_attachments_to_war_room(client: JiraBaseClient, issue: Dict[str, Any],
@@ -1491,13 +1464,23 @@ def get_comments_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
 def create_comments_command_results(response_comments: List[Dict[str, Any]],
                                     issue_id_or_key: str, res: Dict[str, Any]) -> CommandResults:
     is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
-    outputs: Dict[str, Any] = JiraIssueFieldsParser.get_comments_context(issue_data=res)
+    comments = []
+    for comment in response_comments:
+        comment_body = BeautifulSoup(comment.get('renderedBody')).get_text(
+        ) if comment.get('renderedBody') else comment.get('body')
+        comments.append({
+            'Id': comment.get('id'),
+            'Comment': comment_body,
+            'User': demisto.get(comment, 'author.displayName'),
+            'Created': comment.get('created')
+        })
+    outputs: Dict[str, Any] = {'Comment': comments}
     if(is_id):
         outputs |= {'Id': issue_id_or_key}
     else:
         extracted_issue_id = extract_issue_id_from_comment_url(comment_url=response_comments[0].get('self', ''))
         outputs |= {'Id': extracted_issue_id, 'Key': issue_id_or_key}
-    human_readable = tableToMarkdown("Comments", outputs.get('Comment', []))
+    human_readable = tableToMarkdown("Comments", comments)
     return CommandResults(
         outputs_prefix='Ticket',
         outputs=outputs,
@@ -1590,7 +1573,6 @@ def get_transitions_command(client: JiraBaseClient, args: Dict[str, str]) -> Com
     outputs: Dict[str, Any] = {'Transitions': transitions_names}
     is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
     outputs |= {'Id': issue_id_or_key} if is_id else {'Key': issue_id_or_key}
-    # {'Ticket((val.Id && val.Id == obj.Id) || (val.Key && val.Key == obj.Key))': outputs}
     return CommandResults(
         outputs_prefix='Ticket',
         outputs=outputs,
@@ -1665,22 +1647,15 @@ def get_specific_fields_command(client: JiraBaseClient, args: Dict[str, str]) ->
         raise DemistoException(ID_OR_KEY_MISSING_ERROR)
     fields = argToList(args.get('fields', ''))
     res = client.get_issue(issue_id_or_key=issue_id_or_key)
-    # Get the general fields of the issue
-    markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=res)
-    issue_fields_id_name_mapping = get_issue_fields_id_to_name_mapping(client=client)
-    for field in fields:
-        if readable_field_name := issue_fields_id_name_mapping.get(field, ''):
-            titled_field = readable_field_name.title().replace(' ', '')
-            markdown_dict[titled_field] = outputs[titled_field] = demisto.get(res, f'fields.{field}', '')
-        else:
-            return_warning(f'The field {field} was not found.')
+    markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=res, specific_issue_fields=fields,
+                                                              issue_fields_id_to_name_mapping=res.get('names', {}) or {})
     return CommandResults(
         outputs_prefix='Ticket',
         outputs=outputs,
         outputs_key_field='Id',
         readable_output=tableToMarkdown(name=f'Issue {outputs.get("Key", "")}', t=markdown_dict,
                                         headerTransform=pascalToSpace),
-        raw_response=[res]
+        raw_response=res
     )
 
 
