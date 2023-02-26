@@ -448,6 +448,7 @@ def test_second_attempt_for_reputation_requests(mocker):
 
     mocker.patch.object(requests, "request", side_effect=get_response)
 
-    results = tq_request('post', '', params={"criteria": {"value": {"+equals": "foo@demisto.com"}}}, retrieve_entire_response=True)
+    results = tq_request('post', '', params={"criteria": {"value": {"+equals": "foo@demisto.com"}}},
+                         retrieve_entire_response=True)
     assert results.status_code == 200
     assert results.json()['data'][0]['value'] == 'foo@demisto.com'
