@@ -794,7 +794,7 @@ def list_access_policy_command(client: Client, args: dict[str, Any]) -> CommandR
         outputs_prefix="CiscoWSA.AccessPolicy",
         outputs_key_field="policy_name",
         outputs=outputs,
-        raw_response=outputs,
+        raw_response=response,
     )
 
 
@@ -1288,25 +1288,17 @@ def create_identification_profiles_command(
         CommandResults: readable outputs for XSOAR.
     """
     profile_name = args["profile_name"]
-    status = args["status"]
-    description = args["description"]
-    order = arg_to_number(args["order"])
-    protocols = protocols_handler(protocols=argToList(args["protocols"]))
-    proxy_ports = argToList(args.get("proxy_ports"))
-    members_by_subnet = argToList(args.get("members_by_subnet"))
-    predefined_url_categories = argToList(args.get("predefined_url_categories"))
-    custom_url_categories = argToList(args.get("custom_url_categories"))
 
     client.identification_profiles_create(
-        status=status,
-        description=description,
+        status=args["status"],
+        description=args["description"],
         profile_name=profile_name,
-        order=order,
-        protocols=protocols,
-        proxy_ports=proxy_ports,
-        members_by_subnet=members_by_subnet,
-        predefined_url_categories=predefined_url_categories,
-        custom_url_categories=custom_url_categories,
+        order=arg_to_number(args["order"]),
+        protocols=protocols_handler(protocols=argToList(args["protocols"])),
+        proxy_ports=argToList(args.get("proxy_ports")),
+        members_by_subnet=argToList(args.get("members_by_subnet")),
+        predefined_url_categories=argToList(args.get("predefined_url_categories")),
+        custom_url_categories=argToList(args.get("custom_url_categories")),
     )
 
     return CommandResults(
@@ -1328,27 +1320,17 @@ def update_identification_profiles_command(
         CommandResults: readable outputs for XSOAR.
     """
     profile_name = args["profile_name"]
-    new_profile_name = args.get("new_profile_name")
-    status = args.get("status")
-    description = args.get("description")
-    order = arg_to_number(args.get("order"))
-    protocols = protocols_handler(protocols=argToList(args.get("protocols")))
-    proxy_ports = argToList(args.get("proxy_ports"))
-    members_by_subnet = argToList(args.get("members_by_subnet"))
-    predefined_url_categories = argToList(args.get("predefined_url_categories"))
-    custom_url_categories = argToList(args.get("custom_url_categories"))
-
     client.identification_profiles_update(
         profile_name=profile_name,
-        new_profile_name=new_profile_name,
-        description=description,
-        status=status,
-        protocols=protocols,
-        order=order,
-        proxy_ports=proxy_ports,
-        members_by_subnet=members_by_subnet,
-        predefined_url_categories=predefined_url_categories,
-        custom_url_categories=custom_url_categories,
+        new_profile_name=args.get("new_profile_name"),
+        description=args.get("description"),
+        status=args.get("status"),
+        protocols=protocols_handler(protocols=argToList(args.get("protocols"))),
+        order=arg_to_number(args.get("order")),
+        proxy_ports=argToList(args.get("proxy_ports")),
+        members_by_subnet=argToList(args.get("members_by_subnet")),
+        predefined_url_categories=argToList(args.get("predefined_url_categories")),
+        custom_url_categories=argToList(args.get("custom_url_categories")),
     )
 
     return CommandResults(

@@ -173,6 +173,8 @@ def test_list_access_policy_command(
 
     assert result.outputs_prefix == "CiscoWSA.AccessPolicy"
     assert len(result.outputs) == expected_outputs_len
+    assert result.outputs_key_field == "policy_name"
+    assert result.outputs[0]['policy_name'] == 'test2'
 
 
 def test_create_access_policy_command(
@@ -594,6 +596,8 @@ def test_list_domain_map_command(
 
     assert result.outputs_prefix == "CiscoWSA.DomainMap"
     assert len(result.outputs) == expected_outputs_len
+    assert result.outputs_key_field == 'domain_name'
+    assert result.outputs[0]['domain_name'] == 'test.com'
 
 
 def test_create_domain_map_command(
@@ -831,6 +835,8 @@ def test_list_identification_profiles_command(
 
     assert result.outputs_prefix == "CiscoWSA.IdentificationProfile"
     assert len(result.outputs) == expected_outputs_len
+    assert result.outputs_key_field == 'profile_name'
+    assert result.outputs[0]['profile_name'] == 'test7'
 
 
 def test_create_identification_profiles_command(
