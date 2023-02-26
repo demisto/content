@@ -624,6 +624,35 @@ def create_body_create_rule_for_v10(rule_type: str, address: List, number: int,
         }
 
 
+def modify_v10_results_to_v9_format(results: List[Dict[Any, Any]]) -> List[Dict[Any, Any]]:
+    # modify the results of v10 to be in the same format as in v9.
+    # in the nested dictionary,  the key is the name of the object,
+    # and the value instead of being a list of dictionaries, now the value is a list of strings
+    key_list = ['IPv6AddressRange', 'HostIPv6', 'Network_IPV_6', 'Network_IPV_4',
+                'HostIPv4', 'IPv4AddressRange']
+    for record in results:
+        for key, value in record.items():
+            if key in key_list and value:
+                address_list: list = []
+                my_key = key
+                # iterate over the list of dictionaries and retrive the addresses
+                for iner_dict in value[next(iter(value))]:
+                    temp_dict = {}
+                    for key in iner_dict.keys():
+                        if key == 'value':
+                            address_list.append(iner_dict[key])
+                        elif key in ['FromAddress', 'ToAddress']:
+                            temp_dict[key] = iner_dict[key]
+                    if temp_dict:
+                        address_list.append(temp_dict)
+
+                if address_list:
+                    # replace the list of dicts with a list of strings containing the addresses
+                    record[my_key][next(iter(value))] = address_list
+
+    return results
+
+
 def check_args_create_rule(rule_type: str, address: List, from_address: str, to_address: str, number: int):
     """ Validate the arguments of the function
         Args:
@@ -1039,6 +1068,9 @@ def list_domain_rule_objects_command(client: Client, args: Dict) -> CommandResul
         rule_type = rule_object_type_cases(rule_type, 'low')
     response = client.list_domain_rule_objects_request(domain_id, rule_type)
     results = pagination(response.get('RuleObjDef', []), limit, page, page_size)
+    # modify the results in v10 to match the v9 pattern
+    if VERSION == "V.10x":
+        results = modify_v10_results_to_v9_format(results)
 
     contents = []
     for record in results:
@@ -1075,6 +1107,10 @@ def get_rule_object_command(client: Client, args: Dict) -> CommandResults:
     rule_id = int(args.get('rule_id', ''))
     response = client.get_rule_object_request(rule_id)
     response = response.get('RuleObjDef', {})
+    addresses = get_addresses_from_response(response)
+    # modify the results in v10 to match the v9 pattern
+    if VERSION == "V.10x":
+        response = modify_v10_results_to_v9_format([response])[0]
     addresses = get_addresses_from_response(response)
     response['ruleobjType'] = reverse_rule_object_type_cases(response.get('ruleobjType'))
     contents = {
