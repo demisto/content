@@ -7,6 +7,23 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "mapping": {
+		"Cortex XDR - CTF - Image Spooned Suspicious Activity": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Agents ID": {
+					"simple": "alerts.endpoint_id"
+				},
+				"Description": {
+					"simple": "description"
+				},
+				"File Paths": {
+					"simple": "alerts.actor_process_image_path"
+				},
+				"Hostnames": {
+					"simple": "alerts.hostname"
+				}
+			}
+		},
         "Cortex XDR Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {
