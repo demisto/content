@@ -634,4 +634,3 @@ def test_parse_indicator_bug_fix():
         "version_info": [{"id": "xxx"}],
     }
     assert parse_indicator(sandbox, DBotScoreReliability.A_PLUS)
-
