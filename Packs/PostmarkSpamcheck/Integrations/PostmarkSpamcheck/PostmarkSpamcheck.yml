@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: Postmark Spamcheck
 display: Postmark Spamcheck
-category: Messaging
+category: Messaging and Conferencing
 description: Postmark's spam API, Spamcheck, is a RESTfull interface to the Spam filter
   tool SpamAssassin.
 configuration:
