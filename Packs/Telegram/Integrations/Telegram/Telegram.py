@@ -6,9 +6,7 @@ import json
 import requests
 
 # Disable insecure warnings
-import urllib3
-urllib3.disable_warnings()
-
+requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
