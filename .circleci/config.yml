@@ -314,10 +314,6 @@ jobs:
       - *persist_to_workspace
 
   Run Unit Testing And Lint:
-    filters:
-      branches:
-        only:
-          - "pull/[0-9]+"
     <<: *container_config
     resource_class: medium
     <<: *environment
@@ -380,13 +376,13 @@ jobs:
 workflows:
   version: 2
   commit:
-    when:
-      matches:
-        pattern: "pull/[0-9]+"
-        value: $CIRCLE_BRANCH
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
+          filters:
+            branches:
+              only:
+                - "pull/[0-9]+"
           requires:
             - Setup Environment
           matrix:
@@ -394,6 +390,10 @@ workflows:
               dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "from-yml" ]
           name: Run Unit Testing And Lint - Docker Image:<< matrix.dockerimageflag >>
       - Run Validations:
+          filters:
+            branches:
+              only:
+                - "pull/[0-9]+"
           requires:
             - Setup Environment
 
