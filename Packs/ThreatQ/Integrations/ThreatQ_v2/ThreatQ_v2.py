@@ -339,7 +339,7 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
             "filters": {"type_name": tq_type}
         }
 
-    url_suffix = 'c'
+    url_suffix = '/indicators/query?limit=500&offset=0&sort=id'
 
     res = tq_request(
         method="POST",

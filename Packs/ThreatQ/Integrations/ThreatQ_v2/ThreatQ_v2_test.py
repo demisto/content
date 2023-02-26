@@ -429,7 +429,7 @@ def test_second_attempt_for_reputation_requests(mocker):
     from ThreatQ_v2 import tq_request
 
     class MockResponse:
-        def __init__(self, status_code, data=None) -> None:
+        def __init__(self, status_code, data={}) -> None:
             self.status_code = status_code
             self.data = data
 
@@ -448,5 +448,6 @@ def test_second_attempt_for_reputation_requests(mocker):
 
     mocker.patch.object(requests, "request", side_effect=get_response)
 
-    results = tq_request('post', '', params={"criteria": {"value": {"+equals": "foo@demisto.com"}}})
+    results = tq_request('post', '', params={"criteria": {"value": {"+equals": "foo@demisto.com"}}}, retrieve_entire_response=True)
+    assert results.status_code == 200
     assert results['data'][0]['value'] == 'foo@demisto.com'
