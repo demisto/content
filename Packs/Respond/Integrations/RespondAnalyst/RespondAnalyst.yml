@@ -257,5 +257,5 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-defaultclassifier: Mandiant Automated Defense Classifier
-defaultmapperin: Mandiant Automated Defense Incoming Mapper
+defaultclassifier: mandiant-automated-defense-classifier
+defaultmapperin: mandiant-automated-defense-incoming-mapper
