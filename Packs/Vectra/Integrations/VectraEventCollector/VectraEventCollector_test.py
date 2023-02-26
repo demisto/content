@@ -129,7 +129,9 @@ def test_test_module_exception(mocker):
 
 
 def test_get_detections(mocker: MockerFixture):
-    # TODO docstring
+    """
+    Test Vectra client `get_detections` method.
+    """
 
     first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
 
@@ -141,7 +143,9 @@ def test_get_detections(mocker: MockerFixture):
 
 
 def test_get_audits(mocker: MockerFixture):
-    # TODO docstring
+    """
+    Test Vectra client `get_audits` method.
+    """
 
     start = datetime.now().strftime(AUDIT_START_TIMESTAMP_FORMAT)
 
@@ -156,8 +160,9 @@ def test_get_audits(mocker: MockerFixture):
 
 
 def test_get_detections_cmd(mocker: MockerFixture):
-    # TODO docstring
-    """ """
+    """
+    Test `vectra-get-events` method detections part.
+    """
 
     first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
 
@@ -168,8 +173,9 @@ def test_get_detections_cmd(mocker: MockerFixture):
 
 
 def test_get_audits_cmd(mocker: MockerFixture):
-    # TODO docstring
-    """ """
+    """
+    Test `vectra-get-events` method audits part.
+    """
 
     first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
 
@@ -192,6 +198,19 @@ def test_get_audits_cmd(mocker: MockerFixture):
 )
 def test_is_eod(dt: datetime, expected: bool):
 
-    # TODO docstring
+    """
+    Test the End-of-Day method.
+
+    Given:
+        - A `datetime`.
+    When:
+        - Case A: The time is 10:55.
+        - Case B: The time is 00:00.
+        - Case C: The time is 23:59.
+    Then:
+        - Case A: Method should return `False`.
+        - Case B: Method should return `False`.
+        - Case C: Method should return `True`.
+    """
 
     assert is_eod(dt) == expected
