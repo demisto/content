@@ -207,7 +207,7 @@ def test_get_packs_with_higher_min_version(mocker):
 
     mocker.patch("builtins.open", mock_open(read_data='{"serverMinVersion": "6.6.0"}'))
 
-    packs_with_higher_min_version = get_packs_with_higher_min_version({'TestPack'}, 'content', '6.5.0')
+    packs_with_higher_min_version = get_packs_with_higher_min_version({'TestPack'}, '6.5.0')
     assert packs_with_higher_min_version == {'TestPack'}
 
 
