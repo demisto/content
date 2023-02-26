@@ -1794,7 +1794,6 @@ def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tu
                                                 that new to current marketplace)
     """
     non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
-    
 
     packs_with_higher_min_version = get_packs_with_higher_min_version(modified_packs_names - non_hidden_packs,
                                                                       build.server_numeric_version)
