@@ -130,10 +130,9 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         pass
 
     # Query Requests
+    @abstractmethod
     def run_query(self, query_params: Dict[str, Any]) -> Dict[str, Any]:
-        return self.http_request_with_access_token(
-            method='GET', url_suffix='rest/api/3/search', params=query_params
-        )
+        pass
 
     # Board Requests
     @abstractmethod
@@ -389,7 +388,14 @@ class JiraCloudClient(JiraBaseClient):
         integration_context |= new_authorization_context
         set_integration_context(integration_context)
 
+    # Query Requests
+    def run_query(self, query_params: Dict[str, Any]) -> Dict[str, Any]:
+        query_params |= {'expand': 'renderedFields,transitions,names'}
+        return self.http_request_with_access_token(
+            method='GET', url_suffix='rest/api/3/search', params=query_params
+        )
     # Board Requests
+
     def get_issues_from_backlog(self, board_id: str, jql_query: str | None = None,
                                 start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
         query_params = assign_params(
@@ -567,7 +573,7 @@ class JiraCloudClient(JiraBaseClient):
         return res
 
     def get_issue(self, issue_id_or_key: str = '', full_issue_url: str = '') -> Dict[str, Any]:
-        query_params = {'expand': 'renderedFields,transitions'}
+        query_params = {'expand': 'renderedFields,transitions,names'}
         res = self.http_request_with_access_token(method='GET', url_suffix=f'rest/api/3/issue/{issue_id_or_key}',
                                                   params=query_params,
                                                   full_url=full_issue_url,
@@ -725,7 +731,7 @@ class JiraIssueFieldsParser():
         return {'TicketLink': issue_data.get('self', '') or ''}
 
     @staticmethod
-    def get_assignee_context(self, issue_data: Dict[str, Any]) -> Dict[str, Any]:
+    def get_assignee_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
         assignee = demisto.get(issue_data, 'fields.assignee', {}) or {}
         return {'Assignee': f'{assignee.get("displayName","")}({assignee.get("emailAddress", "")})'
                 if assignee else ''}
@@ -781,43 +787,69 @@ class JiraIssueFieldsParser():
             return {'Comment': comments}
         return {'Comment': []}
 
+    @staticmethod
+    def get_raw_field_data_context(issue_data: Dict[str, Any], issue_field_id: str,
+                                   issue_fields_id_to_name_mapping: Dict[str, str]) -> Dict[str, Any]:
+        """To return the raw data (not parsed) of the field corresponding to the id issue_field_id. 
+
+        Args:
+            issue_data (Dict[str, Any]): The issue response from the API.
+            issue_field_id (str): The field id of the issue to return its data.
+
+        Returns:
+            Dict[str, Any]: The raw data of the field.
+        """
+        issue_field_display_name = issue_fields_id_to_name_mapping.get(issue_field_id) or ''
+        {'issueFieldDisplayName': issue_field_display_name}
+        return {issue_field_id: ({'issueFieldDisplayName': issue_field_display_name} if issue_field_display_name else {})
+                | {'rawData': issue_data.get('fields', {}).get(issue_field_id, '') or {}}}
+
+    # The following dictionary holds the keys (in dotted string format, with respect how they appear in the issue
+    # response (# TODO add link)), and parser methods as values for every key, which is in charge or receiving the
+    # issue response from the API, and parsing the required field.
     ISSUE_FIELDS_ID_TO_CONTEXT: Dict[str, Callable] = {
         'id': get_id_context,
         'key': get_key_context,
-        'fields.summary': get_summary_context,
-        'fields.status': get_status_context,
-        'fields.priority': get_priority_context,
-        'fields.project': get_priority_context,
-        'fields.duedate': get_due_date_context,
-        'fields.created': get_created_date_context,
-        'fields.labels': get_labels_context,
-        'fields.lastViewed': get_last_update_context,
-        'fields.updated': get_last_update_context,
-        'fields.issuetype': get_issue_type_context,
+        'summary': get_summary_context,
+        'status': get_status_context,
+        'priority': get_priority_context,
+        'project': get_project_name_context,
+        'duedate': get_due_date_context,
+        'created': get_created_date_context,
+        'labels': get_labels_context,
+        'lastViewed': get_last_seen_context,
+        'updated': get_last_update_context,
+        'issuetype': get_issue_type_context,
         'self': get_ticket_link_context,
-        'fields.comment': get_comments_context,
-        'fields.attachment': get_attachments_context
+        # 'comment': get_comments_context,  # TODO Need to remove
+        'attachment': get_attachments_context,
+        'description': get_description_context,
+        'creator': get_creator_context,
+        'reporter': get_reporter_context,
+        'assignee': get_assignee_context
     }
 
     @classmethod
-    def get_issue_fields_to_context_from_id(cls, issue_data: Dict[str, Any], issue_fields: List[str]) -> Dict[str, Any]:
+    def get_issue_fields_to_context_from_id(cls, issue_data: Dict[str, Any], issue_fields_ids: List[str],
+                                            issue_fields_id_to_name_mapping: Dict[str, str]) -> Dict[str, Any]:
         """_summary_
 
         Args:
             issue_data (Dict[str, Any]): The issue response from the API, which holds the data about a specific issue.
-            issue_fields (List[str]): A list of dotted strings, where each dotted string represents a key in issue_data
-            dictionary.
+            issue_fields_ids (List[str]): A list of ids of specific issue fields.
 
         Returns:
             Dict[str, Any]: A dictionary that holds human readable mapping of the issues' fields.
         """
         issue_fields_context: Dict[str, Any] = {}
-        for issue_field in issue_fields:
-            if issue_field in cls.ISSUE_FIELDS_ID_TO_CONTEXT:
-                issue_fields_context |= cls.ISSUE_FIELDS_ID_TO_CONTEXT[issue_field](issue_data)
+        for issue_field_id in issue_fields_ids:
+            if issue_field_id in cls.ISSUE_FIELDS_ID_TO_CONTEXT:
+                issue_fields_context |= cls.ISSUE_FIELDS_ID_TO_CONTEXT[issue_field_id](issue_data)
             else:
-                issue_field_id = issue_field.split('.')[-1]
-                issue_fields_context |= {issue_field_id: demisto.get(issue_data, issue_field, {}) or {}}
+                # issue_field_id = issue_field.split('.')[-1]
+                issue_fields_context |= cls.get_raw_field_data_context(issue_data, issue_field_id,
+                                                                       issue_fields_id_to_name_mapping)
+                # issue_fields_context |= {issue_field_id: demisto.get(issue_data, issue_field, {}) or {}}
         return issue_fields_context
 
 
@@ -854,8 +886,8 @@ def create_query_params(jql: str, specific_fields: List[str] | None = None, star
         # and it is easier to parse the content in HTML format, rather than ADF.
         'expand': 'renderedFields',
     }
-    if specific_fields:
-        query_params['fields'] = specific_fields
+    # if specific_fields:
+    #     query_params['fields'] = specific_fields
     return query_params
 
 
@@ -1068,54 +1100,25 @@ def text_to_adf(text: str) -> Dict[str, Any]:
     }
 
 
-def create_issue_md_and_outputs(res: Dict[str, Any]) -> tuple[Dict[str, Any], Dict[str, Any]]:
-    return JiraIssueFieldsParser.get_issue_fields_to_context_from_id(issue_data=res, issue_fields=[
-        'id', 'key', 'fields.summary', 'fields.status', 'fields.issuetype'
-    ]), JiraIssueFieldsParser.get_issue_fields_to_context_from_id(issue_data=res, issue_fields=[
-        'id', 'key', 'fields.summary', 'fields.status', 'fields.issuetype'
-    ])
-    markdown_dict, outputs = response_to_md_and_outputs(data=res,
-                                                        shared_fields={'Id': ('id', ''),
-                                                                       'Key': ('key', ''),
-                                                                       'Summary': ('fields.summary', ''),
-                                                                       'Status': ('fields.status.name', ''),
-                                                                       'Priority': ('fields.priority.name', ''),
-                                                                       'ProjectName': ('fields.project.name', ''),
-                                                                       'DueDate': ('fields.duedate', ''),
-                                                                       'Created': ('fields.created', ''),
-                                                                       'Labels': ('fields.labels', []),
-                                                                       #    'Components': ('fields.components', [])
-                                                                       },
-                                                        outputs_fields={'LastSeen': ('fields.lastViewed', ''),
-                                                                        'LastUpdate': ('fields.updated', '')},
-                                                        hr_fields={'IssueType': ('fields.issuetype.name', ''),
-                                                                   'TicketLink': ('self', ''),
-                                                                   })
-    assignee = demisto.get(res, 'fields.assignee', {})
-    creator = demisto.get(res, 'fields.creator', {})
-    reporter = demisto.get(res, 'fields.reporter', {})
-    rendered_issue_fields = res.get('renderedFields', {})
-    markdown_dict['Assignee'] = outputs['Assignee'] = f'{assignee.get("displayName","")}({assignee.get("emailAddress", "")})'\
-        if assignee else ''
-    markdown_dict['Creator'] = outputs['Creator'] = f'{creator.get("displayName","")}({creator.get("emailAddress", "")})'\
-        if creator else ''
-    markdown_dict['Reporter'] = f'{reporter.get("displayName","")}({reporter.get("emailAddress", "")})'\
-        if reporter else ''
-    markdown_dict['Description'] = BeautifulSoup(rendered_issue_fields.get('description')).get_text() if rendered_issue_fields\
-        else demisto.get(res, 'fields.description', '')
+def create_issue_md_and_outputs_dict(issue_data: Dict[str, Any],
+                                     specific_issue_fields: List[str] | None = None,
+                                     issue_fields_id_to_name_mapping: Dict[str, str] | None = None) -> tuple[Dict[str, Any], Dict[str, Any]]:
+    md_and_outputs_shared_issue_keys = ['id', 'key', 'summary', 'status', 'priority', 'project', 'duedate',
+                                        'created', 'labels', 'assignee', 'creator']
+    issue_fields_id_to_name_mapping = issue_fields_id_to_name_mapping or {}
+    issue_fields_ids = get_specific_fields_ids(issue_data=issue_data, specific_fields=specific_issue_fields or [],
+                                               issue_fields_id_to_name_mapping=issue_fields_id_to_name_mapping)
+    # The `*` is used to unpack the content of a list into another list.
+    context_outputs = JiraIssueFieldsParser.get_issue_fields_to_context_from_id(
+        issue_data=issue_data, issue_fields_ids=['lastViewed', 'updated', 'attachment', *md_and_outputs_shared_issue_keys,
+                                                 *issue_fields_ids],
+        issue_fields_id_to_name_mapping=issue_fields_id_to_name_mapping)
+    markdown_dict = JiraIssueFieldsParser.get_issue_fields_to_context_from_id(
+        issue_data=issue_data, issue_fields_ids=['issuetype', 'self', 'reporter', 'description',
+                                                 *md_and_outputs_shared_issue_keys],
+        issue_fields_id_to_name_mapping=issue_fields_id_to_name_mapping)
 
-    attachments: List[Dict[str, Any]] = [
-        {
-            'Id': attachment.get('id'),
-            'Filename': attachment.get('filename'),
-            'Created': attachment.get('created'),
-            'Size': attachment.get('size'),
-        }
-        for attachment in demisto.get(res, 'fields.attachment', [])
-    ]
-    outputs['Attachments'] = attachments
-
-    return markdown_dict, outputs
+    return markdown_dict, context_outputs
 
 
 def is_issue_id(issue_id_or_key: str) -> bool:
@@ -1223,38 +1226,28 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Co
     specific_fields = argToList(args.get('specific_fields', ''))
     query_specific_fields: List[str] = []
     specific_fields_set: Set[str] = set()
-    if specific_fields:
-        # We created a set that has the values of the specific_fields list since we are going to use the
-        # "in" operator a lot, and it is faster to determine if an object is present in a set than a list.
-        specific_fields_set = {field.lower() for field in specific_fields}
-    issue_fields_id_name_mapping = get_issue_fields_id_to_name_mapping(client=client)
-    # TODO Should we output the fields that were not found?
-    # This will hold the mapping between the ids of the issue fields supplied by the user to their human readable names
-    specific_fields_mapping = {field_key: field_value for
-                               field_key, field_value in issue_fields_id_name_mapping.items()
-                               if field_value.lower() in specific_fields_set}
+    # if specific_fields:
+    #     # We created a set that has the values of the specific_fields list since we are going to use the
+    #     # "in" operator a lot, and it is faster to determine if an object is present in a set than a list.
+    #     specific_fields_set = {field.lower() for field in specific_fields}
+    # issue_fields_id_name_mapping = get_issue_fields_id_to_name_mapping(client=client)
+    # # TODO Should we output the fields that were not found?
+    # # This will hold the mapping between the ids of the issue fields supplied by the user to their human readable names
+    # specific_fields_mapping = {field_key: field_value for
+    #                            field_key, field_value in issue_fields_id_name_mapping.items()
+    #                            if field_value.lower() in specific_fields_set}
 
-    query_specific_fields = list(specific_fields_mapping.keys())
+    # query_specific_fields = list(specific_fields_mapping.keys())
     query_params = create_query_params(jql=jql_query, start_at=start_at, max_results=max_results,
                                        specific_fields=query_specific_fields)
     res = client.run_query(query_params=query_params)
     if not res:
         return CommandResults(readable_output='No issues matched the query.')
+    issue_fields_id_to_name_mapping = res.get('names', {}) or {}
     command_results: List[CommandResults] = []
     for issue in res.get('issues', []):
-        markdown_dict: Dict[str, Any] = {}
-        outputs: Dict[str, Any] = {}
-        for specific_field_key, specific_field_value in specific_fields_mapping.items():
-            # TODO Need to add support for when the user inserts issue fields that I already parsed in the
-            # create_issue_md_and_outputs function (maybe expand the function create_issue_md_and_outputs?)
-            titled_field = specific_field_value.title().replace(' ', '')
-            markdown_dict[titled_field] = outputs[titled_field] = demisto.get(issue, f'fields.{specific_field_key}', '')
-            markdown_dict['Id'] = outputs['Id'] = demisto.get(issue, 'id', '')
-            markdown_dict['Key'] = outputs['Key'] = demisto.get(issue, 'key', '')
-        if not (markdown_dict or outputs):
-            # If the markdown and outputs dictionaries are empty, that means the specific fields given do not exist,
-            # in such a case, we return the values that are returned when creating an issue.
-            markdown_dict, outputs = create_issue_md_and_outputs(res=issue)
+        markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=issue, specific_issue_fields=specific_fields,
+                                                                  issue_fields_id_to_name_mapping=issue_fields_id_to_name_mapping)
         command_results.append(
             CommandResults(
                 outputs_prefix='Ticket',
@@ -1290,28 +1283,11 @@ def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Comm
     responses: List[Dict[str, Any]] = [res]
     responses.extend(get_expanded_issues(client=client, issue=res,
                                          expand_links=expand_links))
-    # responses.append(res)
     command_results: List[CommandResults] = []
     download_issue_attachments_to_war_room(client=client, issue=res, get_attachments=get_attachments)
-    issue_fields_id_to_name_mapping: Dict[str, str] = {}
     for response in responses:
-        markdown_dict, outputs = create_issue_md_and_outputs(res=response)
-        if specific_fields:
-            # Need to assign issue_fields_id_to_name_mapping once
-            issue_fields_id_to_name_mapping = (
-                issue_fields_id_to_name_mapping
-                or get_issue_fields_id_to_name_mapping(client=client)
-            )
-            outputs |= get_specific_fields_data_from_issue(issue_fields_id_to_name_mapping=issue_fields_id_to_name_mapping,
-                                                           issue=response, specific_fields=specific_fields)
-        # TODO Add a function that will accept the specific_fields supplied by the user, and return the relevant fields,
-        # the way to do this is as follows, run a for loop in the specific_fields:
-        #   1. Map the specific_field.lower() supplied by the user to its id if it is not a field id(using get_issue_fields_id_to_name_mapping()):
-        #   1.1 Try to access res.get('fields', {}).get(specific_field), if it is found, great, if not, then the user probably
-        #   entered the name of the field and not the ID, therefore we try to find the id corresponding to the field's name.
-        #   1.2 If found, great, if not, then return a warning to the user that the field was not found.
-        #   2. Check if there is a parsing function for this field, if yes, supply it the data found in the field, if not,
-        #   return the object as is.
+        markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=response, specific_issue_fields=specific_fields,
+                                                                  issue_fields_id_to_name_mapping=response.get('names', {}) or {})
         command_results.append(
             CommandResults(
                 outputs_prefix='Ticket',
@@ -1325,32 +1301,41 @@ def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Comm
     return command_results
 
 
-def get_specific_fields_data_from_issue(issue_fields_id_to_name_mapping: Dict[str, str], issue: Dict[str, Any],
-                                        specific_fields: List[str]) -> Dict[str, Any]:
+def get_specific_fields_ids(issue_data: Dict[str, Any], specific_fields: List[str],
+                            issue_fields_id_to_name_mapping: Dict[str, str]) -> List[str]:
     # TODO Explain really well what we did here!
+    # TODO Add that if we receive a comment key or id, to return a warning stating that this can be retrieved
+    # with jira-get-comments
     # We offer the opportunity to insert the field name or ID in order to retrieve the data
-    issue_fields = issue.get('fields', {})
     if 'all' in specific_fields:
-        # TODO Need to handle it smartly
-        return issue_fields
-    fields_data: Dict[str, Any] = {}
+        all_issue_fields_ids: List[str] = list(issue_data.get('fields', {}).keys())
+        if 'comment' in all_issue_fields_ids:
+            all_issue_fields_ids.remove('comment')
+        return ['id', 'key', 'self', *all_issue_fields_ids]
     issue_fields_name_to_id_mapping = {issue_name.lower(): issue_id for issue_id,
                                        issue_name in issue_fields_id_to_name_mapping.items()}
-    issue_fields_id: List[str] = []
+    issue_fields_ids: List[str] = []
+    wrong_issue_fields_ids: List[str] = []
     for specific_field in specific_fields:
-        if issue_name := issue_fields_id_to_name_mapping.get(specific_field, ''):
-            # TODO Print to user the ID and the corresponding name
-            issue_fields_id.append(f'fields.{specific_field}')
-            # fields_data[issue_name] = issue_fields.get(specific_field)
+        if specific_field in issue_fields_id_to_name_mapping:
+            issue_fields_ids.append(specific_field)
         elif issue_id := issue_fields_name_to_id_mapping.get(specific_field.lower(), ''):
-            # TODO Print to user the ID and the corresponding name
-            issue_fields_id.append(f'fields.{issue_id}')
-            issue_name = issue_fields_id_to_name_mapping.get(issue_id, '')
-            # fields_data |= {issue_name: issue_fields.get(issue_id)} if issue_name else {}
+            issue_fields_ids.append(issue_id)
         else:
-            return_warning(f'The field {specific_field} was not found.')
-    fields_data = JiraIssueFieldsParser.get_issue_fields_to_context_from_id(issue_data=issue, issue_fields=issue_fields_id)
-    return fields_data
+            wrong_issue_fields_ids.append(specific_field)
+    warning_message = ''
+    if 'comment' in issue_fields_ids:
+        warning_message = 'In order to retrieve the comments of the issue, please run the command `!jira-get-comments`'
+        for issue_field_id in issue_fields_ids:
+            if issue_field_id == 'comment':
+                issue_fields_ids.remove(issue_field_id)
+    if wrong_issue_fields_ids:
+        issue_key = issue_data.get('key', '') or ''
+        warning_message = '\n'.join([f'The field/s [{",".join(wrong_issue_fields_ids)}] was/were not found for issue {issue_key}',
+                                     warning_message])
+    if warning_message:
+        return_warning(warning_message)
+    return issue_fields_ids
 
 
 def download_issue_attachments_to_war_room(client: JiraBaseClient, issue: Dict[str, Any],
@@ -1450,7 +1435,7 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
     client.edit_issue(issue_id_or_key=issue_id_or_key, json_data=update_fields)
     demisto.log(f'Issue {issue_id_or_key} was updated successfully')
     res = client.get_issue(issue_id_or_key=issue_id_or_key)
-    markdown_dict, outputs = create_issue_md_and_outputs(res=res)
+    markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=res)
     return CommandResults(
         outputs_prefix='Ticket',
         outputs=outputs,
@@ -1596,9 +1581,9 @@ def get_transitions_command(client: JiraBaseClient, args: Dict[str, str]) -> Com
     if not issue_id_or_key:
         raise DemistoException(ID_OR_KEY_MISSING_ERROR)
     res = client.get_transitions(issue_id_or_key=issue_id_or_key)
-    transitions_names: List[str] = []
-    for transition in res.get('transitions', []):
-        transitions_names.append(transition.get('name', ''))
+    transitions_names: List[str] = [
+        transition.get('name', '') for transition in res.get('transitions', [])
+    ]
     readable_output = tableToMarkdown(
         'List Transitions:', transitions_names, headers=['Transition Name']
     )
@@ -1681,7 +1666,7 @@ def get_specific_fields_command(client: JiraBaseClient, args: Dict[str, str]) ->
     fields = argToList(args.get('fields', ''))
     res = client.get_issue(issue_id_or_key=issue_id_or_key)
     # Get the general fields of the issue
-    markdown_dict, outputs = create_issue_md_and_outputs(res=res)
+    markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=res)
     issue_fields_id_name_mapping = get_issue_fields_id_to_name_mapping(client=client)
     for field in fields:
         if readable_field_name := issue_fields_id_name_mapping.get(field, ''):
@@ -1808,7 +1793,7 @@ def sprint_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> 
         markdown_list = []
         issues_list = []
         for issue in issues:
-            markdown_dict, outputs = create_issue_md_and_outputs(res=issue)
+            markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=issue)
             markdown_list.append(markdown_dict)
             issues_list.append(outputs)
         context_data_outputs: Dict[str, Any] = {'Ticket': issues_list or []}
@@ -1861,7 +1846,7 @@ def create_epic_issues_command_results(issues: List[Dict[str, Any]], client: Jir
     markdown_list = []
     issues_list = []
     for issue in issues:
-        markdown_dict, outputs_context_data = create_issue_md_and_outputs(res=issue)
+        markdown_dict, outputs_context_data = create_issue_md_and_outputs_dict(issue_data=issue)
         markdown_list.append(markdown_dict)
         issues_list.append(outputs_context_data)
     outputs: Dict[str, Any] = {'Ticket': issues_list}
@@ -2007,7 +1992,7 @@ def board_backlog_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> 
     markdown_list = []
     issues_list = []
     for issue in res.get('issues', []):
-        markdown_dict, outputs = create_issue_md_and_outputs(res=issue)
+        markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=issue)
         markdown_list.append(markdown_dict)
         issues_list.append(outputs)
     return CommandResults(
@@ -2029,7 +2014,7 @@ def board_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> C
     markdown_list = []
     issues_list = []
     for issue in res.get('issues', []):
-        markdown_dict, outputs = create_issue_md_and_outputs(res=issue)
+        markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=issue)
         markdown_list.append(markdown_dict)
         issues_list.append(outputs)
     return CommandResults(
