@@ -1,6 +1,6 @@
 import json
+import pytest
 from datetime import datetime, timedelta
-
 from CommonServerPython import EntryType
 
 BASE_URL = 'https://test.cyberint.io/alert'
@@ -82,7 +82,11 @@ def test_cyberint_alerts_status_update_command(requests_mock):
     assert result.outputs[1].get('ref_id') == 'alert2'
 
 
-def test_fetch_incidents(requests_mock) -> None:
+@pytest.mark.parametrize('duplicate_alerts', [
+    (True),
+    (False),
+])
+def test_fetch_incidents(requests_mock, duplicate_alerts) -> None:
     """
     Scenario: Fetch incidents.
     Given:
@@ -113,7 +117,7 @@ def test_fetch_incidents(requests_mock) -> None:
                     proxy=False)
     last_fetch, incidents = fetch_incidents(client, {'last_fetch': 100000000},
                                             '3 days', [], [], [], [], 50,
-                                            False)
+                                            duplicate_alerts)
     wanted_time = datetime.timestamp(
         datetime.strptime('2020-12-30T00:00:57Z', DATE_FORMAT))
     assert last_fetch.get('last_fetch') == wanted_time * 1000
@@ -311,3 +315,19 @@ def test_cyberint_alerts_get_attachment_command(requests_mock):
     assert result['ContentsFormat'] == 'text'
     assert result['Type'] == EntryType.FILE
     assert result['File'] == "attachment_file_mock.png"
+
+
+def test_verify_input_date_format():
+    """
+         Scenario: Verify date format.
+         Given:
+          - User has provided valid credentials and arguments (date).
+         When:
+          - Using date for commands.
+         Then:
+          - Ensure that the return date is according to Cyberint format.
+     """
+    from Cyberint import verify_input_date_format
+    result = verify_input_date_format('2023-02-14 00:00:57')
+
+    assert result == '2023-02-14 00:00:57Z'
