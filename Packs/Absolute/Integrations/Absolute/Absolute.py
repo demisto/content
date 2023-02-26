@@ -686,6 +686,16 @@ def create_filter_query_from_args_helper(args, arg_name, source_name, query):
 
 
 def create_filter_query_from_args(args: dict, change_device_name_to_system=False, change_device_id=False):
+    """
+
+    Args:
+        args: args given from the user.
+        change_device_name_to_system: True if to filter by "systemName" parameter and False to filter by "deviceName".
+        change_device_id: True if to filter by "id" parameter and False to filter by "deviceUid".
+
+    Returns: filter query to send to the API.
+
+    """
     custom_filter = args.get('filter')
     if custom_filter:
         return f"$filter={custom_filter}"
