@@ -4,7 +4,7 @@
     "name": "CyberInt Targeted Brand",
     "ownerOnly": false,
     "cliName": "cyberinttargetedbrand",
-    "type": "multiSelect",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,

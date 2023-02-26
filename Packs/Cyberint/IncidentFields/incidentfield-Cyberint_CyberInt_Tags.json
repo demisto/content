@@ -4,7 +4,7 @@
     "name": "CyberInt Tags",
     "ownerOnly": false,
     "cliName": "cyberinttags",
-    "type": "multiSelect",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,
