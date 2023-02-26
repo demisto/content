@@ -1,4 +1,4 @@
-category: Authentication & Identity Management
+category: IT Services
 commonfields:
   id: google-vault
   version: -1
@@ -824,7 +824,7 @@ script:
     - contextPath: GoogleVault.Matter.Export.Results.To
       description: The address the message was sent to
       type: string
-  dockerimage: demisto/googleapi-python3:1.0.0.49156
+  dockerimage: demisto/googleapi-python3:1.0.0.36486
   feed: false
   isfetch: false
   longRunning: false
