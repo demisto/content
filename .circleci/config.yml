@@ -314,6 +314,10 @@ jobs:
       - *persist_to_workspace
 
   Run Unit Testing And Lint:
+    filters:
+      branches:
+        only:
+          - "pull/[0-9]+"
     <<: *container_config
     resource_class: medium
     <<: *environment
@@ -383,10 +387,6 @@ workflows:
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
-          filters:
-            branches:
-              only:
-                - "pull/[0-9]+"
           requires:
             - Setup Environment
           matrix:
