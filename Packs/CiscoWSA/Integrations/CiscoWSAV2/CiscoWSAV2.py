@@ -1412,7 +1412,7 @@ def categories_output_filter(response: dict[str, Any], contain: str | None = Non
     Returns:
         dict[str, Any]: Filtered output.
     """
-    outputs = {}
+    outputs: dict[str, Any] = {}
     if all([not contain, not type_]):
         return response
     if type_ is not None:
@@ -1487,7 +1487,8 @@ def access_policy_output_handler(response: List[dict[str, Any]]) -> List[dict[st
     outputs = []
     for policy in response:
         if policy_expiry := policy.get('policy_expiry'):
-            policy['policy_expiry'] = arg_to_datetime(policy_expiry).strftime(ISO8601_CONFIG)
+            if policy_datetime := arg_to_datetime(policy_expiry):
+                policy['policy_expiry'] = policy_datetime.strftime(ISO8601_CONFIG)
 
         outputs.append(policy)
     return outputs
