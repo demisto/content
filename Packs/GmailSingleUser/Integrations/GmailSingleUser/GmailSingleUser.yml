@@ -1,4 +1,4 @@
-category: Messaging
+category: Email
 sectionOrder:
 - Connect
 - Collect
@@ -442,7 +442,7 @@ script:
     description: Retrieves attachments from a sent Gmail message.
     execution: false
     name: gmail-get-attachments
-  dockerimage: demisto/google-api-py3:1.0.0.46474
+  dockerimage: demisto/google-api-py3:1.0.0.49153
   isfetch: true
   longRunning: false
   longRunningPort: false
