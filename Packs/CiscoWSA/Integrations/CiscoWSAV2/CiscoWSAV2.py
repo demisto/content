@@ -1535,7 +1535,7 @@ def pagination(
     """
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size"))
-    limit = arg_to_number(args.get("limit", 50))
+    limit = arg_to_number(args.get("limit"))
 
     if page and page_size:
         offset = (page - 1) * page_size
