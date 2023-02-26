@@ -517,7 +517,7 @@ def test_delete_access_policy_command(
         },
     )
 
-    assert result.readable_output == 'Access policy profiles successfully.'
+    assert result.readable_output == "Deleted Access policy profiles successfully."
 
 
 def test_fail_delete_access_policy_command(

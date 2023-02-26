@@ -1077,14 +1077,11 @@ def delete_access_policy_command(
     policy_names = argToList(args["policy_names"])
 
     response = client.access_policy_delete(policy_names)
-    if response.status_code == HTTPStatus.MULTI_STATUS:
-        return multi_status_delete_handler(response=response,
-                                           obj_key="policy_name",
-                                           readable_obj_name="Access Policy")
 
-    return CommandResults(
-        readable_output="Access policy profiles successfully."
-    )
+    return delete_handler(response=response,
+                          obj_key="policy_name",
+                          readable_obj_name="Access Policy",
+                          success_readable_output="Deleted Access policy profiles successfully.")
 
 
 def list_domain_map_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1355,14 +1352,10 @@ def delete_identification_profiles_command(
 
     response = client.identification_profiles_delete(profile_names)
 
-    if response.status_code == HTTPStatus.MULTI_STATUS:
-        return multi_status_delete_handler(response=response,
-                                           obj_key="profile_name",
-                                           readable_obj_name="Identification profile")
-
-    return CommandResults(
-        readable_output="Deleted identification profiles successfully."
-    )
+    return delete_handler(response=response,
+                          obj_key="profile_name",
+                          readable_obj_name="Identification profile",
+                          success_readable_output="Deleted identification profiles successfully.")
 
 
 def list_url_categories_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1621,6 +1614,17 @@ def protocols_handler(protocols: List[str]) -> List[str]:
     if "SOCKS" in protocols:
         organized_protocols.extend(SOCKS_PROTOCOL)
     return organized_protocols
+
+
+def delete_handler(response: dict[str, Any], obj_key: str, readable_obj_name: str, success_readable_output: str) -> CommandResults | List[CommandResults]:
+    if response.status_code == HTTPStatus.MULTI_STATUS:
+        return multi_status_delete_handler(response=response,
+                                           obj_key=obj_key,
+                                           readable_obj_name=readable_obj_name)
+
+    return CommandResults(
+        readable_output=success_readable_output
+    )
 
 
 def main() -> None:
