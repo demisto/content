@@ -35,3 +35,4 @@ To create or configure the Broker VM, use the information described [here](https
 
 1. Navigate to **Settings** → **Configuration** → **Data Broker** → **Broker VMs**. 
 2. Right-click, and select **add app* → **Windows Event Collector**.
+3. 
