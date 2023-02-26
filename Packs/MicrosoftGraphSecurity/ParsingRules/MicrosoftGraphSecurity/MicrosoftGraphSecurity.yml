@@ -1,5 +1,5 @@
-name: Microsoft Graph Security
-id: Microsoft_Graph_Security
+name: Microsoft Graph Security Parsing Rules
+id: Microsoft_Graph_Security_Parsing_Rules
 fromversion: 6.10.0
 tags: []
 rules: ''

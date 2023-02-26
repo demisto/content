@@ -1,6 +1,6 @@
 fromversion: 6.10.0
-id: Microsoft_Graph_Security
-name: Microsoft Graph Security
+id: Microsoft_Graph_Security_Modeling_Rules
+name: Microsoft Graph Security Modeling Rules
 rules: ''
 schema: ''
 tags: ''
