@@ -1,10 +1,20 @@
 import argparse
 import json5
+
+from Tests.scripts.collect_tests.path_manager import PathManager
+from Tests.scripts.collect_tests.utils import PackManager
 from Tests.scripts.utils.GoogleSecretManagerModule import GoogleSecreteManagerModule
 from Tests.scripts.utils import logging_wrapper as logging
+from pathlib import Path
 
 
 def run(options):
+    PATHS = PathManager(Path(__file__).absolute().parents[3])
+    PACK_MANAGER = PackManager(PATHS)
+    branch_name = PATHS.content_repo.active_branch.name
+    print(branch_name)
+    print('******************************')
+    print(PACK_MANAGER)
     secret_conf = GoogleSecreteManagerModule(options.service_account)
     secrets = secret_conf.list_secrets(options.gsm_project_id, with_secret=True, attr_validation=('name', 'params'))
     secret_file = {
