@@ -6,10 +6,11 @@ import json
 import shutil
 from typing import Dict, List
 
+import urllib3
 import requests
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARIABLES '''
 SERVER_URL = demisto.params()['serverUrl'].rstrip('/')
@@ -218,7 +219,7 @@ def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_resp
                     allow_redirects=allow_redirects,
                     make_second_attempt=False
                 )
-                
+
         errors_string = get_errors_string_from_bad_request(response, response.status_code)
         error_message = 'Received an error - status code [{0}].\n{1}'.format(response.status_code, errors_string)
         return_error(error_message)
