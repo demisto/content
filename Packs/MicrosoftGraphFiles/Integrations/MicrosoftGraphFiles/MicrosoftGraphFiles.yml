@@ -1,4 +1,4 @@
-category: IT Services
+category: Authentication & Identity Management
 commonfields:
   id: Microsoft_Graph_Files
   version: -1
@@ -8,7 +8,6 @@ configuration:
   name: host
   required: true
   type: 0
-
 - display: ID (received from the admin consent - see Detailed Instructions)
   name: auth_id
   required: false

@@ -1,4 +1,4 @@
-category: Identity and Access Management
+category: Authentication & Identity Management
 commonfields:
   id: Envoy IAM
   version: -1
