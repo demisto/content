@@ -4,7 +4,7 @@
     "name": "CyberInt Related entities",
     "ownerOnly": false,
     "cliName": "cyberintrelatedentities",
-    "type": "shortText",
+    "type": "multiSelect",
     "closeForm": false,
     "editForm": true,
     "required": false,

@@ -4,7 +4,7 @@
     "name": "CyberInt Impact",
     "ownerOnly": false,
     "cliName": "cyberintimpact",
-    "type": "shortText",
+    "type": "multiSelect",
     "closeForm": false,
     "editForm": true,
     "required": false,
