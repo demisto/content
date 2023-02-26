@@ -115,7 +115,7 @@ script:
       - "IPV4"
       - "IPV6"
     - name: region
-      description: The AWS Region. If not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -177,7 +177,7 @@ script:
       description: The IP set ID.
       required: true
     - name: region
-      description: The AWS Region. If not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -241,7 +241,7 @@ script:
     - name: description
       description: The IP set description.
     - name: region
-      description: The AWS Region. If not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -289,7 +289,7 @@ script:
       defaultValue: '50'
       description: The maximum number of results to return.
     - name: region
-      description: The AWS Region. If not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -347,7 +347,7 @@ script:
       description: The IP set ID.
       required: true
     - name: region
-      description: The AWS Region. If not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -389,7 +389,7 @@ script:
     - name: description
       description: The regex set description.
     - name: region
-      description: The AWS Region. If not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -451,7 +451,7 @@ script:
       description: The regex set ID.
       required: true
     - name: region
-      description: The AWS Region. If not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -512,7 +512,7 @@ script:
     - name: description
       description: The regex set description.
     - name: region
-      description: The AWS Region. If not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -560,7 +560,7 @@ script:
       defaultValue: '50'
       description: The maximum number of results to return.
     - name: region
-      description: The AWS Region. If not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -618,7 +618,7 @@ script:
       description: The regex set ID.
       required: true
     - name: region
-      description: The AWS Region. If not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -657,7 +657,7 @@ script:
       defaultValue: '50'
       description: The maximum number of results to return.
     - name: region
-      description: The AWS Region. If not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -716,7 +716,7 @@ script:
       description: The rule group ID.
       required: true
     - name: region
-      description: The AWS Region. If not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -772,7 +772,7 @@ script:
       description: The rule group ID.
       required: true
     - name: region
-      description: The AWS Region. If not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -830,7 +830,7 @@ script:
           - 'true'
           - 'false'
       - name: region
-        description: The AWS Region. If not specified the default region will be used.
+        description: The AWS Region. If not specified, the default region will be used.
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -895,7 +895,7 @@ script:
           - "CLOUDFRONT"
           - "REGIONAL"
       - name: region
-        description: The AWS Region. If not specified the default region will be used.
+        description: The AWS Region. If not specified, the default region will be used.
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -961,7 +961,7 @@ script:
           - "CLOUDFRONT"
           - "REGIONAL"
       - name: region
-        description: The AWS Region. If not specified the default region will be used.
+        description: The AWS Region. If not specified, the default region will be used.
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -1022,7 +1022,7 @@ script:
           - "CLOUDFRONT"
           - "REGIONAL"
       - name: region
-        description: The AWS Region. If not specified the default region will be used.
+        description: The AWS Region. If not specified, the default region will be used.
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -1119,6 +1119,49 @@ script:
     execution: false
     name: aws-waf-string-match-rule-create
 
+  - arguments:
+      - name: group_id
+        description: The rule group id to delete the rule from.
+        required: true
+      - name: group_name
+        description: The rule group name to delete the rule from.
+        required: true
+      - name: rule_name
+        description: The rule name.
+        required: true
+      - name: scope
+        description: The rule scope.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - "CLOUDFRONT"
+          - "REGIONAL"
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - ca-central-1
+          - eu-west-1
+          - eu-central-1
+          - eu-west-2
+          - ap-northeast-1
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-south-1
+          - sa-east-1
+          - eu-north-1
+          - eu-west-3
+          - us-gov-east-1
+          - us-gov-west-1
+    deprecated: false
+    description: Delete a specific rule from a rule group.
+    execution: false
+    name: aws-waf-rule-delete
 
   isfetch: false
   runonce: false

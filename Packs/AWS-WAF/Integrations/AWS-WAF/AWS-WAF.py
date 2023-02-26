@@ -514,6 +514,7 @@ def create_country_rule_command(client: boto3.client, args) -> CommandResults:
 
 
 def create_string_match_rule_command(client: boto3.client, args) -> CommandResults:
+    # TODO need to change
     response = update_rule(client, args, build_country_rule_object)
 
     readable_output = f'AWS Waf string match rule with id {args.get("Id", "")} was created successfully. ' \
