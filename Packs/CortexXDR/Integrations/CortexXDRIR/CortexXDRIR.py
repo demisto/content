@@ -35,13 +35,6 @@ XDR_INCIDENT_FIELDS = {
                         "xsoar_field_name": "severity"},
 }
 
-XSOAR_RESOLVED_STATUS_TO_XDR = {
-    'Other': 'resolved_other',
-    'Duplicate': 'resolved_duplicate',
-    'False Positive': 'resolved_false_positive',
-    'Resolved': 'resolved_true_positive',
-}
-
 MIRROR_DIRECTION = {
     'None': None,
     'Incoming': 'In',
@@ -1257,6 +1250,9 @@ def main():  # pragma: no cover
         elif command == 'xdr-get-endpoints':
             return_results(get_endpoints_command(client, args))
 
+        elif command == 'xdr-endpoint-alias-change':
+            return_results(endpoint_alias_change_command(client, **args))
+
         elif command == 'xdr-insert-parsed-alert':
             return_outputs(*insert_parsed_alert_command(client, args))
 
@@ -1582,12 +1578,16 @@ def main():  # pragma: no cover
 
         elif command == 'xdr-replace-featured-field':
             return_results(replace_featured_field_command(client, args))
+
         elif command == 'xdr-endpoint-tag-add':
             return_results(add_tag_to_endpoints_command(client, args))
+
         elif command == 'xdr-endpoint-tag-remove':
             return_results(remove_tag_from_endpoints_command(client, args))
+
         elif command == 'xdr-get-tenant-info':
             return_results(get_tenant_info_command(client))
+
     except Exception as err:
         return_error(str(err))
 

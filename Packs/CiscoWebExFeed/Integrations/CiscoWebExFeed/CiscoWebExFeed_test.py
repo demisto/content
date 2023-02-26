@@ -26,7 +26,7 @@ DOMAIN_TABLE = [['Client Type', 'Domain(s)'],
 IP_LIST = [['1.1.1.1/1 (CIDR) or 8.8.8.8 - 8.8.8.8 (net range)',
             '1.1.1.1/1 (CIDR) or 8.8.8.8 - 8.8.8.8 (net range)', '1.2.3.4/5 (CIDR) or 8.8.8.8 - 8.8.8.8 (net range)']]
 
-HTML_DOMAIN_SECTION = util_load_json('tests_data_1.json')
+HTML_DOMAIN_SECTION = util_load_json('test_data/tests_data_1.json')
 
 
 HTML_IP_SECTION = '''<div class="panel-collapse collapse" id="id_135011">
@@ -95,7 +95,7 @@ def test_grab_domain_table():
     """
     from CiscoWebExFeed import grab_domain_table
     soup = BeautifulSoup(HTML_DOMAIN_SECTION, "html.parser")
-    expected_result = util_load_json('tests_data_2.json')
+    expected_result = util_load_json('test_data/tests_data_2.json')
     assert grab_domain_table(soup) == expected_result
 
 

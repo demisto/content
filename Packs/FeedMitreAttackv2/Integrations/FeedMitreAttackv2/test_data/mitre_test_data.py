@@ -52,11 +52,11 @@ ATTACK_PATTERN = {
         'publications': [{'link': "https://en.wikipedia.org/wiki/Server_Message_Block",
                           'title': "Wikipedia. (2016, June 12). Server Message Block. Retrieved June 12, 2016.",
                           'source': 'Wikipedia SMB',
-                          'timestamp': '2016, June 12'},
+                          'timestamp': '2016-06-12T00:00:00'},
                          {'link': "https://technet.microsoft.com/en-us/library/cc787851.aspx",
                           'title': 'Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, 2016.',
                           "source": 'TechNet RPC',
-                          'timestamp': '2003, March 28'}],
+                          'timestamp': '2003-03-28T00:00:00'}],
         'tags': ['T1047'],
         'tlp': ''
     },
@@ -72,12 +72,12 @@ ATTACK_PATTERN = {
                                                  'title': 'Wikipedia. (2016, June 12). Server '
                                                           'Message Block. Retrieved June 12, '
                                                           '2016.',
-                                                'timestamp': '2016, June 12'},
+                                                'timestamp': '2016-06-12T00:00:00'},
                                                 {'link': 'https://technet.microsoft.com/en-us/library/cc787851.aspx',
                                                  'source': 'TechNet RPC',
                                                  'title': 'Microsoft. (2003, March 28). What Is '
                                                           'RPC?. Retrieved June 12, 2016.',
-                                                'timestamp': '2003, March 28'}],
+                                                'timestamp': '2003-03-28T00:00:00'}],
                                'stixid': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
                                'tags': ['T1047'],
                                'tlp': ''},
@@ -169,11 +169,11 @@ STIX_ATTACK_PATTERN = {
         'publications': [{'link': "https://en.wikipedia.org/wiki/Server_Message_Block",
                           'title': "Wikipedia. (2016, June 12). Server Message Block. Retrieved June 12, 2016.",
                           'source': 'Wikipedia SMB',
-                          'timestamp': '2016, June 12'},
+                          'timestamp': '2016-06-12T00:00:00'},
                          {'link': "https://technet.microsoft.com/en-us/library/cc787851.aspx",
                           'title': 'Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, 2016.',
                           "source": 'TechNet RPC',
-                          'timestamp': '2003, March 28'}],
+                          'timestamp': '2003-03-28T00:00:00'}],
         'tags': ['T1047'],
         'tlp': ''
     }
@@ -352,7 +352,7 @@ MALWARE = {
                         'source': 'Symantec Wiarp May 2012',
                         'title': 'Zhou, R. (2012, May 15). Backdoor.Wiarp. '
                                  'Retrieved February 22, 2018.',
-                        'timestamp': '2012, May 15'}],
+                        'timestamp': '2012-05-15T00:00:00'}],
                    'stixid': 'malware--039814a0-88de-46c5-a4fb-b293db21880a',
                    'tags': ['S0206', 'malware'],
                    'tlp': ''},
@@ -369,7 +369,7 @@ MALWARE = {
                                    'title': 'Zhou, R. (2012, May 15). '
                                             'Backdoor.Wiarp. Retrieved February '
                                             '22, 2018.',
-                                   'timestamp': '2012, May 15'}],
+                                   'timestamp': '2012-05-15T00:00:00'}],
                                'stixid': 'malware--039814a0-88de-46c5-a4fb-b293db21880a',
                                'tags': ['S0206', 'malware'],
                                'tlp': ''},
@@ -441,7 +441,7 @@ STIX_MALWARE = {
                         'source': 'Symantec Wiarp May 2012',
                         'title': 'Zhou, R. (2012, May 15). Backdoor.Wiarp. '
                                  'Retrieved February 22, 2018.',
-                        'timestamp': '2012, May 15'}],
+                        'timestamp': '2012-05-15T00:00:00'}],
                    'stixid': 'malware--039814a0-88de-46c5-a4fb-b293db21880a',
                    'tags': ['S0206', 'malware'],
                    'tlp': ''}
@@ -726,9 +726,9 @@ CAMPAIGN = {
         'tags': ['C0016'],
         "description": "[Operation Dust Storm](https://attack.mitre.org/campaigns/C0016) was a long-standing persistent cyber espionage campaign that targeted multiple industries in Japan, South Korea, the United States, Europe, and several Southeast Asian countries. By 2015, the [Operation Dust Storm](https://attack.mitre.org/campaigns/C0016) threat actors shifted from government and defense-related intelligence targets to Japanese companies or Japanese subdivisions of larger foreign organizations supporting Japan's critical infrastructure, including electricity generation, oil and natural gas, finance, transportation, and construction.(Citation: Cylance Dust Storm)\n\n[Operation Dust Storm](https://attack.mitre.org/campaigns/C0016) threat actors also began to use Android backdoors in their operations by 2015, with all identified victims at the time residing in Japan or South Korea.(Citation: Cylance Dust Storm)",
         'publications': [{'link': "https://s7d2.scene7.com/is/content/cylance/prod/cylance-web/en-us/resources/knowledge-center/resource-library/reports/Op_Dust_Storm_Report.pdf",
-                          'title': 'Gross, J. (2016, February 23). Operation Dust Storm. Retrieved December 22, 2021.',                         
+                          'title': 'Gross, J. (2016, February 23). Operation Dust Storm. Retrieved December 22, 2021.',
                           'source': 'Cylance Dust Storm',
-                          'timestamp': '2016, February 23'}],
+                          'timestamp': '2016-02-23T00:00:00'}],
         "aliases": ["Operation Dust Storm"],
         'tlp': 'WHITE'
     }
