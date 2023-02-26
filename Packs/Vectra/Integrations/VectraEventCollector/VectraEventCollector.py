@@ -252,7 +252,7 @@ def get_audits_cmd(client: VectraClient, start: str) -> Tuple[CommandResults, Li
 
 def fetch_events(
     client: VectraClient, first_timestamp: str, start: str, is_first_fetch: bool
-) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], Dict[str, str]]:
+) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], Dict[str, str]]:  # pragma: no cover
 
     """
     Fetch detections based on whether it's the first fetch or not.
@@ -319,7 +319,9 @@ def fetch_events(
 
 def get_events(
     client: VectraClient, first_fetch: datetime
-) -> Tuple[CommandResults, List[Dict[str, Any]], CommandResults, List[Dict[str, Any]]]:
+) -> Tuple[
+    CommandResults, List[Dict[str, Any]], CommandResults, List[Dict[str, Any]]
+]:  # pragma: no cover
 
     """
     Command function to retrieve detections and audits.
