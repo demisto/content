@@ -71,8 +71,7 @@ answers = {
     "03" : ["<none>","none","nothing"],
     "04" : ["ctf 01","ctf01"],
     "05" : ["reportsarecool"],
-    "06" : ["monkey","baboon","ape","gorilla","lemor","chimpanzee","orangutan"],
-    "07" : ["alt/option","alt","option"]
+    "06" : ["monkey","baboon","ape","gorilla","lemor","chimpanzee","orangutan"]
 
 }
 

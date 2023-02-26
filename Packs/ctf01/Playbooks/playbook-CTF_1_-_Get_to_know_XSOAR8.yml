@@ -90,7 +90,7 @@ tasks:
         tooltip: Try to generate the report to see it's content. This is so importent to our "CISO".
         readonly: false
       title: Practicing with Reports
-      description: "XSOAR reporting can be a powerful value proposition. \nReports can contain widgets and be customized. \nThey can be used for a variety of tasks, including things such as measurement of efficiency and teamwork. \n\nThere is a flag hidden in one of the reports (located at the Dashboard and Reports tab). Generate a report and try to find it :sunglasses: . \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/status-report-status-update.gif) "
+      description: "XSOAR reporting can be a powerful value proposition. \nReports can contain widgets and be customized. \nThey can be used for a variety of tasks, including things such as measurement of efficiency and teamwork. \n\nThere is a flag hidden in one of the reports. Generate a report and try to find it :sunglasses: . \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/status-report-status-update.gif) "
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -148,7 +148,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: 'Can you find the flag in the playbook tasks? What is the flag?'
+          simple: 'Can you find the flag in the playbook tasks? '
         required: true
         gridcolumns: []
         defaultrows: []
@@ -404,7 +404,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3110
+          "y": 2750
         }
       }
     note: false
@@ -435,7 +435,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2935
+          "y": 2575
         }
       }
     note: false
@@ -453,7 +453,9 @@ tasks:
       id: e9c293b2-e4d5-4b8a-8dfb-70d6143cef01
       version: -1
       name: 'Check your answer #Q1'
-      description: "Question #1:\nHow many content items can you find in the pack?"
+      description: |-
+        Question #1:
+        How many content items can you find in the pack?
       scriptName: CTF_1
       type: regular
       iscommand: false
@@ -495,7 +497,9 @@ tasks:
       id: a9551360-22c2-442c-8130-a948860b557f
       version: -1
       name: 'Check your answer #Q2'
-      description: "Question #2:\nCan you find the flag in the playbook tasks?"
+      description: |-
+        Question #2:
+        Can you find the flag in the playbook tasks?
       scriptName: CTF_1
       type: regular
       iscommand: false
@@ -537,7 +541,9 @@ tasks:
       id: ba4a4963-18a6-4067-8c49-e7a1c773f6f1
       version: -1
       name: 'Check your answer #Q3'
-      description: "Question #3:\nIf this playbook runs, what will be the output of the tasks?"
+      description: |-
+        Question #3:
+        If this playbook runs, what will be the output of the tasks?
       scriptName: CTF_1
       type: regular
       iscommand: false
@@ -571,73 +577,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: 994e4219-4b34-4b65-860b-faf7706edcb9
-    type: collection
-    task:
-      id: 994e4219-4b34-4b65-860b-faf7706edcb9
-      version: -1
-      name: 'View and download logs '
-      type: collection
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "25"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2440
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-      subject:
-      body:
-      methods: []
-      format: ""
-      bcc:
-      cc:
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-        completeafterv2: true
-        completeaftersla: false
-    form:
-      questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: What is the key on your keyboard that opens the "Download support logs" section?
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - simple: Ctrl/Command
-        - simple: Alt/Option
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: 'If you saw Harry Potter - it''s like the secret chamber but quite not... You would probably want to check the Server Settings first... '
-        readonly: false
-      title: View and download logs
-      description: "It's pretty common to view logs and troubleshoot any strange issue that the system produces, but in this version, the way of looking at the support logs entirely changed... can you find a way to generate support logs :black_joker:?  \n\n \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/discord-logs-logs.gif)"
-      sender: Your SOC team
-      expired: false
-      totalanswers: 0
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "20":
     id: "20"
     taskid: 15c36edb-5aaf-454c-80fd-363d6ca4dfa5
@@ -646,7 +585,9 @@ tasks:
       id: 15c36edb-5aaf-454c-80fd-363d6ca4dfa5
       version: -1
       name: 'Check your answer #Q4'
-      description: "Question #4:\nWhat is the non-system incident field that exists on your tenant?"
+      description: |-
+        Question #4:
+        What is the non-system incident field that exists on your tenant?
       scriptName: CTF_1
       type: regular
       iscommand: false
@@ -759,7 +700,9 @@ tasks:
       id: d7e2ada0-52b4-44eb-8e1c-a81c3f1acf5e
       version: -1
       name: 'Check your answer #Q5'
-      description: "Question #5:\nWhat is the report's flag?"
+      description: |-
+        Question #5:
+        What is the report's flag?
       scriptName: CTF_1
       type: regular
       iscommand: false
@@ -800,14 +743,16 @@ tasks:
       id: f1489bd8-b7be-4592-8cbe-36fbaaf30fb2
       version: -1
       name: 'Check your answer #Q6'
-      description: "Question #6:\nWhat is the flag in the integration?"
+      description: |-
+        Question #6:
+        What is the flag in the integration?
       scriptName: CTF_1
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "26"
     scriptarguments:
       question_ID:
         simple: "06"
@@ -824,47 +769,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 2265
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
-    taskid: 66c173bd-c682-4155-8831-7c5519150238
-    type: regular
-    task:
-      id: 66c173bd-c682-4155-8831-7c5519150238
-      version: -1
-      name: 'Check your answer #Q7'
-      description: "Question #7:\nWhat is the key on your keyboard that opens the \"Download support logs\" section?"
-      scriptName: CTF_1
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "26"
-    scriptarguments:
-      question_ID:
-        simple: "07"
-      secret:
-        complex:
-          root: View and download logs.Answers
-          accessor: "0"
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2620
         }
       }
     note: false
@@ -895,7 +799,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2790
+          "y": 2430
         }
       }
     note: false
