@@ -259,10 +259,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 28f680ac-5d6a-4fe2-8867-babed2ab4056
+    taskid: ce9e5be9-d2eb-43b8-8e85-e2090c9b47de
     type: regular
     task:
-      id: 28f680ac-5d6a-4fe2-8867-babed2ab4056
+      id: ce9e5be9-d2eb-43b8-8e85-e2090c9b47de
       version: -1
       name: Tenable-io-export-assets
       description: Retrieves details for the specified asset to include custom attributes.
@@ -276,6 +276,8 @@ tasks:
     scriptarguments:
       chunkSize:
         simple: "500"
+      serviceNowSysId:
+        simple: "false"
     separatecontext: false
     continueonerrortype: ""
     view: |-
