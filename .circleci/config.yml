@@ -383,6 +383,10 @@ workflows:
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
+          filters:
+            branches:
+              only:
+                - "pull/[0-9]+"
           requires:
             - Setup Environment
           matrix:
