@@ -1,4 +1,4 @@
-category: Email
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: TrustwaveFusion
   version: -1
