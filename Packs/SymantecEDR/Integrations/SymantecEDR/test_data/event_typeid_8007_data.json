@@ -14,8 +14,8 @@
             "user_domain": "NT AUTHORITY",
             "user_sid": "S-1-5-20",
             "internal_ip": "172.16.14.42",
-            "external_ip": "8.241.136.254",
-            "source_ip": "172.16.14.42",
+            "external_ip": "8.8.8.8",
+            "source_ip": "8.8.8.8",
             "source_port": [
                 57452
             ],
