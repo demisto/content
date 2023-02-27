@@ -767,7 +767,7 @@ class SecurityAndComplianceClient {
             }
         } else {
             $response = Get-ComplianceCase @cmd_params
-        }        
+        }
         $response = $response | Select-Object -First $limit
         # Close session to remote
         $this.DisconnectSession()
@@ -820,8 +820,8 @@ class SecurityAndComplianceClient {
             https://learn.microsoft.com/en-us/powershell/module/exchange/remove-compliancecase?view=exchange-ps
         #>
     }
-    
-    [psobject]CaseHoldPolicyCreate([string]$policy_name, [string]$case, [string]$comment, [string]$exchange_location, 
+
+    [psobject]CaseHoldPolicyCreate([string]$policy_name, [string]$case, [string]$comment, [string]$exchange_location,
                                    [string]$public_folder_location, [string]$share_point_location, [bool]$enabled) {
         # Establish session to remote
         $this.CreateDelegatedSession("New-CaseHoldPolicy")
@@ -853,13 +853,13 @@ class SecurityAndComplianceClient {
 
             .PARAMETER policy_name
              Name of a new policy name to create.
-            
+
             .PARAMETER case
             Case to connect the policy to.
-            
+
             .PARAMETER comment
             Attach a comment to the policy.
-            
+
             .PARAMETER exchange_location
             The ExchangeLocation parameter specifies the mailboxes to include in the policy.
 
@@ -868,7 +868,7 @@ class SecurityAndComplianceClient {
 
             .PARAMETER share_point_location
             Specifies the SharePoint Online and OneDrive for Business sites to include.
-            
+
             .PARAMETER enabled
             Whether the policy is enabled or disabled.
 
@@ -1069,7 +1069,7 @@ class SecurityAndComplianceClient {
         Wethere to use force_delete or not.
 
         .EXAMPLE
-        Remove-CaseHoldRule -Identity "Test Rule 3" -Confirm:$false 
+        Remove-CaseHoldRule -Identity "Test Rule 3" -Confirm:$false
 
         .OUTPUTS
         psobject - Raw response.
@@ -1318,7 +1318,7 @@ function ComplianceCaseCreateCommand([SecurityAndComplianceClient]$client, [hash
 }
 
 function ComplianceCaseListCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
-    # Raw response    
+    # Raw response
     $raw_response = $client.ComplianceCaseList($kwargs.identity, $kwargs.case_type, $kwargs.limit)
     $md_columns = $raw_response | Select-Object -Property GUID, Name, Status, CreatedDateTime
     $human_readable = TableToMarkdown $md_columns "Results of $command"
@@ -1340,11 +1340,11 @@ function CaseHoldPolicyCreateCommand([SecurityAndComplianceClient]$client, [hash
     $enabled = ConvertTo-Boolean $kwargs.enabled
     $exchange_location = @()
     if ($kwargs.exchange_location) {
-        $exchange_location = ArgToList($kwargs.exchange_location) 
+        $exchange_location = ArgToList($kwargs.exchange_location)
     }
     $public_folder_location = @()
     if ($kwargs.public_folder_location) {
-        $public_folder_location = ArgToList($kwargs.public_folder_location) 
+        $public_folder_location = ArgToList($kwargs.public_folder_location)
     }
     $share_point_location = @()
     if ($kwargs.share_point_location) {
