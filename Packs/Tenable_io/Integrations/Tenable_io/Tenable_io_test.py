@@ -285,14 +285,14 @@ def test_export_assets_build_command_result():
     command_result = export_assets_build_command_result(export_assets_response)
 
     assert command_result.outputs == export_assets_response
-    assert command_result.readable_output == '### Export Assets Results:\n' \
-                                             '|ASSET ID|DNS NAME (FQDN)|SYSTEM TYPE|OPERATING SYSTEM' \
-                                             '|IPV4 ADDRESS|NETWORK|FIRST SEEN|LAST SEEN|LAST LICENSED SCAN' \
-                                             '|SOURCE|TAGS|\n|---|---|---|---|---|---|---|---|---|---|---|\n|' \
-                                             ' XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX | some_fqdns | general-purpose |' \
-                                             ' Linux Kernel 2.6 | 00.000.00.00 | Default | 2024-08-13T15:11:08.145Z ' \
-                                             '| 2024-08-13T15:11:08.145Z | 2022-12-28T17:10:47.756Z | SOME_SCAN ' \
-                                             '| some_key:test |\n'
+    assert command_result.readable_output == '### Assets\n|ASSET ID|DNS NAME (FQDN)|SYSTEM TYPE|OPERATING SYSTEM|IPV4 ADDRESS|' \
+                                             'NETWORK|FIRST SEEN|LAST SEEN|LAST LICENSED SCAN|SOURCE|TAGS|\n|' \
+                                             '---|---|---|---|---|---|---|---|---|---|---|\n|' \
+                                             ' XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX |' \
+                                             ' some_fqdns | general-purpose | Linux Kernel 2.6 |' \
+                                             ' 00.000.00.00 | Default | 2024-08-13T15:11:08.145Z ' \
+                                             '| 2024-08-13T15:11:08.145Z | 2022-12-28T17:10:47.756Z |' \
+                                             ' SOME_SCAN | some_key:test |\n'
     assert command_result.raw_response == export_assets_response
 
 
@@ -310,16 +310,16 @@ def test_export_vulnerabilities_build_command_result():
     command_result = export_vulnerabilities_build_command_result(export_vulnerabilities_response)
 
     assert command_result.outputs == export_vulnerabilities_response
-    assert command_result.readable_output == '### Export Vulnerabilities Results:\n|ASSET ID|ASSET NAME|IPV4 ADDRESS|' \
-                                             'OPERATING SYSTEM|SYSTEM TYPE|DNS NAME (FQDN)|SEVERITY|PLUGIN ID|PLUGIN NAME|' \
-                                             'VULNERABILITY PRIORITY RATING|CVSSV2 BASE SCORECVE|PROTOCOL|PORT|FIRST SEEN|' \
-                                             'LAST SEEN|DESCRIPTION|SOLUTION|\n' \
-                                             '|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n|' \
+    assert command_result.readable_output == '### Export Vulnerabilities Results' \
+                                             '\n|ASSET ID|ASSET NAME|IPV4 ADDRESS|OPERATING SYSTEM|SYSTEM TYPE|DNS NAME (FQDN)|' \
+                                             'SEVERITY|PLUGIN ID|PLUGIN NAME|VULNERABILITY PRIORITY RATING|PROTOCOL|' \
+                                             'PORT|FIRST SEEN|' \
+                                             'LAST SEEN|DESCRIPTION|SOLUTION|\n|' \
+                                             '---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n|' \
                                              ' XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX | some_hostname | 00.000.00.00 |' \
-                                             ' Linux Kernel 2.6 | general-purpose | some_fqdn | info ' \
-                                             '| 11111 | some_name | 5.2 |' \
-                                             '  | TCP | 21 | 2023-08-15T15:56:18.852Z | 2023-08-15T15:56:18.852Z ' \
-                                             '| some_description | solution. |\n'
+                                             ' Linux Kernel 2.6 | general-purpose | some_fqdn | info | 11111 | some_name |' \
+                                             ' 5.2 | TCP | 21 | 2023-08-15T15:56:18.852Z | 2023-08-15T15:56:18.852Z |' \
+                                             ' some_description | solution. |\n'
     assert command_result.raw_response == export_vulnerabilities_response
 
 
@@ -356,13 +356,12 @@ def test_export_assets_command(mocker, args, return_value_export_request_with_ex
         assert response.readable_output == 'Waiting for export assets to finish...'
     else:
         assert response.outputs == export_assets_response
-        assert response.readable_output == '### Export Assets Results:\n' \
-                                           '|ASSET ID|DNS NAME (FQDN)|SYSTEM TYPE|OPERATING SYSTEM' \
-                                           '|IPV4 ADDRESS|NETWORK|FIRST SEEN|LAST SEEN|LAST LICENSED SCAN' \
-                                           '|SOURCE|TAGS|\n|---|---|---|---|---|---|---|---|---|---|---|\n|' \
+        assert response.readable_output == '### Assets\n|ASSET ID|DNS NAME (FQDN)|SYSTEM TYPE|OPERATING SYSTEM|IPV4 ADDRESS' \
+                                           '|NETWORK|FIRST SEEN|LAST SEEN|LAST LICENSED SCAN|SOURCE|TAGS|\n|' \
+                                           '---|---|---|---|---|---|---|---|---|---|---|\n|' \
                                            ' XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX | some_fqdns | general-purpose |' \
-                                           ' Linux Kernel 2.6 | 00.000.00.00 | Default | 2024-08-13T15:11:08.145Z ' \
-                                           '| 2024-08-13T15:11:08.145Z | 2022-12-28T17:10:47.756Z | SOME_SCAN | some_key:test |\n'
+                                           ' Linux Kernel 2.6 | 00.000.00.00 | Default | 2024-08-13T15:11:08.145Z |' \
+                                           ' 2024-08-13T15:11:08.145Z | 2022-12-28T17:10:47.756Z | SOME_SCAN | some_key:test |\n'
         assert response.raw_response == export_assets_response
 
 
@@ -399,13 +398,15 @@ def test_export_vulnerabilities_command(mocker, args, return_value_export_reques
         assert response.readable_output == 'Waiting for export vulnerabilities to finish...'
     else:
         assert response.outputs == export_vulnerabilities_response
-        assert response.readable_output == '### Export Vulnerabilities Results:\n|ASSET ID|ASSET NAME|IPV4 ADDRESS|' \
-                                           'OPERATING SYSTEM|SYSTEM TYPE|DNS NAME (FQDN)|SEVERITY|PLUGIN ID|PLUGIN NAME|' \
-                                           'VULNERABILITY PRIORITY RATING|CVSSV2 BASE SCORECVE|PROTOCOL|PORT|FIRST SEEN|' \
-                                           'LAST SEEN|DESCRIPTION|SOLUTION|\n' \
-                                           '|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n|' \
-                                           ' XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX | some_hostname | 00.000.00.00 |' \
-                                           ' Linux Kernel 2.6 | general-purpose | some_fqdn | info | 11111 | some_name | 5.2 |' \
-                                           '  | TCP | 21 | 2023-08-15T15:56:18.852Z | 2023-08-15T15:56:18.852Z ' \
-                                           '| some_description | solution. |\n'
+        assert response.readable_output == '### Export Vulnerabilities Results' \
+                                           '\n|ASSET ID|ASSET NAME|IPV4 ADDRESS|OPERATING SYSTEM|' \
+                                           'SYSTEM TYPE|DNS NAME (FQDN)|SEVERITY|PLUGIN ID|PLUGIN NAME|' \
+                                           'VULNERABILITY PRIORITY RATING|PROTOCOL|PORT|FIRST SEEN|LAST SEEN|' \
+                                           'DESCRIPTION|SOLUTION|\n|' \
+                                           '---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n|' \
+                                           ' XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX | some_hostname |' \
+                                           ' 00.000.00.00 | Linux Kernel 2.6 | general-purpose | some_fqdn |' \
+                                           ' info | 11111 | some_name | 5.2 | TCP | 21 |' \
+                                           ' 2023-08-15T15:56:18.852Z | 2023-08-15T15:56:18.852Z |' \
+                                           ' some_description | solution. |\n'
         assert response.raw_response == export_vulnerabilities_response

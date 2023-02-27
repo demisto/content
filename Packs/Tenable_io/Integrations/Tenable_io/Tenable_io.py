@@ -782,7 +782,7 @@ def export_assets_build_command_result(chunks_details_list: list[dict]) -> Comma
         outputs_prefix='TenableIO.Asset',
         outputs=chunks_details_list,
         raw_response=chunks_details_list,
-        readable_output=tableToMarkdown('Export Assets Results:', human_readable, headers=headers)
+        readable_output=tableToMarkdown('Assets', human_readable, headers=headers, removeNull=True)
     )
 
 
@@ -1032,7 +1032,7 @@ def export_vulnerabilities_build_command_result(chunks_details_list: list[dict])
         outputs_prefix='TenableIO.Vulnerability',
         outputs=chunks_details_list,
         raw_response=chunks_details_list,
-        readable_output=tableToMarkdown('Export Vulnerabilities Results:', human_readable, headers=headers)
+        readable_output=tableToMarkdown('Export Vulnerabilities Results', human_readable, headers=headers, removeNull=True)
     )
 
 

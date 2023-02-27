@@ -436,12 +436,11 @@ script:
       description: Date the asset was last updated.
       type: date
   - arguments:
-    - description: Specifies the number of assets per exported chunk. The range is 100-10000.
+    - description: Specifies the number of assets per exported chunk. The range is 100-10000. Tenable does not recommend using a chunk size larger than 5000 as the potential for an error increases above this amount.
       defaultValue: 100
       name: chunkSize
-      required: true
       isArray: false
-    - description: The number of seconds until the next run.
+    - description: The interval in seconds between each poll.
       defaultValue: 10
       name: intervalInSeconds
       required: false
@@ -500,7 +499,6 @@ script:
       required: false
       isArray: false
     - auto: PREDEFINED
-      defaultValue: 'true'
       default: false
       description: If true, returns all assets that have a ServiceNow Sys ID, regardless of value. If false, returns all assets that do not have a ServiceNow Sys ID.
       isArray: false
@@ -508,7 +506,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: 'A comma-separated list of sources. Possible values are: AWS, NESSUS_AGENT, PVS,NESSUS_SCAN, WAS. When specified, the results returned in the list are limited to assets that have the specified source.'
+    - description: 'A comma-separated list of sources. Commonly used values are: AWS, NESSUS_AGENT, PVS,NESSUS_SCAN, WAS. When specified, the results returned in the list are limited to assets that have the specified source.'
       name: sources
       required: false
       isArray: true
@@ -755,9 +753,8 @@ script:
     - description: The number of assets used to chunk the vulnerabilities. The range for number of assets in a chunk is 50-5000.
       defaultValue: 50
       name: numAssets
-      required: true
       isArray: false
-    - description: The number of seconds until the next run.
+    - description: The interval in seconds between each poll.
       defaultValue: 10
       name: intervalInSeconds
       required: false
@@ -813,7 +810,7 @@ script:
       - 'summary'
       - 'third-party'
       - 'reputation'
-    - description: 'The severity of the vulnerabilities to include in the export. Defaults to all severity levels. The severity of a vulnerability is defined using the Common Vulnerability Scoring System (CVSS) base score. Supported array values are: info, low, medium, high, critical'
+    - description: 'A comma-separated list of severities of the vulnerabilities to include in the export. Defaults to all severity levels. The severity of a vulnerability is defined using the Common Vulnerability Scoring System (CVSS) base score. Supported array values are: info, low, medium, high, critical'
       name: severity
       required: false
       isArray: true

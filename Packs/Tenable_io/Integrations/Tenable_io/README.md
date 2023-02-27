@@ -17,6 +17,29 @@ This integration was integrated and tested with January 2023 release of Tenable.
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+## Permissions
+
+| **Command Name**                        | **Required Permissions**                                                       |
+|-----------------------------------------|--------------------------------------------------------------------------------|
+| tenable-io-list-scans                   | BASIC [16] user permissions and CAN VIEW [16] scan permissions.                |
+| tenable-io-launch-scan                  | SCAN OPERATOR [24] user permissions.                                           |
+| tenable-io-get-scan-report              | BASIC [16] user permissions.                                                   |
+| tenable-io-get-vulnerability-details    | BASIC [16] user permissions.                                                   |
+| tenable-io-get-vulnerabilities-by-asset | BASIC [16] user permissions.                                                   |
+| tenable-io-get-scan-status              | BASIC [16] user permissions and CAN VIEW [16] scan permissions.                |
+| tenable-io-resume-scan                  | SCAN OPERATOR [24] user permissions and CAN EXECUTE [32] scan permissions.     |
+| tenable-io-pause-scan                   | SCAN OPERATOR [24] user permissions and CAN EXECUTE [32] scan permissions.     |
+| tenable-io-get-asset-details            | BASIC [16] user permissions.                                                   |
+| tenable-io-export-assets                | ADMINISTRATOR [64] user permissions.                                           |
+| tenable-io-export-vulnerabilities       | ADMINISTRATOR [64] user permissions.                                           |
+
+
+## Concurrency Limits
+
+| **Limitations**                                                                                                                                                           | **Commands name**                                                                                                                                                                                                                                                                  |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Three concurrent requests per Tenable.io customer instance.<br>Note: This limit is subject to change.                                                                     | tenable-io-list-scans<br>tenable-io-launch-scan<br>tenable-io-get-scan-report<br>tenable-io-get-vulnerability-details<br>tenable-io-get-vulnerabilities-by-asset <br>tenable-io-get-scan-status<br>tenable-io-resume-scan<br>tenable-io-pause-scan<br>tenable-io-get-asset-details |
+| Two concurrent asset exports per container. Tenable.io also prevents duplicate exports from running concurrently. <br>For example, export requests with the same filters. | tenable-io-export-assets<br>tenable-io-export-vulnerabilities                                                                                                                                                                                                                      |
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -27,12 +50,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Retrieves scans from the Tenable platform.
 
-#### Limitations
-Three concurrent requests per Tenable.io customer instance.
-Note: This limit is subject to change.
-
-##### Required Permissions
-BASIC [16] user permissions and CAN VIEW [16] scan permissions.
 
 #### Base Command
 
@@ -108,13 +125,6 @@ Launches a scan with existing or custom targets. You can specify custom targets 
 
 `tenable-io-launch-scan`
 
-#### Limitations
-Three concurrent requests per Tenable.io customer instance.
-Note: This limit is subject to change.
-
-##### Required Permissions
-SCAN OPERATOR [24] user permissions.
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -159,13 +169,6 @@ Retrieves a scan report for the specified scan.
 #### Base Command
 
 `tenable-io-get-scan-report`
-
-#### Limitations
-Three concurrent requests per Tenable.io customer instance.
-Note: This limit is subject to change.
-
-##### Required Permissions
-BASIC [16] user permissions.
 
 #### Input
 
@@ -254,12 +257,6 @@ BASIC [16] user permissions.
 ***
 Retrieves details for the specified vulnerability.
 
-#### Limitations
-Three concurrent requests per Tenable.io customer instance.
-Note: This limit is subject to change.
-
-##### Required Permissions
-BASIC [16] user permissions.
 
 #### Base Command
 
@@ -327,13 +324,6 @@ BASIC [16] user permissions.
 
 ***
 Gets a list of up to 5000 of the vulnerabilities recorded for a specified asset.
-
-#### Limitations
-Three concurrent requests per Tenable.io customer instance.
-Note: This limit is subject to change.
-
-##### Required Permissions
-BASIC [16] user permissions.
 
 #### Base Command
 
@@ -409,12 +399,6 @@ BASIC [16] user permissions.
 ***
 Checks the status of a specific scan using the scan ID. Possible values: "Running", "Completed", and "Empty" (Ready to run).
 
-#### Limitations
-Three concurrent requests per Tenable.io customer instance.
-Note: This limit is subject to change.
-
-##### Required Permissions
- BASIC [16] user permissions and CAN VIEW [16] scan permissions.
 
 #### Base Command
 
@@ -460,13 +444,6 @@ Note: This limit is subject to change.
 ***
 Resumes all scans inputted as an array. Will resume scans whose status is 'Paused'.
 
-#### Limitations
-Three concurrent requests per Tenable.io customer instance.
-Note: This limit is subject to change.
-
-##### Required Permissions
-SCAN OPERATOR [24] user permissions and CAN EXECUTE [32] scan permissions.
-
 #### Base Command
 
 `tenable-io-resume-scan`
@@ -510,13 +487,6 @@ SCAN OPERATOR [24] user permissions and CAN EXECUTE [32] scan permissions.
 
 ***
 Pauses all scans inputted as an array. Will pause scans whose status is 'Running'.
-
-#### Limitations
-Three concurrent requests per Tenable.io customer instance.
-Note: This limit is subject to change.
-
-##### Required Permissions
-SCAN OPERATOR [24] user permissions and CAN EXECUTE [32] scan permissions.
 
 #### Base Command
 
@@ -562,8 +532,6 @@ SCAN OPERATOR [24] user permissions and CAN EXECUTE [32] scan permissions.
 ***
 Retrieves details for the specified asset including custom attributes.
 
-##### Required Permissions
-BASIC [16] user permissions.
 
 #### Base Command
 
@@ -769,12 +737,8 @@ BASIC [16] user permissions.
 ***
 Retrieves details for the specified asset to include custom attributes.
 
-#### Limitations
-Two concurrent asset exports per container. Tenable.io also prevents duplicate exports from running concurrently. For example, export requests with the same filters.
-
-##### Required Permissions
-ADMINISTRATOR [64] user permissions.
-
+## Limitations
+Please notice that when inserting arguments that are not valid then ​an error message would returned.​​
 
 #### Base Command
 
@@ -784,7 +748,7 @@ ADMINISTRATOR [64] user permissions.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| chunkSize | Specifies the number of assets per exported chunk. The range is 100-10000. Default is 100. | Required | 
+| chunkSize | Specifies the number of assets per exported chunk. The range is 100-10000. Default is 100. | Optional | 
 | intervalInSeconds | The number of seconds until the next run. Default is 10. | Optional | 
 | timeOut | The timeout for the polling in seconds. Default is 600. | Optional | 
 | createdAt | When specified, the results returned in the list are limited to assets created later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'. | Optional | 
@@ -797,7 +761,7 @@ ADMINISTRATOR [64] user permissions.
 | firstScanTime | When specified, the results returned in the list are limited to assets with a first scan time later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'. | Optional | 
 | lastAuthenticatedScanTime | When specified, the results returned in the list are limited to assets with a last credentialed scan time later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'. | Optional | 
 | lastAssessed | When specified, the results returned in the list are limited to assets with a last assessed time later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'. | Optional | 
-| serviceNowSysId | If true, returns all assets that have a ServiceNow Sys ID, regardless of value. If false, returns all assets that do not have a ServiceNow Sys ID. Possible values are: true, false. Default is true. | Optional | 
+| serviceNowSysId | If true, returns all assets that have a ServiceNow Sys ID, regardless of value. If false, returns all assets that do not have a ServiceNow Sys ID. Possible values are: true, false. | Optional | 
 | sources | A comma-separated list of sources. Possible values are: AWS, NESSUS_AGENT, PVS,NESSUS_SCAN, WAS. When specified, the results returned in the list are limited to assets that have the specified source. | Optional | 
 | hasPluginResults | If true, returns all assets that have a plugin results associated with it. Possible values are: true, false. | Optional | 
 | tagCategory | When specified, the results returned in the list are limited to assets with the specified tag category. | Optional | 
@@ -1037,11 +1001,9 @@ ADMINISTRATOR [64] user permissions.
 Retrieves details for the specified asset to include custom attributes.
 
 
-#### Limitations
-Two concurrent vulnerability exports per container. Tenable.io also prevents duplicate exports from running concurrently. For example, export requests with the same filters.
+## Limitations
+Please notice that when inserting arguments that are not valid then ​an error message would returned.​​
 
-##### Required Permissions
-ADMINISTRATOR [64] user permissions.
 
 #### Base Command
 
@@ -1051,7 +1013,7 @@ ADMINISTRATOR [64] user permissions.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| numAssets | The number of assets used to chunk the vulnerabilities. The range for number of assets in a chunk is 50-5000. Default is 50. | Required | 
+| numAssets | The number of assets used to chunk the vulnerabilities. The range for number of assets in a chunk is 50-5000. Default is 50. | Optional | 
 | intervalInSeconds | The number of seconds until the next run. Default is 10. | Optional | 
 | timeOut | The timeout for the polling in seconds. Default is 600. | Optional | 
 | includeUnlicensed | Specifies whether or not to include unlicensed assets. Possible values are: true, false. | Optional | 
