@@ -13,15 +13,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Prisma Cloud Remediation - Azure SQL Database Misconfiguration
+Prisma Cloud Remediation - Azure SQL Database Misconfiguration
 
 ### Integrations
 
-* PrismaCloud v2
+PrismaCloud v2
 
 ### Scripts
 
-* IsIntegrationAvailable
+IsIntegrationAvailable
 
 ### Commands
 
@@ -35,7 +35,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | AutoRemediateAzureSQL | Execute Azure SQL remediation automatically? | no | Optional |
-| policyId | Grab the Prisma Cloud policy Id. | incident.labels.policy | Optional |
+| policyId | Grab the Prisma Cloud policy ID. | incident.labels.policy | Optional |
 
 ## Playbook Outputs
 
