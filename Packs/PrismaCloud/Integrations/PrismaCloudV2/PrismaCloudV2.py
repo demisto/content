@@ -1117,8 +1117,8 @@ def remediation_command_list_command(client: Client, args: Dict[str, Any]) -> Co
         raise
 
     command_results = CommandResults(
-        outputs_prefix='PrismaCloud.Alert.Remediation',
-        outputs_key_field='id',
+        outputs_prefix='PrismaCloud.AlertRemediation',
+        outputs_key_field='alertId',
         readable_output=f'Showing {len(readable_response)} of {total_response_amount} results:\n'
                         + tableToMarkdown('Remediation Command List:',
                                           readable_response,

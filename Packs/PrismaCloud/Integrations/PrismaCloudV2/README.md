@@ -20,8 +20,8 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Incident type |  | False |
     | Maximum number of incidents to fetch | Maximum is limited to 200. | False |
     | First fetch time interval | Date or relative timestamp to start fetching incidents from, in the format of &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;. For example, 2 minutes, 12 hours, 6 days, 2 weeks, 3 months, 1 year, ISO timestamp. Default is 3 days. | False |
-    | Advanced: Time in minutes to look back when fetching incidents | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. When choosing to increase this value, duplicate incidents might occur at increase time. | False |
-    | Fetch only incidents matching these filters | Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running "prisma-cloud-alert-filter-list" command. | False |
+    | Advanced: Time in minutes to look back when fetching incidents | Use this parameter to determine how far back to look in the search for incidents that were created before the last run time and did not match the query when they were created. When choosing to increase this value, duplicate incidents might occur at increase time. | False |
+    | Fetch only incidents matching these filters | Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command. | False |
     | Fetch incidents |  | False |
     | Output results of old version commands to the context data in the old format |  | False |
 
@@ -52,9 +52,9 @@ Dismiss or snooze the alerts matching the given filter. Either policy IDs or ale
 | dismissal_note | Reason for dismissal. | Required | 
 | time_range_date_from | Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time). | Optional | 
 | time_range_date_to | End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time). | Optional | 
-| time_range_unit | The search time unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if "time_range_value" is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
+| time_range_unit | The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
 | time_range_value | The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc. | Optional | 
-| filters | Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running "prisma-cloud-alert-filter-list" command. | Optional | 
+| filters | Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command. | Optional | 
 
 #### Context Output
 
@@ -76,7 +76,7 @@ There is no context output for this command.
 ### prisma-cloud-alert-get-details
 
 ***
-Gets the details of an alert based on alert ID
+Gets the details of an alert based on the alert ID.
 
 #### Base Command
 
@@ -87,41 +87,41 @@ Gets the details of an alert based on alert ID
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The alert ID. | Required | 
-| detailed | Allows retrieving entire / trimmed alert model. Possible values are: true, false. Default is true. | Optional | 
+| detailed | Whether to retrieve the entire / trimmed alert model. Possible values are: true, false. Default is true. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloud.Alert.id | String | The alert ID | 
-| PrismaCloud.Alert.status | String | The alert status | 
-| PrismaCloud.Alert.reason | String | The alert reason | 
-| PrismaCloud.Alert.alertTime | Date | The time of the alert | 
-| PrismaCloud.Alert.firstSeen | Date | The time the alert was first seen at | 
-| PrismaCloud.Alert.lastSeen | Date | The time the alert was last seen at | 
-| PrismaCloud.Alert.eventOccurred | Date | The time the event occurred | 
+| PrismaCloud.Alert.id | String | The alert ID. | 
+| PrismaCloud.Alert.status | String | The alert status. | 
+| PrismaCloud.Alert.reason | String | The alert reason. | 
+| PrismaCloud.Alert.alertTime | Date | The time of the alert. | 
+| PrismaCloud.Alert.firstSeen | Date | The time the alert was first seen. | 
+| PrismaCloud.Alert.lastSeen | Date | The time the alert was last seen. | 
+| PrismaCloud.Alert.eventOccurred | Date | The time the event occurred. | 
 | PrismaCloud.Alert.alertRules | String | Names of the alert rules that triggered this alert. | 
-| PrismaCloud.Alert.resource.resourceApiName | String | The resource API name | 
-| PrismaCloud.Alert.resource.id | String | The resource id | 
-| PrismaCloud.Alert.resource.account | String | The resource account | 
-| PrismaCloud.Alert.resource.accountId | String | The resource account id | 
-| PrismaCloud.Alert.resource.resourceType | String | The resource type | 
-| PrismaCloud.Alert.policy.policyId | String | The policy ID | 
-| PrismaCloud.Alert.policy.name | String | The policy name | 
-| PrismaCloud.Alert.policy.policyType | String | The type of policy | 
-| PrismaCloud.Alert.policy.severity | String | The policy severity | 
-| PrismaCloud.Alert.policy.recommendation | String | The policy recommendation | 
-| PrismaCloud.Alert.policy.remediation.description | String | The policy remediation description | 
-| PrismaCloud.Alert.policy.remediation.cliScriptTemplate | String | The policy remediation CLI script template | 
-| PrismaCloud.Alert.policy.description | String | The policy description | 
-| PrismaCloud.Alert.policy.labels | Unknown | The policy labels | 
-| PrismaCloud.Alert.resource.cloudType | String | The resource cloud type | 
-| PrismaCloud.Alert.resource.rrn | String | The resource RRN | 
-| PrismaCloud.Alert.resource.regionId | String | The resource region ID | 
-| PrismaCloud.Alert.resource.url | String | The resource url | 
-| PrismaCloud.Alert.policy.remediable | Boolean | Whether the policy is remediable | 
-| PrismaCloud.Alert.policy.systemDefault | Boolean | Whether the policy is system default | 
-| PrismaCloud.Alert.policy.deleted | Boolean | Whether the policy is deleted | 
+| PrismaCloud.Alert.resource.resourceApiName | String | The resource API name. | 
+| PrismaCloud.Alert.resource.id | String | The resource ID. | 
+| PrismaCloud.Alert.resource.account | String | The resource account. | 
+| PrismaCloud.Alert.resource.accountId | String | The resource account ID. | 
+| PrismaCloud.Alert.resource.resourceType | String | The resource type. | 
+| PrismaCloud.Alert.policy.policyId | String | The policy ID. | 
+| PrismaCloud.Alert.policy.name | String | The policy name. | 
+| PrismaCloud.Alert.policy.policyType | String | The type of policy. | 
+| PrismaCloud.Alert.policy.severity | String | The policy severity. | 
+| PrismaCloud.Alert.policy.recommendation | String | The policy recommendation. | 
+| PrismaCloud.Alert.policy.remediation.description | String | The policy remediation description. | 
+| PrismaCloud.Alert.policy.remediation.cliScriptTemplate | String | The policy remediation CLI script template. | 
+| PrismaCloud.Alert.policy.description | String | The policy description. | 
+| PrismaCloud.Alert.policy.labels | Unknown | The policy labels. | 
+| PrismaCloud.Alert.resource.cloudType | String | The resource cloud type. | 
+| PrismaCloud.Alert.resource.rrn | String | The resource RRN. | 
+| PrismaCloud.Alert.resource.regionId | String | The resource region ID. | 
+| PrismaCloud.Alert.resource.url | String | The resource URL. | 
+| PrismaCloud.Alert.policy.remediable | Boolean | Whether the policy is remediable. | 
+| PrismaCloud.Alert.policy.systemDefault | Boolean | Whether the policy is the system default. | 
+| PrismaCloud.Alert.policy.deleted | Boolean | Whether the policy was deleted. | 
 
 #### Command example
 ```!prisma-cloud-alert-get-details alert_id=P-465020```
@@ -300,7 +300,7 @@ Gets the details of an alert based on alert ID
 ### prisma-cloud-alert-filter-list
 
 ***
-List the acceptable filters and values for alerts
+List the acceptable filters and values for alerts.
 
 #### Base Command
 
@@ -314,9 +314,9 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloud.AlertFilters.filterName | String | The filter name | 
-| PrismaCloud.AlertFilters.options | String | The filter value options | 
-| PrismaCloud.AlertFilters.staticFilter | Unknown | Whether the filter is static | 
+| PrismaCloud.AlertFilters.filterName | String | The filter name. | 
+| PrismaCloud.AlertFilters.options | String | The filter value options. | 
+| PrismaCloud.AlertFilters.staticFilter | Unknown | Whether the filter is static. | 
 
 #### Command example
 ```!prisma-cloud-alert-filter-list```
@@ -627,19 +627,19 @@ Gets remediation command list details for the given alerts or policy. Either pol
 | policy_id | Policy ID for which to get remediation details. | Optional | 
 | time_range_date_from | Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time). | Optional | 
 | time_range_date_to | End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time). | Optional | 
-| time_range_unit | The search time unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if "time_range_value" is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
+| time_range_unit | The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
 | time_range_value | The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc. | Optional | 
 | limit | Maximum number of entries to return. Default is 50. | Optional | 
-| all_results | Allows retrieving all results; "limit" argument will be ignored. Possible values are: true, false. | Optional | 
+| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloud.Alert.Remediation.description | String | Description of CLI remediation instructions. | 
-| PrismaCloud.Alert.Remediation.scriptImpact | String | Impact of CLI remediation instructions. | 
-| PrismaCloud.Alert.Remediation.alertId | String | The ID of the alert to which the remediation details apply. | 
-| PrismaCloud.Alert.Remediation.CLIScript | String | The exact CLI command string. | 
+| PrismaCloud.AlertRemediation.description | String | Description of CLI remediation instructions. | 
+| PrismaCloud.AlertRemediation.scriptImpact | String | Impact of CLI remediation instructions. | 
+| PrismaCloud.AlertRemediation.alertId | String | The ID of the alert to which the remediation details apply. | 
+| PrismaCloud.AlertRemediation.CLIScript | String | The exact CLI command string. | 
 
 #### Command example
 ```!prisma-cloud-remediation-command-list policy_id=a11b2cc3-1111-2222-33aa-a1b23ccc4dd5 limit=2```
@@ -680,7 +680,7 @@ Gets remediation command list details for the given alerts or policy. Either pol
 ### prisma-cloud-alert-remediate
 
 ***
-Remediates the alert with the specified ID, if that alert is associated with a remediable policy
+Remediates the alert with the specified ID, if that alert is associated with a remediable policy.
 
 #### Base Command
 
@@ -718,9 +718,9 @@ Re-open the alerts matching the given filter. Either policy IDs or alert IDs mus
 | policy_ids | Comma-separated list of policy IDs. | Optional | 
 | time_range_date_from | Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time). | Optional | 
 | time_range_date_to | End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time). | Optional | 
-| time_range_unit | The search time unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if "time_range_value" is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
+| time_range_unit | The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
 | time_range_value | The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc. | Optional | 
-| filters | Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running "prisma-cloud-alert-filter-list" command. | Optional | 
+| filters | Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command. | Optional | 
 
 #### Context Output
 
@@ -746,10 +746,10 @@ Search alerts on the Prisma Cloud platform. When no absolute time nor relative t
 | --- | --- | --- |
 | time_range_date_from | Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time). | Optional | 
 | time_range_date_to | End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time). | Optional | 
-| time_range_unit | The search time unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if "time_range_value" is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
+| time_range_unit | The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
 | time_range_value | The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc. | Optional | 
-| filters | Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running "prisma-cloud-alert-filter-list" command. | Optional | 
-| detailed | Allows retrieving entire / trimmed alert model. Possible values are: true, false. Default is true. | Optional | 
+| filters | Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command. | Optional | 
+| detailed | Whether to retrieve the entire / trimmed alert model. Possible values are: true, false. Default is true. | Optional | 
 | limit | Maximum number of entries to return. Default is 50. | Optional | 
 | next_token | Token of the next page to retrive. When provided, other arguments are ignored. | Optional | 
 
@@ -757,7 +757,7 @@ Search alerts on the Prisma Cloud platform. When no absolute time nor relative t
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloud.AlertPageToken.nextPageToken | String | Next page token | 
+| PrismaCloud.AlertPageToken.nextPageToken | String | Next page token. | 
 | PrismaCloud.Alert.id | String | The ID of the returned alert. | 
 | PrismaCloud.Alert.status | String | The status of the returned alert. | 
 | PrismaCloud.Alert.reason | String | The reason of the returned alert. | 
@@ -774,8 +774,8 @@ Search alerts on the Prisma Cloud platform. When no absolute time nor relative t
 | PrismaCloud.Alert.policy.recommendation | String | The policy recommendation of the returned alert. | 
 | PrismaCloud.Alert.policy.remediation.description | String | The policy remediation description of the returned alert. | 
 | PrismaCloud.Alert.policy.remediation.cliScriptTemplate | String | The policy cli script template description of the returned alert. | 
-| PrismaCloud.Alert.policy.systemDefault | Boolean | Whether the policy is system default. | 
-| PrismaCloud.Alert.policy.deleted | Boolean | Whether the policy is deleted. | 
+| PrismaCloud.Alert.policy.systemDefault | Boolean | Whether the policy is the system default. | 
+| PrismaCloud.Alert.policy.deleted | Boolean | Whether the policy was deleted. | 
 | PrismaCloud.Alert.resource.resourceType | String | The resource type of the returned alert. | 
 | PrismaCloud.Alert.resource.name | String | The resource name of the returned alert. | 
 | PrismaCloud.Alert.resource.account | String | The resource account of the returned alert. | 
@@ -1041,7 +1041,7 @@ Search configuration inventory on the Prisma Cloud platform using RQL language. 
 | --- | --- | --- |
 | time_range_date_from | Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time). | Optional | 
 | time_range_date_to | End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time). | Optional | 
-| time_range_unit | The search time unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if "time_range_value" is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
+| time_range_unit | The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
 | time_range_value | The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc. | Optional | 
 | query | Query to run in Prisma Cloud config API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/config-query. | Required | 
 | limit | Maximum number of entries to return. Default is 50. | Optional | 
@@ -1053,27 +1053,27 @@ Search configuration inventory on the Prisma Cloud platform using RQL language. 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloud.Config.accountId | String | Cloud Account ID | 
-| PrismaCloud.Config.accountName | String | Cloud Account Name | 
+| PrismaCloud.Config.accountId | String | Cloud Account ID. | 
+| PrismaCloud.Config.accountName | String | Cloud Account Name. | 
 | PrismaCloud.Config.allowDrillDown | Boolean | Whether to allow drill down. | 
-| PrismaCloud.Config.cloudType | String | Cloud Type | 
+| PrismaCloud.Config.cloudType | String | Cloud Type. | 
 | PrismaCloud.Config.deleted | Boolean | Whether asset was deleted. | 
-| PrismaCloud.Config.hasExtFindingRiskFactors | Boolean | Whether configuration has external finding risk factors | 
-| PrismaCloud.Config.hasExternalFinding | Boolean | Whether configuration has external finding | 
-| PrismaCloud.Config.hasExternalIntegration | Boolean | Whether configuration has axternal integration | 
+| PrismaCloud.Config.hasExtFindingRiskFactors | Boolean | Whether configuration has external finding risk factors. | 
+| PrismaCloud.Config.hasExternalFinding | Boolean | Whether configuration has external finding. | 
+| PrismaCloud.Config.hasExternalIntegration | Boolean | Whether configuration has axternal integration. | 
 | PrismaCloud.Config.hasNetwork | Boolean | Whether configuration has network? | 
-| PrismaCloud.Config.id | String | Prisma Cloud config ID | 
-| PrismaCloud.Config.assetId | String | Prisma Cloud Asset ID | 
-| PrismaCloud.Config.data | Unknown | Prisma Cloud Asset specific data | 
-| PrismaCloud.Config.insertTs | Date | Insert Ts | 
-| PrismaCloud.Config.createdTs | Date | Insert Ts | 
-| PrismaCloud.Config.name | String | Asset Name | 
-| PrismaCloud.Config.regionId | String | Cloud Region ID | 
-| PrismaCloud.Config.regionName | String | Cloud Region Name | 
-| PrismaCloud.Config.resourceType | String | Cloud Resource type | 
-| PrismaCloud.Config.rrn | String | Cloud RRN | 
-| PrismaCloud.Config.service | String | Cloud service | 
-| PrismaCloud.Config.stateId | String | State ID | 
+| PrismaCloud.Config.id | String | Prisma Cloud config ID. | 
+| PrismaCloud.Config.assetId | String | Prisma Cloud Asset ID. | 
+| PrismaCloud.Config.data | Unknown | Prisma Cloud Asset specific data. | 
+| PrismaCloud.Config.insertTs | Date | Insert Ts. | 
+| PrismaCloud.Config.createdTs | Date | Created Ts. | 
+| PrismaCloud.Config.name | String | Asset Name. | 
+| PrismaCloud.Config.regionId | String | Cloud Region ID. | 
+| PrismaCloud.Config.regionName | String | Cloud Region Name. | 
+| PrismaCloud.Config.resourceType | String | Cloud Resource type. | 
+| PrismaCloud.Config.rrn | String | Cloud RRN. | 
+| PrismaCloud.Config.service | String | Cloud service. | 
+| PrismaCloud.Config.stateId | String | State ID. | 
 
 #### Command example
 ```!prisma-cloud-config-search query="config from cloud.resource where cloud.region = 'AWS Ohio' " limit=1```
@@ -1150,7 +1150,7 @@ Search events inventory on the Prisma Cloud platform using RQL language. Use thi
 | --- | --- | --- |
 | time_range_date_from | Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time). | Optional | 
 | time_range_date_to | End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time). | Optional | 
-| time_range_unit | The search time unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if "time_range_value" is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
+| time_range_unit | The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
 | time_range_value | The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc. | Optional | 
 | query | Query to run in Prisma Cloud event API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/event-query. | Required | 
 | limit | Maximum number of entries to return. Default is 50. | Optional | 
@@ -1159,30 +1159,30 @@ Search events inventory on the Prisma Cloud platform using RQL language. Use thi
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloud.Event.subject | String | Cloud Event subject | 
-| PrismaCloud.Event.accountName | String | Cloud event account name | 
-| PrismaCloud.Event.name | String | Cloud event name | 
-| PrismaCloud.Event.source | String | Cloud event source | 
-| PrismaCloud.Event.ip | String | Cloud event ip | 
-| PrismaCloud.Event.eventTs | Date | Cloud event timestamp | 
-| PrismaCloud.Event.countryName | String | Cloud event country name | 
-| PrismaCloud.Event.stateName | String | Cloud event state name | 
-| PrismaCloud.Event.cityName | String | Cloud event city name | 
-| PrismaCloud.Event.location | String | Cloud event location | 
-| PrismaCloud.Event.account | String | Cloud event account | 
-| PrismaCloud.Event.regionId | Number | Cloud event region ID | 
-| PrismaCloud.Event.type | String | Cloud event type | 
-| PrismaCloud.Event.id | Number | Cloud event ID | 
-| PrismaCloud.Event.role | String | Cloud event role | 
-| PrismaCloud.Event.accessKeyUsed | Boolean | Whether the cloud event access key is used | 
-| PrismaCloud.Event.success | Boolean | Whether the cloud event is success | 
-| PrismaCloud.Event.internal | Boolean | Whether the cloud event is internal | 
-| PrismaCloud.Event.cityId | Number | Cloud event city ID | 
-| PrismaCloud.Event.cityLatitude | Number | Cloud event city latitude | 
-| PrismaCloud.Event.cityLongitude | Number | Cloud event city longitude | 
-| PrismaCloud.Event.countryId | Number | Cloud event country ID | 
-| PrismaCloud.Event.dynamicData | String | Cloud event dynamic data | 
-| PrismaCloud.Event.stateId | Number | Cloud event state ID | 
+| PrismaCloud.Event.subject | String | Cloud Event subject. | 
+| PrismaCloud.Event.accountName | String | Cloud event account name. | 
+| PrismaCloud.Event.name | String | Cloud event name. | 
+| PrismaCloud.Event.source | String | Cloud event source. | 
+| PrismaCloud.Event.ip | String | Cloud event IP. | 
+| PrismaCloud.Event.eventTs | Date | Cloud event timestamp. | 
+| PrismaCloud.Event.countryName | String | Cloud event country name. | 
+| PrismaCloud.Event.stateName | String | Cloud event state name. | 
+| PrismaCloud.Event.cityName | String | Cloud event city name. | 
+| PrismaCloud.Event.location | String | Cloud event location. | 
+| PrismaCloud.Event.account | String | Cloud event account. | 
+| PrismaCloud.Event.regionId | Number | Cloud event region ID. | 
+| PrismaCloud.Event.type | String | Cloud event type. | 
+| PrismaCloud.Event.id | Number | Cloud event ID. | 
+| PrismaCloud.Event.role | String | Cloud event role. | 
+| PrismaCloud.Event.accessKeyUsed | Boolean | Whether the cloud event access key is used. | 
+| PrismaCloud.Event.success | Boolean | Whether the cloud event is success. | 
+| PrismaCloud.Event.internal | Boolean | Whether the cloud event is internal. | 
+| PrismaCloud.Event.cityId | Number | Cloud event city ID. | 
+| PrismaCloud.Event.cityLatitude | Number | Cloud event city latitude. | 
+| PrismaCloud.Event.cityLongitude | Number | Cloud event city longitude. | 
+| PrismaCloud.Event.countryId | Number | Cloud event country ID. | 
+| PrismaCloud.Event.dynamicData | String | Cloud event dynamic data. | 
+| PrismaCloud.Event.stateId | Number | Cloud event state ID. | 
 
 #### Command example
 ```!prisma-cloud-event-search query="event from cloud.audit_logs where cloud.type = 'aws'" limit=2```
@@ -1276,7 +1276,7 @@ Search networks inventory on the Prisma Cloud platform using RQL language. Use t
 | --- | --- | --- |
 | time_range_date_from | Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time). | Optional | 
 | time_range_date_to | End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time). | Optional | 
-| time_range_unit | The search time unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if "time_range_value" is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
+| time_range_unit | The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
 | time_range_value | The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc. | Optional | 
 | query | Query to run in Prisma Cloud network API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/network-query. | Required | 
 | cloud_type | The cloud in which the network should be searched. Possible values are: aws, azure, gcp, alibaba_cloud, oci. | Optional | 
@@ -1598,23 +1598,23 @@ Lists scanned files that contain errors. In order to use this command, "Code Sec
 | search_text | Search text in the files. | Optional | 
 | search_title | Search title of the files. Possible values are: title, constructive_title, descriptive_title. | Optional | 
 | severities | Comma-separated list of severities of the files. Available options are: CRITICAL, HIGH, MEDIUM, LOW, INFO. | Optional | 
-| source_types | Comma-separated list of source types of the files. Available options are: Github, Bitbucket, Gitlab, AzureRepos, cli, AWS, Azure, GCP, Docker, githubEnterprise, gitlabEnterprise, bitbucketEnterprise, tttCloud, githubActions, circleci, codebuild, jenkins, tfcRunTasks, admissionController, tttEnterprise. | Required | 
+| source_types | Comma-separated list of source types of the files. Available options are: Github, Bitbucket, Gitlab, AzureRepos, cli, AWS, Azure, GCP, Docker, githubEnterprise, gitlabEnterprise, bitbucketEnterprise, terraformCloud, githubActions, circleci, codebuild, jenkins, tfcRunTasks, admissionController, terraformEnterprise. | Required | 
 | tags | Comma-separated list of tag key and value, in the following format: tagkey1=tagvalue1,tagkey2=tagvalue2,etc. | Optional | 
 | statuses | Comma-separated list of statuses of the files. Available options are: Errors, Suppressed, Passed, Fixed. | Optional | 
 | limit | Maximum number of entries to return. Default is 50. | Optional | 
-| all_results | Allows retrieving all results; "limit" argument will be ignored. Possible values are: true, false. | Optional | 
+| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloud.ErrorFile.filePath | String | Error file path | 
-| PrismaCloud.ErrorFile.suppressedErrorsCount | Number | Error file suppressed errors count | 
-| PrismaCloud.ErrorFile.passedCount | Number | Error file passed count | 
-| PrismaCloud.ErrorFile.openErrorsCount | Number | Error file open errors count | 
-| PrismaCloud.ErrorFile.errorsCount | Number | Error file errors count | 
-| PrismaCloud.ErrorFile.fixedCount | Number | Error file fixed count | 
-| PrismaCloud.ErrorFile.type | String | Error file type | 
+| PrismaCloud.ErrorFile.filePath | String | Error file path. | 
+| PrismaCloud.ErrorFile.suppressedErrorsCount | Number | Error file suppressed errors count. | 
+| PrismaCloud.ErrorFile.passedCount | Number | Error file passed count. | 
+| PrismaCloud.ErrorFile.openErrorsCount | Number | Error file open errors count. | 
+| PrismaCloud.ErrorFile.errorsCount | Number | Error file errors count. | 
+| PrismaCloud.ErrorFile.fixedCount | Number | Error file fixed count. | 
+| PrismaCloud.ErrorFile.type | String | Error file type. | 
 
 #### Command example
 ```!prisma-cloud-error-file-list repository=chanduusc/AWS-GWLB-VMSeries source_types=Github limit=2```
@@ -1703,29 +1703,29 @@ Get resource details.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloud.Resource.rrn | String | Cloud RRN | 
-| PrismaCloud.Resource.id | String | Prisma Cloud resource ID | 
-| PrismaCloud.Resource.name | String | Resource Name | 
-| PrismaCloud.Resource.url | String | Resource url | 
-| PrismaCloud.Resource.accountId | String | Cloud Account ID | 
-| PrismaCloud.Resource.accountName | String | Cloud Account Name | 
-| PrismaCloud.Resource.cloudType | String | Cloud Type | 
-| PrismaCloud.Resource.regionId | String | Cloud Region ID | 
-| PrismaCloud.Resource.regionName | String | Cloud Region Name | 
-| PrismaCloud.Resource.service | String | Cloud service | 
-| PrismaCloud.Resource.resourceType | String | Cloud Resource type | 
-| PrismaCloud.Resource.insertTs | Date | Insert Ts | 
+| PrismaCloud.Resource.rrn | String | Cloud RRN. | 
+| PrismaCloud.Resource.id | String | Prisma Cloud resource ID. | 
+| PrismaCloud.Resource.name | String | Resource Name. | 
+| PrismaCloud.Resource.url | String | Resource URL. | 
+| PrismaCloud.Resource.accountId | String | Cloud Account ID. | 
+| PrismaCloud.Resource.accountName | String | Cloud Account Name. | 
+| PrismaCloud.Resource.cloudType | String | Cloud Type. | 
+| PrismaCloud.Resource.regionId | String | Cloud Region ID. | 
+| PrismaCloud.Resource.regionName | String | Cloud Region Name. | 
+| PrismaCloud.Resource.service | String | Cloud service. | 
+| PrismaCloud.Resource.resourceType | String | Cloud Resource type. | 
+| PrismaCloud.Resource.insertTs | Date | Insert Ts. | 
 | PrismaCloud.Resource.deleted | Boolean | Resource was deleted? | 
-| PrismaCloud.Resource.vpcId | String | Vpc id | 
-| PrismaCloud.Resource.vpcName | String | Vpc name | 
-| PrismaCloud.Resource.tags | Unknown | Prisma Cloud resource tags | 
-| PrismaCloud.Resource.riskGrade | String | Risk grade | 
+| PrismaCloud.Resource.vpcId | String | Vpc ID. | 
+| PrismaCloud.Resource.vpcName | String | Vpc name. | 
+| PrismaCloud.Resource.tags | Unknown | Prisma Cloud resource tags. | 
+| PrismaCloud.Resource.riskGrade | String | Risk grade. | 
 | PrismaCloud.Resource.hasNetwork | Boolean | Has Network? | 
 | PrismaCloud.Resource.hasExternalFinding | Boolean | Has External Finding? | 
 | PrismaCloud.Resource.hasExternalIntegration | Boolean | Has External Integration? | 
 | PrismaCloud.Resource.allowDrillDown | Boolean | Whether to allow drill down. | 
 | PrismaCloud.Resource.hasExtFindingRiskFactors | Boolean | Has External Finding Risk Factors? | 
-| PrismaCloud.Resource.data | Unknown | Prisma Cloud resource specific data | 
+| PrismaCloud.Resource.data | Unknown | Prisma Cloud resource specific data. | 
 
 #### Command example
 ```!prisma-cloud-resource-get rrn=rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25```
@@ -1824,27 +1824,27 @@ List accounts.
 | --- | --- | --- |
 | exclude_account_group_details | Allows excludind account group details. Possible values are: true, false. Default is false. | Optional | 
 | limit | Maximum number of entries to return. Default is 50. | Optional | 
-| all_results | Allows retrieving all results; "limit" argument will be ignored. Possible values are: true, false. | Optional | 
+| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloud.Account.name | String | Account name | 
-| PrismaCloud.Account.cloudType | String | Account cloud type | 
-| PrismaCloud.Account.accountType | String | Account type | 
-| PrismaCloud.Account.enabled | Boolean | Whether the account is enabled | 
-| PrismaCloud.Account.lastModifiedTs | Date | Account last modified time | 
-| PrismaCloud.Account.storageScanEnabled | Boolean | Whether account storage scan is enabled | 
-| PrismaCloud.Account.protectionMode | String | Account protection mode | 
-| PrismaCloud.Account.ingestionMode | Number | Account ingestion mode | 
-| PrismaCloud.Account.deploymentType | String | Account deployment type | 
-| PrismaCloud.Account.groupIds | Unknown | Account group IDs | 
-| PrismaCloud.Account.groups | Unknown | Account groups | 
-| PrismaCloud.Account.status | String | Account status | 
-| PrismaCloud.Account.numberOfChildAccounts | Number | Account number of child accounts | 
-| PrismaCloud.Account.accountId | String | Account ID | 
-| PrismaCloud.Account.addedOn | Date | Account added on time | 
+| PrismaCloud.Account.name | String | Account name. | 
+| PrismaCloud.Account.cloudType | String | Account cloud type. | 
+| PrismaCloud.Account.accountType | String | Account type. | 
+| PrismaCloud.Account.enabled | Boolean | Whether the account is enabled. | 
+| PrismaCloud.Account.lastModifiedTs | Date | Account last modified time. | 
+| PrismaCloud.Account.storageScanEnabled | Boolean | Whether account storage scan is enabled. | 
+| PrismaCloud.Account.protectionMode | String | Account protection mode. | 
+| PrismaCloud.Account.ingestionMode | Number | Account ingestion mode. | 
+| PrismaCloud.Account.deploymentType | String | Account deployment type. | 
+| PrismaCloud.Account.groupIds | Unknown | Account group IDs. | 
+| PrismaCloud.Account.groups | Unknown | Account groups. | 
+| PrismaCloud.Account.status | String | Account status. | 
+| PrismaCloud.Account.numberOfChildAccounts | Number | Account number of child accounts. | 
+| PrismaCloud.Account.accountId | String | Account ID. | 
+| PrismaCloud.Account.addedOn | Date | Account added on time. | 
 
 #### Command example
 ```!prisma-cloud-account-list limit=1```
@@ -1907,17 +1907,17 @@ Get accounts statuses.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_ids | In order to get account ids, run prisma-cloud-account-list command. | Required | 
+| account_ids | In order to get account IDs, run the "prisma-cloud-account-list" command. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloud.Account.accountId | String | Account ID | 
-| PrismaCloud.Account.name | String | Account name | 
-| PrismaCloud.Account.status | String | Account status | 
-| PrismaCloud.Account.message | String | Account message | 
-| PrismaCloud.Account.remediation | String | Account remediation action | 
+| PrismaCloud.Account.accountId | String | Account ID. | 
+| PrismaCloud.Account.name | String | Account name. | 
+| PrismaCloud.Account.status | String | Account status. | 
+| PrismaCloud.Account.message | String | Account message. | 
+| PrismaCloud.Account.remediation | String | Account remediation action. | 
 
 #### Command example
 ```!prisma-cloud-account-status-get account_ids=111111111111```
@@ -1958,14 +1958,14 @@ Get accounts owners.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_ids | In order to get account ids, run prisma-cloud-account-list command. | Required | 
+| account_ids | In order to get account IDs, run the "prisma-cloud-account-list" command. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloud.Account.accountId | String | Account ID | 
-| PrismaCloud.Account.emails | Unknown | Account owner emails | 
+| PrismaCloud.Account.accountId | String | Account ID. | 
+| PrismaCloud.Account.emails | Unknown | Account owner emails. | 
 
 #### Command example
 ```!prisma-cloud-account-owner-list account_ids=888888888888888888888888888888888888,111111111111```
@@ -2015,34 +2015,34 @@ Get resource host finding list.
 | finding_types | Comma separated list of finding types to look for. Available options are: guard_duty_host, guard_duty_iam, inspector_sbp, compliance_cis, host_vulnerability_cve. When left empty, will return all options. | Optional | 
 | risk_factors | Comma separated list of risk factors to look for. Available options are: CRITICAL_SEVERITY, HIGH_SEVERITY, MEDIUM_SEVERITY, HAS_FIX, REMOTE_EXECUTION, DOS, RECENT_VULNERABILITY, EXPLOIT_EXISTS, ATTACK_COMPLEXITY_LOW, ATTACK_VECTOR_NETWORK, REACHABLE_FROM_THE_INTERNET, LISTENING_PORTS, CONTAINER_IS_RUNNING_AS_ROOT, NO_MANDATORY_SECURITY_PROFILE_APPLIED, RUNNING_AS_PRIVILEGED_CONTAINER, PACKAGE_IN_USE. When left empty, will return all options. | Optional | 
 | limit | Maximum number of entries to return. Default is 50. | Optional | 
-| all_results | Allows retrieving all results; "limit" argument will be ignored. Possible values are: true, false. | Optional | 
+| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloud.HostFinding.accountId | String | Account ID | 
-| PrismaCloud.HostFinding.regionId | String | Region ID | 
-| PrismaCloud.HostFinding.findingId | String | Finding ID | 
-| PrismaCloud.HostFinding.type | String | Type | 
-| PrismaCloud.HostFinding.source | String | source | 
-| PrismaCloud.HostFinding.severity | String | severity | 
-| PrismaCloud.HostFinding.status | String | status | 
-| PrismaCloud.HostFinding.createdOn | Date | created on | 
-| PrismaCloud.HostFinding.updatedOn | Date | updated on | 
-| PrismaCloud.HostFinding.normalizedNames | Unknown | Normalized names | 
-| PrismaCloud.HostFinding.scanId | String | Scan ID | 
-| PrismaCloud.HostFinding.resourceCloudId | String | Resource cloud ID | 
-| PrismaCloud.HostFinding.sourceData.accountId | String | Source data account ID | 
-| PrismaCloud.HostFinding.sourceData.arn | String | Source data arn | 
-| PrismaCloud.HostFinding.title | String | title | 
-| PrismaCloud.HostFinding.description | String | description | 
-| PrismaCloud.HostFinding.resourceUrl | String | resourceUrl | 
-| PrismaCloud.HostFinding.rlUpdatedOn | Date | Rl updated on | 
-| PrismaCloud.HostFinding.externalFindingId | String | External finding ID | 
-| PrismaCloud.HostFinding.sourceData | Unknown | sourceData | 
-| PrismaCloud.HostFinding.score | String | score | 
-| PrismaCloud.HostFinding.count | String | count | 
+| PrismaCloud.HostFinding.accountId | String | Host finding account ID. | 
+| PrismaCloud.HostFinding.regionId | String | Host finding region ID. | 
+| PrismaCloud.HostFinding.findingId | String | Host finding ID. | 
+| PrismaCloud.HostFinding.type | String | Host finding type. | 
+| PrismaCloud.HostFinding.source | String | Host finding source. | 
+| PrismaCloud.HostFinding.severity | String | Host finding severity. | 
+| PrismaCloud.HostFinding.status | String | Host finding status. | 
+| PrismaCloud.HostFinding.createdOn | Date | Host finding created on. | 
+| PrismaCloud.HostFinding.updatedOn | Date | Host finding updated on. | 
+| PrismaCloud.HostFinding.normalizedNames | Unknown | Host finding normalized names. | 
+| PrismaCloud.HostFinding.scanId | String | Host finding scan ID. | 
+| PrismaCloud.HostFinding.resourceCloudId | String | Host finding resource cloud ID. | 
+| PrismaCloud.HostFinding.sourceData.accountId | String | Host finding source data account ID. | 
+| PrismaCloud.HostFinding.sourceData.arn | String | Host finding source data ARN. | 
+| PrismaCloud.HostFinding.title | String | Host finding title. | 
+| PrismaCloud.HostFinding.description | String | Host finding description. | 
+| PrismaCloud.HostFinding.resourceUrl | String | Host finding resource URL. | 
+| PrismaCloud.HostFinding.rlUpdatedOn | Date | Host finding RL updated on. | 
+| PrismaCloud.HostFinding.externalFindingId | String | External finding ID. | 
+| PrismaCloud.HostFinding.sourceData | Unknown | Host finding source data. | 
+| PrismaCloud.HostFinding.score | String | Host finding score. | 
+| PrismaCloud.HostFinding.count | String | Host finding count. | 
 
 #### Command example
 ```!prisma-cloud-host-finding-list rrn=rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25 finding_types=guard_duty_host,guard_duty_iam limit=2```
@@ -2220,50 +2220,50 @@ Get permission list. You must provide either "query" or "next_token".
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloud.PermissionPageToken.nextPageToken | String | Next page token | 
-| PrismaCloud.Permission.id | String | Permission ID | 
-| PrismaCloud.Permission.sourceCloudType | String | Permission source cloud type | 
-| PrismaCloud.Permission.sourceCloudAccount | String | Permission source cloud account | 
-| PrismaCloud.Permission.sourceResourceId | String | Permission source resource Id | 
-| PrismaCloud.Permission.destCloudType | String | Permission destination cloud type | 
-| PrismaCloud.Permission.destCloudServiceName | String | Permission destination cloud service name | 
-| PrismaCloud.Permission.destResourceType | String | Permission destination resource type | 
-| PrismaCloud.Permission.effectiveActionName | String | Permission effective action name | 
-| PrismaCloud.Permission.grantedByCloudType | String | Permission granted by cloud type | 
-| PrismaCloud.Permission.grantedByCloudPolicyId | String | Permission granted by cloud policy Id | 
-| PrismaCloud.Permission.grantedByCloudPolicyName | String | Permission granted by cloud policy name | 
-| PrismaCloud.Permission.grantedByCloudPolicyType | String | Permission granted by cloud policy type | 
-| PrismaCloud.Permission.grantedByCloudPolicyRrn | String | Permission granted by cloud policy rrn | 
-| PrismaCloud.Permission.grantedByCloudEntityId | String | Permission granted by cloud entity Id | 
-| PrismaCloud.Permission.grantedByCloudEntityName | String | Permission granted by cloud entity name | 
-| PrismaCloud.Permission.grantedByCloudEntityRrn | String | Permission granted by cloud entity rrn | 
-| PrismaCloud.Permission.sourcePublic | Boolean | Whether the permission source is public | 
-| PrismaCloud.Permission.sourceCloudRegion | String | Permission source cloud region | 
-| PrismaCloud.Permission.sourceCloudServiceName | String | Permission source cloud service name | 
-| PrismaCloud.Permission.sourceResourceName | String | Permission source resource name | 
-| PrismaCloud.Permission.sourceResourceType | String | Permission source resource type | 
-| PrismaCloud.Permission.sourceIdpService | String | Permission source idp service | 
-| PrismaCloud.Permission.sourceIdpDomain | String | Permission source idp domain | 
-| PrismaCloud.Permission.sourceIdpEmail | String | Permission source idp email | 
-| PrismaCloud.Permission.sourceIdpUsername | String | Permission source idp username | 
-| PrismaCloud.Permission.sourceIdpGroup | String | Permission source idp group | 
-| PrismaCloud.Permission.sourceIdpRrn | String | Permission source idp rrn | 
-| PrismaCloud.Permission.sourceCloudResourceRrn | String | Permission source cloud resource rrn | 
-| PrismaCloud.Permission.destCloudAccount | String | Permission destination cloud account | 
-| PrismaCloud.Permission.destCloudRegion | String | Permission destination cloud region | 
-| PrismaCloud.Permission.destResourceName | String | Permission destination resource name | 
-| PrismaCloud.Permission.destResourceId | String | Permission destination resource Id | 
-| PrismaCloud.Permission.destCloudResourceRrn | String | Permission destination cloud resource rrn | 
-| PrismaCloud.Permission.grantedByCloudEntityType | String | Permission granted by cloud entity type | 
-| PrismaCloud.Permission.accessedResourcesCount | String | Permission accessed resources count | 
-| PrismaCloud.Permission.lastAccessDate | String | Permission last access date | 
-| PrismaCloud.Permission.lastAccessStatus | String | Permission last access status | 
-| PrismaCloud.Permission.isWildCardDestCloudResourceName | Boolean | Whether the destination cloud resource name is wildcard | 
-| PrismaCloud.Permission.exceptions | Unknown | Permission exceptions | 
-| PrismaCloud.Permission.grantedByLevelType | String | Permission granted by level type | 
-| PrismaCloud.Permission.grantedByLevelId | String | Permission granted by level Id | 
-| PrismaCloud.Permission.grantedByLevelName | String | Permission granted by level name | 
-| PrismaCloud.Permission.grantedByLevelRrn | String | Permission granted by level rrn | 
+| PrismaCloud.PermissionPageToken.nextPageToken | String | Next page token. | 
+| PrismaCloud.Permission.id | String | Permission ID. | 
+| PrismaCloud.Permission.sourceCloudType | String | Permission source cloud type. | 
+| PrismaCloud.Permission.sourceCloudAccount | String | Permission source cloud account. | 
+| PrismaCloud.Permission.sourceResourceId | String | Permission source resource ID. | 
+| PrismaCloud.Permission.destCloudType | String | Permission destination cloud type. | 
+| PrismaCloud.Permission.destCloudServiceName | String | Permission destination cloud service name. | 
+| PrismaCloud.Permission.destResourceType | String | Permission destination resource type. | 
+| PrismaCloud.Permission.effectiveActionName | String | Permission effective action name. | 
+| PrismaCloud.Permission.grantedByCloudType | String | Permission granted by cloud type. | 
+| PrismaCloud.Permission.grantedByCloudPolicyId | String | Permission granted by cloud policy ID. | 
+| PrismaCloud.Permission.grantedByCloudPolicyName | String | Permission granted by cloud policy name. | 
+| PrismaCloud.Permission.grantedByCloudPolicyType | String | Permission granted by cloud policy type. | 
+| PrismaCloud.Permission.grantedByCloudPolicyRrn | String | Permission granted by cloud policy RRN. | 
+| PrismaCloud.Permission.grantedByCloudEntityId | String | Permission granted by cloud entity ID. | 
+| PrismaCloud.Permission.grantedByCloudEntityName | String | Permission granted by cloud entity name. | 
+| PrismaCloud.Permission.grantedByCloudEntityRrn | String | Permission granted by cloud entity RRN. | 
+| PrismaCloud.Permission.sourcePublic | Boolean | Whether the permission source is public. | 
+| PrismaCloud.Permission.sourceCloudRegion | String | Permission source cloud region. | 
+| PrismaCloud.Permission.sourceCloudServiceName | String | Permission source cloud service name. | 
+| PrismaCloud.Permission.sourceResourceName | String | Permission source resource name. | 
+| PrismaCloud.Permission.sourceResourceType | String | Permission source resource type. | 
+| PrismaCloud.Permission.sourceIdpService | String | Permission source IDP service. | 
+| PrismaCloud.Permission.sourceIdpDomain | String | Permission source IDP domain. | 
+| PrismaCloud.Permission.sourceIdpEmail | String | Permission source IDP email. | 
+| PrismaCloud.Permission.sourceIdpUsername | String | Permission source IDP username. | 
+| PrismaCloud.Permission.sourceIdpGroup | String | Permission source IDP group. | 
+| PrismaCloud.Permission.sourceIdpRrn | String | Permission source IDP RRN. | 
+| PrismaCloud.Permission.sourceCloudResourceRrn | String | Permission source cloud resource RRN. | 
+| PrismaCloud.Permission.destCloudAccount | String | Permission destination cloud account. | 
+| PrismaCloud.Permission.destCloudRegion | String | Permission destination cloud region. | 
+| PrismaCloud.Permission.destResourceName | String | Permission destination resource name. | 
+| PrismaCloud.Permission.destResourceId | String | Permission destination resource ID. | 
+| PrismaCloud.Permission.destCloudResourceRrn | String | Permission destination cloud resource RRN. | 
+| PrismaCloud.Permission.grantedByCloudEntityType | String | Permission granted by cloud entity type. | 
+| PrismaCloud.Permission.accessedResourcesCount | String | Permission accessed resources count. | 
+| PrismaCloud.Permission.lastAccessDate | String | Permission last access date. | 
+| PrismaCloud.Permission.lastAccessStatus | String | Permission last access status. | 
+| PrismaCloud.Permission.isWildCardDestCloudResourceName | Boolean | Whether the destination cloud resource name is wildcard. | 
+| PrismaCloud.Permission.exceptions | Unknown | Permission exceptions. | 
+| PrismaCloud.Permission.grantedByLevelType | String | Permission granted by level type. | 
+| PrismaCloud.Permission.grantedByLevelId | String | Permission granted by level ID. | 
+| PrismaCloud.Permission.grantedByLevelName | String | Permission granted by level name. | 
+| PrismaCloud.Permission.grantedByLevelRrn | String | Permission granted by level RRN. | 
 
 #### Command example
 ```!prisma-cloud-permission-list query="config from iam where source.cloud.service.name = 'EC2'" limit=2```
@@ -2419,4 +2419,4 @@ The following sections list the changes in this version.
 
 ## Additional Considerations for this version
 * "Risk detail" was removed from all commands because it is not supported by the API anymore.
-* Previous commands were kept in order to make to transition from v1 to v2 easy. We encourge to ue the new version of each command.
+* Commands from the previous version were kept in order to make to transition from v1 to v2 easy for existing playbooks. We encourage to use the new version of each command.
