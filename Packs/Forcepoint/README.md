@@ -17,7 +17,7 @@ Open Forcepoint NGFW interface, and follow these instructions;
 8. Configure the log forwarding rules.
 9. Click **OK**.
 
-* Additional documentation for log forwarding is available [here](https://help.stonesoft.com/onlinehelp/StoneGate/SMC/6.5.0/GUID-4C98583A-7BA4-4028-AD85-6D20B58EC420.html).
+* Additional documentation for log forwarding is available [here](https://help.stonesoft.com/onlinehelp/StoneGate/SMC/6.5.0/) at: **SMC configuration** > **Configuring the Log Server** > **Forwarding log data from Log Servers to external hosts** > **Add log forwarding rules to Log Servers**.
 
 ## Collect Events from Vendor
 
