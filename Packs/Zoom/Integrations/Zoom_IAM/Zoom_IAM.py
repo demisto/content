@@ -1,19 +1,32 @@
+from datetime import timedelta
+import dateparser
 import demistomock as demisto
-from CommonServerPython import *
-from IAMApiModule import *
 import jwt
 import urllib3
+from CommonServerPython import *
+from IAMApiModule import *
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 DEFAULT_OUTGOING_MAPPER = "User Profile - SCIM (Outgoing)"
 DEFAULT_INCOMING_MAPPER = "User Profile - SCIM (Incoming)"
-
+# The token’s time to live is 1 hour,
+# two minutes were subtract for extra safety.
+TOKEN_LIFE_TIME = timedelta(minutes=58)
+# the lifetime for an JWT token is 90 minutes == 5400 seconds
+# 400 seconds were subtract for extra safety.
+JWT_LIFETIME = 5000
 ERROR_CODES_TO_SKIP = [
     404
 ]
-BASE_URL = 'https://api.zoom.us/v2/'
+OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
+
+# ERRORS
+INVALID_CREDENTIALS = 'Invalid credentials. Please verify that your credentials are valid.'
+INVALID_API_SECRET = 'Invalid API Secret. Please verify that your API Secret is valid.'
+INVALID_ID_OR_SECRET = 'Invalid Client ID or Client Secret. Please verify that your ID and Secret is valid.'
 
 '''CLIENT CLASS'''
 
@@ -21,11 +34,100 @@ BASE_URL = 'https://api.zoom.us/v2/'
 class Client(BaseClient):
     """ A client class that implements logic to authenticate with Zoom application. """
 
-    def __init__(self, base_url, api_key, api_secret, verify=True, proxy=False):
+    def __init__(
+        self,
+        base_url: str,
+        api_key: str | None = None,
+        api_secret: str | None = None,
+        account_id: str | None = None,
+        client_id: str | None = None,
+        client_secret: str | None = None,
+        verify=True,
+        proxy=False,
+    ):
         super().__init__(base_url, verify, proxy)
         self.api_key = api_key
         self.api_secret = api_secret
-        self.access_token = get_jwt(api_key, api_secret)
+        self.account_id = account_id
+        self.client_id = client_id
+        self.client_secret = client_secret
+        is_jwt = (api_key and api_secret) and not (client_id and client_secret and account_id)
+        if is_jwt:
+            # the user has chosen to use the JWT authentication method (deprecated)
+            self.access_token: str | None = get_jwt_token(api_key, api_secret)  # type: ignore[arg-type]
+        else:
+            # the user has chosen to use the OAUTH authentication method.
+            try:
+                self.access_token = self.get_oauth_token()
+            except Exception as e:
+                demisto.debug(f"Cannot get access token. Error: {e}")
+                self.access_token = None
+
+    def generate_oauth_token(self):
+        """
+    Generate an OAuth Access token using the app credentials (AKA: client id and client secret) and the account id
+
+    :return: valid token
+    """
+        token_res = self._http_request(method="POST", full_url=OAUTH_TOKEN_GENERATOR_URL,
+                                       params={"account_id": self.account_id,
+                                               "grant_type": "account_credentials"},
+                                       auth=(self.client_id, self.client_secret))
+        return token_res.get('access_token')
+
+    def get_oauth_token(self, force_gen_new_token=False):
+        """
+            Retrieves the token from the server if it's expired and updates the global HEADERS to include it
+
+            :param force_gen_new_token: If set to True will generate a new token regardless of time passed
+
+            :rtype: ``str``
+            :return: Token
+        """
+        now = datetime.now()
+        ctx = get_integration_context()
+
+        if not ctx or not ctx.get('token_info').get('generation_time', force_gen_new_token):
+            # new token is needed
+            oauth_token = self.generate_oauth_token()
+            ctx = {}
+        else:
+            generation_time = dateparser.parse(ctx.get('token_info').get('generation_time'))
+            if generation_time:
+                time_passed = now - generation_time
+            else:
+                time_passed = TOKEN_LIFE_TIME
+            if time_passed < TOKEN_LIFE_TIME:
+                # token hasn't expired
+                return ctx.get('token_info').get('oauth_token')
+            else:
+                # token expired
+                oauth_token = self.generate_oauth_token()
+
+        ctx.update({'token_info': {'oauth_token': oauth_token, 'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")}})
+        set_integration_context(ctx)
+        return oauth_token
+
+    def error_handled_http_request(self, method, url_suffix='', full_url=None, headers=None,
+                                   auth=None, json_data=None, params=None,
+                                   return_empty_response: bool = False, resp_type: str = 'json'):
+
+        # all future functions should call this function instead of the original _http_request.
+        # This is needed because the OAuth token may not behave consistently,
+        # First the func will make an http request with a token,
+        # and if it turns out to be invalid, the func will retry again with a new token.
+        try:
+            return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
+                                         auth=auth, json_data=json_data, params=params,
+                                         return_empty_response=return_empty_response, resp_type=resp_type)
+        except DemistoException as e:
+            if ('Invalid access token' in e.message
+                    or "Access token is expired." in e.message):
+                self.access_token = self.generate_oauth_token()
+                headers = {'authorization': f'Bearer {self.access_token}'}
+            return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
+                                         auth=auth, json_data=json_data, params=params,
+                                         return_empty_response=return_empty_response, resp_type=resp_type)
 
     def test(self):
         """ Tests connectivity with the application. """
@@ -36,7 +138,7 @@ class Client(BaseClient):
     def get_user(self, _, filter_value: str) -> Optional[IAMUserAppData]:
         uri = f'/users/{filter_value}'
 
-        res = self._http_request(
+        res = self.error_handled_http_request(
             method='GET',
             url_suffix=uri,
             headers={'authorization': f'Bearer {self.access_token}',
@@ -68,7 +170,7 @@ class Client(BaseClient):
         :rtype: ``IAMUserAppData``
         """
         uri = f'/users/{user_id}/status'
-        self._http_request(
+        self.error_handled_http_request(
             method='PUT',
             url_suffix=uri,
             json_data=user_data,
@@ -98,6 +200,19 @@ class Client(BaseClient):
         """
 
         user_data = {'action': 'deactivate'}
+        return self.update_user(user_id, user_data)
+
+    def enable_user(self, user_id: str) -> IAMUserAppData:
+        """ Enables a user in the application using REST API.
+
+        :type user_id: ``str``
+        :param user_id: ID of the user in the application
+
+        :return: An IAMUserAppData object that contains the data of the user in the application.
+        :rtype: ``IAMUserAppData``
+        """
+
+        user_data = {'action': 'activate'}
         return self.update_user(user_id, user_data)
 
     def get_app_fields(self):
@@ -161,12 +276,12 @@ class Client(BaseClient):
 '''HELPER FUNCTIONS'''
 
 
-def get_jwt(api_key: str, api_secret: str) -> str:
+def get_jwt_token(api_key: str, api_secret: str) -> str:
     """
-    Encode the JWT token given the api ket and secret
+    Encode the JWT token given the api key and secret
     """
     now = time.time()
-    expire_time = int(now) + 5000
+    expire_time = int(now) + JWT_LIFETIME
     payload = {
         'iss': api_key,
         'exp': expire_time
@@ -193,16 +308,21 @@ def get_error_details(res: Dict[str, Any]) -> str:
 
 
 def test_module(client: Client):
-    """ Tests connectivity with the client. """
+    """Tests connectivity with the client.
+    Takes as an argument all client arguments to create a new client
+    """
     try:
         client.test()
-    except Exception as e:
-        error_message_index = str(e).find('"message":')
-        error_message = str(e)[error_message_index:]
+    except DemistoException as e:
+        error_message = e.message
         if 'Invalid access token' in error_message:
-            error_message = 'Invalid API Key. Please verify that your API key is valid.'
-        if "The Token's Signature resulted invalid" in error_message:
-            error_message = 'Invalid API Secret. Please verify that your API Secret is valid.'
+            error_message = INVALID_CREDENTIALS
+        elif "The Token's Signature resulted invalid" in error_message:
+            error_message = INVALID_API_SECRET
+        elif 'Invalid client_id or client_secret' in error_message:
+            error_message = INVALID_ID_OR_SECRET
+        else:
+            error_message = f'Problem reaching Zoom API, check your credentials. Error message: {error_message}'
         return error_message
     return 'ok'
 
@@ -213,22 +333,34 @@ def get_mapping_fields(client: Client):
     return GetMappingFieldsResponse([incident_type_scheme])
 
 
-def main():
+def check_authentication_type_arguments(api_key: str, api_secret: str,
+                                        account_id: str, client_id: str, client_secret: str):
+    if any((api_key, api_secret)) and any((account_id, client_id, client_secret)):
+        raise DemistoException("""Too many fields were filled.
+                                   You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
+                                   OR the API Key and API Secret fields (JWT - Deprecated)""")
+
+
+def main():  # pragma: no cover
     user_profile = None
     params = demisto.params()
-    api_key = params.get('api_key')
-    api_secret = params.get('api_secret')
+    base_url = params.get('url')
+    api_key = params.get('creds_api_key', {}).get('password') or params.get('api_key')
+    api_secret = params.get('creds_api_secret', {}).get('password') or params.get('api_secret')
+    account_id = params.get('account_id')
+    client_id = params.get('credentials', {}).get('identifier')
+    client_secret = params.get('credentials', {}).get('password')
     mapper_in = params.get('mapper_in', DEFAULT_INCOMING_MAPPER)
-    # mapper_out = params.get('mapper_out', DEFAULT_OUTGOING_MAPPER)
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()
     args = demisto.args()
 
-    is_disable_enabled = params.get('disable-user-enabled')
+    is_disable_enabled = argToBoolean(params.get('disable-user-enabled'))
+    is_enable_enabled = argToBoolean(params.get('enable-user-enabled'))
 
     iam_command = IAMCommand(is_create_enabled=False,
-                             is_enable_enabled=False,
+                             is_enable_enabled=is_enable_enabled,
                              is_disable_enabled=is_disable_enabled,
                              is_update_enabled=False,
                              create_if_not_exists=False,
@@ -237,32 +369,41 @@ def main():
                              mapper_out=None,
                              get_user_iam_attrs=['id', 'username', 'email']
                              )
-    client = Client(
-        base_url=BASE_URL,
-        verify=verify_certificate,
-        proxy=proxy,
-        api_key=api_key,
-        api_secret=api_secret,
-    )
-
-    demisto.debug(f'Command being called is {command}')
-
-    '''CRUD commands'''
-    if command == 'iam-disable-user':
-        user_profile = iam_command.disable_user(client, args)
-    elif command == 'iam-get-user':
-        user_profile = iam_command.get_user(client, args)
-
-    if user_profile:
-        return_results(user_profile)
-
-    '''non-CRUD commands'''
-
     try:
+        check_authentication_type_arguments(api_key, api_secret, account_id, client_id, client_secret)
+
+        client = Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            proxy=proxy,
+            api_key=api_key,
+            api_secret=api_secret,
+            account_id=account_id,
+            client_id=client_id,
+            client_secret=client_secret,
+        )
+
         if command == 'test-module':
-            return_results(test_module(client))
-        elif command == 'get-mapping-fields':
+            return_results(test_module(client=client))
+
+        demisto.debug(f'Command being called is {command}')
+
+        '''CRUD commands'''
+        if command == 'iam-disable-user':
+            user_profile = iam_command.disable_user(client, args)
+        if command == 'iam-enable-user':
+            user_profile = iam_command.enable_user(client, args)
+        if command == 'iam-get-user':
+            user_profile = iam_command.get_user(client, args)
+
+        if user_profile:
+            return_results(user_profile)
+
+        '''non-CRUD commands'''
+
+        if command == 'get-mapping-fields':
             return_results(get_mapping_fields(client))
+
     except Exception as e:
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Error: {str(e)}')

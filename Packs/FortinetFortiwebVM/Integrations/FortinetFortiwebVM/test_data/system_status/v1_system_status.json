@@ -1,0 +1,60 @@
+{
+    "hostName": "FortiWeb",
+    "serialNumber": "FVVM00UNLICENSED",
+    "operationMode": "Reverse Proxy",
+    "haStatus": "Standalone",
+    "systemTime": "Tue Nov 22 23:42:12 2022\n",
+    "firmwareVersion": "FortiWeb-VM 6.12,build0421(GA),191218",
+    "systemUptime": "5 day(s) 19 hour(s) 3 min(s)",
+    "firmware_partition": 2,
+    "administrativeDomain": "Disabled",
+    "fipcc": "Disabled",
+    "vmLicense": "invalid",
+    "registration": {
+        "label": "[Unregistered]",
+        "url": "https://support.fortinet.com",
+        "text": "[Register]"
+    },
+    "securityService": {
+        "expired": "Expired (1969-12-31)",
+        "expired_text": "[Renew]",
+        "expired_url": "http://support.fortinet.com/",
+        "lastUpdateTime": "1969-12-31",
+        "lastUpdateMethod": "Manual",
+        "update_url": "#navigate/SignatureUpdate",
+        "update_text": "[Update]",
+        "buildNumber": "0.00240"
+    },
+    "antivirusService": {
+        "anti_expired": "Expired (1969-12-31)",
+        "anti_expired_text": "[Renew]",
+        "anti_expired_url": "http://support.fortinet.com/",
+        "antivirusLastUpdateTime": "1969-12-31",
+        "antivirusLastUpdateMethod": "Manual",
+        "anti_update_url": "#navigate/SignatureUpdate",
+        "anti_update_text": "[Update]",
+        "regularVirusDatabaseVersion": "1.00000",
+        "exVirusDatabaseVersion": "1.00000"
+    },
+    "reputationService": {
+        "reputation_expired": "Expired (1969-12-31)",
+        "reputation_expired_text": "[Renew]",
+        "reputation_expired_url": "http://support.fortinet.com/",
+        "reputationLastUpdateTime": "1969-12-31",
+        "reputationLastUpdateMethod": "Manual",
+        "reputation_update_url": "#navigate/SignatureUpdate",
+        "reputation_update_text": "[Update]",
+        "reputationBuildNumber": "1.00020"
+    },
+    "credentialStuffingDefense": {
+        "expired": "Expired (1969-12-31)",
+        "expired_text": "[Renew]",
+        "expired_url": "http://support.fortinet.com/",
+        "lastUpdateTime": "1969-12-31",
+        "databaseVersion": "0.00000"
+    },
+    "readonly": false,
+    "logDisk": "Available",
+    "bufferSizeMax": 102400,
+    "fileUploadLimitMax": 102400
+}

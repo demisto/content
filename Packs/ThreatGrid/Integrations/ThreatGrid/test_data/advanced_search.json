@@ -1,0 +1,14 @@
+{
+    "data":{
+        "sample":[{
+            "id": "737baaf846de4b9583192460e98780f4",
+            "login": "test-temp",
+            "state": "succ",
+            "status": "job_done",
+            "submitted_at": "2022-12-19T14:09:36Z",
+            "submitted_file_type": "url",
+            "threat_score": 72,
+            "url": "http://www.example.com"
+        }]
+    }
+}

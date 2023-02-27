@@ -34,14 +34,17 @@ args:
 - description: Private IP addresses found.
   isArray: true
   name: asm_private_ip
-- description: Related or duplicate objects. (More of a nice to have because not sure how to track this).
+- description: Related or duplicate objects.
   isArray: true
   name: asm_related
+- description: Matched remediation path rule (if there is a match).
+  isArray: true
+  name: asm_remediation_path_rule
 comment: Generate an ASM Alert Summary report.
 commonfields:
   id: GenerateASMReport
   version: -1
-dockerimage: demisto/python3:3.10.8.37233
+dockerimage: demisto/python3:3.10.10.48392
 enabled: true
 name: GenerateASMReport
 runas: DBotWeakRole

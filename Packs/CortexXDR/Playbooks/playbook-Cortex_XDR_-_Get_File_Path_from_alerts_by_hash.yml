@@ -68,7 +68,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Incident.alerts.action_process_image_sha256
+                  simple: PaloAltoNetworksXDR.Incident.alerts.actor_process_image_sha256
                 iscontext: true
               right:
                 value:

@@ -99,6 +99,7 @@ VERDICTS_DICT = {
     '1': 'malware',
     '2': 'grayware',
     '4': 'phishing',
+    '5': 'c2',
     '-100': 'pending, the sample exists, but there is currently no verdict',
     '-101': 'error',
     '-102': 'unknown, cannot find sample record in the database',
@@ -111,6 +112,7 @@ VERDICTS_TO_DBOTSCORE = {
     '1': 3,
     '2': 2,
     '4': 3,
+    '5': 3,
     '-100': 0,
     '-101': 0,
     '-102': 0,
@@ -1398,7 +1400,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
         )
         # we get the report and file info from the XML object
         reports = json_res.get('wildfire', {}).get('task_info', {}).get('report')
-        file_info = json_res.get('wildfire').get('file_info')
+        file_info = json_res.get('wildfire', {}).get('file_info')
 
         # extra options to provide in the query
         verbose = args.get('verbose', 'false').lower() == 'true'
@@ -1435,7 +1437,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
                                              outputs=remove_empty_elements(entry_context),
                                              readable_output=human_readable, indicator=indicator, raw_response=json_res,
                                              relationships=relationships)
-            return command_results, entry_context['Status']
+            return command_results, entry_context.get('Status')
         except Exception:
             raise DemistoException('Error while trying to get the report from the API.')
 

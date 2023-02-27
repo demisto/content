@@ -1,4 +1,7 @@
 category: Messaging
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Microsoft Teams Management
   version: -1
@@ -6,8 +9,9 @@ configuration:
 - defaultvalue: 3307a0ab-612c-47af-b3b5-8208247562db
   display: Application ID
   name: app_id
-  required: true
+  required: false
   type: 0
+  section: Connect
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   name: azure_ad_endpoint
@@ -19,16 +23,22 @@ configuration:
   required: false
   type: 15
   additionalinfo: Azure AD endpoint associated with a national cloud.
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
   defaultvalue: 'false'
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
   defaultvalue: "false"
+  section: Connect
+  advanced: true
 - name: authentication_type
   display: Authentication Type
   required: false
@@ -38,12 +48,17 @@ configuration:
   options:
   - Device Code
   - Client Credentials
+  - Azure Managed Identities
+  section: Connect
+  advanced: true
 - name: tenant_id
   display: Tenant ID (for Client Credentials mode)
   required: false
   defaultvalue:
   type: 0
   additionalinfo: ""
+  section: Connect
+  advanced: true
 - name: credentials
   hiddenusername: true
   displaypassword: Client Secret (for Client Credentials mode)
@@ -52,6 +67,14 @@ configuration:
   defaultvalue:
   type: 9
   additionalinfo: ""
+  section: Connect
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
+  section: Connect
 description: Manage teams and members in Microsoft Teams.
 display: Microsoft Teams Management
 name: Microsoft Teams Management
@@ -970,7 +993,7 @@ script:
     - contextPath: MicrosoftTeams.Team.description
       description: An optional description for the group.
       type: String
-  dockerimage: demisto/crypto:1.0.0.39526
+  dockerimage: demisto/crypto:1.0.0.47103
   feed: false
   isfetch: false
   longRunning: false

@@ -13,39 +13,16 @@ from TaegisXDR import (
     fetch_incidents,
     fetch_investigation_command,
     fetch_investigation_alerts_command,
+    fetch_users_command,
     fetch_playbook_execution_command,
     create_investigation_command,
     update_investigation_command,
+    archive_investigation_command,
+    unarchive_investigation_command,
     test_module as connectivity_test,
 )
 
-from test_data.data import (
-    TAEGIS_ENVIRONMENT,
-    TAEGIS_ALERT,
-    TAEGIS_INVESTIGATION,
-    TAEGIS_PLAYBOOK_EXECUTION,
-    TAEGIS_PLAYBOOK_EXECUTION_ID,
-    TAEGIS_PLAYBOOK_INSTANCE_ID,
-    EXECUTE_PLAYBOOK_RESPONSE,
-    EXECUTE_PLAYBOOK_BAD_RESPONSE,
-    FETCH_ALERTS_RESPONSE,
-    FETCH_ALERTS_BY_ID_RESPONSE,
-    CREATE_COMMENT_RESPONSE,
-    CREATE_UPDATE_COMMENT_BAD_RESPONSE,
-    FETCH_COMMENT_RESPONSE,
-    FETCH_COMMENTS_RESPONSE,
-    FETCH_COMMENTS_BAD_RESPONSE,
-    UPDATE_COMMENT_RESPONSE,
-    FETCH_INCIDENTS_RESPONSE,
-    FETCH_INCIDENTS_BAD_RESPONSE,
-    FETCH_INVESTIGATION_RESPONSE,
-    FETCH_INVESTIGATIONS,
-    FETCH_INVESTIGATION_ALERTS_RESPONSE,
-    FETCH_PLAYBOOK_EXECUTION_RESPONSE,
-    FETCH_PLAYBOOK_EXECUTION_BAD_RESPONSE,
-    CREATE_INVESTIGATION_RESPONSE,
-    UPDATE_INVESTIGATION_RESPONSE,
-)
+from test_data.data import *
 
 
 ''' UTILITY FUNCTIONS '''
@@ -300,7 +277,7 @@ def test_fetch_investigatons(requests_mock):
     client = mock_client(requests_mock, FETCH_INVESTIGATIONS)
     args = {
         "page": 0,
-        "page_sie": 1,
+        "page_size": 1,
     }
 
     response = fetch_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
@@ -376,6 +353,7 @@ def test_update_investigation(requests_mock):
         "id": UPDATE_INVESTIGATION_RESPONSE["data"]["updateInvestigation"]["id"],
         "description": "Test Investigation Updated",
         "priority": 2,
+        "status": "Active",
     }
     response = update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
@@ -396,8 +374,100 @@ def test_update_investigation(requests_mock):
     with pytest.raises(ValueError, match=bad_status):
         assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
+    # Invalid Assignee ID Format
+    args["assignee_id"] = "BadAssigneeIDFormat"
+    invalid_fields = r"assignee_id MUST be in 'auth0|12345' format or '@secureworks'"
+    with pytest.raises(ValueError, match=invalid_fields):
+        assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
     # No valid update fields set
     args = {"id": UPDATE_INVESTIGATION_RESPONSE["data"]["updateInvestigation"]["id"]}
     invalid_fields = r"No valid investigation fields provided. Supported Update Fields:.*"
     with pytest.raises(ValueError, match=invalid_fields):
         assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+
+def test_archive_investigation(requests_mock):
+    """Tests taegis-archive-investigation command function
+    """
+    client = mock_client(requests_mock, INVESTIGATION_ARCHIVE_RESPONSE)
+
+    # Test Archiving
+    args = {"id": TAEGIS_INVESTIGATION["id"]}
+    response = archive_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs["id"] == args["id"]
+    assert response.raw_response["data"]["archiveInvestigation"]
+
+    # investigation id not set
+    with pytest.raises(ValueError, match="Cannot archive investigation, missing investigation id"):
+        assert archive_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
+
+    # Investigation archive not found
+    client = mock_client(requests_mock, INVESTIGATION_ARCHIVE_ALREADY_COMPLETE)
+    with pytest.raises(ValueError, match="Could not locate investigation with id:.*"):
+        assert archive_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+
+def test_unarchive_investigation(requests_mock):
+    """Tests taegis-unarchive-investigation command function
+    """
+    client = mock_client(requests_mock, INVESTIGATION_UNARCHIVE_RESPONSE)
+
+    # Test Unarchiving
+    args = {"id": TAEGIS_INVESTIGATION["id"]}
+    response = unarchive_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs["id"] == args["id"]
+    assert response.raw_response["data"]["unArchiveInvestigation"]
+
+    # investigation id not set
+    with pytest.raises(ValueError, match="Cannot unarchive investigation, missing investigation id"):
+        assert unarchive_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
+
+    # Investigation is not archived
+    client = mock_client(requests_mock, INVESTIGATION_ARCHIVE_ALREADY_COMPLETE)
+    response = unarchive_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs["id"] == args["id"]
+    assert response.outputs["status"] == "Investigation is not currently archived"
+
+    # Could not find investigation by investigation id
+    args = {"id": "InvalidInvestigationId"}
+    client = mock_client(requests_mock, INVESTIGATION_NOT_ARCHIVED_RESPONSE)
+    with pytest.raises(ValueError, match="Could not locate investigation with id:.*"):
+        assert unarchive_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+
+def test_fetch_users(requests_mock):
+    client = mock_client(requests_mock, FETCH_USERS_RESPONSE)
+    args = {
+        "limit": 1,
+        "page_size": 0,
+    }
+
+    response = fetch_users_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs[0] == TAEGIS_USER
+    assert len(response.outputs) == len([TAEGIS_USER])
+
+    client = mock_client(requests_mock, FETCH_USERS_BAD_RESPONSE)
+    with pytest.raises(ValueError, match="Failed to fetch user information:"):
+        assert fetch_users_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    # Test user search by email
+    client = mock_client(requests_mock, FETCH_USERS_RESPONSE)
+    args["email"] = TAEGIS_USER["email"]
+    response = fetch_users_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs[0] == TAEGIS_USER
+    assert len(response.outputs) == len([TAEGIS_USER])
+
+    # Test user search by auth0 user id
+    client = mock_client(requests_mock, FETCH_USER_RESPONSE)
+    args["id"] = TAEGIS_USER["user_id"]
+    args.pop("email")
+    response = fetch_users_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs[0] == TAEGIS_USER
+    assert len(response.outputs) == len([TAEGIS_USER])
+
+    # Invalid id Format
+    args["id"] = "BadAssigneeIDFormat"
+    invalid_fields = r"id MUST be in 'auth0|12345' format"
+    with pytest.raises(ValueError, match=invalid_fields):
+        assert fetch_users_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)

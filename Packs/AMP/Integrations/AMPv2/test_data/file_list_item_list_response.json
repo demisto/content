@@ -1,0 +1,106 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self"
+        },
+        "results": {
+            "total": "metadata_results_total",
+            "current_item_count": "metadata_results_current_item_count",
+            "index": "metadata_results_index",
+            "items_per_page": "metadata_results_items_per_page"
+        }
+    },
+    "data": {
+        "name": "data_name",
+        "guid": "data_guid",
+        "policies": [
+            {
+                "name": "data_policies[0]_name",
+                "guid": "data_policies[0]_guid",
+                "links": {
+                    "policy": "data_policies[0]_links_policy"
+                }
+            },
+            {
+                "name": "data_policies[1]_name",
+                "guid": "data_policies[1]_guid",
+                "links": {
+                    "policy": "data_policies[1]_links_policy"
+                }
+            },
+            {
+                "name": "data_policies[2]_name",
+                "guid": "data_policies[2]_guid",
+                "links": {
+                    "policy": "data_policies[2]_links_policy"
+                }
+            },
+            {
+                "name": "data_policies[3]_name",
+                "guid": "data_policies[3]_guid",
+                "links": {
+                    "policy": "data_policies[3]_links_policy"
+                }
+            },
+            {
+                "name": "data_policies[4]_name",
+                "guid": "data_policies[4]_guid",
+                "links": {
+                    "policy": "data_policies[4]_links_policy"
+                }
+            },
+            {
+                "name": "data_policies[5]_name",
+                "guid": "data_policies[5]_guid",
+                "links": {
+                    "policy": "data_policies[5]_links_policy"
+                }
+            },
+            {
+                "name": "data_policies[6]_name",
+                "guid": "data_policies[6]_guid",
+                "links": {
+                    "policy": "data_policies[6]_links_policy"
+                }
+            },
+            {
+                "name": "data_policies[7]_name",
+                "guid": "data_policies[7]_guid",
+                "links": {
+                    "policy": "data_policies[7]_links_policy"
+                }
+            },
+            {
+                "name": "data_policies[8]_name",
+                "guid": "data_policies[8]_guid",
+                "links": {
+                    "policy": "data_policies[8]_links_policy"
+                }
+            },
+            {
+                "name": "data_policies[9]_name",
+                "guid": "data_policies[9]_guid",
+                "links": {
+                    "policy": "data_policies[9]_links_policy"
+                }
+            }
+        ],
+        "items": [
+            {
+                "sha256": "data_items[0]_sha256",
+                "source": "data_items[0]_source",
+                "links": {
+                    "file_list": "data_items[0]_links_file_list"
+                }
+            },
+            {
+                "sha256": "data_items[1]_sha256",
+                "source": "data_items[1]_source",
+                "links": {
+                    "file_list": "data_items[1]_links_file_list"
+                }
+            }
+        ]
+    }
+}

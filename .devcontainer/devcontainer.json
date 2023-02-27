@@ -1,3 +1,4 @@
+// Development container for Content. Poetry hash 97b4446a28329c24352fcb41ca8570403da0ae3f7434121ab73b1ff83fdec395
 {
 	"name": "XSOAR Content",
 	"build": {
@@ -18,7 +19,7 @@
 	"remoteUser": "demisto",
 	"remoteEnv": {
 		"LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}",
-		"PATH": "${containerWorkspaceFolder}/.venv/bin:${containerEnv:PATH}",
+		"PATH": "${containerEnv:PATH}:${containerWorkspaceFolder}/.venv/bin",
 		"CONTENT": "${containerWorkspaceFolder}",
 		"DEMISTO_SDK_CONTENT_PATH": "${containerWorkspaceFolder}",
 		"PYTHONPATH": "${containerWorkspaceFolder}:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
@@ -73,8 +74,15 @@
 				"ms-python.black-formatter",
 				"LittleFoxTeam.vscode-python-test-adapter"
 			]
-	}
-},
+		},
+		"codespaces": {
+			"repositories": {
+				"demisto/demisto-sdk": {
+					"permissions": "write-all"
+				}
+			}
+		}
+	},
 // this is commented out until VSCode will fix self signed certificate issues
 // "features": {
 // 	"ghcr.io/devcontainers/features/docker-in-docker:1": {

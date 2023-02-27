@@ -1,0 +1,21 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "DeCYFIR - Incidents Classifier",
+    "keyTypeMap": {
+        "Attack Surface": "Attack Surface",
+        "Data Breach \u0026 Web Monitoring": "Data Breach \u0026 Web Monitoring",
+        "Impersonation \u0026 Infringement": "Impersonation \u0026 Infringement",
+        "Social \u0026 Public Exposure": "Social \u0026 Public Exposure"
+    },
+    "name": "DeCYFIR - Incidents Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "category"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

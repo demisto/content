@@ -1,0 +1,18 @@
+{
+    "name": "Delinea Account Lifecycle Manager",
+    "description": "Formerly known as \"Thycotic Account Lifecycle Manager\", Delinea Account Lifecycle Manager automates and streamlines service account governance to control service account sprawl.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": ["Thycotic"],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}

@@ -363,3 +363,94 @@ def test_fetch_incdents(mocker, params, incidents, expected_incidents, expected_
     assert last_run['time'] == expected_last_run['third_fetch']['time']
     for id_ in expected_last_run['third_fetch']['found_incident_ids']:
         assert id_ in last_run['found_incident_ids']
+
+
+@pytest.mark.parametrize(
+    'args, expected_results',
+    [
+        (
+            {
+                'username': '__token',
+                'password': None,
+                'api_token': 'test',
+                'is_fetch': False,
+            },
+            "When specifying username='__token', the API Token must be provieded using in the password field"
+            " please empty the other field"
+        ),
+        (
+            {
+                'username': '__token',
+                'password': 'test',
+                'api_token': None,
+                'is_fetch': True,
+            },
+            'In order to use the “Fetch Incident” functionality,'
+            ' the username must be provided in the “Username” parameter.\n'
+            ' Please see documentation `Authentication Methods`'
+        ),
+        (
+            {
+                'username': '__token',
+                'password': None,
+                'api_token': None,
+                'is_fetch': False,
+            },
+            'Please insert API Token in the password field'
+            ' or see documentation `Authentication Methods` for another authentication methods'
+        ),
+        (
+            {
+                'username': None,
+                'password': None,
+                'api_token': None,
+                'is_fetch': False,
+            },
+            "If an API token is not provided, it is mandatory to insert username and password."
+        ),
+        (
+            {
+                'username': None,
+                'password': None,
+                'api_token': 'test',
+                'is_fetch': True,
+            },
+            'In order to use the “Fetch Incident” functionality,'
+            ' the username must be provided in the “Username” parameter.\n'
+            ' Please see documentation `Authentication Methods`'
+        ),
+        (
+            {
+                'username': 'test',
+                'password': None,
+                'api_token': None,
+                'is_fetch': True,
+            },
+            'Please insert password or API token.'
+        ),
+        (
+            {
+                'username': 'test',
+                'password': 'test',
+                'api_token': 'test',
+                'is_fetch': True,
+            },
+            'Please insert API token OR password and not both.'
+        ),
+    ]
+)
+def test_validate_authentication_params(mocker, args, expected_results):
+
+    mocker.patch.object(Client, 'is_token_auth', return_value=True)
+
+    with pytest.raises(ValueError) as err:
+        Client(base_url='test',
+               username=args['username'],
+               password=args['password'],
+               verify=False,
+               proxy=False,
+               headers={},
+               api_key=args['api_token'],
+               is_fetch=args['is_fetch'])
+
+    assert str(err.value) == expected_results

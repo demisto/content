@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Search For Hash In Sandbox - Generic
-description: 'This playbook searches for a specific hash in the supported sandboxes. If the hash is known, the playbook provides a detailed analysis of the sandbox report. Currently, supported sandboxes are Falcon X, Wildfire and Joe Sandbox. '
+description: 'This playbook searches for a specific hash in the supported sandboxes. If the hash is known, the playbook provides a detailed analysis of the sandbox report. Currently, supported sandboxes are Falcon Intelligence Sandbox, Wildfire and Joe Sandbox. '
 starttaskid: "0"
 tasks:
   "0":
@@ -43,8 +43,8 @@ tasks:
     task:
       id: ee043234-3d7b-4195-8ca7-1cbde477e677
       version: -1
-      name: Is FalconX enabled?
-      description: Returns 'yes' if the CrowdStrike Falcon X integration is available.
+      name: Is Falcon Intelligence Sandbox enabled?
+      description: Returns 'yes' if the CrowdStrike Falcon Intelligence Sandbox integration is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -162,7 +162,7 @@ tasks:
     task:
       id: f1fa61ce-3ee3-4918-86af-e6d66a3c6b24
       version: -1
-      name: Search for hash in FalconX
+      name: Search for hash in Falcon Intelligence Sandbox
       description: Finds sandbox reports by providing an FQL filter and paging details.
       script: '|||cs-fx-find-reports'
       type: regular
@@ -268,8 +268,8 @@ tasks:
     task:
       id: 0cc08ef9-5225-44a8-8221-553bb90807b1
       version: -1
-      name: Get full report from FalconX
-      description: Gets a full report from the Falcon X sandbox.
+      name: Get full report from Falcon Intelligence Sandbox
+      description: Gets a full report from the Falcon Intelligence Sandbox.
       script: '|||cs-fx-get-full-report'
       type: regular
       iscommand: true
@@ -297,7 +297,7 @@ tasks:
     note: false
     evidencedata:
       description:
-        simple: FalconX sandbox report
+        simple: Falcon Intelligence Sandbox report
       customfields: {}
     timertriggers: []
     ignoreworker: false
@@ -558,10 +558,10 @@ tasks:
     continueonerrortype: ""
   "23":
     id: "23"
-    taskid: f1e1594d-5b8b-4414-8efb-2682ee0bb1a2
+    taskid: 046b134b-6704-4d29-8443-af01b62bf60e
     type: regular
     task:
-      id: f1e1594d-5b8b-4414-8efb-2682ee0bb1a2
+      id: 046b134b-6704-4d29-8443-af01b62bf60e
       version: -1
       name: Get Wildfire PDF report
       description: Gets a PDF report of search results for hashes in the WildFire sandbox.
@@ -577,6 +577,8 @@ tasks:
         simple: pdf
       sha256:
         simple: ${inputs.FileSha256}
+      execution-timeout:
+        simple: "900"
     separatecontext: false
     view: |-
       {
@@ -1222,9 +1224,12 @@ outputs:
   description: The results of the Wildfire report.
   type: string
 - contextPath: csfalconx.resource.sandbox
-  description: The results of the Falcon X report.
+  description: The results of the Falcon Intelligence Sandbox report.
   type: string
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
 system: true
+marketplaces:
+- xsoar
+

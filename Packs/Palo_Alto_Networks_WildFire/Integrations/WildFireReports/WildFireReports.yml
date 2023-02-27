@@ -1,4 +1,7 @@
 category: Forensics & Malware Analysis
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: WildFire-Reports
   version: -1
@@ -8,21 +11,33 @@ configuration:
   name: server
   required: true
   type: 0
+- name: credentials
+  required: false
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
+  section: Connect
 - display: API Key
   name: token
   required: false
   type: 4
   fromlicense: encrypted
+  hidden: true
+  section: Connect
+
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-description: Generates a Palo Alto Networks WildFire PDF report. For internal use
-  with the TIM Sample Analysis feature.
+  section: Connect
+  advanced: true
+description: Generates a Palo Alto Networks WildFire PDF report. For internal use with the TIM Sample Analysis feature.
 display: Palo Alto Networks WildFire Reports
 name: WildFire-Reports
 defaultEnabled: true
@@ -44,7 +59,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.4.28442
+  dockerimage: demisto/python3:3.10.9.42476
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

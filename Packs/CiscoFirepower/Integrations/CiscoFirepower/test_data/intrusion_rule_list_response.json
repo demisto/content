@@ -1,0 +1,667 @@
+{
+    "links": {
+        "self": "links_self"
+    },
+    "items": [
+        {
+            "type": "IntrusionRule",
+            "id": "items[0]_id",
+            "name": "1:56450",
+            "gid": 1,
+            "sid": 56450,
+            "revision": 2,
+            "isSystemDefined": true,
+            "msg": "BROWSER-CHROME Microsoft Teams Electron framework command injection attempt",
+            "ruleData": "alert tcp $EXTERNAL_NET any -> $SMTP_SERVERS 25 ( msg:\"BROWSER-CHROME Microsoft Teams Electron framework command injection attempt\"; flow:to_server,established; file_data; content:\"msteams:\"; content:\"--browser-subprocess-path=\",within 150,nocase; metadata:policy max-detect-ips drop; service:smtp; reference:cve,2018-1000006; reference:url,electronjs.org/blog/protocol-handler-fix; classtype:attempted-user; sid:56450; rev:2; )",
+            "ruleAction": [
+                {
+                    "defaultState": "BLOCK",
+                    "policy": {
+                        "name": "Maximum Detection",
+                        "id": "items[0]_ruleAction[0]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Security Over Connectivity",
+                        "id": "items[0]_ruleAction[1]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Balanced Security and Connectivity",
+                        "id": "items[0]_ruleAction[2]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Connectivity Over Security",
+                        "id": "items[0]_ruleAction[3]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "BLOCK",
+                    "policy": {
+                        "name": "Test",
+                        "id": "items[0]_ruleAction[4]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": false
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "No Rules Active",
+                        "id": "items[0]_ruleAction[5]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                }
+            ],
+            "metadata": {
+                "domain": {
+                    "name": "Global",
+                    "id": "items[0]_metadata_domain_id",
+                    "type": "Domain"
+                }
+            },
+            "ruleGroups": [
+                {
+                    "name": "Browser/Chrome",
+                    "id": "items[0]_ruleGroups[0]_id",
+                    "type": "IntrusionRuleGroup"
+                }
+            ]
+        },
+        {
+            "type": "IntrusionRule",
+            "id": "items[1]_id",
+            "name": "148:2",
+            "gid": 148,
+            "sid": 2,
+            "revision": 4,
+            "isSystemDefined": true,
+            "msg": "(cip) CIP data is non-conforming to ODVA standard",
+            "ruleData": "alert ( gid:148; sid:2; rev:4; msg:\"(cip) CIP data is non-conforming to ODVA standard\"; metadata: rule-type preproc; classtype:protocol-command-decode;)",
+            "ruleAction": [
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Maximum Detection",
+                        "id": "items[1]_ruleAction[0]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Security Over Connectivity",
+                        "id": "items[1]_ruleAction[1]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Balanced Security and Connectivity",
+                        "id": "items[1]_ruleAction[2]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Connectivity Over Security",
+                        "id": "items[1]_ruleAction[3]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Test",
+                        "id": "items[1]_ruleAction[4]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": false
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "No Rules Active",
+                        "id": "items[1]_ruleAction[5]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                }
+            ],
+            "metadata": {
+                "domain": {
+                    "name": "Global",
+                    "id": "items[1]_metadata_domain_id",
+                    "type": "Domain"
+                }
+            },
+            "ruleGroups": [
+                {
+                    "name": "Protocol/Builtins",
+                    "id": "items[1]_ruleGroups[0]_id",
+                    "type": "IntrusionRuleGroup"
+                }
+            ]
+        },
+        {
+            "type": "IntrusionRule",
+            "id": "items[2]_id",
+            "name": "119:21",
+            "gid": 119,
+            "sid": 21,
+            "revision": 3,
+            "isSystemDefined": true,
+            "msg": "(http_inspect) HTTP message has more than one Content-Length header value",
+            "ruleData": "alert ( gid:119; sid:21; rev:3; msg:\"(http_inspect) HTTP message has more than one Content-Length header value\"; metadata: policy max-detect-ips drop, rule-type preproc; classtype:unknown;)",
+            "ruleAction": [
+                {
+                    "defaultState": "BLOCK",
+                    "policy": {
+                        "name": "Maximum Detection",
+                        "id": "items[2]_ruleAction[0]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Security Over Connectivity",
+                        "id": "items[2]_ruleAction[1]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Balanced Security and Connectivity",
+                        "id": "items[2]_ruleAction[2]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Connectivity Over Security",
+                        "id": "items[2]_ruleAction[3]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "BLOCK",
+                    "policy": {
+                        "name": "Test",
+                        "id": "items[2]_ruleAction[4]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": false
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "No Rules Active",
+                        "id": "items[2]_ruleAction[5]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                }
+            ],
+            "metadata": {
+                "domain": {
+                    "name": "Global",
+                    "id": "items[2]_metadata_domain_id",
+                    "type": "Domain"
+                }
+            },
+            "ruleGroups": [
+                {
+                    "name": "Protocol/Builtins",
+                    "id": "items[2]_ruleGroups[0]_id",
+                    "type": "IntrusionRuleGroup"
+                }
+            ]
+        },
+        {
+            "type": "IntrusionRule",
+            "id": "items[3]_id",
+            "name": "119:202",
+            "gid": 119,
+            "sid": 202,
+            "revision": 2,
+            "isSystemDefined": true,
+            "msg": "(http_inspect) chunk length has excessive leading zeros",
+            "ruleData": "alert ( gid:119; sid:202; rev:2; msg:\"(http_inspect) chunk length has excessive leading zeros\"; metadata: policy max-detect-ips drop, rule-type preproc; classtype:unknown;)",
+            "ruleAction": [
+                {
+                    "defaultState": "BLOCK",
+                    "policy": {
+                        "name": "Maximum Detection",
+                        "id": "items[3]_ruleAction[0]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Security Over Connectivity",
+                        "id": "items[3]_ruleAction[1]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Balanced Security and Connectivity",
+                        "id": "items[3]_ruleAction[2]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Connectivity Over Security",
+                        "id": "items[3]_ruleAction[3]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "BLOCK",
+                    "policy": {
+                        "name": "Test",
+                        "id": "items[3]_ruleAction[4]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": false
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "No Rules Active",
+                        "id": "items[3]_ruleAction[5]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                }
+            ],
+            "metadata": {
+                "domain": {
+                    "name": "Global",
+                    "id": "items[3]_metadata_domain_id",
+                    "type": "Domain"
+                }
+            },
+            "ruleGroups": [
+                {
+                    "name": "Protocol/Builtins",
+                    "id": "items[3]_ruleGroups[0]_id",
+                    "type": "IntrusionRuleGroup"
+                }
+            ]
+        },
+        {
+            "type": "IntrusionRule",
+            "id": "items[4]_id",
+            "name": "119:211",
+            "gid": 119,
+            "sid": 211,
+            "revision": 3,
+            "isSystemDefined": true,
+            "msg": "(http_inspect) URI badly formatted",
+            "ruleData": "alert ( gid:119; sid:211; rev:3; msg:\"(http_inspect) URI badly formatted\"; metadata: policy max-detect-ips drop, rule-type preproc; classtype:unknown;)",
+            "ruleAction": [
+                {
+                    "defaultState": "BLOCK",
+                    "policy": {
+                        "name": "Maximum Detection",
+                        "id": "items[4]_ruleAction[0]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Security Over Connectivity",
+                        "id": "items[4]_ruleAction[1]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Balanced Security and Connectivity",
+                        "id": "items[4]_ruleAction[2]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Connectivity Over Security",
+                        "id": "items[4]_ruleAction[3]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "BLOCK",
+                    "policy": {
+                        "name": "Test",
+                        "id": "items[4]_ruleAction[4]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": false
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "No Rules Active",
+                        "id": "items[4]_ruleAction[5]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                }
+            ],
+            "metadata": {
+                "domain": {
+                    "name": "Global",
+                    "id": "items[4]_metadata_domain_id",
+                    "type": "Domain"
+                }
+            },
+            "ruleGroups": [
+                {
+                    "name": "Protocol/Builtins",
+                    "id": "items[4]_ruleGroups[0]_id",
+                    "type": "IntrusionRuleGroup"
+                }
+            ]
+        },
+        {
+            "type": "IntrusionRule",
+            "id": "items[5]_id",
+            "name": "116:412",
+            "gid": 116,
+            "sid": 412,
+            "revision": 2,
+            "isSystemDefined": true,
+            "msg": "(ipv4) IPv4 packet to reserved dest address",
+            "ruleData": "alert ( gid:116; sid:412; rev:2; msg:\"(ipv4) IPv4 packet to reserved dest address\"; metadata: rule-type decode; classtype:misc-activity;)",
+            "ruleAction": [
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Maximum Detection",
+                        "id": "items[5]_ruleAction[0]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Security Over Connectivity",
+                        "id": "items[5]_ruleAction[1]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Balanced Security and Connectivity",
+                        "id": "items[5]_ruleAction[2]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Connectivity Over Security",
+                        "id": "items[5]_ruleAction[3]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Test",
+                        "id": "items[5]_ruleAction[4]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": false
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "No Rules Active",
+                        "id": "items[5]_ruleAction[5]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                }
+            ],
+            "metadata": {
+                "domain": {
+                    "name": "Global",
+                    "id": "items[5]_metadata_domain_id",
+                    "type": "Domain"
+                }
+            },
+            "ruleGroups": [
+                {
+                    "name": "Protocol/Builtins",
+                    "id": "items[5]_ruleGroups[0]_id",
+                    "type": "IntrusionRuleGroup"
+                }
+            ]
+        },
+        {
+            "type": "IntrusionRule",
+            "id": "items[6]_id",
+            "name": "116:291",
+            "gid": 116,
+            "sid": 291,
+            "revision": 2,
+            "isSystemDefined": true,
+            "msg": "(ipv6) IPV6 tunneled over IPv4, IPv6 header truncated, possible Linux kernel attack",
+            "ruleData": "alert ( gid:116; sid:291; rev:2; msg:\"(ipv6) IPV6 tunneled over IPv4, IPv6 header truncated, possible Linux kernel attack\"; metadata: policy max-detect-ips drop, rule-type decode; reference:cve,2008-2136; reference:bugtraq,29235; classtype:attempted-dos;)",
+            "ruleAction": [
+                {
+                    "defaultState": "BLOCK",
+                    "policy": {
+                        "name": "Maximum Detection",
+                        "id": "items[6]_ruleAction[0]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Security Over Connectivity",
+                        "id": "items[6]_ruleAction[1]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Balanced Security and Connectivity",
+                        "id": "items[6]_ruleAction[2]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Connectivity Over Security",
+                        "id": "items[6]_ruleAction[3]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "BLOCK",
+                    "policy": {
+                        "name": "Test",
+                        "id": "items[6]_ruleAction[4]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": false
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "No Rules Active",
+                        "id": "items[6]_ruleAction[5]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                }
+            ],
+            "metadata": {
+                "domain": {
+                    "name": "Global",
+                    "id": "items[6]_metadata_domain_id",
+                    "type": "Domain"
+                }
+            },
+            "ruleGroups": [
+                {
+                    "name": "Protocol/Builtins",
+                    "id": "items[6]_ruleGroups[0]_id",
+                    "type": "IntrusionRuleGroup"
+                }
+            ]
+        },
+        {
+            "type": "IntrusionRule",
+            "id": "items[7]_id",
+            "name": "124:8",
+            "gid": 124,
+            "sid": 8,
+            "revision": 2,
+            "isSystemDefined": true,
+            "msg": "(smtp) attempted X-Link2State command buffer overflow",
+            "ruleData": "alert ( gid:124; sid:8; rev:2; msg:\"(smtp) attempted X-Link2State command buffer overflow\"; metadata: policy max-detect-ips drop, policy security-ips drop, rule-type preproc; reference:cve,2005-0560; reference:url,www.microsoft.com/technet/security/bulletin/ms05-021.mspx; service:smtp; classtype:attempted-admin;)",
+            "ruleAction": [
+                {
+                    "defaultState": "BLOCK",
+                    "policy": {
+                        "name": "Maximum Detection",
+                        "id": "items[7]_ruleAction[0]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "BLOCK",
+                    "policy": {
+                        "name": "Security Over Connectivity",
+                        "id": "items[7]_ruleAction[1]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Balanced Security and Connectivity",
+                        "id": "items[7]_ruleAction[2]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "Connectivity Over Security",
+                        "id": "items[7]_ruleAction[3]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                },
+                {
+                    "defaultState": "BLOCK",
+                    "policy": {
+                        "name": "Test",
+                        "id": "items[7]_ruleAction[4]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": false
+                    }
+                },
+                {
+                    "defaultState": "DISABLE",
+                    "policy": {
+                        "name": "No Rules Active",
+                        "id": "items[7]_ruleAction[5]_policy_id",
+                        "type": "IntrusionPolicy",
+                        "isSystemDefined": true
+                    }
+                }
+            ],
+            "metadata": {
+                "domain": {
+                    "name": "Global",
+                    "id": "items[7]_metadata_domain_id",
+                    "type": "Domain"
+                }
+            },
+            "ruleGroups": [
+                {
+                    "name": "Protocol/Builtins",
+                    "id": "items[7]_ruleGroups[0]_id",
+                    "type": "IntrusionRuleGroup"
+                }
+            ]
+        }
+    ],
+    "paging": {
+        "offset": 0,
+        "limit": 8,
+        "count": 48212,
+        "next": [
+            "paging_next_0",
+            "paging_next_1",
+            "paging_next_2",
+            "paging_next_3"
+        ],
+        "pages": 49
+    }
+}

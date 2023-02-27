@@ -10,3 +10,4 @@ ignore=IN145,IN126
 [known_words]
 ThreatVault
 md
+RTDNS

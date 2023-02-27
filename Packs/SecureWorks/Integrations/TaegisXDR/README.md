@@ -20,6 +20,37 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 
+### taegis-archive-investigation
+
+#### Base Command
+
+`!taegis-archive-investigation`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The investigation id to archive | True |
+
+#### Command Example
+
+```
+!taegis-archive-investigation id=c207ca4c-8a78-4408-a056-49f05d6eb77d
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "ArchivedInvestigation": {
+            "id": "c207ca4c-8a78-4408-a056-49f05d6eb77d"
+        }
+    }
+}
+```
+
+
 ### taegis-create-comment
 
 #### Base Command
@@ -419,6 +450,46 @@ After you successfully execute a command, a DBot message appears in the War Room
 ```
 
 
+### taegis-fetch-users
+
+#### Base Command
+`!taegis-fetch-users`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The id of the user, in `auth0` format | False |
+| email | The email of the user | False |
+| status | The users to find based on status | False |
+| page |  | False |
+| page_size | | False |
+
+#### Command Example
+
+```
+!taegis-fetch-users id="auth0|123456"
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "Users": [
+            {
+                "email": "myuser@email.com",
+                "family_name": "Smith",
+                "given_name": "John",
+                "status": "Registered",
+                "user_id": "auth0|123456"
+            }
+        ]
+    }
+}
+```
+
+
 ### taegis-update-comment
 
 #### Base Command
@@ -466,16 +537,21 @@ After you successfully execute a command, a DBot message appears in the War Room
 | service_desk_id | An ID or ticket # to relate to an Investigation | False |
 | service_desk_type | The type of id related to an investigation (e.g. Jira) | False |
 | status | The current status of the Investigation | False |
+| assignee_id | The id of a user to assign, in `auth0|12345` format | False |
 
 Note: At least 1 of the above inputs (in addition to id) must be defined
 
 ##### Permitted Status Values
 
 * Active
+* Awaiting Action
 * Closed: Authorized Activity
+* Closed: Confirmed Security Incident
 * Closed: False Positive Alert
+* Closed: Inconclusive
 * Closed: Informational
 * Closed: Not Vulnerable
+* Closed: Threat Mitigated
 * Open
 * Suspended
 
@@ -492,6 +568,37 @@ Note: At least 1 of the above inputs (in addition to id) must be defined
     "TaegisXDR": {
         "InvestigationUpdate": {
             "id": "c2e09554-833e-41a1-bc9d-8160aec0d70d"
+        }
+    }
+}
+```
+
+
+### taegis-unarchive-investigation
+
+#### Base Command
+
+`!taegis-unarchive-investigation`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The investigation id to unarchive | True |
+
+#### Command Example
+
+```
+!taegis-unarchive-investigation id=c207ca4c-8a78-4408-a056-49f05d6eb77d
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "UnarchivedInvestigation": {
+            "id": "c207ca4c-8a78-4408-a056-49f05d6eb77d"
         }
     }
 }

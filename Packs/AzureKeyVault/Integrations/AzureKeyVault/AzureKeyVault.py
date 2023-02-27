@@ -23,7 +23,8 @@ class KeyVaultClient:
 
     def __init__(self, tenant_id: str, client_id: str, client_secret: str,
                  subscription_id: str, resource_group_name: str,
-                 verify: bool, proxy: bool, certificate_thumbprint: Optional[str], private_key: Optional[str]):
+                 verify: bool, proxy: bool, certificate_thumbprint: Optional[str], private_key: Optional[str],
+                 managed_identities_client_id: Optional[str] = None):
 
         self.ms_client = MicrosoftClient(
             self_deployed=True,
@@ -42,7 +43,8 @@ class KeyVaultClient:
             tenant_id=tenant_id,
             ok_codes=(200, 201, 202, 204, 400, 401, 403, 404),
             certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key
+            private_key=private_key,
+            managed_identities_client_id=managed_identities_client_id,
         )
 
     def http_request(self, method: str, url_suffix: str = None, full_url: str = None,
@@ -1270,6 +1272,7 @@ def main() -> None:
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     identifier = args.get('identifier')
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
@@ -1277,7 +1280,7 @@ def main() -> None:
         client_secret = params.get('client_secret')
         certificate_thumbprint = params.get('certificate_thumbprint')
         private_key = params.get('private_key')
-        if not client_secret and not (certificate_thumbprint and private_key):
+        if not managed_identities_client_id and not client_secret and not (certificate_thumbprint and private_key):
             raise DemistoException('Client Secret or Certificate Thumbprint and Private Key must be provided. For further information see https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')  # noqa: E501
 
         requests.packages.urllib3.disable_warnings()
@@ -1293,6 +1296,7 @@ def main() -> None:
                                                 proxy=proxy,
                                                 certificate_thumbprint=certificate_thumbprint,
                                                 private_key=private_key,
+                                                managed_identities_client_id=managed_identities_client_id
                                                 )
 
         commands = {

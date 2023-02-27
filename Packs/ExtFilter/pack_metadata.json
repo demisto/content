@@ -1,8 +1,8 @@
 {
-    "name": "Advanced Filter",
-    "description": "This transformer enables you to make advanced filters with complex conditions.",
+    "name": "Advanced Filter (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
     "support": "community",
-    "currentVersion": "1.1.12",
+    "currentVersion": "1.1.13",
     "author": "Masahiko Inoue",
     "url": "",
     "email": "",
@@ -16,5 +16,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "hidden": true
 }

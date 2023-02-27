@@ -57,7 +57,7 @@ tasks:
       version: -1
       name: Test POST without body
       description: ''
-      script: Demisto REST API|||demisto-api-post
+      script: demisto-api-post
       type: regular
       iscommand: true
       brand: ''
@@ -96,3 +96,5 @@ view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width
 inputs: []
 outputs: []
 description: ''
+marketplaces:
+  - xsoar
