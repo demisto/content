@@ -1,7 +1,7 @@
 {
     "id": "incident_microsoftsentinelowner",
     "version": -1,
-    "modified": "2023-01-23T10:44:48.974736+02:00",
+    "modified": "2023-02-27T09:03:29.755756208Z",
     "name": "Microsoft Sentinel Owner",
     "ownerOnly": false,
     "cliName": "microsoftsentinelowner",
@@ -25,7 +25,7 @@
     "columns": [
         {
             "key": "objectid",
-            "displayName": "objectId",
+            "displayName": "Object Id",
             "type": "shortText",
             "orgType": "shortText",
             "required": false,
@@ -38,7 +38,7 @@
         },
         {
             "key": "email",
-            "displayName": "email",
+            "displayName": "Email",
             "type": "shortText",
             "orgType": "shortText",
             "required": false,
@@ -51,7 +51,7 @@
         },
         {
             "key": "userprincipalname",
-            "displayName": "userPrincipalName",
+            "displayName": "User Principal Name",
             "type": "shortText",
             "orgType": "shortText",
             "required": false,
@@ -64,7 +64,7 @@
         },
         {
             "key": "assignedto",
-            "displayName": "assignedTo",
+            "displayName": "Assigned To",
             "type": "shortText",
             "orgType": "shortText",
             "required": false,
@@ -79,5 +79,5 @@
     "defaultRows": [],
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.5.0"
+    "fromVersion": "6.8.0"
 }

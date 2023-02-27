@@ -1790,18 +1790,7 @@ def delete_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any])
     if isinstance(response, requests.Response) and response.status_code == 204:
         return CommandResults(readable_output=f'Alert rule {rule_id} does not exist.')
 
-    context = {
-        'ID': rule_id,
-        'Deleted': True
-    }
-
-    return CommandResults(
-        readable_output=f'Alert rule {rule_id} was deleted successfully.',
-        outputs_prefix='AzureSentinel.AlertRule',
-        outputs=context,
-        outputs_key_field='ID',
-        raw_response={}
-    )
+    return CommandResults(readable_output=f'Alert rule {rule_id} was deleted successfully.')
 
 
 def validate_required_arguments_for_alert_rule(args: Dict[str, Any]) -> None:
