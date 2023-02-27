@@ -69,7 +69,7 @@ def get_git_diff(branch_name, repo):
         changed_files.append(file_path)  # non-deleted files (added, modified)
         # return FilesToCollect(changed_files=tuple(changed_files),
         #                       pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))
-        return changed_files
+    return changed_files
 
 def run(options):
     # raise Exception(f'ppppaaaaattttthhhh: {Path(__file__).absolute()},ppppaaaaattttthhhh: {Path(__file__).absolute().parents[3]},ppppaaaaattttthhhh: {Path(__file__).absolute().parents[2]}')
@@ -83,7 +83,8 @@ def run(options):
     paath = ''
     for p in changed_files:
         if 'Packs' in p:
-            paath = p
+            paath = f'{Path(__file__).absolute().parents[2]}/{p}'
+            paath = '/'.join(paath.split('/')[:-1])
     root_dir1 = paath
     root_dir_instance1 = pathlib.Path(root_dir1)
     filesindir1 = [item.name for item in root_dir_instance1.glob("*")]
