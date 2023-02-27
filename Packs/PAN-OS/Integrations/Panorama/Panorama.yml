@@ -12,7 +12,6 @@ configuration:
   required: false
   type: 9
   hiddenusername: true
-  display: ''
 - defaultvalue: '443'
   display: Port (e.g 443)
   name: port
@@ -162,11 +161,6 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: '1'
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  required: false
-  type: 19
 description: Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.
 display: Palo Alto Networks PAN-OS
 name: Panorama
@@ -388,7 +382,8 @@ script:
       description: The push errors.
       type: String
   - arguments:
-    - description: The template-stack to push.
+    - default: false
+      description: The template-stack to push.
       name: template-stack
       required: true
     - auto: PREDEFINED
@@ -3904,9 +3899,11 @@ script:
       type: String
   - arguments:
     - description: The name of the address to edit.
+      isArray: false
       name: name
       required: true
     - description: The device-group in which the address is in.
+      isArray: false
       name: device-group
     - auto: PREDEFINED
       description: The element to change.
@@ -4111,6 +4108,7 @@ script:
       name: tags
     - description: The device group in which the address group belongs to.
       name: device-group
+      required: false
     description: Edits a static or dynamic address group.
     name: pan-os-edit-address-group
     outputs:
@@ -4356,6 +4354,7 @@ script:
       name: tags
     - description: The device group in which the service group belongs to.
       name: device-group
+      required: false
     description: Edits a service group.
     name: pan-os-edit-service-group
     outputs:
@@ -8873,6 +8872,7 @@ script:
       name: nexthop_address_list
     description: Creates a new policy-based-forwarding (PBF) rule in a Panorama/firewall instance.
     name: pan-os-create-pbf-rule
+    outputs: []
   - arguments:
     - description: The name of the PBF rule to edit. Can be retrieved from the pan-os-list-pbf-rules command.
       name: rulename
@@ -9020,14 +9020,21 @@ script:
       type: Number
   - arguments:
     - description: The name of the application-group to delete. Can be retrieved from the pan-os-list-application-groups command.
+      isArray: false
       name: name
       required: true
     - description: The device-group in which the application-group is part of. Only for a Panorama instance.
+      isArray: false
       name: device-group
+      required: false
     description: Deletes an application-group
     name: pan-os-delete-application-group
+    outputs: []
   dockerimage: demisto/pan-os-python:1.0.0.49154
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: ''
   subtype: python3
@@ -9038,3 +9045,5 @@ tests:
 - palo_alto_panorama_test_pb
 - PAN-OS-firewall-topology-test-pb
 - PAN-OS-panorama-topology-test-pb
+defaultmapperin: Panorama Mapper
+defaultclassifier: Panorama Classifier
