@@ -1,1007 +1,1197 @@
 {
-    "get_commits": 
-    [
-        {
-            "short_id": "a1",
-            "created_at": "2022-07-26T11:28:03.000+00:00",
-            "parent_ids": [
-                "112"
-            ],
-            "title": "commit1",
-            "message": "message1",
-            "author_name": "demo1"
-        },
-        {
-            "id": "296c0c7bf32f23190ebcd3c47bf46f95097afbc4",
-            "short_id": "b2",
-            "created_at": "2022-07-26T11:28:03.000+00:00",
-            "parent_ids": [
-                "114",
-                "112"
-            ],
-            "title": "commit2",
-            "message": "message2",
-            "author_name": "demo2"
-        },
-        {
-            "id": "aade54fdaab9b970825f245ac2b595c09f420ef6",
-            "short_id": "c3",
-            "created_at": "2022-07-26T11:28:03.000+00:00",
-            "parent_ids": [
-                "25836836a437e5c11719ba0bdffce6edf80f7f9e"
-            ],
-            "title": "commit3",
-            "message": "message3",
-            "author_name": "demo3"
-            
-        }
-    ],
-    "get_commit_single":
+  "get_commits": [
     {
-        "short_id": "a1",
-        "created_at": "2022-07-26T11:28:03.000+00:00",
-        "parent_ids": [
-            "112"
-        ],
-        "title": "commit1",
-        "message": "message1",
-        "author_name": "demo1"
+      "short_id": "a1",
+      "created_at": "2022-07-26T11:28:03.000+00:00",
+      "parent_ids": ["112"],
+      "title": "commit1",
+      "message": "message1",
+      "author_name": "demo1"
     },
-        
-    "create_branch":
     {
-        "name": "branchExample",
-        "commit": {
-            "short_id": "f9d0bf17",
-            "created_at": "2022-07-27T13:09:50.000+00:00",
-            "title": "test1"
-        },
-        "merged": false,
-        "protected": false,
-        "developers_can_push": false,
-        "developers_can_merge": false
+      "id": "296c0c7bf32f23190ebcd3c47bf46f95097afbc4",
+      "short_id": "b2",
+      "created_at": "2022-07-26T11:28:03.000+00:00",
+      "parent_ids": ["114", "112"],
+      "title": "commit2",
+      "message": "message2",
+      "author_name": "demo2"
+    },
+    {
+      "id": "aade54fdaab9b970825f245ac2b595c09f420ef6",
+      "short_id": "c3",
+      "created_at": "2022-07-26T11:28:03.000+00:00",
+      "parent_ids": ["25836836a437e5c11719ba0bdffce6edf80f7f9e"],
+      "title": "commit3",
+      "message": "message3",
+      "author_name": "demo3"
     }
-    ,
-    
-    
-    "get_branches":[
-        {
-            "name": "1-test",
-            "commit": {
-                "short_id": "f9d0bf17",
-                "created_at": "2022-07-27T13:09:50.000+00:00",
-                "title": "test1"
-            },
-            "merged": false,
-            "protected": false,
-            "developers_can_push": false,
-            "developers_can_merge": false
-        },
-        {
-            "name": "2-test",
-            "commit": {
-                "short_id": "d9177263",
-                "created_at": "2022-07-18T12:19:47.000+00:00",
-                "parent_ids": null,
-                "title": "test2"
-            },
-            "merged": false,
-            "protected": false,
-            "developers_can_push": false,
-            "developers_can_merge": false
-        }
-    ],
-    "get_branches_single":        
-    {
-        "name": "1-test",
-        "commit": {
-            "short_id": "f9d0bf17",
-            "created_at": "2022-07-27T13:09:50.000+00:00",
-            "title": "test1"
-        },
-        "merged": false,
-        "protected": false,
-        "developers_can_push": false,
-        "developers_can_merge": false
-    },
-    "get_group_project":
-    [
-        {
-            "id": 1,
-            "description": "test1",
-            "name": "ProjectTest1",
-            "path": "learn-gitlab1",
-            "path_with_namespace": "demistotest1/learn-gitlab",
-            "created_at": "2022-07-18T12:19:47.553Z"
-        },
-        {
-            "id": 2,
-            "description": "test2",
-            "name": "ProjectTest2",
-            "path": "learn-gitlab2",
-            "created_at": "2022-07-18T12:19:47.553Z"
-        }
-    ],
-    "get_version": 
-        {
-            "version": "15.5.0-pre",
-            "revision": "6146b2240b0"
-        },
-    "get_projects":
-    [{
-        "id": 143,
-        "name": "TearDownWalls",
-        "path": "teardownwalls"
+  ],
+  "get_commit_single": {
+    "short_id": "a1",
+    "created_at": "2022-07-26T11:28:03.000+00:00",
+    "parent_ids": ["112"],
+    "title": "commit1",
+    "message": "message1",
+    "author_name": "demo1"
+  },
 
+  "create_branch": {
+    "name": "branchExample",
+    "commit": {
+      "short_id": "f9d0bf17",
+      "created_at": "2022-07-27T13:09:50.000+00:00",
+      "title": "test1"
+    },
+    "merged": false,
+    "protected": false,
+    "developers_can_push": false,
+    "developers_can_merge": false
+  },
+  "get_branches": [
+    {
+      "name": "1-test",
+      "commit": {
+        "short_id": "f9d0bf17",
+        "created_at": "2022-07-27T13:09:50.000+00:00",
+        "title": "test1"
+      },
+      "merged": false,
+      "protected": false,
+      "developers_can_push": false,
+      "developers_can_merge": false
     },
     {
-        "id": 450,
-        "name": "Leiningen",
-        "path": "leiningen"
-
+      "name": "2-test",
+      "commit": {
+        "short_id": "d9177263",
+        "created_at": "2022-07-18T12:19:47.000+00:00",
+        "parent_ids": null,
+        "title": "test2"
+      },
+      "merged": false,
+      "protected": false,
+      "developers_can_push": false,
+      "developers_can_merge": false
     }
-    ],
-    "get_project_list":
-    [
-        {
-            "id": 1,
-            "description": "description1",
-            "name": "LearnGitLab1",
-            "path": "/learn-gitlab1",
-            "path_with_namespace": "demistotest1/learn-gitlab",
-            "created_at": "2022-07-18T12:19:47.553Z"
-        }
-        ,
-        {
-            "id": 2,
-            "description": "description2",
-            "name": "LearnGitLab2",
-            "name_with_namespace": "demistoTest / demistoTest",
-            "path": "/learn-gitlab2"
-        }
-    ],
-    "issue_list":
-        [
-            {
-                "id": 116016439,
-                "iid": 1,
-                "project_id": 1234,
-                "title": "try",
-                "description": "demo",
-                "state": "opened",
-                "created_at": "2022-09-29T14:21:10.746Z",
-                "updated_at": "2022-09-29T14:21:10.746Z",
-                "closed_at": null,
-                "closed_by": null,
-                "labels": [],
-                "milestone": null,
-                "assignees": [],
-                "author": {
-                    "id": 12665296,
-                    "username": "test9308",
-                    "name": "Test Account",
-                    "state": "active",
-                    "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
-                    "web_url": "https://gitlab.com/test9308"
-                },
-                "type": "ISSUE",
-                "assignee": null,
-                "user_notes_count": 0,
-                "merge_requests_count": 0,
-                "upvotes": 0,
-                "downvotes": 0,
-                "due_date": null,
-                "confidential": false,
-                "discussion_locked": null,
-                "issue_type": "issue",
-                "web_url": "https://gitlab.com/test9308/gitlabtest/-/issues/1",
-                "time_stats": {
-                    "time_estimate": 0,
-                    "total_time_spent": 0,
-                    "human_time_estimate": null,
-                    "human_total_time_spent": null
-                },
-                "task_completion_status": {
-                    "count": 0,
-                    "completed_count": 0
-                },
-                "blocking_issues_count": 0,
-                "has_tasks": false,
-                "_links": {
-                    "self": "https://gitlab.com/api/v4/projects/39823965/issues/1",
-                    "notes": "https://gitlab.com/api/v4/projects/39823965/issues/1/notes",
-                    "award_emoji": "https://gitlab.com/api/v4/projects/39823965/issues/1/award_emoji",
-                    "project": "https://gitlab.com/api/v4/projects/39823965",
-                    "closed_as_duplicate_of": null
-                },
-                "references": {
-                    "short": "#1",
-                    "relative": "#1",
-                    "full": "test9308/gitlabtest#1"
-                },
-                "severity": "UNKNOWN",
-                "moved_to_id": null,
-                "service_desk_reply_to": null
-            },
-            {
-                "id": 116016545,
-                "iid": 2,
-                "project_id": 1234,
-                "title": "AnotherOne",
-                "description": "issue2",
-                "state": "opened",
-                "created_at": "2022-09-29T14:22:25.268Z",
-                "updated_at": "2022-09-29T14:22:25.268Z",
-                "closed_at": null,
-                "closed_by": null,
-                "labels": [],
-                "milestone": null,
-                "assignees": [],
-                "author": {
-                    "id": 12665296,
-                    "username": "test9308",
-                    "name": "Test Account",
-                    "state": "active",
-                    "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
-                    "web_url": "https://gitlab.com/test9308"
-                },
-                "type": "ISSUE",
-                "assignee": null,
-                "user_notes_count": 0,
-                "merge_requests_count": 0,
-                "upvotes": 0,
-                "downvotes": 0,
-                "due_date": null,
-                "confidential": false,
-                "discussion_locked": null,
-                "issue_type": "issue",
-                "web_url": "https://gitlab.com/test9308/gitlabtest/-/issues/2",
-                "time_stats": {
-                    "time_estimate": 0,
-                    "total_time_spent": 0,
-                    "human_time_estimate": null,
-                    "human_total_time_spent": null
-                },
-                "task_completion_status": {
-                    "count": 0,
-                    "completed_count": 0
-                },
-                "blocking_issues_count": 0,
-                "has_tasks": false,
-                "_links": {
-                    "self": "https://gitlab.com/api/v4/projects/39823965/issues/2",
-                    "notes": "https://gitlab.com/api/v4/projects/39823965/issues/2/notes",
-                    "award_emoji": "https://gitlab.com/api/v4/projects/39823965/issues/2/award_emoji",
-                    "project": "https://gitlab.com/api/v4/projects/39823965",
-                    "closed_as_duplicate_of": null
-                },
-                "references": {
-                    "short": "#2",
-                    "relative": "#2",
-                    "full": "test9308/gitlabtest#2"
-                },
-                "severity": "UNKNOWN",
-                "moved_to_id": null,
-                "service_desk_reply_to": null
-            },
-            {
-                "id": 116016600,
-                "iid": 3,
-                "project_id": 1234,
-                "title": "Tester3",
-                "description": "issue3",
-                "state": "opened",
-                "created_at": "2022-09-29T14:22:48.498Z",
-                "updated_at": "2022-09-29T14:22:48.498Z",
-                "closed_at": null,
-                "closed_by": null,
-                "labels": [],
-                "milestone": null,
-                "assignees": [],
-                "author": {
-                    "id": 12665296,
-                    "username": "test9308",
-                    "name": "Test Account",
-                    "state": "active",
-                    "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
-                    "web_url": "https://gitlab.com/test9308"
-                },
-                "type": "ISSUE",
-                "assignee": null,
-                "user_notes_count": 0,
-                "merge_requests_count": 0,
-                "upvotes": 0,
-                "downvotes": 0,
-                "due_date": null,
-                "confidential": false,
-                "discussion_locked": null,
-                "issue_type": "issue",
-                "web_url": "https://gitlab.com/test9308/gitlabtest/-/issues/3",
-                "time_stats": {
-                    "time_estimate": 0,
-                    "total_time_spent": 0,
-                    "human_time_estimate": null,
-                    "human_total_time_spent": null
-                },
-                "task_completion_status": {
-                    "count": 0,
-                    "completed_count": 0
-                },
-                "blocking_issues_count": 0,
-                "has_tasks": false,
-                "_links": {
-                    "self": "https://gitlab.com/api/v4/projects/39823965/issues/3",
-                    "notes": "https://gitlab.com/api/v4/projects/39823965/issues/3/notes",
-                    "award_emoji": "https://gitlab.com/api/v4/projects/39823965/issues/3/award_emoji",
-                    "project": "https://gitlab.com/api/v4/projects/39823965",
-                    "closed_as_duplicate_of": null
-                },
-                "references": {
-                    "short": "#3",
-                    "relative": "#3",
-                    "full": "test9308/gitlabtest#3"
-                },
-                "severity": "UNKNOWN",
-                "moved_to_id": null,
-                "service_desk_reply_to": null
-            },
-            {
-                "id": 116016614,
-                "iid": 4,
-                "project_id": 1234,
-                "title": "whatnu",
-                "description": "Pica",
-                "state": "opened",
-                "created_at": "2022-09-29T14:22:56.326Z",
-                "updated_at": "2022-10-02T08:48:26.661Z",
-                "closed_at": null,
-                "closed_by": null,
-                "labels": [
-                    "GitlabLabel5"
-                ],
-                "milestone": null,
-                "assignees": [],
-                "author": {
-                    "id": 12665296,
-                    "username": "test9308",
-                    "name": "Test Account",
-                    "state": "active",
-                    "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
-                    "web_url": "https://gitlab.com/test9308"
-                },
-                "type": "ISSUE",
-                "assignee": null,
-                "user_notes_count": 4,
-                "merge_requests_count": 0,
-                "upvotes": 0,
-                "downvotes": 0,
-                "due_date": null,
-                "confidential": false,
-                "discussion_locked": null,
-                "issue_type": "issue",
-                "web_url": "https://gitlab.com/test9308/gitlabtest/-/issues/4",
-                "time_stats": {
-                    "time_estimate": 0,
-                    "total_time_spent": 0,
-                    "human_time_estimate": null,
-                    "human_total_time_spent": null
-                },
-                "task_completion_status": {
-                    "count": 0,
-                    "completed_count": 0
-                },
-                "blocking_issues_count": 0,
-                "has_tasks": false,
-                "_links": {
-                    "self": "https://gitlab.com/api/v4/projects/39823965/issues/4",
-                    "notes": "https://gitlab.com/api/v4/projects/39823965/issues/4/notes",
-                    "award_emoji": "https://gitlab.com/api/v4/projects/39823965/issues/4/award_emoji",
-                    "project": "https://gitlab.com/api/v4/projects/39823965",
-                    "closed_as_duplicate_of": null
-                },
-                "references": {
-                    "short": "#4",
-                    "relative": "#4",
-                    "full": "test9308/gitlabtest#4"
-                },
-                "severity": "UNKNOWN",
-                "moved_to_id": null,
-                "service_desk_reply_to": null
-            },
-            {
-                "id": 116130973,
-                "iid": 5,
-                "project_id": 1234,
-                "title": "whatnu",
-                "description": "Pica",
-                "state": "opened",
-                "created_at": "2022-10-02T08:48:25.201Z",
-                "updated_at": "2022-10-02T10:05:26.765Z",
-                "closed_at": null,
-                "closed_by": null,
-                "labels": [
-                    "GitlabLabel5"
-                ],
-                "milestone": null,
-                "assignees": [],
-                "author": {
-                    "id": 12665296,
-                    "username": "test9308",
-                    "name": "Test Account",
-                    "state": "active",
-                    "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
-                    "web_url": "https://gitlab.com/test9308"
-                },
-                "type": "ISSUE",
-                "assignee": null,
-                "user_notes_count": 3,
-                "merge_requests_count": 0,
-                "upvotes": 0,
-                "downvotes": 0,
-                "due_date": null,
-                "confidential": false,
-                "discussion_locked": null,
-                "issue_type": "issue",
-                "web_url": "https://gitlab.com/test9308/gitlabtest/-/issues/5",
-                "time_stats": {
-                    "time_estimate": 0,
-                    "total_time_spent": 0,
-                    "human_time_estimate": null,
-                    "human_total_time_spent": null
-                },
-                "task_completion_status": {
-                    "count": 0,
-                    "completed_count": 0
-                },
-                "blocking_issues_count": 0,
-                "has_tasks": false,
-                "_links": {
-                    "self": "https://gitlab.com/api/v4/projects/39823965/issues/5",
-                    "notes": "https://gitlab.com/api/v4/projects/39823965/issues/5/notes",
-                    "award_emoji": "https://gitlab.com/api/v4/projects/39823965/issues/5/award_emoji",
-                    "project": "https://gitlab.com/api/v4/projects/39823965",
-                    "closed_as_duplicate_of": null
-                },
-                "references": {
-                    "short": "#5",
-                    "relative": "#5",
-                    "full": "test9308/gitlabtest#5"
-                },
-                "severity": "UNKNOWN",
-                "moved_to_id": null,
-                "service_desk_reply_to": null
-            },
-            {
-                "id": 116132096,
-                "iid": 6,
-                "project_id": 1234,
-                "title": "whatnu",
-                "description": "Pica",
-                "state": "opened",
-                "created_at": "2022-10-02T10:05:21.271Z",
-                "updated_at": "2022-10-02T10:07:57.244Z",
-                "closed_at": null,
-                "closed_by": null,
-                "labels": [
-                    "GitlabLabel5"
-                ],
-                "milestone": null,
-                "assignees": [],
-                "author": {
-                    "id": 12665296,
-                    "username": "test9308",
-                    "name": "Test Account",
-                    "state": "active",
-                    "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
-                    "web_url": "https://gitlab.com/test9308"
-                },
-                "type": "ISSUE",
-                "assignee": null,
-                "user_notes_count": 3,
-                "merge_requests_count": 0,
-                "upvotes": 0,
-                "downvotes": 0,
-                "due_date": null,
-                "confidential": false,
-                "discussion_locked": null,
-                "issue_type": "issue",
-                "web_url": "https://gitlab.com/test9308/gitlabtest/-/issues/6",
-                "time_stats": {
-                    "time_estimate": 0,
-                    "total_time_spent": 0,
-                    "human_time_estimate": null,
-                    "human_total_time_spent": null
-                },
-                "task_completion_status": {
-                    "count": 0,
-                    "completed_count": 0
-                },
-                "blocking_issues_count": 0,
-                "has_tasks": false,
-                "_links": {
-                    "self": "https://gitlab.com/api/v4/projects/39823965/issues/6",
-                    "notes": "https://gitlab.com/api/v4/projects/39823965/issues/6/notes",
-                    "award_emoji": "https://gitlab.com/api/v4/projects/39823965/issues/6/award_emoji",
-                    "project": "https://gitlab.com/api/v4/projects/39823965",
-                    "closed_as_duplicate_of": null
-                },
-                "references": {
-                    "short": "#6",
-                    "relative": "#6",
-                    "full": "test9308/gitlabtest#6"
-                },
-                "severity": "UNKNOWN",
-                "moved_to_id": null,
-                "service_desk_reply_to": null
-            },
-            {
-                "id": 116132144,
-                "iid": 7,
-                "project_id": 1234,
-                "title": "whatnu",
-                "description": "Pica",
-                "state": "opened",
-                "created_at": "2022-10-02T10:07:51.168Z",
-                "updated_at": "2022-10-02T10:07:54.139Z",
-                "closed_at": null,
-                "closed_by": null,
-                "labels": [
-                    "GitlabLabel5"
-                ],
-                "milestone": null,
-                "assignees": [],
-                "author": {
-                    "id": 12665296,
-                    "username": "test9308",
-                    "name": "Test Account",
-                    "state": "active",
-                    "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
-                    "web_url": "https://gitlab.com/test9308"
-                },
-                "type": "ISSUE",
-                "assignee": null,
-                "user_notes_count": 1,
-                "merge_requests_count": 0,
-                "upvotes": 0,
-                "downvotes": 0,
-                "due_date": null,
-                "confidential": false,
-                "discussion_locked": null,
-                "issue_type": "issue",
-                "web_url": "https://gitlab.com/test9308/gitlabtest/-/issues/7",
-                "time_stats": {
-                    "time_estimate": 0,
-                    "total_time_spent": 0,
-                    "human_time_estimate": null,
-                    "human_total_time_spent": null
-                },
-                "task_completion_status": {
-                    "count": 0,
-                    "completed_count": 0
-                },
-                "blocking_issues_count": 0,
-                "has_tasks": false,
-                "_links": {
-                    "self": "https://gitlab.com/api/v4/projects/39823965/issues/7",
-                    "notes": "https://gitlab.com/api/v4/projects/39823965/issues/7/notes",
-                    "award_emoji": "https://gitlab.com/api/v4/projects/39823965/issues/7/award_emoji",
-                    "project": "https://gitlab.com/api/v4/projects/39823965",
-                    "closed_as_duplicate_of": null
-                },
-                "references": {
-                    "short": "#7",
-                    "relative": "#7",
-                    "full": "test9308/gitlabtest#7"
-                },
-                "severity": "UNKNOWN",
-                "moved_to_id": null,
-                "service_desk_reply_to": null
-            }
-        ],
-    "raw_file": "I am a file.",
-    "List Brnaches":
-    [
-        {
-            "name": "TestFileCommandsForPlaybook",
-            "commit": {
-                "id": "1188e1e97bc6aa297986695eccecd6227dc8c4a7",
-                "short_id": "1188e1e9",
-                "created_at": "2022-10-02T10:08:50.000+00:00",
-                "parent_ids": [
-                    "a76e22e374b0e698b848c95e0ad744cdf3ee167f"
-                ],
-                "title": "delete file via playbook",
-                "message": "delete file via playbook",
-                "author_name": "Test Account",
-                "author_email": "test@demistodev.com",
-                "authored_date": "2022-10-02T10:08:50.000+00:00",
-                "committer_name": "Test Account",
-                "committer_email": "test@demistodev.com",
-                "committed_date": "2022-10-02T10:08:50.000+00:00",
-                "trailers": {},
-                "web_url": "https://gitlab.com/test9308/gitlabtest/-/commit/1188e1e97bc6aa297986695eccecd6227dc8c4a7"
-            },
-            "merged": false,
-            "protected": false,
-            "developers_can_push": false,
-            "developers_can_merge": false,
-            "can_push": true,
-            "default": false,
-            "web_url": "https://gitlab.com/test9308/gitlabtest/-/tree/TestFileCommandsForPlaybook"
-        },
-        {
-            "name": "b",
-            "commit": {
-                "id": "eadec97163297620df38f9cbc906eff7fa04eb18",
-                "short_id": "eadec971",
-                "created_at": "2022-10-02T10:01:15.000+00:00",
-                "parent_ids": [
-                    "c4a4c5d80f9cce20108bf5325b88ec73698f92c8"
-                ],
-                "title": "Update CheckRawFileCommand_main",
-                "message": "Update CheckRawFileCommand_main",
-                "author_name": "Test Account",
-                "author_email": "test@demistodev.com",
-                "authored_date": "2022-10-02T10:01:15.000+00:00",
-                "committer_name": "Test Account",
-                "committer_email": "test@demistodev.com",
-                "committed_date": "2022-10-02T10:01:15.000+00:00",
-                "trailers": {},
-                "web_url": "https://gitlab.com/test9308/gitlabtest/-/commit/eadec97163297620df38f9cbc906eff7fa04eb18"
-            },
-            "merged": false,
-            "protected": false,
-            "developers_can_push": false,
-            "developers_can_merge": false,
-            "can_push": true,
-            "default": false,
-            "web_url": "https://gitlab.com/test9308/gitlabtest/-/tree/b"
-        },
-        {
-            "name": "b2",
-            "commit": {
-                "id": "eadec97163297620df38f9cbc906eff7fa04eb18",
-                "short_id": "eadec971",
-                "created_at": "2022-10-02T10:01:15.000+00:00",
-                "parent_ids": [
-                    "c4a4c5d80f9cce20108bf5325b88ec73698f92c8"
-                ],
-                "title": "Update CheckRawFileCommand_main",
-                "message": "Update CheckRawFileCommand_main",
-                "author_name": "Test Account",
-                "author_email": "test@demistodev.com",
-                "authored_date": "2022-10-02T10:01:15.000+00:00",
-                "committer_name": "Test Account",
-                "committer_email": "test@demistodev.com",
-                "committed_date": "2022-10-02T10:01:15.000+00:00",
-                "trailers": {},
-                "web_url": "https://gitlab.com/test9308/gitlabtest/-/commit/eadec97163297620df38f9cbc906eff7fa04eb18"
-            },
-            "merged": false,
-            "protected": false,
-            "developers_can_push": false,
-            "developers_can_merge": false,
-            "can_push": true,
-            "default": false,
-            "web_url": "https://gitlab.com/test9308/gitlabtest/-/tree/b2"
-        },
-        {
-            "name": "main",
-            "commit": {
-                "id": "eadec97163297620df38f9cbc906eff7fa04eb18",
-                "short_id": "eadec971",
-                "created_at": "2022-10-02T10:01:15.000+00:00",
-                "parent_ids": [
-                    "c4a4c5d80f9cce20108bf5325b88ec73698f92c8"
-                ],
-                "title": "Update CheckRawFileCommand_main",
-                "message": "Update CheckRawFileCommand_main",
-                "author_name": "Test Account",
-                "author_email": "test@demistodev.com",
-                "authored_date": "2022-10-02T10:01:15.000+00:00",
-                "committer_name": "Test Account",
-                "committer_email": "test@demistodev.com",
-                "committed_date": "2022-10-02T10:01:15.000+00:00",
-                "trailers": {},
-                "web_url": "https://gitlab.com/test9308/gitlabtest/-/commit/eadec97163297620df38f9cbc906eff7fa04eb18"
-            },
-            "merged": false,
-            "protected": true,
-            "developers_can_push": false,
-            "developers_can_merge": false,
-            "can_push": true,
-            "default": true,
-            "web_url": "https://gitlab.com/test9308/gitlabtest/-/tree/main"
-        }
-    ],
-    "List commit":
-    [
-        {
-            "id": "eadec97163297620df38f9cbc906eff7fa04eb18",
-            "short_id": "eadec971",
-            "created_at": "2022-10-02T10:01:15.000+00:00",
-            "parent_ids": [
-                "c4a4c5d80f9cce20108bf5325b88ec73698f92c8"
-            ],
-            "title": "Update CheckRawFileCommand_main",
-            "message": "Update CheckRawFileCommand_main",
-            "author_name": "Test Account",
-            "author_email": "test@demistodev.com",
-            "authored_date": "2022-10-02T10:01:15.000+00:00",
-            "committer_name": "Test Account",
-            "committer_email": "test@demistodev.com",
-            "committed_date": "2022-10-02T10:01:15.000+00:00",
-            "trailers": {},
-            "web_url": "https://gitlab.com/test9308/gitlabtest/-/commit/eadec97163297620df38f9cbc906eff7fa04eb18"
-        },
-        {
-            "id": "c4a4c5d80f9cce20108bf5325b88ec73698f92c8",
-            "short_id": "c4a4c5d8",
-            "created_at": "2022-10-02T10:00:34.000+00:00",
-            "parent_ids": [
-                "7d584f46406188ba35bf6d651cbd12b4108b6284"
-            ],
-            "title": "Add new file",
-            "message": "Add new file",
-            "author_name": "Test Account",
-            "author_email": "test@demistodev.com",
-            "authored_date": "2022-10-02T10:00:34.000+00:00",
-            "committer_name": "Test Account",
-            "committer_email": "test@demistodev.com",
-            "committed_date": "2022-10-02T10:00:34.000+00:00",
-            "trailers": {},
-            "web_url": "https://gitlab.com/test9308/gitlabtest/-/commit/c4a4c5d80f9cce20108bf5325b88ec73698f92c8"
-        },
-        {
-            "id": "7d584f46406188ba35bf6d651cbd12b4108b6284",
-            "short_id": "7d584f46",
-            "created_at": "2022-09-29T13:59:18.000+00:00",
-            "parent_ids": [],
-            "title": "Initial commit",
-            "message": "Initial commit",
-            "author_name": "Test Account",
-            "author_email": "test@demistodev.com",
-            "authored_date": "2022-09-29T13:59:18.000+00:00",
-            "committer_name": "Test Account",
-            "committer_email": "test@demistodev.com",
-            "committed_date": "2022-09-29T13:59:18.000+00:00",
-            "trailers": {},
-            "web_url": "https://gitlab.com/test9308/gitlabtest/-/commit/7d584f46406188ba35bf6d651cbd12b4108b6284"
-        }
-    ],
-    "list_merge_request_note":
-    [
-        {
-            "id": 115,
-            "body": "body11",
-            "attachment": null,
-            "created_at": "2022-10-02T08:48:43.674Z",
-            "updated_at": "2022-10-02T08:48:43.676Z"
-        },
-        {
-            "id": 112,
-            "body": "body12",
-            "created_at": "2022-10-02T08:48:43.588Z",
-            "updated_at": "2022-10-02T08:48:43.591Z"
-        }
-    ],
-    "list_merge_request":
-        [
-            {
-                "iid": 5,
-                "title": "t1",
-                "description": null,
-                "state": "opened",
-                "created_at": "2022-10-02T10:11:27.506Z",
-                "merged_by": null,
-                "merge_user": null,
-                "merged_at": "2022-10-02T10:11:27.506Z",
-                "user_notes_count": 0,
-                "upvotes": 0,
-                "downvotes": 0,
-                "author": {
-                    "name": "Test Account"
-                },
-                "assignees": [],
-                "assignee": null,
-                "reviewers": []
-            },
-            {
-                "iid": 6,
-                "title": "t2",
-                "description": null,
-                "state": "opened",
-                "created_at": "2022-10-02T10:11:27.506Z",
-                "merged_by": null,
-                "merge_user": null,
-                "merged_at": "2022-10-02T10:11:27.506Z",
-                "user_notes_count": 0,
-                "upvotes": 0,
-                "downvotes": 0,
-                "author": {
-                    "name": "Test Account"
-                },
-                "assignees": [],
-                "assignee": null,
-                "reviewers": []
-            }
-        ],
-    "list_group_members":
-        [{
-            "id": 126,
-            "username": "test2",
-            "name": "Test Account",
-            "state": "active",
-            "access_level": 50,
-            "created_at": "2022-10-02T08:44:38.826Z",
-            "expires_at": "2032-10-02T08:44:38.826Z",
-            "membership_state": "active"
-        },
-        {
-            "id": 116,
-            "username": "test2",
-            "name": "Test Account",
-            "state": "active",
-            "access_level": 50,
-            "created_at": "2022-10-02T08:44:38.826Z",
-            "expires_at": "2032-10-02T08:44:38.826Z",
-            "membership_state": "active"
-        }
-        ],
-    "list_project_user":
-        [{
-            "id": 123,
-            "username": "test1",
-            "name": "Test Account",
-            "state": "active",
-            "avatar_url": "avater_url",
-            "web_url": "web_url1"
-        },
-        {
-            "id": 345,
-            "username": "test2",
-            "name": "Test Account",
-            "state": "active",
-            "avatar_url": "avater_url",
-            "web_url": "web_url2"
-        },
-        {
-            "id": 678,
-            "username": "test3",
-            "name": "Test Account",
-            "state": "active",
-            "avatar_url": "avater_url",
-            "web_url": "web_url3"
-        }
-
-    ],
-    "issue_client":{
-        "iid": 114,
-        "title": "title_test",
-        "description": "desc_test",
-        "state": "opened",
-        "created_at": "'2022-10-06T14:45:38.004Z'",
-        "updated_at": "'2022-10-06T14:45:38.004Z'",
-        "author": {
-            "name": "name"
-        }
+  ],
+  "get_branches_single": {
+    "name": "1-test",
+    "commit": {
+      "short_id": "f9d0bf17",
+      "created_at": "2022-07-27T13:09:50.000+00:00",
+      "title": "test1"
     },
-    "list_groups":[
-        {
-            "id": 55694272,
-            "name": "demistoTest",
-            "path": "demistotest1",
-            "description": "exaple unit test",
-            "visibility": "private",
-            "created_at": "2022-07-18T12:19:46.363Z",
-            "parent_id": null,
-            "ldap_cn": null,
-            "ldap_access": null
-        }
-    ],
-    "list_issue_note":
-    [
-        {
-            "id": 112,
-            "body": "body1",
-            "attachment": null,
-            "author": {
-                "id": 1,
-                "username": "demo",
-                "name": "user test",
-                "state": "active"
-            },
-            "created_at": "2022-07-27T10:47:38.028Z",
-            "updated_at": "2022-07-27T10:47:38.032Z"
-        },
-        {
-            "id": 113,
-            "body": "body2",
-            "attachment": null,
-            "author": {
-                "id": 1,
-                "username": "demo",
-                "name": "user test",
-                "state": "active"
-            },
-            "created_at": "2022-07-27T10:47:38.028Z",
-            "updated_at": "2022-07-27T10:47:38.032Z"
-        }
-    ],
-    "check_pagination_list_project_user":
-        [{
-            "id": 111,
-            "username": "test1",
-            "name": "Test Account",
-            "state": "active",
-            "avatar_url": "avater_url",
-            "web_url": "web_url1"
-        },
-        {
-            "id": 222,
-            "username": "test2",
-            "name": "Test Account",
-            "state": "active",
-            "avatar_url": "avater_url",
-            "web_url": "web_url2"
-        },
-        {
-            "id": 333,
-            "username": "test3",
-            "name": "Test Account",
-            "state": "active",
-            "avatar_url": "avater_url",
-            "web_url": "web_url3"
-        },
-        {
-            "id": 444,
-            "username": "test2",
-            "name": "Test Account",
-            "state": "active",
-            "avatar_url": "avater_url",
-            "web_url": "web_url2"
-        },
-        {
-            "id": 555,
-            "username": "test3",
-            "name": "Test Account",
-            "state": "active",
-            "avatar_url": "avater_url",
-            "web_url": "web_url3"
-        }
-    ],
-    "file":
+    "merged": false,
+    "protected": false,
+    "developers_can_push": false,
+    "developers_can_merge": false
+  },
+  "get_group_project": [
     {
-        "file_name": "example-file",
-        "file_path": ".example-file",
-        "size": 1024,
-        "encoding": "base64",
-        "content_sha256": "7ff1d80f",
-        "ref": "test-1",
-        "blob_id": "aff693",
-        "commit_id": "f9d0b",
-        "last_commit_id": "f9d0b",
-        "execute_filemode": false,
-        "content": "example unit test"
+      "id": 1,
+      "description": "test1",
+      "name": "ProjectTest1",
+      "path": "learn-gitlab1",
+      "path_with_namespace": "demistotest1/learn-gitlab",
+      "created_at": "2022-07-18T12:19:47.553Z"
     },
-    "create_file":
     {
-        "file_path": ".example",
-        "branch": "main"
+      "id": 2,
+      "description": "test2",
+      "name": "ProjectTest2",
+      "path": "learn-gitlab2",
+      "created_at": "2022-07-18T12:19:47.553Z"
+    }
+  ],
+  "get_version": {
+    "version": "15.5.0-pre",
+    "revision": "6146b2240b0"
+  },
+  "get_projects": [
+    {
+      "id": 143,
+      "name": "TearDownWalls",
+      "path": "teardownwalls"
     },
-    "search_code":
-    [
-        {
-            "basename": "test",
-            "data": " search via unit test\n",
-            "path": "test",
-            "filename": "test",
-            "id": null,
-            "ref": "main",
-            "startline": 1,
-            "project_id": 1
+    {
+      "id": 450,
+      "name": "Leiningen",
+      "path": "leiningen"
+    }
+  ],
+  "get_project_list": [
+    {
+      "id": 1,
+      "description": "description1",
+      "name": "LearnGitLab1",
+      "path": "/learn-gitlab1",
+      "path_with_namespace": "demistotest1/learn-gitlab",
+      "created_at": "2022-07-18T12:19:47.553Z"
+    },
+    {
+      "id": 2,
+      "description": "description2",
+      "name": "LearnGitLab2",
+      "name_with_namespace": "demistoTest / demistoTest",
+      "path": "/learn-gitlab2"
+    }
+  ],
+  "issue_list": [
+    {
+      "id": 116016439,
+      "iid": 1,
+      "project_id": 1234,
+      "title": "try",
+      "description": "demo",
+      "state": "opened",
+      "created_at": "2022-09-29T14:21:10.746Z",
+      "updated_at": "2022-09-29T14:21:10.746Z",
+      "closed_at": null,
+      "closed_by": null,
+      "labels": [],
+      "milestone": null,
+      "assignees": [],
+      "author": {
+        "id": 12665296,
+        "username": "test9308",
+        "name": "Test Account",
+        "state": "active",
+        "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
+        "web_url": "https://gitlab.com/test9308"
+      },
+      "type": "ISSUE",
+      "assignee": null,
+      "user_notes_count": 0,
+      "merge_requests_count": 0,
+      "upvotes": 0,
+      "downvotes": 0,
+      "due_date": null,
+      "confidential": false,
+      "discussion_locked": null,
+      "issue_type": "issue",
+      "web_url": "https://gitlab.com/test9308/gitlabtest/-/issues/1",
+      "time_stats": {
+        "time_estimate": 0,
+        "total_time_spent": 0,
+        "human_time_estimate": null,
+        "human_total_time_spent": null
+      },
+      "task_completion_status": {
+        "count": 0,
+        "completed_count": 0
+      },
+      "blocking_issues_count": 0,
+      "has_tasks": false,
+      "_links": {
+        "self": "https://gitlab.com/api/v4/projects/39823965/issues/1",
+        "notes": "https://gitlab.com/api/v4/projects/39823965/issues/1/notes",
+        "award_emoji": "https://gitlab.com/api/v4/projects/39823965/issues/1/award_emoji",
+        "project": "https://gitlab.com/api/v4/projects/39823965",
+        "closed_as_duplicate_of": null
+      },
+      "references": {
+        "short": "#1",
+        "relative": "#1",
+        "full": "test9308/gitlabtest#1"
+      },
+      "severity": "UNKNOWN",
+      "moved_to_id": null,
+      "service_desk_reply_to": null
+    },
+    {
+      "id": 116016545,
+      "iid": 2,
+      "project_id": 1234,
+      "title": "AnotherOne",
+      "description": "issue2",
+      "state": "opened",
+      "created_at": "2022-09-29T14:22:25.268Z",
+      "updated_at": "2022-09-29T14:22:25.268Z",
+      "closed_at": null,
+      "closed_by": null,
+      "labels": [],
+      "milestone": null,
+      "assignees": [],
+      "author": {
+        "id": 12665296,
+        "username": "test9308",
+        "name": "Test Account",
+        "state": "active",
+        "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
+        "web_url": "https://gitlab.com/test9308"
+      },
+      "type": "ISSUE",
+      "assignee": null,
+      "user_notes_count": 0,
+      "merge_requests_count": 0,
+      "upvotes": 0,
+      "downvotes": 0,
+      "due_date": null,
+      "confidential": false,
+      "discussion_locked": null,
+      "issue_type": "issue",
+      "web_url": "https://gitlab.com/test9308/gitlabtest/-/issues/2",
+      "time_stats": {
+        "time_estimate": 0,
+        "total_time_spent": 0,
+        "human_time_estimate": null,
+        "human_total_time_spent": null
+      },
+      "task_completion_status": {
+        "count": 0,
+        "completed_count": 0
+      },
+      "blocking_issues_count": 0,
+      "has_tasks": false,
+      "_links": {
+        "self": "https://gitlab.com/api/v4/projects/39823965/issues/2",
+        "notes": "https://gitlab.com/api/v4/projects/39823965/issues/2/notes",
+        "award_emoji": "https://gitlab.com/api/v4/projects/39823965/issues/2/award_emoji",
+        "project": "https://gitlab.com/api/v4/projects/39823965",
+        "closed_as_duplicate_of": null
+      },
+      "references": {
+        "short": "#2",
+        "relative": "#2",
+        "full": "test9308/gitlabtest#2"
+      },
+      "severity": "UNKNOWN",
+      "moved_to_id": null,
+      "service_desk_reply_to": null
+    },
+    {
+      "id": 116016600,
+      "iid": 3,
+      "project_id": 1234,
+      "title": "Tester3",
+      "description": "issue3",
+      "state": "opened",
+      "created_at": "2022-09-29T14:22:48.498Z",
+      "updated_at": "2022-09-29T14:22:48.498Z",
+      "closed_at": null,
+      "closed_by": null,
+      "labels": [],
+      "milestone": null,
+      "assignees": [],
+      "author": {
+        "id": 12665296,
+        "username": "test9308",
+        "name": "Test Account",
+        "state": "active",
+        "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
+        "web_url": "https://gitlab.com/test9308"
+      },
+      "type": "ISSUE",
+      "assignee": null,
+      "user_notes_count": 0,
+      "merge_requests_count": 0,
+      "upvotes": 0,
+      "downvotes": 0,
+      "due_date": null,
+      "confidential": false,
+      "discussion_locked": null,
+      "issue_type": "issue",
+      "web_url": "https://gitlab.com/test9308/gitlabtest/-/issues/3",
+      "time_stats": {
+        "time_estimate": 0,
+        "total_time_spent": 0,
+        "human_time_estimate": null,
+        "human_total_time_spent": null
+      },
+      "task_completion_status": {
+        "count": 0,
+        "completed_count": 0
+      },
+      "blocking_issues_count": 0,
+      "has_tasks": false,
+      "_links": {
+        "self": "https://gitlab.com/api/v4/projects/39823965/issues/3",
+        "notes": "https://gitlab.com/api/v4/projects/39823965/issues/3/notes",
+        "award_emoji": "https://gitlab.com/api/v4/projects/39823965/issues/3/award_emoji",
+        "project": "https://gitlab.com/api/v4/projects/39823965",
+        "closed_as_duplicate_of": null
+      },
+      "references": {
+        "short": "#3",
+        "relative": "#3",
+        "full": "test9308/gitlabtest#3"
+      },
+      "severity": "UNKNOWN",
+      "moved_to_id": null,
+      "service_desk_reply_to": null
+    },
+    {
+      "id": 116016614,
+      "iid": 4,
+      "project_id": 1234,
+      "title": "whatnu",
+      "description": "Pica",
+      "state": "opened",
+      "created_at": "2022-09-29T14:22:56.326Z",
+      "updated_at": "2022-10-02T08:48:26.661Z",
+      "closed_at": null,
+      "closed_by": null,
+      "labels": ["GitlabLabel5"],
+      "milestone": null,
+      "assignees": [],
+      "author": {
+        "id": 12665296,
+        "username": "test9308",
+        "name": "Test Account",
+        "state": "active",
+        "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
+        "web_url": "https://gitlab.com/test9308"
+      },
+      "type": "ISSUE",
+      "assignee": null,
+      "user_notes_count": 4,
+      "merge_requests_count": 0,
+      "upvotes": 0,
+      "downvotes": 0,
+      "due_date": null,
+      "confidential": false,
+      "discussion_locked": null,
+      "issue_type": "issue",
+      "web_url": "https://gitlab.com/test9308/gitlabtest/-/issues/4",
+      "time_stats": {
+        "time_estimate": 0,
+        "total_time_spent": 0,
+        "human_time_estimate": null,
+        "human_total_time_spent": null
+      },
+      "task_completion_status": {
+        "count": 0,
+        "completed_count": 0
+      },
+      "blocking_issues_count": 0,
+      "has_tasks": false,
+      "_links": {
+        "self": "https://gitlab.com/api/v4/projects/39823965/issues/4",
+        "notes": "https://gitlab.com/api/v4/projects/39823965/issues/4/notes",
+        "award_emoji": "https://gitlab.com/api/v4/projects/39823965/issues/4/award_emoji",
+        "project": "https://gitlab.com/api/v4/projects/39823965",
+        "closed_as_duplicate_of": null
+      },
+      "references": {
+        "short": "#4",
+        "relative": "#4",
+        "full": "test9308/gitlabtest#4"
+      },
+      "severity": "UNKNOWN",
+      "moved_to_id": null,
+      "service_desk_reply_to": null
+    },
+    {
+      "id": 116130973,
+      "iid": 5,
+      "project_id": 1234,
+      "title": "whatnu",
+      "description": "Pica",
+      "state": "opened",
+      "created_at": "2022-10-02T08:48:25.201Z",
+      "updated_at": "2022-10-02T10:05:26.765Z",
+      "closed_at": null,
+      "closed_by": null,
+      "labels": ["GitlabLabel5"],
+      "milestone": null,
+      "assignees": [],
+      "author": {
+        "id": 12665296,
+        "username": "test9308",
+        "name": "Test Account",
+        "state": "active",
+        "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
+        "web_url": "https://gitlab.com/test9308"
+      },
+      "type": "ISSUE",
+      "assignee": null,
+      "user_notes_count": 3,
+      "merge_requests_count": 0,
+      "upvotes": 0,
+      "downvotes": 0,
+      "due_date": null,
+      "confidential": false,
+      "discussion_locked": null,
+      "issue_type": "issue",
+      "web_url": "https://gitlab.com/test9308/gitlabtest/-/issues/5",
+      "time_stats": {
+        "time_estimate": 0,
+        "total_time_spent": 0,
+        "human_time_estimate": null,
+        "human_total_time_spent": null
+      },
+      "task_completion_status": {
+        "count": 0,
+        "completed_count": 0
+      },
+      "blocking_issues_count": 0,
+      "has_tasks": false,
+      "_links": {
+        "self": "https://gitlab.com/api/v4/projects/39823965/issues/5",
+        "notes": "https://gitlab.com/api/v4/projects/39823965/issues/5/notes",
+        "award_emoji": "https://gitlab.com/api/v4/projects/39823965/issues/5/award_emoji",
+        "project": "https://gitlab.com/api/v4/projects/39823965",
+        "closed_as_duplicate_of": null
+      },
+      "references": {
+        "short": "#5",
+        "relative": "#5",
+        "full": "test9308/gitlabtest#5"
+      },
+      "severity": "UNKNOWN",
+      "moved_to_id": null,
+      "service_desk_reply_to": null
+    },
+    {
+      "id": 116132096,
+      "iid": 6,
+      "project_id": 1234,
+      "title": "whatnu",
+      "description": "Pica",
+      "state": "opened",
+      "created_at": "2022-10-02T10:05:21.271Z",
+      "updated_at": "2022-10-02T10:07:57.244Z",
+      "closed_at": null,
+      "closed_by": null,
+      "labels": ["GitlabLabel5"],
+      "milestone": null,
+      "assignees": [],
+      "author": {
+        "id": 12665296,
+        "username": "test9308",
+        "name": "Test Account",
+        "state": "active",
+        "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
+        "web_url": "https://gitlab.com/test9308"
+      },
+      "type": "ISSUE",
+      "assignee": null,
+      "user_notes_count": 3,
+      "merge_requests_count": 0,
+      "upvotes": 0,
+      "downvotes": 0,
+      "due_date": null,
+      "confidential": false,
+      "discussion_locked": null,
+      "issue_type": "issue",
+      "web_url": "https://gitlab.com/test9308/gitlabtest/-/issues/6",
+      "time_stats": {
+        "time_estimate": 0,
+        "total_time_spent": 0,
+        "human_time_estimate": null,
+        "human_total_time_spent": null
+      },
+      "task_completion_status": {
+        "count": 0,
+        "completed_count": 0
+      },
+      "blocking_issues_count": 0,
+      "has_tasks": false,
+      "_links": {
+        "self": "https://gitlab.com/api/v4/projects/39823965/issues/6",
+        "notes": "https://gitlab.com/api/v4/projects/39823965/issues/6/notes",
+        "award_emoji": "https://gitlab.com/api/v4/projects/39823965/issues/6/award_emoji",
+        "project": "https://gitlab.com/api/v4/projects/39823965",
+        "closed_as_duplicate_of": null
+      },
+      "references": {
+        "short": "#6",
+        "relative": "#6",
+        "full": "test9308/gitlabtest#6"
+      },
+      "severity": "UNKNOWN",
+      "moved_to_id": null,
+      "service_desk_reply_to": null
+    },
+    {
+      "id": 116132144,
+      "iid": 7,
+      "project_id": 1234,
+      "title": "whatnu",
+      "description": "Pica",
+      "state": "opened",
+      "created_at": "2022-10-02T10:07:51.168Z",
+      "updated_at": "2022-10-02T10:07:54.139Z",
+      "closed_at": null,
+      "closed_by": null,
+      "labels": ["GitlabLabel5"],
+      "milestone": null,
+      "assignees": [],
+      "author": {
+        "id": 12665296,
+        "username": "test9308",
+        "name": "Test Account",
+        "state": "active",
+        "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
+        "web_url": "https://gitlab.com/test9308"
+      },
+      "type": "ISSUE",
+      "assignee": null,
+      "user_notes_count": 1,
+      "merge_requests_count": 0,
+      "upvotes": 0,
+      "downvotes": 0,
+      "due_date": null,
+      "confidential": false,
+      "discussion_locked": null,
+      "issue_type": "issue",
+      "web_url": "https://gitlab.com/test9308/gitlabtest/-/issues/7",
+      "time_stats": {
+        "time_estimate": 0,
+        "total_time_spent": 0,
+        "human_time_estimate": null,
+        "human_total_time_spent": null
+      },
+      "task_completion_status": {
+        "count": 0,
+        "completed_count": 0
+      },
+      "blocking_issues_count": 0,
+      "has_tasks": false,
+      "_links": {
+        "self": "https://gitlab.com/api/v4/projects/39823965/issues/7",
+        "notes": "https://gitlab.com/api/v4/projects/39823965/issues/7/notes",
+        "award_emoji": "https://gitlab.com/api/v4/projects/39823965/issues/7/award_emoji",
+        "project": "https://gitlab.com/api/v4/projects/39823965",
+        "closed_as_duplicate_of": null
+      },
+      "references": {
+        "short": "#7",
+        "relative": "#7",
+        "full": "test9308/gitlabtest#7"
+      },
+      "severity": "UNKNOWN",
+      "moved_to_id": null,
+      "service_desk_reply_to": null
+    }
+  ],
+  "raw_file": "I am a file.",
+  "List Brnaches": [
+    {
+      "name": "TestFileCommandsForPlaybook",
+      "commit": {
+        "id": "1188e1e97bc6aa297986695eccecd6227dc8c4a7",
+        "short_id": "1188e1e9",
+        "created_at": "2022-10-02T10:08:50.000+00:00",
+        "parent_ids": ["a76e22e374b0e698b848c95e0ad744cdf3ee167f"],
+        "title": "delete file via playbook",
+        "message": "delete file via playbook",
+        "author_name": "Test Account",
+        "author_email": "test@demistodev.com",
+        "authored_date": "2022-10-02T10:08:50.000+00:00",
+        "committer_name": "Test Account",
+        "committer_email": "test@demistodev.com",
+        "committed_date": "2022-10-02T10:08:50.000+00:00",
+        "trailers": {},
+        "web_url": "https://gitlab.com/test9308/gitlabtest/-/commit/1188e1e97bc6aa297986695eccecd6227dc8c4a7"
+      },
+      "merged": false,
+      "protected": false,
+      "developers_can_push": false,
+      "developers_can_merge": false,
+      "can_push": true,
+      "default": false,
+      "web_url": "https://gitlab.com/test9308/gitlabtest/-/tree/TestFileCommandsForPlaybook"
+    },
+    {
+      "name": "b",
+      "commit": {
+        "id": "eadec97163297620df38f9cbc906eff7fa04eb18",
+        "short_id": "eadec971",
+        "created_at": "2022-10-02T10:01:15.000+00:00",
+        "parent_ids": ["c4a4c5d80f9cce20108bf5325b88ec73698f92c8"],
+        "title": "Update CheckRawFileCommand_main",
+        "message": "Update CheckRawFileCommand_main",
+        "author_name": "Test Account",
+        "author_email": "test@demistodev.com",
+        "authored_date": "2022-10-02T10:01:15.000+00:00",
+        "committer_name": "Test Account",
+        "committer_email": "test@demistodev.com",
+        "committed_date": "2022-10-02T10:01:15.000+00:00",
+        "trailers": {},
+        "web_url": "https://gitlab.com/test9308/gitlabtest/-/commit/eadec97163297620df38f9cbc906eff7fa04eb18"
+      },
+      "merged": false,
+      "protected": false,
+      "developers_can_push": false,
+      "developers_can_merge": false,
+      "can_push": true,
+      "default": false,
+      "web_url": "https://gitlab.com/test9308/gitlabtest/-/tree/b"
+    },
+    {
+      "name": "b2",
+      "commit": {
+        "id": "eadec97163297620df38f9cbc906eff7fa04eb18",
+        "short_id": "eadec971",
+        "created_at": "2022-10-02T10:01:15.000+00:00",
+        "parent_ids": ["c4a4c5d80f9cce20108bf5325b88ec73698f92c8"],
+        "title": "Update CheckRawFileCommand_main",
+        "message": "Update CheckRawFileCommand_main",
+        "author_name": "Test Account",
+        "author_email": "test@demistodev.com",
+        "authored_date": "2022-10-02T10:01:15.000+00:00",
+        "committer_name": "Test Account",
+        "committer_email": "test@demistodev.com",
+        "committed_date": "2022-10-02T10:01:15.000+00:00",
+        "trailers": {},
+        "web_url": "https://gitlab.com/test9308/gitlabtest/-/commit/eadec97163297620df38f9cbc906eff7fa04eb18"
+      },
+      "merged": false,
+      "protected": false,
+      "developers_can_push": false,
+      "developers_can_merge": false,
+      "can_push": true,
+      "default": false,
+      "web_url": "https://gitlab.com/test9308/gitlabtest/-/tree/b2"
+    },
+    {
+      "name": "main",
+      "commit": {
+        "id": "eadec97163297620df38f9cbc906eff7fa04eb18",
+        "short_id": "eadec971",
+        "created_at": "2022-10-02T10:01:15.000+00:00",
+        "parent_ids": ["c4a4c5d80f9cce20108bf5325b88ec73698f92c8"],
+        "title": "Update CheckRawFileCommand_main",
+        "message": "Update CheckRawFileCommand_main",
+        "author_name": "Test Account",
+        "author_email": "test@demistodev.com",
+        "authored_date": "2022-10-02T10:01:15.000+00:00",
+        "committer_name": "Test Account",
+        "committer_email": "test@demistodev.com",
+        "committed_date": "2022-10-02T10:01:15.000+00:00",
+        "trailers": {},
+        "web_url": "https://gitlab.com/test9308/gitlabtest/-/commit/eadec97163297620df38f9cbc906eff7fa04eb18"
+      },
+      "merged": false,
+      "protected": true,
+      "developers_can_push": false,
+      "developers_can_merge": false,
+      "can_push": true,
+      "default": true,
+      "web_url": "https://gitlab.com/test9308/gitlabtest/-/tree/main"
+    }
+  ],
+  "List commit": [
+    {
+      "id": "eadec97163297620df38f9cbc906eff7fa04eb18",
+      "short_id": "eadec971",
+      "created_at": "2022-10-02T10:01:15.000+00:00",
+      "parent_ids": ["c4a4c5d80f9cce20108bf5325b88ec73698f92c8"],
+      "title": "Update CheckRawFileCommand_main",
+      "message": "Update CheckRawFileCommand_main",
+      "author_name": "Test Account",
+      "author_email": "test@demistodev.com",
+      "authored_date": "2022-10-02T10:01:15.000+00:00",
+      "committer_name": "Test Account",
+      "committer_email": "test@demistodev.com",
+      "committed_date": "2022-10-02T10:01:15.000+00:00",
+      "trailers": {},
+      "web_url": "https://gitlab.com/test9308/gitlabtest/-/commit/eadec97163297620df38f9cbc906eff7fa04eb18"
+    },
+    {
+      "id": "c4a4c5d80f9cce20108bf5325b88ec73698f92c8",
+      "short_id": "c4a4c5d8",
+      "created_at": "2022-10-02T10:00:34.000+00:00",
+      "parent_ids": ["7d584f46406188ba35bf6d651cbd12b4108b6284"],
+      "title": "Add new file",
+      "message": "Add new file",
+      "author_name": "Test Account",
+      "author_email": "test@demistodev.com",
+      "authored_date": "2022-10-02T10:00:34.000+00:00",
+      "committer_name": "Test Account",
+      "committer_email": "test@demistodev.com",
+      "committed_date": "2022-10-02T10:00:34.000+00:00",
+      "trailers": {},
+      "web_url": "https://gitlab.com/test9308/gitlabtest/-/commit/c4a4c5d80f9cce20108bf5325b88ec73698f92c8"
+    },
+    {
+      "id": "7d584f46406188ba35bf6d651cbd12b4108b6284",
+      "short_id": "7d584f46",
+      "created_at": "2022-09-29T13:59:18.000+00:00",
+      "parent_ids": [],
+      "title": "Initial commit",
+      "message": "Initial commit",
+      "author_name": "Test Account",
+      "author_email": "test@demistodev.com",
+      "authored_date": "2022-09-29T13:59:18.000+00:00",
+      "committer_name": "Test Account",
+      "committer_email": "test@demistodev.com",
+      "committed_date": "2022-09-29T13:59:18.000+00:00",
+      "trailers": {},
+      "web_url": "https://gitlab.com/test9308/gitlabtest/-/commit/7d584f46406188ba35bf6d651cbd12b4108b6284"
+    }
+  ],
+  "list_merge_request_note": [
+    {
+      "id": 115,
+      "body": "body11",
+      "attachment": null,
+      "created_at": "2022-10-02T08:48:43.674Z",
+      "updated_at": "2022-10-02T08:48:43.676Z"
+    },
+    {
+      "id": 112,
+      "body": "body12",
+      "created_at": "2022-10-02T08:48:43.588Z",
+      "updated_at": "2022-10-02T08:48:43.591Z"
+    }
+  ],
+  "list_merge_request": [
+    {
+      "iid": 5,
+      "title": "t1",
+      "description": null,
+      "state": "opened",
+      "created_at": "2022-10-02T10:11:27.506Z",
+      "merged_by": null,
+      "merge_user": null,
+      "merged_at": "2022-10-02T10:11:27.506Z",
+      "user_notes_count": 0,
+      "upvotes": 0,
+      "downvotes": 0,
+      "author": {
+        "name": "Test Account"
+      },
+      "assignees": [],
+      "assignee": null,
+      "reviewers": []
+    },
+    {
+      "iid": 6,
+      "title": "t2",
+      "description": null,
+      "state": "opened",
+      "created_at": "2022-10-02T10:11:27.506Z",
+      "merged_by": null,
+      "merge_user": null,
+      "merged_at": "2022-10-02T10:11:27.506Z",
+      "user_notes_count": 0,
+      "upvotes": 0,
+      "downvotes": 0,
+      "author": {
+        "name": "Test Account"
+      },
+      "assignees": [],
+      "assignee": null,
+      "reviewers": []
+    }
+  ],
+  "list_group_members": [
+    {
+      "id": 126,
+      "username": "test2",
+      "name": "Test Account",
+      "state": "active",
+      "access_level": 50,
+      "created_at": "2022-10-02T08:44:38.826Z",
+      "expires_at": "2032-10-02T08:44:38.826Z",
+      "membership_state": "active"
+    },
+    {
+      "id": 116,
+      "username": "test2",
+      "name": "Test Account",
+      "state": "active",
+      "access_level": 50,
+      "created_at": "2022-10-02T08:44:38.826Z",
+      "expires_at": "2032-10-02T08:44:38.826Z",
+      "membership_state": "active"
+    }
+  ],
+  "list_project_user": [
+    {
+      "id": 123,
+      "username": "test1",
+      "name": "Test Account",
+      "state": "active",
+      "avatar_url": "avater_url",
+      "web_url": "web_url1"
+    },
+    {
+      "id": 345,
+      "username": "test2",
+      "name": "Test Account",
+      "state": "active",
+      "avatar_url": "avater_url",
+      "web_url": "web_url2"
+    },
+    {
+      "id": 678,
+      "username": "test3",
+      "name": "Test Account",
+      "state": "active",
+      "avatar_url": "avater_url",
+      "web_url": "web_url3"
+    }
+  ],
+  "issue_client": {
+    "iid": 114,
+    "title": "title_test",
+    "description": "desc_test",
+    "state": "opened",
+    "created_at": "'2022-10-06T14:45:38.004Z'",
+    "updated_at": "'2022-10-06T14:45:38.004Z'",
+    "author": {
+      "name": "name"
+    }
+  },
+  "list_groups": [
+    {
+      "id": 55694272,
+      "name": "demistoTest",
+      "path": "demistotest1",
+      "description": "exaple unit test",
+      "visibility": "private",
+      "created_at": "2022-07-18T12:19:46.363Z",
+      "parent_id": null,
+      "ldap_cn": null,
+      "ldap_access": null
+    }
+  ],
+  "list_issue_note": [
+    {
+      "id": 112,
+      "body": "body1",
+      "attachment": null,
+      "author": {
+        "id": 1,
+        "username": "demo",
+        "name": "user test",
+        "state": "active"
+      },
+      "created_at": "2022-07-27T10:47:38.028Z",
+      "updated_at": "2022-07-27T10:47:38.032Z"
+    },
+    {
+      "id": 113,
+      "body": "body2",
+      "attachment": null,
+      "author": {
+        "id": 1,
+        "username": "demo",
+        "name": "user test",
+        "state": "active"
+      },
+      "created_at": "2022-07-27T10:47:38.028Z",
+      "updated_at": "2022-07-27T10:47:38.032Z"
+    }
+  ],
+  "check_pagination_list_project_user": [
+    {
+      "id": 111,
+      "username": "test1",
+      "name": "Test Account",
+      "state": "active",
+      "avatar_url": "avater_url",
+      "web_url": "web_url1"
+    },
+    {
+      "id": 222,
+      "username": "test2",
+      "name": "Test Account",
+      "state": "active",
+      "avatar_url": "avater_url",
+      "web_url": "web_url2"
+    },
+    {
+      "id": 333,
+      "username": "test3",
+      "name": "Test Account",
+      "state": "active",
+      "avatar_url": "avater_url",
+      "web_url": "web_url3"
+    },
+    {
+      "id": 444,
+      "username": "test2",
+      "name": "Test Account",
+      "state": "active",
+      "avatar_url": "avater_url",
+      "web_url": "web_url2"
+    },
+    {
+      "id": 555,
+      "username": "test3",
+      "name": "Test Account",
+      "state": "active",
+      "avatar_url": "avater_url",
+      "web_url": "web_url3"
+    }
+  ],
+  "file": {
+    "file_name": "example-file",
+    "file_path": ".example-file",
+    "size": 1024,
+    "encoding": "base64",
+    "content_sha256": "7ff1d80f",
+    "ref": "test-1",
+    "blob_id": "aff693",
+    "commit_id": "f9d0b",
+    "last_commit_id": "f9d0b",
+    "execute_filemode": false,
+    "content": "example unit test"
+  },
+  "create_file": {
+    "file_path": ".example",
+    "branch": "main"
+  },
+  "search_code": [
+    {
+      "basename": "test",
+      "data": " search via unit test\n",
+      "path": "test",
+      "filename": "test",
+      "id": null,
+      "ref": "main",
+      "startline": 1,
+      "project_id": 1
+    }
+  ],
+  "pipeline": {
+    "mock_response": [
+      {
+        "id": 1,
+        "project_id": 3,
+        "sha": "skd5h31245ljkasl4kj45l324",
+        "ref": "Pipeline 1",
+        "status": "running",
+        "created_at": "2021-06-15T14:31:29.607Z",
+        "updated_at": "2021-06-15T14:31:32.964Z",
+        "web_url": "https://server_url/project/-/pipelines/1"
+      },
+      {
+        "id": 2,
+        "project_id": 3,
+        "sha": "zxfmle54j14jazskl4jqlk421l4",
+        "ref": "Pipeline 2",
+        "status": "running",
+        "created_at": "2021-06-15T14:26:00.460Z",
+        "updated_at": "2021-06-15T14:26:03.452Z",
+        "web_url": "https://server_url/project/-/pipelines/2"
+      }
+    ],
+    "expected_outputs": [
+      {
+        "id": 1,
+        "project_id": 3,
+        "sha": "skd5h31245ljkasl4kj45l324",
+        "ref": "Pipeline 1",
+        "status": "running",
+        "created_at": "2021-06-15T14:31:29.607Z",
+        "updated_at": "2021-06-15T14:31:32.964Z",
+        "web_url": "https://server_url/project/-/pipelines/1"
+      },
+      {
+        "id": 2,
+        "project_id": 3,
+        "sha": "zxfmle54j14jazskl4jqlk421l4",
+        "ref": "Pipeline 2",
+        "status": "running",
+        "created_at": "2021-06-15T14:26:00.460Z",
+        "updated_at": "2021-06-15T14:26:03.452Z",
+        "web_url": "https://server_url/project/-/pipelines/2"
+      }
+    ],
+    "expected_prefix": "GitLab.Pipeline",
+    "expected_url_mock_suffix": "projects/3/pipelines",
+    "expected_key_field": "id"
+  },
+  "jobs": {
+    "mock_response": [
+      {
+        "id": 31,
+        "status": "failed",
+        "stage": "run-instances",
+        "name": "server_master",
+        "ref": "master",
+        "tag": false,
+        "coverage": null,
+        "allow_failure": false,
+        "created_at": "2021-06-15T00:05:09.139Z",
+        "started_at": "2021-06-15T00:35:52.125Z",
+        "finished_at": "2021-06-15T01:44:16.559Z",
+        "duration": 4104.433651,
+        "user": {
+          "id": 1,
+          "name": "User name",
+          "username": "user",
+          "state": "active",
+          "avatar_url": "https://server_url/uploads/-/system/user/avatar/1/avatar.png",
+          "web_url": "https://server_url/user",
+          "created_at": "2020-10-26T19:36:25.259Z",
+          "bio": "",
+          "bio_html": "",
+          "location": "",
+          "public_email": "",
+          "skype": "",
+          "linkedin": "",
+          "twitter": "",
+          "website_url": "",
+          "organization": "",
+          "job_title": "",
+          "bot": false,
+          "work_information": null,
+          "followers": 0,
+          "following": 0
+        },
+        "commit": {
+          "id": "sdm45mk43214ask4la43kj12l3kj",
+          "short_id": "sd45123",
+          "created_at": "2021-06-14T18:57:03.000+03:00",
+          "parent_ids": ["as41p24aslkjrsklas412234jkas"],
+          "title": "Update Issue 1",
+          "message": "Updated issue 1 by user",
+          "author_name": "bot",
+          "author_email": "bot@gmail.com",
+          "authored_date": "2021-06-14T18:57:03.000+03:00",
+          "committer_name": "GitHub",
+          "committer_email": "noreply@github.com",
+          "committed_date": "2021-06-14T18:57:03.000+03:00",
+          "web_url": "https://server_url/-/commit/sdm45mk43214ask4la43kj12l3kj"
+        },
+        "pipeline": {
+          "id": 12,
+          "project_id": 4,
+          "sha": "as5235knlsadjr5lsdk45jl1k2j3lsdr",
+          "ref": "master",
+          "status": "failed",
+          "created_at": "2021-06-15T00:05:09.041Z",
+          "updated_at": "2021-06-15T01:44:17.793Z",
+          "web_url": "https://server_url/-/pipelines/12"
+        },
+        "web_url": "https://server_url/-/jobs/31",
+        "artifacts_file": {
+          "filename": "artifacts.zip",
+          "size": 136861712
+        },
+        "artifacts": [
+          {
+            "file_type": "archive",
+            "size": 136861712,
+            "filename": "artifacts.zip",
+            "file_format": "zip"
+          },
+          {
+            "file_type": "metadata",
+            "size": 1138,
+            "filename": "metadata.gz",
+            "file_format": "gzip"
+          },
+          {
+            "file_type": "trace",
+            "size": 26318,
+            "filename": "job.log",
+            "file_format": null
+          }
+        ],
+        "artifacts_expire_at": "2021-07-15T01:44:11.659Z",
+        "tag_list": []
+      }
+    ],
+    "expected_outputs": [
+      {
+        "id": 31,
+        "stage": "run-instances",
+        "name": "server_master",
+        "ref": "master",
+        "created_at": "2021-06-15T00:05:09.139Z",
+        "started_at": "2021-06-15T00:35:52.125Z",
+        "finished_at": "2021-06-15T01:44:16.559Z",
+        "duration": 4104.433651,
+        "status": "failed",
+        "pipeline": {
+          "id": 12,
+          "project_id": 4,
+          "sha": "as5235knlsadjr5lsdk45jl1k2j3lsdr",
+          "ref": "master",
+          "status": "failed",
+          "created_at": "2021-06-15T00:05:09.041Z",
+          "updated_at": "2021-06-15T01:44:17.793Z",
+          "web_url": "https://server_url/-/pipelines/12"
+        },
+        "web_url": "https://server_url/-/jobs/31"
+      }
+    ],
+    "expected_prefix": "GitLab.Job",
+    "expected_url_mock_suffix": "projects/4/pipelines/12/jobs",
+    "expected_key_field": "id"
+  },
+  "artifact-get": {
+    "mock_response": "Failed Unit Test",
+    "expected_outputs": {
+      "job_id": "32",
+      "artifact_path_suffix": "artifacts/failed_tests.txt",
+      "artifact_data": "Failed Unit Test"
+    },
+    "expected_prefix": "GitLab.Artifact",
+    "expected_url_mock_suffix": "projects/45/jobs/32/artifacts/artifacts/failed_tests.txt",
+    "expected_key_field": ["job_id", "artifact_path_suffix"]
+  },
+  "pipeline_schedule": {
+    "mock_response": [
+      {
+        "id": 1,
+        "description": "Run the Build",
+        "ref": "master",
+        "cron": "* * * * *",
+        "cron_timezone": "UTC",
+        "next_run_at": "2021-06-16T00:05:00.000Z",
+        "active": true,
+        "created_at": "2021-05-23T14:00:34.105Z",
+        "updated_at": "2021-06-15T00:05:06.617Z",
+        "owner": {
+          "id": 11,
+          "name": "User Name 2",
+          "username": "user2",
+          "state": "active",
+          "avatar_url": "https://secure.gravatar.com/avatar/as52123asjklaslsajf?s=80&d=identicon",
+          "web_url": "https://gitlab_server/user2"
         }
-    ]
-
-
+      },
+      {
+        "id": 2,
+        "description": "Run the Expected Pipeline",
+        "ref": "upload_flow",
+        "cron": "* * * * *",
+        "cron_timezone": "UTC",
+        "next_run_at": "2021-05-24T02:05:00.000Z",
+        "active": false,
+        "created_at": "2021-05-12T11:57:47.436Z",
+        "updated_at": "2021-05-23T08:28:39.885Z",
+        "owner": {
+          "id": 22,
+          "name": "User Name",
+          "username": "user",
+          "state": "active",
+          "avatar_url": "https://secure.gravatar.com/avatar/as52123asjklaslsajf?s=80&d=identicon",
+          "web_url": "https://gitlab_server/user"
+        }
+      }
+    ],
+    "expected_outputs": [
+      {
+        "id": 1,
+        "description": "Run the Build",
+        "ref": "master",
+        "next_run_at": "2021-06-16T00:05:00.000Z",
+        "active": true,
+        "created_at": "2021-05-23T14:00:34.105Z",
+        "updated_at": "2021-06-15T00:05:06.617Z"
+      },
+      {
+        "id": 2,
+        "description": "Run the Expected Pipeline",
+        "ref": "upload_flow",
+        "next_run_at": "2021-05-24T02:05:00.000Z",
+        "active": false,
+        "created_at": "2021-05-12T11:57:47.436Z",
+        "updated_at": "2021-05-23T08:28:39.885Z"
+      }
+    ],
+    "expected_prefix": "GitLab.PipelineSchedule",
+    "expected_url_mock_suffix": "projects/1/pipeline_schedules",
+    "expected_key_field": "id"
+  }
 }
