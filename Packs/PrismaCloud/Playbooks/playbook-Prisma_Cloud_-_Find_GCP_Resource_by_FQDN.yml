@@ -730,7 +730,7 @@ tasks:
       brand: PrismaCloud v2
       description: Search configuration inventory on the Prisma Cloud platform using
         RQL language. Use this command for all queries that start with "config". When
-        no absolute time nor relative time arguments are provided, default time range
+        no absolute time nor relative time arguments are provided, the default time range
         is all times.
       id: 32767fe7-d8ea-422b-8bed-c3327a805dc7
       iscommand: true
