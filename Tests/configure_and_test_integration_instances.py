@@ -39,6 +39,8 @@ from Tests.test_content import get_server_numeric_version
 from Tests.test_integration import __get_integration_config, test_integration_instance, disable_all_integrations
 from Tests.tools import run_with_proxy_configured
 from Tests.update_content_data import update_content
+from Tests.private_build.upload_packs_private import extract_packs_artifacts
+from tempfile import mkdtemp
 
 MARKET_PLACE_MACHINES = ('master',)
 SKIPPED_PACKS = ['NonSupported', 'ApiModules']
@@ -1794,6 +1796,10 @@ def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tu
                                                 that new to current marketplace)
     """
     non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
     packs_with_higher_min_version = get_packs_with_higher_min_version(modified_packs_names - non_hidden_packs,
                                                                       build.content_path, build.server_numeric_version)
     # packs to install used in post update
@@ -1821,12 +1827,22 @@ def get_packs_with_higher_min_version(packs_names: Set[str], content_path: str, 
         (Set[str]): The set of the packs names that supposed to be not installed because
                     their min version is greater than the server version.
     """
+<<<<<<< HEAD
+=======
+    extract_content_packs_path = mkdtemp()
+    packs_artifacts_path = f'{os.getenv("ARTIFACTS_FOLDER")}/content_packs.zip'
+    extract_packs_artifacts(packs_artifacts_path, extract_content_packs_path)
+
+>>>>>>> master
     packs_with_higher_version = set()
     for pack_name in packs_names:
 
         pack_metadata = get_json_file(f"{content_path}/Packs/{pack_name}/pack_metadata.json")
         server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION, Metadata.SERVER_DEFAULT_MIN_VERSION)
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
         if 'Master' not in server_numeric_version and Version(server_numeric_version) < Version(server_min_version):
             packs_with_higher_version.add(pack_name)
             logging.info(f"Found pack '{pack_name}' with min version {server_min_version} that is "
