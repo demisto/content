@@ -2,8 +2,9 @@ import demistomock as demisto
 from CommonServerPython import *
 import traceback
 
+import urllib3
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 '''CLIENT CLASS'''
 
