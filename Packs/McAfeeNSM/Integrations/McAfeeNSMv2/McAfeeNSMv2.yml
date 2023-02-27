@@ -1937,6 +1937,25 @@ script:
     - name: all_results
       description: Return all devices related to the given domain.
       auto: PREDEFINED
+      predefined:
+        - yes
+        - no
+  - name: nsm-list-device-interface
+    description: List the interfaces related to a given device.
+    arguments:
+    - name: domain_id
+      description: The ID of the domain. To get the domain_id, use the !nsm-get-domains command.
+      required: true
+    - name: device_id
+      required: true
+      description: The ID of the device. To get the device ID, use the !nsm-list-domain-device command.
+    - name: limit
+      description: The maximum number of interfaces to return.
+      defaultvalue: 50
+    - name: all_results
+      description: Return all interfaces related to the given device.
+      auto: PREDEFINED
+      predefined:
         - yes
         - no
   isfetch: false

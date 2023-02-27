@@ -309,6 +309,17 @@ class Client(BaseClient):
         url_suffix = f'/domain/{domain_id}/device'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
+    def list_device_interface_request(self, domain_id, device_id):
+        """ Retrieves the list of interfaces realeted to a device.
+            Args:
+                device_id: int - The relevant device id.
+                domain_id: int - The relevant domain id.
+            Returns:
+                A dictionary with a list of interfaces.
+        """
+        url_suffix = f'/domain/{domain_id}/sensor/{device_id}/allocatedinterfaces'
+        return self._http_request(method='GET', url_suffix=url_suffix)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -1930,8 +1941,7 @@ def export_pcap_file_command(client: Client, args: Dict) -> List:
 
 
 def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
-    """_summary_
-
+    """
     Args:
         client (Client): client - A McAfeeNSM client.
         args (Dict): - The function arguments.
@@ -1958,19 +1968,52 @@ def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
+def list_device_interface_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Args:
+        client (Client): client - A McAfeeNSM client.
+        args (Dict): - The function arguments.
+    Returns: A CommandResult object with a list of device interfaces.
+    """
+    device_id = int(args.get('device_id', ''))
+    domain_id = int(args.get('domain_id', ''))
+    limit = arg_to_number(args.get('limit', 50))
+    all_results = argToBoolean(args.get('all_results', False))
+    response = client.list_device_interface_request(domain_id=domain_id, device_id=device_id)
+    if all_results:
+        interfaces = response.get('allocatedInterfaceList')
+    else:
+        interfaces = response.get('allocatedInterfaceList')[:limit]
+
+    readable_output = tableToMarkdown(
+        name='Device interfaces List', t=interfaces, removeNull=True
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='NSM.Interface',
+        outputs=interfaces,
+        raw_response=response
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
 def main() -> None:  # pragma: no cover
 
-    url = f"{demisto.params().get('url')}/sdkapi"
-    user_name = demisto.params().get('credentials', {}).get('identifier', "")
-    password = demisto.params().get('credentials', {}).get('password', "")
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    args = demisto.args()
+    command = demisto.command()
+    params = demisto.params()
+
+    url = f"{params.get('url')}/sdkapi"
+    user_name = params.get('credentials', {}).get('identifier', "")
+    password = params.get('credentials', {}).get('password', "")
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
     auth = (user_name, password)
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {command}')
     try:
 
         headers: Dict = {
@@ -1979,84 +2022,68 @@ def main() -> None:  # pragma: no cover
         }
 
         client = Client(url=url, auth=auth, headers=headers, proxy=proxy, verify=verify_certificate)
-        if demisto.command() != 'test-module':
+        if command != 'test-module':
             session_str = get_session(client, f'{user_name}:{password}')
             headers['NSM-SDK-API'] = session_str
             client = Client(url=url, auth=auth, headers=headers, proxy=proxy, verify=verify_certificate)
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result_str = test_module(client, f'{user_name}:{password}')
-            return_results(result_str)
-        elif demisto.command() == 'nsm-list-domain-firewall-policy':
-            result = list_domain_firewall_policy_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-get-firewall-policy':
-            result = get_firewall_policy_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-create-firewall-policy':
-            result = create_firewall_policy_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-update-firewall-policy':
-            result = update_firewall_policy_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-delete-firewall-policy':
-            result = delete_firewall_policy_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-list-domain-rule-object':
-            result = list_domain_rule_objects_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-get-rule-object':
-            result = get_rule_object_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-create-rule-object':
-            result = create_rule_object_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-update-rule-object':
-            result = update_rule_object_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-delete-rule-object':
-            result = delete_rule_object_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-get-alerts':
-            result = get_alerts_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-get-alert-details':
-            result = get_alert_details_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-get-attacks':
-            results_list = get_attacks_command(client, demisto.args())
-            return_results(results_list)
-        elif demisto.command() == 'nsm-get-domains':
-            result = get_domains_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-get-sensors':
-            result = get_sensors_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-get-ips-policies':
-            result = get_ips_policies_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-get-ips-policy-details':
-            result = get_ips_policy_details_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-update-alerts':
-            result = update_alerts_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-list-pcap-file':
-            result = list_pcap_file_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-export-pcap-file':
-            results_list = export_pcap_file_command(client, demisto.args())
-            return_results(results_list)
-        elif demisto.command() == 'nsm-list-domain-device':
-            results = list_domain_device_command(client, demisto.args())
+            str_results = test_module(client, f'{user_name}:{password}')
+            return_results(str_results)
+        elif command == 'nsm-list-domain-firewall-policy':
+            results: CommandResults = list_domain_firewall_policy_command(client, **args)
+        elif command == 'nsm-get-firewall-policy':
+            results = get_firewall_policy_command(client, **args)
+        elif command == 'nsm-create-firewall-policy':
+            results = create_firewall_policy_command(client, **args)
+        elif command == 'nsm-update-firewall-policy':
+            results = update_firewall_policy_command(client, **args)
+        elif command == 'nsm-delete-firewall-policy':
+            results = delete_firewall_policy_command(client, **args)
+        elif command == 'nsm-list-domain-rule-object':
+            results = list_domain_rule_objects_command(client, **args)
+        elif command == 'nsm-get-rule-object':
+            results = get_rule_object_command(client, **args)
+        elif command == 'nsm-create-rule-object':
+            results = create_rule_object_command(client, **args)
+        elif command == 'nsm-update-rule-object':
+            results = update_rule_object_command(client, **args)
+        elif command == 'nsm-delete-rule-object':
+            results = delete_rule_object_command(client, **args)
+        elif command == 'nsm-get-alerts':
+            results = get_alerts_command(client, **args)
+        elif command == 'nsm-get-alert-details':
+            results = get_alert_details_command(client, **args)
+        elif command == 'nsm-get-attacks':
+            list_results = get_attacks_command(client, **args)
+            return_results(list_results)
+        elif command == 'nsm-get-domains':
+            results = get_domains_command(client, **args)
+        elif command == 'nsm-get-sensors':
+            results = get_sensors_command(client, **args)
+        elif command == 'nsm-get-ips-policies':
+            results = get_ips_policies_command(client, **args)
+        elif command == 'nsm-get-ips-policy-details':
+            results = get_ips_policy_details_command(client, **args)
+        elif command == 'nsm-update-alerts':
+            results = update_alerts_command(client, **args)
+        elif command == 'nsm-list-pcap-file':
+            results = list_pcap_file_command(client, **args)
+        elif command == 'nsm-export-pcap-file':
+            list_results = export_pcap_file_command(client, **args)
+            return_results(list_results)
+        elif command == 'nsm-list-device-interface':
+            results = list_device_interface_command(client, **args)
+        elif command == 'nsm-list-domain-device':
+            results = list_domain_device_command(client, **args)
         else:
             raise NotImplementedError('This command is not implemented yet.')
         return_results(results)
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
