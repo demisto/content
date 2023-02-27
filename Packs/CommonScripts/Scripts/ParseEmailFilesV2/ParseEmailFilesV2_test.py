@@ -513,3 +513,22 @@ def test_eml_contains_eml_nesting_level(mocker, nesting_level_to_return, results
 
     assert len(results) == results_len
     assert results[results_index].args[0]['EntryContext']['Email']['Depth'] == depth
+
+
+def test_eml_contains_empty_htm_not_containing_file_data(mocker):
+    """
+        Given: An email containing both an empty text file and a base64 encoded htm file.
+        When: Parsing a valid email file with default parameters.
+        Then: FileData is not one of the attachments' data attributes returned.
+        """
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('eml_contains_emptytxt_htm_file.eml'))
+    mocker.patch.object(demisto, 'results')
+
+    assert demisto.args()['entryid'] == 'test'
+    main()
+
+    results = demisto.results.call_args[0]
+
+    assert results[0]['EntryContext']['Email']['AttachmentsData'][0]['FileData'] is None

@@ -993,6 +993,14 @@ script:
     - description: AppSec configuration version.
       name: create_from_version
       required: true
+    - description: Specifies whether the application rules should be migrated to the latest version.
+      name: rule_update
+      required: false
+      auto: PREDEFINED
+      defaultValue: 'True'
+      predefined:
+      - 'True'
+      - 'False'
     - description: Do not clone to create a new version. Use in the test.
       name: do_not_clone
       required: true
@@ -1201,6 +1209,7 @@ script:
       predefined:
       - 'yes'
       - 'no'
+      auto: PREDEFINED
     description: Generic JSON patch command for Papi Property Default Rule
     name: akamai-patch-papi-property-rule-generic
   - arguments:
@@ -1224,7 +1233,13 @@ script:
     outputs:
     - contextPath: Akamai.PapiProperty.DefaultRule
       description: Papi Property default rule
-  dockerimage: demisto/akamai:1.0.0.39599
+  - arguments:
+    - description: The path that includes enrollmentId and changeId.
+      name: change_path
+      required: true
+    description: acknowledge pre verification warning
+    name: akamai-acknowledge-pre-verification-warning
+  dockerimage: demisto/akamai:1.0.0.48112
   runonce: false
   script: ''
   subtype: python3
