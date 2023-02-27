@@ -1,0 +1,21 @@
+{
+    "name": "FortiGate_v2 Token based",
+    "description": "This integration is based on FortiGate integration_v2 using token based authentication instead of session based authentication.  This Integration was developed at Information Technology Solutions - ITS company.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Amaal Ashraf",
+    "url": "",
+    "email": "",
+    "created": "2023-02-27T15:21:38Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "Amaal-Ashraf"
+    ]
+}
