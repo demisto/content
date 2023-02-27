@@ -13,7 +13,7 @@ from github.Repository import Repository
 import sys
 from Tests.Marketplace.marketplace_constants import Metadata
 from Tests.Marketplace.marketplace_services import Pack
-from utils import timestamped_print, load_json
+from Utils.github_workflow_scripts.utils import timestamped_print, load_json
 from datetime import datetime, timedelta
 from git import Repo, GitCommandError
 from demisto_sdk.commands.common.tools import get_pack_names_from_files
@@ -48,7 +48,7 @@ class UpdateType(str, Enum):
 class SkipReason(str, Enum):
     """ Reasons to skip update release notes"""
     LAST_MODIFIED_TIME = 'The PR was not updated in last {} days. PR last update time: {}'
-    NOT_UPDATE_RN_LABEL_EXIST = 'Label {} exist in this PR. PR labels: {}'
+    NOT_UPDATE_RN_LABEL_EXIST = 'Label "{}" exist in this PR. PR labels: {}'
     NO_RELEASE_NOTES_CHANGED = 'No changes were detected on {} directory.'
     CONFLICTING_FILES = 'The PR has conflicts not only at {} and {}. The conflicting files are: {}.'
     NO_CONFLICTING_FILES = 'No conflicts were detected.'
@@ -67,7 +67,7 @@ class ConditionResult:
     def __init__(
             self,
             should_skip: bool,
-            reason: Optional[SkipReason] = None,
+            reason: Optional[SkipReason] = '',
             conflicting_packs: Optional[Set] = None,
             pack_new_rn_file: Path = None,
             pr_rn_version: Version = None,
@@ -861,7 +861,7 @@ class checkout:
         self.repo.git.checkout(self._original_branch)
 
 
-def arguments_handler():
+def arguments_handler():  # pragma: no cover
     """ Validates and parses script arguments.
 
      Returns:
@@ -874,7 +874,7 @@ def arguments_handler():
     return parser.parse_args()
 
 
-def main():
+def main():     # pragma: no cover
     options = arguments_handler()
     github_token = options.github_token
     run_id = options.run_id
