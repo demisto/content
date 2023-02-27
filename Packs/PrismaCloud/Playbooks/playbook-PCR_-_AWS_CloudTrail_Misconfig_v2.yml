@@ -190,7 +190,7 @@ tasks:
       version: -1
       name: Manually update CloudTrail
       description: |
-        1. Login to the AWS console and navigate to the CloudTrail dashboard
+        1. Log in to the AWS console and navigate to the CloudTrail dashboard.
       type: regular
       iscommand: false
       brand: ""
@@ -545,7 +545,7 @@ tasks:
       id: 9245d63b-9dcd-4cb6-81e6-6b09dcb35f4f
       version: -1
       name: Dismiss Prisma Cloud alert
-      description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
+      description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
       script: PrismaCloud v2|||prisma-cloud-alert-dismiss
       type: regular
       iscommand: true

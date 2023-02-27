@@ -18,7 +18,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* PrismaCloud v2
+PrismaCloud v2
 
 ### Scripts
 

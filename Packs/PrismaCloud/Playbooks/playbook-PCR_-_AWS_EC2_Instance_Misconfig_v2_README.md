@@ -38,7 +38,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* IsIntegrationAvailable
+IsIntegrationAvailable
 
 ### Commands
 * closeInvestigation
