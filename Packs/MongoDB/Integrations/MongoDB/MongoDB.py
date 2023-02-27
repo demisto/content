@@ -124,12 +124,12 @@ class Client:
         raw = collection_object.insert_many(entries)
         return self.datetime_to_str(raw)
 
-    def update_entry(self, collection, filter, update, update_one) -> UpdateResult:
+    def update_entry(self, collection, filter, update, update_one, upsert) -> UpdateResult:
         collection_object = self.get_collection(collection)
         if update_one:
-            raw = collection_object.update_one(filter, update)
+            raw = collection_object.update_one(filter, update, upsert)
         else:
-            raw = collection_object.update_many(filter, update)
+            raw = collection_object.update_many(filter, update, upsert)
         return self.datetime_to_str(raw)
 
     def delete_entry(self, collection, filter, delete_one) -> DeleteResult:
@@ -362,6 +362,7 @@ def update_entry_command(
         filter: str,
         update: str,
         update_one=False,
+        upsert=False,
         **kwargs,
 ) -> Tuple[str, None]:
     try:
@@ -374,7 +375,7 @@ def update_entry_command(
     except JSONDecodeError:
         raise DemistoException('The `update` argument is not a valid json.')
     response = client.update_entry(
-        collection, json_filter, json_update, argToBoolean(update_one)
+        collection, json_filter, json_update, argToBoolean(update_one), argToBoolean(upsert)
     )
     if not response.acknowledged:
         raise DemistoException('Error occurred when trying to enter update entries.')

@@ -157,7 +157,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Updates entries in a collection that matches the query or creates a new entry if no entires match the query. Default is false.
+      description: Update entries in a collection that matches the query or create a new entry if no entires match the query. Default is false.
       isArray: false
       name: upsert
       predefined:
