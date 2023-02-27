@@ -270,6 +270,9 @@
       fi
     - section_end "Run Unit Testing and Lint"
     - job-done
+  parallel:
+    matrix:
+      - DOCKER: [a, b]
 
 .run-validations:
   stage: unittests-and-validations
