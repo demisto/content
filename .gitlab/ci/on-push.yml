@@ -432,6 +432,7 @@ slack-notify-nightly-build:
       if [[ $EXIT_CODE != 0 ]]
       then
         echo "Failed to install packs. Exiting"
+        job-done
         exit $EXIT_CODE
       fi
     - section_end "Install Packs and run Test-Module"
