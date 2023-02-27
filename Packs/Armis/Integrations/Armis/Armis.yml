@@ -494,6 +494,6 @@ script:
   type: python
 tests:
 - Armis-Test
-defaultmapperin: Armis_mapper-incoming
-defaultclassifier: classifier-armis-alerts
+defaultmapperin: Armis - Incoming Mapper
+defaultclassifier: Armis - Classifier
 fromversion: 5.0.0
