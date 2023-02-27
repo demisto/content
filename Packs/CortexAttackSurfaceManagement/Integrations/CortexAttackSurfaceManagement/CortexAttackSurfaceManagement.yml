@@ -370,7 +370,7 @@ script:
     - contextPath: ASM.RemediationRule.created_at
       description: Date the rule was created.
       type: Date
-  dockerimage: demisto/python3:3.10.10.47713
+  dockerimage: demisto/python3:3.10.10.48392
   runonce: false
   script: ''
   subtype: python3
