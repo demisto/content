@@ -33,6 +33,4 @@ As cortex XSIAM provides YAML template for Windows Security Event Logs, you can 
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 
-1. Navigate to **Settings** → **Configuration** → **Data Broker** → **Broker VMs**. 
-2. Right-click, and select **add app* → **Windows Event Collector**.
-3. 
+To connect and use Windows Event Collector, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Activate-the-Windows-Event-Collector).
