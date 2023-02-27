@@ -904,7 +904,7 @@ def request_uuid_export_vulnerabilities(args: Dict[str, Any]) -> PollResult:
                 'last_found': relational_date_to_epoch_date_format(args.get('lastFound')),
                 'network_id': args.get('networkId'),
                 'plugin_id': [arg_to_number(x) for x in argToList(args.get('pluginId'))],
-                'plugin_type': argToList(args.get('pluginType')),
+                'plugin_type': args.get('pluginType'),
                 'severity': argToList(args.get('severity')),
                 'since': relational_date_to_epoch_date_format(args.get('since')),
                 'state': argToList(args.get('state')),
