@@ -57,7 +57,7 @@ configuration:
     required: false
   - display: Collective Insights Settings
     name: collective_insights
-    additionalinfo: The Recorded Future Intelligence Cloud aggregates data related to indicators, driving collective insights to better identify threats. Anonymized data is collected for analytical purposes to identify trends and insights with the Intelligence Cloud. Go to the Recorded Future support site to learn more about Collective Insights.
+    additionalinfo: The Recorded Future Intelligence Cloud aggregates data related to indicators, incidents and detections from correlations, driving collective insights to better identify threats. Unattributable data is collected for analytical purposes to identify trends and insights with the Intelligence Cloud. Go to the Recorded Future support site to learn more about Collective Insights.
     defaultvalue: "On"
     type: 15
     required: true
