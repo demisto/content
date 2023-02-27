@@ -3,12 +3,12 @@ description: |
   Supported services: Azure VM, Azure Load Balancer, Azure Application Gateway, AKS, Azure Web Apps, Azure Storage.
 id: Prisma Cloud - Find Azure Resource by FQDN v2
 inputs:
-- description: FQDN to look up
+- description: FQDN to look up.
   key: FQDN
   playbookInputQuery:
   required: true
   value: {}
-- description: Azure domains (comma separated)
+- description: A comma-separated list of Azure domains.
   key: AzureDomains
   playbookInputQuery:
   required: false
@@ -183,7 +183,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Prisma Cloud Attribution
+      description: Prisma Cloud Attribution.
       id: 0ae7d2c8-e8b6-499b-8e24-92c78c24f070
       iscommand: false
       name: Transform Results
@@ -807,7 +807,7 @@ tasks:
     skipunavailable: false
     task:
       brand: PrismaCloud v2
-      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, default time range is all times.
+      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, the default time range is all times.
       id: 3107b94b-2010-48eb-85c0-ebaed826a7ec
       iscommand: true
       name: Search FQDNs in App Service
@@ -948,7 +948,7 @@ tasks:
     skipunavailable: false
     task:
       brand: PrismaCloud v2
-      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, default time range is all times.
+      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, the default time range is all times.
       id: 80352352-4b39-4b7a-86d4-c07bf3a61b9d
       iscommand: true
       name: Search FQDNs in Public IPs
@@ -1001,7 +1001,7 @@ tasks:
     skipunavailable: false
     task:
       brand: PrismaCloud v2
-      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, default time range is all times.
+      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, the default time range is all times.
       id: c91a738c-b191-4725-894b-8deeef6ef3a2
       iscommand: true
       name: Search FQDNs in Azure Application Gateway
@@ -1154,7 +1154,7 @@ tasks:
     skipunavailable: false
     task:
       brand: PrismaCloud v2
-      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, default time range is all times.
+      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, the default time range is all times.
       id: 49476811-2e58-4291-8f00-305c666af44b
       iscommand: true
       name: Search FQDNs in Azure Storage
@@ -1295,7 +1295,7 @@ tasks:
     skipunavailable: false
     task:
       brand: PrismaCloud v2
-      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, default time range is all times.
+      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, the default time range is all times.
       id: 8ddbb096-d42c-49a5-846e-30995677f78c
       iscommand: true
       name: Search FQDNs in AKS
