@@ -1,6 +1,5 @@
 import os
 import pytest
-from unittest.mock import mock_open
 from Tests.configure_and_test_integration_instances import XSOARBuild, create_build_object, \
     options_handler, CloudBuild, get_turned_non_hidden_packs, update_integration_lists, \
     get_packs_with_higher_min_version, filter_new_to_marketplace_packs, packs_names_to_integrations_names
