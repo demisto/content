@@ -1110,8 +1110,7 @@ List different types of compliance cases in the Microsoft Purview compliance por
 ### o365-sc-compliance-case-delete
 
 ***
-Removes compliance cases from the Microsoft Purview compliance portal or the Microsoft Purview compliance portal.
-
+Removes compliance cases from the Microsoft Purview compliance portal.
 #### Base Command
 
 `o365-sc-compliance-case-delete`
