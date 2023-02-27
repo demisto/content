@@ -1320,7 +1320,7 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
-  runonce: false
+  runonce: true
   script: '-'
   type: powershell
 fromversion: 5.5.0
