@@ -5,13 +5,13 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 # IMPORTS
 import json
 import copy
-import requests
+import urllib3
 from datetime import datetime
 
 import dateparser
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
