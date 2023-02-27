@@ -140,7 +140,7 @@ tasks:
       id: bc9f2552-58c3-402a-8951-ede4d027509c
       version: -1
       name: Is there a policy to remediate?
-      description: Checks for a Prisma Cloud policy Id.
+      description: Checks for a Prisma Cloud policy ID.
       type: condition
       iscommand: false
       brand: ""
@@ -263,7 +263,7 @@ tasks:
       id: 5ed221c5-a729-4e5d-8b23-b970b2cf1d90
       version: -1
       name: Execute playbook
-      description: Execute the appropriate remediation sub-playbook based on the Prisma Cloud policy Id.
+      description: Execute the appropriate remediation sub-playbook based on the Prisma Cloud policy ID.
       type: condition
       iscommand: false
       brand: ""
@@ -643,7 +643,7 @@ tasks:
       id: cdf5e218-c21c-40e0-8a90-ea03bada73ac
       version: -1
       name: Dismiss Prisma Cloud alert
-      description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
+      description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
       script: PrismaCloud v2|||prisma-cloud-alert-dismiss
       type: regular
       iscommand: true
@@ -720,7 +720,7 @@ inputs:
             value:
               simple: policyId
   required: false
-  description: Grab the Prisma Cloud policy Id.
+  description: Grab the Prisma Cloud policy ID.
 outputs: []
 tests:
 - No Test
