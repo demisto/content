@@ -3,7 +3,7 @@ description: |
   Supported services: Azure VM, Azure Load Balancer, Azure Application Gateway, Azure Web Apps.
 id: Prisma Cloud - Find Azure Resource by Public IP v2
 inputs:
-- description: Public IP Address to look up
+- description: Public IP address to look up.
   key: PublicIPAddress
   playbookInputQuery:
   required: true
@@ -106,7 +106,7 @@ tasks:
     skipunavailable: false
     task:
       brand: PrismaCloud v2
-      description: Search Azure VM instances in Prisma Cloud
+      description: Search Azure VM instances in Prisma Cloud.
       id: 747967fa-f4f0-4afb-8d24-bfe451752cfd
       iscommand: true
       name: Search in Azure Compute
@@ -181,7 +181,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Prisma Cloud Attribution
+      description: Prisma Cloud Attribution.
       id: 8e61f71b-1962-4af9-8dda-c868f1716764
       iscommand: false
       name: Transform Results
@@ -332,7 +332,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if there are any IP in the input.
+      description: Check if there are any IPs in the input.
       id: 156f032a-0995-4ada-8ccd-06a9d6da3f16
       iscommand: false
       name: Are there IPs in input?
@@ -384,7 +384,7 @@ tasks:
     skipunavailable: false
     task:
       brand: PrismaCloud v2
-      description: Search Azure VM instances in Prisma Cloud
+      description: Search Azure VM instances in Prisma Cloud.
       id: c6f7f040-449a-4734-8dce-733b84e70c14
       iscommand: true
       name: Search in Azure Public IP
@@ -437,7 +437,7 @@ tasks:
     skipunavailable: false
     task:
       brand: PrismaCloud v2
-      description: Search Azure VM instances in Prisma Cloud
+      description: Search Azure VM instances in Prisma Cloud.
       id: 9da485c0-2441-424e-87e6-10ec95671e6e
       iscommand: true
       name: Search in Azure App Service
