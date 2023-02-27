@@ -127,7 +127,8 @@ def test_apply_filters(args, expected_incident_ids):
 
 def get_incidents_mock(command, args, extract_contents=True, fail_on_error=True):
     ids = args.get('id', '').split(',')
-    return [{'Contents': {'data': [incident for incident in EXAMPLE_INCIDENTS_RAW_RESPONSE if incident['id'] in ids]}}]
+    incidents_list = [incident for incident in EXAMPLE_INCIDENTS_RAW_RESPONSE if incident['id'] in ids]
+    return [{'Contents': {'data': incidents_list, 'total': len(incidents_list)}}]
 
 
 @pytest.mark.parametrize('args,filtered_args,expected_result', [
@@ -152,6 +153,10 @@ def test_filter_events(mocker, args, filtered_args, expected_result):
     """
     import SearchIncidentsV2
     execute_mock = mocker.patch.object(SearchIncidentsV2, 'execute_command', side_effect=get_incidents_mock)
+    if 'trimevents' in args:
+        # trimevents supported only in XSIAM
+        mocker.patch.object(demisto, 'demistoVersion', return_value={'platform': 'xsiam'})
+
     _, res, _ = SearchIncidentsV2.search_incidents(args)
     assert res == expected_result
     assert execute_mock.call_count == 1

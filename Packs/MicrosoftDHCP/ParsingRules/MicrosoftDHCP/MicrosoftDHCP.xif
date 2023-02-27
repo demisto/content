@@ -1,0 +1,4 @@
+[INGEST:vendor="microsoft", product="DHCP", target_dataset="microsoft_dhcp_raw", no_hit=keep]
+alter tmp_time = concat(date, " ", time," ", `timezone`)
+|alter _time=parse_timestamp("%D %X %Ez", tmp_time)
+|fields -tmp_time;

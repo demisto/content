@@ -220,13 +220,12 @@ class Client(BaseClient):
         :param content_type: content type of header.
         :return: boolean flag, whether content type is supported or not.
         """
-        if (
+        return (
             content_type == 'application/pdf'
             or content_type == 'text/csv'
             or content_type == CONTENT_TYPE_ZIP
-        ):
-            return True
-        return False
+            or content_type == 'application/octet-stream'
+        )
 
     @staticmethod
     def handle_demisto_exception(e):
@@ -1166,7 +1165,7 @@ def get_artifacts_by_alert_command(
 
     # Preparing header
     headers = {
-        'accept': CONTENT_TYPE_ZIP,
+        'Content-Type': CONTENT_TYPE_ZIP,
         'X-FeApi-Token': client.get_api_token(),
     }
 
