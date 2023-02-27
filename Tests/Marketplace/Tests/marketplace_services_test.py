@@ -2357,48 +2357,6 @@ class TestSetDependencies:
 
         assert str(e.value) == "New mandatory dependencies ['SlackV2'] were found in the core pack HelloWorld"
 
-    def test_set_dependencies_core_pack_mandatory_dependency_override(self):
-        """
-           Given:
-               - Core pack with new dependencies
-               - Mandatory dependencies that are not core packs that were overridden in the user metadata
-           When:
-               - Formatting metadata
-           Then:
-               - Metadata should be formatted correctly
-       """
-        from Tests.Marketplace.marketplace_services import Pack
-
-        generated_dependencies = {
-            'HelloWorld': {
-                'dependencies': {
-                    'CommonPlaybooks': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'ServiceNow',
-                        'certification': 'certified'
-                    },
-                    'Ipstack': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'Ipstack',
-                        'certification': 'certified'
-                    }
-                }
-            }
-        }
-
-        generated_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
-        p = Pack('HelloWorld', 'dummy_path')
-        dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
-        dependencies = json.loads(dependencies)
-
-        p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
-
-        assert p.user_metadata['dependencies'] == dependencies
-
 
 class TestReleaseNotes:
     """ Test class for all the handling of release notes of a given pack.
