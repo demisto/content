@@ -312,7 +312,7 @@ tasks:
       description: |-
         1. Log in to the Azure Portal.
         2. Go to SQL servers.
-        3. Choose the reported each DB server
+        3. Choose the reported DB server.
         4. Under the Security section, click 'Auditing'.
         5. Set 'Auditing' to 'On'.
         6. Select 'Storage' and click 'Storage Details'.

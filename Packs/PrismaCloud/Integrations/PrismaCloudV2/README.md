@@ -116,7 +116,7 @@ Gets the details of an alert based on the alert ID.
 | PrismaCloud.Alert.policy.description | String | The policy description. | 
 | PrismaCloud.Alert.policy.labels | Unknown | The policy labels. | 
 | PrismaCloud.Alert.resource.cloudType | String | The resource cloud type. | 
-| PrismaCloud.Alert.resource.rrn | String | The resource RRN. | 
+| PrismaCloud.Alert.resource.rrn | String | The restricted resource name. | 
 | PrismaCloud.Alert.resource.regionId | String | The resource region ID. | 
 | PrismaCloud.Alert.resource.url | String | The resource URL. | 
 | PrismaCloud.Alert.policy.remediable | Boolean | Whether the policy is remediable. | 
@@ -780,7 +780,7 @@ Search alerts on the Prisma Cloud platform. When no absolute time nor relative t
 | PrismaCloud.Alert.resource.name | String | The resource name of the returned alert. | 
 | PrismaCloud.Alert.resource.account | String | The resource account of the returned alert. | 
 | PrismaCloud.Alert.resource.cloudType | String | The resource cloud type of the returned alert. | 
-| PrismaCloud.Alert.resource.rrn | String | The resource rrn of the returned alert. | 
+| PrismaCloud.Alert.resource.rrn | String | The restricted resource name of the returned alert. | 
 
 #### Command example
 ```!prisma-cloud-alert-search filters=alert.status=open,policy.remediable=true,cloud.type=gcp,policy.type=config limit=2```
@@ -1053,25 +1053,25 @@ Search configuration inventory on the Prisma Cloud platform using RQL language. 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloud.Config.accountId | String | Cloud Account ID. | 
-| PrismaCloud.Config.accountName | String | Cloud Account Name. | 
+| PrismaCloud.Config.accountId | String | Cloud account ID. | 
+| PrismaCloud.Config.accountName | String | Cloud account name. | 
 | PrismaCloud.Config.allowDrillDown | Boolean | Whether to allow drill down. | 
-| PrismaCloud.Config.cloudType | String | Cloud Type. | 
+| PrismaCloud.Config.cloudType | String | Cloud type. | 
 | PrismaCloud.Config.deleted | Boolean | Whether the asset was deleted. | 
-| PrismaCloud.Config.hasExtFindingRiskFactors | Boolean | Whether configuration has external finding risk factors. | 
-| PrismaCloud.Config.hasExternalFinding | Boolean | Whether configuration has external finding. | 
+| PrismaCloud.Config.hasExtFindingRiskFactors | Boolean | Whether the configuration has external finding risk factors. | 
+| PrismaCloud.Config.hasExternalFinding | Boolean | Whether the configuration has an external finding. | 
 | PrismaCloud.Config.hasExternalIntegration | Boolean | Whether the configuration has an external integration. | 
 | PrismaCloud.Config.hasNetwork | Boolean | Whether the configuration has a network. | 
-| PrismaCloud.Config.id | String | Prisma Cloud config ID. | 
-| PrismaCloud.Config.assetId | String | Prisma Cloud Asset ID. | 
-| PrismaCloud.Config.data | Unknown | Prisma Cloud Asset specific data. | 
-| PrismaCloud.Config.insertTs | Date | Insert Ts. | 
-| PrismaCloud.Config.createdTs | Date | Created Ts. | 
-| PrismaCloud.Config.name | String | Asset Name. | 
-| PrismaCloud.Config.regionId | String | Cloud Region ID. | 
-| PrismaCloud.Config.regionName | String | Cloud Region Name. | 
-| PrismaCloud.Config.resourceType | String | Cloud Resource type. | 
-| PrismaCloud.Config.rrn | String | Cloud RRN. | 
+| PrismaCloud.Config.id | String | Prisma Cloud configuration ID. | 
+| PrismaCloud.Config.assetId | String | Prisma Cloud asset ID. | 
+| PrismaCloud.Config.data | Unknown | Prisma Cloud asset specific data. | 
+| PrismaCloud.Config.insertTs | Date | Insert timestamp. | 
+| PrismaCloud.Config.createdTs | Date | Created timestamp. | 
+| PrismaCloud.Config.name | String | Asset name. | 
+| PrismaCloud.Config.regionId | String | Cloud region ID. | 
+| PrismaCloud.Config.regionName | String | Cloud region name. | 
+| PrismaCloud.Config.resourceType | String | Cloud resource type. | 
+| PrismaCloud.Config.rrn | String | Cloud restricted resource name. | 
 | PrismaCloud.Config.service | String | Cloud service. | 
 | PrismaCloud.Config.stateId | String | State ID. | 
 
@@ -1159,11 +1159,11 @@ Search events inventory on the Prisma Cloud platform using RQL language. Use thi
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloud.Event.subject | String | Cloud Event subject. | 
+| PrismaCloud.Event.subject | String | Cloud event subject. | 
 | PrismaCloud.Event.accountName | String | Cloud event account name. | 
 | PrismaCloud.Event.name | String | Cloud event name. | 
 | PrismaCloud.Event.source | String | Cloud event source. | 
-| PrismaCloud.Event.ip | String | Cloud event IP. | 
+| PrismaCloud.Event.ip | String | Cloud event IP address. | 
 | PrismaCloud.Event.eventTs | Date | Cloud event timestamp. | 
 | PrismaCloud.Event.countryName | String | Cloud event country name. | 
 | PrismaCloud.Event.stateName | String | Cloud event state name. | 
@@ -1175,7 +1175,7 @@ Search events inventory on the Prisma Cloud platform using RQL language. Use thi
 | PrismaCloud.Event.id | Number | Cloud event ID. | 
 | PrismaCloud.Event.role | String | Cloud event role. | 
 | PrismaCloud.Event.accessKeyUsed | Boolean | Whether the cloud event access key is used. | 
-| PrismaCloud.Event.success | Boolean | Whether the cloud event is success. | 
+| PrismaCloud.Event.success | Boolean | Whether the cloud event is successful. | 
 | PrismaCloud.Event.internal | Boolean | Whether the cloud event is internal. | 
 | PrismaCloud.Event.cityId | Number | Cloud event city ID. | 
 | PrismaCloud.Event.cityLatitude | Number | Cloud event city latitude. | 
@@ -1609,11 +1609,11 @@ Lists scanned files that contain errors. In order to use this command, the "Code
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaCloud.ErrorFile.filePath | String | Error file path. | 
-| PrismaCloud.ErrorFile.suppressedErrorsCount | Number | Error file suppressed errors count. | 
-| PrismaCloud.ErrorFile.passedCount | Number | Error file passed count. | 
-| PrismaCloud.ErrorFile.openErrorsCount | Number | Error file open errors count. | 
-| PrismaCloud.ErrorFile.errorsCount | Number | Error file errors count. | 
-| PrismaCloud.ErrorFile.fixedCount | Number | Error file fixed count. | 
+| PrismaCloud.ErrorFile.suppressedErrorsCount | Number | The number of error file suppressed errors. | 
+| PrismaCloud.ErrorFile.passedCount | Number | The number of error files passed. | 
+| PrismaCloud.ErrorFile.openErrorsCount | Number | The number of error file open errors. | 
+| PrismaCloud.ErrorFile.errorsCount | Number | The number of error file errors. | 
+| PrismaCloud.ErrorFile.fixedCount | Number | The number of error files fixed. | 
 | PrismaCloud.ErrorFile.type | String | Error file type. | 
 
 #### Command example
@@ -1703,17 +1703,17 @@ Get resource details.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloud.Resource.rrn | String | Cloud RRN. | 
+| PrismaCloud.Resource.rrn | String | Prisma Cloud restricted resource name. | 
 | PrismaCloud.Resource.id | String | Prisma Cloud resource ID. | 
-| PrismaCloud.Resource.name | String | Resource Name. | 
+| PrismaCloud.Resource.name | String | Resource name. | 
 | PrismaCloud.Resource.url | String | Resource URL. | 
-| PrismaCloud.Resource.accountId | String | Cloud Account ID. | 
-| PrismaCloud.Resource.accountName | String | Cloud Account Name. | 
-| PrismaCloud.Resource.cloudType | String | Cloud Type. | 
-| PrismaCloud.Resource.regionId | String | Cloud Region ID. | 
-| PrismaCloud.Resource.regionName | String | Cloud Region Name. | 
+| PrismaCloud.Resource.accountId | String | Cloud account ID. | 
+| PrismaCloud.Resource.accountName | String | Cloud account name. | 
+| PrismaCloud.Resource.cloudType | String | Cloud type. | 
+| PrismaCloud.Resource.regionId | String | Cloud region ID. | 
+| PrismaCloud.Resource.regionName | String | Cloud region Name. | 
 | PrismaCloud.Resource.service | String | Cloud service. | 
-| PrismaCloud.Resource.resourceType | String | Cloud Resource type. | 
+| PrismaCloud.Resource.resourceType | String | Cloud resource type. | 
 | PrismaCloud.Resource.insertTs | Date | Insert timestamp. | 
 | PrismaCloud.Resource.deleted | Boolean | Whether the resource was deleted. | 
 | PrismaCloud.Resource.vpcId | String | VPC ID. | 
@@ -1842,7 +1842,7 @@ List accounts.
 | PrismaCloud.Account.groupIds | Unknown | Account group IDs. | 
 | PrismaCloud.Account.groups | Unknown | Account groups. | 
 | PrismaCloud.Account.status | String | Account status. | 
-| PrismaCloud.Account.numberOfChildAccounts | Number | Account number of child accounts. | 
+| PrismaCloud.Account.numberOfChildAccounts | Number | The number of child accounts. | 
 | PrismaCloud.Account.accountId | String | Account ID. | 
 | PrismaCloud.Account.addedOn | Date | Account added on time. | 
 
@@ -1907,7 +1907,7 @@ Get the statuses of the provided accounts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_ids | In order to get account IDs, run the "prisma-cloud-account-list" command. | Required | 
+| account_ids | A comma-separated list of accound IDs. To get account IDs, run the "prisma-cloud-account-list" command. | Required | 
 
 #### Context Output
 
@@ -1958,7 +1958,7 @@ Get the owners of the provided accounts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_ids | In order to get account IDs, run the "prisma-cloud-account-list" command. | Required | 
+| account_ids | A comma-separated list of account IDs. To get account IDs, run the "prisma-cloud-account-list" command. | Required | 
 
 #### Context Output
 
@@ -2028,8 +2028,8 @@ Get resource host finding list.
 | PrismaCloud.HostFinding.source | String | Host finding source. | 
 | PrismaCloud.HostFinding.severity | String | Host finding severity. | 
 | PrismaCloud.HostFinding.status | String | Host finding status. | 
-| PrismaCloud.HostFinding.createdOn | Date | Host finding created on. | 
-| PrismaCloud.HostFinding.updatedOn | Date | Host finding updated on. | 
+| PrismaCloud.HostFinding.createdOn | Date | The date on which the host finding was created. | 
+| PrismaCloud.HostFinding.updatedOn | Date | The date on which the host finding was updated. | 
 | PrismaCloud.HostFinding.normalizedNames | Unknown | Host finding normalized names. | 
 | PrismaCloud.HostFinding.scanId | String | Host finding scan ID. | 
 | PrismaCloud.HostFinding.resourceCloudId | String | Host finding resource cloud ID. | 
@@ -2038,11 +2038,11 @@ Get resource host finding list.
 | PrismaCloud.HostFinding.title | String | Host finding title. | 
 | PrismaCloud.HostFinding.description | String | Host finding description. | 
 | PrismaCloud.HostFinding.resourceUrl | String | Host finding resource URL. | 
-| PrismaCloud.HostFinding.rlUpdatedOn | Date | Host finding RL updated on. | 
+| PrismaCloud.HostFinding.rlUpdatedOn | Date | The date on which the RL was updated. | 
 | PrismaCloud.HostFinding.externalFindingId | String | External finding ID. | 
 | PrismaCloud.HostFinding.sourceData | Unknown | Host finding source data. | 
 | PrismaCloud.HostFinding.score | String | Host finding score. | 
-| PrismaCloud.HostFinding.count | String | Host finding count. | 
+| PrismaCloud.HostFinding.count | Number | The number of host findings. | 
 
 #### Command example
 ```!prisma-cloud-host-finding-list rrn=rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25 finding_types=guard_duty_host,guard_duty_iam limit=2```
@@ -2233,10 +2233,10 @@ Get permission list. You must provide either "query" or "next_token".
 | PrismaCloud.Permission.grantedByCloudPolicyId | String | Permission granted by cloud policy ID. | 
 | PrismaCloud.Permission.grantedByCloudPolicyName | String | Permission granted by cloud policy name. | 
 | PrismaCloud.Permission.grantedByCloudPolicyType | String | Permission granted by cloud policy type. | 
-| PrismaCloud.Permission.grantedByCloudPolicyRrn | String | Permission granted by cloud policy RRN. | 
+| PrismaCloud.Permission.grantedByCloudPolicyRrn | String | Permission granted by cloud policy restricted resource name. | 
 | PrismaCloud.Permission.grantedByCloudEntityId | String | Permission granted by cloud entity ID. | 
 | PrismaCloud.Permission.grantedByCloudEntityName | String | Permission granted by cloud entity name. | 
-| PrismaCloud.Permission.grantedByCloudEntityRrn | String | Permission granted by cloud entity RRN. | 
+| PrismaCloud.Permission.grantedByCloudEntityRrn | String | Permission granted by cloud entity restricted resource name. | 
 | PrismaCloud.Permission.sourcePublic | Boolean | Whether the permission source is public. | 
 | PrismaCloud.Permission.sourceCloudRegion | String | Permission source cloud region. | 
 | PrismaCloud.Permission.sourceCloudServiceName | String | Permission source cloud service name. | 
@@ -2247,23 +2247,23 @@ Get permission list. You must provide either "query" or "next_token".
 | PrismaCloud.Permission.sourceIdpEmail | String | Permission source IDP email. | 
 | PrismaCloud.Permission.sourceIdpUsername | String | Permission source IDP username. | 
 | PrismaCloud.Permission.sourceIdpGroup | String | Permission source IDP group. | 
-| PrismaCloud.Permission.sourceIdpRrn | String | Permission source IDP RRN. | 
-| PrismaCloud.Permission.sourceCloudResourceRrn | String | Permission source cloud resource RRN. | 
+| PrismaCloud.Permission.sourceIdpRrn | String | Permission source IDP restricted resource name. | 
+| PrismaCloud.Permission.sourceCloudResourceRrn | String | Permission source cloud resource restricted resource name. | 
 | PrismaCloud.Permission.destCloudAccount | String | Permission destination cloud account. | 
 | PrismaCloud.Permission.destCloudRegion | String | Permission destination cloud region. | 
 | PrismaCloud.Permission.destResourceName | String | Permission destination resource name. | 
 | PrismaCloud.Permission.destResourceId | String | Permission destination resource ID. | 
-| PrismaCloud.Permission.destCloudResourceRrn | String | Permission destination cloud resource RRN. | 
+| PrismaCloud.Permission.destCloudResourceRrn | String | Permission destination cloud resource restricted resource name. | 
 | PrismaCloud.Permission.grantedByCloudEntityType | String | Permission granted by cloud entity type. | 
 | PrismaCloud.Permission.accessedResourcesCount | String | Permission accessed resources count. | 
 | PrismaCloud.Permission.lastAccessDate | String | Permission last access date. | 
 | PrismaCloud.Permission.lastAccessStatus | String | Permission last access status. | 
-| PrismaCloud.Permission.isWildCardDestCloudResourceName | Boolean | Whether the destination cloud resource name is wildcard. | 
+| PrismaCloud.Permission.isWildCardDestCloudResourceName | Boolean | Whether the destination cloud resource name is a wildcard. | 
 | PrismaCloud.Permission.exceptions | Unknown | Permission exceptions. | 
 | PrismaCloud.Permission.grantedByLevelType | String | Permission granted by level type. | 
 | PrismaCloud.Permission.grantedByLevelId | String | Permission granted by level ID. | 
 | PrismaCloud.Permission.grantedByLevelName | String | Permission granted by level name. | 
-| PrismaCloud.Permission.grantedByLevelRrn | String | Permission granted by level RRN. | 
+| PrismaCloud.Permission.grantedByLevelRrn | String | Permission granted by level restricted resource name. | 
 
 #### Command example
 ```!prisma-cloud-permission-list query="config from iam where source.cloud.service.name = 'EC2'" limit=2```

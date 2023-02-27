@@ -224,7 +224,7 @@ tasks:
       id: f8fef3ac-24cc-4da8-808c-f528da2e4018
       version: -1
       name: Find Prisma Cloud Incidents
-      description: Searches Demisto incidents
+      description: Searches Cortex XSOAR incidents.
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false

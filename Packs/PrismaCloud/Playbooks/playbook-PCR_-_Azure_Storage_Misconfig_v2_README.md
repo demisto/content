@@ -6,7 +6,7 @@ Remediation:
 - Azure storage account logging for blobs is disabled
 - Azure Storage Accounts without Secure transfer enabled
 - Azure storage account logging for queues is disabled
-- Azure storage account logging for tables is disabled #95
+- Azure storage account logging for tables is disabled
 
 ## Dependencies
 

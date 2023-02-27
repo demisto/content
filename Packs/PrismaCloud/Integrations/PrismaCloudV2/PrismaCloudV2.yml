@@ -263,7 +263,7 @@ script:
       description: The resource cloud type.
       type: String
     - contextPath: PrismaCloud.Alert.resource.rrn
-      description: The resource RRN.
+      description: The restricted resource name.
       type: String
     - contextPath: PrismaCloud.Alert.resource.regionId
       description: The resource region ID.
@@ -574,7 +574,7 @@ script:
       description: The resource cloud type of the returned alert.
       type: String
     - contextPath: PrismaCloud.Alert.resource.rrn
-      description: The resource rrn of the returned alert.
+      description: The restricted resource name of the returned alert.
       type: String
   - arguments:
     - default: false
@@ -663,25 +663,25 @@ script:
     name: prisma-cloud-config-search
     outputs:
     - contextPath: PrismaCloud.Config.accountId
-      description: Cloud Account ID.
+      description: Cloud account ID.
       type: String
     - contextPath: PrismaCloud.Config.accountName
-      description: Cloud Account Name.
+      description: Cloud account name.
       type: String
     - contextPath: PrismaCloud.Config.allowDrillDown
       description: Whether to allow drill down.
       type: Boolean
     - contextPath: PrismaCloud.Config.cloudType
-      description: Cloud Type.
+      description: Cloud type.
       type: String
     - contextPath: PrismaCloud.Config.deleted
       description: Whether the asset was deleted.
       type: Boolean
     - contextPath: PrismaCloud.Config.hasExtFindingRiskFactors
-      description: Whether configuration has external finding risk factors.
+      description: Whether the configuration has external finding risk factors.
       type: Boolean
     - contextPath: PrismaCloud.Config.hasExternalFinding
-      description: Whether configuration has external finding.
+      description: Whether the configuration has an external finding.
       type: Boolean
     - contextPath: PrismaCloud.Config.hasExternalIntegration
       description: Whether the configuration has an external integration.
@@ -690,34 +690,34 @@ script:
       description: Whether the configuration has a network.
       type: Boolean
     - contextPath: PrismaCloud.Config.id
-      description: Prisma Cloud config ID.
+      description: Prisma Cloud configuration ID.
       type: String
     - contextPath: PrismaCloud.Config.assetId
-      description: Prisma Cloud Asset ID.
+      description: Prisma Cloud asset ID.
       type: String
     - contextPath: PrismaCloud.Config.data
-      description: Prisma Cloud Asset specific data.
+      description: Prisma Cloud asset specific data.
       type: Unknown
     - contextPath: PrismaCloud.Config.insertTs
-      description: Insert Ts.
+      description: Insert timestamp.
       type: Date
     - contextPath: PrismaCloud.Config.createdTs
-      description: Created Ts.
+      description: Created timestamp.
       type: Date
     - contextPath: PrismaCloud.Config.name
-      description: Asset Name.
+      description: Asset name.
       type: String
     - contextPath: PrismaCloud.Config.regionId
-      description: Cloud Region ID.
+      description: Cloud region ID.
       type: String
     - contextPath: PrismaCloud.Config.regionName
-      description: Cloud Region Name.
+      description: Cloud region name.
       type: String
     - contextPath: PrismaCloud.Config.resourceType
-      description: Cloud Resource type.
+      description: Cloud resource type.
       type: String
     - contextPath: PrismaCloud.Config.rrn
-      description: Cloud RRN.
+      description: Cloud restricted resource name.
       type: String
     - contextPath: PrismaCloud.Config.service
       description: Cloud service.
@@ -777,7 +777,7 @@ script:
     name: prisma-cloud-event-search
     outputs:
     - contextPath: PrismaCloud.Event.subject
-      description: Cloud Event subject.
+      description: Cloud event subject.
       type: String
     - contextPath: PrismaCloud.Event.accountName
       description: Cloud event account name.
@@ -789,7 +789,7 @@ script:
       description: Cloud event source.
       type: String
     - contextPath: PrismaCloud.Event.ip
-      description: Cloud event IP.
+      description: Cloud event IP address.
       type: String
     - contextPath: PrismaCloud.Event.eventTs
       description: Cloud event timestamp.
@@ -825,7 +825,7 @@ script:
       description: Whether the cloud event access key is used.
       type: Boolean
     - contextPath: PrismaCloud.Event.success
-      description: Whether the cloud event is success.
+      description: Whether the cloud event is successful.
       type: Boolean
     - contextPath: PrismaCloud.Event.internal
       description: Whether the cloud event is internal.
@@ -1073,19 +1073,19 @@ script:
       description: Error file path.
       type: String
     - contextPath: PrismaCloud.ErrorFile.suppressedErrorsCount
-      description: Error file suppressed errors count.
+      description: The number of error file suppressed errors.
       type: Number
     - contextPath: PrismaCloud.ErrorFile.passedCount
-      description: Error file passed count.
+      description: The number of error files passed.
       type: Number
     - contextPath: PrismaCloud.ErrorFile.openErrorsCount
-      description: Error file open errors count.
+      description: The number of error file open errors.
       type: Number
     - contextPath: PrismaCloud.ErrorFile.errorsCount
-      description: Error file errors count.
+      description: The number of error file errors.
       type: Number
     - contextPath: PrismaCloud.ErrorFile.fixedCount
-      description: Error file fixed count.
+      description: The number of error files fixed.
       type: Number
     - contextPath: PrismaCloud.ErrorFile.type
       description: Error file type.
@@ -1104,37 +1104,37 @@ script:
     name: prisma-cloud-resource-get
     outputs:
     - contextPath: PrismaCloud.Resource.rrn
-      description: Cloud RRN.
+      description: Prisma Cloud restricted resource name.
       type: String
     - contextPath: PrismaCloud.Resource.id
       description: Prisma Cloud resource ID.
       type: String
     - contextPath: PrismaCloud.Resource.name
-      description: Resource Name.
+      description: Resource name.
       type: String
     - contextPath: PrismaCloud.Resource.url
       description: Resource URL.
       type: String
     - contextPath: PrismaCloud.Resource.accountId
-      description: Cloud Account ID.
+      description: Cloud account ID.
       type: String
     - contextPath: PrismaCloud.Resource.accountName
-      description: Cloud Account Name.
+      description: Cloud account name.
       type: String
     - contextPath: PrismaCloud.Resource.cloudType
-      description: Cloud Type.
+      description: Cloud type.
       type: String
     - contextPath: PrismaCloud.Resource.regionId
-      description: Cloud Region ID.
+      description: Cloud region ID.
       type: String
     - contextPath: PrismaCloud.Resource.regionName
-      description: Cloud Region Name.
+      description: Cloud region Name.
       type: String
     - contextPath: PrismaCloud.Resource.service
       description: Cloud service.
       type: String
     - contextPath: PrismaCloud.Resource.resourceType
-      description: Cloud Resource type.
+      description: Cloud resource type.
       type: String
     - contextPath: PrismaCloud.Resource.insertTs
       description: Insert timestamp.
@@ -1242,7 +1242,7 @@ script:
       description: Account status.
       type: String
     - contextPath: PrismaCloud.Account.numberOfChildAccounts
-      description: Account number of child accounts.
+      description: The number of child accounts.
       type: Number
     - contextPath: PrismaCloud.Account.accountId
       description: Account ID.
@@ -1252,7 +1252,7 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: In order to get account IDs, run the "prisma-cloud-account-list" command.
+      description: A comma-separated list of accound IDs. To get account IDs, run the "prisma-cloud-account-list" command.
       isArray: true
       name: account_ids
       required: true
@@ -1278,7 +1278,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: In order to get account IDs, run the "prisma-cloud-account-list" command.
+      description: A comma-separated list of account IDs. To get account IDs, run the "prisma-cloud-account-list" command.
       isArray: true
       name: account_ids
       required: true
@@ -1355,10 +1355,10 @@ script:
       description: Host finding status.
       type: String
     - contextPath: PrismaCloud.HostFinding.createdOn
-      description: Host finding created on.
+      description: The date on which the host finding was created.
       type: Date
     - contextPath: PrismaCloud.HostFinding.updatedOn
-      description: Host finding updated on.
+      description: The date on which the host finding was updated.
       type: Date
     - contextPath: PrismaCloud.HostFinding.normalizedNames
       description: Host finding normalized names.
@@ -1385,7 +1385,7 @@ script:
       description: Host finding resource URL.
       type: String
     - contextPath: PrismaCloud.HostFinding.rlUpdatedOn
-      description: Host finding RL updated on.
+      description: The date on which the RL was updated.
       type: Date
     - contextPath: PrismaCloud.HostFinding.externalFindingId
       description: External finding ID.
@@ -1397,8 +1397,8 @@ script:
       description: Host finding score.
       type: String
     - contextPath: PrismaCloud.HostFinding.count
-      description: Host finding count.
-      type: String
+      description: The number of host findings.
+      type: Number
   - arguments:
     - default: false
       description: User ID to look for. Must be provided with the "query" argument.
@@ -1469,7 +1469,7 @@ script:
       description: Permission granted by cloud policy type.
       type: String
     - contextPath: PrismaCloud.Permission.grantedByCloudPolicyRrn
-      description: Permission granted by cloud policy RRN.
+      description: Permission granted by cloud policy restricted resource name.
       type: String
     - contextPath: PrismaCloud.Permission.grantedByCloudEntityId
       description: Permission granted by cloud entity ID.
@@ -1478,7 +1478,7 @@ script:
       description: Permission granted by cloud entity name.
       type: String
     - contextPath: PrismaCloud.Permission.grantedByCloudEntityRrn
-      description: Permission granted by cloud entity RRN.
+      description: Permission granted by cloud entity restricted resource name.
       type: String
     - contextPath: PrismaCloud.Permission.sourcePublic
       description: Whether the permission source is public.
@@ -1511,10 +1511,10 @@ script:
       description: Permission source IDP group.
       type: String
     - contextPath: PrismaCloud.Permission.sourceIdpRrn
-      description: Permission source IDP RRN.
+      description: Permission source IDP restricted resource name.
       type: String
     - contextPath: PrismaCloud.Permission.sourceCloudResourceRrn
-      description: Permission source cloud resource RRN.
+      description: Permission source cloud resource restricted resource name.
       type: String
     - contextPath: PrismaCloud.Permission.destCloudAccount
       description: Permission destination cloud account.
@@ -1529,7 +1529,7 @@ script:
       description: Permission destination resource ID.
       type: String
     - contextPath: PrismaCloud.Permission.destCloudResourceRrn
-      description: Permission destination cloud resource RRN.
+      description: Permission destination cloud resource restricted resource name.
       type: String
     - contextPath: PrismaCloud.Permission.grantedByCloudEntityType
       description: Permission granted by cloud entity type.
@@ -1544,7 +1544,7 @@ script:
       description: Permission last access status.
       type: String
     - contextPath: PrismaCloud.Permission.isWildCardDestCloudResourceName
-      description: Whether the destination cloud resource name is wildcard.
+      description: Whether the destination cloud resource name is a wildcard.
       type: Boolean
     - contextPath: PrismaCloud.Permission.exceptions
       description: Permission exceptions.
@@ -1559,23 +1559,23 @@ script:
       description: Permission granted by level name.
       type: String
     - contextPath: PrismaCloud.Permission.grantedByLevelRrn
-      description: Permission granted by level RRN.
+      description: Permission granted by level restricted resource name.
       type: String
   - arguments:
     - default: false
-      description: Start time for search in the following string format -  MM/DD/YYYY.
+      description: Start time for the search in the following string format - MM/DD/YYYY.
       isArray: false
       name: time-range-date-from
       required: false
       secret: false
     - default: false
-      description: End time for search in the following format -  MM/DD/YYYY.
+      description: End time for the search in the following format - MM/DD/YYYY.
       isArray: false
       name: time-range-date-to
       required: false
       secret: false
     - default: false
-      description: The amount of units to go back in time.
+      description: The number of units to go back in time.
       isArray: false
       name: time-range-value
       required: false
@@ -1833,7 +1833,7 @@ script:
       description: The resource cloud type of the returned alert.
       type: String
     - contextPath: PrismaCloud.Alert.resource.rrn
-      description: The resource RRN of the returned alert.
+      description: The restricted resource name of the returned alert.
       type: String
   - arguments:
     - default: true
@@ -1880,19 +1880,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: Start time for search in the following string format -  MM/DD/YYYY.
+      description: Start time for the search in the following string format - MM/DD/YYYY.
       isArray: false
       name: time-range-date-from
       required: false
       secret: false
     - default: false
-      description: End time for search in the following format -  MM/DD/YYYY.
+      description: End time for the search in the following format - MM/DD/YYYY.
       isArray: false
       name: time-range-date-to
       required: false
       secret: false
     - default: false
-      description: The amount of units to go back in time.
+      description: The number of units to go back in time.
       isArray: false
       name: time-range-value
       required: false
@@ -2086,7 +2086,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The amount of units to go back in time.
+      description: The number of units to go back in time.
       isArray: false
       name: time-range-value
       required: false
@@ -2324,25 +2324,25 @@ script:
     name: redlock-search-config
     outputs:
     - contextPath: PrismaCloud.Config.accountId
-      description: Cloud Account ID.
+      description: Cloud account ID.
       type: String
     - contextPath: PrismaCloud.Config.accountName
-      description: Cloud Account Name.
+      description: Cloud account name.
       type: String
     - contextPath: PrismaCloud.Config.allowDrillDown
       description: Whether to allow drill down.
       type: Boolean
     - contextPath: PrismaCloud.Config.cloudType
-      description: Cloud Type.
+      description: Cloud type.
       type: String
     - contextPath: PrismaCloud.Config.deleted
       description: Whether the asset was deleted.
       type: Boolean
     - contextPath: PrismaCloud.Config.hasExtFindingRiskFactors
-      description: Whether configuration has external finding risk factors.
+      description: Whether the configuration has external finding risk factors.
       type: Boolean
     - contextPath: PrismaCloud.Config.hasExternalFinding
-      description: Whether configuration has external finding.
+      description: Whether the configuration has an external finding.
       type: Boolean
     - contextPath: PrismaCloud.Config.hasExternalIntegration
       description: Whether the configuration has an external integration.
@@ -2351,34 +2351,34 @@ script:
       description: Whether the configuration has a network.
       type: Boolean
     - contextPath: PrismaCloud.Config.id
-      description: Prisma Cloud config ID.
+      description: Prisma Cloud configuration ID.
       type: String
     - contextPath: PrismaCloud.Config.assetId
-      description: Prisma Cloud Asset ID.
+      description: Prisma Cloud asset ID.
       type: String
     - contextPath: PrismaCloud.Config.data
-      description: Prisma Cloud Asset specific data.
+      description: Prisma Cloud asset specific data.
       type: Unknown
     - contextPath: PrismaCloud.Config.insertTs
-      description: Insert Ts.
+      description: Insert timestamp.
       type: Date
     - contextPath: PrismaCloud.Config.createdTs
-      description: Created Ts.
+      description: Created timestamp.
       type: Date
     - contextPath: PrismaCloud.Config.name
-      description: Asset Name.
+      description: Asset name.
       type: String
     - contextPath: PrismaCloud.Config.regionId
-      description: Cloud Region ID.
+      description: Cloud region ID.
       type: String
     - contextPath: PrismaCloud.Config.regionName
-      description: Cloud Region Name.
+      description: Cloud region Name.
       type: String
     - contextPath: PrismaCloud.Config.resourceType
-      description: Cloud Resource type.
+      description: Cloud resource type.
       type: String
     - contextPath: PrismaCloud.Config.rrn
-      description: Cloud RRN.
+      description: Cloud restricted resource name.
       type: String
     - contextPath: PrismaCloud.Config.service
       description: Cloud service.
