@@ -379,8 +379,10 @@ def update_entry_command(
     )
     if not response.acknowledged:
         raise DemistoException('Error occurred when trying to enter update entries.')
+    human_readable = "A new entry was inserted to the collection." if response.upserted_id \
+        else f'MongoDB: Total of {response.modified_count} entries has been modified.'
     return (
-        f'MongoDB: Total of {response.modified_count} entries has been modified.',
+        human_readable,
         None,
     )
 
