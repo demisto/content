@@ -1,11 +1,10 @@
+import json
+import traceback
+from base64 import b64decode
+from typing import Any, Dict, List
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-
-import traceback
-import json
-from typing import Any, List, Dict
-from base64 import b64decode
 
 
 def build_report(template: List[Dict], alert_id: str) -> Dict:
@@ -231,7 +230,7 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         },
         {
             "type": "header",
-            "data": "Service Owner Information",
+            "data": "Remediation Rule Match",
             "layout": {
                 "rowPos": 9,
                 "columnPos": 1,
@@ -245,17 +244,22 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         },
         {
             "type": "table",
-            "data": asm_args["asmserviceowner"],
+            "data": asm_args["asmremediationpathrule"],
             "layout": {
                 "rowPos": 10,
                 "columnPos": 1,
-                "tableColumns": ["Name", "Email", "Source", "Timestamp"],
+                "tableColumns": [
+                    "RuleName",
+                    "Criteria",
+                    "CreatedBy",
+                    "Action",
+                ],
                 "classes": "striped stackable",
             },
         },
         {
             "type": "header",
-            "data": "Notifications Sent",
+            "data": "Service Owner Information",
             "layout": {
                 "rowPos": 11,
                 "columnPos": 1,
@@ -269,17 +273,17 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         },
         {
             "type": "table",
-            "data": asm_args["asmnotification"],
+            "data": asm_args["asmserviceowner"],
             "layout": {
                 "rowPos": 12,
                 "columnPos": 1,
-                "tableColumns": ["Type", "Value", "URL", "Timestamp"],
+                "tableColumns": ["Name", "Email", "Source", "Timestamp"],
                 "classes": "striped stackable",
             },
         },
         {
             "type": "header",
-            "data": "Data Collected from Owner",
+            "data": "Notifications Sent",
             "layout": {
                 "rowPos": 13,
                 "columnPos": 1,
@@ -293,17 +297,17 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         },
         {
             "type": "table",
-            "data": asm_args["asmdatacollection"],
+            "data": asm_args["asmnotification"],
             "layout": {
                 "rowPos": 14,
                 "columnPos": 1,
-                "tableColumns": ["Options", "Selected", "Answerer", "Timestamp"],
+                "tableColumns": ["Type", "Value", "URL", "Timestamp"],
                 "classes": "striped stackable",
             },
         },
         {
             "type": "header",
-            "data": "Private IP Addresses",
+            "data": "Data Collected from Owner",
             "layout": {
                 "rowPos": 15,
                 "columnPos": 1,
@@ -317,17 +321,17 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         },
         {
             "type": "table",
-            "data": asm_args["asmprivateip"],
+            "data": asm_args["asmdatacollection"],
             "layout": {
                 "rowPos": 16,
                 "columnPos": 1,
-                "tableColumns": ["Source", "IP"],
+                "tableColumns": ["Options", "Selected", "Answerer", "Timestamp"],
                 "classes": "striped stackable",
             },
         },
         {
             "type": "header",
-            "data": "Cloud Asset Information",
+            "data": "Private IP Addresses",
             "layout": {
                 "rowPos": 17,
                 "columnPos": 1,
@@ -341,9 +345,33 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         },
         {
             "type": "table",
-            "data": asm_args["asmcloud"],
+            "data": asm_args["asmprivateip"],
             "layout": {
                 "rowPos": 18,
+                "columnPos": 1,
+                "tableColumns": ["Source", "IP"],
+                "classes": "striped stackable",
+            },
+        },
+        {
+            "type": "header",
+            "data": "Cloud Asset Information",
+            "layout": {
+                "rowPos": 19,
+                "columnPos": 1,
+                "style": {
+                    "textAlign": "left",
+                    "fontSize": 16,
+                    "color": "black",
+                    "background-color": "#00cc66ff",
+                },
+            },
+        },
+        {
+            "type": "table",
+            "data": asm_args["asmcloud"],
+            "layout": {
+                "rowPos": 20,
                 "columnPos": 1,
                 "tableColumns": [
                     "Provider",
@@ -359,7 +387,7 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
             "type": "header",
             "data": "Object Tag Information",
             "layout": {
-                "rowPos": 19,
+                "rowPos": 21,
                 "columnPos": 1,
                 "style": {
                     "textAlign": "left",
@@ -373,7 +401,7 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
             "type": "table",
             "data": asm_args["asmtags"],
             "layout": {
-                "rowPos": 20,
+                "rowPos": 22,
                 "columnPos": 1,
                 "tableColumns": [
                     "Key",
@@ -387,7 +415,7 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
             "type": "header",
             "data": "Related System Identifiers",
             "layout": {
-                "rowPos": 21,
+                "rowPos": 23,
                 "columnPos": 1,
                 "style": {
                     "textAlign": "left",
@@ -401,7 +429,7 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
             "type": "table",
             "data": asm_args["asmsystemids"],
             "layout": {
-                "rowPos": 22,
+                "rowPos": 24,
                 "columnPos": 1,
                 "tableColumns": [
                     "Type",
@@ -419,6 +447,17 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
 def color_for_severity(severity: str) -> str:
     sev_map = {"low": "green", "medium": "gold", "high": "red", "critical": "maroon"}
     return sev_map.get(severity.lower(), "black")
+
+
+def RPR_criteria(criteria: Any) -> Any:
+    if criteria:
+        criteria_dict = json.loads(criteria)
+        statements = []
+        for entry in criteria_dict:
+            statements.append(f"({entry.get('field')} {'=' if entry.get('operator') == 'eq' else '!='} {entry.get('value')})")
+        return " AND ".join(statements)
+    else:
+        return None
 
 
 def get_asm_args(args: Dict[str, Any]) -> Dict[str, Any]:
@@ -445,6 +484,20 @@ def get_asm_args(args: Dict[str, Any]) -> Dict[str, Any]:
                 "Region": "n/a",
             }
         ),
+        "asmremediationpathrule":
+            {
+                "RuleName": args.get("asm_remediation_path_rule", {}).get("rule_name"),
+                "Criteria": RPR_criteria(args.get("asm_remediation_path_rule", {}).get("criteria")),
+                "CreatedBy": args.get("asm_remediation_path_rule", {}).get("created_by_pretty"),
+                "Action": args.get("asm_remediation_path_rule", {}).get("action")
+        }
+            if args.get("asm_remediation_path_rule")
+            else {
+            "RuleName": "n/a",
+            "Criteria": "n/a",
+            "CreatedBy": "n/a",
+            "Action": "n/a"
+        },
         "asmdatacollection": args.get("asm_data_collection")
         if args.get("asm_data_collection")
         else {

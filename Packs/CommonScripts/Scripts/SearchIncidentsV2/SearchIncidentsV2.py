@@ -129,8 +129,13 @@ def search_incidents(args: Dict):   # pragma: no cover
         to_date = todate.isoformat()
         args['todate'] = to_date
 
-    if args.get('trimevents') == '0':
-        args.pop('trimevents')
+    if args.get('trimevents'):
+        platform = demisto.demistoVersion().get('platform', 'xsoar')
+        if platform == 'xsoar' or platform == 'xsoar_hosted':
+            raise ValueError('The trimevents argument is not supported in XSOAR.')
+
+        if args.get('trimevents') == '0':
+            args.pop('trimevents')
 
     platform = get_demisto_version().get('platform')
 
@@ -145,7 +150,15 @@ def search_incidents(args: Dict):   # pragma: no cover
             return 'Alerts not found.', {}, {}
         return 'Incidents not found.', {}, {}
 
-    data = apply_filters(res[0]['Contents']['data'], args)
+    result_data_list = res[0]["Contents"]["data"]
+    page = 0
+    max_page = round(res[0]["Contents"]["total"] / 100)
+    while max_page != page:
+        page += 1
+        args["page"] = page
+        result_data_list.extend(execute_command('getIncidents', args).get("data"))
+
+    data = apply_filters(result_data_list, args)
     data = add_incidents_link(data, platform)
     headers: List[str]
     if platform == 'x2':
