@@ -113,36 +113,6 @@
                 "Source Username": {
                     "simple": "attachments.content.username"
                 },
-                "Threat Actor": {
-                    "complex": null,
-                    "simple": "threat_actor"
-                },
-                "name": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "title",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "prefix": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "Cyberint - "
-                                        }
-                                    },
-                                    "suffix": {
-                                        "isContext": false,
-                                        "value": null
-                                    }
-                                },
-                                "operator": "concat"
-                            }
-                        ]
-                    },
-                    "simple": ""
-                },
                 "occurred": {
                     "complex": {
                         "filters": [],
@@ -211,10 +181,6 @@
                         "root": "tags",
                         "transformers": []
                     }
-                },
-                "source": {
-                    "complex": null,
-                    "simple": "source"
                 }
             }
         },
@@ -223,10 +189,6 @@
             "internalMapping": {
                 "Alert ID": {
                     "simple": "ref_id"
-                },
-                "Alert Name": {
-                    "complex": null,
-                    "simple": "title"
                 },
                 "CyberInt Alert ID": {
                     "simple": "ref_id"
@@ -386,10 +348,6 @@
                 },
                 "CyberInt Vulnerable CName Record": {
                     "simple": "alert_data.vulnerable_cname_record"
-                },
-                "name": {
-                    "complex": null,
-                    "simple": "title"
                 },
                 "occurred": {
                     "complex": {
