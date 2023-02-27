@@ -1022,7 +1022,7 @@ script:
       isArray: false
     - name: case_type
       description: |
-                   "AdvancedEdiscovery: used to manage legal or other types of investigations.
+                   "AdvancedEdiscovery: Used to manage legal or other types of investigations.
                     ComplianceClassifier: This type of case corresponds to a trainable classifier.
                     DataInvestigation: Data investigation cases are used to investigate data spillage incidents.
                     DSR: Data Subject Request (DSR) cases are used to manage General Data Protection Regulation (GDPR) DSR investigations.
