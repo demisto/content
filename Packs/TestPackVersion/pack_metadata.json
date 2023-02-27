@@ -1,0 +1,21 @@
+{
+    "name": "Test Pack version",
+    "description": "This is a test pack from curl",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "testing",
+    "url": "",
+    "email": "",
+    "created": "2023-02-27T11:03:33Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "dansterenson"
+    ]
+}
