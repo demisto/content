@@ -35,7 +35,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### prisma-cloud-alert-dismiss
 
 ***
-Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
+Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
 
 #### Base Command
 
@@ -613,7 +613,7 @@ There are no input arguments for this command.
 ### prisma-cloud-remediation-command-list
 
 ***
-Gets remediation command list details for the given alerts or policy. Either policy ID or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times.
+Gets remediation command list details for the given alerts or policy. Either policy ID or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times.
 
 #### Base Command
 
@@ -704,7 +704,7 @@ There is no context output for this command.
 ### prisma-cloud-alert-reopen
 
 ***
-Re-open the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times.
+Re-open the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times.
 
 #### Base Command
 
@@ -763,7 +763,7 @@ Search alerts on the Prisma Cloud platform. When no absolute time nor relative t
 | PrismaCloud.Alert.reason | String | The reason of the returned alert. | 
 | PrismaCloud.Alert.lastSeen | String | The time the returned alert was last seen. | 
 | PrismaCloud.Alert.firstSeen | String | The time the returned alert was first seen. | 
-| PrismaCloud.Alert.lastUpdated | String | The time the returned was last updated. | 
+| PrismaCloud.Alert.lastUpdated | String | The time the returned alert was last updated. | 
 | PrismaCloud.Alert.alertTime | String | The time of the returned alert. | 
 | PrismaCloud.Alert.policy.policyId | String | The policy ID of the returned alert. | 
 | PrismaCloud.Alert.policy.name | String | The policy name of the returned alert. | 
@@ -773,7 +773,7 @@ Search alerts on the Prisma Cloud platform. When no absolute time nor relative t
 | PrismaCloud.Alert.policy.description | String | The policy description of the returned alert. | 
 | PrismaCloud.Alert.policy.recommendation | String | The policy recommendation of the returned alert. | 
 | PrismaCloud.Alert.policy.remediation.description | String | The policy remediation description of the returned alert. | 
-| PrismaCloud.Alert.policy.remediation.cliScriptTemplate | String | The policy cli script template description of the returned alert. | 
+| PrismaCloud.Alert.policy.remediation.cliScriptTemplate | String | The policy CLI script template description of the returned alert. | 
 | PrismaCloud.Alert.policy.systemDefault | Boolean | Whether the policy is the system default. | 
 | PrismaCloud.Alert.policy.deleted | Boolean | Whether the policy was deleted. | 
 | PrismaCloud.Alert.resource.resourceType | String | The resource type of the returned alert. | 
@@ -1029,7 +1029,7 @@ Search alerts on the Prisma Cloud platform. When no absolute time nor relative t
 ### prisma-cloud-config-search
 
 ***
-Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, default time range is all times.
+Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, the default time range is all times.
 
 #### Base Command
 
@@ -1045,7 +1045,7 @@ Search configuration inventory on the Prisma Cloud platform using RQL language. 
 | time_range_value | The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc. | Optional | 
 | query | Query to run in Prisma Cloud config API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/config-query. | Required | 
 | limit | Maximum number of entries to return. Default is 50. | Optional | 
-| search_id | Search ID. Can be used to run again the same search. | Optional | 
+| search_id | Search ID. Can be used to rerun the same search. | Optional | 
 | sort_direction | The direction to sort the results by. Both sort direction and field must be specified if sorting. Possible values are: asc, desc. Default is desc. | Optional | 
 | sort_field | The field to sort the results by. Both sort direction and field must be specified if sorting. Possible values are: id, time, apiName, customerId, insertTs, json, cloudAccount, cloudRegion, stateId. Default is insertTs. | Optional | 
 
@@ -1057,11 +1057,11 @@ Search configuration inventory on the Prisma Cloud platform using RQL language. 
 | PrismaCloud.Config.accountName | String | Cloud Account Name. | 
 | PrismaCloud.Config.allowDrillDown | Boolean | Whether to allow drill down. | 
 | PrismaCloud.Config.cloudType | String | Cloud Type. | 
-| PrismaCloud.Config.deleted | Boolean | Whether asset was deleted. | 
+| PrismaCloud.Config.deleted | Boolean | Whether the asset was deleted. | 
 | PrismaCloud.Config.hasExtFindingRiskFactors | Boolean | Whether configuration has external finding risk factors. | 
 | PrismaCloud.Config.hasExternalFinding | Boolean | Whether configuration has external finding. | 
-| PrismaCloud.Config.hasExternalIntegration | Boolean | Whether configuration has axternal integration. | 
-| PrismaCloud.Config.hasNetwork | Boolean | Whether configuration has network? | 
+| PrismaCloud.Config.hasExternalIntegration | Boolean | Whether the configuration has an external integration. | 
+| PrismaCloud.Config.hasNetwork | Boolean | Whether the configuration has a network. | 
 | PrismaCloud.Config.id | String | Prisma Cloud config ID. | 
 | PrismaCloud.Config.assetId | String | Prisma Cloud Asset ID. | 
 | PrismaCloud.Config.data | Unknown | Prisma Cloud Asset specific data. | 
@@ -1138,7 +1138,7 @@ Search configuration inventory on the Prisma Cloud platform using RQL language. 
 ### prisma-cloud-event-search
 
 ***
-Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, default time range is all times.
+Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, the default time range is all times.
 
 #### Base Command
 
@@ -1264,7 +1264,7 @@ Search events inventory on the Prisma Cloud platform using RQL language. Use thi
 ### prisma-cloud-network-search
 
 ***
-Search networks inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "networks". When no absolute time nor relative time arguments are provided, default time range is all times. In order to limit the results returning, use "limit search records to" at the end of the RQL query, followed by a value from one of these options: 1, 10, 100, 1000, and 10,000.
+Search networks inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "networks". When no absolute time nor relative time arguments are provided, the default time range is all times. In order to limit the results returning, use "limit search records to" at the end of the RQL query, followed by a value from one of these options: 1, 10, 100, 1000, and 10,000.
 
 #### Base Command
 
@@ -1280,7 +1280,7 @@ Search networks inventory on the Prisma Cloud platform using RQL language. Use t
 | time_range_value | The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc. | Optional | 
 | query | Query to run in Prisma Cloud network API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/network-query. | Required | 
 | cloud_type | The cloud in which the network should be searched. Possible values are: aws, azure, gcp, alibaba_cloud, oci. | Optional | 
-| search_id | Search ID. Can be used to run again the same search. | Optional | 
+| search_id | Search ID. Can be used to rerun the same search. | Optional | 
 
 #### Context Output
 
@@ -1297,7 +1297,7 @@ Search networks inventory on the Prisma Cloud platform using RQL language. Use t
 | PrismaCloud.Network.Connection.to | Number | Cloud network connection to node ID. | 
 | PrismaCloud.Network.Connection.label | String | Cloud network connection label. | 
 | PrismaCloud.Network.Connection.suspicious | Boolean | Whether the cloud network node is suspicious. | 
-| PrismaCloud.Network.Connection.metadata | Unknown | Cloud network Connection metadata. | 
+| PrismaCloud.Network.Connection.metadata | Unknown | Cloud network connection metadata. | 
 
 #### Command example
 ```!prisma-cloud-network-search query="network from vpc.flow_record where cloud.account = 'AWS Prod' AND source.publicnetwork IN ( 'Suspicious IPs' ) AND bytes > 0 "```
@@ -1576,7 +1576,7 @@ Search networks inventory on the Prisma Cloud platform using RQL language. Use t
 ### prisma-cloud-error-file-list
 
 ***
-Lists scanned files that contain errors. In order to use this command, "Code Security" module needs to be enabled and accessible in Prisma Cloud UI.
+Lists scanned files that contain errors. In order to use this command, the "Code Security" module needs to be enabled and accessible in the Prisma Cloud UI.
 
 #### Base Command
 
@@ -1661,7 +1661,7 @@ Lists scanned files that contain errors. In order to use this command, "Code Sec
 ### prisma-cloud-trigger-scan
 
 ***
-Trigger asynchronous scan of all resources to refresh the current state at Prisma Cloud Code Security. In order to use this command, "Code Security" module needs to be enabled and accessible in Prisma Cloud UI.
+Trigger asynchronous scan of all resources to refresh the current state at Prisma Cloud Code Security. In order to use this command, the "Code Security" module needs to be enabled and accessible in the Prisma Cloud UI.
 
 #### Base Command
 
@@ -1714,17 +1714,17 @@ Get resource details.
 | PrismaCloud.Resource.regionName | String | Cloud Region Name. | 
 | PrismaCloud.Resource.service | String | Cloud service. | 
 | PrismaCloud.Resource.resourceType | String | Cloud Resource type. | 
-| PrismaCloud.Resource.insertTs | Date | Insert Ts. | 
-| PrismaCloud.Resource.deleted | Boolean | Resource was deleted? | 
-| PrismaCloud.Resource.vpcId | String | Vpc ID. | 
-| PrismaCloud.Resource.vpcName | String | Vpc name. | 
+| PrismaCloud.Resource.insertTs | Date | Insert timestamp. | 
+| PrismaCloud.Resource.deleted | Boolean | Whether the resource was deleted. | 
+| PrismaCloud.Resource.vpcId | String | VPC ID. | 
+| PrismaCloud.Resource.vpcName | String | VPC name. | 
 | PrismaCloud.Resource.tags | Unknown | Prisma Cloud resource tags. | 
 | PrismaCloud.Resource.riskGrade | String | Risk grade. | 
-| PrismaCloud.Resource.hasNetwork | Boolean | Has Network? | 
-| PrismaCloud.Resource.hasExternalFinding | Boolean | Has External Finding? | 
-| PrismaCloud.Resource.hasExternalIntegration | Boolean | Has External Integration? | 
+| PrismaCloud.Resource.hasNetwork | Boolean | Whether the resource has a network. | 
+| PrismaCloud.Resource.hasExternalFinding | Boolean | Whether the resource has an external finding. | 
+| PrismaCloud.Resource.hasExternalIntegration | Boolean | Whether the resource has an external integration. | 
 | PrismaCloud.Resource.allowDrillDown | Boolean | Whether to allow drill down. | 
-| PrismaCloud.Resource.hasExtFindingRiskFactors | Boolean | Has External Finding Risk Factors? | 
+| PrismaCloud.Resource.hasExtFindingRiskFactors | Boolean | Whether the resource has external finding risk factors. | 
 | PrismaCloud.Resource.data | Unknown | Prisma Cloud resource specific data. | 
 
 #### Command example
@@ -1822,7 +1822,7 @@ List accounts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| exclude_account_group_details | Allows excludind account group details. Possible values are: true, false. Default is false. | Optional | 
+| exclude_account_group_details | Whether to exclude account group details. Possible values are: true, false. Default is false. | Optional | 
 | limit | Maximum number of entries to return. Default is 50. | Optional | 
 | all_results | Whether to retrieve all results. The "limit" argument will be ignored. Possible values are: true, false. | Optional | 
 
@@ -1897,7 +1897,7 @@ List accounts.
 ### prisma-cloud-account-status-get
 
 ***
-Get accounts statuses.
+Get the statuses of the provided accounts.
 
 #### Base Command
 
@@ -1948,7 +1948,7 @@ Get accounts statuses.
 ### prisma-cloud-account-owner-list
 
 ***
-Get accounts owners.
+Get the owners of the provided accounts.
 
 #### Base Command
 
@@ -2211,7 +2211,7 @@ Get permission list. You must provide either "query" or "next_token".
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User ID to look for. Must be provided with "query" argument. | Optional | 
+| user_id | User ID to look for. Must be provided with the "query" argument. | Optional | 
 | query | IAM query to run in Prisma Cloud config API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/iam-query. | Optional | 
 | limit | Maximum number of entries to return. Default is 50. | Optional | 
 | next_token | Token of the next page to retrive. | Optional | 

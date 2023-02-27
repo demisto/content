@@ -169,7 +169,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
+    description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
     execution: true
     name: prisma-cloud-alert-dismiss
   - arguments:
@@ -355,7 +355,7 @@ script:
       - 'false'
       required: false
       secret: false
-    description: Gets remediation command list details for the given alerts or policy. Either policy ID or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times.
+    description: Gets remediation command list details for the given alerts or policy. Either policy ID or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times.
     execution: false
     name: prisma-cloud-remediation-command-list
     outputs:
@@ -433,7 +433,7 @@ script:
       name: filters
       required: false
       secret: false
-    description: Re-open the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times.
+    description: Re-open the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times.
     execution: true
     name: prisma-cloud-alert-reopen
   - arguments:
@@ -523,7 +523,7 @@ script:
       description: The time the returned alert was first seen.
       type: String
     - contextPath: PrismaCloud.Alert.lastUpdated
-      description: The time the returned was last updated.
+      description: The time the returned alert was last updated.
       type: String
     - contextPath: PrismaCloud.Alert.alertTime
       description: The time of the returned alert.
@@ -553,7 +553,7 @@ script:
       description: The policy remediation description of the returned alert.
       type: String
     - contextPath: PrismaCloud.Alert.policy.remediation.cliScriptTemplate
-      description: The policy cli script template description of the returned alert.
+      description: The policy CLI script template description of the returned alert.
       type: String
     - contextPath: PrismaCloud.Alert.policy.systemDefault
       description: Whether the policy is the system default.
@@ -624,7 +624,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Search ID. Can be used to run again the same search.
+      description: Search ID. Can be used to rerun the same search.
       isArray: false
       name: search_id
       required: false
@@ -658,7 +658,7 @@ script:
       - stateId
       required: false
       secret: false
-    description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, default time range is all times.
+    description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, the default time range is all times.
     execution: false
     name: prisma-cloud-config-search
     outputs:
@@ -675,7 +675,7 @@ script:
       description: Cloud Type.
       type: String
     - contextPath: PrismaCloud.Config.deleted
-      description: Whether asset was deleted.
+      description: Whether the asset was deleted.
       type: Boolean
     - contextPath: PrismaCloud.Config.hasExtFindingRiskFactors
       description: Whether configuration has external finding risk factors.
@@ -684,10 +684,10 @@ script:
       description: Whether configuration has external finding.
       type: Boolean
     - contextPath: PrismaCloud.Config.hasExternalIntegration
-      description: Whether configuration has axternal integration.
+      description: Whether the configuration has an external integration.
       type: Boolean
     - contextPath: PrismaCloud.Config.hasNetwork
-      description: Whether configuration has network?
+      description: Whether the configuration has a network.
       type: Boolean
     - contextPath: PrismaCloud.Config.id
       description: Prisma Cloud config ID.
@@ -740,7 +740,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
+      description: The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.
       isArray: false
       name: time_range_unit
       predefined:
@@ -772,7 +772,7 @@ script:
       name: limit
       required: false
       secret: false
-    description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, default time range is all times.
+    description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, the default time range is all times.
     execution: false
     name: prisma-cloud-event-search
     outputs:
@@ -902,13 +902,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Search ID. Can be used to run again the same search.
+      description: Search ID. Can be used to rerun the same search.
       isArray: false
       name: search_id
       required: false
       secret: false
     deprecated: false
-    description: 'Search networks inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "networks". When no absolute time nor relative time arguments are provided, default time range is all times. In order to limit the results returning, use "limit search records to" at the end of the RQL query, followed by a value from one of these options: 1, 10, 100, 1000, and 10,000.'
+    description: 'Search networks inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "networks". When no absolute time nor relative time arguments are provided, the default time range is all times. In order to limit the results returning, use "limit search records to" at the end of the RQL query, followed by a value from one of these options: 1, 10, 100, 1000, and 10,000.'
     execution: false
     name: prisma-cloud-network-search
     outputs:
@@ -946,7 +946,7 @@ script:
       description: Whether the cloud network node is suspicious.
       type: Boolean
     - contextPath: PrismaCloud.Network.Connection.metadata
-      description: Cloud network Connection metadata.
+      description: Cloud network connection metadata.
       type: Unknown
   - arguments:
     - default: false
@@ -1065,7 +1065,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Lists scanned files that contain errors. In order to use this command, "Code Security" module needs to be enabled and accessible in Prisma Cloud UI.
+    description: Lists scanned files that contain errors. In order to use this command, the "Code Security" module needs to be enabled and accessible in the Prisma Cloud UI.
     execution: false
     name: prisma-cloud-error-file-list
     outputs:
@@ -1091,10 +1091,10 @@ script:
       description: Error file type.
       type: String
   - name: prisma-cloud-trigger-scan
-    description: Trigger asynchronous scan of all resources to refresh the current state at Prisma Cloud Code Security. In order to use this command, "Code Security" module needs to be enabled and accessible in Prisma Cloud UI.
+    description: Trigger asynchronous scan of all resources to refresh the current state at Prisma Cloud Code Security. In order to use this command, the "Code Security" module needs to be enabled and accessible in the Prisma Cloud UI.
   - arguments:
     - default: false
-      description: 'Restricted Resource Name of the resource to get details about. Can be retrieved by running a command that has that RRN.'
+      description: Restricted Resource Name of the resource to get details about. Can be retrieved by running a command that has that RRN.
       isArray: false
       name: rrn
       required: true
@@ -1137,16 +1137,16 @@ script:
       description: Cloud Resource type.
       type: String
     - contextPath: PrismaCloud.Resource.insertTs
-      description: Insert Ts.
+      description: Insert timestamp.
       type: Date
     - contextPath: PrismaCloud.Resource.deleted
-      description: Resource was deleted?
+      description: Whether the resource was deleted.
       type: Boolean
     - contextPath: PrismaCloud.Resource.vpcId
-      description: Vpc ID.
+      description: VPC ID.
       type: String
     - contextPath: PrismaCloud.Resource.vpcName
-      description: Vpc name.
+      description: VPC name.
       type: String
     - contextPath: PrismaCloud.Resource.tags
       description: Prisma Cloud resource tags.
@@ -1155,19 +1155,19 @@ script:
       description: Risk grade.
       type: String
     - contextPath: PrismaCloud.Resource.hasNetwork
-      description: Has Network?
+      description: Whether the resource has a network.
       type: Boolean
     - contextPath: PrismaCloud.Resource.hasExternalFinding
-      description: Has External Finding?
+      description: Whether the resource has an external finding.
       type: Boolean
     - contextPath: PrismaCloud.Resource.hasExternalIntegration
-      description: Has External Integration?
+      description: Whether the resource has an external integration.
       type: Boolean
     - contextPath: PrismaCloud.Resource.allowDrillDown
       description: Whether to allow drill down.
       type: Boolean
     - contextPath: PrismaCloud.Resource.hasExtFindingRiskFactors
-      description: Has External Finding Risk Factors?
+      description: Whether the resource has external finding risk factors.
       type: Boolean
     - contextPath: PrismaCloud.Resource.data
       description: Prisma Cloud resource specific data.
@@ -1176,7 +1176,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Allows excludind account group details.
+      description: Whether to exclude account group details.
       isArray: false
       name: exclude_account_group_details
       predefined:
@@ -1257,7 +1257,7 @@ script:
       name: account_ids
       required: true
       secret: false
-    description: Get accounts statuses.
+    description: Get the statuses of the provided accounts.
     execution: false
     name: prisma-cloud-account-status-get
     outputs:
@@ -1283,7 +1283,7 @@ script:
       name: account_ids
       required: true
       secret: false
-    description: Get accounts owners.
+    description: Get the owners of the provided accounts.
     execution: false
     name: prisma-cloud-account-owner-list
     outputs:
@@ -1295,7 +1295,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: 'Restricted Resource Name of the resource to get host finding of. Can be retrieved by running a command that has that RRN.'
+      description: Restricted Resource Name of the resource to get host finding of. Can be retrieved by running a command that has that RRN.
       isArray: false
       name: rrn
       required: true
@@ -1401,7 +1401,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User ID to look for. Must be provided with "query" argument.
+      description: User ID to look for. Must be provided with the "query" argument.
       isArray: false
       name: user_id
       required: false
@@ -1773,7 +1773,7 @@ script:
       description: The status of the returned alert.
       type: String
     - contextPath: PrismaCloud.Alert.reason
-      description: The reason of the returned alert.
+      description: The reason for the returned alert.
       type: String
     - contextPath: PrismaCloud.Alert.lastSeen
       description: The time the returned alert was last seen.
@@ -1782,7 +1782,7 @@ script:
       description: The time the returned alert was first seen.
       type: String
     - contextPath: PrismaCloud.Alert.lastUpdated
-      description: The time the returned was last updated.
+      description: The time the returned alert was last updated.
       type: String
     - contextPath: PrismaCloud.Alert.alertTime
       description: The time of the returned alert.
@@ -1812,7 +1812,7 @@ script:
       description: The policy remediation description of the returned alert.
       type: String
     - contextPath: PrismaCloud.Alert.policy.remediation.cliScriptTemplate
-      description: The policy cli script template description of the returned alert.
+      description: The policy CLI script template description of the returned alert.
       type: String
     - contextPath: PrismaCloud.Alert.policy.systemDefault
       description: Whether the policy is the system default.
@@ -1833,7 +1833,7 @@ script:
       description: The resource cloud type of the returned alert.
       type: String
     - contextPath: PrismaCloud.Alert.resource.rrn
-      description: The resource rrn of the returned alert.
+      description: The resource RRN of the returned alert.
       type: String
   - arguments:
     - default: true
@@ -1861,7 +1861,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The time unit for if snoozing alert.  Both snooze value and unit must be specified if snoozing.
+      description: The time unit for snoozing alert.  Both snooze value and unit must be specified if snoozing.
       isArray: false
       name: snooze-unit
       predefined:
@@ -2058,7 +2058,7 @@ script:
       secret: false
     - default: false
       description: Comma-separated string of policy IDs.
-      isArray: false
+      isArray: true
       name: policy-id
       required: false
       secret: false
@@ -2251,7 +2251,7 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Re-open the alerts matching the given filter.  Must provide either policy IDs or alert IDs.
+    description: Re-open the alerts matching the given filter. Must provide either policy IDs or alert IDs.
     execution: true
     name: redlock-reopen-alerts
   - arguments:
@@ -2319,7 +2319,7 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Search configuration inventory on the Prisma Cloud platform using RQL language.
+    description: Search the configuration inventory on the Prisma Cloud platform using RQL language.
     execution: false
     name: redlock-search-config
     outputs:
@@ -2336,7 +2336,7 @@ script:
       description: Cloud Type.
       type: String
     - contextPath: PrismaCloud.Config.deleted
-      description: Whether asset was deleted.
+      description: Whether the asset was deleted.
       type: Boolean
     - contextPath: PrismaCloud.Config.hasExtFindingRiskFactors
       description: Whether configuration has external finding risk factors.
@@ -2345,10 +2345,10 @@ script:
       description: Whether configuration has external finding.
       type: Boolean
     - contextPath: PrismaCloud.Config.hasExternalIntegration
-      description: Whether configuration has axternal integration.
+      description: Whether the configuration has an external integration.
       type: Boolean
     - contextPath: PrismaCloud.Config.hasNetwork
-      description: Whether configuration has network?
+      description: Whether the configuration has a network.
       type: Boolean
     - contextPath: PrismaCloud.Config.id
       description: Prisma Cloud config ID.
@@ -2394,7 +2394,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The RQL config query to run. Examples of RQL config queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/config-query/config-query-examples.html. Note that ` limit search records to 1` is automatically appended to each query and a `;` may need to be added to the end of the rql input to make the entire query valid.  The limit parameter adjusts this to be a value other than 1.'
+      description: 'The RQL config query to run. Examples of RQL config queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/config-query/config-query-examples.html. Note that ` limit search records to 1` is automatically appended to each query and a `;` may need to be added to the end of the RQL input to make the entire query valid.  The limit parameter adjusts this to be a value other than 1.'
       isArray: false
       name: rql
       required: true
