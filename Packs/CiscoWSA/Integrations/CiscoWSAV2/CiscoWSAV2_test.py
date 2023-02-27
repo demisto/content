@@ -1024,6 +1024,7 @@ def test_delete_handler(
     res = 'Identification profile "test343434" deletion failed, message: "profile_name ' + "'test343434' doesn't exist" + '".'
     assert result[2].readable_output == str(res)
 
+
 @pytest.mark.parametrize(
     "command_arguments,expected_predefined_len,expected_custom_len",
     [

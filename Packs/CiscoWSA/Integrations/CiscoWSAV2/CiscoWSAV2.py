@@ -473,7 +473,7 @@ class Client(BaseClient):
             ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
-    def access_policy_delete(self, policy_names: str) -> dict[str, Any]:
+    def access_policy_delete(self, policy_names: str) -> Response:
         """
         Delete access policy.
 
@@ -481,7 +481,7 @@ class Client(BaseClient):
             policy_names (str): Comma separated policy names to delete.
 
         Returns:
-            dict[str, Any]: API response from Cisco WSA.
+            Response: API response from Cisco WSA.
         """
         params = assign_params(policy_names=",".join(policy_names))
         return self._http_request(
@@ -721,7 +721,7 @@ class Client(BaseClient):
             ok_codes=[HTTPStatus.NO_CONTENT],
         )
 
-    def identification_profiles_delete(self, profile_names: List[str]) -> dict[str, Any]:
+    def identification_profiles_delete(self, profile_names: List[str]) -> Response:
         """
         Delete identification profiles.
 
@@ -1614,7 +1614,7 @@ def protocols_handler(protocols: List[str]) -> List[str]:
     return organized_protocols
 
 
-def delete_handler(response: dict[str, Any],
+def delete_handler(response: Response,
                    obj_key: str,
                    readable_obj_name: str,
                    success_readable_output: str) -> CommandResults | List[CommandResults]:
