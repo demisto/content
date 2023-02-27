@@ -1069,9 +1069,9 @@ Create eDiscovery cases in the Microsoft Purview compliance portal.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | case_name | Case name create. | Required | 
-| case_type | "AdvancedEdiscovery: used to manage legal or other types of investigations.<br/> ComplianceClassifier: This type of case corresponds to a trainable classifier.<br/> DataInvestigation: Data investigation cases are used to investigate data spillage incidents.<br/> DSR: Data Subject Request (DSR) cases are used to manage General Data Protection Regulation (GDPR) DSR investigations.<br/> eDiscovery: eDiscovery (also called eDiscovery Standard) cases are used to manage legal or other types of investigations.<br/> This is the default value.<br/> InsiderRisk: Insider risk cases are used to manage insider risk management cases.<br/> Typically, insider risk management cases are manually created in the Microsoft Purview<br/> compliance portal to further investigate activity based on a risk alert.<br/> SupervisionPolicy: This type of case corresponds to communication compliance policy."<br/>. Possible values are: AdvancedEdiscovery, ComplianceClassifier, DataInvestigation, DSR, eDiscovery, InsiderRisk, SupervisionPolicy. Default is eDiscovery. | Optional | 
+| case_type | "AdvancedEdiscovery: Used to manage legal or other types of investigations.<br/> ComplianceClassifier: This type of case corresponds to a trainable classifier.<br/> DataInvestigation: Data investigation cases are used to investigate data spillage incidents.<br/> DSR: Data Subject Request (DSR) cases are used to manage General Data Protection Regulation (GDPR) DSR investigations.<br/> eDiscovery: eDiscovery (also called eDiscovery Standard) cases are used to manage legal or other types of investigations.<br/> This is the default value.<br/> InsiderRisk: Insider risk cases are used to manage insider risk management cases.<br/> Typically, insider risk management cases are manually created in the Microsoft Purview<br/> compliance portal to further investigate activity based on a risk alert.<br/> SupervisionPolicy: This type of case corresponds to communication compliance policy."<br/>. Possible values are: AdvancedEdiscovery, ComplianceClassifier, DataInvestigation, DSR, eDiscovery, InsiderRisk, SupervisionPolicy. Default is eDiscovery. | Optional | 
 | description | Case description. | Optional | 
-| external_id | Case external Id. | Optional | 
+| external_id | Case external ID. | Optional | 
 
 #### Context Output
 
@@ -1084,7 +1084,7 @@ Create eDiscovery cases in the Microsoft Purview compliance portal.
 ### o365-sc-compliance-case-list
 
 ***
-List different types of compliance cases in the Microsoft Purview compliance portal
+List different types of compliance cases in the Microsoft Purview compliance portal.
 
 #### Base Command
 
@@ -1128,7 +1128,7 @@ There is no context output for this command.
 ### o365-sc-case-hold-policy-create
 
 ***
-Creates new case hold policies in the Microsoft Purview compliance portal
+Creates new case hold policies in the Microsoft Purview compliance portal.
 
 #### Base Command
 
@@ -1150,15 +1150,15 @@ Creates new case hold policies in the Microsoft Purview compliance portal
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| O365.SecurityAndCompliance.CaseHoldPolicy.Name | String | CaseHoldPolicy name. | 
-| O365.SecurityAndCompliance.CaseHoldPolicy.Workload | String | CaseHoldPolicy workload. | 
-| O365.SecurityAndCompliance.CaseHoldPolicy.Enabled | String | Is CaseHoldPolicy enabled. | 
-| O365.SecurityAndCompliance.CaseHoldPolicy.Mode | String | CaseHoldPolicy mode. | 
+| O365.SecurityAndCompliance.CaseHoldPolicy.Name | String | Case hold policy name. | 
+| O365.SecurityAndCompliance.CaseHoldPolicy.Workload | String | Case hold policy workload. | 
+| O365.SecurityAndCompliance.CaseHoldPolicy.Enabled | String | Is case hold policy enabled. | 
+| O365.SecurityAndCompliance.CaseHoldPolicy.Mode | String | Case hold policy mode. | 
 
 ### o365-sc-case-hold-policy-get
 
 ***
-View existing case hold policies in the Microsoft Purview compliance portal
+View existing case hold policies in the Microsoft Purview compliance portal.
 
 #### Base Command
 
@@ -1177,11 +1177,11 @@ View existing case hold policies in the Microsoft Purview compliance portal
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| O365.SecurityAndCompliance.CaseHoldPolicy.Name | String | CaseHoldPolicy name. | 
-| O365.SecurityAndCompliance.CaseHoldPolicy.GUID | String | CaseHoldPolicy GUID. | 
-| O365.SecurityAndCompliance.CaseHoldPolicy.Workload | String | CaseHoldPolicy workload. | 
-| O365.SecurityAndCompliance.CaseHoldPolicy.Status | String | CaseHoldPolicy status. | 
-| O365.SecurityAndCompliance.CaseHoldPolicy.Mode | String | CaseHoldPolicy mode. | 
+| O365.SecurityAndCompliance.CaseHoldPolicy.Name | String | Case hold policy name. | 
+| O365.SecurityAndCompliance.CaseHoldPolicy.GUID | String | Case hold policy GUID. | 
+| O365.SecurityAndCompliance.CaseHoldPolicy.Workload | String | Case hold policy workload. | 
+| O365.SecurityAndCompliance.CaseHoldPolicy.Status | String | Case hold policy status. | 
+| O365.SecurityAndCompliance.CaseHoldPolicy.Mode | String | Case hold policy mode. | 
 
 ### o365-sc-case-hold-policy-delete
 
@@ -1225,9 +1225,9 @@ Creates new case hold rules in the Microsoft Purview compliance portal.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| O365.SecurityAndCompliance.CaseHoldRule.Name | String | CaseHoldPolicy name. | 
-| O365.SecurityAndCompliance.CaseHoldRule.Status | String | CaseHoldRule status. | 
-| O365.SecurityAndCompliance.CaseHoldRule.Mode | String | CaseHoldRule mode. | 
+| O365.SecurityAndCompliance.CaseHoldRule.Name | String | Case hold policy name. | 
+| O365.SecurityAndCompliance.CaseHoldRule.Status | String | Case hold policy status. | 
+| O365.SecurityAndCompliance.CaseHoldRule.Mode | String | Case hold policy mode. | 
 
 ### o365-sc-case-hold-rule-list
 
@@ -1250,10 +1250,10 @@ View case hold rules in the Microsoft Purview compliance portal.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| O365.SecurityAndCompliance.CaseHoldRule.Name | String | CaseHoldPolicy name. | 
-| O365.SecurityAndCompliance.CaseHoldRule.GUID | UUID | CaseHoldRule GUID. | 
-| O365.SecurityAndCompliance.CaseHoldRule.Enabled | String | Whether CaseHoldRule is enabled. | 
-| O365.SecurityAndCompliance.CaseHoldRule.Mode | String | CaseHoldRule mode. | 
+| O365.SecurityAndCompliance.CaseHoldRule.Name | String | Case hold policy name. | 
+| O365.SecurityAndCompliance.CaseHoldRule.GUID | UUID | Case hold policy GUID. | 
+| O365.SecurityAndCompliance.CaseHoldRule.Enabled | String | Whether case hold policy is enabled. | 
+| O365.SecurityAndCompliance.CaseHoldRule.Mode | String | Case hold policy mode. | 
 
 ### o365-sc-case-hold-rule-delete
 

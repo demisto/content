@@ -1049,7 +1049,7 @@ script:
       required: false
       isArray: false
     - name: external_id
-      description: Case external Id.
+      description: Case external ID.
       required: false
       isArray: false
     outputs:
@@ -1113,7 +1113,7 @@ script:
       isArray: false
   - name: o365-sc-case-hold-policy-create
     deprecated: false
-    description: Creates new case hold policies in the Microsoft Purview compliance portal
+    description: Creates new case hold policies in the Microsoft Purview compliance portal.
     execution: false
     arguments:
     - name: policy_name
@@ -1151,20 +1151,20 @@ script:
       - 'false'
     outputs:
     - contextPath: O365.SecurityAndCompliance.CaseHoldPolicy.Name
-      description: CaseHoldPolicy name.
+      description: Case hold policy name.
       type: String
     - contextPath: O365.SecurityAndCompliance.CaseHoldPolicy.Workload
-      description: CaseHoldPolicy workload.
+      description: Case hold policy workload.
       type: String
     - contextPath: O365.SecurityAndCompliance.CaseHoldPolicy.Enabled
-      description: Is CaseHoldPolicy enabled.
+      description: Is case hold policy enabled.
       type: String
     - contextPath: O365.SecurityAndCompliance.CaseHoldPolicy.Mode
-      description: CaseHoldPolicy mode.
+      description: Case hold policy mode.
       type: String
   - name: o365-sc-case-hold-policy-get
     deprecated: false
-    description: View existing case hold policies in the Microsoft Purview compliance portal
+    description: View existing case hold policies in the Microsoft Purview compliance portal.
     execution: false
     arguments:
     - name: identity
@@ -1195,19 +1195,19 @@ script:
       - 'false'
     outputs:
     - contextPath: O365.SecurityAndCompliance.CaseHoldPolicy.Name
-      description: CaseHoldPolicy name.
+      description: Case hold policy name.
       type: String
     - contextPath: O365.SecurityAndCompliance.CaseHoldPolicy.GUID
-      description: CaseHoldPolicy GUID.
+      description: Case hold policy GUID.
       type: String
     - contextPath: O365.SecurityAndCompliance.CaseHoldPolicy.Workload
-      description: CaseHoldPolicy workload.
+      description: Case hold policy workload.
       type: String
     - contextPath: O365.SecurityAndCompliance.CaseHoldPolicy.Status
-      description: CaseHoldPolicy status.
+      description: Case hold policy status.
       type: String
     - contextPath: O365.SecurityAndCompliance.CaseHoldPolicy.Mode
-      description: CaseHoldPolicy mode.
+      description: Case hold policy mode.
       type: String
   - name: o365-sc-case-hold-policy-delete
     deprecated: false
@@ -1259,13 +1259,13 @@ script:
       - 'false'
     outputs:
     - contextPath: O365.SecurityAndCompliance.CaseHoldRule.Name
-      description: CaseHoldPolicy name.
+      description: Case hold policy name.
       type: String
     - contextPath: O365.SecurityAndCompliance.CaseHoldRule.Status
-      description: CaseHoldRule status.
+      description: Case hold policy status.
       type: String
     - contextPath: O365.SecurityAndCompliance.CaseHoldRule.Mode
-      description: CaseHoldRule mode.
+      description: Case hold policy mode.
       type: String
   - name: o365-sc-case-hold-rule-list
     deprecated: false
@@ -1287,16 +1287,16 @@ script:
       defaultValue: 50
     outputs:
     - contextPath: O365.SecurityAndCompliance.CaseHoldRule.Name
-      description: CaseHoldPolicy name.
+      description: Case hold policy name.
       type: String
     - contextPath: O365.SecurityAndCompliance.CaseHoldRule.GUID
-      description: CaseHoldRule GUID.
+      description: Case hold policy GUID.
       type: UUID
     - contextPath: O365.SecurityAndCompliance.CaseHoldRule.Enabled
-      description: Whether CaseHoldRule is enabled.
+      description: Whether case hold policy is enabled.
       type: String
     - contextPath: O365.SecurityAndCompliance.CaseHoldRule.Mode
-      description: CaseHoldRule mode.
+      description: Case hold policy mode.
       type: String
   - name: o365-sc-case-hold-rule-delete
     deprecated: false
