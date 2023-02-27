@@ -579,6 +579,6 @@ outputs:
   description: A list of all the records that were found in the CMDB table.
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0
+fromversion: 6.0.0
 contentitemexportablefields:
   contentitemfields: {}
