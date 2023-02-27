@@ -12,15 +12,15 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* PrismaCloud v2
+PrismaCloud v2
 
 ### Scripts
 
-* PrismaCloudAttribution
+PrismaCloudAttribution
 
 ### Commands
 
-* prisma-cloud-config-search
+prisma-cloud-config-search
 
 ## Playbook Inputs
 
@@ -28,7 +28,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| PublicIPAddress | Public IP Address to look up |  | Required |
+| PublicIPAddress | Public IP address to look up. |  | Required |
 
 ## Playbook Outputs
 
