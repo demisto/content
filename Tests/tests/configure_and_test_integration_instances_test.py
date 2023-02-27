@@ -208,7 +208,7 @@ def test_get_packs_with_higher_min_version(mocker):
 
     mocker.patch("Tests.configure_and_test_integration_instances.extract_packs_artifacts")
     mocker.patch("Tests.configure_and_test_integration_instances.get_json_file",
-                 {"serverMinVersion": "6.6.0"})
+                 return_value={"serverMinVersion": "6.6.0"})
 
     packs_with_higher_min_version = get_packs_with_higher_min_version({'TestPack'}, '6.5.0')
     assert packs_with_higher_min_version == {'TestPack'}
