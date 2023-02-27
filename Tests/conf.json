@@ -3562,7 +3562,8 @@
         {
             "integrations": "ExpanseV2",
             "playbookID": "ExpanseV2 Test",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "timeout": 250
         },
         {
             "integrations": "FeedExpanse",
@@ -4476,7 +4477,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 130,
+            "memory_threshold": 160,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -5347,6 +5348,7 @@
         "Calculate Severity - Generic v2 - Test": "Issue 32716",
         "Workday - Test": "No credentials Issue 29595",
         "McAfee-MAR_Test": "Issue CIAC-4521",
+        "G Suite Security Alert Center-Test": "Issue CIAC-5682",
         "MAR - Endpoint data collection test": "Issue CIAC-4521",
         "Tidy - Test": "Will run it manually.",
         "Protectwise-Test": "Issue 28168",

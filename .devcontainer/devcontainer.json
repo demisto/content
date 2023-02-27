@@ -1,4 +1,4 @@
-// Development container for Content. Poetry hash dba719d35b89ee660a81ae1d1b15c1d0dc8125df45af8cfba5d530e936341491
+// Development container for Content. Poetry hash 97b4446a28329c24352fcb41ca8570403da0ae3f7434121ab73b1ff83fdec395
 {
 	"name": "XSOAR Content",
 	"build": {
@@ -83,26 +83,26 @@
 			}
 		}
 	},
-// this is commented out until VSCode will fix self signed certificate issues
-// "features": {
-// 	"ghcr.io/devcontainers/features/docker-in-docker:1": {
-// 		"version": "latest"
-// 	},
-// 	"ghcr.io/devcontainers/features/git:1": {
-// 		"version": "os-provided"
-// 	},
-// 	"ghcr.io/devcontainers/features/powershell:1": {
-// 		"version": "latest"
-// 	},
-// 	"ghcr.io/devcontainers/features/common-utils:1": {
-// 		"version": "latest"
-// 	},
-// 	"ghcr.io/devcontainers/features/node:1": {
-// 		"version": "latest"
-// 	}
-// },
-// "overrideFeatureInstallOrder": [
-// 	"ghcr.io/devcontainers/features/common-utils:1"
-// ],
-"onCreateCommand": "dos2unix -n .devcontainer/createCommand.sh .devcontainer/createCommand_unix.sh && chmod +x .devcontainer/createCommand_unix.sh && bash .devcontainer/createCommand_unix.sh"
+	// this is commented out until VSCode will fix self signed certificate issues
+	// "features": {
+	// 	"ghcr.io/devcontainers/features/docker-in-docker:1": {
+	// 		"version": "latest"
+	// 	},
+	// 	"ghcr.io/devcontainers/features/git:1": {
+	// 		"version": "os-provided"
+	// 	},
+	// 	"ghcr.io/devcontainers/features/powershell:1": {
+	// 		"version": "latest"
+	// 	},
+	// 	"ghcr.io/devcontainers/features/common-utils:1": {
+	// 		"version": "latest"
+	// 	},
+	// 	"ghcr.io/devcontainers/features/node:1": {
+	// 		"version": "latest"
+	// 	}
+	// },
+	// "overrideFeatureInstallOrder": [
+	// 	"ghcr.io/devcontainers/features/common-utils:1"
+	// ],
+	"onCreateCommand": "dos2unix -n .devcontainer/createCommand.sh .devcontainer/createCommand_unix.sh && chmod +x .devcontainer/createCommand_unix.sh && bash .devcontainer/createCommand_unix.sh"
 }
