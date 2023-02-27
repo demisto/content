@@ -71,6 +71,9 @@ run-unittests-and-lint:
       when: never
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  parallel:
+    matrix:
+      - DOCKER: [native:ga, native:maintenance, native:dev, from-yml]
 
 
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
