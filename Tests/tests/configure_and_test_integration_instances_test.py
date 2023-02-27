@@ -203,7 +203,6 @@ def test_get_packs_with_higher_min_version(mocker):
     Then:
         - Assert the returned packs are with higher min version than the server version.
     """
-    # import Tests.Marketplace.upload_packs as upload_packs
 
     mocker.patch("Tests.configure_and_test_integration_instances.extract_packs_artifacts")
     mocker.patch("Tests.configure_and_test_integration_instances.get_json_file",
