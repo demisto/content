@@ -113,14 +113,13 @@ def fetch_events(client: Client, **kwargs) -> list:
     response = client.get_alerts(params)
 
     if events := response.get('data', {}).get('results', []):
-        last_run_event_ids = demisto.getLastRun().get('last_run_ids', set())
-        if last_run_event_ids:
+        if last_run_event_ids := demisto.getLastRun().get('last_run_ids'):
             events = list(filter(lambda x: x.get('id') not in last_run_event_ids, events))
 
         # Get the latest triggered time to start fetching the next round from this time.
         next_run_time = events[-1].get('triggered')
         # We need the IDs of the events with the same trigger time as the latest,
-        # So that we can remove them in the next fetch, Since we are fetching from this time.
+        # So that we can remove them in the next fetch, Since we are fetching from (including) this time.
         next_run_event_ids = {event.get('id') for event in events if event.get('triggered') == next_run_time}
 
         # In case all events were triggered at the same time and the limit equals their amount,
@@ -190,6 +189,8 @@ def main() -> None:
 
             if should_push_events:
                 add_time_key_to_events(events)
+                demisto.info(f'this is the event: {events[0]}')
+                demisto.info(f'this is the last run: {demisto.getLastRun()}')
                 send_events_to_xsiam(
                     events,
                     vendor=VENDOR,
