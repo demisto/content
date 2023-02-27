@@ -13,9 +13,14 @@ def run(options):
     PATHS = PathManager(Path(__file__).absolute().parents[2])
     PACK_MANAGER = PackManager(PATHS)
     branch_name = PATHS.content_repo.active_branch.name
+    import pathlib
+    root_dir = Path(__file__).absolute().parents[2]
+    root_dir_instance = pathlib.Path(root_dir)
+    filesindir = [item.name for item in root_dir_instance.glob("*")]
+
     print(branch_name)
     print('******************************')
-    print(PACK_MANAGER)
+    print(filesindir)
     secret_conf = GoogleSecreteManagerModule(options.service_account)
     secrets = secret_conf.list_secrets(options.gsm_project_id, with_secret=True, attr_validation=('name', 'params'))
     secret_file = {
