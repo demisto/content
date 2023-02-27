@@ -266,6 +266,40 @@ script:
     - contextPath: MongoDB.Entry.collection
       description: The collection of which the entry belongs to.
       type: String
+  - arguments:
+    - default: false
+      description: The name of the collection in which to update entries.
+      isArray: false
+      name: collection
+      required: true
+      secret: false
+    - default: false
+      description: 'A query that matches the documents to update, in the format: `{"key": "value"}`.'
+      isArray: false
+      name: filter
+      required: true
+      secret: false
+    - default: false
+      description: 'The content with which to update entries, in the format: {"$set": {"key": "value"}}. You can use Update Operators or Aggregation Pipeline. For more information, see the integration documentation.'
+      isArray: false
+      name: update
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Updates entries in a collection that matches the query or create a new entry if no entires match the query. Default is false.
+      isArray: false
+      name: upsert
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Bulk Updates entires in a collection.
+    execution: false
+    name: mongodb-bulk-update
   dockerimage: demisto/py3-tools:1.0.0.45685
   feed: false
   isfetch: false
