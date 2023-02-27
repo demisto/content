@@ -1301,12 +1301,12 @@ async def process_entitlement_reply(
         requests.post(response_url, json={'text': entitlement_reply, 'replace_original': True})
     else:
         await send_slack_request_async(client=ASYNC_CLIENT, method='chat.update',
-                                    body={
-                                        'channel': channel,
-                                        'ts': message_ts,
-                                        'text': entitlement_reply,
-                                        'blocks': []
-                                    })
+                                       body={
+                                           'channel': channel,
+                                           'ts': message_ts,
+                                           'text': entitlement_reply,
+                                           'blocks': []
+                                       })
 
 
 def is_dm(channel: str) -> bool:
