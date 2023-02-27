@@ -272,7 +272,7 @@
     - job-done
   parallel:
     matrix:
-      - DOCKER: [native-ga,native-maintenance, native-dev,from-yml]
+      - DOCKER: ['native-ga,native-maintenance', 'native-dev,from-yml']
 
 .run-validations:
   stage: unittests-and-validations
