@@ -1836,7 +1836,9 @@ script:
       description: The date in UTC format of when the mailbox audit bypass association
         was created.
       type: Date
-  dockerimage: demisto/powershell-ubuntu:7.2.2.29705
+  dockerimage: demisto/powershell-ubuntu:7.1.4.24032
+  # Please do not change the docker image until CIAC-5623 is handled.
+  autoUpdateDockerImage: false
   feed: false
   isfetch: false
   longRunning: false
