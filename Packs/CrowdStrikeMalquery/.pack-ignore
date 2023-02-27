@@ -3,3 +3,6 @@ ignore=IN136,IN145,IN154
 
 [file:README.md]
 ignore=RM102,RM104
+
+[known_words]
+Malquery
