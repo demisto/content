@@ -1460,6 +1460,14 @@ def multi_status_delete_handler(response: Response, obj_key: str, readable_obj_n
 
 
 def identification_profile_mapper(data: List[dict[str, Any]]) -> List[dict[str, Any]]:
+    """Map API identification profile response to XSOAR output.
+
+    Args:
+        data (List[dict[str, Any]]): API response from Cisco WSA.
+
+    Returns:
+        List[dict[str, Any]]: Identification profile output.
+    """
     filtered_data = []
     for profile in data:
         filtered_data.append({
@@ -1484,6 +1492,14 @@ def identification_profile_mapper(data: List[dict[str, Any]]) -> List[dict[str, 
 
 
 def access_policy_output_handler(response: List[dict[str, Any]]) -> List[dict[str, Any]]:
+    """Handling with access policy handler (ISO 8061), updating to XSOAR standards.
+
+    Args:
+        response (List[dict[str, Any]]): Access policy response.
+
+    Returns:
+        List[dict[str, Any]]: Fixed outputs
+    """
     outputs = []
     for policy in response:
         if policy_expiry := policy.get('policy_expiry'):
@@ -1618,7 +1634,7 @@ def delete_handler(response: Response,
                    obj_key: str,
                    readable_obj_name: str,
                    success_readable_output: str) -> CommandResults | List[CommandResults]:
-    """_summary_
+    """Handling with delete response.
 
     Args:
         response (Response): API response from Cisco WSA (with 207 status code).
