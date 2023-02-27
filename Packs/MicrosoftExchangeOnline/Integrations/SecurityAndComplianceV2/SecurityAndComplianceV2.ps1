@@ -717,7 +717,7 @@ class SecurityAndComplianceClient {
         if ($description) {
             $cmd_params.Description = $description
         }
-        if ($description) {
+        if ($external_id) {
             $cmd_params.ExternalId = $external_id
         }
 
@@ -968,11 +968,7 @@ class SecurityAndComplianceClient {
         $cmd_params = @{
             "Name" = $rule_name
             "Policy" = $policy_name
-        }
-        if ($is_disabled) {
-            $cmd_params.Disabled = $true
-        } else {
-            $cmd_params.Disabled = $false
+            "Disabled" = $is_disabled
         }
         if ($comment) {
             $cmd_params.Comment = $comment
@@ -981,7 +977,7 @@ class SecurityAndComplianceClient {
             $cmd_params.ContentMatchQuery = $query
         }
         # Execute command
-        $response = New-CaseHoldRule $cmd_params
+        $response = New-CaseHoldRule @cmd_params
         # Close session to remote
         $this.DisconnectSession()
         return $response
