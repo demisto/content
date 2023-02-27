@@ -12,7 +12,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* PrismaCloud v2
+PrismaCloud v2
 
 ### Scripts
 
@@ -21,7 +21,7 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* prisma-cloud-config-search
+prisma-cloud-config-search
 
 ## Playbook Inputs
 
@@ -29,8 +29,8 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| FQDN | FQDN to look up |  | Required |
-| GCPDomains | GCP domains \(comma separated\) | .google.com | Optional |
+| FQDN | FQDN to look up. |  | Required |
+| GCPDomains | A comma-separated list of GCP domains. | .google.com | Optional |
 
 ## Playbook Outputs
 
