@@ -1,7 +1,7 @@
 commonfields:
   id: Hey
   version: -1
-fromversion: 6.5.0
+fromversion: 6.0.0
 comment: Use rakyll/hey to test a web application with a load of requests.
 name: Hey
 script: ''
