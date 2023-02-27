@@ -12,7 +12,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* PrismaCloud v2
+PrismaCloud v2
 
 ### Scripts
 
@@ -21,7 +21,7 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* prisma-cloud-config-search
+prisma-cloud-config-search
 
 ## Playbook Inputs
 
@@ -30,7 +30,7 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | FQDN | FQDN to look up |  | Required |
-| AWSDomains | AWS domains \(comma separated\) | .amazonaws.com,.cloudfront.net | Optional |
+| AWSDomains | A comma-separated list of AWS domains. | .amazonaws.com,.cloudfront.net | Optional |
 
 ## Playbook Outputs
 
