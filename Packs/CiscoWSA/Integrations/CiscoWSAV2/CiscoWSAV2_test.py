@@ -1128,3 +1128,56 @@ def test_pagination_function(response, arguments, paginated_response):
     result = pagination(response, arguments)
 
     assert result == paginated_response
+
+@pytest.mark.parametrize(
+    "response,arguments,err",
+    [
+        (
+            ["test.com", "test1.com", "test2.com", "test3.com", "test4.com"],
+            {
+                "page": -50,
+                "page_size": 2,
+            },
+            "page has to be positive number.",
+        ),
+        (
+            ["test.com", "test1.com", "test2.com", "test3.com", "test4.com"],
+            {
+                "page": 2,
+                "page_size": -1,
+                "limit": 4
+            },
+            "page_size has to be positive number.",
+        ),
+        (
+            ["test.com", "test1.com", "test2.com", "test3.com", "test4.com"],
+            {
+                "page": 2,
+            },
+            "Please insert page and page_size.",
+        ),
+        (
+            ["test.com", "test1.com", "test2.com", "test3.com", "test4.com"],
+            {
+                "limit": -1,
+            },
+            "Limit has to be positive number.",
+        ),
+    ],
+)
+def test_fail_pagination_function(response, arguments, err):
+    """
+    Scenario: Paginate response.
+    Given:
+    - User provided wrong pagination arguments.
+    When:
+    - pagination function called.
+    Then:
+    - Ensure relevant error raised.
+    """
+    from CiscoWSAV2 import pagination
+
+    with pytest.raises(ValueError) as error:
+        pagination(response, arguments)
+
+    assert str(error.value) == err

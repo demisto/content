@@ -1526,6 +1526,14 @@ def pagination(
     page_size = arg_to_number(args.get("page_size"))
     limit = arg_to_number(args.get("limit"))
 
+    if limit and limit < 0:
+        raise ValueError("Limit has to be positive number.")
+    if page and page < 0:
+        raise ValueError("page has to be positive number.")
+    if page_size and page_size < 0:
+        raise ValueError("page_size has to be positive number.")
+    if (page and not page_size) or (not page and page_size):
+        raise ValueError("Please insert page and page_size.")
     if page and page_size:
         offset = (page - 1) * page_size
         return response[offset: offset + page_size]
