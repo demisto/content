@@ -2173,7 +2173,6 @@ class TestSetDependencies:
        """
         from Tests.Marketplace.marketplace_services import Pack
 
-        metadata = self.get_pack_metadata()
         generated_dependencies = {
             'ImpossibleTraveler': {
                 'dependencies': {
@@ -2210,10 +2209,8 @@ class TestSetDependencies:
         }
         generated_dependencies['ImpossibleTraveler']['dependencies'].update(BASE_PACK_DEPENDENCY_DICT)
         p = Pack('ImpossibleTraveler', 'dummy_path')
-        dependencies = json.dumps(metadata['dependencies'])
+        dependencies = json.dumps(generated_dependencies['ImpossibleTraveler']['dependencies'])
         dependencies = json.loads(dependencies)
-        dependencies.update(generated_dependencies['ImpossibleTraveler']['dependencies'])
-        p._user_metadata = metadata
         p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
         assert p.user_metadata['dependencies'] == dependencies
@@ -2273,25 +2270,6 @@ class TestSetDependencies:
         p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
         assert p.user_metadata['dependencies'] == generated_dependencies['ImpossibleTraveler']['dependencies']
-
-    def test_set_dependencies_no_generated_dependencies(self):
-        """
-           Given:
-               - Pack with user dependencies
-               - No generated dependencies
-           When:
-               - Formatting metadata
-           Then:
-               - The dependencies in the metadata file should be the user ones
-       """
-        from Tests.Marketplace.marketplace_services import Pack
-
-        metadata = self.get_pack_metadata()
-        dependencies = metadata['dependencies']
-        p = Pack('ImpossibleTraveler', 'dummy_path')
-        p._user_metadata = metadata
-        p.set_pack_dependencies({}, {})
-        assert p.user_metadata['dependencies'] == dependencies
 
     def test_set_dependencies_core_pack(self):
         """
@@ -2391,8 +2369,6 @@ class TestSetDependencies:
        """
         from Tests.Marketplace.marketplace_services import Pack
 
-        metadata = self.get_pack_metadata()
-
         generated_dependencies = {
             'HelloWorld': {
                 'dependencies': {
@@ -2416,11 +2392,8 @@ class TestSetDependencies:
 
         generated_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
         p = Pack('HelloWorld', 'dummy_path')
-        user_dependencies = metadata['dependencies']
         dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
         dependencies = json.loads(dependencies)
-        dependencies.update(user_dependencies)
-        p._user_metadata = metadata
 
         p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
