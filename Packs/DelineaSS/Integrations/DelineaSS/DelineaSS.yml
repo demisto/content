@@ -1,4 +1,4 @@
-category: Authentication
+category: Authentication & Identity Management
 commonfields:
   id: DelineaSS
   version: -1
@@ -1094,7 +1094,7 @@ script:
     - contextPath: Delinea.Secret.ChangePassword
       description: Secret summary
       type: String
-  dockerimage: demisto/python3:3.10.9.42008
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: false
   longRunning: false
