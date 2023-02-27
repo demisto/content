@@ -8,18 +8,18 @@
             "log_time": "2023-02-25T05:18:51.736Z",
             "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
             "device_name": "WIN-TFB8L7BI77H",
-            "device_ip": "172.16.14.42",
+            "device_ip": "127.0.0.1",
             "device_os_name": "Windows Server 2019 ",
             "user_name": "NETWORK SERVICE",
             "user_domain": "NT AUTHORITY",
             "user_sid": "S-1-5-20",
-            "internal_ip": "172.16.14.42",
+            "internal_ip": "127.0.0.1",
             "external_ip": "8.8.8.8",
             "source_ip": "8.8.8.8",
             "source_port": [
                 57452
             ],
-            "target_ip": "8.241.136.254",
+            "target_ip": "8.8.8.8",
             "target_port": [
                 80
             ],

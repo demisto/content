@@ -1530,21 +1530,21 @@ def check_valid_indicator_value(indicator_type: str, indicator_value: str) -> bo
     Returns:
         True if the provided indicator values are valid
     """
-    if indicator_type == 'ip':
-        if not is_ip_valid(indicator_value):
-            raise ValueError(f'{indicator_value} is not a valid IP')
-        return True
-
     hash_to_regex: dict[str, Any] = {
         'sha256': sha256Regex,
         'urls': urlRegex,
         'md5': md5Regex
     }
-    if indicator_type not in hash_to_regex:
-        raise ValueError(f'Indicator type {indicator_type} is not supported')
 
-    if not re.match(hash_to_regex[indicator_type], indicator_value):
-        raise ValueError(f'{indicator_value} is not a valid {indicator_type}')
+    if indicator_type == 'ip':
+        if not is_ip_valid(indicator_value):
+            raise ValueError(f'{indicator_value} is not a valid IP')
+    else:
+        if indicator_type not in hash_to_regex:
+            raise ValueError(f'Indicator type {indicator_type} is not supported')
+
+        if not re.match(hash_to_regex[indicator_type], indicator_value):
+            raise ValueError(f'{indicator_value} is not a valid {indicator_type}')
 
     return True
 
@@ -1624,7 +1624,6 @@ def validate_command_argument(args: dict[str, Any], cmd_type: str, expected_valu
         raise ValueError(
             f'Invalid {cmd_type}! Only supported types are : {expected_values}'
         )
-    return
 
 
 ''' COMMAND FUNCTIONS '''
@@ -1692,7 +1691,7 @@ def get_domain_file_association_list_command(client: Client, args: dict[str, Any
     Returns:
         CommandResults: A ``CommandResults`` object
     """
-
+    validate_command_argument(args, 'search_object', ['sha256', 'domain'])
     return common_wrapper_command(
         client_func=client.list_domain_file,
         cmd_args=args,
