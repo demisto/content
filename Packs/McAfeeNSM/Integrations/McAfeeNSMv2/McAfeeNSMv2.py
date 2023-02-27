@@ -299,7 +299,7 @@ class Client(BaseClient):
         self.headers['Accept'] = 'application/octet-stream'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body, resp_type='response')
 
-    def list_domain_device_request(self, domain_id):
+    def list_domain_device_request(self, domain_id: int | None) -> Dict:
         """ Retrieves the list of devices in a domain.
             Args:
                 domain_id: int - The relevant domain id.
@@ -309,7 +309,7 @@ class Client(BaseClient):
         url_suffix = f'/domain/{domain_id}/device'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def list_device_interface_request(self, domain_id, device_id):
+    def list_device_interface_request(self, domain_id: int | None, device_id: int | None) -> Dict[str, List]:
         """ Retrieves the list of interfaces realeted to a device.
             Args:
                 device_id: int - The relevant device id.
@@ -319,6 +319,55 @@ class Client(BaseClient):
         """
         url_suffix = f'/domain/{domain_id}/sensor/{device_id}/allocatedinterfaces'
         return self._http_request(method='GET', url_suffix=url_suffix)
+
+    def assign_device_policy_request(self, domain_id: int | None, device_id: int | None, pre_firewall_policy: str | None,
+                                     post_firewall_policy: str | None) -> Dict:
+        """ Assigns a policy to a device.
+            Args:
+                device_id: int - The relevant device id.
+                domain_id: int - The relevant domain id.
+            Returns:
+                A suuccess or failure code
+        """
+        url_suffix = f'/domain/{domain_id}/policyassignments/device/{device_id}'
+        json_data = {"firewallPolicyLast": post_firewall_policy,
+                     "firewallPolicyFirst": pre_firewall_policy}
+        return self._http_request(method='PUT', url_suffix=url_suffix, json_data=json_data)
+
+    def list_device_policy_request(self, domain_id: int | None, device_id: int | None) -> Dict:
+        """ Retrieves the list of policies assigned to a device.
+            Args:
+                device_id: int - The relevant device id.
+                domain_id: int - The relevant domain id.
+            Returns:
+                A dictionary with a list of policies.
+        """
+        if device_id:
+            url_suffix = f'/domain/{domain_id}/policyassignments/device/{device_id}'
+        else:
+            url_suffix = f'/domain/{domain_id}/policyassignments/device'
+        return self._http_request(method='GET', url_suffix=url_suffix)
+
+    def assign_interface_policy_request(self, domain_id, interface_id, firewall_policy,
+                                        firewall_port_policy, ips_policy, costom_json):
+        """ Assigns a policy to an interface.
+            Args:
+                domain_id: int - The relevant domain id.
+                interface_id: int - The relevant interface id.
+                firewall_policy: str - The firewall policy.
+                firewall_port_policy: str - The firewall port policy.
+                ips_policy: str - The IPS policy.
+                costom_json: str - The custom json.
+            Returns:
+                A suuccess or failure code
+
+        """
+        url_suffix = f'/domain/{domain_id}/policyassignments/interface/{interface_id}'
+        json_data = {"firewallPolicy": firewall_policy,
+                     "firewallPortPolicy": firewall_port_policy,
+                     "ipsPolicy": ips_policy
+                     }
+        return self._http_request(method='PUT', url_suffix=url_suffix, json_data=json_data)
 
 
 ''' HELPER FUNCTIONS '''
@@ -355,7 +404,7 @@ def pagination(records_list: List, limit: int, page: Optional[int], page_size: O
     Args:
         records_list: List - The original list of objects.
         limit: str - The amount of records to be returned
-        page: Optional[int] - The page of the results (The results in page 1, 2 ...)
+        page: Optional[int] - The page of the results(The results in page 1, 2 ...)
         page_size: Optional[int] - the number of records that will be in the page.
     Returns:
         The wanted records.
@@ -375,7 +424,7 @@ def alerts_list_pagination(records_list: List, limit: int, page: Optional[int], 
     Args:
         records_list: List - The original list of objects.
         limit: int - The amount of records to be returned
-        page: Optional[int] - The page of the results (The results in page 1, 2 ...)
+        page: Optional[int] - The page of the results(The results in page 1, 2 ...)
         page_size: Optional[int] - The number of records in a page.
         time_period: str - The time period of the alert.
         start_time: str - The start time of the alert.
@@ -428,7 +477,7 @@ def response_cases(response_str: str) -> str:
         Ignore -> IGNORE
         Stateless Ignore -> STATELESS_IGNORE
         Stateless Drop -> STATELESS_DROP
-        Require Authentication-> REQUIRE_AUTHENTICATION
+        Require Authentication -> REQUIRE_AUTHENTICATION
     """
     split_str = response_str.upper().split()
     if len(split_str) == 1:
@@ -620,7 +669,7 @@ def create_body_create_rule_for_v10(rule_type: str, address: List, number: int,
             address: List - A list of addresses, if relevant.
             number: int - The number of the IPV.
             from_to_list: List - A list that contains dictionaries with from and do addresses.
-            stste: str - An Enabled or Disabled state. 
+            stste: str - An Enabled or Disabled state.
         Returns:
             Returns the body for the request.
         """
@@ -781,7 +830,7 @@ def update_filter(filter_arg: str) -> str:
         Returns:
             The updated filter, without special chars.
         Example:
-            - name:HTTP: IIS 6.0 (CVE-0000-0000) -> name:HTTP  IIS 6 0  CVE 0000 0000
+            - name: HTTP: IIS 6.0 (CVE - 0000 - 0000) -> name: HTTP  IIS 6 0  CVE 0000 0000
     """
     split_filter = filter_arg.split(';')
     for index, s in enumerate(split_filter):
@@ -795,7 +844,7 @@ def update_filter(filter_arg: str) -> str:
 
 
 def get_addresses_from_response(response: Dict) -> List:
-    """ Returns the addresses from the response, for the human-readable in the command get_rule_object.
+    """ Returns the addresses from the response, for the human - readable in the command get_rule_object.
         Args:
             response: Dict - The response from the API.
         Returns:
@@ -818,7 +867,7 @@ def test_module(client: Client, username_n_password: str) -> str:
     """ Test the connection to McAfee NSM.
     Args:
         client: Client - A McAfeeNSM client.
-        username_n_password: str - The string that contains username:password to be encoded.
+        username_n_password: str - The string that contains username: password to be encoded.
     Returns:
         'ok' if the connection was successful, else throws exception.
     """
@@ -1943,11 +1992,11 @@ def export_pcap_file_command(client: Client, args: Dict) -> List:
 def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
     """
     Args:
-        client (Client): client - A McAfeeNSM client.
-        args (Dict): - The function arguments.
+        client(Client): client - A McAfeeNSM client.
+        args(Dict): - The function arguments.
     Returns: A CommandResult object with a list of domain devices.
     """
-    domain_id = int(args.get('domain_id', ''))
+    domain_id = arg_to_number(args.get('domain_id'))
     limit = arg_to_number(args.get('limit', 50))
     all_results = argToBoolean(args.get('all_results', False))
     response = client.list_domain_device_request(domain_id)
@@ -1957,8 +2006,7 @@ def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
         devices = response.get('DeviceResponseList')[:limit]
 
     readable_output = tableToMarkdown(
-        name='Domain devices List', t=devices, removeNull=True
-    )
+        name='Domain devices List', t=devices, removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1971,14 +2019,15 @@ def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
 def list_device_interface_command(client: Client, args: Dict) -> CommandResults:
     """
     Args:
-        client (Client): client - A McAfeeNSM client.
-        args (Dict): - The function arguments.
+        client(Client): client - A McAfeeNSM client.
+        args(Dict): - The function arguments.
     Returns: A CommandResult object with a list of device interfaces.
     """
-    device_id = int(args.get('device_id', ''))
-    domain_id = int(args.get('domain_id', ''))
+    device_id = arg_to_number(args.get('device_id'))
+    domain_id = arg_to_number(args.get('domain_id'))
     limit = arg_to_number(args.get('limit', 50))
     all_results = argToBoolean(args.get('all_results', False))
+
     response = client.list_device_interface_request(domain_id=domain_id, device_id=device_id)
     if all_results:
         interfaces = response.get('allocatedInterfaceList')
@@ -1993,6 +2042,91 @@ def list_device_interface_command(client: Client, args: Dict) -> CommandResults:
         readable_output=readable_output,
         outputs_prefix='NSM.Interface',
         outputs=interfaces,
+        raw_response=response
+    )
+
+
+def assign_device_policy_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Args:
+        client(Client): client - A McAfeeNSM client.
+        args(Dict): - The function arguments.
+    Returns: A CommandResult object with a success or failure message.
+    """
+    device_id = arg_to_number(args.get('device_id'))
+    domain_id = arg_to_number(args.get('domain_id'))
+    pre_firewall_policy = args.get('pre_firewall_policy')
+    post_firewall_policy = args.get('post_firewall_policy')
+
+    response = client.assign_device_policy_request(domain_id=domain_id, device_id=device_id,
+                                                   pre_firewall_policy=pre_firewall_policy,
+                                                   post_firewall_policy=post_firewall_policy
+                                                   )
+
+    return CommandResults(
+        readable_output='Policy assigned successfully.',
+        raw_response=response
+    )
+
+
+def list_device_policy_command(client: Client, args: Dict) -> CommandResults:
+    """
+
+    Args:
+        client(Client): client - A McAfeeNSM client.
+        args(Dict): - The function arguments.
+
+    Returns:
+        CommandResults: A CommandResult object with a list of device policies.
+    """
+    device_id = arg_to_number(args.get('device_id'))
+    domain_id = arg_to_number(args.get('domain_id'))
+    limit = arg_to_number(args.get('limit', 50))
+    all_results = argToBoolean(args.get('all_results', False))
+    response = client.list_device_policy_request(domain_id=domain_id, device_id=device_id)
+    if all_results:
+        all_policies = response.get('policyAssignmentsList')
+    else:
+        all_policies = response.get('policyAssignmentsList')[:limit]
+    readable_output = tableToMarkdown(
+        name='Device policy List', t=all_policies, removeNull=True
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='NSM.DevicePolicy',
+        outputs=all_policies,
+        raw_response=response
+    )
+
+
+def assign_interface_policy_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Args:
+        client(Client): client - A McAfeeNSM client.
+        args(Dict): - The function arguments.
+    Returns: A CommandResult object with a success or failure message.
+    """
+    domain_id = arg_to_number(args.get('domain_id'))
+    interface_id = arg_to_number(args.get('interface_id'))
+    firewall_policy = args.get('firewall_policy')
+    firewall_port_policy = args.get('firewall_port_policy')
+    ips_policy = args.get('ips_policy')
+    costom_json = args.get('custom_json')
+
+    # Check if at least one policy is provided
+    if len(args) < 3:
+        raise DemistoException("Please provide at least one policy to assign")
+
+    response = client.assign_interface_policy_request(domain_id=domain_id,
+                                                      interface_id=interface_id,
+                                                      firewall_policy=firewall_policy,
+                                                      firewall_port_policy=firewall_port_policy,
+                                                      ips_policy=ips_policy,
+                                                      costom_json=costom_json
+                                                      )
+    return CommandResults(
+        readable_output='Policy assigned successfully.',
         raw_response=response
     )
 
@@ -2032,51 +2166,57 @@ def main() -> None:  # pragma: no cover
             str_results = test_module(client, f'{user_name}:{password}')
             return_results(str_results)
         elif command == 'nsm-list-domain-firewall-policy':
-            results: CommandResults = list_domain_firewall_policy_command(client, **args)
+            results: CommandResults = list_domain_firewall_policy_command(client, args)
         elif command == 'nsm-get-firewall-policy':
-            results = get_firewall_policy_command(client, **args)
+            results = get_firewall_policy_command(client, args)
         elif command == 'nsm-create-firewall-policy':
-            results = create_firewall_policy_command(client, **args)
+            results = create_firewall_policy_command(client, args)
         elif command == 'nsm-update-firewall-policy':
-            results = update_firewall_policy_command(client, **args)
+            results = update_firewall_policy_command(client, args)
         elif command == 'nsm-delete-firewall-policy':
-            results = delete_firewall_policy_command(client, **args)
+            results = delete_firewall_policy_command(client, args)
         elif command == 'nsm-list-domain-rule-object':
-            results = list_domain_rule_objects_command(client, **args)
+            results = list_domain_rule_objects_command(client, args)
         elif command == 'nsm-get-rule-object':
-            results = get_rule_object_command(client, **args)
+            results = get_rule_object_command(client, args)
         elif command == 'nsm-create-rule-object':
-            results = create_rule_object_command(client, **args)
+            results = create_rule_object_command(client, args)
         elif command == 'nsm-update-rule-object':
-            results = update_rule_object_command(client, **args)
+            results = update_rule_object_command(client, args)
         elif command == 'nsm-delete-rule-object':
-            results = delete_rule_object_command(client, **args)
+            results = delete_rule_object_command(client, args)
         elif command == 'nsm-get-alerts':
-            results = get_alerts_command(client, **args)
+            results = get_alerts_command(client, args)
         elif command == 'nsm-get-alert-details':
-            results = get_alert_details_command(client, **args)
+            results = get_alert_details_command(client, args)
         elif command == 'nsm-get-attacks':
-            list_results = get_attacks_command(client, **args)
+            list_results = get_attacks_command(client, args)
             return_results(list_results)
         elif command == 'nsm-get-domains':
-            results = get_domains_command(client, **args)
+            results = get_domains_command(client, args)
         elif command == 'nsm-get-sensors':
-            results = get_sensors_command(client, **args)
+            results = get_sensors_command(client, args)
         elif command == 'nsm-get-ips-policies':
-            results = get_ips_policies_command(client, **args)
+            results = get_ips_policies_command(client, args)
         elif command == 'nsm-get-ips-policy-details':
-            results = get_ips_policy_details_command(client, **args)
+            results = get_ips_policy_details_command(client, args)
         elif command == 'nsm-update-alerts':
-            results = update_alerts_command(client, **args)
+            results = update_alerts_command(client, args)
         elif command == 'nsm-list-pcap-file':
-            results = list_pcap_file_command(client, **args)
+            results = list_pcap_file_command(client, args)
         elif command == 'nsm-export-pcap-file':
-            list_results = export_pcap_file_command(client, **args)
+            list_results = export_pcap_file_command(client, args)
             return_results(list_results)
         elif command == 'nsm-list-device-interface':
-            results = list_device_interface_command(client, **args)
+            results = list_device_interface_command(client, args)
         elif command == 'nsm-list-domain-device':
-            results = list_domain_device_command(client, **args)
+            results = list_domain_device_command(client, args)
+        elif command == 'nsm-assign-device-policy':
+            results = assign_device_policy_command(client, args)
+        elif command == 'nsm-list-device-policy':
+            results = list_device_policy_command(client, args)
+        elif command == 'nsm-assign-interface-policy':
+            results = assign_interface_policy_command(client, args)
         else:
             raise NotImplementedError('This command is not implemented yet.')
         return_results(results)

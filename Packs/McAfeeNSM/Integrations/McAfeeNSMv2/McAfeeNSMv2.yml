@@ -1958,6 +1958,55 @@ script:
       predefined:
         - yes
         - no
+  - name: nsm-assign-device-policy
+    description: Assign a policy to a specific device.
+    arguments:
+    - name: domain_id
+      description: The ID of the domain. To get the domain_id, use the !nsm-get-domains command.
+      required: true
+    - name: device_id
+      required: true
+      description: The ID of the device. To get the device ID, use the !nsm-list-domain-device command.
+    - name: pre_firewall_policy
+      description: The name of the policy to be evaluated first and added to the top of the policy order.
+        To get the policies, use the !nsm-list-domain-firewall-policy command.
+    - name: post_firewall_policy
+      description: The name of the policy to be evaluated last and added to the bottom of the policy order.
+        To get the policies, use the !nsm-list-domain-firewall-policy command.
+  - name: nsm-list-device-policy
+    description: List all the policies assigned to a domain or a specific device.
+    arguments:
+    - name: domain_id
+      description: The ID of the domain. To get the domain_id, use the !nsm-get-domains command.
+      required: true
+    - name: device_id
+      description: The ID of the device. To get the device ID, use the !nsm-list-domain-device command.
+    - name: limit
+      description: The maximum number of interfaces to return.
+      defaultvalue: 50
+    - name: all_results
+      description: Return all interfaces related to the given device.
+      auto: PREDEFINED
+      predefined:
+        - yes
+        - no
+  - name: nsm-assign-interface-policy
+    description: Assign a policy to a specific interface.
+    arguments:
+    - name: domain_id
+      description: The ID of the domain. To get the domain_id, use the !nsm-get-domains command.
+      required: true
+    - name: interface_id
+      required: true
+      description: The ID of the interface. To get the interface ID, use the !nsm-list-device-interface command.
+    - name: firewall_policy
+      description: The name of the firewall policy that will be connected to the interface. To get the domain_id, use the !nsm-list-domain-firewall-policy command.
+    - name: firewall_port_policy
+      description: The name of the firewall policy that will be connected to the interface/port. To get the domain_id, use the !nsm-list-domain-firewall-policy command.
+    - name: ips_policy
+      description: The name of the IPS policy that will be connected to the interface. To get the domain_id, use the !nsm-get-ips-policies command.
+    - name: custom_json
+      description: fill here...
   isfetch: false
   runonce: false
   script: '-'
