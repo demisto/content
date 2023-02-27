@@ -102,7 +102,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix=f"/groups/{group_id}/risk_score_history",
             resp_type="json",
-            ok_codes=(200,),
+            ok_codes=(200, 404,),
             params=params,
         )
 
@@ -120,7 +120,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix=f"/groups/{group_id}/members",
             resp_type="json",
-            ok_codes=(200,),
+            ok_codes=(200, 404,),
             params=params,
         )
 
@@ -138,7 +138,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix=f"/users/{user_id}/risk_score_history",
             resp_type="json",
-            ok_codes=(200,),
+            ok_codes=(200, 404,),
             params=params,
         )
 
@@ -173,7 +173,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix=f"/phishing/security_tests/{pst_id}/recipients",
             resp_type="json",
-            ok_codes=(200,),
+            ok_codes=(200, 404,),
             params=params,
         )
 
@@ -191,7 +191,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix=f"/phishing/campaigns/{campaign_id}/security_tests",
             resp_type="json",
-            ok_codes=(200,),
+            ok_codes=(200, 404,),
             params=params,
         )
 
@@ -357,7 +357,7 @@ class UserEventClient(BaseClient):
             url_suffix=f"/events/{event_id}",
             resp_type="json",
             raise_on_status=True,
-            ok_codes=(200,),
+            ok_codes=(200, 404,),
         )
 
     def user_event_status(self, request_id: str):
@@ -375,7 +375,7 @@ class UserEventClient(BaseClient):
             url_suffix=f"/statuses/{request_id}",
             resp_type="json",
             raise_on_status=True,
-            ok_codes=(200,),
+            ok_codes=(200, 404,),
         )
 
     def user_event_statuses(self, params: dict):
@@ -446,11 +446,7 @@ def kmsat_account_info_list_command(client: Client, args: dict) -> CommandResult
             "current_risk_score",
         ],
     )
-    if not response:
-        raise DemistoException(
-            "Translation failed: the response from server did not include `kmsat_account_info_list_command`.",
-            res=response,
-        )
+
     return CommandResults(
         outputs_prefix="KMSAT.AccountInfo",
         outputs_key_field="name",
@@ -477,11 +473,7 @@ def kmsat_account_risk_score_history_list_command(
     """
     params = get_pagination(args)
     response = client.kmsat_account_risk_score_history(params)
-    if not response:
-        raise DemistoException(
-            "Translation failed: the response from server did not include `kmsat_account_risk_score_history_list_command`.",
-            res=response,
-        )
+
     markdown = tableToMarkdown(
         "Account Risk Score History", response, ["risk_score", "date"]
     )
@@ -511,11 +503,7 @@ def kmsat_groups_list_command(client: Client, args: dict) -> CommandResults:
             "status"
         ]
     )
-    if not response:
-        raise DemistoException(
-            "Translation failed: the response from server did not include `kmsat_groups_list_command`.",
-            res=response,
-        )
+
     return CommandResults(
         outputs_prefix="KMSAT.Groups",
         outputs_key_field="id",
@@ -546,11 +534,7 @@ def kmsat_groups_risk_score_history_list_command(
     markdown = tableToMarkdown(
         "Groups Risk Score History", response, headers=["risk_score", "date"]
     )
-    if not response:
-        raise DemistoException(
-            "Translation failed: the response from server did not include `kmsat_groups_risk_score_history_list_command`.",
-            res=response,
-        )
+
     return CommandResults(
         outputs_prefix="KMSAT.GroupsRiskScoreHistory",
         outputs_key_field="id",
@@ -618,11 +602,7 @@ def kmsat_groups_members_list_command(
             "custom_date_2",
         ]
     )
-    if not response:
-        raise DemistoException(
-            "Translation failed: the response from server did not include `kmsat_groups_members_list_command`.",
-            res=response,
-        )
+
     return CommandResults(
         outputs_prefix="KMSAT.GroupsMembers",
         outputs_key_field="id",
@@ -653,11 +633,7 @@ def kmsat_users_risk_score_history_list_command(
     markdown = tableToMarkdown(
         "Users Risk Score History", response, headers=["risk_score", "date"]
     )
-    if not response:
-        raise DemistoException(
-            "Translation failed: the response from server did not include `kmsat_users_risk_score_history_list_command`.",
-            res=response,
-        )
+
     return CommandResults(
         outputs_prefix="KMSAT.UsersRiskScoreHistory",
         outputs_key_field="",
@@ -692,13 +668,6 @@ def kmsat_phishing_security_tests_list_command(
             "pst_id",
             "status",
             "name",
-            "groups",
-            "phish_prone_percentage",
-            "started_at",
-            "duration",
-            "categories",
-            "template",
-            "landing_page",
             "scheduled_count",
             "delivered_count",
             "opened_count",
@@ -712,11 +681,7 @@ def kmsat_phishing_security_tests_list_command(
             "bounced_count",
         ],
     )
-    if not response:
-        raise DemistoException(
-            "Translation failed: the response from server did not include `kmsat_phishing_security_tests_list_command`.",
-            res=response,
-        )
+
     return CommandResults(
         outputs_prefix="KMSAT.PhishingSecurity",
         outputs_key_field="campaign_id",
@@ -751,8 +716,6 @@ def kmsat_phishing_security_tests_recipients_list_command(
             "recipient_id",
             "pst_id",
             "user",
-            "template",
-            "scheduled_at",
             "delivered_at",
             "opened_at",
             "clicked_at",
@@ -763,18 +726,9 @@ def kmsat_phishing_security_tests_recipients_list_command(
             "qr_code_scanned",
             "reported_at",
             "bounced_at",
-            "ip",
-            "ip_location",
-            "browser",
-            "browser_version",
-            "os",
         ],
     )
-    if not response:
-        raise DemistoException(
-            "Translation failed: the response from server did not include `phishing_security_tests_recipients`.",
-            res=response,
-        )
+
     return CommandResults(
         outputs_prefix="KMSAT.PhishingSecurityPST",
         outputs_key_field="recipient_id",
@@ -845,8 +799,6 @@ def kmsat_phishing_security_tests_failed_recipients_list_command(
             "recipient_id",
             "pst_id",
             "user",
-            "template",
-            "scheduled_at",
             "delivered_at",
             "opened_at",
             "clicked_at",
@@ -857,19 +809,9 @@ def kmsat_phishing_security_tests_failed_recipients_list_command(
             "qr_code_scanned",
             "reported_at",
             "bounced_at",
-            "ip",
-            "ip_location",
-            "browser",
-            "browser_version",
-            "os",
         ],
     )
-    if not response:
-        raise DemistoException(
-            "Translation failed: the response from server did not include"
-            "`kmsat_phishing_security_tests_failed_recipients_list_command`.",
-            res=response,
-        )
+
     return CommandResults(
         outputs_prefix="KMSAT.PhishingSecurityPST",
         outputs_key_field="recipient_id",
@@ -902,14 +844,7 @@ def kmsat_phishing_campaign_security_tests_list_command(client: Client, args) ->
             "campaign_id",
             "pst_id",
             "status",
-            "name",
-            "groups",
-            "phish_prone_percentage",
             "started_at",
-            "duration",
-            "categories",
-            "template",
-            "landing_page",
             "scheduled_count",
             "delivered_count",
             "opened_count",
@@ -923,11 +858,7 @@ def kmsat_phishing_campaign_security_tests_list_command(client: Client, args) ->
             "bounced_count",
         ]
     )
-    if not response:
-        raise DemistoException(
-            "Translation failed: the response from server did not include `kmsat_phishing_campaign_security_tests_list_command`.",
-            res=response,
-        )
+
     return CommandResults(
         outputs_prefix="KMSAT.CampaignPST",
         outputs_key_field="",
@@ -970,11 +901,7 @@ def kmsat_training_campaigns_list_command(client: Client, args: dict) -> Command
             "completion_percentage",
         ],
     )
-    if not response:
-        raise DemistoException(
-            "Translation failed: the response from server did not include `kmsat_training_campaigns_list_command`.",
-            res=response,
-        )
+
     return CommandResults(
         outputs_prefix="KMSAT.TrainingCampaigns",
         outputs_key_field="campaign_id",
@@ -1081,11 +1008,7 @@ def kmsat_user_events_list_command(
         CommandResults: Returns context data for user events
     """
     response = client.user_events(args)
-    if not response:
-        raise DemistoException(
-            "Translation failed: the response from server did not include user event `data`.",
-            res=response,
-        )
+
     data: List[Dict] = response.get("data") or []
     return CommandResults(
         outputs_prefix="KMSAT.UserEvents",
@@ -1112,11 +1035,7 @@ def kmsat_user_event_types_list_command(
         CommandResults: Returns context data for user event types
     """
     response = client.user_event_types(args)
-    if not response:
-        raise DemistoException(
-            "Translation failed: the response from server did not include user event types`data`.",
-            res=response,
-        )
+
     data: List[Dict] = response.get("data") or []
     return CommandResults(
         outputs_prefix="KMSAT.UserEventTypes",
@@ -1143,11 +1062,7 @@ def kmsat_user_event_create_command(
         CommandResults: Returns context data user create event
     """
     response = client.create_user_event(args)
-    if not response:
-        raise DemistoException(
-            "Translation failed: the response from server did not include user event types`data`.",
-            res=response,
-        )
+
     data: List[Dict] = response.get("data") or []
     return CommandResults(
         outputs_prefix="KMSAT.UserEventCreate",
@@ -1193,11 +1108,7 @@ def kmsat_user_event_list_command(
     """
     event_id: str = str(args.get("id"))
     response = client.user_event(event_id)
-    if not response:
-        raise DemistoException(
-            "Translation failed: the response from server did not include user event `data`.",
-            res=response,
-        )
+
     data: List[Dict] = response.get("data") or []
     return CommandResults(
         outputs_prefix="KMSAT.UserEvent",

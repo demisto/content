@@ -80,6 +80,7 @@ script:
   - name: kmsat-account-risk-score-history-list
     arguments:
     - name: page
+      required: true
       description: Page Number
     - name: per_page
       description: Per Page Amount
@@ -94,6 +95,7 @@ script:
   - name: kmsat-groups-list
     arguments:
     - name: page
+      required: true
       description: Page Number
     - name: per_page
       description: Per Page Amount
@@ -126,6 +128,7 @@ script:
       required: true
       description: Group ID
     - name: page
+      required: true
       description: Page Number
     - name: per_page
       description: Per Page Amount
@@ -143,6 +146,7 @@ script:
       required: true
       description: Group ID
     - name: page
+      required: true
       description: Page Number
     - name: per_page
       description: Per Page Amount
@@ -256,6 +260,7 @@ script:
       required: true
       description: User ID
     - name: page
+      required: true
       description: Page Number
     - name: per_page
       description: Per Page Amount
@@ -270,6 +275,7 @@ script:
   - name: kmsat-phishing-security-tests-list
     arguments:
     - name: page
+      required: true
       description: Page Number
     - name: per_page
       description: Per Page Amount
@@ -359,6 +365,7 @@ script:
       required: true
       description: PST ID
     - name: page
+      required: true
       description: Page Number
     - name: per_page
       description: Per Page Amount
@@ -430,6 +437,7 @@ script:
       required: true
       description: PST ID
     - name: page
+      required: true
       description: Page Number
     - name: per_page
       description: Per Page Amount
@@ -510,6 +518,7 @@ script:
       required: true
       description: Campaign ID
     - name: page
+      required: true
       description: Page Number
     - name: per_page
       description: Per Page Amount
@@ -596,6 +605,7 @@ script:
   - name: kmsat-training-campaigns-list
     arguments:
     - name: page
+      required: true
       description: Page Number
     - name: per_page
       description: Per Page Amount
@@ -690,6 +700,7 @@ script:
     - name: status
       description: Status
     - name: page
+      required: true
       description: Page Number
     - name: per_page
       description: Per Page Amount
@@ -796,6 +807,7 @@ script:
     - name: order_direction
       description: Order returned events in ascending (asc) or descending (desc) order ("asc", "desc")
     - name: page
+      required: true
       description: Page Number
     - name: per_page
       description: Per Page Amount
@@ -1006,6 +1018,7 @@ script:
     - name: processed
       description: The date and time the API request was processed.
     - name: page
+      required: true
       description: Page Number
     - name: per_page
       description: Per Page Amount
@@ -1016,6 +1029,6 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.10.48392
-fromversion: 6.8.0
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
