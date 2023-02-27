@@ -4,6 +4,16 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Dict, Any, List
 import urllib.parse
+import re
+
+PIPELINE_FIELDS_TO_EXTRACT = {'id', 'project_id', 'status', 'ref', 'sha', 'created_at', 'updated_at', 'started_at',
+                              'finished_at', 'duration', 'web_url', 'user'}
+
+PIPELINE_SCHEDULE_FIELDS_TO_EXTRACT = {'id', 'description', 'ref', 'next_run_at', 'active', 'created_at', 'updated_at',
+                                       'last_pipeline'}
+
+JOB_FIELDS_TO_EXTRACT = {'created_at', 'started_at', 'finished_at', 'duration', 'id', 'name', 'pipeline', 'ref',
+                         'stage', 'web_url', 'status'}
 
 '''--------------------- CLIENT CLASS --------------------'''
 
@@ -271,6 +281,38 @@ class Client(BaseClient):
         suffix = f'/projects/{self.project_id}/merge_requests/{merge_request_iid}/notes/{note_id}'
         response = self._http_request('DELETE', suffix, headers=headers, ok_codes=[200, 202, 204], resp_type='text')
         return response
+
+    def get_pipeline_request(self, project_id: str, pipeline_id: Optional[str], ref: Optional[str],
+                             status: Optional[str]):
+        headers = self._headers
+        base_suffix = f'projects/{project_id}/pipelines'
+        final_suffix = f'{base_suffix}/{pipeline_id}' if pipeline_id else base_suffix
+        return self._http_request(
+            'get',
+            final_suffix,
+            headers=headers,
+            params=assign_params(ref=ref, status=status),
+        )
+
+    def get_pipeline_schedules_request(self, project_id: str, pipeline_schedule_id: Optional[str]):
+        headers = self._headers
+        base_suffix = f'projects/{project_id}/pipeline_schedules'
+        final_suffix = f'{base_suffix}/{pipeline_schedule_id}' if pipeline_schedule_id else base_suffix
+        return self._http_request(
+            'get',
+            final_suffix,
+            headers=headers
+        )
+
+    def get_pipeline_job_request(self, project_id: str, pipeline_id: str):
+        headers = self._headers
+        suffix = f'projects/{project_id}/pipelines/{pipeline_id}/jobs'
+        return self._http_request('get', suffix, headers=headers)
+
+    def get_job_artifact_request(self, project_id: str, job_id: str, artifact_path_suffix: str):
+        headers = self._headers
+        suffix = f'projects/{project_id}/jobs/{job_id}/artifacts/{artifact_path_suffix}'
+        return self._http_request('get', suffix, headers=headers, resp_type='text')
 
 
 ''' HELPER FUNCTIONS '''
@@ -1537,6 +1579,137 @@ def project_user_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
+def gitlab_pipelines_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns pipelines corresponding to given arguments.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'project_id' (Required): Project ID to retrieve pipeline schedules from.
+            - 'pipeline_id': ID of specific pipeline to retrieve its details.
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id', '') or client.project_id
+    pipeline_id = args.get('pipeline_id')
+    ref = args.get('ref')
+    status = args.get('status')
+    response = client.get_pipeline_request(project_id, pipeline_id, ref, status)
+    response = response if isinstance(response, list) else [response]
+    outputs = [{k: v for k, v in output.items() if k in PIPELINE_FIELDS_TO_EXTRACT} for output in response]
+
+    return CommandResults(
+        outputs_prefix='GitLab.Pipeline',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=tableToMarkdown('GitLab Pipelines', outputs, removeNull=True)
+    )
+
+
+def gitlab_pipelines_schedules_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns pipeline schedules corresponding to given arguments.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'project_id' (Required): Project ID to retrieve pipeline schedules from.
+            - 'pipeline_schedule_id': ID of specific pipeline schedule to retrieve its details.
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id', '') or client.project_id
+    pipeline_schedule_id = args.get('pipeline_schedule_id')
+    response = client.get_pipeline_schedules_request(project_id, pipeline_schedule_id)
+    response = response if isinstance(response, list) else [response]
+    outputs = [{k: v for k, v in output.items() if k in PIPELINE_SCHEDULE_FIELDS_TO_EXTRACT} for output in response]
+
+    return CommandResults(
+        outputs_prefix='GitLab.PipelineSchedule',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=tableToMarkdown('GitLab Pipeline Schedules', outputs, removeNull=True)
+    )
+
+
+def gitlab_jobs_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns pipeline jobs corresponding to given arguments.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'project_id' (Required): Project ID to retrieve pipeline schedules from.
+            - 'pipeline_id': ID of specific pipeline to retrieve its jobs.
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id', '') or client.project_id
+    pipeline_id = args.get('pipeline_id', '')
+    response = client.get_pipeline_job_request(project_id, pipeline_id)
+    response = response if isinstance(response, list) else [response]
+    outputs = [{k: v for k, v in output.items() if k in JOB_FIELDS_TO_EXTRACT} for output in response]
+
+    return CommandResults(
+        outputs_prefix='GitLab.Job',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=tableToMarkdown('GitLab Jobs', outputs, removeNull=True)
+    )
+
+
+def gitlab_artifact_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns artifact corresponding to given artifact path suffix of the given job ID.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'project_id' (Required): Project ID to retrieve pipeline schedules from.
+            - 'job_id': ID of specific job to retrieve artifact from.
+            - 'artifact_path_suffix': Suffix to artifact in the artifacts directory of the job.
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id', '') or client.project_id
+    job_id = args.get('job_id', '')
+    artifact_path_suffix = args.get('artifact_path_suffix', '')
+    response = client.get_job_artifact_request(project_id, job_id, artifact_path_suffix)
+    outputs = {
+        'job_id': job_id,
+        'artifact_path_suffix': artifact_path_suffix,
+        'artifact_data': response
+    }
+    if len(response) <= 100:
+        human_readable = tableToMarkdown(f'Artifact {artifact_path_suffix} From Job {job_id}', outputs, removeNull=True)
+    else:
+        human_readable = f'## Data for artifact {artifact_path_suffix} From Job {job_id} Has Been Retrieved.'
+
+    return CommandResults(
+        outputs_prefix='GitLab.Artifact',
+        outputs_key_field=['job_id', 'artifact_path_suffix'],
+        readable_output=human_readable,
+        outputs=outputs,
+        raw_response=response
+    )
+
+
+def check_for_html_in_error(e: str):
+    """
+    Args:
+        e(str): The string of the error
+    Returns:
+        True if an html doc was retured in the error message.
+        else Flse
+    """
+    match = re.search(r'<!DOCTYPE html>', e)
+    return bool(match)
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -1580,7 +1753,11 @@ def main() -> None:  # pragma: no cover
                 'gitlab-file-update': file_update_command,
                 'gitlab-file-delete': file_delete_command,
                 'gitlab-code-search': code_search_command,
-                'gitlab-project-user-list': project_user_list_command
+                'gitlab-project-user-list': project_user_list_command,
+                'gitlab-pipelines-list': gitlab_pipelines_list_command,
+                'gitlab-pipelines-schedules-list': gitlab_pipelines_schedules_list_command,
+                'gitlab-jobs-list': gitlab_jobs_list_command,
+                'gitlab-artifact-get': gitlab_artifact_get_command,
                 }
 
     try:
@@ -1593,8 +1770,11 @@ def main() -> None:  # pragma: no cover
                 return_results(commands[demisto.command()](client, demisto.args()))
 
     except Exception as e:
+        error_message = str(e)
+        if check_for_html_in_error(error_message):
+            error_message = 'Try checking your Sever Url integration parameter (e.g. base_path_to_your_gitlab/api/v4).'
         return_error(
-            f'Failed to execute {demisto.command()} command. Error: {str(e)}'
+            f'Failed to execute {demisto.command()} command. Error: {error_message}'
         )
 
 
