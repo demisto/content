@@ -48,7 +48,7 @@ For more information about which permissions are required for the token owner in
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL \(e.g., https://example.net\) |  | True |
+    | Server URL \(e.g., https://example.net\) | In the Security Center, go to Settings > Clod Apps > About tab, where the API URL is displayed. | True |
     | Authentication Mode |  | False |
     | User's key to access the API |  | False |
     | Application ID |  | False |

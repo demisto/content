@@ -3,61 +3,80 @@
     "fromVersion": "5.0.0",
     "toVersion": "5.9.9",
     "custom": true,
-    "defaultIncidentType": "Lacework Event",
+    "defaultIncidentType": "Lacework Alert",
     "id": "LaceworkClassifier",
     "keyTypeMap": {},
     "mapping": {
-        "Lacework Event": {
+        "Lacework Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Lacework Event ID": {
+                "Alert ID": {
                     "complex": null,
-                    "simple": "EVENT_ID"
+                    "simple": "alertId"
                 },
-                "Lacework Event Type": {
+                "Alert Type ID": {
                     "complex": null,
-                    "simple": "EVENT_TYPE"
+                    "simple": "alertType"
                 },
-                "Lacework Event Actor": {
-                    "complex": null,
-                    "simple": "EVENT_ACTOR"
+                "Alert Category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "derivedFields.category",
+                        "transformers": []
+                    },
+                    "simple": ""
                 },
-                "Lacework Event Model": {
-                    "complex": null,
-                    "simple": "EVENT_MODEL"
+                "Sub Category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "derivedFields.sub_category",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Alert Source": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "derivedFields.source",
+                        "transformers": []
+                    },
+                    "simple": ""
                 },
                 "Lacework Recommendation Account Alias": {
                     "complex": {
-                        "accessor": "ACCOUNT_ALIAS",
+                        "accessor": "PROPS.account_alias",
                         "filters": [],
-                        "root": "ENTITY_MAP.RecId",
+                        "root": "entityMap.RecId",
                         "transformers": []
                     },
                     "simple": ""
                 },
                 "Lacework Recommendation Account ID": {
                     "complex": {
-                        "accessor": "ACCOUNT_ID",
+                        "accessor": "PROPS.account_id",
                         "filters": [],
-                        "root": "ENTITY_MAP.RecId",
+                        "root": "entityMap.RecId",
                         "transformers": []
                     },
                     "simple": ""
                 },
                 "Lacework Recommendation ID": {
                     "complex": {
-                        "accessor": "REC_ID",
+                        "accessor": "KEY.rec_id",
                         "filters": [],
-                        "root": "ENTITY_MAP.RecId",
+                        "root": "entityMap.RecId",
                         "transformers": []
                     },
                     "simple": ""
                 },
                 "Lacework Recommendation Title": {
                     "complex": {
-                        "accessor": "TITLE",
+                        "accessor": "PROPS.title",
                         "filters": [],
-                        "root": "ENTITY_MAP.RecId",
+                        "root": "entityMap.RecId",
                         "transformers": []
                     },
                     "simple": ""
@@ -66,7 +85,7 @@
                     "complex": {
                         "accessor": "",
                         "filters": [],
-                        "root": "SEVERITY",
+                        "root": "severity",
                         "transformers": [
                             {
                                 "args": {
