@@ -151,6 +151,21 @@ full_incident = {'name': 'Policy name - P-11111',
 
 ''' HELPER FUNCTIONS TESTS ARGUMENTS '''
 
+# test_concatenate_url
+# arguments: dict_input, url_field, expected_result
+nested_url_field = ({'id': 'P-11111', 'policy': {}, 'resource': {'url': 'suffix'}},
+                    'resource.url',
+                    {'id': 'P-11111', 'policy': {}, 'resource': {'url': 'https://app.prismacloud.io/suffix'}})
+outer_url_field = ({'id': 'P-11111', 'policy': {}, 'url': 'suffix'},
+                   'url',
+                   {'id': 'P-11111', 'policy': {}, 'url': 'https://app.prismacloud.io/suffix'})
+suffix_with_beginning_char = ({'id': 'P-11111', 'policy': {}, 'url': '/suffix'},
+                              'url',
+                              {'id': 'P-11111', 'policy': {}, 'url': 'https://app.prismacloud.io/suffix'})
+url_field_nonexistent = ({'id': 'P-11111', 'policy': {}, 'url': '/suffix'},
+                         'policy.url',
+                         {'id': 'P-11111', 'policy': {}, 'url': '/suffix'})
+
 # test_handle_time_filter
 # arguments: base_case, unit_value, amount_value, time_from, time_to, expected_output
 only_unit_value = (None, 'week', None, None, None, {'type': 'to_now', 'value': 'week'})

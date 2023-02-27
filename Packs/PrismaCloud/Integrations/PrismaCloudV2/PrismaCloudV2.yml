@@ -78,7 +78,7 @@ configuration:
   type: 8
   section: Collect
 - name: output_old_format
-  display: Output results of old version commands to the context data in the old format
+  display: Output results of V1 commands to the context data in the old format
   defaultvalue: 'false'
   type: 8
   required: false

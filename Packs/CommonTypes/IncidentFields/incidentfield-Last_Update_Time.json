@@ -22,11 +22,11 @@
         "AWS Guard Duty Malware Protection Finding",
         "AWS Guard Duty S3 Finding",
         "Prisma Cloud",
-		"GCP Compute Engine Misconfiguration",
-		"GCP Kubernetes Engine Misconfiguration",
-		"AWS CloudTrail Misconfiguration",
-		"AWS IAM Policy Misconfiguration",
-		"AWS EC2 Instance Misconfiguration"
+        "GCP Compute Engine Misconfiguration",
+        "GCP Kubernetes Engine Misconfiguration",
+        "AWS CloudTrail Misconfiguration",
+        "AWS IAM Policy Misconfiguration",
+        "AWS EC2 Instance Misconfiguration"
     ],
     "breachScript": "",
     "caseInsensitive": true,

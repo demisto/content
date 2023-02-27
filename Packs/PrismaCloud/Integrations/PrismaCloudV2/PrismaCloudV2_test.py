@@ -418,6 +418,23 @@ def test_permission_list_command_with_next_token(mocker, prisma_cloud_v2_client)
 ''' HELPER FUNCTIONS TESTS '''
 
 
+@pytest.mark.parametrize('dict_input, url_field, expected_result', (input_data.nested_url_field,
+                                                                    input_data.outer_url_field,
+                                                                    input_data.suffix_with_beginning_char,
+                                                                    input_data.url_field_nonexistent))
+def test_concatenate_url(prisma_cloud_v2_client, dict_input, url_field, expected_result):
+    """
+    Given:
+        - A url entry in a dictionary, with the value of the suffix only
+    When:
+        - The url is about to be shown to the user
+    Then:
+        - Update the dictionary given with the url value as base and suffix
+    """
+    prisma_cloud_v2_client._concatenate_url(dict_input, url_field)
+    assert dict_input == expected_result
+
+
 @pytest.mark.parametrize('url_to_format, formatted_url', (('https://api.prismacloud.io', 'https://api.prismacloud.io/'),
                                                           ('https://app.prismacloud.io/', 'https://api.prismacloud.io/'),
                                                           ('https://other.prismacloud.io/', 'https://other.prismacloud.io/'),
@@ -674,7 +691,7 @@ def test_validate_array_arg():
     validate_array_arg(argToList('good,another_good'), 'Good Name', options)  # should just pass
     with pytest.raises(DemistoException) as de:
         validate_array_arg(argToList('more_good,bad,good'), 'Bad Name', options)
-    assert de.value.message == 'Bad Name values must be of the following: good, another_good, more_good.'
+    assert de.value.message == 'Bad Name values are unexpected, must be of the following: good, another_good, more_good.'
 
 
 def test_remove_empty_values_from_dict():
