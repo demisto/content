@@ -3,7 +3,7 @@ description: |
   Supported services: EC2, Network Load Balancer, ECS, Route53.
 id: Prisma Cloud - Find AWS Resource by Public IP v2
 inputs:
-- description: Public IP Address to look up
+- description: Public IP address to look up.
   key: PublicIPAddress
   playbookInputQuery:
   required: true
@@ -78,7 +78,7 @@ tasks:
     skipunavailable: false
     task:
       brand: PrismaCloud v2
-      description: Search EC2 instances in Prisma Cloud
+      description: Search EC2 instances in Prisma Cloud.
       id: 5d21d3ef-d78f-4b93-8b0a-07a355a64601
       iscommand: true
       name: Search in EC2 Instances
@@ -159,7 +159,7 @@ tasks:
     skipunavailable: false
     task:
       brand: PrismaCloud v2
-      description: Search EC2 Elastic Load Balancers in Prisma Cloud
+      description: Search EC2 Elastic Load Balancers in Prisma Cloud.
       id: 53e36036-6367-4c36-869e-2e0eea7eb955
       iscommand: true
       name: Search in EC2 NLB
@@ -385,7 +385,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if there are any IP in the input.
+      description: Check if there are any IPs in the input.
       id: e273f930-7647-485d-8692-6365d61a0d19
       iscommand: false
       name: Are there IPs in input?
@@ -438,7 +438,7 @@ tasks:
     skipunavailable: false
     task:
       brand: PrismaCloud v2
-      description: Search EC2 instances in Prisma Cloud
+      description: Search EC2 instances in Prisma Cloud.
       id: ace1585b-f50b-4466-8ec0-ba15ea621d90
       iscommand: true
       name: Search in Route53 Hosted Zones
