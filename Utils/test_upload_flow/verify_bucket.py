@@ -310,9 +310,8 @@ class BucketVerifier:
         expected_rn = 'testing modifying existing RN'
         self.verify_rn('Box', expected_rn)
 
-        # TODO: fix after hidden pack mechanism is fixed - CIAC-3848
         # Case 6: Verify pack is set to hidden - Microsoft365Defender
-        # self.verify_hidden('Microsoft365Defender')
+        self.verify_hidden('Microsoft365Defender')
 
         # TODO: fix after README changes are collected the pack to upload is fixed - CIAC-5369
         # Case 7: Verify changed readme - Maltiverse

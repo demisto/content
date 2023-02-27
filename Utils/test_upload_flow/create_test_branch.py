@@ -293,9 +293,8 @@ def do_changes_on_branch(packs_path: Path):
     # Case 5: Verify modified existing release notes - Box
     update_existing_release_notes(packs_path / 'Box')
 
-    # TODO: fix after hidden pack mechanism is fixed - CIAC-3848
     # Case 6: Verify pack is set to hidden - Microsoft365Defender
-    # set_pack_hidden(packs_path / 'Microsoft365Defender')
+    set_pack_hidden(packs_path / 'Microsoft365Defender')
 
     # TODO: fix after README changes are collected the pack to upload is fixed - CIAC-5369
     # Case 7: Verify changed readme - Maltiverse
