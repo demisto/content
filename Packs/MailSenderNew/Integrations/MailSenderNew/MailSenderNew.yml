@@ -1,4 +1,4 @@
-category: Messaging
+category: Email
 commonfields:
   id: Mail Sender (New)
   version: -1
