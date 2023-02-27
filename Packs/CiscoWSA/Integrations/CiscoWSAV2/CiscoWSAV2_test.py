@@ -1129,6 +1129,7 @@ def test_pagination_function(response, arguments, paginated_response):
 
     assert result == paginated_response
 
+
 @pytest.mark.parametrize(
     "response,arguments,err",
     [
