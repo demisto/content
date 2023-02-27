@@ -216,33 +216,36 @@ def process_timeline(detection_id):
 
         if activity['attributes']['type'] == 'process_activity_occurred':
             process = activity['attributes']['process_execution']['attributes'].get(
-                'operating_system_process', {}).get('attributes', {})
+                'operating_system_process', {})
             if not process:
                 demisto.debug('##### process attributes corrupted, skipping additional data. process response:'
                               f'{activity.get("attributes", {}).get("process_execution")} #######')
             else:
+                process = process.get('attributes', {}) or {}
                 image = process.get('image', {}).get('attributes')
                 additional_data = {
-                    'MD5': image['md5'],
-                    'SHA256': image['sha256'],
-                    'Path': image['path'],
-                    'Type': image['file_type'],
-                    'CommandLine': process['command_line']['attributes']['command_line'],
+                    'MD5': image.get('md5'),
+                    'SHA256': image.get('sha256'),
+                    'Path': image.get('path'),
+                    'Type': image.get('file_type'),
+                    'CommandLine': process.get('command_line', {}).get(
+                        'attributes', {}).get('command_line'),
                 }
                 files.append({
-                    'Name': os.path.basename(image['path']),
-                    'MD5': image['md5'],
-                    'SHA256': image['sha256'],
-                    'Path': image['path'],
+                    'Name': os.path.basename(image.get('path')),
+                    'MD5': image.get('md5'),
+                    'SHA256': image.get('sha256'),
+                    'Path': image.get('path'),
                     'Extension': os.path.splitext(image['path'])[-1],
                 })
                 processes.append({
-                    'Name': os.path.basename(image['path']),
-                    'Path': image['path'],
-                    'MD5': image['md5'],
-                    'SHA256': image['sha256'],
-                    'StartTime': get_time_str(get_time_obj(process['started_at'])),
-                    'CommandLine': process['command_line']['attributes']['command_line'],
+                    'Name': os.path.basename(image.get('path')),
+                    'Path': image.get('path'),
+                    'MD5': image.get('md5'),
+                    'SHA256': image.get('sha256'),
+                    'StartTime': get_time_str(get_time_obj(process.get('started_at'))),
+                    'CommandLine': process.get('command_line', {}).get(
+                        'attributes', {}).get('command_line'),
                 })
 
         elif activity['attributes']['type'] == 'network_connection_activity_occurred':
