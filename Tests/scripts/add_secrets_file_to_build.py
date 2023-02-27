@@ -2,7 +2,6 @@ import argparse
 import json5
 
 from Tests.scripts.collect_tests.path_manager import PathManager
-from Tests.scripts.collect_tests.utils import PackManager
 from Tests.scripts.utils.GoogleSecretManagerModule import GoogleSecreteManagerModule
 from Tests.scripts.utils import logging_wrapper as logging
 from pathlib import Path
@@ -11,7 +10,6 @@ from pathlib import Path
 def run(options):
     # raise Exception(f'ppppaaaaattttthhhh: {Path(__file__).absolute()},ppppaaaaattttthhhh: {Path(__file__).absolute().parents[3]},ppppaaaaattttthhhh: {Path(__file__).absolute().parents[2]}')
     PATHS = PathManager(Path(__file__).absolute().parents[2])
-    PACK_MANAGER = PackManager(PATHS)
     branch_name = PATHS.content_repo.active_branch.name
     import pathlib
     root_dir = Path(__file__).absolute().parents[2]
