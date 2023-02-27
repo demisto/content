@@ -135,7 +135,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: TenableIO.Scan(val.Status == 'pending' || val.Status == 'running').Id
+        simple: TenableIO.Scan(val.Status == 'pending' || val.Status == 'running' || val.Status == 'publishing').Id
     separatecontext: true
     continueonerrortype: ""
     loop:
