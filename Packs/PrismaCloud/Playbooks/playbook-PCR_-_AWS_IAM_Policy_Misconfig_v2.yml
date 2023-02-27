@@ -165,7 +165,7 @@ tasks:
       id: d7495e19-5781-4bbf-88e1-7c4be19f9ad8
       version: -1
       name: Auto remediate?
-      description: Determine whether or not to auto-remediate?
+      description: Determine whether or not to auto-remediate.
       type: condition
       iscommand: false
       brand: ""
@@ -210,10 +210,10 @@ tasks:
       version: -1
       name: Manually update IAM password policy
       description: |-
-        1. Login to the AWS console and navigate to the IAM dashboard
-        2. On the left navigation panel, click on Account Settings
-        3. Check Prevent password reuse and enter remember 5 passwords
-        4. Click on Apply password policy
+        1. Log in to the AWS console and navigate to the IAM dashboard.
+        2. On the left navigation panel, click Account Settings.
+        3. Check Prevent password reuse and enter remember 5 passwords.
+        4. Click Apply password policy.
       type: regular
       iscommand: false
       brand: ""
@@ -299,7 +299,7 @@ tasks:
       id: bd2eb7f2-5e30-4623-8e11-ea91b99c23d8
       version: -1
       name: Dismiss Prisma Cloud alert
-      description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
+      description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
       script: PrismaCloud v2|||prisma-cloud-alert-dismiss
       type: regular
       iscommand: true
@@ -453,9 +453,9 @@ tasks:
       version: -1
       name: Prisma Cloud Remediation - AWS IAM User Policy Misconfiguration
       description: |-
-        This playbook remediates the following Prisma Cloud AWS IAM User alerts.
+        This playbook remediates the following Prisma Cloud AWS IAM User alert.
 
-        Prisma Cloud policies remediated:
+        Prisma Cloud policy remediated:
 
          - AWS IAM user has two active Access Keys
       playbookName: Prisma Cloud Remediation - AWS IAM User Policy Misconfiguration
