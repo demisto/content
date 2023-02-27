@@ -12,7 +12,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* PrismaCloud v2
+PrismaCloud v2
 
 ### Scripts
 
@@ -21,7 +21,7 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* prisma-cloud-config-search
+prisma-cloud-config-search
 
 ## Playbook Inputs
 
@@ -29,8 +29,8 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| FQDN | FQDN to look up |  | Required |
-| AzureDomains | Azure domains \(comma separated\) | .azure.com,.azurewebsites.net,.windows.net,.azmk8s.io | Optional |
+| FQDN | FQDN to look up. |  | Required |
+| AzureDomains | A comma-separated list of Azure domains. | .azure.com,.azurewebsites.net,.windows.net,.azmk8s.io | Optional |
 
 ## Playbook Outputs
 
