@@ -6,13 +6,11 @@ import traceback
 from datetime import datetime
 from typing import Any, Dict
 from urllib.parse import quote_plus
-import requests
 import urllib3
 import copy
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 

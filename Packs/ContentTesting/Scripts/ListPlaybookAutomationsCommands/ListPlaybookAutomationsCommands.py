@@ -1,3 +1,4 @@
+# Final Test: 6.10
 import uuid
 from typing import Dict
 
@@ -8,8 +9,11 @@ from CommonServerPython import *  # noqa: F401
 def GetAutomationName(id):
     results = demisto.executeCommand("demisto-api-post", {
         "uri": f"/automation/load/{id}"
-    })[0]['Contents']['response']
-    return results['name']
+    })[0]['Contents']
+    if 'response' in results:
+        if 'name' in results['response']:
+            return results['response']['name']
+    return ""
 
 
 def GetPlaybooks():
@@ -36,9 +40,10 @@ def GetAutomationsUsed(playbooks):
                     s = GetAutomationName(s)
                 except ValueError:
                     pass
-                if p['name'] not in automations:
-                    automations[p['name']] = {}
-                automations[p['name']][s] = ""
+                if s != "":
+                    if p['name'] not in automations:
+                        automations[p['name']] = {}
+                    automations[p['name']][s] = ""
     return automations
 
 
