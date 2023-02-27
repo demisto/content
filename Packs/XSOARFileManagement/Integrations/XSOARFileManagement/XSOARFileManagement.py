@@ -166,9 +166,9 @@ def test_module(client: Client, params: Dict[str, Any]) -> str:
 
 def get_incident_id(entry_id: str) -> str:
     res = re.findall("(\d+)@(\d+)", entry_id)
-    if len(res) > 0:
-        return res[0][1]
-    return_error("EntryID unknow or malformatted !")
+    if len(res) <= 0:
+        return_error("EntryID unknow or malformatted !")
+    return res[0][1]
 
 
 def rename_file_command(client: Client, args: dict) -> CommandResults:
@@ -251,7 +251,8 @@ def delete_attachment_command(client: Client, args: dict) -> CommandResults:
     Arguments:
         incidentID {str} -- incident number where the file will be deleted
         filePath {str} -- path of the file
-        fieldName {str} -- name of the field (type attachment) you want to remove the attachment by default it's the incident attachment (incident.attachment) field
+        fieldName {str} -- name of the field (type attachment) you want to remove the attachment.
+                           By default it's the incident attachment (incident.attachment) field
     Returns:
         CommandResults -- Readable output
     Note:
@@ -313,12 +314,12 @@ def get_file_path_name(file_input: str) -> Tuple[str, str]:
         return file_path, file_name
     except Exception:
         res = re.findall("_(.*)_(.*)", file_input)
-        if len(res) > 0:
-            path_res = demisto.getFilePath(res[0][0])
-            file_path = path_res.get("path")
-            file_name = res[0][1]
-            return file_path, file_name
-    return_error("File not found... entryID or path invalid !")
+        if len(res) <= 0:
+            return_error("File not found... entryID or path invalid !")
+        path_res = demisto.getFilePath(res[0][0])
+        file_path = path_res.get("path")
+        file_name = res[0][1]
+        return file_path, file_name
 
 
 def upload_file_command(client: Client, args: dict) -> CommandResults:
@@ -354,7 +355,7 @@ def upload_file_command(client: Client, args: dict) -> CommandResults:
     if file_content:
         response = client.upload_file(incident_id, file_content, file_name, target == 'incident attachment')
     else:
-        arg_path = list(filter(None, [entry_id, file_path]))[0]
+        arg_path: str = list(filter(None, [entry_id, file_path]))[0]
         res_path, res_name = get_file_path_name(arg_path)
         # file name override by user
         file_name = file_name if file_name else res_name
