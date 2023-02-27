@@ -112,7 +112,7 @@ def fetch_events(client: Client, **kwargs) -> list:
     }
     response = client.get_alerts(params)
 
-    if events := response.get('data', {}).get('results'):
+    if events := response.get('data', {}).get('results', []):
         last_run_event_ids = demisto.getLastRun().get('last_run_ids', set())
         if last_run_event_ids:
             events = list(filter(lambda x: x.get('id') not in last_run_event_ids, events))
@@ -128,11 +128,9 @@ def fetch_events(client: Client, **kwargs) -> list:
         if len(next_run_event_ids) == len(events) == int(kwargs.get('limit')):  # type: ignore
             next_run_time = (datetime.strptime(next_run_time, DATE_FORMAT) + timedelta(seconds=1)).strftime(DATE_FORMAT)
 
-        demisto.setLastRun({'last_run_time': next_run_time, 'last_run_ids': next_run_event_ids})
+        demisto.setLastRun({'last_run_time': next_run_time, 'last_run_ids': list(next_run_event_ids)})
 
-        return events
-
-    return []
+    return events
 
 
 ''' HELPER FUNCTIONS '''
@@ -155,7 +153,6 @@ def main() -> None:
     """
     main function, parses params and runs command functions
     """
-
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
@@ -164,7 +161,7 @@ def main() -> None:
     api_key = params.get('credentials', {}).get('password')
     headers = {'X-RFToken': api_key}
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.info(f'Command being called is {command}')
     try:
         client = Client(
             base_url=BASE_URL,
