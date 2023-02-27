@@ -2,7 +2,7 @@ Prisma Cloud secures infrastructure, workloads and applications, across the enti
 This integration was integrated and tested with version xx of PrismaCloud
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-prisma-cloud-v2).
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---prisma-cloud-v2).
 
 ## Configure Prisma Cloud v2 on Cortex XSOAR
 
@@ -2399,16 +2399,16 @@ Get permission list. You must provide either "query" or "next_token".
 The following sections list the changes in this version.
 
 ### Commands
-#### The following commands were removed in this version:
-* *redlock-list-scans* - this command is deprecated because it is not supported by the API anymore.
-* *redlock-get-scan-status* - this command is deprecated because it is not supported by the API anymore.
-* *redlock-get-scan-results* - this command is deprecated because it is not supported by the API anymore.
+#### The following commands were deprecated in this version because they are not supported by the API anymore:
+* ***redlock-list-scans***
+* *redlock-get-scan-status***
+* ***redlock-get-scan-results***
 
 #### The following commands were replaced in this version:
-* *redlock-dismiss-alerts* - this command is replaced by *prisma-cloud-alert-dismiss*.
-* *redlock-get-alert-details* - this command is replaced by *prisma-cloud-alert-get-details*.
-* *redlock-get-remediation-details* - this command is replaced by *prisma-cloud-remediation-command-list*.
-* *redlock-get-rql-response* - this command is replaced by *prisma-cloud-config-search*.
+* ***redlock-dismiss-alerts*** - this command is replaced by ***prisma-cloud-alert-dismiss***.
+* ***redlock-get-alert-details*** - this command is replaced by ***prisma-cloud-alert-get-details***.
+* ***redlock-get-remediation-details*** - this command is replaced by ***prisma-cloud-remediation-command-list***.
+* ***redlock-get-rql-response*** - this command is replaced by ***prisma-cloud-config-search***.
 * *redlock-list-alert-filters* - this command is replaced by *prisma-cloud-alert-filter-list*.
 * *redlock-reopen-alerts* - this command is replaced by *prisma-cloud-alert-reopen*.
 * *redlock-search-alerts* - this command is replaced by *prisma-cloud-alert-search*.
