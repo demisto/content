@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* PrismaCloud v2
+PrismaCloud v2
 
 ### Scripts
 
@@ -37,8 +37,8 @@ This playbook does not use any sub-playbooks.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| foundIncidents | Found Prisma Cloud Incidents | unknown |
-| PrismaCloud.Alert | Prisma Cloud Alert | unknown |
+| foundIncidents | Found Prisma Cloud incidents | unknown |
+| PrismaCloud.Alert | Prisma Cloud alert. | unknown |
 
 ## Playbook Image
 
