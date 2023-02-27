@@ -19,11 +19,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Prisma Cloud Remediation - GCP Kubernetes Engine Cluster Misconfiguration
+Prisma Cloud Remediation - GCP Kubernetes Engine Cluster Misconfiguration
 
 ### Integrations
 
-* PrismaCloud v2
+PrismaCloud v2
 
 ### Scripts
 
@@ -41,7 +41,7 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | AutoRemediateKubernetesEngine | Execute GCP Kubernetes Engine remediation automatically? | no | Optional |
-| policyId | Grab the Prima Cloud policy Id. | incident.labels.policy | Optional |
+| policyId | Grab the Prima Cloud policy ID. | incident.labels.policy | Optional |
 
 ## Playbook Outputs
 
