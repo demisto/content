@@ -293,7 +293,7 @@ EXPECTED_LIST_VIOLATION_DATA_6_4 = [
         {
             "Timeline_By_Month": "1672552800000",
             "Resourcegroupname": "SNX-IEE-AEE-51",
-            "Eventid": "3ae64498-1b89-44d7-aa14-6dc72af814bf",
+            "Eventid": "test-event-id",
             "Ipaddress": "0.0.0.0",
             "Week": "3",
             "Year": "2023",

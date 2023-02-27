@@ -562,7 +562,7 @@ RESPONSE_LIST_VIOLATION_6_4 = {
         {
             "timeline_by_month": "1672552800000",
             "resourcegroupname": "SNX-IEE-AEE-51",
-            "eventid": "3ae64498-1b89-44d7-aa14-6dc72af814bf",
+            "eventid": "test-event-id",
             "ipaddress": "0.0.0.0",
             "week": "3",
             "year": "2023",
@@ -610,7 +610,7 @@ RESPONSE_LIST_VIOLATION_6_4 = {
     ],
     "error": False,
     "available": False,
-    "queryId": "spotterwebservice8bad184d-3eae-4e1d-9f61-8fb4fd06648e",
+    "queryId": "spotterwebservice-test-id",
     "applicationTz": "CST6CDT",
     "inputParams": {
         "generationtime_from": "01/17/2022 00:00:00",
@@ -619,7 +619,7 @@ RESPONSE_LIST_VIOLATION_6_4 = {
         "generationtime_to": "01/17/2023 00:00:20"
     },
     "index": "violation",
-    "nextCursorMarker": "AoNzjuSa3YUDPwo2NDU2XzJkMWFjMWQ4LWM1MzUtNGFiMC05MmM2LTRhNmRkMDc0ZmVkNHLVi5vdhQM="
+    "nextCursorMarker": "test-cursor-marker"
 }
 
 RESPONSE_LIST_WHITELISTS_ENTRY = {

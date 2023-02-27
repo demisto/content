@@ -664,16 +664,17 @@ class Client(BaseClient):
 
         except requests.exceptions.RetryError as exception:
             try:
-                reason = 'Reason: {}'.format(exception.args[0].reason.args[0])  # pylint: disable=no-member
+                reason = f'Reason: {exception.args[0].reason.args[0]}'  # pylint: disable=no-member
             except Exception:  # noqa: disable=broad-except
                 reason = ''
-            err_msg = 'Max Retries Error: Request attempts with {} retries and with {} seconds {} delay failed.\n{}'.format(
-                self._securonix_retry_count, self._securonix_retry_delay, self._securonix_retry_delay_type, reason)
+            err_msg = f'Max Retries Error: Request attempts with {self._securonix_retry_count} retries and with ' \
+                      f'{self._securonix_retry_delay} seconds {self._securonix_retry_delay_type} delay ' \
+                      f'failed.\n{reason}'
             if self._securonix_retry_delay_type == "Exponential":
                 # For Exponential delay we are dividing it by 2 so for error message make it to original value
-                err_msg = 'Max Retries Error: Request attempts with {} retries and with {} seconds {} delay failed.' \
-                          '\n{}'.format(self._securonix_retry_count, self._securonix_retry_delay * 2,
-                                        self._securonix_retry_delay_type, reason)
+                err_msg = f'Max Retries Error: Request attempts with {self._securonix_retry_count} retries and with' \
+                          f'{self._securonix_retry_delay * 2} seconds {self._securonix_retry_delay_type} delay ' \
+                          f'failed.\n{reason}'
             demisto.error(err_msg)
             raise Exception(f'{err_msg}\n{exception}')
 
@@ -3084,6 +3085,7 @@ def main():
     global TOTAL_RETRY_COUNT
     TOTAL_RETRY_COUNT = arg_to_number(params.get('securonix_retry_count', '0'),  # type: ignore
                                       arg_name='securonix_retry_count')
+    TOTAL_RETRY_COUNT = min(TOTAL_RETRY_COUNT, 5)
     securonix_retry_delay_type = params.get('securonix_retry_delay_type', 'Exponential')
     securonix_retry_delay = arg_to_number(params.get('securonix_retry_delay', '30'), arg_name='securonix_retry_delay')
     if securonix_retry_delay <= 30:  # type: ignore

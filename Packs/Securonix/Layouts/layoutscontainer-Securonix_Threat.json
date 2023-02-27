@@ -341,7 +341,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "securonixthreatname",
+                                "fieldId": "threatname",
                                 "height": 53,
                                 "id": "158da700-970c-11ed-b126-ad61fba01d81",
                                 "index": 2,
@@ -405,7 +405,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "securonixtenantname",
+                                "fieldId": "tenantname",
                                 "height": 53,
                                 "id": "e7ed0ca0-970b-11ed-b126-ad61fba01d81",
                                 "index": 1,

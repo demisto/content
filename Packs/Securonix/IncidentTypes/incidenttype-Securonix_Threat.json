@@ -23,7 +23,7 @@
     "layout": "Securonix Threat",
     "detached": false,
     "extractSettings": {
-        "mode": "Specific",
+        "mode": "All",
         "fieldCliNameToExtractSettings": {}
     },
     "fromVersion": "6.5.0"

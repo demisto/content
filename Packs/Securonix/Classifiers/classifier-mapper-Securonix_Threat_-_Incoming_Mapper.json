@@ -55,7 +55,7 @@
                         "transformers": []
                     }
                 },
-                "Securonix Tenant Name": {
+                "Tenant Name": {
                     "complex": {
                         "filters": [],
                         "root": "tenantname",
@@ -69,7 +69,7 @@
                         "transformers": []
                     }
                 },
-                "Securonix Threat Name": {
+                "Threat Name": {
                     "complex": {
                         "filters": [],
                         "root": "threatname",
