@@ -65,7 +65,7 @@ tasks:
       id: 3bd78b35-5c67-4c29-82d3-56cd93cb2e1a
       version: -1
       name: Is AWS - EC2 integration available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -149,7 +149,7 @@ tasks:
       id: a1526b70-d9ce-4d1c-8e36-4aaa1cf5d850
       version: -1
       name: Auto remediate?
-      description: Determines whether or not to auto-remediate?
+      description: Determines whether or not to auto-remediate.
       type: condition
       iscommand: false
       brand: ""
@@ -686,7 +686,7 @@ tasks:
       id: f8385099-65e3-47ef-818d-0131c61c0d6f
       version: -1
       name: Dismiss Prisma Cloud alert
-      description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
+      description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
       script: PrismaCloud v2|||prisma-cloud-alert-dismiss
       type: regular
       iscommand: true
