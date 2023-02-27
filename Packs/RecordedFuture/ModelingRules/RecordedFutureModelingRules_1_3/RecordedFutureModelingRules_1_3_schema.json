@@ -7,6 +7,10 @@
         "title": {
             "type": "string",
             "is_array": false
+        },
+        "owner_id": {
+            "type": "string",
+            "is_array": false
         }
     }
 }
