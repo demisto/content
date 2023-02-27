@@ -2127,7 +2127,7 @@
                         "y": 3
                     }
                 ],
-                "showEmptyFields": true,
+                "showEmptyFields": false,
                 "type": "custom"
             },
             {
@@ -3053,7 +3053,7 @@
                         "y": 0
                     },
                     {
-                        "description": "Instruction: \ncopy-paste email header into the argument\nthe emails headers are in the view\u003esource of your mail.",
+                        "description": "Instructions: \ncopy-paste email headers into the argument.\nThe emails headers are found in the view\u003esource of your email.",
                         "displayType": "ROW",
                         "h": 2,
                         "hideItemTitleOnlyOne": false,
@@ -3334,7 +3334,7 @@
                         "y": 2
                     },
                     {
-                        "description": "Cortex XSOAR Admin Guide : [Cortex XSOAR Admin Guide](https://docs.paloaltonetworks.com/cortex/cortex-xsoar.html)\nDeveloper Guide: [Cortex XSOAR Developer Guide](https://xsoar.pan.dev/) \nDocumentation for Integrations: [Cortex XSOAR Integration Reference](https://xsoar.pan.dev/docs/reference/index) \nsupport Portal: [Palo Alto Networks Support Portal](https://support.paloaltonetworks.com/) \nOr [Palo Alto Networks Live Community](https://live.paloaltonetworks.com/) , which includes training and how-to blog posts.",
+                        "description": "Cortex XSOAR Admin Guide: [Cortex XSOAR Admin Guide](https://docs.paloaltonetworks.com/cortex/cortex-xsoar.html)\n\nDeveloper Guide: [Cortex XSOAR Developer Guide](https://xsoar.pan.dev/) \n\nDocumentation for Integrations: [Cortex XSOAR Integration Reference](https://xsoar.pan.dev/docs/reference/index) \n\nSupport Portal: [Palo Alto Networks Support Portal](https://support.paloaltonetworks.com/) \nOr [Palo Alto Networks Live Community](https://live.paloaltonetworks.com/) , which includes training and how-to blog posts.",
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
@@ -4220,5 +4220,6 @@
     "system": false,
     "version": -1,
     "fromVersion": "8.2.0",
+    "marketplaces": ["xsoar"],
     "description": ""
 }
