@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Prisma Cloud Correlate Alerts v2
-description: Search alerts in Prisma Cloud for a specific asset ID and, if present in XSOAR, link them.
+description: Search alerts in Prisma Cloud for a specific asset ID and, if present in Cortex XSOAR, link them.
 starttaskid: "0"
 tasks:
   "0":
@@ -69,7 +69,7 @@ tasks:
       id: a8c93e03-4367-44d4-88f4-1c778a392639
       version: -1
       name: Are assets in Prisma Cloud found?
-      description: Check if Prisma Cloud assets are present
+      description: Check if Prisma Cloud assets are present.
       type: condition
       iscommand: false
       brand: ""
@@ -174,7 +174,7 @@ tasks:
       id: b6b02f01-2db2-4859-8756-3e7ad37c9072
       version: -1
       name: Print Prisma Cloud Alerts
-      description: Convert an array to a nice table display. Usually, from the context.
+      description: Convert an array to a nice table display, usually from the context.
       scriptName: ToTable
       type: regular
       iscommand: false
@@ -321,7 +321,7 @@ tasks:
       id: 9fe334d8-188b-4bf0-83a1-2d82effa470e
       version: -1
       name: Prisma Cloud Alerts found?
-      description: Check if Prisma Cloud alerts were found
+      description: Check if Prisma Cloud alerts were found.
       type: condition
       iscommand: false
       brand: ""
@@ -410,7 +410,7 @@ tasks:
       id: e44f2a90-27f4-4584-8548-e285eac679a5
       version: -1
       name: Is Prisma Cloud enabled?
-      description: Check if the Prisma Cloud integration is enabled
+      description: Check if the Prisma Cloud integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -466,7 +466,7 @@ tasks:
       id: ff612a87-2f7a-4742-8630-ef241e51577e
       version: -1
       name: Did we find any related Prisma Cloud incidents to link?
-      description: Check if any linkable incidents are found in XSOAR.
+      description: Check if any linkable incidents are found in Cortex XSOAR.
       type: condition
       iscommand: false
       brand: ""
