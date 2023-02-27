@@ -1,5 +1,4 @@
 BloxOne Threat Defense is a hybrid cybersecurity solution that leverages DNS as the first line of defense to detect and block cyber threats.
-This integration was integrated and tested with version xx of InfobloxBloxOneThreatDefense
 
 ## Configure Infoblox BloxOne Threat Defense on Cortex XSOAR
 
