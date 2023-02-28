@@ -36,7 +36,7 @@ Follow these steps for a self-deployed configuration:
 
 *Make sure to provide the following permissions for the app to work with Microsoft Cloud App Security:*
 
-- ***Discovery.manage*** - <https://learn.microsoft.com/en-us/defender-cloud-apps/api-authentication-application#supported-permission-scopes>
+- ***Discovery.manage***, ***Investigation.read*** - <https://learn.microsoft.com/en-us/defender-cloud-apps/api-authentication-application#supported-permission-scopes>
 - ***offline_access*** - when using the Device Code flow.
 
 ### By token (legacy method)
@@ -704,10 +704,6 @@ There is no context output for this command.
 
 ***
 Returns a list of activities that match the specified filters.
-
-##### Required Permissions
-
-`Investigation.read`
 
 #### Base Command
 
