@@ -18,10 +18,11 @@ def format_alert(alert: dict) -> dict:
 def convert_to_table(context_results: str) -> CommandResults:
     """
     Args:
-        context_results (str): list of dicts or a single dict but in string format
+        context_results (str): String representing a list of dicts if multiple result values are returned,
+        or String representing a single dict if only one value is returned.
 
     Returns:
-        CommandResults: CommandResults object with readable_output
+        CommandResults: CommandResults object containing only readable_output
     """
     context_results = ast.literal_eval(context_results)
     if not isinstance(context_results, list):

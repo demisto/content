@@ -4,14 +4,15 @@ from itertools import chain
 import ast
 
 
-def format_entity(entity: dict) -> dict:
+def format_comment(comment: dict) -> dict:
     """
-    Converts an entity to a dictionary with the relevant fields.
+    Converts an comment to a dictionary with the relevant fields.
     """
     return {
-        'name': entity.get('name'),
-        'kind': entity.get('kind'),
-        **entity.get('properties', {})
+        'name': comment.get('name'),
+        'message': comment.get('properties', {}).get('message'),
+        'createdTimeUtc': comment.get('properties', {}).get('createdTimeUtc'),
+        'userPrincipalName': comment.get('properties', {}).get('author', {}).get('userPrincipalName')
     }
 
 
@@ -29,7 +30,7 @@ def convert_to_table(context_results: str) -> CommandResults:
         context_results = [context_results]
 
     context_formatted = [
-        format_entity(entity) for entity in context_results
+        format_comment(comment) for comment in context_results
     ]
 
     md = tableToMarkdown(
@@ -49,7 +50,7 @@ def convert_to_table(context_results: str) -> CommandResults:
 def main():
     context = dict_safe_get(
         demisto.callingContext,
-        ['context', 'Incidents', 0, 'CustomFields', 'microsoftsentinelentities'],
+        ['context', 'Incidents', 0, 'CustomFields', 'microsoftsentinelcomments'],
         {}
     )
 
