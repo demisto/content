@@ -1870,6 +1870,7 @@ def send_message():
         raise ValueError('Given adaptive card is not in valid JSON format.')
 
     if message_type == MESSAGE_TYPES['mirror_entry'] and ENTRY_FOOTER in original_message:
+        demisto.debug(f"the message '{message}' was already mirrored, skipping it")
         # Got a message which was already mirrored - skipping it
         return
     channel_name: str = demisto.args().get('channel', '')
@@ -2343,6 +2344,10 @@ def message_handler(integration_context: dict, request_body: dict, channel_data:
                             investigation_id: str = mirrored_channel.get('investigation_id', '')
                             username: str = from_property.get('name', '')
                             user_email: str = get_team_member(integration_context, team_member_id).get('user_email', '')
+                            demisto.debug("about to add entry")
+                            demisto.debug(f"entry is: {message}\nusername is: {username}\nemail is: {user_email}")
+                            user = demisto.findUser(email=user_email) if user_email else demisto.findUser(username=username)
+                            demisto.debug(f"found user: {user}")
                             demisto.addEntry(
                                 id=investigation_id,
                                 entry=message,
@@ -2350,6 +2355,7 @@ def message_handler(integration_context: dict, request_body: dict, channel_data:
                                 email=user_email,
                                 footer=f'\n**{ENTRY_FOOTER}**'
                             )
+                            demisto.debug("done adding entry")
                         return
 
 
@@ -2367,6 +2373,7 @@ def messages() -> Response:
             demisto.info(f'Authorization header failed: {str(headers)}')
         else:
             request_body: dict = request.json
+            demisto.debug(f"request body: {request_body}")
             integration_context: dict = get_integration_context()
             service_url: str = request_body.get('serviceUrl', '')
             if service_url:
