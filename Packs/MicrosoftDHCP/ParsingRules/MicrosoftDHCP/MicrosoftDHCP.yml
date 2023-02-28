@@ -1,0 +1,6 @@
+name: Microsoft DHCP
+id: Microsoft_DHCP
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''
