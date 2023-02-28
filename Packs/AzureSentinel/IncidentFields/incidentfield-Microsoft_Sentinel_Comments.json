@@ -1,11 +1,11 @@
 {
     "id": "incident_microsoftsentinelcomments",
     "version": -1,
-    "modified": "2023-01-24T10:33:49.737792+02:00",
+    "modified": "2023-02-28T07:49:06.748986985Z",
     "name": "Microsoft Sentinel Comments",
     "ownerOnly": false,
     "cliName": "microsoftsentinelcomments",
-    "type": "grid",
+    "type": "longText",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -22,75 +22,7 @@
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,
-    "columns": [
-        {
-            "key": "id",
-            "displayName": "id",
-            "type": "shortText",
-            "orgType": "shortText",
-            "required": false,
-            "script": "",
-            "width": 150,
-            "isDefault": true,
-            "fieldCalcScript": "",
-            "isReadOnly": false,
-            "selectValues": null
-        },
-        {
-            "key": "name",
-            "displayName": "name",
-            "type": "shortText",
-            "orgType": "shortText",
-            "required": false,
-            "script": "",
-            "width": 150,
-            "isDefault": true,
-            "fieldCalcScript": "",
-            "isReadOnly": false,
-            "selectValues": null
-        },
-        {
-            "key": "type",
-            "displayName": "type",
-            "type": "shortText",
-            "orgType": "shortText",
-            "required": false,
-            "script": "",
-            "width": 150,
-            "isDefault": true,
-            "fieldCalcScript": "",
-            "isReadOnly": false,
-            "selectValues": null
-        },
-        {
-            "key": "etag",
-            "displayName": "etag",
-            "type": "shortText",
-            "orgType": "shortText",
-            "required": false,
-            "script": "",
-            "width": 150,
-            "isDefault": true,
-            "fieldCalcScript": "",
-            "isReadOnly": false,
-            "selectValues": null
-        },
-        {
-            "key": "properties",
-            "displayName": "properties",
-            "type": "longText",
-            "orgType": "longText",
-            "required": false,
-            "script": "",
-            "width": 150,
-            "isDefault": true,
-            "fieldCalcScript": "",
-            "isReadOnly": false,
-            "selectValues": null
-        }
-    ],
-    "defaultRows": [],
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.5.0"
+    "fromVersion": "6.8.0"
 }
