@@ -769,6 +769,11 @@ class SecurityAndComplianceClient {
             $response = Get-ComplianceCase @cmd_params
         }
         $response = $response | Select-Object -First $limit
+        if (-not $response){
+            # Close session to remote
+            $this.DisconnectSession()
+            throw "The list action didn't return any results. The Compliance cases do not exist or have been deleted."
+        }
         # Close session to remote
         $this.DisconnectSession()
         return $response
@@ -896,36 +901,41 @@ class SecurityAndComplianceClient {
         if ($case) {
             $cmd_params.Case = $case
         }
-          # Execute command
-          $response = Get-CaseHoldPolicy @cmd_params
-          # Close session to remote
-          $this.DisconnectSession()
-          return $response
-           <#
-            .DESCRIPTION
-            View existing case hold policies in the Microsoft Purview compliance portal
+        # Execute command
+        $response = Get-CaseHoldPolicy @cmd_params
+        if (-not $response) {
+            # Close session to remote
+            $this.DisconnectSession()
+            throw "The Get action didn't return any results. The Policy does not exist or has been deleted."
+        }
+        # Close session to remote
+        $this.DisconnectSession()
+        return $response
+        <#
+        .DESCRIPTION
+        View existing case hold policies in the Microsoft Purview compliance portal
 
-            .PARAMETER identity
-            Specifies the case hold policy that you want to view.
+        .PARAMETER identity
+        Specifies the case hold policy that you want to view.
 
-            .PARAMETER case
-            The Case parameter specifies the case hold policy that you want to view by using the eDiscovery case that's associated with the policy.
+        .PARAMETER case
+        The Case parameter specifies the case hold policy that you want to view by using the eDiscovery case that's associated with the policy.
 
-            .PARAMETER distribution_detail
-            Returns detailed policy distribution information on the case hold policy.
+        .PARAMETER distribution_detail
+        Returns detailed policy distribution information on the case hold policy.
 
-            .PARAMETER include_bindindgs
-            The ExchangeLocation parameter specifies the mailboxes to include in the policy.
+        .PARAMETER include_bindindgs
+        The ExchangeLocation parameter specifies the mailboxes to include in the policy.
 
-            .EXAMPLE
-            Get-CaseHoldPolicy -Case "Contoso Legal"
-            Get-CaseHoldPolicy -Identity "Regulation 123 Compliance"
+        .EXAMPLE
+        Get-CaseHoldPolicy -Case "Contoso Legal"
+        Get-CaseHoldPolicy -Identity "Regulation 123 Compliance"
 
-            .OUTPUTS
-            psobject - Raw response.
+        .OUTPUTS
+        psobject - Raw response.
 
-            .LINK
-            https://learn.microsoft.com/en-us/powershell/module/exchange/get-caseholdpolicy?view=exchange-ps
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/get-caseholdpolicy?view=exchange-ps
         #>
     }
 
@@ -1019,7 +1029,7 @@ class SecurityAndComplianceClient {
         if (-not $response){
             # Close session to remote
             $this.DisconnectSession()
-            throw "The search action didn't return any results. The rules do not exist or have been deleted."
+            throw "The list action didn't return any results. The rules do not exist or have been deleted."
         }
         $response = $response | Select-Object -First $limit
         # Close session to remote
@@ -1311,7 +1321,7 @@ function ListSearchActionsCommand([SecurityAndComplianceClient]$client, [hashtab
 function ComplianceCaseCreateCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Raw response
     $raw_response = $client.ComplianceCaseCreate($kwargs.case_name, $kwargs.case_type, $kwargs.description, $kwargs.external_id)
-    $md_columns = $raw_response | Select-Object -Property Name, Status, CreatedDateTime
+    $md_columns = $raw_response | Select-Object -Property Identity, Name, Status, CreatedDateTime, CaseType
     $human_readable = TableToMarkdown $md_columns "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_COMPLIANCE_CASE" = $raw_response }
     return $human_readable, $entry_context, $raw_response
@@ -1320,7 +1330,7 @@ function ComplianceCaseCreateCommand([SecurityAndComplianceClient]$client, [hash
 function ComplianceCaseListCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Raw response
     $raw_response = $client.ComplianceCaseList($kwargs.identity, $kwargs.case_type, $kwargs.limit)
-    $md_columns = $raw_response | Select-Object -Property GUID, Name, Status, CreatedDateTime
+    $md_columns = $raw_response | Select-Object -Property Identity, Name, Status, CreatedDateTime, CaseType
     $human_readable = TableToMarkdown $md_columns "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_COMPLIANCE_CASE(obj.Identity === val.Identity)" = $raw_response}
     return $human_readable, $entry_context, $raw_response
@@ -1354,7 +1364,7 @@ function CaseHoldPolicyCreateCommand([SecurityAndComplianceClient]$client, [hash
     $raw_response = $client.CaseHoldPolicyCreate($kwargs.policy_name, $kwargs.case, $kwargs.comment, $exchange_location,
     $public_folder_location, $share_point_location, $enabled)
     $entry_context = @{"$script:INTEGRATION_ENTRY_CASE_HOLD_POLICY(obj.Guid === val.Guid)" = $raw_response}
-    $md_columns = $raw_response | Select-Object -Property Name, Workload, Enabled, Mode
+    $md_columns = $raw_response | Select-Object -Property Name, Workload, Enabled, Mode, @{Name = "Guid";Expression = {$_.Guid.ToString()}}
     $human_readable = TableToMarkdown $md_columns "Results of $command"
     return $human_readable, $entry_context, $raw_response
 }
@@ -1367,7 +1377,7 @@ function CaseHoldPolicyGetCommand([SecurityAndComplianceClient]$client, [hashtab
     $include_bindings = ConvertTo-Boolean $kwargs.include_bindings
     $raw_response = $client.CaseHoldPolicyGet($kwargs.identity, $kwargs.case, $distribution_detail, $include_bindings)
     $entry_context = @{"$script:INTEGRATION_ENTRY_CASE_HOLD_POLICY(obj.Guid === val.Guid)" = $raw_response}
-    $md_columns = $raw_response | Select-Object -Property Name, Guid, Workload, Status, Mode
+    $md_columns = $raw_response | Select-Object -Property Name, Workload, Status, Mode, @{Name = "Guid";Expression = {$_.Guid.ToString()}}
     $human_readable = TableToMarkdown $md_columns "Results of $command"
     return $human_readable, $entry_context, $raw_response
 }
@@ -1387,7 +1397,7 @@ function CaseHoldRuleCreateCommand([SecurityAndComplianceClient]$client, [hashta
     $comment = $kwargs.comment
     $is_disabled = ConvertTo-Boolean $kwargs.is_disabled
     $raw_response = $client.CaseHoldRuleCreate($rule_name, $policy_name, $query, $comment, $is_disabled)
-    $md_columns = $raw_response | Select-Object -Property Name, Status, Mode
+    $md_columns = $raw_response | Select-Object -Property Name, Status, Mode, @{Name = "Guid";Expression = {$_.Guid.ToString()}}
     $human_readable = TableToMarkdown $md_columns "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CASE_HOLD_RULE(obj.Guid === val.Guid)" = $raw_response}
     return $human_readable, $entry_context, $raw_response
@@ -1397,7 +1407,7 @@ function CaseHoldRuleListCommand([SecurityAndComplianceClient]$client, [hashtabl
     $policy = $kwargs.policy
     $limit = $kwargs.limit
     $raw_response = $client.CaseHoldRuleList($identity, $policy, $limit)
-    $md_columns = $raw_response | Select-Object -Property Name, Status, Guid, Mode
+    $md_columns = $raw_response | Select-Object -Property Name, Status, Mode, @{Name = "Guid";Expression = {$_.Guid.ToString()}}
     $human_readable = TableToMarkdown $md_columns "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CASE_HOLD_RULE(obj.Guid === val.Guid)" = $raw_response}
     return $human_readable, $entry_context, $raw_response

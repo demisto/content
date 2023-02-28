@@ -1072,7 +1072,7 @@ script:
       required: false
       isArray: false  
     - name: case_type
-      description: List cases by type.
+      description: Comma-separated closed list of Case Types to filter by.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -1219,7 +1219,7 @@ script:
       required: true
       isArray: false 
     - name: force_delete
-      description: Whether to use force delete or not.
+      description: Whether to use force delete or not. Can be used if current policy status is pending delete. 
       required: false
       isArray: false
       auto: PREDEFINED
@@ -1308,7 +1308,7 @@ script:
       required: false
       isArray: false 
     - name: force_delete
-      description: Whether to use force delete or not.
+      description: Whether to use force delete or not. Can be used if current rule status is pending delete. 
       required: false
       isArray: false
       auto: PREDEFINED
