@@ -38,7 +38,7 @@ configuration:
   required: false
   type: 0
 - display: Role Session Duration
-  additionalinfo: 'The maximum length of each session in seconds. The integration will have the permissions assigned only when the session is initiated and for the defined duration.'
+  additionalinfo: The maximum length of each session in seconds. The integration will have the permissions assigned only when the session is initiated and for the defined duration.
   name: sessionDuration
   required: false
   defaultvalue: 900
@@ -68,13 +68,13 @@ configuration:
   hidden: true
 - display: First fetch time interval
   additionalinfo: The time range to consider for the initial data fetch. (<number>
-    <unit>, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years). Default is 3 days.
+    <unit>, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years). 
   defaultvalue: 3 days
   hidden: false
   name: first_fetch
   required: false
   type: 0
-- display: Maximum number of incidents to fetch every time
+- display: Maximum number of incidents to fetch every time.
   defaultvalue: '25'
   hidden: false
   name: max_fetch
@@ -82,7 +82,7 @@ configuration:
   type: 0
 - display: Fetch Analyzer ARN
   name: analyzerArn
-  additionalinfo: The ARN to fetch findings for
+  additionalinfo: The ARN to fetch findings for.
   defaultvalue: ""
   type: 0
   required: false
@@ -96,10 +96,10 @@ configuration:
   type: 8
 - display: Timeout
   name: timeout
-  additionalinfo: The time in seconds till a timeout exception is reached. You can
-    specify just the read timeout (for example 60) or also the connect timeout followed
-    after a comma (for example 60,10). If a connect timeout is not specified, a default
-    of 10 second will be used.
+  additionalinfo: The time in seconds until a timeout exception is reached. You can
+    specify just the read timeout (for example 60) or also the connect timeout following
+    a comma (for example 60,10). If a connect timeout is not specified, a default
+    of 10 seconds will be used.
   defaultvalue: 60,10
   required: false
   type: 0
@@ -150,7 +150,7 @@ script:
       description: List of Analyzers and their details.
       type: Unknown
     - contextPath: AWS.AccessAnalyzer.Analyzers.arn
-      description: The Analyzer arn.
+      description: The analyzer ARN.
       type: String
   - arguments:
     - default: false
@@ -212,10 +212,10 @@ script:
       description: List of analyzed resources.
       type: Unknown
     - contextPath: AWS.AccessAnalyzer.Resource.resourceArn
-      description: The resource Arn.
+      description: The resource ARN.
       type: String
     - contextPath: AWS.AccessAnalyzer.Resource.analyzerArn
-      description: The analyzer Arn.
+      description: The analyzer ARN.
       type: String
   - arguments:
     - default: false
@@ -288,10 +288,10 @@ script:
       description: Access Analyzer findings.
       type: Unknown
     - contextPath: AWS.AccessAnalyzer.Finding.id
-      description: The Finding ID.
+      description: The finding ID.
       type: String
     - contextPath: AWS.AccessAnalyzer.Finding.analyzerArn
-      description: The analyzer arn.
+      description: The analyzer ARN.
       type: String
   - arguments:
     - default: false
@@ -339,10 +339,10 @@ script:
       description: Analyzed resource detail.
       type: Unknown
     - contextPath: AWS.AccessAnalyzer.Resource.id
-      description: The Resource id.
+      description: The resource ID.
       type: String
     - contextPath: AWS.AccessAnalyzer.Resource.analyzerArn
-      description: The analyzer arn.
+      description: The analyzer ARN.
       type: String
   - arguments:
     - default: false
@@ -390,10 +390,10 @@ script:
       description: Finding details.
       type: Unknown
     - contextPath: AWS.AccessAnalyzer.Finding.id
-      description: The Finding ID.
+      description: The finding ID.
       type: String
     - contextPath: AWS.AccessAnalyzer.Finding.analyzerArn
-      description: The analyzer arn.
+      description: The analyzer ARN.
       type: String
   - arguments:
     - default: false
