@@ -9,7 +9,7 @@ license = "MIT"
 python = "^3.8,<3.11"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev="7b2c2c61b0f005de4d8fd7d74b12a6bc68e0148c"}
+demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev="9e480d7e9378f4fbab1fc906f82bd1420bca2ff9"}
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
 
@@ -142,6 +142,7 @@ follow_imports = "silent"
 pretty = true
 allow_redefinition = true
 junit_xml = ".report_mypy.xml"
+exclude = ["test_data", "tests_data", ".venv", ".*_test.py$"]
 
 [tool.pytest]
 junit_family = "xunit1"
