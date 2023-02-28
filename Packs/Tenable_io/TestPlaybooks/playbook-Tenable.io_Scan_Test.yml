@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 657382bc-8da0-4f5b-8839-b7c1963c306f
+    taskid: e5bcdce1-05b5-40be-8a73-c38ae3dbee9f
     type: start
     task:
-      id: 657382bc-8da0-4f5b-8839-b7c1963c306f
+      id: e5bcdce1-05b5-40be-8a73-c38ae3dbee9f
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 42ca9421-88ae-4a08-879f-1985cbc0a616
+    taskid: ed65bc4b-8534-4ee5-8eb2-9be5a3cae6d7
     type: regular
     task:
-      id: 42ca9421-88ae-4a08-879f-1985cbc0a616
+      id: ed65bc4b-8534-4ee5-8eb2-9be5a3cae6d7
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -48,7 +48,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "5"
     scriptarguments:
       all:
         simple: "yes"
@@ -57,7 +57,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 175
         }
       }
     note: false
@@ -70,10 +70,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: dcab9ea3-b7fa-48c6-8975-a96c051896e6
+    taskid: bc7d35a9-3cdc-4724-8bab-0a8dbe1648d3
     type: playbook
     task:
-      id: dcab9ea3-b7fa-48c6-8975-a96c051896e6
+      id: bc7d35a9-3cdc-4724-8bab-0a8dbe1648d3
       version: -1
       name: Tenable.io Scan
       playbookName: Tenable.io Scan
@@ -96,7 +96,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 650
         }
       }
     note: false
@@ -109,23 +109,40 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 47758e9c-9003-44bd-8eb4-f4e4649180f0
+    taskid: 6174091e-cfc1-4fc4-87ea-115a501e6c53
     type: playbook
     task:
-      id: 47758e9c-9003-44bd-8eb4-f4e4649180f0
+      id: 6174091e-cfc1-4fc4-87ea-115a501e6c53
       version: -1
       name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
       playbookName: GenericPolling
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
       Ids:
-        simple: "16"
+        complex:
+          root: TenableIO.Scan.Id
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: TenableIO.Scan.Id
+                iscontext: true
+              right:
+                value:
+                  simple: "16"
       Interval:
         simple: "1"
       PollingCommandArgName:
@@ -147,7 +164,39 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 906f1daf-f844-4d7c-884a-8892b71ca63e
+    type: regular
+    task:
+      id: 906f1daf-f844-4d7c-884a-8892b71ca63e
+      version: -1
+      name: 'tenable.io list scans '
+      description: Retrieves scans from the Tenable platform.
+      script: '|||tenable-io-list-scans'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
         }
       }
     note: false
@@ -162,7 +211,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 590,
+        "height": 695,
         "width": 380,
         "x": 50,
         "y": 50

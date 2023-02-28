@@ -40,6 +40,7 @@ This integration was integrated and tested with January 2023 release of Tenable.
 |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Three concurrent requests per Tenable.io customer instance.<br>Note: This limit is subject to change.                                                                     | tenable-io-list-scans<br>tenable-io-launch-scan<br>tenable-io-get-scan-report<br>tenable-io-get-vulnerability-details<br>tenable-io-get-vulnerabilities-by-asset <br>tenable-io-get-scan-status<br>tenable-io-resume-scan<br>tenable-io-pause-scan<br>tenable-io-get-asset-details |
 | Two concurrent asset exports per container. Tenable.io also prevents duplicate exports from running concurrently. <br>For example, export requests with the same filters. | tenable-io-export-assets<br>tenable-io-export-vulnerabilities                                                                                                                                                                                                                      |
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -82,8 +83,11 @@ Retrieves scans from the Tenable platform.
 | TenableIO.Scan.FolderId | number | The unique ID of the folder where the scan has been stored. | 
 
 #### Command example
+
 ```!tenable-io-list-scans ```
+
 #### Context Example
+
 ```json
 {
     "TenableIO": {
@@ -111,6 +115,7 @@ Retrieves scans from the Tenable platform.
 #### Human Readable Output
 
 >### Tenable.io - List of Scans
+
 >|FolderId|Id|Name|Targets|Status|StartTime|EndTime|Enabled|Type|Owner|Scanner|Policy|CreationDate|LastModificationDate|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 5 | 10 | some_name | 1.1.1.1, 0.0.0.0 | aborted | Thu Nov 07 11:11:05 2024 | Thu Nov 07 11:11:05 2024 | false | remote | some_owner |  | Host Discovery | Thu Nov 07 11:11:05 2024 | Thu Nov 07 11:11:05 2024 |
@@ -141,8 +146,11 @@ Launches a scan with existing or custom targets. You can specify custom targets 
 | TenableIO.Scan.Status | string | The status of the scan \(completed, aborted, imported, pending, running, resuming, canceling, cancelled, pausing, paused, stopping, stopped\). | 
 
 #### Command example
+
 ```!tenable-io-launch-scan scanId="10"```
+
 #### Context Example
+
 ```json
 {
     "TenableIO": {
@@ -156,6 +164,7 @@ Launches a scan with existing or custom targets. You can specify custom targets 
 ```
 
 >### The requested scan was launched successfully
+
 >|Id|Targets|Status|
 >|---|---|---|
 >| 10 | target_1,target_2,target_3 | pending |
@@ -211,8 +220,11 @@ Retrieves a scan report for the specified scan.
 | TenableIO.Remediations.AssociatedVulnerabilities | number | The number of vulnerabilities associated with the remedy. | 
 
 #### Command example
+
 ```!tenable-io-get-scan-report scanId="10"```
+
 #### Context Example
+
 ```json
 {
     "TenableIO": {
@@ -246,6 +258,7 @@ Retrieves a scan report for the specified scan.
 #### Human Readable Output
 
 >### Vulnerabilities
+
 >|Id|Name|Severity|Description|Synopsis|Solution|FirstSeen|LastSeen|VulnerabilityOccurences|
 >|---|---|---|---|---|---|---|---|---|
 >| 00000 | some_name | None | description | Synopsis | Solution | 2024-11-07T11:11:05Z | 2024-11-07T11:11:05Z | 26 |
@@ -290,8 +303,11 @@ Retrieves details for the specified vulnerability.
 | TenableIO.Vulnerabilities.Cvss3BaseScore | string | The Common Vulnerability Scoring System version 3 allotted base score. | 
 
 #### Command example
+
 ```!tenable-io-get-vulnerability-details vulnerabilityId=fake_id```
+
 #### Context Example
+
 ```json
 {
     "TenableIO": {
@@ -315,6 +331,7 @@ Retrieves details for the specified vulnerability.
 #### Human Readable Output
 
 >### Vulnerability details - fake_id
+
 >|Name|Severity|Type|Family|Description|Synopsis|FirstSeen|LastSeen|PublicationDate|ModificationDate|VulnerabilityOccurences|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| Name | None | remote | General | Description | Synopsis | 2024-11-07T11:11:05Z | 2024-11-07T11:11:05Z | 2024-11-07T11:11:05Z | 2024-11-07T11:11:05Z | 1 |
@@ -351,8 +368,11 @@ Gets a list of up to 5000 of the vulnerabilities recorded for a specified asset.
 | TenableIO.Vulnerabilities.VulnerabilityState | string | The current state of the reported vulnerability \("Active", "Fixed", "New", etc.\). | 
 
 #### Command example
+
 ```!tenable-io-get-vulnerabilities-by-asset hostname="debian8628.aspadmin.net"```
+
 #### Context Example
+
 ```json
 {
     "TenableIO": {
@@ -388,6 +408,7 @@ Gets a list of up to 5000 of the vulnerabilities recorded for a specified asset.
 #### Human Readable Output
 
 >### Vulnerabilities for asset debian8628.aspadmin.net
+
 >|Id|Name|Severity|Family|VulnerabilityOccurences|VulnerabilityState|
 >|---|---|---|---|---|---|
 >| 11111 | Name_01 | None | General | 2 | Active |
@@ -418,8 +439,11 @@ Checks the status of a specific scan using the scan ID. Possible values: "Runnin
 | TenableIO.Scan.Status | string | The status of the scan specified. | 
 
 #### Command example
+
 ```!tenable-io-get-scan-status scanId="10"```
+
 #### Context Example
+
 ```json
 {
     "TenableIO": {
@@ -434,6 +458,7 @@ Checks the status of a specific scan using the scan ID. Possible values: "Runnin
 #### Human Readable Output
 
 >### Scan status for 10
+
 >|Id|Status|
 >|---|---|
 >| 10 | aborted |
@@ -462,8 +487,11 @@ Resumes all scans inputted as an array. Will resume scans whose status is 'Pause
 | TenableIO.Scan.Status | String | The status of the scan \(completed, aborted, imported, pending, running, resuming, canceling, cancelled, pausing, paused, stopping, stopped\). | 
 
 #### Command example
+
 ```!tenable-io-resume-scan scanId="13"```
+
 #### Context Example
+
 ```json
 {
     "TenableIO": {
@@ -478,6 +506,7 @@ Resumes all scans inputted as an array. Will resume scans whose status is 'Pause
 #### Human Readable Output
 
 >### The requested scan was resumed successfully
+
 >|Id|Status|
 >|---|---|
 >| 13 | Resuming |
@@ -506,8 +535,11 @@ Pauses all scans inputted as an array. Will pause scans whose status is 'Running
 | TenableIO.Scan.Status | String | The status of the scan \(completed, aborted, imported, pending, running, resuming, canceling, cancelled, pausing, paused, stopping, stopped\). | 
 
 #### Command example
+
 ```!tenable-io-pause-scan scanId="10"```
+
 #### Context Example
+
 ```json
 {
     "TenableIO": {
@@ -522,6 +554,7 @@ Pauses all scans inputted as an array. Will pause scans whose status is 'Running
 #### Human Readable Output
 
 >### The requested scan was paused successfully
+
 >|Id|Status|
 >|---|---|
 >| 13 | Pausing |
@@ -560,8 +593,11 @@ Retrieves details for the specified asset including custom attributes.
 | TenableIO.AssetDetails.updated_at | date | Date the asset was last updated. | 
 
 #### Command example
+
 ```!tenable-io-get-asset-details ip=1.3.2.1"```
+
 #### Context Example
+
 ```json
 {
     "TenableIO": {
@@ -727,6 +763,7 @@ Retrieves details for the specified asset including custom attributes.
 #### Human Readable Output
 
 >### Asset Info for 1.3.2.1
+
 >|attributes|fqdn|interfaces|ipv4|id|last_seen|
 >|---|---|---|---|---|---|
 >|  | test.com | {'name': 'UNKNOWN', 'fqdn': ['test.com'], 'mac_address': [], 'ipv4': ['1.3.2.1'], 'ipv6': []} | 1.3.2.1 | fake_asset_id | 2024-11-07T11:11:05.739Z |
@@ -738,6 +775,7 @@ Retrieves details for the specified asset including custom attributes.
 Retrieves details for the specified asset to include custom attributes.
 
 ## Limitations
+
 Please notice that when inserting arguments that are not valid then ​an error message would returned.​​
 
 #### Base Command
@@ -846,8 +884,11 @@ Please notice that when inserting arguments that are not valid then ​an error 
 | TenableIO.Asset.exposure_score | String | The Asset Exposure Score \(AES\) for the asset. | 
 
 #### Command example
+
 ```!tenable-io-export-assets chunkSize=500```
+
 #### Context Example
+
 ```json
 {
     "TenableIO": {
@@ -989,6 +1030,7 @@ Please notice that when inserting arguments that are not valid then ​an error 
 #### Human Readable Output
 
 >### Export Assets Results:
+
 >|ASSET ID|DNS NAME (FQDN)|SYSTEM TYPE|OPERATING SYSTEM|IPV4 ADDRESS|NETWORK|FIRST SEEN|LAST SEEN|LAST LICENSED SCAN|SOURCE|TAGS|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| fake_uuid | test.com | general-purpose | Linux Kernel 2.6 | 1.3.2.1 | Default | 2024-11-07T11:11:05Z | 2024-11-07T11:11:05Z | 2024-11-07T11:11:05Z | NESSUS_SCAN | some_key:test.com |
@@ -1002,6 +1044,7 @@ Retrieves details for the specified asset to include custom attributes.
 
 
 ## Limitations
+
 Please notice that when inserting arguments that are not valid then ​an error message would returned.​​
 
 
@@ -1155,8 +1198,11 @@ Please notice that when inserting arguments that are not valid then ​an error 
 | TenableIO.Vulnerability.indexed | Date | The date and time \(in Unix time\) when the vulnerability was indexed into Tenable.io. | 
 
 #### Command example
+
 ```!tenable-io-export-vulnerabilities numAssets=500```
+
 #### Context Example
+
 ```json
 {
     "TenableIO": {
@@ -1306,6 +1352,7 @@ Please notice that when inserting arguments that are not valid then ​an error 
 #### Human Readable Output
 
 >### Export Vulnerabilities Results:
+
 >|ASSET ID|ASSET NAME|IPV4 ADDRESS|OPERATING SYSTEM|SYSTEM TYPE|DNS NAME (FQDN)|SEVERITY|PLUGIN ID|PLUGIN NAME|VULNERABILITY PRIORITY RATING|CVSSV2 BASE SCORECVE|PROTOCOL|PORT|FIRST SEEN|LAST SEEN|DESCRIPTION|SOLUTION|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| fake_uuid | 1.1.1.1 | 1.1.1.1 | Linux Kernel 3.13 on Ubuntu 14.04 (trusty) | general-purpose | fqdn | info | 00000 | Name |  |  | TCP | 22 | 2024-11-07T11:11:05.906Z | 2024-11-07T11:11:05.906Z | Description | N/A |

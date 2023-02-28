@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5afe1887-7a82-4201-8e2b-87ed91f4d6e9
+    taskid: f7932817-4391-4aa3-863d-73d83a011ecf
     type: start
     task:
-      id: 5afe1887-7a82-4201-8e2b-87ed91f4d6e9
+      id: f7932817-4391-4aa3-863d-73d83a011ecf
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 1f1f2594-35d3-4fd3-81af-04f50bcea0c4
+    taskid: 56c528de-0cec-449f-8506-afe329207973
     type: regular
     task:
-      id: 1f1f2594-35d3-4fd3-81af-04f50bcea0c4
+      id: 56c528de-0cec-449f-8506-afe329207973
       version: -1
       name: tenable-io-list-scans
       description: Retrive scans from the Tenable platform.
@@ -48,7 +48,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "2"
     scriptarguments:
       retry-count:
         simple: "2"
@@ -57,7 +57,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 360
         }
       }
     note: false
@@ -70,10 +70,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 9601b222-3c43-4a90-87d1-dd4a78ce6231
+    taskid: 426ddd77-8f48-46a1-89e8-aa6d4782246a
     type: regular
     task:
-      id: 9601b222-3c43-4a90-87d1-dd4a78ce6231
+      id: 426ddd77-8f48-46a1-89e8-aa6d4782246a
       version: -1
       name: tenable-io-get-scan-status
       description: 'Check the status of a specific scan using its ID. The status can hold following possible values : Running, Completed and Empty (Ready to run).'
@@ -83,7 +83,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "3"
     scriptarguments:
       retry-count:
         simple: "2"
@@ -94,7 +94,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 540
         }
       }
     note: false
@@ -107,10 +107,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: e0d7ba01-293d-47e0-8b14-4892160c6df3
+    taskid: 14a9feb3-a1f1-4464-8063-c83bb3fe4eef
     type: regular
     task:
-      id: e0d7ba01-293d-47e0-8b14-4892160c6df3
+      id: 14a9feb3-a1f1-4464-8063-c83bb3fe4eef
       version: -1
       name: tenable-io-get-scan-report
       description: Retrive scan-report for the given scan.
@@ -148,10 +148,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: d4815e86-163b-4a25-8144-a11a1bcd6886
+    taskid: 7139c144-e5bd-4840-8266-7f2cf0b0055c
     type: regular
     task:
-      id: d4815e86-163b-4a25-8144-a11a1bcd6886
+      id: 7139c144-e5bd-4840-8266-7f2cf0b0055c
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -161,7 +161,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "1"
     scriptarguments:
       all:
         simple: "yes"
@@ -183,10 +183,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 441a9a18-1123-4cdb-834a-83b6defec520
+    taskid: 23bbbd46-8773-4cf5-847f-ebe65b135f1c
     type: regular
     task:
-      id: 441a9a18-1123-4cdb-834a-83b6defec520
+      id: 23bbbd46-8773-4cf5-847f-ebe65b135f1c
       version: -1
       name: tenable-io-get-vulnerability-details
       description: Retrieve details for the given vulnerability.
@@ -222,10 +222,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: b8dfde69-7555-46b7-8177-272abbf76cf6
+    taskid: d3cd8fc0-900f-480e-8e14-dea887416c2d
     type: regular
     task:
-      id: b8dfde69-7555-46b7-8177-272abbf76cf6
+      id: d3cd8fc0-900f-480e-8e14-dea887416c2d
       version: -1
       name: tenable-io-get-vulnerabilities-by-asset
       description: Get a list of up to 5000 of the vulnerabilities recorded for a given asset. By default, this list is sorted by vulnerability count, descending.
@@ -259,10 +259,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: ce9e5be9-d2eb-43b8-8e85-e2090c9b47de
+    taskid: 5a69fe6a-1c85-4736-84ad-ef961c1693c4
     type: regular
     task:
-      id: ce9e5be9-d2eb-43b8-8e85-e2090c9b47de
+      id: 5a69fe6a-1c85-4736-84ad-ef961c1693c4
       version: -1
       name: Tenable-io-export-assets
       description: Retrieves details for the specified asset to include custom attributes.
@@ -296,10 +296,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: fac545a4-3995-4dfd-8a13-127595c4ffe9
+    taskid: 1f3807f7-1ab6-4d00-844c-9f7d6f1a056d
     type: regular
     task:
-      id: fac545a4-3995-4dfd-8a13-127595c4ffe9
+      id: 1f3807f7-1ab6-4d00-844c-9f7d6f1a056d
       version: -1
       name: Tenable-io-export-vulnerability
       description: Retrieves details for the specified asset to include custom attributes.
@@ -331,10 +331,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 1d023d21-6294-4c3c-8154-84d1a12a6b35
+    taskid: 17027ae1-c221-4daf-8bb0-9081d50375d8
     type: condition
     task:
-      id: 1d023d21-6294-4c3c-8154-84d1a12a6b35
+      id: 17027ae1-c221-4daf-8bb0-9081d50375d8
       version: -1
       name: Verify vulnerabilities
       type: condition
@@ -369,10 +369,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 74e6bb9a-997e-49c9-8f37-0e4015e99369
+    taskid: 8115f6fa-a10f-4d84-87f4-ea8f4e059f66
     type: condition
     task:
-      id: 74e6bb9a-997e-49c9-8f37-0e4015e99369
+      id: 8115f6fa-a10f-4d84-87f4-ea8f4e059f66
       version: -1
       name: Verify assets
       type: condition
@@ -407,10 +407,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: eb80d96a-082f-4fda-8631-c9fb15c81a3e
+    taskid: 10c45026-f73b-47fc-878a-26ed8b5ecab4
     type: title
     task:
-      id: eb80d96a-082f-4fda-8631-c9fb15c81a3e
+      id: 10c45026-f73b-47fc-878a-26ed8b5ecab4
       version: -1
       name: Done
       type: title
