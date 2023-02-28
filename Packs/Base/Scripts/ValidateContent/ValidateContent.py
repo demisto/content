@@ -1,15 +1,11 @@
 import io
-import json
-import traceback
-import types
 import zipfile
 from base64 import b64decode
 from contextlib import redirect_stderr, redirect_stdout
-from datetime import datetime
 from pathlib import Path
 from shutil import copy
 from tempfile import TemporaryDirectory
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, Optional, Tuple
 
 import git
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, TYPE_TO_EXTENSION, FileType
@@ -20,6 +16,7 @@ from demisto_sdk.commands.init.contribution_converter import (
     AUTOMATION, INTEGRATION, INTEGRATIONS_DIR, SCRIPT, SCRIPTS_DIR,
     ContributionConverter, get_child_directories, get_child_files)
 from demisto_sdk.commands.lint.lint_manager import LintManager
+from demisto_sdk.commands.lint.linter import DockerImageFlagOption
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from ruamel.yaml import YAML
@@ -193,10 +190,11 @@ def run_lint(file_path: str, json_output_file: str) -> None:
         input=file_path, git=False, all_packs=False, quiet=False, verbose=1,
         prev_ver='', json_file_path=json_output_file
     )
-    lint_manager.run_dev_packages(
+    lint_manager.run(
         parallel=1, no_flake8=False, no_xsoar_linter=False, no_bandit=False, no_mypy=False,
         no_pylint=True, no_coverage=True, coverage_report='', no_vulture=False, no_test=True, no_pwsh_analyze=True,
         no_pwsh_test=True, keep_container=False, test_xml='', failure_report=lint_log_dir, docker_timeout=60,
+        docker_image_flag=DockerImageFlagOption.FROM_YML.value
     )
 
 
@@ -258,6 +256,7 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
     code_fp_to_row_offset = None
     with redirect_stdout(output_capture):
         with redirect_stderr(output_capture):
+            demisto.info(f'before .zip, {filename=}')
             if filename.endswith('.zip'):
                 path_to_validate, code_fp_to_row_offset = prepare_content_pack_for_validation(
                     filename, data, tmp_directory
@@ -267,8 +266,12 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
                     filename, data, tmp_directory
                 )
 
+            demisto.info(f'before run_validate')
             run_validate(path_to_validate, json_output_path)
+            demisto.info(f'before run_lint')
             run_lint(path_to_validate, lint_output_path)
+
+    demisto.info('after redirect_stdout context manager')
 
     all_outputs = []
     with open(json_output_path, 'r') as json_outputs:
@@ -413,14 +416,17 @@ def main():
         os.chdir(content_tmp_dir.name)
 
         result = validate_content(filename, file_contents, content_tmp_dir.name)
+        demisto.info(f'{result=}')
         outputs = []
         for validation in result:
+            demisto.info(f'{validation=}')
             if validation.get('ui') or validation.get('fileType') in {'py', 'ps1'}:
                 outputs.append({
                     'Name': validation.get('name'),
                     'Error': validation.get('message'),
                     'Line': validation.get('row'),
                 })
+        demisto.info(f'{outputs=}')
         return_results(CommandResults(
             readable_output=tableToMarkdown('Validation Results', outputs, headers=['Name', 'Error', 'Line']),
             outputs_prefix='ValidationResult',
