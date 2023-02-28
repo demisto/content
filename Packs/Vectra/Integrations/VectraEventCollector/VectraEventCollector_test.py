@@ -187,8 +187,9 @@ def test_get_audits_cmd(mocker: MockerFixture):
 
 
 def test_get_events(mocker: MockerFixture):
-    # TODO docstring
-    """"""
+    """
+    Test the `vectra-get-events` command.
+    """
 
     mocker.patch.object(client, "get_detections", return_value=DETECTIONS)
     mocker.patch.object(client, "get_audits", return_value=AUDITS)

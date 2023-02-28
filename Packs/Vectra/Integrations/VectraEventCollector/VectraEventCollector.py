@@ -300,10 +300,9 @@ def fetch_events(
         next_run_detection_str = (next_run_detection + timedelta(minutes=1)).strftime(
             DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT
         )
+    # If no detections were fetched, we can reuse the current first_timestamp
     else:
-        next_run_detection_str = datetime.utcnow().strftime(
-            DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT
-        )
+        next_run_detection_str = first_timestamp
 
     demisto.info(f"{len(detections)} detections found.")
 
