@@ -4,7 +4,7 @@ This pack includes Cortex XSIAM content.
 
 Note: The logs will be stored in the dataset named *microsoft_windows_raw*.
 
-To view logs only from the windows event log, please apply the following filter to the datamodel query: *| filter provider_name ="Microsoft-Windows-\*"*
+To view logs only from the windows event log, please apply the following filter to the datamodel query: *| filter xdm.event.original_event_type="Microsoft-Windows-\*"*
 
 
 ## Collect Events from Vendor
