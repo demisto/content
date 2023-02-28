@@ -4,8 +4,9 @@ import demistomock as demisto
 from http.client import HTTPException
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
+import urllib3
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 class XsoarLogger:
