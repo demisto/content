@@ -383,6 +383,16 @@ class Client(BaseClient):
             url_suffix = f'/domain/{domain_id}/policyassignments/interface'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
+    def get_sensor_configuration_request(self, sensor_id: int | None) -> Dict:
+        """ Retrieves the configuration of a sensor.
+            Args:
+                sensor_id: int - The relevant sensor id.
+            Returns:
+                A dictionary with the sensor configuration.
+        """
+        url_suffix = f'/sensor/{sensor_id}/config/status'
+        return self._http_request(method='GET', url_suffix=url_suffix)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -2182,6 +2192,32 @@ def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
+def get_sensor_configuration_command(client: Client, args: Dict) -> CommandResults:
+    """
+
+    Args:
+        client (Client): _description_
+        args (Dict): _description_
+
+    Returns:
+        A CommandResult object with the sensor configuration information.
+    """
+    sensor_id = arg_to_number(args.get('sensor_id'))
+
+    response = client.get_sensor_configuration_request(sensor_id=sensor_id)
+
+    readable_output = tableToMarkdown(
+        name='Sensor Configuration', t=response, removeNull=True
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='NSM.SensorConfiguration',
+        outputs=response,
+        raw_response=response
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -2270,6 +2306,9 @@ def main() -> None:  # pragma: no cover
             results = assign_interface_policy_command(client, args)
         elif command == 'nsm-list-interface-policy':
             results = list_interface_policy_command(client, args)
+        elif command == 'nsm-get-sensor-configuration':
+            results = get_sensor_configuration_command(client, args)
+
         else:
             raise NotImplementedError('This command is not implemented yet.')
         return_results(results)

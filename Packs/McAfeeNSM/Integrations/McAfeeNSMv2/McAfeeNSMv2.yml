@@ -2024,6 +2024,12 @@ script:
       predefined:
         - yes
         - no
+  - name: nsm-get-sensor-configuration
+    description: Provides configuration information of a given sensor.
+    arguments:
+    - name: sensor_id
+      description: The ID of the sensor. To get the sensor ID, use the !nsm-get-sensors command.
+      required: true
   isfetch: false
   runonce: false
   script: '-'
