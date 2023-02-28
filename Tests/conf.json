@@ -3392,6 +3392,7 @@
             "fromversion": "6.5.0",
             "timeout": 3000
         },
+        
         {
             "integrations": "Prisma Access",
             "playbookID": "Prisma_Access-Test",
@@ -5916,7 +5917,7 @@
     "test_marketplacev2": [
         "Sanity Test - Playbook with Unmockable Whois Integration"
     ],
-    "reputation_tests": [
+    "reputation_tests":[
         "FormattingPerformance - Test",
         "reputations.json Test",
         "Indicators reputation-.json Test",
