@@ -26,7 +26,8 @@ MSG_DICT = {
     "verify_failed_pack": "verified the commit hash is not updated in the pack metadata in the index.zip",
     "verify_modified_item_path": "verified the path of the pack item is modified",
     "verify_dependency": "verified the new dependency is in the pack metadata",
-    "verify_new_image": "verified the new image was uploaded"
+    "verify_new_image": "verified the new image was uploaded",
+    "verify_hidden_dependency": "verified the hidden dependency pack not in metadata.json",
 }
 
 
@@ -48,7 +49,7 @@ def logger(func):
             if not result:
                 raise Exception(f"Failed when running validation - {func.__name__}")
 
-            logging.info(f"[{pack_id}] {MSG_DICT[func.__name__]}")
+            logging.info(f"[{pack_id}] Successfully {MSG_DICT[func.__name__]}")
 
         except FileNotFoundError as e:
             logging.error(f"Failed to verify {func.__name__} for pack {pack_id} -\n{e}")
@@ -274,6 +275,13 @@ class BucketVerifier:
         image_in_bucket_path = self.gcp.download_image(pack_id)
         return open(image_in_bucket_path, "rb").read() == open(str(new_image_path), "rb").read(), pack_id
 
+    @logger
+    def verify_hidden_dependency(self, pack_id, dependency_id):
+        """
+        Verify hidden dependency pack doesn't was added to the metadata
+        """
+        return dependency_id not in self.gcp.get_pack_metadata(pack_id).get('dependencies', {}).keys(), pack_id
+
     def run_xsiam_bucket_validations(self):
         """
         Runs the only XSIAM bucket verifications.
@@ -324,6 +332,9 @@ class BucketVerifier:
         # Case 9: Verify changed image - Armis
         self.verify_new_image('Armis', Path(
             __file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png')
+
+        # Case 12: Verify hidden dependency not in metadata.json
+        self.verify_hidden_dependency('MicrosoftAdvancedThreatAnalytics', 'Microsoft365Defender')
 
         if 'v2' in self.bucket_name or 'xsiam' in self.bucket_name:
             self.run_xsiam_bucket_validations()

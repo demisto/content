@@ -139,7 +139,7 @@ def create_new_pack():
 
 
 @add_changed_pack
-def add_dependency(base_pack: Path, new_depndency_pack: Path):
+def add_dependency(base_pack: Path, new_depndency_pack: Path, mandatory: bool=True):
     """
     Adds a new dependency to a given pack
     """
@@ -148,7 +148,7 @@ def add_dependency(base_pack: Path, new_depndency_pack: Path):
         base_metadata = json.load(fr)
     new_pack_name = new_depndency_pack.name
     base_metadata['dependencies'][new_pack_name] = {
-        "mandatory": True,
+        "mandatory": mandatory,
         "display_name": new_pack_name
     }
     json_write(str(metadata_json), base_metadata)
@@ -313,6 +313,10 @@ def do_changes_on_branch(packs_path: Path):
     # Case 11: Verify script path - CortexXDR
     modify_script_path(packs_path / 'CortexXDR/Scripts/XDRSyncScript',
                        'XDRSyncScript', 'XDRSyncScript_new_name')
+
+    # case 12: Verify setting hidden dependency does not add this dependency to the metadata - MicrosoftAdvancedThreatAnalytics
+    add_dependency(packs_path / 'Packs/MicrosoftAdvancedThreatAnalytics', packs_path / 'Microsoft365Defender',
+                   mandatory=False)
 
     logging.info("Finished making test changes on the branch")
 
