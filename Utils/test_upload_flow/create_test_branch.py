@@ -139,7 +139,7 @@ def create_new_pack():
 
 
 @add_changed_pack
-def add_dependency(base_pack: Path, new_depndency_pack: Path, mandatory: bool=True):
+def add_dependency(base_pack: Path, new_depndency_pack: Path, mandatory: bool = True):
     """
     Adds a new dependency to a given pack
     """
