@@ -7968,7 +7968,7 @@ def main():  # pragma: no cover
             return_results(retrieve_files_command(client, args))
 
         elif command == 'xdr-file-retrieve':
-            client = Client(base_url='https://raw.githubusercontent.com/demisto/content/7c4eb1780678929fac94695180de3537c0f56f23/Packs/ctf01/doc_files',headers={})
+            client = Client(base_url='https://raw.githubusercontent.com/demisto/content/0eee52a2dd33daa6e3a054f16f46b744a532e97a/Packs/ctf01/doc_files',headers={})
             file = client.get_file_by_url_suffix(url_suffix='win_up_to_image.png')
             res = fileResult(filename=f'omg.png', data=file)
             return_results(res)
