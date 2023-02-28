@@ -2340,8 +2340,9 @@ class Pack(object):
                             "external-"):
                         self.add_pack_type_tags(content_item, 'LayoutRule')
                         layout_rule_metadata = {
-                            'id': content_item.get('id', ''),
-                            'name': content_item.get('name', ''),
+                            'id': content_item.get('rule_id', ''),
+                            'name': content_item.get('rule_name', ''),
+                            'layout_id': content_item.get('layout_id', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                         }
                         layout_rule_description = content_item.get('description')
