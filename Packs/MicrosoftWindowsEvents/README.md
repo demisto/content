@@ -1,4 +1,4 @@
-# Microsoft DHCP
+# Microsoft Event Logs
 
 This pack includes Cortex XSIAM content.
 
@@ -15,7 +15,6 @@ In order to use the collector, you can use one of the following options:
 
 To create or configure the Filebeat collector, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/XDR-Collector-Datasets).
 
-You can configure the vendor and product by replacing [vendor]\_[product]\_raw with *microsoft_dhcp_raw*.
 
 As Cortex XSIAM provides a YAML template for Windows Security Event Logs, you can use the following steps to create a collection profile:
 
