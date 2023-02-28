@@ -130,6 +130,9 @@ line-length = 130
 ignore = ["F405", "F403"]
 src = ["Packs/Base/Scripts/CommonServerPython", "Tests/demistomock", "Packs/ApiModules/Scripts/*"]
 
+[tool.ruff.per-file-ignores]
+"*_test.py" = ["S", "PT"]
+
 [tool.mypy]
 python_version = "3.10"
 check_untyped_defs = true
