@@ -809,7 +809,7 @@ tasks:
                 iscontext: true
       InternalRange:
         complex:
-          root: inputs.InternalRange
+          root: inputs.internal_range
       ResolveIP:
         simple: "True"
     separatecontext: true
@@ -4741,14 +4741,6 @@ inputs:
       accessor: username
   required: true
   description: Username of the user who is suspected of the activity.
-  playbookInputQuery:
-- key: src
-  value:
-    complex:
-      root: incident
-      accessor: src
-  required: true
-  description: Source endpoint that triggered the incident.
   playbookInputQuery:
 - key: traps_endpoint_id
   value:
