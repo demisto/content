@@ -21,7 +21,7 @@ A valid API Token for Recorded Future Identity Intelligence needed to fetch info
 | proxy                            | Use system proxy settings                                         |
 | Password properties              | Password properties that are used as a filter                     |
 | Limit Identities                 | Limit of identities to get min is 0 and max is 10 000             |
-| Domains                          | List of domains to use in search and lookup commands(e.g. mycompany.com; nextcompany.com )|
+| Domains                          | List of domains to use in search and lookup commands(e.g. mycompany.com, nextcompany.com )|
 
 
 
@@ -46,7 +46,7 @@ Get a list of identities for the specified period of time.
 | --- | --- | --- |
 | latest-downloaded | Time frame for the leaked identities          | Optional |
 | domain-type       | Type of the domain(Email, Authorization, All) | Optional |
-| domains           | Domains separated by semicolon                | Optional |
+| domains           | Domains separated by comma (if not specified, domains from app instance will be used) | Optional |
 
 
 
@@ -103,9 +103,9 @@ Get a detailed info regarding identities.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identities        | String of identities separated by semicolon   | Required |
-| first-downloaded  | Time frame for the leaked identities          | Optional |
-| domains           | Domains separated by semicolon                | Optional |
+| identities        | String of identities separated by comma   | Required |
+| first-downloaded  | Time frame for the leaked identities      | Optional |
+| domains           | Domains separated by comma                | Optional |
 
 
 
@@ -138,7 +138,7 @@ Get a detailed info regarding identities.
 
 
 #### Command Example
-```!recordedfuture-identity-lookup identities="fake@fakeyahoo.com;real@notfake.com" first-downloaded="3 Months ago"```
+```!recordedfuture-identity-lookup identities="fake@fakeyahoo.com,real@notfake.com" first-downloaded="3 Months ago"```
 
 #### Context Example
 ```

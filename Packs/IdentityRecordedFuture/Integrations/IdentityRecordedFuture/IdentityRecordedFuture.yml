@@ -48,7 +48,7 @@ configuration:
   defaultvalue: "500"
   required: false
   type: 0
-- display: Domains list separated by semicolon  (e.g. mycompany.com; othercompany.com ). This will be used for identity search command as a default value.
+- display: Domains list separated by comma (e.g. norsegods.online, norsegods.online ). This will be used for identity search command as a default value.
   name: domains
   type: 12
   required: true
@@ -67,7 +67,7 @@ script:
       defaultValue: "All time"
       description: Time period for last downloaded time.(e.g. "7 days ago", "Three months ago", "Last Year", "All time")
     - name: domains
-      description: Domains list separated by semicolon. (e.g. mycompany.com; othercompany.com )
+      description: Domains list separated by comma. (e.g. norsegods.online, norsegods.online ). If not specified, domains from app instance will be used.
       required: false
     - name: domain-type
       description: Type of identities to search for (Authorization or Email). If not specified use All.
@@ -112,10 +112,10 @@ script:
     arguments:
     - name: identities
       required: true
-      description: Identities for the lookup separated by semicolon.(e.g. "test@test.com; test1@google.com").
+      description: Identities for the lookup separated by comma.(e.g. "09719@norsegods.online, 1000739@norsegods.online").
     - name: domains
       required: false
-      description: Domains list separated by semicolon. (e.g. mycompany.com; othercompany.com )
+      description: Domains list separated by comma. (e.g. norsegods.online, norsegods.online )
     - name: first-downloaded
       required: false
       defaultValue: "All time"
