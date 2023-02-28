@@ -26,10 +26,10 @@ def main():
     dt: str = args.get('dt')
     pollingCommand = args.get('pollingCommand')
     pollingCommandArgName = args.get('pollingCommandArgName')
-    tag = demisto.getArg('tag')
-    playbookId = f' playbookId="{args.get("playbookId")}"' if args.get("playbookId") else ''
-    interval = int(demisto.getArg('interval'))
-    timeout = int(demisto.getArg('timeout'))
+    tag = args.get('tag')
+    playbookId = f' playbookId="{args.get("playbookId", "")}"'
+    interval = int(args.get('interval'))
+    timeout = int(args.get('timeout'))
 
     args_names = args.get('additionalPollingCommandArgNames').strip() \
         if args.get('additionalPollingCommandArgNames') else None
