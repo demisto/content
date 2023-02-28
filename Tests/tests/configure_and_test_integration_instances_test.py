@@ -196,7 +196,7 @@ def test_pack_names_to_integration_names_no_integrations_folder(tmp_path):
 
 @pytest.mark.parametrize(
     'pack_version, expected_results',
-    [('6.5.0', {'TestPack'}), ('6.8.0', {})])
+    [('6.5.0', {'TestPack'}), ('6.8.0', set())])
 def test_get_packs_with_higher_min_version(mocker, pack_version, expected_results):
     """
     Given:
