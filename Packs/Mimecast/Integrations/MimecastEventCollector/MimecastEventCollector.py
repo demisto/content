@@ -62,16 +62,16 @@ class MimecastClient(IntegrationEventsClient):
             date=request_date,
             req_id=request_id,
             uri=uri,
-            app_key=self.options.app_key  # type: ignore[attr-defined]
+            app_key=self.options.app_key
         )
         hmac_sha1 = hmac.new(
-            base64.b64decode(self.options.secret_key),  # type: ignore[attr-defined]
+            base64.b64decode(self.options.secret_key),
             unsigned_auth_header.encode(),
             digestmod=hashlib.sha1).digest()
         sig = base64.encodebytes(hmac_sha1).rstrip()
         headers = {
-            'Authorization': 'MC ' + self.options.access_key + ':' + sig.decode(),  # type: ignore[attr-defined]
-            'x-mc-app-id': self.options.app_id,  # type: ignore[attr-defined]
+            'Authorization': 'MC ' + self.options.access_key + ':' + sig.decode(),
+            'x-mc-app-id': self.options.app_id,
             'x-mc-date': request_date,
             'x-mc-req-id': request_id,
             'Content-Type': 'application/json'
@@ -243,8 +243,8 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
             'headers': self.client.prepare_headers(self.uri),  # type: ignore
             'data': self.prepare_siem_request_body(),
             'method': Method.POST,
-            'url': self.options.base_url + self.uri,  # type: ignore[attr-defined]
-            'verify': self.options.verify,  # type: ignore[attr-defined]
+            'url': self.options.base_url + self.uri,
+            'verify': self.options.verify,
         }
         return req_obj
 
@@ -361,8 +361,8 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
             'headers': self.client.prepare_headers(self.uri),  # type: ignore
             'data': self.prepare_audit_events_data(),
             'method': Method.POST,
-            'url': self.options.base_url + self.uri,  # type: ignore[attr-defined]
-            'verify': self.options.verify,  # type: ignore[attr-defined]
+            'url': self.options.base_url + self.uri,
+            'verify': self.options.verify,
         }
 
     def prepare_audit_events_data(self):
