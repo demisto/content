@@ -13,7 +13,7 @@ To configure, follow these instructions:
    * **Service endpoint and Port** - Enter the IP address or fully qualified domain name (FQDN) for the syslog server and specify the port number. You can configure only one Syslog endpoint.
    * **Transport** - Select the Transport protocol (TCP or UDP).
    * **Format** - Select the format (RFC 3164 or RFC 5424).
-6. Select **Send test SIEM** notification and then verify the message is received in your Syslog infrastructure solution.
+6. Click **Send test SIEM** notification and then verify the message is received in your Syslog infrastructure solution.
 7. Click **Save**.
 8. Once you've configured the **Syslog service**, you can choose which types of notifications (alerts or health issues) to send to your Syslog server.
 
