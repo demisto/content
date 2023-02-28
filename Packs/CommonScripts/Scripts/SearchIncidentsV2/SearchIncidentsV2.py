@@ -152,7 +152,7 @@ def search_incidents(args: Dict):   # pragma: no cover
 
     result_data_list = res[0]["Contents"]["data"]
     page = 0
-    max_page = round(res[0]["Contents"]["total"] / 100)
+    max_page = (int(res[0]["Contents"]["total"] / 100) + bool(res[0]["Contents"]["total"] / 100))-1
     while max_page != page:
         page += 1
         args["page"] = page
