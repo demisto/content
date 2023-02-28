@@ -306,3 +306,129 @@ Retrieves the email activity list associated with the messages matching your que
 #### Command Example
 ``` ```
 #### Human Readable Output
+### sg-get-all-lists
+
+***
+Retrieves all of your recipient lists. If you don't have any lists, an empty array will be returned.
+
+#### Base Command
+
+`sg-get-all-lists`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page_size | Maximum number of elements to return. returns 1000 max. default: 100. | Optional | 
+| page_token | Token corresponding to a specific page of results, as provided by metadata. default: None. | Optional | 
+| headers | Table headers to use the human readable output (if none provided, will show all table headers). Available headers: id, name, contact_count, _metadata. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Sendgrid.Lists.Result | unknown | Array of your contact lists | 
+| Sendgrid.Lists.Metadata | unknown | Metadata of returned set of result | 
+### sg-get-list-by-id
+
+***
+Retrieves a single recipient list.
+
+#### Base Command
+
+`sg-get-list-by-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_id | ID of contact list. | Required | 
+| contact_sample | Setting the optional parameter contact_sample=true returns the contact_sample in the response body. Up to fifty of the most recent contacts uploaded or attached to a list will be returned, sorted alphabetically, by email address. Default:False. Possible values are: True, False. Default is False. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Sendgrid.List | unknown | Contact list details | 
+### sg-create-list
+
+***
+Creates a new contacts list
+
+#### Base Command
+
+`sg-create-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_name | Name for your list. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Sendgrid.NewList | unknown | Newly created List details | 
+### sg-get-list-contact-count-by-id
+
+***
+Returns the number of contacts on a specific list
+
+#### Base Command
+
+`sg-get-list-contact-count-by-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_id | ID of contact list. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Sendgrid.ListCount | unknown | List contact count details | 
+### sg-update-list-name
+
+***
+Updates the name of a list
+
+#### Base Command
+
+`sg-update-list-name`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_id | ID of contact list. | Required | 
+| updated_list_name | New name for your list. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Sendgrid.updatedList | unknown | Updated list details | 
+### sg-delete-list
+
+***
+Deletes a specific list
+
+#### Base Command
+
+`sg-delete-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_id | ID of contact list or job Id. | Required | 
+| delete_contacts | Flag indicates that all contacts on the list are also to be deleted. default: False. Possible values are: True, False. Default is False. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Sendgrid.DeleteListJobId | unknown | Job id of the async job | 
