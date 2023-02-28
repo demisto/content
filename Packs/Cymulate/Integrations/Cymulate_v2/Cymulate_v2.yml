@@ -1,4 +1,4 @@
-category: Forensics & Malware Analysis
+category: Deception & Breach Simulation
 commonfields:
   id: cymulate_v2
   version: -1
