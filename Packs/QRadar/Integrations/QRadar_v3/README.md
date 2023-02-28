@@ -21,9 +21,11 @@ This integration was integrated and tested with API versions 10.1-14.0 on QRadar
     | Incidents Enrichment | IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. | True |
     | Incidents Enrichment | IP enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. | True |
     | Event fields to return from the events query (WARNING: This parameter is correlated to the incoming mapper and changing the values may adversely affect mapping). | The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html | False |
+    <~XSOAR>
     | Mirroring Options | How mirroring from QRadar to Cortex XSOAR should be done. | False |
     | Close Mirrored XSOAR Incident | When selected, closing the QRadar offense is mirrored in Cortex XSOAR. Can't be used with "status=OPEN" query. | False |
     | The number of incoming incidents to mirror each time | Maximum number of incoming incidents to mirror each time. | False |
+    </~XSOAR>
     | Advanced Parameters | Comma-separated configuration for advanced parameter values. E.g., EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5 | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -85,7 +87,7 @@ Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adj
 | qradar-get-domains | qradar-domains-list |  | 
 | qradar-domains-list | qradar-get-domain-by-id | Specify the *domain_id* argument in the command. |  |
 
-
+<~XSOAR>
 ## Mirroring
 This integration supports in mirroring from QRadar offenses to Cortex XSOAR.  
 When a field of an offense is updated in QRadar services, the update is mirrored in Cortex XSOAR.
@@ -97,6 +99,7 @@ When a field of an offense is updated in QRadar services, the update is mirrored
 * The integration will always mirror the events that occurred first in each offense.
 
 For more information about mirroring configurations, see [here](https://xsoar.pan.dev/docs/integrations/mirroring_integration).  
+</~XSOAR>
 
 ## Use the API Token Instead of Username and Password
 - In the **Username / API Key** field, type **_api_token_key**.  
@@ -120,7 +123,9 @@ In order to change the default values, configure the following **Advanced Parame
 ```
 EVENTS_SEARCH_TRIES=<amount of tries for events search> (default 3),EVENTS_SEARCH_RETRY_SECONDS=<amount of seconds to wait between tries> (default 100),EVENTS_POLLING_TRIES=<number of times to poll for one search> (default 10),
 ```
+<~XSOAR>
 It is recommended to enable [mirroring](#mirroring-events), as it should fetch previously missed events when the offense is updated.
+</~XSOAR>
 Alternatively, the [retrieve events command](#qradar-search-retrieve-events) can be used to retrieve the `events` immediately.
 If the command takes too long to finish executing, try setting the `interval_in_seconds` to a lower value (down to a minimum of 10 seconds).
 

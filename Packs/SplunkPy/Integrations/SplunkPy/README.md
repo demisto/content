@@ -35,11 +35,13 @@ This integration was integrated and tested with Splunk v7.2.
     | Extract Fields - CSV fields that will be parsed out of _raw notable events |  | False |
     | Event Type Field | Used only for mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for notable events. However, you may choose any custom field. | False |
     | Use CIM Schemas for Mapping | If selected, when creating a mapper using the \`Select Schema\` feature \(supported from Cortex XSOAR V6.0\), the Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more information. | False |
+    <~XSOAR>
     | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Splunk to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Splunk\), or Incoming and Outgoing \(from/to Cortex XSOAR and Splunk\). | False |
     | Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, closing the Splunk notable event with a "Closed" status will close the Cortex XSOAR incident. | False |
     | Additional Splunk status labels to close on mirror (Incoming Mirroring) | A comma-separated list of Splunk status labels to mirror as closed Cortex XSOAR incident \(Example: Resolved,False-Positive\). | False |
     | Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring) | When selected, Splunk Notable Events with a status that is marked as "End Status" will close the Cortex XSOAR incident. | False |
     | Close Mirrored Splunk Notable Events (Outgoing Mirroring) | When selected, closing the Cortex XSOAR incident  will close the Notable Event in Splunk. | False |
+    </~XSOAR>
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | The app context of the namespace |  | False |
@@ -145,6 +147,7 @@ Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism w
 - If you wish to configure a mapper, wait for the integration to perform the first fetch successfully. This is to make the fetch mechanism logic stable.
 - The drilldown search, does not support Splunk's advanced syntax. For example: Splunk filters (**|s**, **|h**, etc.)  
 
+<~XSOAR>
 ### Incident Mirroring
 **Important Notes*** 
  - This feature is available from Cortex XSOAR version 6.0.0.
@@ -170,6 +173,7 @@ To set up mirroring:
 7. Fill in the **timezone** integration parameter with the timezone the Splunk server is using.
 Newly fetched incidents will be mirrored in the chosen direction.
 **Note: This will not affect existing incidents.**
+</~XSOAR>
 
 ### Existing users
 **NOTE: The enrichment and mirroring mechanisms use a new default fetch query.** 
@@ -935,7 +939,7 @@ There is no context output for this command.
 
 >The values of the demisto_store were deleted successfully
 
-
+<~XSOAR>
 ### get-remote-data
 ***
 Gets data from a notable event. This method does not update the current incident, and should be used for debugging purposes.
@@ -975,7 +979,7 @@ Gets the list of notable events that were modified since the last update. This c
 #### Context Output
 
 There is no context output for this command.
-
+</~XSOAR>
 
 ### splunk-reset-enriching-fetch-mechanism
 ***

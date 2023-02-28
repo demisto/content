@@ -13,9 +13,11 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | Username (or '&lt;username&gt;/token' when using API key). | example 'admin@org.com' when using the password, or 'admin@org.com/token' when using an API key. | True |
     | Password/API key |  | True |
     | Fetch incidents |  | False |
+    <~XSOAR>
     | Incident Mirroring Direction | Selects which direction you want the incidents mirrored. You can mirror \*\*Incoming\*\* only \(from Zendesk to Cortex XSOAR\), \*\*Outgoing\*\* only \(from Cortex XSOAR to Zendesk\), or both \*\*Incoming And Outgoing\*\*. | False |
     | Close mirrored incidents | If true, XSOAR will mirror also the ticket closeing. | False |
     | Mirror tags | Comment and files that will be marked with this tag will be pushed into Zendesk. | False |
+    </~XSOAR>
     | Ticket types to fetch |  | False |
     | Maximum number of incidents per fetch |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
@@ -698,6 +700,8 @@ Clears the Zendesk integration cache.
 #### Context Output
 
 There is no context output for this command.
+
+<~XSOAR>
 ### get-remote-data
 ***
 Get remote data from a remote incident. Note that this method will not update the current incident. It's used for debugging purposes.
@@ -783,4 +787,4 @@ To set up the mirroring:
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Zendesk v2.
-
+</~XSOAR>

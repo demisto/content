@@ -21,10 +21,12 @@ CRM Services
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | First Fetch Time | The First Fetch Time, e.g., 1 hour, 3 days | False |
+    <~XSOAR>
     | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Salesforce to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to ServiceNow\), or Incoming and Outgoing \(from/to Cortex XSOAR and Salesforce\). | False |
     | Comment Entry Tag | Choose the tag to add to an entry to mirror it as a comment in Salesforce. | False |
     | Close Mirrored XSOAR Incident | When selected, closing the Salesforce ticket is mirrored in Cortex XSOAR. | False |
     | Close Mirrored Salesforce case | When selected, closing the Cortex XSOAR incident is mirrored in Salesforce. | False |
+    </~XSOAR>
     | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -623,6 +625,7 @@ Returns organization details from the case number.
 | ID | string | The unique ID of the case. | 
 | Name | string | Name of the account. If the account has a record type of Person Account, this value is the concatenation of the FirstName, MiddleName, LastName, and Suffix of the associated person contact. | 
 
+<~XSOAR>
 ### get-remote-data
 ***
 Gets remote data from a remote incident. This method is only used for debugging purposes and will not update the current incident.
@@ -701,6 +704,7 @@ Returns the list of fields for an incident type.
 #### Context Output
 
 There is no context output for this command.
+</~XSOAR>
 ### salesforce-describe-sobject-field
 ***
 Describe Salesforce object field.
@@ -758,6 +762,7 @@ Retrieve a case file by file ID.
 #### Context Output
 
 There is no context output for this command.
+<~XSOAR>
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and Salesforce V2 corresponding events (available from Cortex XSOAR version 6.0.0).
@@ -777,3 +782,4 @@ To set up the mirroring:
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Salesforce V2.
+</~XSOAR>

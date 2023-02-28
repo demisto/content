@@ -26,7 +26,9 @@ Use the Mandiant Automated Defense integration to fetch and update incidents fro
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
+    <~XSOAR>
     | Incident Mirroring Direction |  | False |
+    <~/XSOAR>
     | Base Url | https://&amp;lt;Respond Analyst Server&amp;gt; \(either hostname or IP address\) | True |
     | Trust any certificate (not secure) |  | False |
     | Incident type |  | False |
@@ -181,6 +183,7 @@ Get escalation data associated with incident. In Respond, an 'escalation' is a s
 #### Context Output
 
 There is no context output for this command.
+<~XSOAR>
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and Mandiant Automated Defense (Formerly Respond Software) corresponding events (available from Cortex XSOAR version 6.0.0).
@@ -198,3 +201,4 @@ To set up the mirroring:
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Mandiant Automated Defense (Formerly Respond Software).
+</~XSOAR>

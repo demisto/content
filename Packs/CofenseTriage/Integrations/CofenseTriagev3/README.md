@@ -22,7 +22,9 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | Category ID | Fetches reports based on the unique identifier of the category. If not specified, it fetches all the reports. Note: Only the reports that have been processed will be retrieved. | False |
     | Tags | Fetches reports based on the tags associated with the reports. If not specified, it fetches all the reports. Supports comma separated values. Note: Tags are associated with reports which are in Reconnaissance. | False |
     | Categorization Tags | Fetches reports based on the tags assigned when the reported email was processed. If not specified, it fetches all the reports. Supports comma separated values. Note: Categorization tags are associated with the reports which are processed. | False |
+    <~XSOAR>
     | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming (from Cofens Triage to XSOAR). | False |
+    <~/XSOAR>
     | Advanced Filters | Fetches incidents based on the advanced filters and type of the incident to be fetched. Specify the filters to filter the incidents by attribute values. Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Format accepted: \{"attribute1_operator": "value1, value2", "attribute2_operator" : "value3, value4"\} For example: \{"updated_at_gt":"2020-10-26T10:48:16.834Z","categorization_tags_any":"test, snow"\} | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
@@ -98,10 +100,12 @@ comparison operators:
 - `all`: Returns results when a resource is tagged with all of the specified tags.
 - `none`: Returns results when a resource is not tagged with any of the specified tags.
 
+<~XSOAR>
 ## Mirroring
 The data in Cofense Triage Report can be mirrored to Cortex XSOAR to view the modifications when the report is updated.
 
 For example: When the report is processed, the fields like Report Category ID and Report location get modified, and hence the user will be able to see the modified field's value in XSOAR.
+</~XSOAR>
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -2283,7 +2287,7 @@ Updates a threat indicator based on the values provided in the command arguments
 >|---|---|---|---|---|---|---|
 >| 1 | Suspicious | SHA256 | dummy_hash | URL | 2020-10-26T10:47:09.675Z | 2021-06-22T06:09:22.661Z |
 
-
+<~XSOAR>
 ### get-remote-data
 ***
 Get remote data from a remote incident. Please note that this method will not update the current incident, it's here for debugging purposes.
@@ -2329,7 +2333,7 @@ There is no context output for this command.
 
 #### Command Example
 ```!get-modified-remote-data lastUpdate="3 days"```
-
+</~XSOAR>
 
 ### cofense-report-image-download
 ***

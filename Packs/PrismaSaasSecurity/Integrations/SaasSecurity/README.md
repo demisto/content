@@ -17,19 +17,22 @@ Use the SaaS Security integration to protect against cloud‑based threats by:
     | Fetch incidents | If selected, fetches incidents from SaaS Security. | False |
     | Incidents Fetch Interval | Frequency \(in hours and minutes\) by which Cortex XSOAR fetches incidents from SaaS Security when **Fetch Incidents** is selected. | False |
     | Incident type | Incident type is set by this field if a classifier does not exist. If a  classifier is selected, it takes precedence. | False |
+    <~XSOAR>
     | Incident Mirroring Direction | Selects which direction you want the incidents mirrored. You can mirror Incoming only \(from SaaS Security to Cortex XSOAR\), **Outgoing** only \(from Cortex XSOAR to SaaS Security\), or both **Incoming And Outgoing**. | False |
+    | Close Mirrored XSOAR Incident | If selected, when the incident closes on SaaS Security, the incident closes in Cortex XSOAR. | False |
+    </~XSOAR>
     | Number of incidents per fetch | Minimum is 10. Maximum is 1000. | True |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;. For example, 12 hours, 7 days) |  | False |
     | Fetch only incidents with matching state | Fetches only incidents with matching **All**, **Closed**, or **Open** state. If nothing is selected, **All** states will be used. | False |
     | Fetch only incidents with matching severity | If nothing is selected, **All** severities will be used. | False |
     | Fetch only incidents with matching status | If nothing is selected, **All** statuses will be used. | False |
     | Fetch only incidents with matching Application IDs | A comma-separated list of Application IDs. Run the ***saas-security-get-apps*** command to return the **Application ID**, **Name**, and **Type** for all applications. | False |
-    | Close Mirrored XSOAR Incident | If selected, when the incident closes on SaaS Security, the incident closes in Cortex XSOAR. | False |
     | Trust any certificate (not secure) | By default, SSL verification is enabled. If selected, the connection isn’t secure and all requests return an SSL error because the certificate cannot be verified. | False |
     | Use system proxy settings | Uses the system proxy server to communicate with the  integration. If not selected, the integration will not use the system proxy server. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+<~XSOAR>
 ## Configure SaaS Security Incident Mirroring
 You can enable incident mirroring between Cortex XSOAR incidents and SaaS Security notables (available from Cortex XSOAR version 6.0.0).
 To set up mirroring.<br/>
@@ -61,7 +64,7 @@ Newly fetched incidents will be mirrored in the direction you select. However, t
      - *state*
      - *category* The supported categories for closing incidents are: "misidentified", "no_reason", and "business_justified".
     **Note**: Mirroring out works only for closed incidents due to an API limitation.
-
+</~XSOAR>
 
 ## Create the Client ID and Client Secret on SaaS Security
 In the SaaS Security UI, do the following:

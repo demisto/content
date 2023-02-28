@@ -19,9 +19,11 @@ This integration was integrated and tested with version 21.02 of BmcITSM
     | Ticket Impact | The impact of the tickets to fetch. | False |
     | Ticket Urgency | The urgency of the tickets to fetch. | False |
     | Fetch by Query | Search query to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing parameters. See the BMC documentation for  [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html). | False |
+    <~XSOAR>
     | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from BMC Helix ITSM to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to BMC Helix ITSM\), or Incoming and Outgoing \(from/to Cortex XSOAR and BMC Helix ITSM\). | False |
     | Close Mirrored XSOAR Incident | When selected, closing the BMC Helix ITSM ticket is mirrored in Cortex XSOAR. | False |
     | Close Mirrored BMC Helix ITSM Ticket | When selected, closing the Cortex XSOAR incident is mirrored in BMC Helix ITSM. | False |
+    </~XSOAR>
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Incident type |  | False |
@@ -1256,6 +1258,7 @@ Gets remote data from a remote incident. This method does not update the current
 #### Context Output
 
 There is no context output for this command.
+<~XSOAR>
 ### get-modified-remote-data
 ***
 Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
@@ -1292,3 +1295,4 @@ To set up the mirroring:
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and BMC Helix ITSM.
+</~XSOAR>

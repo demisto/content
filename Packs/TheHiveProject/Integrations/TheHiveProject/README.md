@@ -16,7 +16,9 @@ This integration was integrated and tested with version 4.1.4 of TheHive Project
     | Incidents Fetch Interval |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | The maximum amount of incidents to fetch at once |  | False |
+    <~XSOAR>
     | Case mirroring | Select whether you would like cases to mirror in, out, in both directions or disabled. | True |
+    </~XSOAR>
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
@@ -2007,7 +2009,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 
-
+<~XSOAR>
 ### get-remote-data
 ***
 Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
@@ -2034,7 +2036,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 
-
+</~XSOAR>
 ### thehive-get-version
 ***
 Displays the version of TheHive Project.
@@ -2060,6 +2062,7 @@ There is no context output for this command.
 
 >4.1.4-1
 
+<~XSOAR>
 ### get-modified-remote-data
 ***
 Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
@@ -2083,4 +2086,4 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-
+</~XSOAR>

@@ -11,7 +11,9 @@ This integration was integrated and tested with CyCognito V1 API.
     | --- | --- | --- |
     | API Key | The API Key required to authenticate to the service. | True |
     | Incident type | Incident type to map if no classifier is provided. | False |
+    <~XSOAR>
     | Incident Mirroring Direction | The mirroring direction in which to mirror the incident. You can mirror only in \(from CyCognito to XSOAR\), out \(from XSOAR to CyCognito\), or in both directions. | False |
+    </~XSOAR>
     | Fetch incidents | Indicates whether to fetch incident from the instance. | False |
     | First Fetch Time | The date or relative timestamp from which to begin fetching incidents.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ<br/><br/>For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z | False |
     | Max Fetch | The maximum number of incidents to fetch every time. The maximum value is '1000'. | False |

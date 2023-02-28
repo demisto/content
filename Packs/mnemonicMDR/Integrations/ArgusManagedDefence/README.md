@@ -18,21 +18,25 @@ This integration was integrated and tested with version 5.1.1 argus-toolbelt ([P
     | First fetch time | How far back should the first run fetch open cases in Argus. | False |
     | Maximum number of incidents per fetch | Maximum number of cases to be fetched from Argus. 0 means up to system limit \(100 000\) | False |
     | Fetch incidents exclude tag | Excludes fetching incidents with the optional tag. May be used to exclude fetching Argus Cases created by XSOAR. Tags in Argus are of key: value pairs. You may exclude with tag key, or key: value pairs by a comma-separated string. | False |
+    <~XSOAR>
     | Incident Mirroring Direction | Which direction should the integration mirror incidents. | False |
     | Mirroring tag | Names of tags used to mark incident entries to be mirrored. Comma separated. | False |
-    | Close Argus Case | If true, when an incident is closed in XSOAR: close the mirrored Argus Case | False |
     | Close XSOAR Incident | If true, when mirrored Argus Case is closed: also close the XSOAR Incident | False |
+    </~XSOAR>
+    | Close Argus Case | If true, when an incident is closed in XSOAR: close the mirrored Argus Case | False |
     | Trust any certificate (not secure) | Skip HTTPS certification verification. | False |
     | Use system proxy settings | Use system proxy settings. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+<~XSOAR>
 ### Mirroring
 This integration supports in- and outbound mirroring of incidents. 
 Case comments are added as incident notes and case attachments added as files.
 Tags and events are fetched and placed in context.
 #### Configuration
 You should set the mirroring direction parameter to the appropriate mirroring direction(s). If you are mirroring out, please note that all War Room entries you want added to Argus must be attached with the same tag as configured as the integration parameter *Mirroring tag*.
+</~XSOAR>
 
 ### Excluding cases / creating Argus Cases from XSOAR
 If you wish to create an Argus Case from an incident you should configure the integration to exclude fetching incidents with and appropriate tag and ensure that the new Argus Case has this tag. 
@@ -2598,7 +2602,7 @@ Look up reputation observations for the given IP
 #### Command Example
 ``` !argus-fetch-observations-for-ip ip=94.127.56.170 ```
 
-
+<~XSOAR>
 ### get-remote-data
 ***
 Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
@@ -2643,7 +2647,7 @@ There is no context output for this command.
 
 #### Command Example
 ``` !update-remote-system ```
-
+</~XSOAR>
 
 ### argus-download-attachment-by-filename
 ***

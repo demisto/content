@@ -45,12 +45,14 @@ For more information about JQL syntax, go to https://www.atlassian.com/software/
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Fetch incidents |  | False |
+    <~XSOAR>
     | Mirror incoming incidents |  | False |
-    | Incident type |  | False |
-    | Use created field to fetch incidents |  | False |
     | Mirror outgoing incidents |  | False |
     | File entry tag | Choose the tag to add to an entry to mirror it as an attachment in Jira. | False |
     | Comment entry tag | Choose the tag to add to an entry to mirror it as a comment in Jira. | False |
+    </~XSOAR>
+    | Incident type |  | False |
+    | Use created field to fetch incidents |  | False |
     | Fetch comments | Fetch comments for Jira ticket. | False |
     | Fetch attachments | Fetch attachments for Jira ticket. | False |
 
@@ -743,6 +745,7 @@ Gets specific fields from a Jira issue and adds it to context dynamically.
 | To Do |
 | Build Broken |
 
+<~XSOAR>
 ### get-remote-data
 ***
 Gets remote data from a remote incident. This method is only used for debugging purposes and will not update the current incident.
@@ -990,3 +993,4 @@ Add a new custom field and add it to the incident type&#39;s layout:
 6. Click on the 'V' option in the 'V/X' menu.
 7. You can see the new status under 'Jira Status'.
 8. Go to Jira, within approximately one minute you will be able to see the new status there as well.
+</~XSOAR>

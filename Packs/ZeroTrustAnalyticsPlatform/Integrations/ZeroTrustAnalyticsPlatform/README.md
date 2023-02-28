@@ -17,7 +17,9 @@ This integration was integrated and tested with version 2021-06-25 of ZeroTrustA
     | Use system proxy settings |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
+    <~XSOAR>
     | Incident Mirroring Direction |  | False |
+    </~XSOAR>
     | Comment entry tag |  |  |
     | Escalate entry tag |  |  |
     | ZTAP input tag |  |  |
@@ -32,6 +34,7 @@ This integration was integrated and tested with version 2021-06-25 of ZeroTrustA
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+<~XSOAR>
 ### get-mapping-fields
 ***
 Get mapping fields from remote incident.
@@ -84,7 +87,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-
+</~XSOAR>
 
 ### ztap-get-alert-entries
 ***

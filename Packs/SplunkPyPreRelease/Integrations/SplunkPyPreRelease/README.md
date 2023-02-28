@@ -42,9 +42,11 @@ This integration was integrated and tested with Splunk v7.2.
 | use_requests_handler | Use Python requests handler  | False |
 | type_field | Used only for mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for notable events. However, you may choose any custom field that suits the need. | False |
 | use_cim | Use this option to get the mapping fields by Splunk CIM. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more info. | False | 
+<~XSOAR>
 | mirror_direction | Choose the direction to mirror the incident: Incoming (from Splunk to XSOAR), Outgoing (from XSOAR to Splunk), or Incoming and Outgoing (from/to SOAR and Splunk). | False |
 | close_incident | When selected, closing the Splunk notable event is mirrored in Cortex XSOAR. | False |
 | close_notable | When selected, closing the XSOAR incident is mirrored in Splunk. | False |
+</~XSOAR>
 | enabled_enrichments | The possible types of enrichment are: Drilldown, Asset, and Identity | False |
 | num_enrichment_events | The maximal number of event to retrieve per enrichment type. Default to 20. | False |
 | extensive_logs | Extensive logging (for debugging purposes) - Please use this option unless advised otherwise. | False
@@ -100,6 +102,7 @@ Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism w
 - If you wish to configure a mapper, wait for the integration to perform the first fetch successfully. This is to make the fetch mechanism logic stable.
 - The drilldown search, does not support Splunk's advanced syntax. For example: Splunk filters (**|s**, **|h**, etc.)  
 
+</~XSOAR>
 ### Incident Mirroring
 **NOTE: This feature is available from Cortex XSOAR version 6.0.0**
 **NOTE: This feature is supported by Splunk Enterprise Security only**
@@ -120,6 +123,7 @@ To setup the mirroring follow these instructions:
 7. Fill in the **timezone** integration parameter with the timezone the Splunk Server is using.
 Newly fetched incidents will be mirrored in the chosen direction.
 Note: This will not effect existing incidents.
+</~XSOAR>
 
 ### Existing users
 **NOTE: The enrichment and mirroring mechanisms use a new default fetch query.** 
@@ -876,7 +880,7 @@ There is no context output for this command.
 
 >The values of the demisto_store were deleted successfully
 
-
+<~XSOAR>
 ### get-remote-data
 ***
 Gets data from a notable event. This method does not update the current incident, and should be used for debugging purposes.
@@ -917,7 +921,7 @@ Gets the list of notable events that were modified since the last update. This c
 
 There is no context output for this command.
 
-
+</~XSOAR>
 ### splunk-reset-enriching-fetch-mechanism
 ***
 Resets the enriching fetch mechanism.

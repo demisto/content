@@ -51,6 +51,7 @@ Make sure you use the right account for your needs and that the account used has
 #### Troubleshooting
 Make sure the application password is not expired by logging in TOPdesk and viewing it as described in step 3 of the **Setup TOPdesk's application password** procedure. 
 
+<~XSOAR>
 ### Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and TOPdesk incidents.
@@ -72,6 +73,7 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 
 **Important Notes**
  To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and TOPdesk.
+ </~XSOAR>
  
  ### FIQL query
 A few implemented commands can get a query as a parameter. A partial list of these commands: 
