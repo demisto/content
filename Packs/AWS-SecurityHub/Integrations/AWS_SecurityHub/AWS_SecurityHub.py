@@ -933,7 +933,7 @@ def update_remote_system_command(client: boto3.client, args: Dict[str, Any]) -> 
                 # should contain only 1 state
                 "VerificationState": delta.get('VerificationState')[0] if delta.get('VerificationState') else None,
                 "Workflow": {
-                    "Status": delta.get('Workflow.Status')
+                    "Status": delta.get('Workflow.Status')[0] if delta.get('Workflow.Status') else None
                 },
                 "Confidence": int(delta.get('Confidence')) if delta.get('Confidence') else None,
                 "Criticality": int(delta.get('Criticality')) if delta.get('Criticality') else None

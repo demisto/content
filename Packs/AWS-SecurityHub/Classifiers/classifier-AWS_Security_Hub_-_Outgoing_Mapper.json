@@ -51,7 +51,7 @@
                     "simple": "awssecurityhubverificationstate"
                 },
                 "Workflow.Status": {
-                    "simple": "awssecurityhubworkflowstatus.[0]"
+                    "simple": "awssecurityhubworkflowstatus"
                 }
             }
         }

@@ -1,8 +1,8 @@
 import pytest
 import demistomock as demisto
 import datetime
+from freezegun import freeze_time
 from CommonServerPython import IncidentStatus
-
 from AWS_SecurityHub import AWSClient, get_findings_command, fetch_incidents, list_members_command
 
 FILTER_FIELDS_TEST_CASES = [
@@ -130,9 +130,9 @@ FINDINGS = [{
     'Id': 'Id',
     'Severity': {
         'Product': 0,
-        'Label': 'INFORMATIONAL',
+        'Label': 'LOW',
         'Normalized': 0,
-        'Original': 'INFORMATIONAL'},
+        'Original': 'LOW'},
 }]
 
 
@@ -179,10 +179,52 @@ def test_fetch_incidents(mocker):
     Then:
         - Verify the last run is set as the created time + 1 millisecond, i.e. 2020-03-22T13:22:13.934Z
     """
+    # expected_filters = {
+    #     'CreatedAt': [{
+    #         'Start': '2018-10-24T14:13:20+00:00',
+    #         'End': '2023-02-27T08:54:27.595503+00:00'
+    #     }],
+    #     'SeverityLabel': [
+    #         {'Comparison': 'EQUALS', 'Value': 'LOW'},
+    #         {'Comparison': 'EQUALS', 'Value': 'MEDIUM'},
+    #         {'Comparison': 'EQUALS', 'Value': 'HIGH'},
+    #         {'Comparison': 'EQUALS', 'Value': 'CRITICAL'}
+    #     ]
+    # }
     mocker.spy(demisto, 'setLastRun')
+    # fetch_incidents_mock = mocker.patch.object(MockClient, 'get_findings')
     client = MockClient()
     fetch_incidents(client, 'Low', False, None, 'Both', None, None, None)
     assert demisto.setLastRun.call_args[0][0]['lastRun'] == '2020-03-22T13:22:13.934000+00:00'
+    # fetch_incidents_mock.assert_called_with(Filters=expected_filters)
+
+
+@freeze_time("2021-03-14T13:34:14.758295Z")
+def test_fetch_incidents_with_filters(mocker):
+    """
+    Given:
+        - .
+    When:
+        -
+    Then:
+        -
+    """
+    expected_filters = {
+        'CreatedAt': [{
+            'Start': '2018-10-24T14:13:20+00:00',
+            'End': '2021-03-14T13:34:14.758295Z'
+        }],
+        'SeverityLabel': [
+            {'Comparison': 'EQUALS', 'Value': 'LOW'},
+            {'Comparison': 'EQUALS', 'Value': 'MEDIUM'},
+            {'Comparison': 'EQUALS', 'Value': 'HIGH'},
+            {'Comparison': 'EQUALS', 'Value': 'CRITICAL'}
+        ]
+    }
+    client = MockClient()
+    get_findings_mock = mocker.patch.object(MockClient, 'get_findings', return_value=client.get_findings())
+    fetch_incidents(client, 'Low', False, None, 'Both', None, None, None)
+    get_findings_mock.assert_called_with(Filters=expected_filters)
 
 
 def test_list_members_command(mocker):
@@ -277,7 +319,7 @@ def test_build_severity_label_obj(label, expected_result):
         Given:
             - A severity label.
         When:
-            - fetch_incidents command is running.
+            - build_severity_label_obj function is running.
         Then:
             - Checks the returned  list of comparisons objects. For example, if the severity level is Medium, than the
                 list of comparison object will contain MEDIUM, HIGH and CRITICAL.
@@ -335,7 +377,7 @@ severity_update = ({'data': {'FindingIdentifiers.Id': 'ID',
                              'FindingIdentifiers.ProductArn': 'ProductArn',
                              'Note.UpdatedBy': '',
                              'Severity.Label': 'LOW',
-                             'Workflow.Status': 'NEW'},
+                             'Workflow.Status': ['NEW']},
                     'entries': [],
                     'remoteId': 'ID',
                     'status': IncidentStatus.ACTIVE,
@@ -348,7 +390,7 @@ confidence_update = ({'data': {'FindingIdentifiers.Id': 'ID',
                                'FindingIdentifiers.ProductArn': 'ProductArn',
                                'Note.UpdatedBy': '',
                                'Severity.Label': 'LOW',
-                               'Workflow.Status': 'NEW',
+                               'Workflow.Status': ['NEW'],
                                'Confidence': 2},
                       'entries': [],
                       'remoteId': 'ID',
@@ -362,7 +404,7 @@ criticality_update = ({'data': {'FindingIdentifiers.Id': 'ID',
                                 'FindingIdentifiers.ProductArn': 'ProductArn',
                                 'Note.UpdatedBy': '',
                                 'Severity.Label': 'LOW',
-                                'Workflow.Status': 'NEW',
+                                'Workflow.Status': ['NEW'],
                                 'Criticality': 10},
                        'entries': [],
                        'remoteId': 'ID',
@@ -375,7 +417,7 @@ criticality_update = ({'data': {'FindingIdentifiers.Id': 'ID',
 comment_update = ({'data': {'FindingIdentifiers.Id': 'ID',
                             'FindingIdentifiers.ProductArn': 'ProductArn',
                             'Severity.Label': 'LOW',
-                            'Workflow.Status': 'NEW',
+                            'Workflow.Status': ['NEW'],
                             'Note.Text': 'test',
                             'Note.UpdatedBy': 'admin'},
                    'entries': [],
@@ -389,7 +431,7 @@ comment_update = ({'data': {'FindingIdentifiers.Id': 'ID',
 verification_state_update = ({'data': {'FindingIdentifiers.Id': 'ID',
                                        'FindingIdentifiers.ProductArn': 'ProductArn',
                                        'Severity.Label': 'LOW',
-                                       'Workflow.Status': 'NEW',
+                                       'Workflow.Status': ['NEW'],
                                        'VerificationState': ['TRUE_POSITIVE'],
                                        'Note.UpdatedBy': 'admin'},
                               'entries': [],
@@ -403,12 +445,12 @@ verification_state_update = ({'data': {'FindingIdentifiers.Id': 'ID',
 workflow_status_update = ({'data': {'FindingIdentifiers.Id': 'ID',
                                     'FindingIdentifiers.ProductArn': 'ProductArn',
                                     'Severity.Label': 'LOW',
-                                    'Workflow.Status': 'NOTIFIED',
+                                    'Workflow.Status': ['NOTIFIED'],
                                     'Note.UpdatedBy': 'admin'},
                            'entries': [],
                            'remoteId': 'ID',
                            'status': IncidentStatus.ACTIVE,
-                           'delta': {'Workflow.Status': 'NOTIFIED'},
+                           'delta': {'Workflow.Status': ['NOTIFIED']},
                            'incidentChanged': True}, 'ID',
                           {'FindingIdentifiers': [{'Id': 'ID', 'ProductArn': 'ProductArn'}],
                            'Workflow': {'Status': 'NOTIFIED'}})

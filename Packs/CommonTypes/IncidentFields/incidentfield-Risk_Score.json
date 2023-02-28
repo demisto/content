@@ -9,7 +9,7 @@
 		"AWS EC2 Instance Misconfiguration",
 		"Microsoft CAS Alert",
 		"Trend Micro CAS Event",
-		"Netwitness Incident",
+		"NetWitness Incident",
 		"Skyhigh Security Alert",
 		"Skyhigh Security Threat",
 		"AWS Security Hub Finding"
