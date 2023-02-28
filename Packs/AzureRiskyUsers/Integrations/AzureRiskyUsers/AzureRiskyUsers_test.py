@@ -130,7 +130,8 @@ def test_build_query_filter() -> None:
      - Ensure results are valid.
     """
     from AzureRiskyUsers import build_query_filter
-    result = build_query_filter(risk_state='dismissed', risk_level='medium')
+    result = build_query_filter(risk_state='dismissed', risk_level='medium', detected_date_time_after=None,
+                                detected_date_time_before=None)
     assert result == "riskState eq 'dismissed' and riskLevel eq 'medium'"
 
 
@@ -223,3 +224,23 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     qs = get_mock.last_request.qs
     assert qs['resource'] == [Resources.graph]
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+
+
+@pytest.mark.parametrize('query,filter_name,filter_value,filter_operator,expected_query', [
+        ('', 'riskState', 'dismissed', 'eq', "riskState eq 'dismissed'"),
+        ("riskState eq 'dismissed'", 'detectedDateTime', '2022-06-09T23:00:44.7420905Z', 'le',
+         "riskState eq 'dismissed' and detectedDateTime le 2022-06-09T23:00:44.7420905Z")
+    ])
+def test_update_query(query, filter_name, filter_value, filter_operator, expected_query):
+    """
+    Scenario: Build query filter for API call.
+    Given:
+     - Provided valid arguments.
+    When:
+     - update_query function is called.
+    Then:
+     - Ensure results are valid.
+    """
+    from AzureRiskyUsers import update_query
+    query = update_query(query, filter_name, filter_value, filter_operator)
+    assert query == expected_query

@@ -95,6 +95,7 @@ class Client:
             return 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
 
     def risky_users_list_request(self, risk_state: Optional[str], risk_level: Optional[str],
+                                 detected_date_time_before: Optional[str], detected_date_time_after: Optional[str],
                                  limit: int, skip_token: str = None) -> dict:
         """
         List risky users.
@@ -102,6 +103,8 @@ class Client:
         Args:
             risk_state (str): Risk State to retrieve.
             risk_level (str): Specify to get only results with the same Risk Level.
+            detected_date_time_before (str): Filter events by created before.
+            detected_date_time_after (str): Filter events by created after.
             limit (int): Limit of results to retrieve.
             skip_token (str): Skip token.
 
@@ -110,7 +113,8 @@ class Client:
         """
         params = remove_empty_elements({'$top': limit,
                                         '$skiptoken': skip_token,
-                                        '$filter': build_query_filter(risk_state, risk_level)})
+                                        '$filter': build_query_filter(risk_state, risk_level, detected_date_time_before,
+                                                                      detected_date_time_after)})
 
         return self.ms_client.http_request(method='GET',
                                            url_suffix="identityProtection/riskyUsers",
@@ -130,6 +134,7 @@ class Client:
                                            url_suffix=f'identityProtection/riskyUsers/{id}')
 
     def risk_detections_list_request(self, risk_state: Optional[str], risk_level: Optional[str],
+                                     detected_date_time_before: Optional[str], detected_date_time_after: Optional[str],
                                      limit: int, skip_token: str = None) -> dict:
         """
         Get a list of the Risk Detection objects and their properties.
@@ -137,6 +142,8 @@ class Client:
         Args:
             risk_state (str): Risk State to retrieve.
             risk_level (str): Specify to get only results with the same Risk Level.
+            detected_date_time_before (str): Filter events by created before.
+            detected_date_time_after (str): Filter events by created after.
             limit (int): Limit of results to retrieve.
             skip_token (int): Skip token.
 
@@ -145,7 +152,8 @@ class Client:
         """
         params = remove_empty_elements({'$top': limit,
                                         '$skiptoken': skip_token,
-                                        '$filter': build_query_filter(risk_state, risk_level)})
+                                        '$filter': build_query_filter(risk_state, risk_level, detected_date_time_before,
+                                                                      detected_date_time_after)})
 
         return self.ms_client.http_request(method='GET',
                                            url_suffix="/identityProtection/riskDetections",
@@ -165,7 +173,23 @@ class Client:
                                            url_suffix=f'/identityProtection/riskDetections/{id}')
 
 
-def build_query_filter(risk_state: Optional[str], risk_level: Optional[str]) -> Optional[str]:
+def update_query(query: str, filter_name: str, filter_value: str, filter_operator: str):
+    if not filter_value:
+        return query
+
+    if filter_operator == 'eq':
+        filter_value = f"'{filter_value}'"
+
+    filter_str = f'{filter_name} {filter_operator} {filter_value}'
+    if query:
+        return f'{query} and {filter_str}'
+    else:
+        return filter_str
+
+
+def build_query_filter(risk_state: Optional[str], risk_level: Optional[str],
+                       detected_date_time_before: Optional[str],
+                       detected_date_time_after: Optional[str]) -> Optional[str]:
     """
     Build query filter for API call, in order to get filtered results.
     API query syntax reference: https://docs.microsoft.com/en-us/graph/query-parameters.
@@ -173,18 +197,18 @@ def build_query_filter(risk_state: Optional[str], risk_level: Optional[str]) -> 
     Args:
         risk_state (str): Wanted risk state for filter.
         risk_level (str): Wanted risk level for filter.
+        detected_date_time_before (str): Filter events by created before.
+        detected_date_time_after (str): Filter events by created after.
 
     Returns:
         str: Query filter string for API call.
     """
-    if risk_state and risk_level:
-        return f"riskState eq '{risk_state}' and riskLevel eq '{risk_level}'"
-    elif risk_state:
-        return f"riskState eq '{risk_state}'"
-    elif risk_level:
-        return f"riskLevel eq '{risk_level}'"
-    else:
-        return None
+    query = ''
+    query = update_query(query, 'riskState', risk_state, 'eq')
+    query = update_query(query, 'riskLevel', risk_level, 'eq')
+    query = update_query(query, 'detectedDateTime', detected_date_time_before, 'le')
+    query = update_query(query, 'detectedDateTime', detected_date_time_after, 'ge')
+    return query
 
 
 def get_skip_token(next_link: Optional[str], outputs_prefix: str, outputs_key_field: str,
@@ -213,6 +237,8 @@ def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandRes
     page = arg_to_number(args.get('page', 1))
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
+    detected_date_time_before = args.get('detected_date_time_before')
+    detected_date_time_after = args.get('detected_date_time_after')
     skip_token = None
 
     if page > 1:
@@ -220,6 +246,8 @@ def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandRes
 
         raw_response = client.risky_users_list_request(risk_state,
                                                        risk_level,
+                                                       detected_date_time_before,
+                                                       detected_date_time_after,
                                                        offset)
         next_link = raw_response.get('@odata.nextLink')
         skip_token = get_skip_token(next_link=next_link,
@@ -232,6 +260,8 @@ def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandRes
 
     raw_response = client.risky_users_list_request(risk_state,
                                                    risk_level,
+                                                   detected_date_time_before,
+                                                   detected_date_time_after,
                                                    limit,
                                                    skip_token)
 
@@ -304,12 +334,16 @@ def risk_detections_list_command(client: Client, args: Dict[str, Any]) -> Comman
     page = arg_to_number(args.get('page', 1))
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
+    detected_date_time_before = args.get('detected_date_time_before')
+    detected_date_time_after = args.get('detected_date_time_after')
     skip_token = None
 
     if page > 1:
         offset = limit * (page - 1)
         raw_response = client.risk_detections_list_request(risk_state,
                                                            risk_level,
+                                                           detected_date_time_before,
+                                                           detected_date_time_after,
                                                            offset)
 
         next_link = raw_response.get('@odata.nextLink')
@@ -323,6 +357,8 @@ def risk_detections_list_command(client: Client, args: Dict[str, Any]) -> Comman
 
     raw_response = client.risk_detections_list_request(risk_state,
                                                        risk_level,
+                                                       detected_date_time_before,
+                                                       detected_date_time_after,
                                                        limit,
                                                        skip_token)
 
