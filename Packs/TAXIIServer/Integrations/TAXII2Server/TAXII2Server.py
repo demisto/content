@@ -585,7 +585,7 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
         limit=new_limit,
         size=PAGE_SIZE,
         from_date=added_after,
-        sort=[{"field": "modified", "asc": True}]
+        sort=[{"field": "modified", "asc": True}],
     )
 
     total = 0
@@ -611,7 +611,7 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
                     iocs.append(stix_ioc)
                 stix_objects.append(stix_ioc)
 
-    relationships = create_relationship_object(stix_objects) if stix_objects else []
+    relationships = create_relationship_object(stix_objects) if stix_objects and is_demisto_version_ge('6.6.0') else []
     iocs.extend(relationships)
     iocs = sorted(iocs, key=lambda k: k['modified'])
     return iocs, extensions, total
@@ -1207,7 +1207,7 @@ def get_server_collections_command(integration_context):
     return result
 
 
-def create_relationship_object(stix_iocs: List) -> list:
+def create_relationship_object(stix_iocs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
     Create entries for the relationships returned by the searchRelationships command.
     :param stix_iocs: Entries for the Stix objects associated with given indicators
@@ -1244,7 +1244,7 @@ def create_relationship_object(stix_iocs: List) -> list:
             "relationship_type": relationship.get('type'),
             'source_ref': iocs_value_to_id.get(relationship.get('entityA')),
             'target_ref': entity_b_stix_id,
-            'target_value': entity_b_value
+            'target_value': entity_b_value,
         }
         custom_fields = relationship.get('CustomFields', {})
         if custom_fields:
@@ -1263,20 +1263,18 @@ def get_entity_b_stix_uuid(relationship: Dict[str, Any]) -> tuple[Optional[str],
     :param relationship: A dictionary containing the relationships fields
     :return: tuple: A tuple containing the STIX UUID and value of the 'entityB'.
     """
+    entity_b_stix_id = None
     entity_b_value = relationship.get('entityB')
-    entity_b_xsoar_indicator = {'value': entity_b_value}
-    entity_b_type: str = relationship.get('entityBType', '')
-    if stix_type := XSOAR_TYPES_TO_STIX_SCO.get(entity_b_type):
-        if stix_type == 'user-account':
-            entity_b_xsoar_indicator = (demisto.searchIndicators(value=entity_b_value, size=1).get('iocs') or [])[0]
-        entity_b_stix_id = create_sco_stix_uuid(entity_b_xsoar_indicator, stix_type)
-    elif stix_type := XSOAR_TYPES_TO_STIX_SDO.get(entity_b_type):
-        if stix_type == 'attack-pattern':
-            entity_b_xsoar_indicator = (demisto.searchIndicators(value=entity_b_value, size=1).get('iocs') or [])[0]
-        entity_b_stix_id = create_sdo_stix_uuid(entity_b_xsoar_indicator, stix_type)
-    else:
-        demisto.debug(f'No such indicator type: {entity_b_type} in stix format.')
-        entity_b_stix_id = None
+    entity_b_xsoar_indicator = demisto.searchIndicators(value=entity_b_value, size=1).get('iocs', [])
+    if entity_b_xsoar_indicator:
+        entity_b_type: str = relationship.get('entityBType', '')
+        if stix_type := XSOAR_TYPES_TO_STIX_SCO.get(entity_b_type):
+            entity_b_stix_id = create_sco_stix_uuid(entity_b_xsoar_indicator[0], stix_type)
+        elif stix_type := XSOAR_TYPES_TO_STIX_SDO.get(entity_b_type):
+            entity_b_stix_id = create_sdo_stix_uuid(entity_b_xsoar_indicator[0], stix_type)
+        else:
+            demisto.debug(f'No such indicator type: {entity_b_type} in stix format.')
+            entity_b_stix_id = None
     demisto.debug(f'Generated STIX UUID for {entity_b_value}: {entity_b_stix_id}')
     return entity_b_stix_id, entity_b_value
 

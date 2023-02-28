@@ -6748,22 +6748,11 @@ class TestIndicatorsSearcher:
         """
         from CommonServerPython import IndicatorsSearcher
 
-        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
-
+        mocker.patch.object(demisto, 'searchIndicators')
         sort_param = [{"field": "created", "asc": False}]
         search_indicators_obj_search_after = IndicatorsSearcher(sort=sort_param)
         search_indicators_obj_search_after.search_indicators_by_version()
-        expected_args = {
-            'fromDate': None,
-            'toDate': None,
-            'query': '',
-            'size': 100,
-            'value': '',
-            'searchAfter': None,
-            'populateFields': None,
-            'page': None,
-            'sort': sort_param,
-        }
+        expected_args = {'page': 0, 'size': 100, 'sort': [{'asc': False, 'field': 'created'}]}
         assert search_indicators_obj_search_after._sort == sort_param
         demisto.searchIndicators.assert_called_once_with(**expected_args)
 
