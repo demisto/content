@@ -16,6 +16,7 @@ alter
     xdm.target.port = dpt,
 	xdm.source.port = spt,
 	xdm.target.sent_bytes = to_integer(`in`),
+	xdm.event.outcome = if(act = "Allow", XDM_CONST.OUTCOME_SUCCESS, act = "Permit", XDM_CONST.OUTCOME_SUCCESS, act = "Discard", XDM_CONST.OUTCOME_FAILED, act = "Refuse", XDM_CONST.OUTCOME_FAILED, act = "Discard (passive)", XDM_CONST.OUTCOME_FAILED, act = "Terminate (passive)", XDM_CONST.OUTCOME_FAILED, act = "Terminate", XDM_CONST.OUTCOME_FAILED, act = "Terminate (failed)", XDM_CONST.OUTCOME_FAILED, act = "Terminate (reset)", XDM_CONST.OUTCOME_FAILED, act = "Wait for further actions", XDM_CONST.OUTCOME_PARTIAL, act = "Wait for authentication", XDM_CONST.OUTCOME_PARTIAL, act = "Wait for RPC reply", XDM_CONST.OUTCOME_PARTIAL),
 	xdm.observer.action = act,
 	xdm.network.application_protocol = app,
 	xdm.source.agent.identifier = dvc,
