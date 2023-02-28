@@ -151,12 +151,13 @@ def search_incidents(args: Dict):   # pragma: no cover
         return 'Incidents not found.', {}, {}
 
     result_data_list = res[0]["Contents"]["data"]
-    page = 0
-    max_page = round(res[0]["Contents"]["total"] / 100)
-    while max_page != page:
-        page += 1
-        args["page"] = page
-        result_data_list.extend(execute_command('getIncidents', args).get("data"))
+    if result_data_list:
+        page = 0
+        max_page = (int(res[0]["Contents"]["total"] / 100) + bool(res[0]["Contents"]["total"] / 100)) - 1
+        while max_page != page:
+            page += 1
+            args["page"] = page
+            result_data_list.extend(execute_command('getIncidents', args)["data"])
 
     data = apply_filters(result_data_list, args)
     data = add_incidents_link(data, platform)
