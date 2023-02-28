@@ -929,6 +929,7 @@ def main():
     elif certificate and private_key:
         http_server = False
 
+
     global SERVER
     scheme = 'http'
     host_name = server_link_parts.hostname
