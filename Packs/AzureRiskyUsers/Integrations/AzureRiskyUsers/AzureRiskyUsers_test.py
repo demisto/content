@@ -227,10 +227,10 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
 
 
 @pytest.mark.parametrize('query,filter_name,filter_value,filter_operator,expected_query', [
-        ('', 'riskState', 'dismissed', 'eq', "riskState eq 'dismissed'"),
-        ("riskState eq 'dismissed'", 'detectedDateTime', '2022-06-09T23:00:44.7420905Z', 'le',
-         "riskState eq 'dismissed' and detectedDateTime le 2022-06-09T23:00:44.7420905Z")
-    ])
+    ('', 'riskState', 'dismissed', 'eq', "riskState eq 'dismissed'"),
+    ("riskState eq 'dismissed'", 'detectedDateTime', '2022-06-09T23:00:44.7420905Z', 'le',
+     "riskState eq 'dismissed' and detectedDateTime le 2022-06-09T23:00:44.7420905Z")
+])
 def test_update_query(query, filter_name, filter_value, filter_operator, expected_query):
     """
     Scenario: Build query filter for API call.

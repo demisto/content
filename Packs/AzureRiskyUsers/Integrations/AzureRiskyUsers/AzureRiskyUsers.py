@@ -254,7 +254,7 @@ def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandRes
                                                        detected_date_time_before,
                                                        detected_date_time_after,
                                                        offset,
-                                                       order_by=order_by)
+                                                       order_by)
         next_link = raw_response.get('@odata.nextLink')
         skip_token = get_skip_token(next_link=next_link,
                                     outputs_prefix='AzureRiskyUsers.RiskyUser',
@@ -269,8 +269,8 @@ def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandRes
                                                    detected_date_time_before,
                                                    detected_date_time_after,
                                                    limit,
-                                                   skip_token,
-                                                   order_by=order_by)
+                                                   order_by,
+                                                   skip_token)
 
     table_headers = ['id', 'userDisplayName', 'userPrincipalName', 'riskLevel',
                      'riskState', 'riskDetail', 'riskLastUpdatedDateTime']
@@ -353,7 +353,7 @@ def risk_detections_list_command(client: Client, args: Dict[str, Any]) -> Comman
                                                            detected_date_time_before,
                                                            detected_date_time_after,
                                                            offset,
-                                                           order_by=order_by)
+                                                           order_by)
 
         next_link = raw_response.get('@odata.nextLink')
         skip_token = get_skip_token(next_link=next_link,
@@ -369,8 +369,8 @@ def risk_detections_list_command(client: Client, args: Dict[str, Any]) -> Comman
                                                        detected_date_time_before,
                                                        detected_date_time_after,
                                                        limit,
-                                                       skip_token,
-                                                       order_by=order_by)
+                                                       order_by,
+                                                       skip_token)
 
     table_headers = ['id', 'userId', 'userDisplayName', 'userPrincipalName', 'riskDetail',
                      'riskEventType', 'riskLevel', 'riskState', 'riskDetail', 'lastUpdatedDateTime',
