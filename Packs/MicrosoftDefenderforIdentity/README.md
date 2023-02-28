@@ -3,21 +3,21 @@ This pack includes Cortex XSIAM content.
 ## Configuration on Server Side
 You need to configure Microsoft for Identity to forward Syslog messages in CEF format.
 
-For configuration, please follow these instructions;
-1. In [Microsoft 365 Defender](https://security.microsoft.com/), go to **Settings** and then **Identities**.
-2. Select **Syslog notifications**.
+To configure, follow these instructions:
+1. In [Microsoft 365 Defender](https://security.microsoft.com/), go to **Settings** > **Identities**.
+2. Click **Syslog notifications**.
 3. To enable syslog notification, set the **Syslog service** toggle to the **on** position.
-4. Select **Configure service**. A pane will open where you can enter the details for the syslog service.
+4. Click **Configure service**. A pane will open where you can enter the details for the syslog service.
 5. Enter the following details:
    * **Sensor** - From the drop-down list, choose the sensor that will send the alerts.
    * **Service endpoint and Port** - Enter the IP address or fully qualified domain name (FQDN) for the syslog server and specify the port number. You can configure only one Syslog endpoint.
    * **Transport** - Select the Transport protocol (TCP or UDP).
    * **Format** - Select the format (RFC 3164 or RFC 5424).
-6. Select **Send test SIEM** notification and then verify the message is received in your Syslog infrastructure solution.
-7. Select **Save**.
+6. Click **Send test SIEM** notification and then verify the message is received in your Syslog infrastructure solution.
+7. Click **Save**.
 8. Once you've configured the **Syslog service**, you can choose which types of notifications (alerts or health issues) to send to your Syslog server.
 
-* Additional documentation for syslog notifications is available [here](https://learn.microsoft.com/en-us/defender-for-identity/notifications#syslog-notifications)
+* Additional documentation for syslog notifications is available [here](https://learn.microsoft.com/en-us/defender-for-identity/notifications#syslog-notifications).
 
 ## Collect Events from Vendor
 
