@@ -147,10 +147,10 @@ def add_dependency(base_pack: Path, new_depndency_pack: Path, mandatory: bool = 
     with metadata_json.open('r') as fr:
         base_metadata = json.load(fr)
     new_pack_name = new_depndency_pack.name
-    base_metadata['dependencies'][new_pack_name] = {
+    base_metadata.setdefault('dependencies', {}).update({
         "mandatory": mandatory,
         "display_name": new_pack_name
-    }
+    })
     json_write(str(metadata_json), base_metadata)
     return base_pack, base_metadata['currentVersion'], None
 
