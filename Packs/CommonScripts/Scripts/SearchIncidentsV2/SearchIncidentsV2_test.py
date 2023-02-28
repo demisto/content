@@ -127,7 +127,8 @@ def test_apply_filters(args, expected_incident_ids):
 
 def get_incidents_mock(command, args, extract_contents=True, fail_on_error=True):
     ids = args.get('id', '').split(',')
-    return [{'Contents': {'data': [incident for incident in EXAMPLE_INCIDENTS_RAW_RESPONSE if incident['id'] in ids]}}]
+    incidents_list = [incident for incident in EXAMPLE_INCIDENTS_RAW_RESPONSE if incident['id'] in ids]
+    return [{'Contents': {'data': incidents_list, 'total': len(incidents_list)}}]
 
 
 @pytest.mark.parametrize('args,filtered_args,expected_result', [

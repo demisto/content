@@ -35,7 +35,7 @@ import warnings
 
 def __line__():
     cf = currentframe()
-    return cf.f_back.f_lineno
+    return cf.f_back.f_lineno  # type: ignore[union-attr]
 
 
 # 42 - The line offset from the beggining of the file.
@@ -701,6 +701,8 @@ def auto_detect_indicator_type(indicator_value):
     except Exception:
         raise Exception("Missing tldextract module, In order to use the auto detect function please use a docker"
                         " image with it installed such as: demisto/jmespath")
+
+    indicator_value = indicator_value.replace('[.]', '.').replace('[@]', '@')  # Refang indicator prior to checking
 
     if re.match(ipv4cidrRegex, indicator_value):
         return FeedIndicatorType.CIDR
@@ -1575,7 +1577,7 @@ class IntegrationLogger(object):
                 if IS_PY3:
                     to_add.append(urllib.parse.quote_plus(a))  # type: ignore[attr-defined]
                 else:
-                    to_add.append(urllib.quote_plus(a))
+                    to_add.append(urllib.quote_plus(a))  # type: ignore[attr-defined]
 
         self.replace_strs.extend(to_add)
 
@@ -1827,7 +1829,7 @@ def argToList(arg, separator=',', transform=None):
                 result = json.loads(arg)
                 is_comma_separated = False
             except Exception:
-                demisto.debug('Failed to load {} as JSON, trying to split'.format(arg))
+                demisto.debug('Failed to load {} as JSON, trying to split'.format(arg))  # type: ignore[str-bytes-safe]
         if is_comma_separated:
             result = [s.strip() for s in arg.split(separator)]
     else:
@@ -1906,7 +1908,7 @@ def appendContext(key, data, dedup=False):
     if existing:
         if isinstance(existing, STRING_TYPES):
             if isinstance(data, STRING_TYPES):
-                new_val = data + ',' + existing
+                new_val = data + ',' + existing  # type: ignore[operator]
             else:
                 new_val = data + existing  # will raise a self explanatory TypeError
 
@@ -1914,7 +1916,8 @@ def appendContext(key, data, dedup=False):
             if isinstance(data, dict):
                 new_val = [existing, data]  # type: ignore[assignment]
             elif isinstance(data, list) and all([isinstance(sub_data, dict) for sub_data in data]):
-                new_val = [existing] + data  # For cases the context have only one value but we append a few values at once.
+                # For cases the context have only one value but we append a few values at once.
+                new_val = [existing] + data  # type: ignore[assignment]
             else:
                 new_val = data + existing  # will raise a self explanatory TypeError
 
@@ -6267,7 +6270,7 @@ def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=No
         # relative time stamps.
         # For example: format 2019-10-23T00:00:00 or "3 days", etc
         if settings:
-            date = dateparser.parse(arg, settings=settings)
+            date = dateparser.parse(arg, settings=settings)  # type: ignore[arg-type]
         else:
             date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
 
@@ -6769,7 +6772,7 @@ class CommandResults:
         if not outputs_key_field:
             self._outputs_key_field = None
         elif isinstance(outputs_key_field, STRING_TYPES):
-            self._outputs_key_field = [outputs_key_field]
+            self._outputs_key_field = [outputs_key_field]  # type: ignore[list-item]
         elif isinstance(outputs_key_field, list):
             self._outputs_key_field = outputs_key_field
         else:
@@ -6820,7 +6823,7 @@ class CommandResults:
             raw_response = self.raw_response
 
         if self.tags:
-            tags = self.tags
+            tags = self.tags  # type: ignore[assignment]
 
         if self.ignore_auto_extract:
             ignore_auto_extract = True
@@ -8341,7 +8344,7 @@ if 'requests' in sys.modules:
                 # type: (bool, dict) -> None
                 if not verify and ssl.OPENSSL_VERSION_INFO >= (3, 0, 0, 0):
                     self.context.options |= 0x4
-                super().__init__(**kwargs)
+                super().__init__(**kwargs)  # type: ignore[arg-type]
 
             def init_poolmanager(self, *args, **kwargs):
                 kwargs['ssl_context'] = self.context
@@ -8472,7 +8475,7 @@ if 'requests' in sys.modules:
                 been exhausted.
             """
             try:
-                method_whitelist = "allowed_methods" if hasattr(Retry.DEFAULT, "allowed_methods") else "method_whitelist"
+                method_whitelist = "allowed_methods" if hasattr(Retry.DEFAULT, "allowed_methods") else "method_whitelist"  # type: ignore[attr-defined]
                 whitelist_kawargs = {
                     method_whitelist: frozenset(['GET', 'POST', 'PUT'])
                 }
@@ -8485,7 +8488,7 @@ if 'requests' in sys.modules:
                     status_forcelist=status_list_to_retry,
                     raise_on_status=raise_on_status,
                     raise_on_redirect=raise_on_redirect,
-                    **whitelist_kawargs
+                    **whitelist_kawargs  # type: ignore[arg-type]
                 )
                 http_adapter = HTTPAdapter(max_retries=retry)
 
@@ -8496,7 +8499,7 @@ if 'requests' in sys.modules:
                 if self._verify:
                     https_adapter = http_adapter
                 elif IS_PY3 and PY_VER_MINOR >= 10:
-                    https_adapter = SSLAdapter(max_retries=retry, verify=self._verify)
+                    https_adapter = SSLAdapter(max_retries=retry, verify=self._verify)  # type: ignore[arg-type]
                 else:
                     https_adapter = http_adapter
 
@@ -8656,7 +8659,7 @@ if 'requests' in sys.modules:
                         return res
                     return res
                 except ValueError as exception:
-                    raise DemistoException('Failed to parse {} object from response: {}'
+                    raise DemistoException('Failed to parse {} object from response: {}'  # type: ignore[str-bytes-safe]
                                            .format(resp_type, res.content), exception, res)
             except requests.exceptions.ConnectTimeout as exception:
                 err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
@@ -10369,12 +10372,13 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     last_run_time = last_run and 'time' in last_run and last_run['time']
     now = get_current_time(timezone)
     if not last_run_time:
-        last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}) \
-            + timedelta(hours=timezone)
+        last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
+        if last_run_time:
+            last_run_time += timedelta(hours=timezone)
     else:
         last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
 
-    if look_back > 0:
+    if look_back and look_back > 0:
         if now - last_run_time < timedelta(minutes=look_back):
             last_run_time = now - timedelta(minutes=look_back)
 
@@ -10623,6 +10627,8 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
     :return: The updated LastRun object
     :rtype: ``Dict``
     """
+    if not look_back:
+        look_back = 0
 
     updated_last_run, remove_incident_ids = create_updated_last_run_object(last_run,
                                                                            incidents,
@@ -10777,12 +10783,71 @@ class YMLMetadataCollector:
         return command_wrapper
 
 
-def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url'):
+def xsiam_api_call_with_retries(
+    client,
+    xsiam_url,
+    zipped_data,
+    headers,
+    num_of_attempts,
+    events_error_handler=None
+):
+    """
+    Send the fetched events into the XDR data-collector private api.
+
+    :type client: ``BaseClient``
+    :param client: base client containing the XSIAM url.
+
+    :type xsiam_url: ``str``
+    :param xsiam_url: The URL of XSIAM to send the api request.
+
+    :type zipped_data: ``bytes``
+    :param zipped_data: encoded events
+
+    :type headers: ``dict``
+    :param headers: headers for the request
+
+    :type num_of_attempts: ``int``
+    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes).
+
+    :type events_error_handler: ``callable``
+    :param events_error_handler: error handler function
+
+    :return: Response object
+    :rtype: ``requests.Response``
+    """
+    # retry mechanism in case there is a rate limit (429) from xsiam.
+    status_code = None
+    attempt_num = 1
+    response = None
+
+    while status_code != 200 and attempt_num < num_of_attempts + 1:
+        demisto.debug('Sending events into xsiam, attempt number {attempt_num}'.format(attempt_num=attempt_num))
+        # in the last try we should raise an exception if any error occurred, including 429
+        ok_codes = (200, 429) if attempt_num < num_of_attempts else None
+        response = client._http_request(
+            method='POST',
+            full_url=urljoin(xsiam_url, '/logs/v1/xsiam'),
+            data=zipped_data,
+            headers=headers,
+            error_handler=events_error_handler,
+            ok_codes=ok_codes,
+            resp_type='response'
+        )
+        status_code = response.status_code
+        demisto.debug('received status code: {status_code}'.format(status_code=status_code))
+        if status_code == 429:
+            time.sleep(1)
+        attempt_num += 1
+
+    return response
+
+
+def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3):
     """
     Send the fetched events into the XDR data-collector private api.
 
     :type events: ``Union[str, list]``
-    :param events: The events to send to send to XSIAM server. Should be of the following:
+    :param events: The events to send to XSIAM server. Should be of the following:
         1. List of strings or dicts where each string or dict represents an event.
         2. String containing raw events separated by a new line.
 
@@ -10798,6 +10863,9 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
 
     :type url_key: ``str``
     :param url_key: The param dict key where the integration url is located at. the default is 'url'.
+
+    :type num_of_attempts: ``int``
+    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
 
     :return: None
     :rtype: ``None``
@@ -10879,13 +10947,15 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)
 
-    zipped_data = gzip.compress(data.encode('utf-8'))   # type: ignore[AttributeError,attr-defined]
+    zipped_data = gzip.compress(data.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
     client = BaseClient(base_url=xsiam_url)
-    res = client._http_request(method='POST', full_url=urljoin(xsiam_url, '/logs/v1/xsiam'), data=zipped_data,
-                               headers=headers,
-                               error_handler=events_error_handler)
-    if res.get('error').lower() != 'false':
-        raise DemistoException(header_msg + res.get('error'))
+
+    raw_response = xsiam_api_call_with_retries(
+        client, xsiam_url, zipped_data, headers, num_of_attempts, events_error_handler
+    ).json()
+
+    if raw_response.get('error').lower() != 'false':
+        raise DemistoException(header_msg + raw_response.get('error'))
 
     demisto.updateModuleHealth({'eventsPulled': amount_of_events})
 

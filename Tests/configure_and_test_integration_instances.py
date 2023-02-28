@@ -873,6 +873,9 @@ class CloudBuild(Build):
             except Exception as e:
                 logging.error(f'Filed to sync marketplace. Error: {e}')
         logging.info('Finished copying successfully.')
+        sleep_time = 120
+        logging.info(f'sleeping for {sleep_time} seconds')
+        sleep(sleep_time)
 
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         # no need to run this concurrently since we have only one server
