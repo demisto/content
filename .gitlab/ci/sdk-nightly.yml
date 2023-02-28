@@ -158,6 +158,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
     INSTANCE_ROLE: "Server Master"
+    ARTIFACTS_FOLDER: $ARTIFACTS_FOLDER_XSOAR
   stage: run-instances
   script:
     - !reference [.open-ssh-tunnel]
