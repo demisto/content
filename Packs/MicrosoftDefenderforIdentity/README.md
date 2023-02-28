@@ -14,7 +14,7 @@ To configure, follow these instructions:
    * **Transport** - Select the Transport protocol (TCP or UDP).
    * **Format** - Select the format (RFC 3164 or RFC 5424).
 6. Select **Send test SIEM** notification and then verify the message is received in your Syslog infrastructure solution.
-7. Select **Save**.
+7. Click **Save**.
 8. Once you've configured the **Syslog service**, you can choose which types of notifications (alerts or health issues) to send to your Syslog server.
 
 * Additional documentation for syslog notifications is available [here](https://learn.microsoft.com/en-us/defender-for-identity/notifications#syslog-notifications)
