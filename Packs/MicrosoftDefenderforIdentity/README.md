@@ -7,7 +7,7 @@ To configure, follow these instructions:
 1. In [Microsoft 365 Defender](https://security.microsoft.com/), go to **Settings** > **Identities**.
 2. Click **Syslog notifications**.
 3. To enable syslog notification, set the **Syslog service** toggle to the **on** position.
-4. Select **Configure service**. A pane will open where you can enter the details for the syslog service.
+4. Click **Configure service**. A pane will open where you can enter the details for the syslog service.
 5. Enter the following details:
    * **Sensor** - From the drop-down list, choose the sensor that will send the alerts.
    * **Service endpoint and Port** - Enter the IP address or fully qualified domain name (FQDN) for the syslog server and specify the port number. You can configure only one Syslog endpoint.
