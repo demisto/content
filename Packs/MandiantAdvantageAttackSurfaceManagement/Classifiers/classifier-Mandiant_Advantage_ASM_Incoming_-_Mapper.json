@@ -1,0 +1,130 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "670ce8cf-90e2-4358-80a8-d758e588b2ef",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 2,
+	"mapping": {
+		"Mandiant Advantage ASM Issue": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Alert Category": {
+					"complex": {
+						"accessor": "category",
+						"filters": [],
+						"root": "summary",
+						"transformers": []
+					}
+				},
+				"Alert Name": {
+					"complex": {
+						"accessor": "pretty_name",
+						"filters": [],
+						"root": "summary",
+						"transformers": []
+					}
+				},
+				"Alert Source": {
+					"complex": {
+						"filters": [],
+						"root": "upstream",
+						"transformers": []
+					}
+				},
+				"Alert Type ID": {
+					"complex": {
+						"filters": [],
+						"root": "name",
+						"transformers": []
+					}
+				},
+				"External Status": {
+					"complex": {
+						"accessor": "status",
+						"filters": [],
+						"root": "summary",
+						"transformers": []
+					}
+				},
+				"M-ASM Category": {
+					"complex": {
+						"accessor": "category",
+						"filters": [],
+						"root": "summary",
+						"transformers": []
+					}
+				},
+				"M-ASM Collection": {
+					"complex": {
+						"filters": [],
+						"root": "collection",
+						"transformers": []
+					}
+				},
+				"M-ASM Confirmed": {
+					"complex": {
+						"accessor": "confidence",
+						"filters": [],
+						"root": "summary",
+						"transformers": [
+							{
+								"args": {
+									"condition": {},
+									"else": {
+										"value": {
+											"simple": "false"
+										}
+									},
+									"equals": {},
+									"lhs": {},
+									"options": {},
+									"rhs": {
+										"value": {
+											"simple": "confirmed"
+										}
+									},
+									"then": {
+										"value": {
+											"simple": "true"
+										}
+									}
+								},
+								"operator": "If-Then-Else"
+							}
+						]
+					}
+				},
+				"M-ASM Entity Name": {
+					"complex": {
+						"filters": [],
+						"root": "entity_name",
+						"transformers": []
+					}
+				}
+			}
+		}
+	},
+	"name": "Mandiant Advantage ASM Incoming - Mapper",
+	"nameRaw": "Mandiant Advantage ASM Incoming - Mapper",
+	"packID": "925dd1c9-3e72-4883-8d53-02b7f966c4a2",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}

@@ -1,0 +1,132 @@
+category: Vulnerability Management
+commonfields:
+  id: AttackSurfaceManagement
+  version: -1
+configuration:
+- name: url
+  defaultvalue: https://asm-api.advantage.mandiant.com/
+  display: Your server URL
+  required: true
+  type: 0
+  additionalinfo: The ASM API URL.  Leave as `https://asm-api.advantage.mandiant.com/` if you're unsure
+- name: credentials
+  displaypassword: Secret Key
+  display: Access Key
+  additionalinfo: The Access and Secret Keys used for authentication
+  required: true
+  type: 9
+- name: project_id
+  display: Project ID
+  required: false
+  type: 0
+  additionalinfo: The ASM Project ID to retrieve issues from
+- name: collection_ids
+  display: Collection IDs
+  required: false
+  type: 0
+  additionalinfo: A list of Collection IDs, separated by commas (`,`)
+- name: initial_lookback
+  defaultvalue: 30
+  display: Initial Lookback Days
+  required: true
+  type: 0
+  additionalinfo: The number of days to look back when first retrieving issues.
+- name: max_fetch
+  defaultvalue: 30
+  display: Maximum Issues To Fetch
+  required: true
+  type: 0
+  additionalinfo: The maximum number of issues to pull during a single fetch-incidents command.
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Mirror incoming incidents
+  hidden: false
+  name: incoming_mirror
+  required: false
+  type: 8
+description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+display: 'Mandiant Attack Surface Management'
+name: AttackSurfaceManagement
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      isArray: false
+      name: dummy
+      required: true
+      secret: false
+    deprecated: false
+    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+    execution: false
+    name: baseintegration-dummy
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  - name: attacksurfacemanagement-get-projects
+    deprecated: false
+    description: Retrieve a list of all accessible ASM projects.
+    outputs:
+    - contextPath: MandiantAdvantageASM.Projects.Name
+      description: The name of the project
+      type: String
+    - contextPath: MandiantAdvantageASM.Projects.ID
+      description: The ID of the project
+      type: Number
+    - contextPath: MandiantAdvantageASM.Projects.Owner
+      description: The E-Mail of the project owner
+  - name: attacksurfacemanagement-get-collections
+    deprecated: false
+    description: Retrieve a list of collections for a specified project
+    arguments:
+      - name: project_id
+        required: false
+        description: 'The ID of the project to query collections for'
+    outputs:
+    - contextPath: MandiantAdvantageASM.Collections.Name
+      description: The name of the collection
+      type: String
+    - contextPath: MandiantAdvantageASM.Collections.ID
+      description: The ID of the collection
+      type: String
+    - contextPath: MandiantAdvantageASM.Collections.Owner
+      description: The owner of the collection
+  - name: fetch-incidents
+    deprecated: false
+    description: Fetch Incidents
+  - name: get-remote-data
+    deprecated: false
+    description: Update a specific incident
+    arguments:
+      - description: The ticket ID.
+        name: id
+        required: true
+        default: false
+      - description: Retrieve entries that were created after lastUpdate.
+        name: lastUpdate
+        required: false
+        defaultValue: '0'
+  - name: update-remote-system
+    deprecated: false
+    description: Update issue in Mandiant Advantage ASM
+    arguments: []
+  isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.7.35188
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
