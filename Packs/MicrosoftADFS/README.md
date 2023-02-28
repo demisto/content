@@ -1,6 +1,7 @@
 # Microsoft AD FS
 ​
 This pack includes XSIAM content.
+
 ​
 Note: The logs will be stored in the dataset named *microsoft_windows_raw*.
 
