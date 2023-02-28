@@ -369,6 +369,20 @@ class Client(BaseClient):
                      }
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=json_data)
 
+    def list_interface_policy_request(self, domain_id: int | None, interface_id: int | None) -> Dict:
+        """ Retrieves the list of policies assigned to an interface.
+            Args:
+                domain_id: int - The relevant domain id.
+                interface_id: int - The relevant interface id.
+            Returns:
+                A dictionary with a list of policies.
+        """
+        if interface_id:
+            url_suffix = f'/domain/{domain_id}/policyassignments/interface/{interface_id}'
+        else:
+            url_suffix = f'/domain/{domain_id}/policyassignments/interface'
+        return self._http_request(method='GET', url_suffix=url_suffix)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -2131,6 +2145,43 @@ def assign_interface_policy_command(client: Client, args: Dict) -> CommandResult
     )
 
 
+def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
+    """
+
+    Args:
+        client (Client): _description_
+        args (Dict): _description_
+
+    Returns:
+        A CommandResult object with a list of policies.
+    """
+    domain_id = arg_to_number(args.get('domain_id'))
+    interface_id = arg_to_number(args.get('interface_id'))
+    limit = arg_to_number(args.get('limit', 50))
+    all_results = argToBoolean(args.get('all_results', False))
+
+    response = client.list_interface_policy_request(domain_id=domain_id, interface_id=interface_id)
+    if not interface_id:
+        all_policies = (
+            response.get('policyAssignmentsList')
+            if all_results
+            else response.get('policyAssignmentsList')[:limit]
+        )
+    elif all_results:
+        all_policies = response
+    else:
+        all_policies = [response][:limit]
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            name='Interface policy List', t=all_policies, removeNull=True
+        ),
+        outputs_prefix='NSM.InterfacePolicy',
+        outputs=all_policies,
+        raw_response=response
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -2217,6 +2268,8 @@ def main() -> None:  # pragma: no cover
             results = list_device_policy_command(client, args)
         elif command == 'nsm-assign-interface-policy':
             results = assign_interface_policy_command(client, args)
+        elif command == 'nsm-list-interface-policy':
+            results = list_interface_policy_command(client, args)
         else:
             raise NotImplementedError('This command is not implemented yet.')
         return_results(results)

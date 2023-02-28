@@ -2007,6 +2007,23 @@ script:
       description: The name of the IPS policy that will be connected to the interface. To get the domain_id, use the !nsm-get-ips-policies command.
     - name: custom_json
       description: fill here...
+  - name: nsm-list-interface-policy
+    description: List all the policies assigned to all interfaces or a specific interface.
+    arguments:
+    - name: domain_id
+      description: The ID of the domain. To get the domain_id, use the !nsm-get-domains command.
+      required: true
+    - name: interface_id
+      description: The ID of the interface. To get the interface ID, use the !nsm-list-device-interface command.
+    - name: limit
+      description: The maximum number of policies to return.
+      defaultvalue: 50
+    - name: all_results
+      description: Return all policies assigned to all interfaces or a specific interface.
+      auto: PREDEFINED
+      predefined:
+        - yes
+        - no
   isfetch: false
   runonce: false
   script: '-'
