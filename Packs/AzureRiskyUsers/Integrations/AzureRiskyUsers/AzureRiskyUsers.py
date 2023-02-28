@@ -96,7 +96,7 @@ class Client:
 
     def risky_users_list_request(self, risk_state: Optional[str], risk_level: Optional[str],
                                  detected_date_time_before: Optional[str], detected_date_time_after: Optional[str],
-                                 limit: int, skip_token: str = None) -> dict:
+                                 limit: int, order_by: str, skip_token: str = None) -> dict:
         """
         List risky users.
 
@@ -106,6 +106,7 @@ class Client:
             detected_date_time_before (str): Filter events by created before.
             detected_date_time_after (str): Filter events by created after.
             limit (int): Limit of results to retrieve.
+            order_by (str): Order results by this attribute.
             skip_token (str): Skip token.
 
         Returns:
@@ -113,6 +114,7 @@ class Client:
         """
         params = remove_empty_elements({'$top': limit,
                                         '$skiptoken': skip_token,
+                                        '$orderby': order_by,
                                         '$filter': build_query_filter(risk_state, risk_level, detected_date_time_before,
                                                                       detected_date_time_after)})
 
@@ -135,7 +137,7 @@ class Client:
 
     def risk_detections_list_request(self, risk_state: Optional[str], risk_level: Optional[str],
                                      detected_date_time_before: Optional[str], detected_date_time_after: Optional[str],
-                                     limit: int, skip_token: str = None) -> dict:
+                                     limit: int, order_by: str, skip_token: str = None) -> dict:
         """
         Get a list of the Risk Detection objects and their properties.
 
@@ -145,6 +147,7 @@ class Client:
             detected_date_time_before (str): Filter events by created before.
             detected_date_time_after (str): Filter events by created after.
             limit (int): Limit of results to retrieve.
+            order_by (str): Order results by this attribute.
             skip_token (int): Skip token.
 
         return:
@@ -152,6 +155,7 @@ class Client:
         """
         params = remove_empty_elements({'$top': limit,
                                         '$skiptoken': skip_token,
+                                        '$orderby': order_by,
                                         '$filter': build_query_filter(risk_state, risk_level, detected_date_time_before,
                                                                       detected_date_time_after)})
 
@@ -239,6 +243,7 @@ def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandRes
     risk_level = args.get('risk_level')
     detected_date_time_before = args.get('detected_date_time_before')
     detected_date_time_after = args.get('detected_date_time_after')
+    order_by = args.get('order_by')
     skip_token = None
 
     if page > 1:
@@ -248,7 +253,8 @@ def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandRes
                                                        risk_level,
                                                        detected_date_time_before,
                                                        detected_date_time_after,
-                                                       offset)
+                                                       offset,
+                                                       order_by=order_by)
         next_link = raw_response.get('@odata.nextLink')
         skip_token = get_skip_token(next_link=next_link,
                                     outputs_prefix='AzureRiskyUsers.RiskyUser',
@@ -263,7 +269,8 @@ def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandRes
                                                    detected_date_time_before,
                                                    detected_date_time_after,
                                                    limit,
-                                                   skip_token)
+                                                   skip_token,
+                                                   order_by=order_by)
 
     table_headers = ['id', 'userDisplayName', 'userPrincipalName', 'riskLevel',
                      'riskState', 'riskDetail', 'riskLastUpdatedDateTime']
@@ -336,6 +343,7 @@ def risk_detections_list_command(client: Client, args: Dict[str, Any]) -> Comman
     risk_level = args.get('risk_level')
     detected_date_time_before = args.get('detected_date_time_before')
     detected_date_time_after = args.get('detected_date_time_after')
+    order_by = args.get('order_by')
     skip_token = None
 
     if page > 1:
@@ -344,7 +352,8 @@ def risk_detections_list_command(client: Client, args: Dict[str, Any]) -> Comman
                                                            risk_level,
                                                            detected_date_time_before,
                                                            detected_date_time_after,
-                                                           offset)
+                                                           offset,
+                                                           order_by=order_by)
 
         next_link = raw_response.get('@odata.nextLink')
         skip_token = get_skip_token(next_link=next_link,
@@ -360,7 +369,8 @@ def risk_detections_list_command(client: Client, args: Dict[str, Any]) -> Comman
                                                        detected_date_time_before,
                                                        detected_date_time_after,
                                                        limit,
-                                                       skip_token)
+                                                       skip_token,
+                                                       order_by=order_by)
 
     table_headers = ['id', 'userId', 'userDisplayName', 'userPrincipalName', 'riskDetail',
                      'riskEventType', 'riskLevel', 'riskState', 'riskDetail', 'lastUpdatedDateTime',
