@@ -18,6 +18,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 SERVICE = 'wafv2'
 OUTPUT_PREFIX = 'AWS.Waf'
 OPERATOR_TO_STATEMENT_OPERATOR = {'And': 'AndStatement', 'Or': 'OrStatement', 'Not': 'NotStatement'}
+STATEMENT_OPERATORS = ('AndStatement', 'OrStatement', 'NotStatement')
 
 ''' HELPER FUNCTIONS '''
 
@@ -54,6 +55,7 @@ def build_visibility_config_object(metric_name: str,
 
 
 def build_ip_rule_object(args: dict) -> dict:
+    # TODO get all out to build ip statements
     ip_rule: dict = {'Statement': {}}
     ip_set_arn = argToList(args.get('ip_set_arn')) or []
     condition_operator = args.get('condition_operator', '')
@@ -76,6 +78,16 @@ def build_ip_rule_object(args: dict) -> dict:
     return ip_rule
 
 
+def build_ip_statement(args: dict) -> list:
+    ip_set_arn = argToList(args.get('ip_set_arn')) or []
+    ip_statements = []
+    for ip_set in ip_set_arn:
+        ip_statements.append({'IPSetReferenceStatement': {
+            'ARN': ip_set
+        }})
+    return ip_statements
+
+
 def build_country_rule_object(args: dict) -> dict:
     country_codes = argToList(args.get('country_codes')) or []
 
@@ -85,8 +97,31 @@ def build_country_rule_object(args: dict) -> dict:
     return ip_rule
 
 
+def update_rule_with_statement(rule, statement, condition_operator):
+    condition = rule.get('statement', {}).keys()
+
+
+def add_statement_to_rule(args: dict, statement, rules):
+    rule_name = args.get('rule_name', '')
+    condition_operator = args.get('condition_operator', '')
+    for rule in rules:
+        if rule.get('Name') == rule_name:
+            return update_rule_with_statement(rule, statement, condition_operator)
+
+
+
+
+def build_string_match_rule_object(args: dict) -> dict:
+    country_codes = argToList(args.get('country_codes')) or []
+
+    ip_rule: dict = {
+        'Statement': {'GeoMatchStatement': {'CountryCodes': country_codes}}
+    }
+    return ip_rule
+
+
 def build_rule_object(args: dict, rule_group_visibility_config: dict,
-                      build_rule_method: Callable[[dict], dict]) -> dict:
+                      build_rule_func: Callable[[dict], dict]) -> dict:
     name = args.get('rule_name', '')
     rule_visibility_config = build_visibility_config_object(
         metric_name=name,
@@ -102,7 +137,7 @@ def build_rule_object(args: dict, rule_group_visibility_config: dict,
         'VisibilityConfig': rule_visibility_config,
 
     }
-    rule |= build_rule_method(args)
+    rule |= build_rule_func(args)
 
     return rule
 
@@ -420,7 +455,7 @@ def delete_rule_group_command(client: boto3.client, args) -> CommandResults:
                           raw_response=response)
 
 
-def update_rule(client: boto3.client, args, build_rule_func) -> dict:
+def update_rule(client: boto3.client, args, build_rule_func: Callable, action: str) -> dict:
     kwargs = {
         'Name': args.get('group_name', ''),
         'Scope': args.get('scope', ''),
@@ -434,11 +469,15 @@ def update_rule(client: boto3.client, args, build_rule_func) -> dict:
 
     rule_group_visibility_config = rule_group.get('VisibilityConfig', {})
 
-    # TODO change logic so would be good for deletion as well
-    if build_rule_func == 'delete_rule':
-        rule_name = args.get(('rule_name', ''))
-        updated_rules = delete_rule(rule_name, rules)
-    else:
+    if action == 'DELETE':
+        rule_name = args.get('rule_name', '')
+        updated_rules = build_rule_func(rule_name, rules)
+    elif action == 'ADD':
+        # build_rule_func can be add_ip_statement, add_country_statement, add_string_match_statement
+        statement = build_rule_func(args)
+        rule = add_statement_to_rule(args, statement, rules)
+    else:  # action == 'CREATE'
+        # build_rule_func can be create_ip_rule, create_country_rule, create_string_match_rule
         rule = build_rule_object(args, rule_group_visibility_config, build_rule_func)
         updated_rules = rules.copy()
         updated_rules.append(rule)
@@ -458,6 +497,7 @@ def delete_rule(rule_name: str, rules: list) -> list:
             updated_rules.remove(rule)
             break
     return updated_rules
+
 
 def create_rule_group_command(client: boto3.client, args) -> CommandResults:
     tag_keys = argToList(args.get('tag_key')) or []
@@ -494,7 +534,7 @@ def create_rule_group_command(client: boto3.client, args) -> CommandResults:
 
 
 def create_ip_rule_command(client: boto3.client, args) -> CommandResults:
-    response = update_rule(client, args, build_ip_rule_object)
+    response = update_rule(client, args, build_ip_rule_object, action='CREATE')
 
     readable_output = f'AWS Waf ip rule with id {args.get("Id", "")} was created successfully. ' \
                       f'Next Lock Token: {response.get("NextLockToken")}'
@@ -504,7 +544,7 @@ def create_ip_rule_command(client: boto3.client, args) -> CommandResults:
 
 
 def create_country_rule_command(client: boto3.client, args) -> CommandResults:
-    response = update_rule(client, args, build_country_rule_object)
+    response = update_rule(client, args, build_country_rule_object, action='CREATE')
 
     readable_output = f'AWS Waf country rule with id {args.get("Id", "")} was created successfully. ' \
                       f'Next Lock Token: {response.get("NextLockToken")}'
@@ -515,7 +555,7 @@ def create_country_rule_command(client: boto3.client, args) -> CommandResults:
 
 def create_string_match_rule_command(client: boto3.client, args) -> CommandResults:
     # TODO need to change
-    response = update_rule(client, args, build_country_rule_object)
+    response = update_rule(client, args, build_string_match_rule_object, action='CREATE')
 
     readable_output = f'AWS Waf string match rule with id {args.get("Id", "")} was created successfully. ' \
                       f'Next Lock Token: {response.get("NextLockToken")}'
@@ -525,9 +565,20 @@ def create_string_match_rule_command(client: boto3.client, args) -> CommandResul
 
 
 def delete_rule_command(client: boto3.client, args) -> CommandResults:
-    response = update_rule(client, args, build_country_rule_object)
+    response = update_rule(client, args, delete_rule, action='DELETE')
 
     readable_output = f'AWS Waf rule with id {args.get("Id", "")} was deleted successfully.'
+
+    return CommandResults(readable_output=readable_output,
+                          raw_response=response)
+
+
+def add_ip_statement_command(client: boto3.client, args) -> CommandResults:
+    # TODO need to change
+    response = update_rule(client, args, add_ip_statement_to_rule, action='ADD')
+
+    readable_output = f'AWS Waf ip statement was added to rule with id {args.get("Id", "")} successfully. ' \
+                      f'Next Lock Token: {response.get("NextLockToken")}'
 
     return CommandResults(readable_output=readable_output,
                           raw_response=response)
@@ -609,6 +660,13 @@ def main() -> None:
             result = create_string_match_rule_command(client, args)
         elif demisto.command() == 'aws-waf-rule-delete':
             result = delete_rule_command(client, args)
+
+        elif demisto.command() == 'aws-waf-ip-statement-add':
+            result = add_ip_statement_command(client, args)
+        elif demisto.command() == 'aws-waf-country-statement-add':
+            result = add_country_statement_command(client, args)
+        elif demisto.command() == 'aws-waf-string-match-statement-add':
+            result = add_string_match_statement_command(client, args)
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} is not implemented in AWS WAF integration.')
