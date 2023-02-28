@@ -148,7 +148,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: 'Can you find the flag in the playbook tasks? '
+          simple: 'What is the flag that is hidden in the playbook task?'
         required: true
         gridcolumns: []
         defaultrows: []
@@ -499,7 +499,7 @@ tasks:
       name: 'Check your answer #Q2'
       description: |-
         Question #2:
-        Can you find the flag in the playbook tasks?
+        What is the flag that is hidden in the playbook task?
       scriptName: CTF_1
       type: regular
       iscommand: false
