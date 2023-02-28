@@ -1,2 +1,6 @@
 [INGEST:vendor="microsoft", product="windows", target_dataset="microsoft_windows_raw", no_hit=keep]
-alter _time = time_created;
+filter provider_name ="Microsoft-Windows-*"
+|alter time_string=to_string(time_created)
+|alter tmp_time = replex(time_string, "th|rd|nt|st", "")
+|alter _time =  parse_timestamp("%b %d %Y %H:%M:%S", tmp_time)
+|fields -tmp_time;
