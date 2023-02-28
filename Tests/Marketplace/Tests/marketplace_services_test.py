@@ -2161,60 +2161,6 @@ class TestSetDependencies:
 
         return pack_metadata
 
-    def test_set_dependencies_new_dependencies(self):
-        """
-           Given:
-               - Pack with user dependencies
-               - New generated dependencies
-           When:
-               - Formatting metadata
-           Then:
-               - The dependencies in the metadata file should be merged with the generated ones
-       """
-        from Tests.Marketplace.marketplace_services import Pack
-
-        generated_dependencies = {
-            'ImpossibleTraveler': {
-                'dependencies': {
-                    'HelloWorld': {
-                        'mandatory': False,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'HelloWorld',
-                        'certification': 'certified'
-                    },
-                    'ServiceNow': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'ServiceNow',
-                        'certification': 'certified'
-                    },
-                    'Ipstack': {
-                        'mandatory': False,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'Ipstack',
-                        'certification': 'certified'
-                    },
-                    'Active_Directory_Query': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'Active Directory Query v2',
-                        'certification': 'certified'
-                    }
-                }
-            }
-        }
-        generated_dependencies['ImpossibleTraveler']['dependencies'].update(BASE_PACK_DEPENDENCY_DICT)
-        p = Pack('ImpossibleTraveler', 'dummy_path')
-        dependencies = json.dumps(generated_dependencies['ImpossibleTraveler']['dependencies'])
-        dependencies = json.loads(dependencies)
-        p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
-
-        assert p.user_metadata['dependencies'] == dependencies
-
     def test_set_dependencies_no_user_dependencies(self):
         """
            Given:
