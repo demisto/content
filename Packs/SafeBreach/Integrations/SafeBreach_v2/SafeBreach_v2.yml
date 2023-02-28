@@ -1,4 +1,4 @@
-category: Data Enrichment & Threat Intelligence
+category: Deception & Breach Simulation
 commonfields:
   id: SafeBreach v2
   version: -1
