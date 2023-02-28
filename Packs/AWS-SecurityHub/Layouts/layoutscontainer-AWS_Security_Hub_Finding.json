@@ -546,7 +546,7 @@
     "name": "AWS Security Hub Finding",
     "system": false,
     "version": -1,
-    "fromVersion": "6.8.0",
+    "fromVersion": "6.5.0",
     "description": "",
     "marketplaces": ["xsoar"]
 }

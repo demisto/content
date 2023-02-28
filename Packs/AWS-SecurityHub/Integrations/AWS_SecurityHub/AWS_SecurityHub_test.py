@@ -133,6 +133,11 @@ FINDINGS = [{
         'Label': 'LOW',
         'Normalized': 0,
         'Original': 'LOW'},
+    'Type': ['Software and Configuration Checks'],
+    'Workflow': {
+        'Status': 'NEW'
+    },
+    'ProductName': 'Security Hub'
 }]
 
 
@@ -179,51 +184,48 @@ def test_fetch_incidents(mocker):
     Then:
         - Verify the last run is set as the created time + 1 millisecond, i.e. 2020-03-22T13:22:13.934Z
     """
-    # expected_filters = {
-    #     'CreatedAt': [{
-    #         'Start': '2018-10-24T14:13:20+00:00',
-    #         'End': '2023-02-27T08:54:27.595503+00:00'
-    #     }],
-    #     'SeverityLabel': [
-    #         {'Comparison': 'EQUALS', 'Value': 'LOW'},
-    #         {'Comparison': 'EQUALS', 'Value': 'MEDIUM'},
-    #         {'Comparison': 'EQUALS', 'Value': 'HIGH'},
-    #         {'Comparison': 'EQUALS', 'Value': 'CRITICAL'}
-    #     ]
-    # }
     mocker.spy(demisto, 'setLastRun')
-    # fetch_incidents_mock = mocker.patch.object(MockClient, 'get_findings')
     client = MockClient()
     fetch_incidents(client, 'Low', False, None, 'Both', None, None, None)
     assert demisto.setLastRun.call_args[0][0]['lastRun'] == '2020-03-22T13:22:13.934000+00:00'
-    # fetch_incidents_mock.assert_called_with(Filters=expected_filters)
 
 
 @freeze_time("2021-03-14T13:34:14.758295Z")
 def test_fetch_incidents_with_filters(mocker):
     """
     Given:
-        - .
+        - A client, archive_findings, mirror_direction and the arguments to get_findings.
     When:
-        -
+        - Executing fetch_incidents command.
     Then:
-        -
+        - Check the filters to get_findings.
     """
     expected_filters = {
         'CreatedAt': [{
             'Start': '2018-10-24T14:13:20+00:00',
-            'End': '2021-03-14T13:34:14.758295Z'
+            'End': '2021-03-14T13:34:14.758295+00:00'
         }],
         'SeverityLabel': [
-            {'Comparison': 'EQUALS', 'Value': 'LOW'},
             {'Comparison': 'EQUALS', 'Value': 'MEDIUM'},
             {'Comparison': 'EQUALS', 'Value': 'HIGH'},
             {'Comparison': 'EQUALS', 'Value': 'CRITICAL'}
-        ]
+        ],
+        'Type': [{
+            'Comparison': 'PREFIX',
+            'Value': 'Software and Configuration Checks'
+        }],
+        'WorkflowStatus': [{
+            'Comparison': 'EQUALS',
+            'Value': 'NEW'
+        }],
+        'ProductName': [{
+            'Comparison': 'EQUALS',
+            'Value': 'Security Hub'
+        }]
     }
     client = MockClient()
     get_findings_mock = mocker.patch.object(MockClient, 'get_findings', return_value=client.get_findings())
-    fetch_incidents(client, 'Low', False, None, 'Both', None, None, None)
+    fetch_incidents(client, 'Medium', False, None, 'Both', ['Software and Configuration Checks'], ['New'], ['Security Hub'])
     get_findings_mock.assert_called_with(Filters=expected_filters)
 
 
@@ -487,7 +489,7 @@ def test_last_update_to_time():
     Given:
         - A string representing a date and time.
     When:
-        - get-remote-data is executed/
+        - get-remote-data is executed.
     Then:
         - Returns the timestamp.
     """

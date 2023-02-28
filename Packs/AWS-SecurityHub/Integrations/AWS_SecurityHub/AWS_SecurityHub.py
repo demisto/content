@@ -594,11 +594,11 @@ def last_update_to_time(last_update: str) -> int:
         Returns:
             The int representing the date.
         """
-    if last_update is None:
+    if not last_update:
         raise ValueError('Missing lastUpdate')
     else:
         date_time = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
-        if date_time is None:
+        if not date_time:
             raise ValueError('Invalid date.')
         else:
             demisto.debug('In last_update_to_time returning the result')
