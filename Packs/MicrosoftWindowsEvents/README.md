@@ -2,11 +2,18 @@
 
 This pack includes Cortex XSIAM content.
 
+Note: The logs will be stored in the dataset named *microsoft_windows_raw*.
+
+To view logs only from the windows event log, please apply the following filter to the datamodel query: *| filter provider_name ="Microsoft-Windows-\*"*
+
+
 ## Collect Events from Vendor
 
 In order to use the collector, you can use one of the following options:
-- [XDRC (XDR Collector)](#xdrc-xdr-collector)
-- [Broker VM](#broker-vm)
+- [Microsoft Event Logs](#microsoft-event-logs)
+  - [Collect Events from Vendor](#collect-events-from-vendor)
+    - [XDRC (XDR Collector)](#xdrc-xdr-collector)
+    - [Broker VM](#broker-vm)
 
 
 
