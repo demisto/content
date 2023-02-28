@@ -1614,8 +1614,8 @@
         ]
     },
     "group": "incident",
-    "id": "Default XDR Alerts Layout",
-    "name": "Default XDR Alerts Layout",
+    "id": "Default XDR Alert",
+    "name": "Default XDR Alert",
     "quickView": {
         "sections": [
             {
