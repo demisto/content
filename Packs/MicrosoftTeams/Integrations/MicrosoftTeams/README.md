@@ -1,7 +1,9 @@
 Use the Microsoft Teams integration to send messages and notifications to your team members and create meetings.
 This integration was integrated and tested with version 1.0 of Microsoft Teams.
 
-**Note:** For use cases where it is only need to send messages to a specific channel, we recommend checking the [Microsoft Teams via Webhook Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams-via-webhook), which has a simpler setup.
+**Note::** 
+- The integration has the ability to run builtin XSOAR commands, through a mirrored channel. make sure to type the command in the chat, do not copy and paste it, it will not be sent as a command.
+- For use cases where it is only need to send messages to a specific channel, we recommend checking the [Microsoft Teams via Webhook Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams-via-webhook), which has a simpler setup.
 
 ## Integration Architecture
 Data is passed between Microsoft Teams and Cortex XSOAR through the bot that you will configure in Microsoft Teams. A webhook (that you will configure) receives the data from Teams and passes it to the messaging endpoint. The web server on which the integration runs in Cortex XSOAR listens to the messaging endpoint and processes the data from Teams. You can use an engine for communication between Teams and the Cortex XSOAR server. In order to mirror messages from Teams to Cortex XSOAR, the bot must be mentioned, using the @ symbol, in the message.
@@ -1129,6 +1131,8 @@ You can send the message `help` in order to see the supported commands:
     If you're working with secured communication (HTTPS), make sure that you provided a valid certificate, run `openssl s_client -connect <domain.com>:443` command, verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
     
     Try inserting your configured message endpoint in a browser tap, click `Enter`, if `Method Not Allowed` is returned, the endpoint is valid and ready to communicate, otherwise, it needs to be handled according to the returned error's message.
+
+    In some cases, a connection is not created between Teams and the messaging endpoint, when adding a bot to the team. You can work around this problem by adding any member to the team the bot was added to (the bot should be already added to the team). It will trigger a connection and solve the issue, then you can remove the member that was added with no poroblems.
 
 2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, then it means the AAD application has insufficient permissions.
 

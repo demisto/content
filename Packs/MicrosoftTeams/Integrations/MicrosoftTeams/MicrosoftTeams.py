@@ -2344,10 +2344,7 @@ def message_handler(integration_context: dict, request_body: dict, channel_data:
                             investigation_id: str = mirrored_channel.get('investigation_id', '')
                             username: str = from_property.get('name', '')
                             user_email: str = get_team_member(integration_context, team_member_id).get('user_email', '')
-                            demisto.debug("about to add entry")
-                            demisto.debug(f"entry is: {message}\nusername is: {username}\nemail is: {user_email}")
-                            user = demisto.findUser(email=user_email) if user_email else demisto.findUser(username=username)
-                            demisto.debug(f"found user: {user}")
+                            demisto.debug(f"Adding Entry {message} to investigation {investigation_id}")
                             demisto.addEntry(
                                 id=investigation_id,
                                 entry=message,
@@ -2355,7 +2352,6 @@ def message_handler(integration_context: dict, request_body: dict, channel_data:
                                 email=user_email,
                                 footer=f'\n**{ENTRY_FOOTER}**'
                             )
-                            demisto.debug("done adding entry")
                         return
 
 
