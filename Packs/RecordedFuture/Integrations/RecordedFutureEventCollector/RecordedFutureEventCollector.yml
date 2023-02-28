@@ -7,7 +7,7 @@ commonfields:
   version: -1
 configuration:
 - displaypassword: API token
-  additionalinfo: The API token to use for connection
+  additionalinfo: The API token to use for the connection.
   name: credentials
   required: true
   hiddenusername: true
@@ -30,7 +30,7 @@ configuration:
   type: 0
   section: Collect
 - defaultvalue: 1000
-  display: The maximum number of events per fetch, Default and maximum is 1000.
+  display: The maximum number of events per fetch. Default and maximum is 1000.
   name: max_fetch
   required: false
   type: 0
@@ -51,7 +51,7 @@ script:
       - 'false'
       required: true
     - defaultValue: 10
-      description: Maximum results to return.
+      description: Maximum number of results to return.
       isArray: false
       name: limit
       required: false

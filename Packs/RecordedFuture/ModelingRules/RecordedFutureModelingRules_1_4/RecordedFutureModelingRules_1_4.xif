@@ -5,5 +5,5 @@ alter
     xdm.alert.description = json_extract_scalar(review, "$.note"),
     xdm.source.user.username = json_extract_scalar(rule, "$.owner_name"),
     xdm.source.user.identifier = json_extract_scalar(rule, "$.owner_id"),
-    xdm.event.original_event_type = json_extract_scalar(rule, "$.type"),
+    xdm.event.original_event_type = type,
     xdm.source.user.ou = json_extract_scalar(rule, "$.organisation_name");

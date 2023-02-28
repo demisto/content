@@ -1,5 +1,5 @@
 This is the Recorded Future event collector integration for XSIAM.
-This integration was integrated and tested with version 2 of Recorded Future API
+This integration was integrated and tested with version 2 of the Recorded Future API.
 
 ## Configure Recorded Future Event Collector on Cortex XSOAR
 
@@ -9,11 +9,11 @@ This integration was integrated and tested with version 2 of Recorded Future API
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | API token | The API token to use for connection | True |
+    | API token | The API token to use for the connection. | True |
     | Trust any certificate (not secure) | Use SSL secure connection or not. | False |
     | Use system proxy settings | Use proxy settings for connection or not. | False |
-    | First fetch time |  First fetch query `<number> <time unit>`, e.g., `7 days`. Default `3 days` | False |
-    | Max fetch | The maximum number of events per fetch, Default and maximum is 1000. | False |
+    | First fetch time |  First fetch query `<number> <time unit>`, e.g., `7 days`. Default `3 days`. | False |
+    | Max fetch | The maximum number of events per fetch. Default and maximum is 1000. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
