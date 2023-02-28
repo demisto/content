@@ -1,14 +1,13 @@
 {
-    "name": "McAfee Active Response",
-    "description": "Connect to MAR using its DXL client",
+    "name": "Infoblox BloxOne",
+    "description": "Infoblox BloxOne",
     "support": "xsoar",
-    "currentVersion": "1.0.5",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2020-03-10T08:37:18Z",
     "categories": [
-        "Endpoint"
+        "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
     "useCases": [],
