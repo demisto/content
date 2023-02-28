@@ -1,6 +1,6 @@
 id: Prisma Cloud Remediation - AWS EC2 Instance Misconfiguration v2
 version: -1
-fromversion: 6.8.0
+fromversion: 6.5.0
 name: Prisma Cloud Remediation - AWS EC2 Instance Misconfiguration v2
 description: |
   This playbook remediates Prisma Cloud AWS EC2 alerts.  It calls the following sub-playbooks to perform the remediation:
