@@ -23,6 +23,17 @@ def mock_results(mocker):
     return mocker.patch.object(demisto, "results")
 
 
+@pytest.fixture(autouse=True)
+def mock_results(mocker):
+    return mocker.patch.object(
+        demisto, "demistoVersion",
+        return_value={
+            'version': '6.5.0',
+            'buildNumber': '12345'
+        }
+    )
+
+
 def patch_command_args_and_params(mocker, command, args):
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "command", return_value=command)
