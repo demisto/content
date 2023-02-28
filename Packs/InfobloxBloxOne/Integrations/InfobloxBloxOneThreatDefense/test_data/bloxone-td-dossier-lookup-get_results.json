@@ -1,0 +1,59 @@
+{
+    "state": "completed",
+    "status": "success",
+    "job_id": "c924d233-ddeb-8877-1234-fedd6a9bb070",
+    "results": [
+        {
+            "task_id": "d4e24d99-1f98-4a1f-8434-cbf4c284c7d0",
+            "params": {
+                "type": "ip",
+                "target": "11.22.33.44",
+                "source": "urlhaus"
+            },
+            "status": "success",
+            "time": 7,
+            "v": "3.0.0",
+            "data": {
+                "matches": []
+            }
+        },
+        {
+            "task_id": "5473e57f-4af1-4bdf-b1b8-a09766390f39",
+            "params": {
+                "type": "ip",
+                "target": "11.22.33.44",
+                "source": "ptr"
+            },
+            "status": "success",
+            "time": 97,
+            "v": "3.0.0",
+            "data": {
+                "ptr_record": "doh.att.net"
+            }
+        },
+        {
+            "task_id": "a88e5488-8425-4a34-94dc-886c8ea8d945",
+            "params": {
+                "type": "ip",
+                "target": "11.22.33.44",
+                "source": "geo"
+            },
+            "status": "success",
+            "time": 38,
+            "v": "3.0.0",
+            "data": {}
+        },
+        {
+            "task_id": "3e45d61e-42f8-43bb-beff-81bd8e3e00fb",
+            "params": {
+                "type": "ip",
+                "target": "11.22.33.44",
+                "source": "whois"
+            },
+            "status": "success",
+            "time": 327,
+            "v": "3.0.0",
+            "data": {}
+        }
+    ]
+}
