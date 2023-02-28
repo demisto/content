@@ -775,8 +775,7 @@ Retrieves details for the specified asset including custom attributes.
 Retrieves details for the specified asset to include custom attributes.
 
 ## Limitations
-
-Please notice that when inserting arguments that are not valid then ​an error message would returned.​​
+When inserting invalid arguments, an error message could be returned.
 
 #### Base Command
 
@@ -1044,8 +1043,7 @@ Retrieves details for the specified asset to include custom attributes.
 
 
 ## Limitations
-
-Please notice that when inserting arguments that are not valid then ​an error message would returned.​​
+When inserting invalid arguments, an error message could be returned.
 
 
 #### Base Command
