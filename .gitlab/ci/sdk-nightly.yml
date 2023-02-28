@@ -89,7 +89,6 @@ demisto-sdk-nightly:xsoar-prepare-testing-bucket:
   variables:
     IFRA_ENV_TYPE: "Server Master"
     KUBERNETES_CPU_REQUEST: 2000m
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     MARKETPLACE_VERSION: "xsoar"
     MARKETPLACE_BUCKET: "$GCS_MARKET_BUCKET"
 
@@ -158,7 +157,6 @@ demisto-sdk-nightly:run-commands-against-instance:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
     INSTANCE_ROLE: "Server Master"
-    ARTIFACTS_FOLDER: $ARTIFACTS_FOLDER_XSOAR
   stage: run-instances
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   script:
@@ -213,7 +211,6 @@ demisto-sdk-nightly:run-end-to-end-tests:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
     INSTANCE_ROLE: "Server Master"
-    ARTIFACTS_FOLDER: $ARTIFACTS_FOLDER_XSOAR
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
