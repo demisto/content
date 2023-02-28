@@ -4,10 +4,6 @@
             "type": "string",
             "is_array": false
         },
-        "type": {
-            "type": "string",
-            "is_array": false
-        },
         "review": {
             "type": "string",
             "is_array": false
