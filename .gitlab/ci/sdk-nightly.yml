@@ -160,6 +160,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     INSTANCE_ROLE: "Server Master"
     ARTIFACTS_FOLDER: $ARTIFACTS_FOLDER_XSOAR
   stage: run-instances
+  needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   script:
     - !reference [.open-ssh-tunnel]
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
