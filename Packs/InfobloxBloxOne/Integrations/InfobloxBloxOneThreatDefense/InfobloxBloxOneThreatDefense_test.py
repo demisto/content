@@ -24,7 +24,7 @@ def mock_results(mocker):
 
 
 @pytest.fixture(autouse=True)
-def mock_results(mocker):
+def mock_demisto_version(mocker):
     return mocker.patch.object(
         demisto, "demistoVersion",
         return_value={
