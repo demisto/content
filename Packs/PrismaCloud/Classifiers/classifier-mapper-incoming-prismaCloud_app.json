@@ -243,6 +243,24 @@
 					},
 					"simple": ""
 				},
+				"Risk Rating": {
+					"complex": {
+						"accessor": "rating",
+						"filters": [],
+						"root": "riskDetail",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Risk Score": {
+					"complex": {
+						"accessor": "score",
+						"filters": [],
+						"root": "riskDetail",
+						"transformers": []
+					},
+					"simple": ""
+				},
 				"SKU Name": {
 					"complex": {
 						"accessor": "data.sku.name",
@@ -622,6 +640,24 @@
 						"accessor": "resourceType",
 						"filters": [],
 						"root": "resource",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Risk Rating": {
+					"complex": {
+						"accessor": "rating",
+						"filters": [],
+						"root": "riskDetail",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Risk Score": {
+					"complex": {
+						"accessor": "score",
+						"filters": [],
+						"root": "riskDetail",
 						"transformers": []
 					},
 					"simple": ""
@@ -1009,6 +1045,24 @@
 					},
 					"simple": ""
 				},
+				"Risk Rating": {
+					"complex": {
+						"accessor": "rating",
+						"filters": [],
+						"root": "riskDetail",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Risk Score": {
+					"complex": {
+						"accessor": "score",
+						"filters": [],
+						"root": "riskDetail",
+						"transformers": []
+					},
+					"simple": ""
+				},
 				"SKU Name": {
 					"complex": {
 						"accessor": "data.sku.name",
@@ -1388,6 +1442,24 @@
 						"accessor": "resourceType",
 						"filters": [],
 						"root": "resource",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Risk Rating": {
+					"complex": {
+						"accessor": "rating",
+						"filters": [],
+						"root": "riskDetail",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Risk Score": {
+					"complex": {
+						"accessor": "score",
+						"filters": [],
+						"root": "riskDetail",
 						"transformers": []
 					},
 					"simple": ""
@@ -1775,6 +1847,24 @@
 					},
 					"simple": ""
 				},
+				"Risk Rating": {
+					"complex": {
+						"accessor": "rating",
+						"filters": [],
+						"root": "riskDetail",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Risk Score": {
+					"complex": {
+						"accessor": "score",
+						"filters": [],
+						"root": "riskDetail",
+						"transformers": []
+					},
+					"simple": ""
+				},
 				"SKU Name": {
 					"complex": {
 						"accessor": "data.sku.name",
@@ -2149,6 +2239,24 @@
 						"accessor": "resourceType",
 						"filters": [],
 						"root": "resource",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Risk Rating": {
+					"complex": {
+						"accessor": "rating",
+						"filters": [],
+						"root": "riskDetail",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Risk Score": {
+					"complex": {
+						"accessor": "score",
+						"filters": [],
+						"root": "riskDetail",
 						"transformers": []
 					},
 					"simple": ""
