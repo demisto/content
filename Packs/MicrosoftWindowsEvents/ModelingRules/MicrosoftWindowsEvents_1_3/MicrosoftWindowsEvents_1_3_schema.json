@@ -59,6 +59,10 @@
       "process_thread_id": {
         "type": "string",
         "is_array": false
+      },
+      "record_id": {
+        "type": "string",
+        "is_array": false
       }
     }
   }

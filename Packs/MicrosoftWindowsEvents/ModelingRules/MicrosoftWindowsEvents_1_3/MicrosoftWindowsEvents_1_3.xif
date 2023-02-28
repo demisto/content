@@ -1,5 +1,6 @@
 [MODEL: dataset = microsoft_windows_raw]
-alter 
+filter provider_name ="Microsoft-Windows-*"
+|alter 
 xdm.source.ipv4=if(json_extract_scalar(event_data ,"$.IpAddress") not contains ":",json_extract_scalar(event_data ,"$.IpAddress"),null),
 xdm.source.ipv6=if(json_extract_scalar(event_data ,"$.IpAddress") contains ":",json_extract_scalar(event_data ,"$.IpAddress"),null),
 xdm.source.port=to_integer(json_extract_scalar(event_data ,"$.IpPort")),
