@@ -3,7 +3,7 @@ This pack includes Cortex XSIAM content.
 ## Configuration on Server Side
 You need to configure Microsoft for Identity to forward Syslog messages in CEF format.
 
-For configuration, please follow these instructions;
+To configure, follow these instructions:
 1. In [Microsoft 365 Defender](https://security.microsoft.com/), go to **Settings** and then **Identities**.
 2. Select **Syslog notifications**.
 3. To enable syslog notification, set the **Syslog service** toggle to the **on** position.
