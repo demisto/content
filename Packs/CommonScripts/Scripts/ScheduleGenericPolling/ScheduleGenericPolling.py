@@ -21,19 +21,20 @@ def parseIds(idsArg):
 
 
 def main():
-    ids = parseIds(demisto.getArg('ids'))
-    dt: str = demisto.getArg('dt')
-    pollingCommand = demisto.getArg('pollingCommand')
-    pollingCommandArgName = demisto.getArg('pollingCommandArgName')
+    args = demisto.args()
+    ids = parseIds(args.get('ids'))
+    dt: str = args.get('dt')
+    pollingCommand = args.get('pollingCommand')
+    pollingCommandArgName = args.get('pollingCommandArgName')
     tag = demisto.getArg('tag')
-    playbookId = ' playbookId="{}"'.format(demisto.getArg('playbookId') if 'playbookId' in demisto.args() else '')
+    playbookId = f' playbookId="{args.get("playbookId")}"' if args.get("playbookId") else ''
     interval = int(demisto.getArg('interval'))
     timeout = int(demisto.getArg('timeout'))
 
-    args_names = demisto.getArg('additionalPollingCommandArgNames').strip() \
-        if demisto.getArg('additionalPollingCommandArgNames') else None
-    args_values = demisto.getArg('additionalPollingCommandArgValues').strip() \
-        if demisto.getArg('additionalPollingCommandArgValues') else None
+    args_names = args.get('additionalPollingCommandArgNames').strip() \
+        if args.get('additionalPollingCommandArgNames') else None
+    args_values = args.get('additionalPollingCommandArgValues').strip() \
+        if args.get('additionalPollingCommandArgValues') else None
 
     if interval <= 0 or timeout <= 0:
         return_error("Interval and timeout must be positive numbers")
@@ -41,9 +42,9 @@ def main():
     # Verify correct dt path (does not verify condition!)
     if not demisto.dt(demisto.context(), dt):
         if not demisto.dt(demisto.context(), re.sub('\(.*\)', '', dt)):
-            return_error("Incorrect dt path: no ids found")
-        demisto.results("Warning: no ids matching the dt condition were found.\nVerify that the condition is correct and "
-                        "that all ids have finished running.")
+            return_error('Incorrect dt path: no ids found')
+        demisto.results('Warning: no ids matching the dt condition were found.\nVerify that the condition is correct and '
+                        'that all ids have finished running.')
     command_string = '''!GenericPollingScheduledTask pollingCommand="{0}" pollingCommandArgName="{1}"{2} ids="{3}" \
                         pendingIds="{4}" interval="{5}" timeout="{6}" tag="{7}" additionalPollingCommandArgNames="{8}" \
                         additionalPollingCommandArgValues="{9}"'''.format(pollingCommand, pollingCommandArgName, playbookId,
