@@ -6,7 +6,7 @@ You need to configure Forcepoint NGFW to forward Syslog messages in CEF format.
 Open Forcepoint NGFW interface, and follow these instructions;
 1. Select **Home**.
 2. Browse to **Others** > **Log Server**
-3. Right-click the Log Server from which you want to forward log data, then select **Properties**.
+3. Right-click the Log Server from which you want to forward log data, and select **Properties**.
 4. Click the **Log Forwarding** tab.
 5. To create a rule, click **Add**.
 6. In the select **Target Host** cell, select the external host to which the log data is forwarded.
