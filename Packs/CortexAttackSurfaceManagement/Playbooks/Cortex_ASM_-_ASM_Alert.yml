@@ -14,7 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -45,13 +45,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 90,
-          "y": 5300
+          "x": 100,
+          "y": 5600
         }
       }
     note: false
@@ -70,10 +70,10 @@ tasks:
       id: cf841205-1bc1-4490-89f8-027e330c91d2
       version: -1
       name: Triage and Qualifier Stage
-      description: ''
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "100"
@@ -383,7 +383,7 @@ tasks:
       {
         "position": {
           "x": -780,
-          "y": 5130
+          "y": 5110
         }
       }
     note: false
@@ -516,66 +516,6 @@ tasks:
       sender: Your SOC team
       expired: false
       totalanswers: 0
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
-    taskid: bfa7a592-ab98-48d6-8013-8c41fe175667
-    type: condition
-    task:
-      id: bfa7a592-ab98-48d6-8013-8c41fe175667
-      version: -1
-      name: Auto-close or keep open?
-      description: Determines if alert will be closed or kept open.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "4"
-      Auto-Close:
-      - "74"
-      Automated-Remediation:
-      - "75"
-    separatecontext: false
-    conditions:
-    - label: Automated-Remediation
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: alert.asmremediation
-                accessor: Outcome
-            iscontext: true
-          right:
-            value:
-              simple: Success
-    - label: Auto-Close
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Select a next step.Answers
-                accessor: "0"
-            iscontext: true
-          right:
-            value:
-              simple: Close Now
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 90,
-          "y": 4940
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -1685,80 +1625,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "74":
-    id: "74"
-    taskid: e555dece-d030-41ce-8859-da2ad3eac0be
-    type: regular
-    task:
-      id: e555dece-d030-41ce-8859-da2ad3eac0be
-      version: -1
-      name: Close alert (Auto-Close)
-      description: Close the current alert because auto-close was selected,
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      closeNotes:
-        simple: Alert status set to 'Resolved' by Active Response Module
-      closeReason:
-        simple: STATUS_160_RESOLVED
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -180,
-          "y": 5130
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "75":
-    id: "75"
-    taskid: 306c3a59-d1bd-478c-8a8f-ee4d98b55547
-    type: regular
-    task:
-      id: 306c3a59-d1bd-478c-8a8f-ee4d98b55547
-      version: -1
-      name: Close alert (Remediated Automatically)
-      description: Close the current alert because Automated Remediation path was selected.
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      closeNotes:
-        simple: Alert status set to 'Resolved - Remediated Automatically' by Active Response Module
-      closeReason:
-        simple: Resolved - Remediated Automatically
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 400,
-          "y": 5130
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "81":
     id: "81"
     taskid: 1443dc39-c07c-4a04-879c-985f6da6b95e
@@ -1776,7 +1642,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "23"
+      - "110"
     scriptarguments:
       gridfield:
         simple: asmalertsummary
@@ -2470,8 +2336,6 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      Prompt no AR:
-      - "34"
       '#default#':
       - "36"
       Automated Remediation:
@@ -2484,6 +2348,8 @@ tasks:
       - "31"
       Prompt All Options - S3:
       - "108"
+      Prompt no AR:
+      - "34"
       Prompt no ServiceNow:
       - "35"
       Prompt no ServiceNow - S3:
@@ -2833,6 +2699,276 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "110":
+    id: "110"
+    taskid: b4ca9b41-4ef8-47df-8873-cdfcf1830553
+    type: condition
+    task:
+      id: b4ca9b41-4ef8-47df-8873-cdfcf1830553
+      version: -1
+      name: Close or keep open?
+      description: Determines if alert will be closed or kept open.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Automated-Remediation':
+      - "112"
+      Automated-Remediation With Rule Match:
+      - "114"
+      Close Now:
+      - "111"
+      Close Now With Rule Match:
+      - "113"
+    separatecontext: false
+    conditions:
+    - label: Automated-Remediation With Rule Match
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmremediation
+                accessor: Outcome
+            iscontext: true
+          right:
+            value:
+              simple: Success
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: asmremediationpathrule
+            iscontext: true
+    - label: ' Automated-Remediation'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmremediation
+                accessor: Outcome
+            iscontext: true
+          right:
+            value:
+              simple: Success
+          ignorecase: true
+    - label: Close Now With Rule Match
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Select a next step.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: Close Now
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: asmremediationpathrule
+            iscontext: true
+    - label: Close Now
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Select a next step.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: Close Now
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 4940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: f50bfd4c-7402-4bb8-8047-489f3d93d495
+    type: regular
+    task:
+      id: f50bfd4c-7402-4bb8-8047-489f3d93d495
+      version: -1
+      name: Close alert (close now)
+      description: Close the current alert because auto-close was selected,
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      closeNotes:
+        simple: Alert status set to 'Resolved' by Active Response Module
+      closeReason:
+        simple: STATUS_160_RESOLVED
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 5300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: 710aec66-336d-4cbc-8cbd-0fc5198f5e4c
+    type: regular
+    task:
+      id: 710aec66-336d-4cbc-8cbd-0fc5198f5e4c
+      version: -1
+      name: Close alert (remediated automatically)
+      description: Close the current alert because Automated Remediation path was selected.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      closeNotes:
+        simple: Alert status set to 'Resolved - Remediated Automatically' by Active Response Module
+      closeReason:
+        simple: Resolved - Remediated Automatically
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 5300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "113":
+    id: "113"
+    taskid: 3660106c-2c7e-4a5a-8d77-13c38f87c6c4
+    type: regular
+    task:
+      id: 3660106c-2c7e-4a5a-8d77-13c38f87c6c4
+      version: -1
+      name: Close alert (close now) with rule match
+      description: Close the current alert because auto-close was selected,
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      closeNotes:
+        complex:
+          root: alert.asmremediationpathrule
+          accessor: rule_name
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Alert status set to ''Resolved'' by Active Response Module - Remediation Path Rule: '
+              suffix: {}
+      closeReason:
+        simple: STATUS_160_RESOLVED
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 5110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "114":
+    id: "114"
+    taskid: 18f94705-5309-4adb-8735-b0a2d4beaf66
+    type: regular
+    task:
+      id: 18f94705-5309-4adb-8735-b0a2d4beaf66
+      version: -1
+      name: Close alert (remediated automatically) with rule match
+      description: Close the current alert because Automated Remediation path was selected.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      closeNotes:
+        complex:
+          root: alert.asmremediationpathrule
+          accessor: rule_name
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Alert status set to ''Resolved - Remediated Automatically'' by Active Response Module - Remediation Path Rule: '
+              suffix: {}
+      closeReason:
+        simple: Resolved - Remediated Automatically
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 5110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -2844,7 +2980,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5215,
+        "height": 5515,
         "width": 3450,
         "x": -1700,
         "y": 150
@@ -2879,6 +3015,6 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
+fromversion: 6.8.0
 contentitemexportablefields:
   contentitemfields: {}
