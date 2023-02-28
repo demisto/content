@@ -1,5 +1,5 @@
 {
-    "name": "AWS - AccessAnalyzer (beta)",
+    "name": "AWS - AccessAnalyzer",
     "description": "Amazon Web Services IAM Access Analyzer",
     "support": "xsoar",
     "currentVersion": "1.1.0",

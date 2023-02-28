@@ -40,7 +40,7 @@ def list_analyzers_command(aws_client, args):
         outputs_prefix='AWS.AccessAnalyzer.Analyzers',
         outputs_key_field='arn',
         outputs=analyzers,
-        readable_output=tableToMarkdown("AWS Access Analyzer Analyzers", analyzers),
+        readable_output=tableToMarkdown("AWS Access Analyzer Analyzers", analyzers, headerTransform=pascalToSpace),
         raw_response=rew_response
     )
 
@@ -61,24 +61,34 @@ def list_analyzed_resource_command(aws_client, args):
         resource | {'analyzerArn': analyzer_arn}
         for resource in response['analyzedResources']
     ]
+    headers = ['resourceArn', 'resourceOwnerAccount', 'resourceType']
     return CommandResults(
-        outputs_prefix='AWS.AccessAnalyzer.Analyzers.Resource',
+        outputs_prefix='AWS.AccessAnalyzer.Resource',
         outputs_key_field='resourceArn',
         outputs=analyzed_resources,
-        readable_output=tableToMarkdown("AWS Access Analyzer Resource", analyzed_resources),
+        readable_output=tableToMarkdown("AWS Access Analyzer Resources",
+                                        analyzed_resources,
+                                        headers=headers,
+                                        headerTransform=pascalToSpace),
         raw_response=response
     )
 
 
 def list_findings_command(aws_client, args):
     response = get_findings(aws_client, args)
-    findings = response['findings']
-
+    findings = [
+        finding | {'analyzerArn': args.get('analyzerArn')}
+        for finding in response['findings']
+    ]
+    headers = ['id', 'resource', 'principal', 'condition', 'updatedAt', 'status']
     return CommandResults(
-        outputs_prefix='AWS.AccessAnalyzer.Analyzers.Finding',
+        outputs_prefix='AWS.AccessAnalyzer.Finding',
         outputs_key_field='id',
         outputs=findings,
-        readable_output=tableToMarkdown("AWS Access Analyzer Findings", findings),
+        readable_output=tableToMarkdown("AWS Access Analyzer Findings",
+                                        findings,
+                                        headers=headers,
+                                        headerTransform=pascalToSpace),
         raw_response=response
     )
 
@@ -93,10 +103,10 @@ def get_analyzed_resource_command(aws_client, args):
     resource['analyzerArn'] = args.get('analyzerArn')
 
     return CommandResults(
-        outputs_prefix='AWS.AccessAnalyzer.Analyzers.Resource',
+        outputs_prefix='AWS.AccessAnalyzer.Resource',
         outputs_key_field='id',
         outputs=resource,
-        readable_output=tableToMarkdown("AWS Access Analyzer Resource", resource),
+        readable_output=tableToMarkdown("AWS Access Analyzer Resource", resource, headerTransform=pascalToSpace),
         raw_response=response
     )
 
@@ -110,10 +120,10 @@ def get_finding_command(aws_client, args):
     finding['analyzerArn'] = args.get('analyzerArn')
 
     return CommandResults(
-        outputs_prefix='AWS.AccessAnalyzer.Analyzers.Finding',
+        outputs_prefix='AWS.AccessAnalyzer.Finding',
         outputs_key_field='id',
         outputs=finding,
-        readable_output=tableToMarkdown("AWS Access Analyzer Findings", finding),
+        readable_output=tableToMarkdown("AWS Access Analyzer Finding", finding, headerTransform=pascalToSpace),
         raw_response=response
     )
 

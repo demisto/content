@@ -1,1 +1,4 @@
-{"breakingChanges":true,"breakingChangesNotes":"The `AWS.AccessAnalyzer.Findings` context path in the ***aws-access-analyzer-list-findings*** command is changed to `AWS.AccessAnalyzer.Analyzers.Finding`."}
+{
+"breakingChanges":true,
+"breakingChangesNotes":"The context path prefix changed to be `AWS.AccessAnalyzer` instead of `AWS.AccessAnalyzer.Analyzers`in some commands."
+}

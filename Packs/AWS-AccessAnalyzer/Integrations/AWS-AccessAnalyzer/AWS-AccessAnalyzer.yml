@@ -28,16 +28,20 @@ configuration:
   required: false
   type: 15
 - display: Role Arn
+  additionalinfo: The Amazon Resource Name (ARN) role used for EC2 instance authentication. If this is used, an access key and secret key are not required.
   name: roleArn
   required: false
   type: 0
 - display: Role Session Name
+  additionalinfo: A descriptive name for the assumed role session. For example, xsiam-IAM.integration-Role_SESSION
   name: roleSessionName
   required: false
   type: 0
 - display: Role Session Duration
+  additionalinfo: 'The maximum length of each session in seconds. The integration will have the permissions assigned only when the session is initiated and for the defined duration.'
   name: sessionDuration
   required: false
+  defaultvalue: 900
   type: 0
 - display: Fetch incidents
   name: isFetch
@@ -204,11 +208,14 @@ script:
     execution: false
     name: aws-access-analyzer-list-analyzed-resource
     outputs:
-    - contextPath: AWS.AccessAnalyzer.Analyzers.Resource
+    - contextPath: AWS.AccessAnalyzer.Resource
       description: List of analyzed resources.
       type: Unknown
-    - contextPath: AWS.AccessAnalyzer.Analyzers.Resource.resourceArn
+    - contextPath: AWS.AccessAnalyzer.Resource.resourceArn
       description: The resource Arn.
+      type: String
+    - contextPath: AWS.AccessAnalyzer.Resource.analyzerArn
+      description: The analyzer Arn.
       type: String
   - arguments:
     - default: false
@@ -277,11 +284,14 @@ script:
     execution: false
     name: aws-access-analyzer-list-findings
     outputs:
-    - contextPath: AWS.AccessAnalyzer.Analyzers.Finding
+    - contextPath: AWS.AccessAnalyzer.Finding
       description: Access Analyzer findings.
       type: Unknown
-    - contextPath: AWS.AccessAnalyzer.Analyzers.Finding.id
+    - contextPath: AWS.AccessAnalyzer.Finding.id
       description: The Finding ID.
+      type: String
+    - contextPath: AWS.AccessAnalyzer.Finding.analyzerArn
+      description: The analyzer arn.
       type: String
   - arguments:
     - default: false
@@ -325,11 +335,14 @@ script:
     execution: false
     name: aws-access-analyzer-get-analyzed-resource
     outputs:
-    - contextPath: AWS.AccessAnalyzer.Analyzers.Resource
+    - contextPath: AWS.AccessAnalyzer.Resource
       description: Analyzed resource detail.
       type: Unknown
-    - contextPath: AWS.AccessAnalyzer.Analyzers.Resource.id
+    - contextPath: AWS.AccessAnalyzer.Resource.id
       description: The Resource id.
+      type: String
+    - contextPath: AWS.AccessAnalyzer.Resource.analyzerArn
+      description: The analyzer arn.
       type: String
   - arguments:
     - default: false
@@ -373,11 +386,14 @@ script:
     execution: false
     name: aws-access-analyzer-get-finding
     outputs:
-    - contextPath: AWS.AccessAnalyzer.Analyzers.Finding
+    - contextPath: AWS.AccessAnalyzer.Finding
       description: Finding details.
       type: Unknown
-    - contextPath: AWS.AccessAnalyzer.Analyzers.Finding.id
+    - contextPath: AWS.AccessAnalyzer.Finding.id
       description: The Finding ID.
+      type: String
+    - contextPath: AWS.AccessAnalyzer.Finding.analyzerArn
+      description: The analyzer arn.
       type: String
   - arguments:
     - default: false
@@ -471,7 +487,7 @@ script:
     description: Updates findings with the new values provided in the request.
     execution: false
     name: aws-access-analyzer-update-findings
-  dockerimage: demisto/boto3py3:1.0.0.49151
+  dockerimage: demisto/boto3py3:1.0.0.49259
   isfetch: true
   longRunning: false
   longRunningPort: false
