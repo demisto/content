@@ -2217,7 +2217,7 @@ def fetch_incidents(client: Client) -> list:
             incidents.append({
                 'name': f'SEDR Incident {incident_id}',
                 'details': incident.get("description"),
-                'severity': XSOAR_SEVERITY_MAP.get(str(incident.get('priority'))),
+                'severity': XSOAR_SEVERITY_MAP.get(str(incident['priority'])),
                 'occurred': incident.get('incident_created'),
                 'dbotMirrorId': str(incident_id),
                 'rawJSON': json.dumps(
