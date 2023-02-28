@@ -17,7 +17,7 @@ To configure, follow these instructions:
 7. Click **Save**.
 8. Once you've configured the **Syslog service**, you can choose which types of notifications (alerts or health issues) to send to your Syslog server.
 
-* Additional documentation for syslog notifications is available [here](https://learn.microsoft.com/en-us/defender-for-identity/notifications#syslog-notifications)
+* Additional documentation for syslog notifications is available [here](https://learn.microsoft.com/en-us/defender-for-identity/notifications#syslog-notifications).
 
 ## Collect Events from Vendor
 
