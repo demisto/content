@@ -3539,7 +3539,11 @@ INDICATOR_VALUE_AND_TYPE = [
     ('*castaneda-thornton.com', 'DomainGlob'),
     (
         '53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b',
-        'File')
+        'File'),
+    ('1[.]1[.]1[.]1', 'IP'),
+    ('test[@]test.com', 'Email'),
+    ('https[:]//www[.]test[.]com/abc', 'URL'),
+    ('test[.]com', 'Domain')
 ]
 
 
@@ -7621,13 +7625,13 @@ class TestFetchWithLookBack:
         """
 
         from CommonServerPython import get_fetch_run_time_range, filter_incidents_by_duplicates_and_limit, \
-            update_last_run_object
+            update_last_run_object, arg_to_number
         date_format = '%Y-%m-%dT%H:%M:%S' + ('Z' if time_aware else '')
         incidents = []
 
         params = demisto.params()
         fetch_limit_param = params.get('limit')
-        look_back = int(params.get('look_back', 0))
+        look_back = arg_to_number(params.get('look_back', 0))
         first_fetch = params.get('first_fetch')
         time_zone = params.get('time_zone', 0)
 
@@ -7673,6 +7677,8 @@ class TestFetchWithLookBack:
 
     @pytest.mark.parametrize('params, result_phase1, result_phase2, expected_last_run', [
         ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
+         {'limit': 2, 'time': INCIDENTS[3]['created']}),
+        ({'limit': 2, 'first_fetch': '40 minutes', 'look_back': None}, [INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
          {'limit': 2, 'time': INCIDENTS[3]['created']}),
         ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [],
          {'limit': 3, 'time': INCIDENTS[4]['created']}),
