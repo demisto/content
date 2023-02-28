@@ -3651,7 +3651,7 @@ VALID_URL_INDICATORS = [
     'wwW.GooGle.com/path',
     '2001:db8:85a3:8d3:1319:8a2e:370:7348/65/path/path',
     '2001:db8:3333:4444:5555:6666:7777:8888/32/path/path',
-    '2001:db8:85a3:8d3:1319:8a2e:370:7348/h'
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/h',
     '1.1.1.1/7/server',
     "1.1.1.1/32/path",
     'https://evil.tld/evil.html',
@@ -3716,7 +3716,8 @@ def test_valid_url_indicator_types(indicator_value):
     Then
     - The indicators are classified as URL indicators.
     """
-    assert re.match(urlRegex, indicator_value)
+    regex_match = re.match(urlRegex, indicator_value)
+    assert regex_match.group(0) == indicator_value
 
 
 INVALID_URL_INDICATORS = [
