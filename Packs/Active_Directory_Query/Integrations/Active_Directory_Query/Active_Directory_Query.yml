@@ -6,7 +6,7 @@ sectionorder:
 - Collect
 name: Active Directory Query v2
 display: Active Directory Query v2
-category: Data Enrichment & Threat Intelligence
+category: Authentication & Identity Management
 description: The Active Directory Query integration enables you to access and manage Active Directory objects (users, contacts, and computers).
 configuration:
 - display: Server IP address (for example, 192.168.0.1)
