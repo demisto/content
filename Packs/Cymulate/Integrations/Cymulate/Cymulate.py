@@ -1,7 +1,6 @@
 from CommonServerPython import *
 
 ''' IMPORTS '''
-import requests
 import dateparser
 from datetime import datetime, timedelta
 import enum
