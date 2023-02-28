@@ -315,7 +315,7 @@ def do_changes_on_branch(packs_path: Path):
                        'XDRSyncScript', 'XDRSyncScript_new_name')
 
     # case 12: Verify setting hidden dependency does not add this dependency to the metadata - MicrosoftAdvancedThreatAnalytics
-    add_dependency(packs_path / 'Packs/MicrosoftAdvancedThreatAnalytics', packs_path / 'Microsoft365Defender',
+    add_dependency(packs_path / 'MicrosoftAdvancedThreatAnalytics', packs_path / 'Microsoft365Defender',
                    mandatory=False)
 
     logging.info("Finished making test changes on the branch")
