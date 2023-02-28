@@ -1,7 +1,7 @@
 commonfields:
-  id: CiscoWSA
+  id: Cisco WSA
   version: -1
-name: CiscoWSA
+name: Cisco WSA
 display: Cisco WSA
 category: Network Security
 description: Cisco Secure Web Appliance protects your organisation by automatically blocking risky sites and testing unknown sites before allowing users to click on them.
