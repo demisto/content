@@ -1,6 +1,7 @@
 [MODEL: dataset = microsoft_windows_raw]
+filter provider_name="AD FS Auditing"
 // xml part
-alter audit_type = arrayindex(regextract(event_data , "<AuditType>([^<]+)"),0),
+| alter audit_type = arrayindex(regextract(event_data , "<AuditType>([^<]+)"),0),
     accountName = arrayindex(regextract(message ,"Account\sName\:\s+(\S+)"),0),
     userName = to_string(json_extract_scalar(user, "$.name")),
     user_id = arrayindex(regextract(event_data ,"\<UserId\>([^\<]*)"),0),
