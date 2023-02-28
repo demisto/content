@@ -5,11 +5,11 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 from typing import Tuple, Dict, List, Any
 from _collections import defaultdict
-import requests
+import urllib3
 import ast
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 API_VERSION = '/api/v3/'
