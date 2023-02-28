@@ -95,14 +95,6 @@
          ]
       },
       {
-         "id":"Traps",
-         "reason":"Integration is Deprecated.",
-         "ignored_native_images": [
-            "native:8.1",
-            "native:dev"
-         ]
-      },
-      {
          "id":"Rasterize",
          "reason":"Issue: CRTX-72338.",
          "ignored_native_images":[
