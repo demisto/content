@@ -72,7 +72,7 @@ def test_fetch_events(mocker):
         mock_events = fetch_events(client, limit=2, last_run=arg_to_datetime('3 days').strftime(DATE_FORMAT))
 
     assert len(mock_events) == 2
-    assert mock_last_run.call_args[0][0] == {'last_run_time': '2023-02-20T05:04:19.601Z', 'last_run_ids': {'333333'}}
+    assert mock_last_run.call_args[0][0] == {'last_run_ids': ['333333'], 'last_run_time': '2023-02-20T05:04:19'}
     assert first_mock_request.last_request.qs.get('triggered')[0].upper() == '[2023-02-18T00:00:00.000000Z,]'
 
     mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run.call_args[0][0])
@@ -85,8 +85,8 @@ def test_fetch_events(mocker):
         mock_events = fetch_events(client, limit=2, last_run=last_run_time)
 
     assert len(mock_events) == 1
-    assert mock_last_run.call_args[0][0] == {'last_run_time': '2023-02-20T05:04:24.673Z', 'last_run_ids': {'555555'}}
-    assert second_mock_request.last_request.qs.get('triggered')[0].upper() == '[2023-02-20T05:04:19.601Z,]'
+    assert mock_last_run.call_args[0][0] == {'last_run_ids': ['555555'], 'last_run_time': '2023-02-20T05:04:24'}
+    assert second_mock_request.last_request.qs.get('triggered')[0].upper() == '[2023-02-20T05:04:19,]'
 
 
 def test_main(mocker):

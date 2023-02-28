@@ -107,27 +107,30 @@ def fetch_events(client: Client, **kwargs) -> list:
     params = {
         'triggered': f'[{kwargs.get("last_run")},]',
         'orderby': 'triggered',
-        'direction': 'desc',
+        'direction': 'asc',
         'limit': kwargs.get('limit')
     }
     response = client.get_alerts(params)
 
     if events := response.get('data', {}).get('results', []):
-        if last_run_event_ids := demisto.getLastRun().get('last_run_ids'):
-            events = list(filter(lambda x: x.get('id') not in last_run_event_ids, events))
+        # Obtain the latest triggered time (for the next fetch round), without milliseconds since the API ignores them.
+        next_run_time = events[0].get('triggered').split('.')[0]
 
-        # Get the latest triggered time to start fetching the next round from this time.
-        next_run_time = events[-1].get('triggered')
         # We need the IDs of the events with the same trigger time as the latest,
         # So that we can remove them in the next fetch, Since we are fetching from (including) this time.
-        next_run_event_ids = {event.get('id') for event in events if event.get('triggered') == next_run_time}
+        next_run_ids = {event.get('id') for event in events if event.get('triggered').split('.')[0] == next_run_time}
 
         # In case all events were triggered at the same time and the limit equals their amount,
         # We should increase the next run time, Otherwise the fetch will get stuck at this time forever.
-        if len(next_run_event_ids) == len(events) == int(kwargs.get('limit')):  # type: ignore
+        if len(next_run_ids) == int(kwargs.get('limit')):  # type: ignore
             next_run_time = (datetime.strptime(next_run_time, DATE_FORMAT) + timedelta(seconds=1)).strftime(DATE_FORMAT)
 
-        demisto.setLastRun({'last_run_time': next_run_time, 'last_run_ids': list(next_run_event_ids)})
+        # Filter out events that have already been fetched.
+        if last_run_event_ids := demisto.getLastRun().get('last_run_ids'):
+            demisto.info(f'this is the last_run_event_ids {last_run_event_ids}')
+            events = list(filter(lambda x: x.get('id') not in last_run_event_ids, events))
+
+        demisto.setLastRun({'last_run_time': next_run_time, 'last_run_ids': list(next_run_ids)})
 
     return events
 
@@ -172,13 +175,11 @@ def main() -> None:
         if command == 'test-module':
             test_module(client)
 
-        if command in ('recorded-future-get-events', 'fetch-events'):
+        elif command in ('recorded-future-get-events', 'fetch-events'):
             if command == 'recorded-future-get-events':
-                should_push_events = argToBoolean(args.get('should_push_events', False))
                 events = get_events(client, params={'limit': args.get('limit', 10)})
 
-            else:  # command == 'fetch-events'
-                should_push_events = True
+            if command == 'fetch-events':
                 if not (last_run := demisto.getLastRun().get('last_run_time')):
                     last_run = arg_to_datetime(params.get('first_fetch', '3 days')).strftime(DATE_FORMAT)  # type: ignore
                 events = fetch_events(
@@ -187,10 +188,8 @@ def main() -> None:
                     last_run=last_run
                 )
 
-            if should_push_events:
+            if argToBoolean(args.get('should_push_events', False)) or command == 'fetch-events':
                 add_time_key_to_events(events)
-                demisto.info(f'this is the event: {events[0]}')
-                demisto.info(f'this is the last run: {demisto.getLastRun()}')
                 send_events_to_xsiam(
                     events,
                     vendor=VENDOR,
