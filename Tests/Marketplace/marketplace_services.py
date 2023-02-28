@@ -2660,10 +2660,6 @@ class Pack(object):
             logging.debug(f'(1) {first_level_dependencies=}')
             logging.debug(f'(1) {all_levels_dependencies=}')
 
-        # update the calculated dependencies with the hardcoded dependencies
-        first_level_dependencies.update(self.user_metadata[Metadata.DEPENDENCIES])
-        logging.debug(f'(3) {first_level_dependencies=}')
-
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
         # They can be overridden in the user metadata to be not mandatory so we need to check there as well
         core_packs = GCPConfig.get_core_packs(marketplace)
