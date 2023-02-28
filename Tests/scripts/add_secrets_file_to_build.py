@@ -5,7 +5,7 @@ from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.utils.GoogleSecretManagerModule import GoogleSecreteManagerModule
 from Tests.scripts.utils import logging_wrapper as logging
 from pathlib import Path
-
+import yaml
 
 def get_git_diff(branch_name, repo):
     changed_files: list[str] = []
@@ -88,15 +88,26 @@ def run(options):
     root_dir1 = paath
     root_dir_instance1 = pathlib.Path(root_dir1)
     filesindir1 = [item.name for item in root_dir_instance1.glob("*")]
-    print(branch_name)
+    print(branch_name)# the branch name
     print('******************************')
+    print(filesindir) # the files in content
+    print('******************************')
+    print(changed_files) # the array of changed files
+    print('******************************')
+    print(paath) # the path of the changed integration
+    print('******************************')
+    print(filesindir1) # the content of the paath location
+    root_dir = Path(paath)
+    root_dir_instance = pathlib.Path(root_dir)
+    filesindir = [item.name for item in root_dir_instance.glob("*") if str(item.name).endswith('yml')]
     print(filesindir)
-    print('******************************')
-    print(changed_files)
-    print('******************************')
-    print(paath)
-    print('******************************')
-    print(filesindir1)
+    for yml_file in filesindir:
+        with open(f'{paath}/{yml_file}', "r") as stream:
+            try:
+                d = yaml.safe_load(stream)
+                print(d['commonfields']['id'])
+            except yaml.YAMLError as exc:
+                print(exc)
     secret_conf = GoogleSecreteManagerModule(options.service_account)
     secrets = secret_conf.list_secrets(options.gsm_project_id, with_secret=True, attr_validation=('name', 'params'))
     secret_file = {
