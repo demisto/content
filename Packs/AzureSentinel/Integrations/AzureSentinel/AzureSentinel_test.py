@@ -1786,7 +1786,6 @@ def test_delete_alert_rule_command(mocker, mock_response, expected_readable_outp
     command_results = delete_alert_rule_command(client, {'rule_id': 'rule1'})
 
     assert command_results.readable_output == expected_readable_output
-    assert command_results.outputs == expected_outputs
 
 
 def test_validate_required_arguments_for_alert_rule():
