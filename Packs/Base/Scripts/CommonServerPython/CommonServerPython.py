@@ -9428,6 +9428,9 @@ class IndicatorsSearcher:
     :type limit: ``Optional[int]``
     :param limit: the current upper limit of the search (can be updated after init)
 
+    :type sort: ``List[Dict]``
+    :param sort: Array of sort params in order of importance. Item structure: {"field": string, "asc": boolean}
+
     :return: No data returned
     :rtype: ``None``
     """
@@ -9441,7 +9444,8 @@ class IndicatorsSearcher:
                  size=100,
                  to_date=None,
                  value='',
-                 limit=None):
+                 limit=None,
+                 sort=None):
         # searchAfter is available in searchIndicators from version 6.1.0
         self._can_use_search_after = is_demisto_version_ge('6.1.0')
         # populateFields merged in https://github.com/demisto/server/pull/18398
@@ -9457,6 +9461,7 @@ class IndicatorsSearcher:
         self._value = value
         self._limit = limit
         self._total_iocs_fetched = 0
+        self._sort = sort
 
     def __iter__(self):
         return self
@@ -9550,7 +9555,8 @@ class IndicatorsSearcher:
             searchAfter=self._search_after_param if self._can_use_search_after else None,
             populateFields=self._filter_fields if self._can_use_filter_fields else None,
             # use paging as fallback when cannot use search_after
-            page=self.page if not self._can_use_search_after else None
+            page=self.page if not self._can_use_search_after else None,
+            sort=self._sort if self._sort else None,
         )
         res = demisto.searchIndicators(**search_args)
         if isinstance(self._page, int):

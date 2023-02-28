@@ -142,4 +142,4 @@ script:
   type: python
 tests:
 - TAXII2 Server Performance Test
-fromversion: 6.1.0
+fromversion: 6.6.0 # TODO
