@@ -512,7 +512,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.10.4"
+version = "1.10.5"
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
@@ -3440,7 +3440,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "e3d0c6f8f27e843c57e7f3633746dcfb4f2550f730a8e9ea50b65115c5f9722e"
+content-hash = "b04e76b62af4fde9654eb1659f50a5cdd2902e5fa351d0d4a4642c7acb7fad77"
 
 [metadata.files]
 aiodns = [
@@ -3943,8 +3943,8 @@ demisto-py = [
     {file = "demisto_py-3.2.7-py3-none-any.whl", hash = "sha256:32e48931970d6b5aa69f525edf10fb6e9ee4c190c88e7c6db57f84790d2b6b86"},
 ]
 demisto-sdk = [
-    {file = "demisto_sdk-1.10.4-py3-none-any.whl", hash = "sha256:997b24b1e2c561d5fba823966aca8b3e7ed73a97682377a44704a3db0c29ceb3"},
-    {file = "demisto_sdk-1.10.4.tar.gz", hash = "sha256:c180fc6f411f26513e83e22aa7eba45239f5e6541de827e442ad250d0edddfa6"},
+    {file = "demisto_sdk-1.10.5-py3-none-any.whl", hash = "sha256:241a5d492d8e6f23267e2a701c55d3f414073b94a025ce80fbd6bb3518139c71"},
+    {file = "demisto_sdk-1.10.5.tar.gz", hash = "sha256:67fcdc1db125ea7b28daf3b353c2fbe9fdb49578ac263282c2479350def44bae"},
 ]
 deprecated = [
     {file = "Deprecated-1.2.13-py2.py3-none-any.whl", hash = "sha256:64756e3e14c8c5eea9795d93c524551432a0be75629f8f29e67ab8caf076c76d"},
@@ -4935,6 +4935,7 @@ phrases-case = [
 ]
 pikepdf = [
     {file = "pikepdf-7.0.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:a80a38e9621a2a31164380eb9743ba3ebee36c0fc7b9c972930e7f26edc99328"},
+    {file = "pikepdf-7.0.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:977db2728da011005caa09f8dccf7b15b54ff857bbad83f791bd0d9e0c577f16"},
     {file = "pikepdf-7.0.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d79321c49d46195535c0dd28b841b33246282ffefcf904d10a1d33fd521b2df7"},
     {file = "pikepdf-7.0.0-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:7a813414bdd32391f2a70f8cf2402130f61ccbcc07a84c70b758ea19fb3fd574"},
     {file = "pikepdf-7.0.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6c263048707ed8919d14edce4d5875462ec66abb4846b63db3d151dd474e8882"},
@@ -4953,6 +4954,7 @@ pikepdf = [
     {file = "pikepdf-7.0.0-cp38-cp38-win32.whl", hash = "sha256:cbfd9abf49614acd9548c1fd3a62ec8aad00cb570823b3714b2f9f46420fda2c"},
     {file = "pikepdf-7.0.0-cp38-cp38-win_amd64.whl", hash = "sha256:73f1f24e8f3f832921adce68f9d93fa09430cb14a8ae1a4c3a98477d2f10aeee"},
     {file = "pikepdf-7.0.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:75928931b758071bcbe44125bd9712b9b82615ad397ac0fe1fc929df1671eaf9"},
+    {file = "pikepdf-7.0.0-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:9826beb73262e46db7c592a3d5e4f466ddf3fc7165d13c94d26d0eb0325b37a7"},
     {file = "pikepdf-7.0.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b246b1903044eb394e45c5a6012e5ab2cbf1e4abb3c848f722f65c078b89c9cf"},
     {file = "pikepdf-7.0.0-cp39-cp39-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:7a0abf788fa6acc636c1913c9f5c825858e8a75d531f862f6528ede03fd5699f"},
     {file = "pikepdf-7.0.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:17665ff0343ae7fb3647cd846d0a388f5b35a328edac8cddb2cb8883e7b155e0"},
