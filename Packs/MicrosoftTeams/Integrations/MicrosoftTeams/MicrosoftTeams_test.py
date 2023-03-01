@@ -1874,7 +1874,7 @@ def test_message_send_to_chat_command(mocker, requests_mock):
     mock_response = test_data.get('send_message_chat')
 
     mocker.patch('MicrosoftTeams.get_chat_id_and_type', return_value=(GROUP_CHAT_ID, 'group'))
-
+    mocker.patch('MicrosoftTeams.add_bot_to_chat', return_value='')
     requests_mock.post(
         f'{GRAPH_BASE_URL}/v1.0/chats/{GROUP_CHAT_ID}/messages',
         json=mock_response
