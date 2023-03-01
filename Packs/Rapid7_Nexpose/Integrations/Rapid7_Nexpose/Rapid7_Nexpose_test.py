@@ -1634,3 +1634,30 @@ def test_update_vulnerability_exception_status_command(mocker, mock_client: Clie
     )
 
     assert result.outputs is None
+
+
+@pytest.mark.parametrize("site_id, site_assets_mock_file, expected_post_data_file",
+                         [
+                             ("1", "client_get_site_assets", "start_site_scan_command")
+                         ])
+def test_start_site_scan_command(mocker, mock_client: Client, site_id: str,
+                                 site_assets_mock_file: str, expected_post_data_file: str):
+    """
+    Given: Valid parameters for the start_site_scan_command function.
+    When: Calling the start_site_scan_command function.
+    Then: Ensure a valid API call is made and no context output is returned.
+    """
+    site_assets_data = load_test_data("api_mock", site_assets_mock_file)
+    mocker.patch.object(Client, "get_site_assets", return_value=site_assets_data)
+
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+    start_site_scan_command(client=mock_client, site_id=site_id, name="Test Scan")
+
+    expected_post_data = load_test_data("expected_post_data", expected_post_data_file)
+
+    http_request.assert_called_with(
+        url_suffix=f"/sites/{site_id}/scans",
+        method="POST",
+        resp_type="json",
+        json_data=expected_post_data,
+    )
