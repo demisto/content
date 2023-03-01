@@ -4942,6 +4942,8 @@ def start_site_scan_command(client: Client, site_id: str | None = None, site_nam
                         hosts_list.add(address["ip"])
 
         hosts_list = list(hosts_list)
+        # Using sort to allow consistent unit-testing. Seems like set -> list conversion results in a random order.
+        hosts_list.sort()
 
     scan_response = client.start_site_scan(
         site_id=site.id,
