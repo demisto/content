@@ -58,7 +58,7 @@ def test_get_my_place_in_the_queue(mocker):
                                                              MockResponse('test/queue/1236', '06/04/2000'),
                                                              MockResponse('test/queue/1237', '03/04/2000')])
 
-    my_place_in_the_queue, previous_build_in_queue = get_my_place_in_the_queue(storage, 'test', '1238')
+    my_place_in_the_queue, previous_build_in_queue = get_my_place_in_the_queue(storage, 'test', '1235')
 
     assert my_place_in_the_queue == 1
     assert previous_build_in_queue == '1237'
