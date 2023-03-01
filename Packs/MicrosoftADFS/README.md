@@ -5,7 +5,7 @@ This pack includes XSIAM content.
 ​
 Note: The logs will be stored in the dataset named *microsoft_windows_raw*.
 
-To view logs only from the windows event log, please apply the following filter to the datamodel query: *| filter xdm.event.original_event_type="AD FS Auditing"*
+To view logs only from the Windows event log, apply the following filter to the datamodel query: *| filter xdm.event.original_event_type="AD FS Auditing"*
 ## Configuration on Server Side
 ​
 #### Validate that AD FS server role is enabled
