@@ -8,7 +8,7 @@ The flow of this playbook is as following:
 3) Check if there are any vulnerabilities or findings related to the instance.
 4) Check if there are any IAM permissions associated to the instance.
 5) Set the incident severity based on the results:
-  - LOW - No public IP was found.
+  - Low - No public IP was found.
   - Medium - Public IP was found, other checks didn't return results.
   - High - Public IP was found and also one of the other checks returned results.
   - Critical - Public IP was found and both of the other checks returned results.
