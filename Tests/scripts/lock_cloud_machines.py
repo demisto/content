@@ -175,7 +175,7 @@ def get_my_place_in_the_queue(storage_client: storage.Client, gcs_locks_path: st
     sorted_builds_in_queue = sorted(builds_in_queue, key=lambda d: d['time_created'], reverse=False)
 
     my_place_in_the_queue = next((index for (index, d) in enumerate(sorted_builds_in_queue) if d["name"] == job_id), None)
-    if not my_place_in_the_queue:
+    if my_place_in_the_queue is None:
         raise Exception("Unable to find the queue lock file, probably a problem creating the file")
     previous_build_in_queue = ''
     if my_place_in_the_queue > 0:
