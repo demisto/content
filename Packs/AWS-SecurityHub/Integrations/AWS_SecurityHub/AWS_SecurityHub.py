@@ -605,6 +605,40 @@ def last_update_to_time(last_update: str) -> int:
             return int(date_time.timestamp())
 
 
+def additional_kwargs_for_update_remote_data(parsed_args: UpdateRemoteSystemArgs):
+    """
+    Create the rest of kwargs for batch_update_findings.
+    Args:
+        parsed_args: UpdateRemoteSystemArgs - A dictionary containing the data regarding a modified incident,
+            including: data, entries, incident_changed, remote_incident_id, inc_status, delta.
+    Returns:
+        The additional part of kwargs dictionary.
+    """
+    delta = parsed_args.delta
+    data = parsed_args.data
+    demisto.debug(f'In additional_kwargs_for_update_remote_data {delta=}')
+    kwargs = {
+        "FindingIdentifiers": [{
+            "Id": data.get('FindingIdentifiers.Id'),
+            "ProductArn": data.get('FindingIdentifiers.ProductArn')
+        }],
+        'Severity': {
+            "Label": delta.get('Severity.Label')
+        },
+        # should contain only 1 state
+        'VerificationState': delta.get('VerificationState')[0] if delta.get('VerificationState') else None,
+        'Confidence': int(delta.get('Confidence')) if delta.get('Confidence') else None,
+        'Criticality': int(delta.get('Criticality')) if delta.get('Criticality') else None
+    }
+
+    if delta.get('Note.Text') or delta.get('Note.UpdatedBy'):
+        kwargs['Note'] = {
+            'Text': delta.get('Note.Text') if delta.get('Note.Text') else data.get('Note.Text'),
+            'UpdatedBy': delta.get('Note.UpdatedBy') if delta.get('Note.UpdatedBy') else data.get('Note.UpdatedBy')
+        }
+    return remove_empty_elements(kwargs)
+
+
 def disable_security_hub_command(client, args):
     kwargs = safe_load_json(args.get('raw_json', "{ }")) if args.get('raw_json') else {}
     response = client.disable_security_hub(**kwargs)
@@ -950,40 +984,6 @@ def update_remote_system_command(client: boto3.client, args: Dict[str, Any], clo
     else:
         demisto.debug(f'Skipping updating remote incident {remote_incident_id} as it did not change.')
     return remote_incident_id
-
-
-def additional_kwargs_for_update_remote_data(parsed_args: UpdateRemoteSystemArgs):
-    """
-    Create the rest of kwargs for batch_update_findings.
-    Args:
-        parsed_args: UpdateRemoteSystemArgs - A dictionary containing the data regarding a modified incident,
-            including: data, entries, incident_changed, remote_incident_id, inc_status, delta.
-    Returns:
-        The additional part of kwargs dictionary.
-    """
-    delta = parsed_args.delta
-    data = parsed_args.data
-    demisto.debug(f'In additional_kwargs_for_update_remote_data {delta=}')
-    kwargs = {
-        "FindingIdentifiers": [{
-            "Id": data.get('FindingIdentifiers.Id'),
-            "ProductArn": data.get('FindingIdentifiers.ProductArn')
-        }],
-        'Severity': {
-            "Label": delta.get('Severity.Label')
-        },
-        # should contain only 1 state
-        'VerificationState': delta.get('VerificationState')[0] if delta.get('VerificationState') else None,
-        'Confidence': int(delta.get('Confidence')) if delta.get('Confidence') else None,
-        'Criticality': int(delta.get('Criticality')) if delta.get('Criticality') else None
-    }
-
-    if delta.get('Note.Text') or delta.get('Note.UpdatedBy'):
-        kwargs['Note'] = {
-            'Text': delta.get('Note.Text') if delta.get('Note.Text') else data.get('Note.Text'),
-            'UpdatedBy': delta.get('Note.UpdatedBy') if delta.get('Note.UpdatedBy') else data.get('Note.UpdatedBy')
-        }
-    return remove_empty_elements(kwargs)
 
 
 def test_function(client):
