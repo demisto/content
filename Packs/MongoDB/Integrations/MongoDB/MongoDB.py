@@ -2,6 +2,7 @@ from CommonServerPython import *
 
 from json import JSONDecodeError
 from typing import List, Union, Tuple, Any, Optional
+from ast import literal_eval
 
 from bson.objectid import ObjectId
 from pymongo import UpdateMany, UpdateOne
@@ -274,8 +275,8 @@ def parse_and_validate_bulk_update_arguments(filter: str, update: str) -> Tuple[
     """
     # convert raw command arguments (filter, update) to list of dictionaries
     try:
-        filters = list(eval(str(f'[{filter}]')))
-        updates = list(eval(str(f'[{update}]')))
+        filters = list(literal_eval(str(f'[{filter}]')))
+        updates = list(literal_eval(str(f'[{update}]')))
     except SyntaxError as e:
         raise DemistoException(
             'There was an error trying to parse `filter` or `update` arguments, please make sure the input is correct.') from e
