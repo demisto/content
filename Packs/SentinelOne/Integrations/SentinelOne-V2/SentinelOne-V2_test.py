@@ -523,10 +523,18 @@ def test_run_remote_script(mocker, requests_mock):
 
     call = sentinelone_v2.return_results.call_args_list
     command_results = call[0].args[0]
-    assert command_results.outputs == {'affected': 1, 'parentTaskId': None, 'pending': None, 'pendingExecutionId': None}
+    assert command_results.outputs == {'affected': 1}
 
 
 def test_initiate_endpoint_scan(mocker, requests_mock):
+    """
+    Given
+        - required agent_ids argument
+    When
+        - running sentinelone-initiate-endpoint-scan command
+    Then
+        - returns a table of result had the details, like agent id and status of the scan
+    """
     requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/agents/actions/initiate-scan",
                        json={"data": {"affected": 1}})
     mocker.patch.object(demisto, 'params', return_value={'token': 'token',
@@ -546,6 +554,14 @@ def test_initiate_endpoint_scan(mocker, requests_mock):
 
 
 def test_get_installed_applications(mocker, requests_mock):
+    """
+    Given
+        - required agent_ids argument
+    When
+        - running sentinelone-get-installed-applications command
+    Then
+        - returns a table of result had the list of installed applications on the provided agent
+    """
     requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/agents/applications",
                       json={"data": [{"name": "test", "publisher": "abc", "size": 50,
                             "version": "2.1", "installedDate": "2023-02-10"}]})
@@ -620,7 +636,7 @@ def test_get_modified_remote_data_command(mocker, requests_mock):
     assert command_results == {'modified_incident_ids': ['123456']}
 
 
-def test_update_remote_system_command(mocker, requests_mock):
+def test_update_remote_system_command(requests_mock):
     """
     Given
         - incident changes (one of the mirroring field changed or it was closed in XSOAR)
@@ -630,22 +646,13 @@ def test_update_remote_system_command(mocker, requests_mock):
         - the relevant incident is updated with the corresponding fields in the remote system
         - the returned result corresponds to the incident ID
     """
-    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/threats",
-                      json={"data": [{"name": "test", "id": "123456"}]})
-    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
-                                                         'url': 'https://usea1.sentinelone.net',
-                                                         'api_version': '2.1',
-                                                         'fetch_threat_rank': '4'})
-    mocker.patch.object(demisto, 'command', return_value='update-remote-system')
-    mocker.patch.object(demisto, 'args', return_value={
-        'id': '123456'
-    })
-    mocker.patch.object(sentinelone_v2, "return_results")
-    main()
-
-    call = sentinelone_v2.return_results.call_args_list
-    command_results = call[0].args[0]
-    assert command_results is None
+    args = {
+        'delta': {'sentinelonethreatanalystverdict': '', 'sentinelonethreatstatus': '', 'closeNotes': 'a test'},
+        'incidentChanged': True,
+        'remoteId': "123456"
+    }
+    command_result = sentinelone_v2.update_remote_system_command(requests_mock, args)
+    assert command_result == "123456"
 
 
 def test_get_mapping_fields_command():

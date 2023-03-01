@@ -855,13 +855,13 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def get_s1_threats_information(self, threat_ids):
+    def get_s1_threats_information(self, threat_ids: str) -> dict:
         response = self._http_request(method="GET", url_suffix=f"threats?ids={threat_ids}")
         return response.get("data", [])
 
     def run_remote_script_request(self,
-                                  account_ids, script_id, output_destination,
-                                  task_description, output_directory, agent_ids):
+                                  account_ids: list, script_id: str, output_destination: str,
+                                  task_description: str, output_directory: str, agent_ids: list) -> dict:
         endpoint_url = "remote-scripts/execute"
         payload = {
             "filter": {
@@ -2944,31 +2944,22 @@ def run_remote_script_command(client: Client, args: dict) -> CommandResults:
     Run a remote script that was uploaded to the SentinelOne Script Library
     """
 
-    context = {}
     headers = ["pendingExecutionId", "pending", "affected", "parentTaskId"]
     # Get arguments
     account_ids = argToList(args.get("account_ids"))
-    script_id = args.get("script_id")
-    output_destination = args.get("output_destination")
-    task_description = args.get("task_description")
-    output_directory = args.get("output_directory")
+    script_id = args.get("script_id", "")
+    output_destination = args.get("output_destination", "")
+    task_description = args.get("task_description", "")
+    output_directory = args.get("output_directory", "")
     agent_ids = argToList(args.get("agent_ids"))
 
     run_remote_script = client.run_remote_script_request(
         account_ids, script_id, output_destination, task_description, output_directory, agent_ids)
 
-    if run_remote_script:
-        context = {
-            "pendingExecutionId": run_remote_script.get("pendingExecutionId"),
-            "pending": run_remote_script.get("pending"),
-            "affected": run_remote_script.get("affected"),
-            "parentTaskId": run_remote_script.get("parentTaskId")
-        }
-
     return CommandResults(
-        readable_output=tableToMarkdown("Sentinel One - Run Remote Script", context, headers=headers, removeNull=True),
+        readable_output=tableToMarkdown("SentinelOne - Run Remote Script", run_remote_script, headers=headers, removeNull=True),
         outputs_prefix="SentinelOne.RunRemoteScript",
-        outputs=context,
+        outputs=run_remote_script,
         raw_response=run_remote_script)
 
 
@@ -2987,16 +2978,17 @@ def get_mapping_fields_command():
 
 
 def update_remote_incident(client: Client, threat_id: str, sentinelone_analyst_verdict: str,
-                           sentinelone_threat_status: str, closing_notes: str) -> str:
+                           sentinelone_threat_status: str, closing_notes: str):
     if sentinelone_analyst_verdict:
         action = ANALYST_VERDICT.get(sentinelone_analyst_verdict, None)
-        response = client.update_threat_analyst_verdict_request(threat_ids=argToList(threat_id), action=action)
-        if response.get("affected") and int(response.get("affected")) > 0:
-            demisto.debug(f"Successfully updated the threat analyst verdict to {action}")
-            note = f"XSOAR - Updated the threat analyst verdict to {sentinelone_analyst_verdict}"
-            client.write_threat_note_request(threat_ids=argToList(threat_id), note=note)
-        else:
-            demisto.debug("Unable to update the analyst verdict")
+        if action:
+            response = client.update_threat_analyst_verdict_request(threat_ids=argToList(threat_id), action=action)
+            if response.get("affected") and int(response.get("affected")) > 0:
+                demisto.debug(f"Successfully updated the threat analyst verdict to {action}")
+                note = f"XSOAR - Updated the threat analyst verdict to {sentinelone_analyst_verdict}"
+                client.write_threat_note_request(threat_ids=argToList(threat_id), note=note)
+            else:
+                demisto.debug("Unable to update the analyst verdict")
     if sentinelone_threat_status:
         action = THREAT_STATUS.get(sentinelone_threat_status, None)
         if action == "resolved" and demisto.params().get("close_sentinelone_incident"):
@@ -3007,7 +2999,7 @@ def update_remote_incident(client: Client, threat_id: str, sentinelone_analyst_v
                 client.write_threat_note_request(threat_ids=argToList(threat_id), note=note)
             else:
                 demisto.debug("Unable to Mark as resolved")
-        if action != "resolved":
+        if action != "resolved" and action is not None:
             response = client.update_threat_status_request(threat_ids=argToList(threat_id), status=action)
             if response.get("affected") and int(response.get("affected")) > 0:
                 demisto.debug(f"Successfully updated the threat status to {action}")
@@ -3015,8 +3007,6 @@ def update_remote_incident(client: Client, threat_id: str, sentinelone_analyst_v
                 client.write_threat_note_request(threat_ids=argToList(threat_id), note=note)
             else:
                 demisto.debug("Unable to update the threat status")
-
-    return ""
 
 
 def update_remote_system_command(client: Client, args: dict) -> str:
@@ -3044,11 +3034,6 @@ def update_remote_system_command(client: Client, args: dict) -> str:
     delta = parsed_args.delta
     remote_incident_id = parsed_args.remote_incident_id
     demisto.debug(f'Got the following data {parsed_args.data}, and delta {delta}.')
-    if delta:
-        demisto.debug(f'Got the following delta keys {list(delta.keys())}.')
-    demisto.debug(
-        f"Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system\n"
-    )
     try:
         if parsed_args.incident_changed:
             sentinelone_analyst_verdict = delta.get("sentinelonethreatanalystverdict", None)
@@ -3065,20 +3050,19 @@ def update_remote_system_command(client: Client, args: dict) -> str:
 
 def set_xsoar_incident_entries(mirrored_object: dict, entries: list, remote_incident_id: str):
     demisto.debug("with in the set xsoar incident entries method")
-    if mirrored_object.get("threatInfo", {}).get("incidentStatus") == "resolved":
-        if demisto.params().get("close_xsoar_incident"):
-            demisto.debug(f"Incident is closed: {remote_incident_id}")
-            entries.append(
-                {
-                    "Type": EntryType.NOTE,
-                    "Contents": {
-                        "dbotIncidentClose": True,
-                        "closeReason": "Incident was closed on SentinelOne",
-                    },
-                    "ContentsFormat": EntryFormat.JSON,
-                }
-            )
-            return entries
+    if mirrored_object.get("threatInfo", {}).get("incidentStatus") == "resolved" and demisto.params().get("close_xsoar_incident"):
+        demisto.debug(f"Incident is closed: {remote_incident_id}")
+        entries.append(
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {
+                    "dbotIncidentClose": True,
+                    "closeReason": "Incident was closed on SentinelOne",
+                },
+                "ContentsFormat": EntryFormat.JSON,
+            }
+        )
+        return entries
     elif mirrored_object.get("threatInfo", {}).get("incidentStatus") in (
         set(INCIDENT_STATUS) - {"resolved"}
     ):
@@ -3119,7 +3103,6 @@ def get_remote_data_command(client: Client, args: dict):
     Returns:
         GetRemoteDataResponse object, which contain the incident data to update.
     """
-    demisto.debug("calling get remote data command")
     remote_args = GetRemoteDataArgs(args)
     remote_incident_id = remote_args.remote_incident_id
 
@@ -3133,7 +3116,7 @@ def get_remote_data_command(client: Client, args: dict):
         mirrored_data = get_remote_incident_data(client, remote_incident_id)
         if mirrored_data:
             entries = set_xsoar_incident_entries(mirrored_data, entries, remote_incident_id)
-        if not mirrored_data:
+        else:
             demisto.debug(f"No delta was found for incident {remote_incident_id}.")
 
         return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=entries)
