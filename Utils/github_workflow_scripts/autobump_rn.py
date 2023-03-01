@@ -731,7 +731,7 @@ class BranchAutoBumper:
         body = PR_COMMENT_TITLE.format(self.github_run_id)
         if self.branch not in ["conflict_in_cs", "conflicts_in_base"]:
             # todo: delete it
-            return ''
+            return 'Pack MyPack version was automatically bumped to 1.0.2.'
         with checkout(self.git_repo, self.branch):
             for pack_auto_bumper in self.packs_to_autobump:
                 pack_auto_bumper.set_pr_changed_rn_related_data()
@@ -744,7 +744,7 @@ class BranchAutoBumper:
                     pack_auto_bumper.pack_id,
                 ))
                 body += PR_COMMENT.format(pack_auto_bumper.pack_id, new_version, )
-            # todo: uncomment
+            # todo: uncomment - dont work with my creds, only bots should work.
             # self.pr.create_issue_comment(body)
             self.git_repo.git.push()
         return body
