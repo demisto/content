@@ -8,7 +8,7 @@ def parseIds(idsArg):
     if idsArg is None:
         return
     if isinstance(idsArg, list):
-        return ','.join([str(item) if type(item) == int or type(item) == bytes else item.encode('utf-8') for item in idsArg])
+        return ','.join(map(str, idsArg))
     if isinstance(idsArg, str):
         return ','.join(argToList(idsArg))
     if isinstance(idsArg, bytes):
@@ -18,8 +18,9 @@ def parseIds(idsArg):
 
 def main():
     args = demisto.args()
-    ids = parseIds(args.get('ids'))
+    ids = parseIds(['LetersNumbersSign&85 space', 'קצת עברית', '$%$$%%dd'])
     dt = args.get('dt')
+    dt = "GP.Dummy(val.Status != 'Success').ID"
     pollingCommand = args.get('pollingCommand')
     pollingCommandArgName = args.get('pollingCommandArgName')
     tag = args.get('tag')
