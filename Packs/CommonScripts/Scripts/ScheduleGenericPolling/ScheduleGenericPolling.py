@@ -11,6 +11,8 @@ def parseIds(idsArg):
         return ','.join([str(item) if type(item) == int or type(item) == bytes else item.encode('utf-8') for item in idsArg])
     if isinstance(idsArg, str):
         return ','.join(argToList(idsArg))
+    if isinstance(idsArg, bytes):
+        return ','.join(argToList(idsArg.decode('utf-8')))
     return str(idsArg)
 
 
