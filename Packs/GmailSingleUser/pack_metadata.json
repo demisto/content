@@ -12,7 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "GmailSingleUser"
+    ],
     "dependencies": {
         "Phishing": {
             "mandatory": false,

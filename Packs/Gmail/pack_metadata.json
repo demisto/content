@@ -12,7 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Google"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
