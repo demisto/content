@@ -1655,9 +1655,6 @@ def test_start_site_scan_command(mocker, mock_client: Client, site_id: str,
 
     expected_post_data = load_test_data("expected_post_data", expected_post_data_file)
 
-    if expected_post_data.get("hosts"):
-        expected_post_data["hosts"].sort()
-
     http_request.assert_called_with(
         url_suffix=f"/sites/{site_id}/scans",
         method="POST",

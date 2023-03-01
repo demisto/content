@@ -4929,21 +4929,17 @@ def start_site_scan_command(client: Client, site_id: str | None = None, site_nam
     else:
         assets = client.get_site_assets(site.id)
 
-        hosts_list = set()  # Using a set to avoid duplicates
+        hosts_list = []
 
         for asset in assets:
-            if asset.get("ip"):
-                hosts_list.add(asset["ip"])
+            if asset.get("ip") and asset["ip"] not in hosts_list:
+                hosts_list.append(asset["ip"])
 
             # In some cases there is an IP address in the "addresses" field, but not in the "ip" field.
             elif asset.get("addresses"):
                 for address in asset["addresses"]:
-                    if address.get("ip"):
-                        hosts_list.add(address["ip"])
-
-        hosts_list = list(hosts_list)
-        # Using sort to allow consistent unit-testing. Seems like set -> list conversion results in a random order.
-        hosts_list.sort()
+                    if address.get("ip") and address["ip"] not in hosts_list:
+                        hosts_list.append(address["ip"])
 
     scan_response = client.start_site_scan(
         site_id=site.id,
