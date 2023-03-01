@@ -105,7 +105,7 @@ def test_wait_for_build_to_be_first_in_queue(mocker):
             the third loop the place in the queue wil be 0.
     then:   assert the function "get_my_place_in_the_queue" wil be called 3 times.
             assert the function "check_job_status" wil be called 2 times.
-            assert the function "remove_build_from_queue" wil be called ones.
+            assert the function "remove_file" wil be called ones.
     """
     mock_my_place = mocker.patch('Tests.scripts.lock_cloud_machines.get_my_place_in_the_queue',
                                  side_effect=[(1, "1234"),
@@ -113,13 +113,13 @@ def test_wait_for_build_to_be_first_in_queue(mocker):
                                               (0, "1234")])
     mock_job_status = mocker.patch('Tests.scripts.lock_cloud_machines.check_job_status',
                                    side_effect=['running', 'failed'])
-    mock_remove_build = mocker.patch('Tests.scripts.lock_cloud_machines.remove_build_from_queue')
+    mock_remove_file = mocker.patch('Tests.scripts.lock_cloud_machines.remove_file')
 
     storage = MockResponse()
     wait_for_build_to_be_first_in_queue(storage, storage, "test", "1234", "12345")
     assert mock_my_place.call_count == 3
     assert mock_job_status.call_count == 2
-    assert mock_remove_build.call_count == 1
+    assert mock_remove_file.call_count == 1
 
 
 def test_get_and_lock_all_needed_machines(mocker):

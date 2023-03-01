@@ -9,7 +9,7 @@ import argparse
 LOCKS_BUCKET = 'xsoar-ci-artifacts'
 QUEUE_REPO = 'queue'
 MACHINES_LOCKS_REPO = 'machines_locks'
-JOB_STATUS_URL = 'https://code.pan.run/api/v4/projects/{}/jobs/{}'
+JOB_STATUS_URL = 'https://code.pan.run/api/v4/projects/{}/jobs/{}'  # disable-secrets-detection
 CONTENT_GITLAB_PROJECT_ID = '2596'
 
 
@@ -93,7 +93,7 @@ def check_job_status(token: str, job_id: str):
     Returns: the status of the job.
 
     """
-    user_endpoint = JOB_STATUS_URL.format(CONTENT_GITLAB_PROJECT_ID, job_id)  # disable-secrets-detection
+    user_endpoint = JOB_STATUS_URL.format(CONTENT_GITLAB_PROJECT_ID, job_id)
     headers = {'PRIVATE-TOKEN': token}
     response = requests.get(user_endpoint, headers=headers)
     return response.json().get('status')
