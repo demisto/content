@@ -39,7 +39,7 @@ Ensure the integration user satisfies below mentioned pre-requisites:
 | Tenant Name | Name of the tenant to fetch threats from. This parameter is optional for Non MSSP users. | No |
 | Incidents to fetch | Selecting "all" will fetch incidents updated in the given time range.<br/>Selecting "opened" will fetch incidents opened in the given time range.<br/>Selecting "closed" will fetch incidents closed in the given time range.| No |
 | Set the default incident severity | | No |
-| The maximum number of incidents to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200. | | No |
+| The maximum number of incidents to fetch each time. | If the value is greater than 200, it will be considered as 200. The maximum is 200. | No |
 | Incident Mirroring Direction | The mirroring direction in which to mirror the incidents. You can mirror "Incoming" (from Securonix to XSOAR), "Outgoing" (from XSOAR to Securonix), or in both directions. | No |
 | Close respective Securonix incident after fetching | If enabled, the integration will close the respective Securonix incident after fetching it in XSOAR. Following fields will be required for this functionality:<br/><br/>1. Securonix action name to map with XSOAR's active state for Outgoing mirroring<br/>2. Securonix status to map with XSOAR's active state for Outgoing mirroring<br/>3. Securonix action name to map with XSOAR's closed state for Outgoing mirroring<br/>4. Securonix status to map with XSOAR's closed state for Outgoing mirroring | No |
 | Securonix workflow state(s) that can be considered as Close state in XSOAR for Incoming mirroring | If the Securonix incident is in any one of the state mentioned here, then the incident will be Closed on XSOAR. Supports comma-separated values. | No |
@@ -2036,7 +2036,7 @@ Remove entity or attribute from the specified whitelist entry.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_name | Name of the tenant the whitelist belongs to.<br/><br/>The tenant name parameter is required for MSSP user. | Optional | 
+| tenant_name | Name of the tenant the whitelist belongs to. | Required | 
 | whitelist_name | Name of the whitelist the user wants to delete the value from. | Required | 
 | whitelist_type | Type of whitelist that user wants to delete from. Possible values are: Global, Attribute. | Optional | 
 | entity_id | Entity ID value that needs to be removed from the whitelist.<br/><br/>This parameter is required if whitelist_type is set to "Global".<br/><br/>Example:<br/>- employeeId for type User<br/>- accountname for type ActivityAccount<br/>- resourcename for type Resources<br/>- ipadress for type IpAddress. | Optional | 

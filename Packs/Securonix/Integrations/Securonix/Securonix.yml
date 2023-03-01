@@ -64,14 +64,18 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: 1 hour
-  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
+- additionalinfo: |-
+    The date or relative timestamp from where to start fetching incidents.
+
+    Supported formats: <number> <time unit>, e.g., 1 hour, 30 minutes, 7 days, 3 months, 1 year.
+  defaultvalue: 1 hour
+  display: First fetch time range
   name: fetch_time
   required: false
   type: 0
 - defaultvalue: '200'
-  display: The maximum number of incidents to fetch each time. If the value is greater
-    than 200, it will be considered as 200. The maximum is 200.
+  additionalinfo: If the value is greater than 200, it will be considered as 200. The maximum is 200.
+  display: The maximum number of incidents to fetch each time.
   name: max_fetch
   required: false
   type: 0
