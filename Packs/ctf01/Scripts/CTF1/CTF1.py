@@ -105,7 +105,7 @@ def main():
 
     except Exception as exc:  # pylint: disable=W0703
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute ERTokenReputation. Error: {str(exc)}')
+        return_error(f'Failed to execute this script. Error: {str(exc)}')
 
 
 # ENTRY POINT #

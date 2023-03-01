@@ -79,7 +79,7 @@ def main():
         if (args.get("secret") == None):
             return_error(f'Please specify Secret and Question ID to proceed with the challange')
 
-        if (args.get("secret").lower() in answers[args.get("01")]):
+        if (args.get("secret").lower() in answers["01"]):
             return_results({
                 'ContentsFormat': EntryFormat.HTML,
                 'Type': EntryType.NOTE,
@@ -95,7 +95,7 @@ def main():
 
     except Exception as exc:  # pylint: disable=W0703
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute ERTokenReputation. Error: {str(exc)}')
+        return_error(f'Failed to execute this script. Error: {str(exc)}')
 
 
 # ENTRY POINT #
