@@ -659,7 +659,7 @@ class Client(BaseClient):
 
     def submit_file_to_sandbox_analyze(self, payload: dict) -> dict[str, Any]:
         """
-        Client method for sandbox analyze
+        Client method for sandbox analyzes
         Args:
             payload: request body
 
@@ -686,13 +686,13 @@ class Client(BaseClient):
 
 
 def convert_to_iso8601(timestamp: str) -> str:
-    """ Convert timestamp from iso 8601 format
+    """ Convert timestamp from an iso8601 format
 
     Args:
         timestamp: Any valid timestamp or provide timedelta e.g. now, "<n> days", "<n> weeks",
         "<n> months", "1 months ago"
 
-    Returns: return timestamp in iso 8601 format.
+    Returns: return timestamp in an iso 8601 format.
     """
     if datetime_from_timestamp := dateparser.parse(timestamp, settings={'TIMEZONE': 'UTC'}):
         return f'{datetime_from_timestamp.strftime(ISO8601_F_FORMAT)[:-3]}Z'
@@ -707,7 +707,7 @@ def extract_headers_for_readable_output(summary_data: list[dict]) -> list:
         summary_data (list[dict]): Human readable output summary data
 
     Returns:
-        Return string headers to camel case.
+        Return string headers to a camel case.
 
     """
     if not summary_data:
@@ -720,14 +720,14 @@ def extract_headers_for_readable_output(summary_data: list[dict]) -> list:
 
 def get_data_of_current_page(response_data: list[dict[str, Any]], offset: int = 0, limit: int = 0) -> list:
     """
-    Retrieve list element based on offset and limit
+    Retrieve a list element based on offset and limit
     Args:
         response_data (list): Raw API result list
         offset (int) : Offset
         limit (int) : Page Limit
 
     Returns:
-        Return List of object from the response according to the limit, page and page_size.
+        Return List of an object from the response according to the limit, page and page_size.
 
     """
 
@@ -740,7 +740,7 @@ def compile_command_title_string(context_name: str, args: dict, record: int) \
         -> str:
     """
     Symantec EDR on-premise display title and pagination
-        If page/page_size are input, then limit should be ignored.
+        If page/page_size is input, then the limit should be ignored.
         If only page or page_size were input,
         then the default for the other that is missing will be added in the code.
         limit can work by itself independently, without page and page_size
@@ -953,7 +953,7 @@ def parse_event_object_data(data: dict[str, Any]) -> dict:
         # Return empty dictionary
         return {}
 
-    # Ignore to retrieve Sub Object which will be fetched subsequently based on command requirement
+    # Ignore to retrieve Sub Object which will be fetched subsequently based on the command requirement
     ignore_list = [
         'attacks', 'av', 'bash', 'connection', 'data', 'directory', 'enriched_data', 'entity', 'entity_result',
         'event_actor', 'file', 'intrusion', 'kernel', 'link_following', 'receivers', 'process', 'reg_key', 'reg_value',
@@ -984,7 +984,7 @@ def parse_event_object_data(data: dict[str, Any]) -> dict:
 
 def domain_instance_readable_output(results: list[dict], title: str) -> tuple[str, list]:
     """
-    Convert to XSOAR Readable output for entities Domains instance
+    Convert to XSOAR Readable output for entity Domains instance
     Args:
         results (list): Symantec Association Results data
         title (str): Title string
@@ -1011,7 +1011,7 @@ def domain_instance_readable_output(results: list[dict], title: str) -> tuple[st
 
 def system_activity_readable_output(results: list[dict], title: str) -> tuple[str, list]:
     """
-    Convert to User Readable output for System Activity resources
+    Convert to User-Readable output for System Activity resources
     Args:
         results (list): Symantec Association Results data
         title (str): Title string
@@ -1077,13 +1077,13 @@ def endpoint_instance_readable_output(results: list[dict], title: str) -> tuple[
 
 def incident_readable_output(results: list[dict], title: str) -> tuple[str, list]:
     """
-    Convert to User Readable output for Incident resources
+    Convert to User-Readable output for Incident resources
     Args:
         results (list): Symantec Association Results data
         title (str): Title string
     Returns:
         markdown: A string representation of the Markdown table
-        summary_data : Formatting response data
+        summary_data: Formatting response data
     """
     summary_data: list[dict[str, Any]] = []
     for data in results:
@@ -1117,13 +1117,13 @@ def incident_readable_output(results: list[dict], title: str) -> tuple[str, list
 
 def audit_event_readable_output(results: list[dict], title: str) -> tuple[str, list]:
     """
-    Convert to User Readable output for Audit Event
+    Convert to User-Readable output for Audit Event
     Args:
         results (list): Symantec Association Results data
         title (str): Title string
     Returns:
         markdown: A string representation of the Markdown table
-        summary_data : Formatting response data
+        summary_data: Formatting response data
     """
     context_data: list[dict[str, Any]] = []
     summary_data: list[dict[str, Any]] = []
@@ -1157,13 +1157,13 @@ def audit_event_readable_output(results: list[dict], title: str) -> tuple[str, l
 
 def incident_event_readable_output(results: list[dict], title: str) -> tuple[str, list]:
     """
-    Convert to User Readable output for Event for Incident resources
+    Convert to User-Readable output for Event for Incident resources
     Args:
         results (list): Symantec Association Results data
         title (str): Title string
     Returns:
         A string representation of the Markdown table and context Data
-        summary_data : Formatting response data
+        summary_data: Formatting response data
     """
     context_data: list[dict[str, Any]] = []
     summary_data: list[dict[str, Any]] = []
@@ -1204,8 +1204,8 @@ def incident_comment_readable_output(results: list[dict], title: str, incident_i
         title (str): Title string
         incident_id (str): Incident Id
     Returns:
-        markdown : A string representation of the Markdown table
-        summary_data : Formatted data set
+        markdown: A string representation of the Markdown table
+        summary_data: Formatted data set
     """
 
     summary_data: list[dict[str, Any]] = []
@@ -1269,11 +1269,11 @@ def extract_raw_data(result: list | dict, ignore_key: list, prefix: str = None) 
 
 def query_search_condition(q_type: str, q_value: str, ignore_validation: bool = False) -> str:
     """
-    This function make parameter query condition based on single or multiple  search values .
+    This function makes a query condition based on single or multiple search values .
     Args:
         q_type (str): search query Type
         q_value (str): search query value
-        ignore_validation (bool) : A boolean which ignore value Validation , Default false
+        ignore_validation (bool): A boolean which ignores value Validation, Default false
     Returns:
         Return search condition.
     """
@@ -1333,7 +1333,7 @@ def get_incident_filter_query(args: dict[str, Any]) -> str:
 
 def get_event_filter_query(args: dict[str, Any]) -> str:
     """
-    This function create the query for search condition as part of response body.
+    This function creates the query for search condition.
     Args:
         args: demisto.args()
     Returns:
@@ -1402,7 +1402,7 @@ def get_association_filter_query(args: dict) -> str:
 
 def create_content_query(args: dict) -> dict[str, Any]:
     """
-    This function create content request body based on the demisto.args().
+    This function creates content body based on the demisto.args().
     Args:
         args: demisto.args()
     Returns:
@@ -1456,10 +1456,10 @@ def pagination(page: int | None, page_size: int | None) -> tuple[int, int]:
 
 def get_query_limit(args: dict) -> tuple[int, int]:
     """
-    This function determine the query limit based on the demisto.args().
+    This function determines the query limit based on the demisto.args().
 
     Scenarios:
-        If page/page_size are input, then limit should be ignored.
+        If page/page_size is input, then the limit should be ignored.
         If only page or page_size were input,
         then the default for the other that is missing will be added in the code.
         Limit can work by itself independently, without page and page_size
@@ -1484,7 +1484,7 @@ def get_query_limit(args: dict) -> tuple[int, int]:
 
 def create_params_query(args: dict) -> dict:
     """
-    This function create a query param based on the demisto.args().
+    This function creates a query param based on the demisto.args().
     Args:
         args: demisto.args()
     Returns:
@@ -1525,7 +1525,7 @@ def check_valid_indicator_value(indicator_type: str, indicator_value: str) -> bo
     Check the validity of indicator values
     Args:
         indicator_type: Indicator type provided in the command
-            Possible Indicator type are : sha256, urls, ip, md5
+            Possible Indicator type are: sha256, urls, ip, md5
         indicator_value: Indicator value provided in the command
     Returns:
         True if the provided indicator values are valid
@@ -1560,7 +1560,7 @@ def get_incident_uuid(client: Client, args: dict[str, Any]) -> str | None:
     """
     payload = create_content_query(args)
 
-    # offset does not support by API therefore need to be removed
+    # offset does not support by API, therefore, need to be removed
     payload.pop('offset')
 
     # search query as Lucene query string
@@ -1615,9 +1615,9 @@ def validate_command_argument(args: dict[str, Any], cmd_type: str, expected_valu
     Args:
         - args (dict): Usually passed from ``demisto.args()``.
         - cmd_type (str): Command argument type.
-        - expected_values (list): Acceptable list of value
+        - expected_values (list): An acceptable list of value
     Raises:
-     ValueError: Raise error if invalid argument found.
+     ValueError: Raise error if invalid argument is found.
     """
     arg_value = args.get(cmd_type)
     if arg_value and arg_value not in expected_values:
@@ -2049,7 +2049,7 @@ def get_deny_list_command(client: Client, args: dict[str, Any]) -> CommandResult
 
 def get_endpoint_command(client: Client, args: dict[str, Any], command: str) -> CommandResults:
     """
-    Issue a Command Action to the SEDR On-Prem networks with following action:
+    Issue a Command Action to the SEDR On-Prem networks with the following action:
         isolate - Isolates endpoint by cutting connections that the endpoint(s) has to internal networks and external
                   networks, based on the endpoint IDs
         rejoin  - Rejoins endpoints by re-establishing connections that the endpoint(s) has to internal networks
@@ -2163,7 +2163,7 @@ def fetch_incidents(client: Client) -> list:
     Args:
         client: Client Object
     Returns:
-        Incidents List
+        Incident List
     """
     seperator = ' OR '
     priority_list = [REVERSE_INCIDENT_PRIORITY.get(i) for i in client.fetch_priority]  # type: ignore[union-attr]
@@ -2199,7 +2199,7 @@ def fetch_incidents(client: Client) -> list:
             incident_id = incident.get('incident_id')
             incident_uuid = incident.get("incident_uuid")
 
-            # Get Incidents Comments if set as true
+            # Get Incident Comments if set as true
             if client.is_fetch_comment:
                 comment_payload = {"verb": "query", "start_time": query_start_time}
                 comments_result = client.get_incident_comment(comment_payload, incident_uuid).get('result', [])
@@ -2370,13 +2370,13 @@ def run_polling_command(client: Client, args: dict, cmd: str, status_func: Calla
     """
     This function can handle the polling flow.
     After the first run, progress will be shown through the status command.
-    The run_polling_command function check the file scan status and will run until status is not 'Completed'.
+    The run_polling_command function checks the file scan status and will run until status is not 'Completed'.
     It returns a ScheduledCommand object that schedules the next 'results' function until the polling is complete.
     Args:
         client: Symantec EDR client object
         args: the arguments required to the command being called
         cmd: the command to schedule by after the current command
-        status_func : The function that check the file scan status and return either completed or error status
+        status_func : The function that checks the file scan status and returns either completed or error status
         results_func: the function that retrieves the verdict based on file sandbox status
 
     Returns:
