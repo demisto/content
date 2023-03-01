@@ -1929,7 +1929,7 @@ def patch_incident_update_command(client: Client, args: dict[str, Any]) -> Comma
         status = response.status_code
     else:
         raise DemistoException(
-            f'operation={action} is not supported; it must be one of {INCIDENT_PATCH_ACTION}')
+            f'Operation {action} is not supported; it must be one of {INCIDENT_PATCH_ACTION}')
 
     if status != 204:
         raise DemistoException(f'Failure of incident {action} operation')
