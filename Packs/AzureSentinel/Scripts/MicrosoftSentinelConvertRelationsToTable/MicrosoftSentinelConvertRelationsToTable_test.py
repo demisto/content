@@ -26,9 +26,9 @@ CONTEXT_RESULTS = str([
 ])
 
 EXPECTED_TABLE = "|Name|Related Resource Kind|Related Resource Type|Related Resource Name|Related Resource Id|\n" \
-                               "|---|---|---|---|---|\n" \
-                               "| test | test_kind | test_type | test_name | test_id |\n" \
-                               "| test2 | test_kind2 | test_type2 | test_name2 | test_id2 |\n"
+                 "|---|---|---|---|---|\n" \
+                 "| test | test_kind | test_type | test_name | test_id |\n" \
+                 "| test2 | test_kind2 | test_type2 | test_name2 | test_id2 |\n"
 
 
 def test_convert_to_table():
