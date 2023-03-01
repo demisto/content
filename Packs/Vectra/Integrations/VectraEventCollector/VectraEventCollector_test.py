@@ -10,9 +10,11 @@ from VectraEventCollector import (
     test_module,
     DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT,
     AUDIT_START_TIMESTAMP_FORMAT,
+    DETECTION_FIRST_TIMESTAMP_FORMAT,
     get_detections_cmd,
     get_audits_cmd,
     get_events,
+    fetch_events,
 )
 from typing import Dict, Any
 import json
@@ -224,6 +226,34 @@ class TestCommands:
 
         assert detection_res.outputs == detections_actual
         assert audits_res.outputs == audits_actual
+
+    @pytest.mark.freeze_time("1970-01-01 00:00:00")
+    def test_first_fetch(
+        self, mocker: MockerFixture, freezer, detections: Dict[str, Any], audits: Dict[str, Any]
+    ):
+
+        first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
+        start = datetime.now().strftime(AUDIT_START_TIMESTAMP_FORMAT)
+
+        mocker.patch.object(client, "get_detections", return_value=detections)
+        mocker.patch.object(client, "get_audits", return_value=audits)
+
+        detections_actual, audits_actual, next_fetch = fetch_events(
+            client, first_timestamp, start, is_first_fetch=True
+        )
+
+        if detections.get("results"):
+            assert next_fetch.get("first_timestamp") == "2023-02-15T0217"
+
+        if audits.get("audits"):
+            next_fetch.get("start") == datetime.now().strftime(AUDIT_START_TIMESTAMP_FORMAT)
+
+    @pytest.mark.freeze_time("2023-03-01 00:00:00")
+    def test_not_first_fetch_is_eod(
+        self, mocker: MockerFixture, freezer, detections: Dict[str, Any], audits: Dict[str, Any]
+    ):
+
+        pass
 
 
 """ Helper Functions Tests """

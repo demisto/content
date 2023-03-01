@@ -249,7 +249,7 @@ def get_audits_cmd(client: VectraClient, start: str) -> Tuple[CommandResults, Li
 
 def fetch_events(
     client: VectraClient, first_timestamp: str, start: str, is_first_fetch: bool
-) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], Dict[str, str]]:  # pragma: no cover
+) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], Dict[str, str]]:
 
     """
     Fetch detections based on whether it's the first fetch or not.
@@ -297,11 +297,11 @@ def fetch_events(
         next_run_detection_str = (next_run_detection + timedelta(minutes=1)).strftime(
             DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT
         )
+        demisto.info(f"{len(detections)} detections found.")
     # If no detections were fetched, we can reuse the current first_timestamp
     else:
         next_run_detection_str = first_timestamp
-
-    demisto.info(f"{len(detections)} detections found.")
+        demisto.info("No detections were found")
 
     return (
         detections,
