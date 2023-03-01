@@ -1907,7 +1907,7 @@ def patch_incident_update_command(client: Client, args: dict[str, Any]) -> Comma
     # Incident Add Comment
     if action == 'add_comment':
         if not update_value:
-            raise ValueError('Comment is absent. Enter Up to 512 characters of free text')
+            raise ValueError('Comment is missing.')
 
         action_desc = 'Add Comment'
         response = client.add_incident_comment(uuid, update_value)
