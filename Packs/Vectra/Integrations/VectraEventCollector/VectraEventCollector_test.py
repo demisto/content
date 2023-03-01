@@ -10,6 +10,9 @@ from VectraEventCollector import (
     test_module,
     DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT,
     AUDIT_START_TIMESTAMP_FORMAT,
+    DETECTION_FIRST_TIMESTAMP_FORMAT,
+    DETECTION_NEXT_RUN_KEY,
+    AUDIT_NEXT_RUN_KEY,
     get_detections_cmd,
     get_audits_cmd,
     get_events,
@@ -232,6 +235,21 @@ class TestCommands:
         self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]
     ):
 
+        """
+        Given:
+            - Fetching for the first time.
+        When:
+            - Case A: Detections and Audits were fetched.
+            - Case B: No Detections nor Audits were fetched.
+            - Case C: Detections were fetched, Audits were not fetched.
+            - Case D: Detections were not fetched, Audits were fetched.
+        Then:
+            - Case A: Detections next fetch will be set to now + 1 minute, audits next fetch will be set to today.
+            - Case B: Detections next fetch will be set to last fetched detections, audits next fetch will be set to today.
+            - Case C: Same as Case A.
+            - Case D: Same as Case B.
+        """
+
         first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
         start = datetime.now().strftime(AUDIT_START_TIMESTAMP_FORMAT)
 
@@ -242,18 +260,117 @@ class TestCommands:
             client, first_timestamp, start, is_first_fetch=True
         )
 
-        if detections.get("results"):
-            assert next_fetch.get("first_timestamp") == "2023-02-15T0217"
+        if detections:
+            assert next_fetch.get(DETECTION_NEXT_RUN_KEY) == (
+                datetime.strptime(
+                    detections_actual[0].get(DETECTION_NEXT_RUN_KEY),
+                    DETECTION_FIRST_TIMESTAMP_FORMAT,
+                )
+                + timedelta(minutes=1)
+            ).strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
+        else:
+            assert next_fetch.get(DETECTION_NEXT_RUN_KEY) == datetime.now().strftime(
+                DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT
+            )
 
-        if audits.get("audits"):
-            next_fetch.get("start") == datetime.now().strftime(AUDIT_START_TIMESTAMP_FORMAT)
+        assert next_fetch.get(AUDIT_NEXT_RUN_KEY) == datetime.now().strftime(
+            AUDIT_START_TIMESTAMP_FORMAT
+        )
 
-    @freeze_time("2023-03-01 00:00:00")
+    @freeze_time("1970-01-01 23:59:00")
     def test_not_first_fetch_is_eod(
         self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]
     ):
+        """
+        Given:
+            - Not the first fetch.
+            - Is the end of the day.
+        When:
+            - Case A: Detections and Audits were fetched.
+            - Case B: No Detections nor Audits were fetched.
+            - Case C: Detections were fetched, Audits were not fetched.
+            - Case D: Detections were not fetched, Audits were fetched.
+        Then:
+            - Case A: Detections next fetch will be set to now + 1 minute, audits next fetch will be set to today.
+            - Case B: Detections next fetch will be set to last fetched detections, audits next fetch will be set to today.
+            - Case C: Same as Case A.
+            - Case D: Same as Case B.
+        """
 
-        pass
+        first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
+        start = datetime.now().strftime(AUDIT_START_TIMESTAMP_FORMAT)
+
+        mocker.patch.object(client, "get_detections", return_value=detections)
+        mocker.patch.object(client, "get_audits", return_value=audits)
+
+        detections_actual, audits_actual, next_fetch = fetch_events(
+            client, first_timestamp, start, is_first_fetch=False
+        )
+
+        if audits:
+            assert len(audits_actual) == len(audits.get("audits"))
+
+        if detections:
+            assert next_fetch.get(DETECTION_NEXT_RUN_KEY) == (
+                datetime.strptime(
+                    detections_actual[0].get(DETECTION_NEXT_RUN_KEY),
+                    DETECTION_FIRST_TIMESTAMP_FORMAT,
+                )
+                + timedelta(minutes=1)
+            ).strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
+        else:
+            assert next_fetch.get(DETECTION_NEXT_RUN_KEY) == datetime.now().strftime(
+                DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT
+            )
+
+    @freeze_time("1970-01-01 00:00:01")
+    def test_not_first_fetch_is_not_eod(
+        self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]
+    ):
+        """
+        Given:
+            - Not the first fetch.
+            - Is not the end of the day.
+        When:
+            - Case A: Detections and Audits are there to be fetched.
+            - Case B: No Detections nor Audits are there to be fetched.
+            - Case C: Detections were fetched, Audits were not there to be fetched.
+            - Case D: Detections were not there to be fetched, Audits are there to be fetched.
+        Then:
+            - All Cases: No audits are fetched.
+            - Case A: Detections next fetch will be set to now + 1 minute.
+            - Case B: Detections next fetch will be set to last fetched detection first_timestamp.
+            - Case C: Same as Case A.
+            - Case D: Same as Case B.
+        """
+
+        first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
+        start = datetime.now().strftime(AUDIT_START_TIMESTAMP_FORMAT)
+
+        mocker.patch.object(client, "get_detections", return_value=detections)
+        mocker.patch.object(client, "get_audits", return_value=audits)
+
+        detections_actual, audits_actual, next_fetch = fetch_events(
+            client, first_timestamp, start, is_first_fetch=False
+        )
+
+        assert not audits_actual
+
+        # if audits:
+        #     assert len(audits_actual) == len(audits.get("audits"))
+
+        if detections:
+            assert next_fetch.get(DETECTION_NEXT_RUN_KEY) == (
+                datetime.strptime(
+                    detections_actual[0].get(DETECTION_NEXT_RUN_KEY),
+                    DETECTION_FIRST_TIMESTAMP_FORMAT,
+                )
+                + timedelta(minutes=1)
+            ).strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
+        else:
+            assert next_fetch.get(DETECTION_NEXT_RUN_KEY) == datetime.now().strftime(
+                DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT
+            )
 
 
 """ Helper Functions Tests """
