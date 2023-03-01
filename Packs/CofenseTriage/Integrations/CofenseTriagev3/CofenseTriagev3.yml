@@ -81,7 +81,8 @@ configuration:
     Triage to XSOAR).'
   defaultvalue: None
   display: Incident Mirroring Direction
-  hidden: false
+  hidden:
+    - marketplacev2
   name: mirror_direction
   options:
   - None
@@ -2331,7 +2332,7 @@ script:
     deprecated: false
     description: |-
       Gets the list of incidents that were modified since the last update time.
-      Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a mirroring feature, which is available from version 6.1.
+      Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a mirroring feature, which is available from Cortex XSOAR version 6.1.
     execution: false
     name: get-modified-remote-data
   - arguments:
@@ -2379,7 +2380,7 @@ script:
     - contextPath: InfoFile.Extension
       description: File extension.
       type: String
-  dockerimage: demisto/python3:3.10.4.27798
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: true
   isremotesyncin: true
