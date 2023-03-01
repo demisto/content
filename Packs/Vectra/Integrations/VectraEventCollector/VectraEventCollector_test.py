@@ -160,59 +160,66 @@ def test_get_audits(mocker: MockerFixture):
 """ Command Tests """
 
 
-def test_get_detections_cmd(mocker: MockerFixture):
-    """
-    Test `vectra-get-events` method detections part.
-    """
-
-    first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
-
-    mocker.patch.object(client, "_http_request", return_value=DETECTIONS)
-    cmd_res, detections = get_detections_cmd(client, first_timestamp)
-
-    assert len(cmd_res.outputs) == len(detections)
-
-
-def test_get_audits_cmd(mocker: MockerFixture):
-    """
-    Test `vectra-get-events` method audits part.
-    """
-
-    first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
-
-    mocker.patch.object(client, "_http_request", return_value=AUDITS)
-    cmd_res, audits = get_audits_cmd(client, first_timestamp)
-
-    assert len(cmd_res.outputs) == len(audits)
-
-
 @pytest.mark.parametrize(
     "detections,audits",
     [(DETECTIONS, AUDITS), ({}, {}), (DETECTIONS, {}), ({}, AUDITS)],
 )
-def test_get_events(mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]):
-    """
-    Test the `vectra-get-events` command.
+class TestCommands:
+    def test_get_detections_cmd(
+        self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]
+    ):
+        """
+        Test `vectra-get-events` method detections part.
+        """
 
-    Given:
-        - Detections and Audits raw responses.
-    When:
-        - Case A: Both detections and audits are returned.
-        - Case B: Both detections and audits are empty.
-        - Case C: Detections are returned, audits is empty.
-        - Case D: Audts are returned, detections is empty.
-    Then:
-        - The `CommandResults::outputs` of detections are equal to the ones raw response.
-        - The `CommandResults::outputs` of audits are equal to the ones raw response.
-    """
+        first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
 
-    mocker.patch.object(client, "get_detections", return_value=detections)
-    mocker.patch.object(client, "get_audits", return_value=audits)
+        mocker.patch.object(client, "_http_request", return_value=DETECTIONS)
+        cmd_res, detections = get_detections_cmd(client, first_timestamp)
 
-    detection_res, detections_actual, audits_res, audits_actual = get_events(client, datetime.now())
+        assert len(cmd_res.outputs) == len(detections)
 
-    assert detection_res.outputs == detections_actual
-    assert audits_res.outputs == audits_actual
+    def test_get_audits_cmd(
+        self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]
+    ):
+        """
+        Test `vectra-get-events` method audits part.
+        """
+
+        first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
+
+        mocker.patch.object(client, "_http_request", return_value=AUDITS)
+        cmd_res, audits = get_audits_cmd(client, first_timestamp)
+
+        assert len(cmd_res.outputs) == len(audits)
+
+    def test_get_events(
+        self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]
+    ):
+        """
+        Test the `vectra-get-events` command.
+
+        Given:
+            - Detections and Audits raw responses.
+        When:
+            - Case A: Both detections and audits are returned.
+            - Case B: Both detections and audits are empty.
+            - Case C: Detections are returned, audits is empty.
+            - Case D: Audts are returned, detections is empty.
+        Then:
+            - The `CommandResults::outputs` of detections are equal to the ones raw response.
+            - The `CommandResults::outputs` of audits are equal to the ones raw response.
+        """
+
+        mocker.patch.object(client, "get_detections", return_value=detections)
+        mocker.patch.object(client, "get_audits", return_value=audits)
+
+        detection_res, detections_actual, audits_res, audits_actual = get_events(
+            client, datetime.now()
+        )
+
+        assert detection_res.outputs == detections_actual
+        assert audits_res.outputs == audits_actual
 
 
 """ Helper Functions Tests """
