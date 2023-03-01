@@ -1945,4 +1945,4 @@ script:
   type: python
 tests:
 - No test - no instance
-fromversion: 6.5.0
+fromversion: 5.0.0
