@@ -106,20 +106,6 @@ script:
       - high
       required: false
       secret: false
-    - description: Filter events that created before specific time range starting, e.g. 2022-06-09T23:00:44.7420905Z.
-      isArray: false
-      name: detected_date_time_before
-    - description: Filter events that created after specific time range starting, e.g. 2022-06-09T23:00:44.7420905Z.
-      isArray: false
-      name: detected_date_time_after
-    - description: The method used to order the retrieved results.
-      isArray: false
-      name: order_by
-      auto: PREDEFINED
-      defaultValue: 'detectedDateTime desc'
-      predefined:
-      - 'detectedDateTime desc'
-      - 'detectedDateTime asc'
     deprecated: false
     description: Returns a comma-separated list of all risky users and their properties.
     execution: false

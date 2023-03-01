@@ -95,18 +95,14 @@ class Client:
             return 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
 
     def risky_users_list_request(self, risk_state: Optional[str], risk_level: Optional[str],
-                                 detected_date_time_before: Optional[str], detected_date_time_after: Optional[str],
-                                 limit: int, order_by: str, skip_token: str = None) -> dict:
+                                 limit: int, skip_token: str = None) -> dict:
         """
         List risky users.
 
         Args:
             risk_state (str): Risk State to retrieve.
             risk_level (str): Specify to get only results with the same Risk Level.
-            detected_date_time_before (str): Filter events by created before.
-            detected_date_time_after (str): Filter events by created after.
             limit (int): Limit of results to retrieve.
-            order_by (str): Order results by this attribute.
             skip_token (str): Skip token.
 
         Returns:
@@ -114,9 +110,7 @@ class Client:
         """
         params = remove_empty_elements({'$top': limit,
                                         '$skiptoken': skip_token,
-                                        '$orderby': order_by,
-                                        '$filter': build_query_filter(risk_state, risk_level, detected_date_time_before,
-                                                                      detected_date_time_after)})
+                                        '$filter': build_query_filter(risk_state, risk_level)})
 
         return self.ms_client.http_request(method='GET',
                                            url_suffix="identityProtection/riskyUsers",
@@ -241,9 +235,6 @@ def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandRes
     page = arg_to_number(args.get('page', 1))
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
-    detected_date_time_before = args.get('detected_date_time_before')
-    detected_date_time_after = args.get('detected_date_time_after')
-    order_by = args.get('order_by')
     skip_token = None
 
     if page > 1:
@@ -251,10 +242,7 @@ def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandRes
 
         raw_response = client.risky_users_list_request(risk_state,
                                                        risk_level,
-                                                       detected_date_time_before,
-                                                       detected_date_time_after,
-                                                       offset,
-                                                       order_by)
+                                                       offset)
         next_link = raw_response.get('@odata.nextLink')
         skip_token = get_skip_token(next_link=next_link,
                                     outputs_prefix='AzureRiskyUsers.RiskyUser',
@@ -266,10 +254,7 @@ def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandRes
 
     raw_response = client.risky_users_list_request(risk_state,
                                                    risk_level,
-                                                   detected_date_time_before,
-                                                   detected_date_time_after,
                                                    limit,
-                                                   order_by,
                                                    skip_token)
 
     table_headers = ['id', 'userDisplayName', 'userPrincipalName', 'riskLevel',
