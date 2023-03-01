@@ -4,7 +4,8 @@
         "Prisma Cloud Compute Vulnerability",
         "Prisma Cloud Compute Audit",
         "Prisma Cloud Compute Cloud Discovery",
-        "Prisma Cloud Compute Compliance"
+        "Prisma Cloud Compute Compliance",
+        "Prisma Cloud Compute Audit v2"
     ],
     "breachScript": "",
     "caseInsensitive": true,
