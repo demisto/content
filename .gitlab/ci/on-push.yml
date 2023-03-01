@@ -44,21 +44,21 @@ trigger-private-build:
   - ./Documentation/commonServerDocs.sh
   - section_end "Create Release Notes and Common Server Documentation"
 
-#stop-running-pipelines:
-#  tags:
-#    - gke
-#  stage: unittests-and-validations
-#  needs: []
-#  extends:
-#    - .default-job-settings
-#  variables:
-#    master_branch_name: master
-#  rules:
-#    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
-#  script:
-#    - section_start "Stop running piplines on current branch"
-#    - Utils/gitlab/stop_running_pipelines.sh $CI_COMMIT_BRANCH $CI_PIPELINE_ID
-#    - section_end "Stop running piplines on current branch"
+stop-running-pipelines:
+  tags:
+    - gke
+  stage: unittests-and-validations
+  needs: []
+  extends:
+    - .default-job-settings
+  variables:
+    master_branch_name: master
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
+  script:
+    - section_start "Stop running piplines on current branch"
+    - Utils/gitlab/stop_running_pipelines.sh $CI_COMMIT_BRANCH $CI_PIPELINE_ID
+    - section_end "Stop running piplines on current branch"
 
 
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
@@ -334,7 +334,7 @@ fan-in-nightly:
 jobs-done-check-nightly:
   extends:
     - .jobs-done-check
-  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsoar_server_master']
+  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_master']
   tags:
     - gke
   rules:
@@ -357,6 +357,8 @@ jobs-done-check-on-push:
     - job: xpanse-prepare-testing-bucket
       optional: true
     - job: xsoar-prepare-testing-bucket
+      optional: true
+    - job: xsiam_server_ga
       optional: true
     - job: xsoar_server_6_5
       optional: true
@@ -486,31 +488,31 @@ slack-notify-nightly-build:
 #    TEST_MACHINES_LIST: "test-machines-master"
 
 
-#xsiam_server_ga:
-#  extends:
-#    - .test_content_on_cloud_server_instances_base
-#  rules:
-#    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-#    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-#    - if: '$NIGHTLY'
-#      when: always
-#  variables:
-#    INSTANCE_ROLE: "XSIAM"
-#    GCS_QUEUE_FILE: "queue-ga"
-#    TEST_MACHINES_LIST: "test-machines-ga"
-#    GCS_LOCKS_PATH: "content-locks-xsiam"
-#    CLOUD_SERVERS_FILE: "xsiam_servers_path"
-#    CLOUD_API_KEYS: $XSIAM_API_KEYS
-#    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
-#    GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
-#    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
-#    GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
-#    GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
-#    SERVER_TYPE: "XSIAM"
-#    MARKETPLACE_NAME: "marketplacev2"
-#  needs:
-#    - job: mpv2-prepare-testing-bucket
-#      optional: true
+xsiam_server_ga:
+  extends:
+    - .test_content_on_cloud_server_instances_base
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
+      when: always
+  variables:
+    INSTANCE_ROLE: "XSIAM"
+    GCS_QUEUE_FILE: "queue-ga"
+    TEST_MACHINES_LIST: "test-machines-ga"
+    GCS_LOCKS_PATH: "content-locks-xsiam"
+    CLOUD_SERVERS_FILE: "xsiam_servers_path"
+    CLOUD_API_KEYS: $XSIAM_API_KEYS
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
+    GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
+    GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
+    SERVER_TYPE: "XSIAM"
+    MARKETPLACE_NAME: "marketplacev2"
+  needs:
+    - job: mpv2-prepare-testing-bucket
+      optional: true
 
 xsoar_ng_server_ga:
   extends:
@@ -538,46 +540,46 @@ xsoar_ng_server_ga:
   allow_failure: true
 
 
-#test-upload-flow:
-#  tags:
-#    - gke
-#  extends:
-#    - .default-job-settings
-#  rules:
-#    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-#    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-#  variables:
-#    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
-#  stage: unittests-and-validations
-#  allow_failure: true
-#  script:
-#    - |
-#    - section_start "Checks Whether to Trigger a Test Upload"
-#    - SHOULD_SKIP_TEST_UPLOAD=$(./Utils/should_trigger_test_upload.sh)
-#    - if [ -z "$SHOULD_SKIP_TEST_UPLOAD" ]; then
-#    -   echo "No upload-flow related files were modified, skipping upload test"
-#    -   exit 0
-#    - fi
-#    - echo "Found modified files that should be tested in upload-flow"
-#    - section_end "Checks Whether to Trigger a Test Upload"
-#
-#    - section_start "Create Testing Branch"
-#    - export BRANCH="${CI_COMMIT_BRANCH}-upload_test_branch-$(date +%s)"
-#    - python3 ./Utils/test_upload_flow/create_test_branch.py -tb $BRANCH -a $ARTIFACTS_FOLDER -g $GITLAB_PUSH_TOKEN
-#    - echo $BRANCH
-#    - section_end "Create Testing Branch"
-#
-#    - section_start "Trigger Test Upload Flow On Testing Branch"
-#    - export pipeline_id=$(./Utils/trigger_test_upload_flow.sh -ct $GITLAB_SVC_USER_TOKEN -g -b $BRANCH | jq .id)
-#    - echo "Successful triggered test upload - https://code.pan.run/xsoar/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
-#    - section_end "Trigger Test Upload Flow On Testing Branch"
-#
-#    - section_start "Wait For Upload To Finish"
-#    - python3 ./Utils/test_upload_flow/wait_for_upload.py -p $pipeline_id -g $GITLAB_API_TOKEN
-#    - section_end "Wait For Upload To Finish"
-#
-#    - section_start "Verify Created Testing Bucket"
-#    - current_storage_base_path="upload-flow/builds/$BRANCH/$pipeline_id/content/packs"
-#    - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY -sb $current_storage_base_path -b $ALL_BUCKETS
-#    - section_end "Verify Created Testing Bucket"
+test-upload-flow:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  variables:
+    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
+  stage: unittests-and-validations
+  allow_failure: true
+  script:
+    - |
+    - section_start "Checks Whether to Trigger a Test Upload"
+    - SHOULD_SKIP_TEST_UPLOAD=$(./Utils/should_trigger_test_upload.sh)
+    - if [ -z "$SHOULD_SKIP_TEST_UPLOAD" ]; then
+    -   echo "No upload-flow related files were modified, skipping upload test"
+    -   exit 0
+    - fi
+    - echo "Found modified files that should be tested in upload-flow"
+    - section_end "Checks Whether to Trigger a Test Upload"
+
+    - section_start "Create Testing Branch"
+    - export BRANCH="${CI_COMMIT_BRANCH}-upload_test_branch-$(date +%s)"
+    - python3 ./Utils/test_upload_flow/create_test_branch.py -tb $BRANCH -a $ARTIFACTS_FOLDER -g $GITLAB_PUSH_TOKEN
+    - echo $BRANCH
+    - section_end "Create Testing Branch"
+
+    - section_start "Trigger Test Upload Flow On Testing Branch"
+    - export pipeline_id=$(./Utils/trigger_test_upload_flow.sh -ct $GITLAB_SVC_USER_TOKEN -g -b $BRANCH | jq .id)
+    - echo "Successful triggered test upload - https://code.pan.run/xsoar/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
+    - section_end "Trigger Test Upload Flow On Testing Branch"
+
+    - section_start "Wait For Upload To Finish"
+    - python3 ./Utils/test_upload_flow/wait_for_upload.py -p $pipeline_id -g $GITLAB_API_TOKEN
+    - section_end "Wait For Upload To Finish"
+
+    - section_start "Verify Created Testing Bucket"
+    - current_storage_base_path="upload-flow/builds/$BRANCH/$pipeline_id/content/packs"
+    - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY -sb $current_storage_base_path -b $ALL_BUCKETS
+    - section_end "Verify Created Testing Bucket"
 
