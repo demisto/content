@@ -5333,6 +5333,7 @@
         }
     ],
     "skipped_tests": {
+        "CanaryTools Test": "No instance",
         "RegPathReputationBasicLists_test": "The D2 pack is deprecated",
         "CirclIntegrationTest": "No instance",
         "CrowdStrikeMalquery-Test": "Issue CRTX-71397",
