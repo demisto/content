@@ -76,7 +76,7 @@ def main():
     try:
         args = demisto.args()
         #__Error handeling when there is an empty secret or question id__
-        if (args.get("secret") == None:
+        if (args.get("secret") == None):
             return_error(f'Please specify Secret and Question ID to proceed with the challange')
 
         if (args.get("secret").lower() in answers[args.get("01")]):
