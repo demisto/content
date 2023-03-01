@@ -44,10 +44,10 @@
       "expected_values": {
         "xdm.source.user.identifier": "uhash:123456",
         "xdm.source.user.ou": "Palo Alto Networks - Partne",
-        "xdm.alert.description": null,
+        "xdm.event.description": null,
         "xdm.source.user.username": "Palo Alto Networks - Partne",
-        "xdm.alert.name": "Vulnerability Intelligence from Insikt Group",
-        "xdm.alert.original_alert_id": "444444"
+        "xdm.event.outcome_reason": "Vulnerability Intelligence from Insikt Group",
+        "xdm.event.id": "444444"
       }
     }
   ]

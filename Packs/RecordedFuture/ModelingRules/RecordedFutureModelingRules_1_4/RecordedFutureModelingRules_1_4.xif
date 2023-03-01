@@ -1,8 +1,8 @@
 [MODEL: dataset=recorded_future_intelligence_cloud_raw]
 alter
-    xdm.alert.name = json_extract_scalar(rule, "$.name"),
-    xdm.alert.original_alert_id = json_extract_scalar(rule, "$.id"),
-    xdm.alert.description = json_extract_scalar(review, "$.note"),
+    xdm.event.outcome_reason = json_extract_scalar(rule, "$.name"),
+    xdm.event.id = json_extract_scalar(rule, "$.id"),
+    xdm.event.description = json_extract_scalar(review, "$.note"),
     xdm.source.user.username = json_extract_scalar(rule, "$.owner_name"),
     xdm.source.user.identifier = json_extract_scalar(rule, "$.owner_id"),
     xdm.event.original_event_type = type,
