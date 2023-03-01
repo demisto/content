@@ -144,3 +144,34 @@ This commands return full cymulate's incidents information
 | dc2a1e9b835b5caf685960bb7d9bdfea | Chinese Hackers Use New Malware to Backdoor Microsoft SQL Servers | Penetrated | Files | Web Gateway | 25/12/2019 15:01:29 |
 | b2aa30c32e06762d09bac485d7c490a5 | Chinese Hackers Use New Malware to Backdoor Microsoft SQL Servers | Penetrated | Files | Web Gateway | 25/12/2019 15:01:29 |
 
+### cymulate-get-incident-info
+
+***
+This commands return full cymulate's incidents information
+
+#### Base Command
+
+`cymulate-get-incident-info`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| attack_id | The attack unique identifier. | Required | 
+| module_type | The Cymulate module_type. | Required | 
+| incident_id | The incident unique identifier. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cymulate.Incident.Payload | String | The Cymulate payload that generated this incident | 
+| Cymulate.Incident.Name | String | The name of the incident | 
+| Cymulate.Incident.Status | String | The attack status \(Enum Values- Penetrated, Blocked, Dead\) | 
+| Cymulate.Incident.ID | String | The incident ID | 
+| Cymulate.Incident.Md5 | String | The Md5 | 
+| Cymulate.Incident.Attack_Vector | String | The Attack Vector | 
+| Cymulate.Incident.Sha256 | String | The Sha256  | 
+| Cymulate.Incident.Sha1 | String | The Sha1 | 
+| Cymulate.Incident.Cymulate_ID | String | The cymulate's ID of the incident | 
+| Cymulate.Incident.Attack_ID | String | The cymulate's Attack ID of the incident | 
