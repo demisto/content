@@ -111,7 +111,12 @@ def test_merge_options():
 
 
 @pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CLI_ONLY])
-def test_rasterize_large_html(r_mode):
+def test_rasterize_large_html(mocker, r_mode):
+    ps_output = '''   PID  PPID S CMD
+    1     0 S python /tmp/pyrunner/_script_docker_python_loop.py
+    '''
+    mocker.patch.object(subprocess, 'check_output', return_value=ps_output)
+    mocker.patch.object(os, 'getpid', return_value=1)
     path = os.path.realpath('test_data/large.html')
     res = rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PNG, r_mode=r_mode)
     assert res
