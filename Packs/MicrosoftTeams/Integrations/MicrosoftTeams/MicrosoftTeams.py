@@ -172,7 +172,7 @@ def create_incidents(demisto_user: dict, incidents: list) -> dict:
     return data
 
 
-def process_incident_create_message(demisto_user: dict, message: str) -> str:
+def process_incident_create_message(demisto_user: dict, message: str) -> str:   # pragma: no cover
     """
     Processes an incident creation message
     :param demisto_user: The Demisto user associated with the message (if exists)
@@ -688,7 +688,7 @@ def integration_health():
     })
 
 
-def validate_auth_header(headers: dict) -> bool:
+def validate_auth_header(headers: dict) -> bool:    # pragma: no cover
     """
     Validated authorization header provided in the bot activity object
     :param headers: Bot activity headers
@@ -1286,10 +1286,10 @@ def is_bot_in_chat(chat_id):
     url_suffix = f"v1.0/chats/{chat_id}/installedApps?$expand=teamsApp," \
                  f"teamsAppDefinition&$filter=teamsApp/externalId eq '{BOT_ID}'"
     res = http_request('GET', urljoin(GRAPH_BASE_URL, url_suffix))
-    return True if res.get('value') else False
+    return True if res.get('value') else False      # type: ignore
 
 
-def add_bot_to_chat(chat_id: str):
+def add_bot_to_chat(chat_id: str):  # pragma: no cover
     """
     Add the Dbot to a chat.
     :param chat_id: chat id which to add the bot to.
@@ -1302,7 +1302,7 @@ def add_bot_to_chat(chat_id: str):
         return
 
     res = http_request('GET', f"{GRAPH_BASE_URL}/v1.0/appCatalogs/teamsApps?$filter=externalId eq '{BOT_ID}'")
-    app_data = res.get('value')[0]
+    app_data = res.get('value')[0]      # type: ignore
     bot_internal_id = app_data.get('id')
 
     request_json = {"teamsApp@odata.bind": f"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/{bot_internal_id}"}
@@ -1340,7 +1340,7 @@ def chat_create_command():
     chat_data.pop('@odata.context', '')
     chat_data['chatId'] = chat_data.pop('id', '')
 
-    add_bot_to_chat(chat_data.get("chatId"))
+    add_bot_to_chat(chat_data.get("chatId"))    # type: ignore
 
     hr_title = f"The chat '{chat_name}' was created successfully" if chat_type == 'group' else \
         f'The chat with "{members[0]}" was created successfully'

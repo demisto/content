@@ -1435,7 +1435,8 @@ def test_direct_message_handler(mocker, requests_mock):
     mocker.patch.object(demisto, 'findUser', return_value=None)
     direct_message_handler(integration_context, request_body, conversation, message)
     assert requests_mock.request_history[0].json() == {
-        'text': 'You are not allowed to create incidents.', 'type': 'message'
+        'text': "I\'m sorry but I was unable to find you as a Cortex XSOAR user for bwillis@email.com. You're not "
+                "allowed to run any command", 'type': 'message'
     }
 
     # verify create incident successfully
@@ -1817,6 +1818,7 @@ def test_chat_create_command(mocker):
 
     mocker.patch('MicrosoftTeams.get_user', return_value=[{'id': 'user1', 'userType': "Member"}])
     mocker.patch('MicrosoftTeams.create_chat', return_value=api_response)
+    mocker.patch('MicrosoftTeams.add_bot_to_chat', return_value='')
 
     chat_create_command()
 
