@@ -20,7 +20,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Domain Threshold | Minimum risk score from Recorded Future to consider the domain malicious. | False |
     | URL Threshold | Minimum risk score from Recorded Future to consider the URL malicious. | False |
     | Vulnerability Threshold | Minimum risk score from Recorded Future to consider the vulnerability critical. | False |
-    | Collective Insights Settings | The Recorded Future Intelligence Cloud aggregates data related to indicators, driving collective insights to better identify threats. Anonymized data is collected for analytical purposes to identify trends and insights with the Intelligence Cloud. Go to the Recorded Future support site to learn more about Collective Insights. | True |
+    | Collective Insights | The Recorded Future Intelligence Cloud aggregates data related to indicators, driving collective insights to better identify threats. Anonymized data is collected for analytical purposes to identify trends and insights with the Intelligence Cloud. Go to the Recorded Future support site to learn more about Collective Insights. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Fetch incidents |  | False |
@@ -1156,4 +1156,4 @@ Search for a malware by specified filters.
 
 ## Breaking changes from the previous version of this integration - Recorded Future v2
 
-Renamed the integration setting "Incident Sharing" to "Collective Insights Settings", resetting any previous configuration to this setting. 
+Renamed the integration setting "Incident Sharing" to "Collective Insights", resetting any previous configuration to this setting. 

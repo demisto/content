@@ -55,7 +55,7 @@ configuration:
     defaultvalue: "65"
     type: 0
     required: false
-  - display: Collective Insights Settings
+  - display: Collective Insights
     name: collective_insights
     additionalinfo: The Recorded Future Intelligence Cloud aggregates data related to indicators, incidents and detections from correlations, driving collective insights to better identify threats. Unattributable data is collected for analytical purposes to identify trends and insights with the Intelligence Cloud.
     defaultvalue: "On"
