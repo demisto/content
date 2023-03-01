@@ -31,8 +31,8 @@ def load_json(path: Path):
         return json.load(f)
 
 
-AUDITS = load_json(Path("./test_data/audits.json"))
-DETECTIONS = load_json(Path("./test_data/search_detections.json"))
+AUDITS: Dict[str, Any] = load_json(Path("./test_data/audits.json"))
+DETECTIONS: Dict[str, Any] = load_json(Path("./test_data/search_detections.json"))
 endpoints = load_json(Path("./test_data/endpoints.json"))
 no_access_endpoints = load_json(Path("./test_data/endpoints_no_detection_audits.json"))
 
@@ -110,7 +110,7 @@ def test_test_module(mocker: MockerFixture, endpoints: Dict[str, str], expected:
     assert expected in actual
 
 
-def test_test_module_exception(mocker):
+def test_test_module_exception(mocker: MockerFixture):
     # TODO docstring
 
     mocker.patch.object(
@@ -186,18 +186,33 @@ def test_get_audits_cmd(mocker: MockerFixture):
     assert len(cmd_res.outputs) == len(audits)
 
 
-def test_get_events(mocker: MockerFixture):
+@pytest.mark.parametrize(
+    "detections,audits",
+    [(DETECTIONS, AUDITS), ({}, {}), (DETECTIONS, {}), ({}, AUDITS)],
+)
+def test_get_events(mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]):
     """
     Test the `vectra-get-events` command.
+
+    Given:
+        - Detections and Audits raw responses.
+    When:
+        - Case A: Both detections and audits are returned.
+        - Case B: Both detections and audits are empty.
+        - Case C: Detections are returned, audits is empty.
+        - Case D: Audts are returned, detections is empty.
+    Then:
+        - The `CommandResults::outputs` of detections are equal to the ones raw response.
+        - The `CommandResults::outputs` of audits are equal to the ones raw response.
     """
 
-    mocker.patch.object(client, "get_detections", return_value=DETECTIONS)
-    mocker.patch.object(client, "get_audits", return_value=AUDITS)
+    mocker.patch.object(client, "get_detections", return_value=detections)
+    mocker.patch.object(client, "get_audits", return_value=audits)
 
-    detection_res, detections, audits_res, audits = get_events(client, datetime.now())
+    detection_res, detections_actual, audits_res, audits_actual = get_events(client, datetime.now())
 
-    assert len(detection_res.outputs) == len(detections)
-    assert len(audits_res.outputs) == len(audits)
+    assert detection_res.outputs == detections_actual
+    assert audits_res.outputs == audits_actual
 
 
 """ Helper Functions Tests """
