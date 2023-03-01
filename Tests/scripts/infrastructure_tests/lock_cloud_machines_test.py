@@ -19,7 +19,7 @@ def test_try_to_lock_machine(mocker):
     assert lock_machine_name == "qa-test-1234"
 
 
-def test_try_to_lock_running_machine(mocker):
+def test_try_to_lock_occupied_machine(mocker):
     """
     given:  machine to try to lock.
     when:   locking for a free machine.

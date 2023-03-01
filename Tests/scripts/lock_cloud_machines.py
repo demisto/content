@@ -6,9 +6,11 @@ import requests
 from google.cloud import storage
 import argparse
 
-
+LOCKS_BUCKET = 'xsoar-ci-artifacts'
 QUEUE_REPO = 'queue'
 MACHINES_LOCKS_REPO = 'machines_locks'
+JOB_STATUS_URL = 'https://code.pan.run/api/v4/projects/{}/jobs/{}'
+CONTENT_GITLAB_PROJECT_ID = '2596'
 
 
 def options_handler():
@@ -91,44 +93,24 @@ def check_job_status(token: str, job_id: str):
     Returns: the status of the job.
 
     """
-    user_endpoint = f"https://code.pan.run/api/v4/projects/2596/jobs/{job_id}"  # disable-secrets-detection
+    user_endpoint = JOB_STATUS_URL.format(CONTENT_GITLAB_PROJECT_ID, job_id)  # disable-secrets-detection
     headers = {'PRIVATE-TOKEN': token}
     response = requests.get(user_endpoint, headers=headers)
     return response.json().get('status')
 
 
-def remove_build_from_queue(storage_bucket: any, lock_repository_name: str, job_id: str):
+def remove_file(storage_bucket: any, file_path: str):
     """
-    deletes a lock queue file
+    deletes a file from the bucket
     Args:
         storage_bucket(google.cloud.storage.bucket.Bucket): google storage bucket where lock machine is stored.
-        lock_repository_name(str): the lock repository  name.
-        job_id(str): the job id to delete.
+        file_path(str): the path of the file.
     """
-    file_path = f'{lock_repository_name}/{QUEUE_REPO}/{job_id}'
     blob = storage_bucket.blob(file_path)
     try:
         blob.delete()
     except Exception as err:
         logging.debug(f'when we try to delete a build_from_queue = {file_path}, we get an error: {str(err)}')
-        pass
-
-
-def remove_machine_lock_file(storage_bucket: any, lock_repository_name: str, machine_name: str, job_id: str):
-    """
-    deletes a lock machine file
-    Args:
-        storage_bucket(google.cloud.storage.bucket.Bucket): google storage bucket where lock machine is stored.
-        lock_repository_name(str) the lock repository name.
-        machine_name: the machine to delete
-        job_id(str): the job id to delete.
-    """
-    file_path = f'{lock_repository_name}/{machine_name}-lock-{job_id}'
-    blob = storage_bucket.blob(file_path)
-    try:
-        blob.delete()
-    except Exception as err:
-        logging.debug(f'when we try to delete a lock machine file = {file_path}, we get an error: {str(err)}')
         pass
 
 
@@ -169,7 +151,7 @@ def get_my_place_in_the_queue(storage_client: storage.Client, gcs_locks_path: st
 
     """
     logging.debug('getting all builds in the queue')
-    builds_in_queue = get_queue_locks_details(storage_client=storage_client, bucket_name='xsoar-ci-artifacts',
+    builds_in_queue = get_queue_locks_details(storage_client=storage_client, bucket_name=LOCKS_BUCKET,
                                               prefix=f'{gcs_locks_path}/{QUEUE_REPO}/')
     # sorting the files by time_created
     sorted_builds_in_queue = sorted(builds_in_queue, key=lambda d: d['time_created'], reverse=False)
@@ -200,18 +182,19 @@ def try_to_lock_machine(storage_bucket: any, machine: str, machines_locks: list,
     """
     lock_machine_name = ''
     job_id_of_the_existing_lock = next((d['job_id'] for d in machines_locks if d["machine_name"] == machine), None)
-    if job_id_of_the_existing_lock:
+
+    if job_id_of_the_existing_lock:  # This means there might be a build using this machine
         logging.debug(f'There is a lock file for job id: {job_id_of_the_existing_lock}')
         job_id_of_the_existing_lock_status = check_job_status(gitlab_status_token, job_id_of_the_existing_lock)
         logging.debug(f'the status of job id: {job_id_of_the_existing_lock} is: {job_id_of_the_existing_lock_status}')
         if job_id_of_the_existing_lock_status != 'running':
-            # machine found! removing the not relevant lock and create a now one
-            remove_machine_lock_file(storage_bucket, gcs_locks_path, machine, job_id_of_the_existing_lock)
+            # The job holding the machine is not running anymore, it is safe to remove its lock from the machine.
+            remove_file(storage_bucket, file_path=f'{gcs_locks_path}/{machine}-lock-{job_id_of_the_existing_lock}')
         else:
             return lock_machine_name
     else:
         # machine found! create lock file
-        logging.info('There is no existing lock file')
+        logging.debug('There is no existing lock file')
     logging.info(f'Locking machine {machine}')
     lock_machine(storage_bucket, gcs_locks_path, machine, job_id)
     lock_machine_name = machine
@@ -222,6 +205,8 @@ def get_and_lock_all_needed_machines(storage_client, storage_bucket, list_machin
                                      number_machines_to_lock, job_id, gitlab_status_token):
     """
     get the requested machines and locked them to the job-id.
+    The function will wait (busy waiting) until it was able to successfully lock the requested number of machines.
+    In between runs, it will sleep for a minute to allow other builds to finish.
     Args:
         storage_client(storage.Client): The GCP storage client.
         storage_bucket(google.cloud.storage.bucket.Bucket): google storage bucket where lock machine is stored.
@@ -235,7 +220,7 @@ def get_and_lock_all_needed_machines(storage_client, storage_bucket, list_machin
     """
 
     logging.debug('getting all machines lock files')
-    machines_locks = get_machines_locks_details(storage_client, 'xsoar-ci-artifacts',
+    machines_locks = get_machines_locks_details(storage_client, LOCKS_BUCKET,
                                                 gcs_locks_path, MACHINES_LOCKS_REPO)
 
     lock_machine_list = []
@@ -263,6 +248,7 @@ def get_and_lock_all_needed_machines(storage_client, storage_bucket, list_machin
 
         # we need more machines but all machines where busy in this round
         if number_machines_to_lock:
+            logging.info(f'Missing {number_machines_to_lock} available machine/s in order to continue, sleeping for 1 minute')
             sleep(60)
     return lock_machine_list
 
@@ -291,14 +277,16 @@ def create_list_of_machines_to_run(storage_bucket, lock_machine_name, gcs_locks_
 
     if number_machines_to_lock > len(list_machines):
         logging.error(
-            f'This build requested {number_machines_to_lock} but there are only {len(list_machines)} of active machines')
+            f'This build requested {number_machines_to_lock} but there are only {len(list_machines)} active machines')
         raise
     return list_machines
 
 
 def wait_for_build_to_be_first_in_queue(storage_client, storage_bucket, gcs_locks_path, job_id, gitlab_status_token):
     """
-    Run until the job-id is the first in the queue.
+    this function will wait (busy waiting) for the current build to be the first in the queue,
+    in case he is not the first it will check if the build before it is alive and cancel it in case it is not,
+    between runs it will sleep for a random amount of seconds.
     Args:
         storage_client(storage.Client): The GCP storage client.
         storage_bucket(google.cloud.storage.bucket.Bucket): google storage bucket where lock machine is stored.
@@ -318,7 +306,7 @@ def wait_for_build_to_be_first_in_queue(storage_client, storage_bucket, gcs_lock
             previous_build_status = check_job_status(gitlab_status_token, previous_build)
             if previous_build_status != 'running':
                 # delete the lock file of the build because its not running
-                remove_build_from_queue(storage_bucket, gcs_locks_path, previous_build)
+                remove_file(storage_bucket, f'{gcs_locks_path}/{QUEUE_REPO}/{previous_build}')
             else:
                 sleep(random.randint(8, 13))
     return first_in_the_queue
@@ -329,7 +317,7 @@ def main():
     logging.info('Starting to search for a CLOUD machine/s to lock')
     options = options_handler()
     storage_client = storage.Client.from_service_account_json(options.service_account)
-    storage_bucket = storage_client.bucket('xsoar-ci-artifacts')
+    storage_bucket = storage_client.bucket(LOCKS_BUCKET)
 
     logging.info(f'Adding job_id: {options.ci_job_id} to the queue')
     adding_build_to_the_queue(storage_bucket, options.gcs_locks_path, options.ci_job_id)
@@ -348,7 +336,7 @@ def main():
                                                          options.ci_job_id, options.gitlab_status_token)
 
     # remove build from queue
-    remove_build_from_queue(storage_bucket, options.gcs_locks_path, options.ci_job_id)
+    remove_file(storage_bucket, file_path=f'{options.lock_repository_name}/{QUEUE_REPO}/{options.ci_job_id}')
 
     # the output need to be improved if we wont to support locking for multiply machines.
     with open(options.response_machine, "w") as f:
