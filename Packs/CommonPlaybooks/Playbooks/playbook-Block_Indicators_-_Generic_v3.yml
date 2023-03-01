@@ -969,7 +969,9 @@ tasks:
           - operator: uniq
           - operator: SetIfEmpty
             args:
-              applyIfEmpty: {}
+              applyIfEmpty:
+                value:
+                  simple: "False"
               defaultValue:
                 value:
                   simple: No indicators to block
