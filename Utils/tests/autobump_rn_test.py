@@ -8,11 +8,10 @@ import pytest as pytest
 from Utils.github_workflow_scripts.autobump_rn import LastModifiedCondition, \
     LabelCondition, AddedRNFilesCondition, HasConflictOnAllowedFilesCondition, PackSupportCondition, \
     MajorChangeCondition, MaxVersionCondition, OnlyVersionChangedCondition, OnlyOneRNPerPackCondition, \
-    SameRNMetadataVersionCondition, ConditionResult, AllowedBumpCondition, UpdateType, PackAutoBumper
+    SameRNMetadataVersionCondition, ConditionResult, AllowedBumpCondition, UpdateType, PackAutoBumper, \
+    BranchAutoBumper, checkout, MetadataCondition
 from git import GitCommandError
-from demisto_sdk.commands.common.git_util import GitUtil
 from demisto_sdk.commands.update_release_notes.update_rn import UpdateRN
-
 
 MERGE_STDOUT = "stdout: '\n Auto-merging {}\n failed.\n Auto-merging {}\n failed.\n"
 
@@ -34,7 +33,7 @@ class PullRequest:
                  updated_at=None,
                  labels: Optional[Label] = None,
                  files: Optional[File] = None,
-                 branch_name: str = 'branch'
+                 branch_name: str = 'branch',
                  ):
         self.number = 1
         self.updated_at = updated_at or datetime.datetime.now()
@@ -46,7 +45,7 @@ class PullRequest:
     def get_files(self):
         return self.files
 
-    def create_issue_comment(self):
+    def create_issue_comment(self, *args, **kwargs):
         pass
 
 
@@ -78,17 +77,45 @@ class Git:
             else:
                 pass
 
-    def add(self):
+    def add(self, *args, **kwargs):
         pass
 
-    def commit(self):
+    def commit(self, *args, **kwargs):
         pass
 
-    def push(self):
+    def push(self, *args, **kwargs):
         pass
 
-    def log(self):
+    def log(self, *args, **kwargs):
         pass
+
+
+@pytest.mark.parametrize('prev_version, new_version, expected_res', [
+    (Version('2.1.3'), Version('2.1.4'), UpdateType.REVISION),
+    (Version('2.1.3'), Version('2.2.0'), UpdateType.MINOR),
+    (Version('2.1.3'), Version('3.0.0'), UpdateType.MAJOR),
+    (Version('2.1.3'), Version('2.2.5'), None),
+])
+def test_check_update_type(prev_version, new_version, expected_res):
+    """
+    Given:
+        - Version bumped by revision + 1.
+        - Version bumped by minor + 1.
+        - Version bumped by major + 1.
+        - Version bumped from 2.1.3 to 2.2.5.
+    When:
+        - Checking that the bump version is legal and finding the update type.
+    Then:
+        - Right update type returned.
+    """
+    res = AllowedBumpCondition.check_update_type(prev_version=prev_version, new_version=new_version)
+    assert res == expected_res
+
+
+def test_get_metadata_files():
+    MetadataCondition.get_metadata_files(pack_id='MyPack', pr=PullRequest(), git_repo=Repo())
+    # todo: write test
+    pass
 
 
 CHANGED_FILES = [File(path='Packs/MyPack/Integrations/MyIntegration/MyIntegration.py'),
@@ -331,36 +358,14 @@ def test_metadata_conditions(cond_obj, pr_args, condition_result_attributes, con
         assert res.__getattribute__(attr) == expected_res
 
 
-@pytest.mark.parametrize('prev_version, new_version, expected_res', [
-    (Version('2.1.3'), Version('2.1.4'), UpdateType.REVISION),
-    (Version('2.1.3'), Version('2.2.0'), UpdateType.MINOR),
-    (Version('2.1.3'), Version('3.0.0'), UpdateType.MAJOR),
-    (Version('2.1.3'), Version('2.2.5'), None),
-])
-def test_check_update_type(prev_version, new_version, expected_res):
-    """
-    Given:
-        - Version bumped by revision + 1.
-        - Version bumped by minor + 1.
-        - Version bumped by major + 1.
-        - Version bumped from 2.1.3 to 2.2.5.
-    When:
-        - Checking that the bump version is legal and finding the update type.
-    Then:
-        - Right update type returned.
-    """
-    res = AllowedBumpCondition.check_update_type(prev_version=prev_version, new_version=new_version)
-    assert res == expected_res
-
-
 def test_pack_auto_bumper(tmp_path, mocker):
     """
     Given:
-
+        - Pack MyPack to update its release notes by minor.
     When:
-
+        - The branch pr passed all conditions to autobump its rn.
     Then:
-
+        - Validate that new rn file created as expected.
     """
     pack = tmp_path / 'Packs'
     pack.mkdir()
@@ -373,16 +378,45 @@ def test_pack_auto_bumper(tmp_path, mocker):
     metadata_file = pack_path / "pack_metadata.json"
     rn_text = '## MyIntegration \n My Changes.'
     rn_file.write_text(rn_text)
-    bc_file.write_text(json.dumps({'breakingChanges': True, 'breakingChangesNotes': 'My Notes'}))
+    bc_json = json.dumps({'breakingChanges': True, 'breakingChangesNotes': 'My Notes'})
+    bc_file.write_text(bc_json)
     metadata_file.write_text(json.dumps({'name': 'MyPack', 'currentVersion': '1.0.5'}))
+
+    new_rn = rn_path / '1_1_0.md'
+    new_bc_file = rn_path / '1_1_0.json'
     mocker.patch.object(UpdateRN, 'get_master_version', return_value='1.0.5')
-    pack_auto_bumper = PackAutoBumper(pack_id='MyPack', rn_file_path=rn_file, update_type=UpdateType.MINOR)
-    pack_auto_bumper.set_pr_changed_rn_related_data()
     mocker.patch.object(UpdateRN, 'bump_version_number', return_value=('1.1.0',
                                                                        {'name': 'MyPack', 'currentVersion': '1.1.0'}))
-    new_rn = rn_path / '1_1_0.md'
     mocker.patch.object(UpdateRN, 'get_release_notes_path', return_value=str(new_rn))
+    pack_auto_bumper = PackAutoBumper(pack_id='MyPack', rn_file_path=rn_file, update_type=UpdateType.MINOR)
+    pack_auto_bumper.set_pr_changed_rn_related_data()
+
     new_version = pack_auto_bumper.autobump()
+
     assert new_version == '1.1.0'
     assert new_rn.read_text() == rn_text
+    assert new_bc_file.read_text() == bc_json
 
+
+def test_branch_auto_bumper(mocker):
+    """
+    Given:
+        - Branch my-branch to autobump release notes for MyPack that was edited in this pack.
+    When:
+        - The pr passed all conditions to autobump its rn
+    Then:
+        - Validate that the comment body was generated as expected
+    """
+    pack_auto_bumper = MagicMock()
+    pack_auto_bumper.autobump.return_value = '1.0.2'
+    pack_auto_bumper.pack_id = 'MyPack'
+    mocker.patch('Utils.github_workflow_scripts.autobump_rn.checkout')
+    branch_auto_bumper = BranchAutoBumper(pr=PullRequest(), git_repo=Repo(),
+                                          packs_to_autobump=[pack_auto_bumper], run_id='1')
+    res = branch_auto_bumper.autobump()
+    assert 'Pack MyPack version was automatically bumped to 1.0.2.' in res
+
+
+def test_autobump_manager():
+    # todo: add test
+    pass

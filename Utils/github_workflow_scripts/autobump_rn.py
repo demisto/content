@@ -728,14 +728,14 @@ class BranchAutoBumper:
         5. Comment on the PR.
         6. Pushes the changes.
         """
+        body = PR_COMMENT_TITLE.format(self.github_run_id)
         if self.branch not in ["conflict_in_cs", "conflicts_in_base"]:
             # todo: delete it
-            return
+            return ''
         with checkout(self.git_repo, self.branch):
             for pack_auto_bumper in self.packs_to_autobump:
                 pack_auto_bumper.set_pr_changed_rn_related_data()
             self.git_repo.git.merge(f'origin/{BASE}', '-Xtheirs', '-m', MERGE_FROM_MASTER_COMMIT_MESSAGE)
-            body = PR_COMMENT_TITLE.format(self.github_run_id)
             for pack_auto_bumper in self.packs_to_autobump:
                 new_version = pack_auto_bumper.autobump()
                 self.git_repo.git.add(f'{PACKS_DIR}/{pack_auto_bumper.pack_id}')
@@ -747,6 +747,7 @@ class BranchAutoBumper:
             # todo: uncomment
             # self.pr.create_issue_comment(body)
             self.git_repo.git.push()
+        return body
 
 
 class AutoBumperManager:
