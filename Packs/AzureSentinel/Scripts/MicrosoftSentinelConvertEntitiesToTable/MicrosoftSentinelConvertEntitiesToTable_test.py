@@ -16,15 +16,14 @@ def test_format_entity():
     assert result == expected
 
 
-CONTEXT_RESULTS = str([
-    {'name': 'test', 'kind': 'test_kind', 'properties': {'testProp': 'test_value'}},
-    {'name': 'test2', 'kind': 'test_kind2', 'properties': {'testProp': 'test_value2', 'testProp2': 'test_value3'}}
-])
+CONTEXT_RESULTS = ("[{'name': 'test', 'kind': 'test_kind', 'properties': {'testProp': 'test_value', 'isDomainJoined': true}},"
+                   "{'name': 'test2', 'kind': 'test_kind2', 'properties': {'testProp': 'test_value2', 'testProp2': 'test_value3',"
+                   "'isDomainJoined': false}}]")
 
-EXPECTED_TABLE = "|Name|Kind|Test Prop|Test Prop 2|\n" \
-                 "|---|---|---|---|\n" \
-                 "| test | test_kind | test_value |  |\n" \
-                 "| test2 | test_kind2 | test_value2 | test_value3 |\n"
+EXPECTED_TABLE = "|Name|Kind|Test Prop|Is Domain Joined|Test Prop 2|\n" \
+                 "|---|---|---|---|---|\n" \
+                 "| test | test_kind | test_value | true |  |\n" \
+                 "| test2 | test_kind2 | test_value2 | false | test_value3 |\n"
 
 
 def test_convert_to_table():

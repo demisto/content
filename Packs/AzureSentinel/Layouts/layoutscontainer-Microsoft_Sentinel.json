@@ -424,6 +424,6 @@
     "system": false,
     "version": -1,
 	"marketplaces": ["xsoar"],
-    "fromVersion": "6.8.0",
+    "fromVersion": "6.5.0",
     "description": "This is the default layout for Microsoft Sentinel incidents."
 }

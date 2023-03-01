@@ -6,7 +6,7 @@ import ast
 
 def format_relation(relation: dict) -> dict:
     """
-    Converts an relation to a dictionary with the relevant fields.
+    Converts a relation to a dictionary with the relevant fields.
     """
     return {
         'name': relation.get('name'),

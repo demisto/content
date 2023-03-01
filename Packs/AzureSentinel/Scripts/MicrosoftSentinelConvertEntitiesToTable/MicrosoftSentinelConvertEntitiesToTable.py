@@ -24,7 +24,7 @@ def convert_to_table(context_results: str) -> CommandResults:
         CommandResults: CommandResults object containing only readable_output
     """
     context_results = re.sub(
-        r':(true|false)\b',
+        r':\s*(true|false)\b',
         lambda x: f':{x.group(1).capitalize()}',
         context_results
     )  # Convert true/false to True/False for literal_eval

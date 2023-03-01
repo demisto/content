@@ -64,7 +64,7 @@ MIRROR_STATUS_DICT = {
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
 INTEGRATION_INSTANCE = demisto.integrationInstance()
 
-INCOMING_MIRRORED_FIELDS = ['ID', 'Etag', 'Title', 'Description', 'Severity', 'Status', 'tags', 'FirstActivityTimeUTC',
+INCOMING_MIRRORED_FIELDS = ['ID', 'Etag', 'Title', 'Description', 'Severity', 'Status', 'owner', 'tags', 'FirstActivityTimeUTC',
                                   'LastActivityTimeUTC', 'LastModifiedTimeUTC', 'CreatedTimeUTC', 'IncidentNumber', 'AlertsCount',
                                   'AlertProductNames', 'Tactics', 'relatedAnalyticRuleIds', 'IncidentUrl', 'classification',
                                   'classificationComment', 'alerts', 'entities', 'comments', 'relations']
