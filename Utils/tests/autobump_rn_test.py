@@ -12,6 +12,8 @@ from Utils.github_workflow_scripts.autobump_rn import LastModifiedCondition, \
     BranchAutoBumper, checkout, MetadataCondition
 from git import GitCommandError
 from demisto_sdk.commands.update_release_notes.update_rn import UpdateRN
+import Utils.github_workflow_scripts.autobump_rn as utils
+
 
 MERGE_STDOUT = "stdout: '\n Auto-merging {}\n failed.\n Auto-merging {}\n failed.\n"
 
@@ -41,12 +43,17 @@ class PullRequest:
         self.files = files or []
         self.head = MagicMock()
         self.head.ref = branch_name
+        self.base = MagicMock()
+        self.base.sha = '12345'
 
     def get_files(self):
         return self.files
 
     def create_issue_comment(self, *args, **kwargs):
         pass
+
+    def get_commits(self):
+        return [['23456']]
 
 
 class Repo:
@@ -87,7 +94,7 @@ class Git:
         pass
 
     def log(self, *args, **kwargs):
-        pass
+        return '*** git commit logs ***'
 
 
 @pytest.mark.parametrize('prev_version, new_version, expected_res', [
@@ -112,10 +119,27 @@ def test_check_update_type(prev_version, new_version, expected_res):
     assert res == expected_res
 
 
-def test_get_metadata_files():
-    MetadataCondition.get_metadata_files(pack_id='MyPack', pr=PullRequest(), git_repo=Repo())
-    # todo: write test
-    pass
+def test_get_metadata_files(mocker):
+    """
+    Given:
+        - Pack that its metadata conditions should be checked
+    When:
+        - The pr passed all base conditions, and we are getting the data to check the metadata conditions
+    Then:
+        - Validate that the pack metadata returned as expected.
+    """
+    origin_metadata = {'name': 'MyPack', 'currentVersion': '1.0.5'}
+    branch_metadata = {'name': 'MyPack', 'currentVersion': '1.0.4'}
+    base_metadata = {'name': 'MyPack', 'currentVersion': '1.0.3'}
+    mocker.patch('Utils.github_workflow_scripts.autobump_rn.checkout')
+    mocker.patch.object(utils, 'load_json',
+                        side_effect=[origin_metadata, branch_metadata, base_metadata])
+
+    res1, res2, res3 = MetadataCondition.get_metadata_files(pack_id='MyPack', pr=PullRequest(), git_repo=Repo())
+
+    assert res1 == origin_metadata
+    assert res2 == branch_metadata
+    assert res3 == base_metadata
 
 
 CHANGED_FILES = [File(path='Packs/MyPack/Integrations/MyIntegration/MyIntegration.py'),
@@ -418,5 +442,14 @@ def test_branch_auto_bumper(mocker):
 
 
 def test_autobump_manager():
+    """
+    Given:
+        - Github repo that has branch my-branch
+        to autobump release notes for MyPack that was edited in this pack.
+    When:
+        - Trying to check whether the update rn needed.
+    Then:
+        - Validate that the comment body was generated as expected
+    """
     # todo: add test
     pass

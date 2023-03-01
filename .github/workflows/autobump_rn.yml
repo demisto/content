@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - master
-  pull_request:
+  pull_request: # todo: delete this. only for testing
     types: [opened, synchronize]
 
 permissions:

@@ -152,7 +152,7 @@ class BaseCondition(ABC):
         """
         curr_result = self._check(previous_result=previous_result)
         if curr_result.should_skip:
-            print(f'{t.red} PR: [{self.pr.number}]. {curr_result.reason} {SKIPPING_MESSAGE}')
+            print(f'{t.red} PR: [{self.pr.number}]. {curr_result.reason} {SKIPPING_MESSAGE}\n\n')
             return curr_result
         elif self.next_cond:
             return self.next_cond.check(curr_result)
@@ -681,6 +681,7 @@ class PackAutoBumper:
         5. If there breaking changes file, updating it to the new version
         Returns: (str) new pack version.
         """
+        print(f'Starting to bump packs {self.pack_id} version.')
         new_version, metadata_dict = self._update_rn_obj.bump_version_number()
         self._update_rn_obj.write_metadata_to_file(metadata_dict=metadata_dict)
         new_release_notes_path = self._update_rn_obj.get_release_notes_path(new_version)
@@ -730,7 +731,7 @@ class BranchAutoBumper:
         """
         body = PR_COMMENT_TITLE.format(self.github_run_id)
         if self.branch not in ["conflict_in_cs", "conflicts_in_base"]:
-            # todo: delete it
+            # todo: delete it, only for testing
             return 'Pack MyPack version was automatically bumped to 1.0.2.'
         with checkout(self.git_repo, self.branch):
             for pack_auto_bumper in self.packs_to_autobump:
@@ -738,12 +739,14 @@ class BranchAutoBumper:
             self.git_repo.git.merge(f'origin/{BASE}', '-Xtheirs', '-m', MERGE_FROM_MASTER_COMMIT_MESSAGE)
             for pack_auto_bumper in self.packs_to_autobump:
                 new_version = pack_auto_bumper.autobump()
+                print(f'Pack {pack_auto_bumper.pack_id} new version: {new_version}.')
                 self.git_repo.git.add(f'{PACKS_DIR}/{pack_auto_bumper.pack_id}')
                 self.git_repo.git.commit('-m', COMMIT_MESSAGE.format(
                     new_version,
                     pack_auto_bumper.pack_id,
                 ))
                 body += PR_COMMENT.format(pack_auto_bumper.pack_id, new_version, )
+            print(f'Committed the changes. Commenting on the pr: \n{body}.\n')
             # todo: uncomment - dont work with my creds, only bots should work.
             # self.pr.create_issue_comment(body)
             self.git_repo.git.push()
@@ -774,7 +777,7 @@ class AutoBumperManager:
         If the pack meets all conditions to autobump pack version, it bumps the version.
         """
         for pr in self.github_repo_obj.get_pulls(state='open', sort='created', base=BASE):
-            print(f'{t.yellow}Looking on pr {pr.number=}: {str(pr.updated_at)=}, {pr.head.ref=}')
+            print(f'{t.yellow}Looking on pr number {pr.number}: {str(pr.updated_at)=}, branch={pr.head.ref}')
 
             conditions = [
                 LastModifiedCondition(pr=pr, git_repo=self.git_repo_obj),
@@ -835,8 +838,10 @@ class AutoBumperManager:
                     pr=pr,
                 ).autobump()
 
+        return 'AutoBumping Done.'
 
-class checkout:
+
+class checkout:  # pragma: no cover
     """Checks out a given branch.
     When the context manager exits, the context manager checks out the
     previously current branch.
@@ -893,7 +898,8 @@ def main():     # pragma: no cover
         run_id=run_id,
     )
 
-    autobump_manager.manage()
+    res = autobump_manager.manage()
+    print(f'{t.green}{res}')
 
     sys.exit(0)
 
