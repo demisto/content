@@ -10,7 +10,6 @@ from VectraEventCollector import (
     test_module,
     DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT,
     AUDIT_START_TIMESTAMP_FORMAT,
-    DETECTION_FIRST_TIMESTAMP_FORMAT,
     get_detections_cmd,
     get_audits_cmd,
     get_events,
@@ -22,6 +21,7 @@ from datetime import datetime
 from pathlib import Path
 from CommonServerPython import *
 from hypothesis import given, strategies as st
+from freezegun import freeze_time
 
 """ Constants """
 BASE_URL = "mock://dev.vectra.ai"
@@ -227,9 +227,9 @@ class TestCommands:
         assert detection_res.outputs == detections_actual
         assert audits_res.outputs == audits_actual
 
-    @pytest.mark.freeze_time("1970-01-01 00:00:00")
+    @freeze_time("1970-01-01 00:00:00")
     def test_first_fetch(
-        self, mocker: MockerFixture, freezer, detections: Dict[str, Any], audits: Dict[str, Any]
+        self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]
     ):
 
         first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
@@ -248,9 +248,9 @@ class TestCommands:
         if audits.get("audits"):
             next_fetch.get("start") == datetime.now().strftime(AUDIT_START_TIMESTAMP_FORMAT)
 
-    @pytest.mark.freeze_time("2023-03-01 00:00:00")
+    @freeze_time("2023-03-01 00:00:00")
     def test_not_first_fetch_is_eod(
-        self, mocker: MockerFixture, freezer, detections: Dict[str, Any], audits: Dict[str, Any]
+        self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]
     ):
 
         pass
