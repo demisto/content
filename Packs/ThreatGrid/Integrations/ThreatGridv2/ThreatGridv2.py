@@ -1,5 +1,3 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 """
 Cisco ThreatGird integration
 """
@@ -18,7 +16,8 @@ from typing import (
     Union,
     Set,
 )
-
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 DEFAULT_INTERVAL = 90
 DEFAULT_TIMEOUT = 600
