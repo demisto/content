@@ -345,7 +345,7 @@ script:
     outputs:
     - contextPath: Sendgrid.DeleteListJobId
       description: 'Job id of the async job'
-  dockerimage: demisto/py3-tools:1.0.0.49159
+  dockerimage: demisto/py3-tools:1.0.0.49475
   script: ''
   subtype: python3
   type: python
