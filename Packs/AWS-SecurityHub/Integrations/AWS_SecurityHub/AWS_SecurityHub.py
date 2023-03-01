@@ -899,13 +899,14 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def update_remote_system_command(client: boto3.client, args: Dict[str, Any]) -> str:
+def update_remote_system_command(client: boto3.client, args: Dict[str, Any], closure_case: str) -> str:
     """
     Mirrors out local changes to the remote system.
     Args:
         client: boto3.client - AWS client
         args: A dictionary containing the data regarding a modified incident, including: data, entries,
             incident_changed, remote_incident_id, inc_status, delta.
+        closure_case: str - Whether to resolve an incident in Security Hub, that was closed in XSOAR.
 
     Returns:
         The remote incident id that was modified. This is important when the incident is newly created remotely.
@@ -915,43 +916,74 @@ def update_remote_system_command(client: boto3.client, args: Dict[str, Any]) -> 
     remote_incident_id = parsed_args.remote_incident_id
     data = parsed_args.data
     list_delta_keys = []
-    demisto.debug(f'Got the following {parsed_args=}, {data=}, {delta=}, and remote ID: {remote_incident_id}.')
+    demisto.debug(f'Got the following {parsed_args.inc_status=}, {data=}, {delta=} '
+                  f'and remote ID: {remote_incident_id}.')
     if delta:
         list_delta_keys = list(delta.keys())
         demisto.debug(f'Got the following delta keys {list(delta.keys())}.')
     if parsed_args.incident_changed:
         demisto.debug(f'Incident id {remote_incident_id} and incident change: {parsed_args.incident_changed}')
-        if any(field in list_delta_keys for field in OUT_FIELDS):
+        if parsed_args.inc_status == IncidentStatus.DONE and closure_case == 'Resolved':
             kwargs = {
-                "FindingIdentifiers": [{
-                    "Id": data.get('FindingIdentifiers.Id'),
-                    "ProductArn": data.get('FindingIdentifiers.ProductArn')
-                }],
-                "Severity": {
-                    "Label": delta.get('Severity.Label')
-                },
-                # should contain only 1 state
-                "VerificationState": delta.get('VerificationState')[0] if delta.get('VerificationState') else None,
-                "Workflow": {
-                    "Status": delta.get('Workflow.Status')[0] if delta.get('Workflow.Status') else None
-                },
-                "Confidence": int(delta.get('Confidence')) if delta.get('Confidence') else None,
-                "Criticality": int(delta.get('Criticality')) if delta.get('Criticality') else None
-            }
-            if delta.get('Note.Text') or delta.get('Note.UpdatedBy'):
-                kwargs['Note'] = {
-                    "Text": delta.get('Note.Text') if delta.get('Note.Text') else data.get('Note.Text'),
-                    "UpdatedBy": delta.get('Note.UpdatedBy') if delta.get('Note.UpdatedBy') else data.get(
-                        'Note.UpdatedBy')
+                'Workflow': {
+                    'Status': 'RESOLVED'
                 }
-            kwargs = remove_empty_elements(kwargs)
-            demisto.debug(f'{kwargs=}')
-            response = client.batch_update_findings(**kwargs)
-            if response:
-                demisto.debug(f'The update remote system response is: {response}')
+            }
+        elif any(field in list_delta_keys for field in OUT_FIELDS):
+            kwargs = {
+                # should contain only 1 status
+                'Workflow': {
+                    "Status": str(delta.get('Workflow.Status')[0]) if delta.get('Workflow.Status') else ''
+                }
+            }
+        else:
+            demisto.debug(f'Skipping updating remote incident {remote_incident_id} because {closure_case=}')
+            return remote_incident_id
+        if kwargs['Workflow']['Status'] == '':
+            del kwargs['Workflow']
+        add_kwargs = additional_kwargs_for_update_remote_data(parsed_args)
+        kwargs.update(add_kwargs)
+        demisto.debug(f'{kwargs=}')
+        response = client.batch_update_findings(**kwargs)
+        if response:
+            demisto.debug(f'The update remote system response is: {response}')
     else:
         demisto.debug(f'Skipping updating remote incident {remote_incident_id} as it did not change.')
     return remote_incident_id
+
+
+def additional_kwargs_for_update_remote_data(parsed_args: UpdateRemoteSystemArgs):
+    """
+    Create the rest of kwargs for batch_update_findings.
+    Args:
+        parsed_args: UpdateRemoteSystemArgs - A dictionary containing the data regarding a modified incident,
+            including: data, entries, incident_changed, remote_incident_id, inc_status, delta.
+    Returns:
+        The additional part of kwargs dictionary.
+    """
+    delta = parsed_args.delta
+    data = parsed_args.data
+    demisto.debug(f'In additional_kwargs_for_update_remote_data {delta=}')
+    kwargs = {
+        "FindingIdentifiers": [{
+            "Id": data.get('FindingIdentifiers.Id'),
+            "ProductArn": data.get('FindingIdentifiers.ProductArn')
+        }],
+        'Severity': {
+            "Label": delta.get('Severity.Label')
+        },
+        # should contain only 1 state
+        'VerificationState': delta.get('VerificationState')[0] if delta.get('VerificationState') else None,
+        'Confidence': int(delta.get('Confidence')) if delta.get('Confidence') else None,
+        'Criticality': int(delta.get('Criticality')) if delta.get('Criticality') else None
+    }
+
+    if delta.get('Note.Text') or delta.get('Note.UpdatedBy'):
+        kwargs['Note'] = {
+            'Text': delta.get('Note.Text') if delta.get('Note.Text') else data.get('Note.Text'),
+            'UpdatedBy': delta.get('Note.UpdatedBy') if delta.get('Note.UpdatedBy') else data.get('Note.UpdatedBy')
+        }
+    return remove_empty_elements(kwargs)
 
 
 def test_function(client):
@@ -983,6 +1015,7 @@ def main():  # pragma: no cover
     finding_type = params.get('finding_type', '')
     workflow_status = params.get('workflow_status', '')
     product_name = argToList(params.get('product_name', ''))
+    closure_case = params.get('close_incident_multiple_options')
 
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
@@ -1026,7 +1059,7 @@ def main():  # pragma: no cover
             return_results(get_remote_data_command(client, args))
             return
         elif command == 'update-remote-system':
-            return_results(update_remote_system_command(client, args))
+            return_results(update_remote_system_command(client, args, closure_case))
             return
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command())

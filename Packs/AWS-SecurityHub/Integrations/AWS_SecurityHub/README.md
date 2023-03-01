@@ -26,10 +26,12 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 4. To ensure that fetch incidents works:
    1. Select the **Fetches incidents** radio button.
    2. Under **Incident type**, select AWS Security Hub Finding.
+<~XSOAR>
 5. To ensure that mirroring works, ensure that fetch incidents works and then:
    1. Under **Mapper (incoming)**, select AWS Security Hub - Incoming Mapper.
    2. Under **Mapper (outgoing)**, select AWS Security Hub - Outgoing Mapper. 
    3. Under **Incident Mirroring Direction**, select the desired mirroring direction. 
+</~XSOAR>
 
     | **Parameter** | **Description**                                                                                                                                                                                                                                                                                                                                   | **Required** |
     |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- | --- |
@@ -50,8 +52,8 @@ For detailed instructions about setting up authentication, see: [AWS Integration
     | Trust any certificate (not secure) |                                                                                                                                                                                                                                                                                                                                                   | False |
     | Use system proxy settings |                                                                                                                                                                                                                                                                                                                                                   | False |
     | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from AWS - Security Hub to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to AWS - Security Hub\), or Incoming and Outgoing \(from/to Cortex XSOAR and AWS - Security Hub\).                                                                                                                | False |
-    | Finding Type | You can set the type of the findings to be fetched or mirrored: "Software and Configuration Checks", "TTPs", "Effects", "Unusual Behaviors", "Sensitive Data Identifications". For example, if you set the finding type to "TTPs", the integration will only fetch or mirror findings with the finding type that match TTPs.                      | False |
-    | Workflow Status | You can set the workflow status of the findings to be fetched or mirrored: "New", "Notified", "Resolved", "Suppressed". For example, if you set the workflow status to "Suppressed", the integration will only fetch or mirror findings with the workflow status of Suppressed.                                                                   | False |
+    | Finding Type | You can set the type of the findings to be fetched: "Software and Configuration Checks", "TTPs", "Effects", "Unusual Behaviors", "Sensitive Data Identifications". For example, if you set the finding type to "TTPs", the integration will only fetch findings with the finding type that match TTPs.                      | False |
+    | Workflow Status | You can set the workflow status of the findings to be fetched: "New", "Notified", "Resolved", "Suppressed". For example, if you set the workflow status to "Suppressed", the integration will only fetch findings with the workflow status of Suppressed.                                                                   | False |
     | Product Name | You can enter a comma-separated list of product names. In order to get the product name, click Integrations in the AWS - Security Hub menu. Use only the product name (the value after the colon (:)) for this parameter.                                                                                                                         | False |
 
 6. Click **Test** to validate the URLs, token, and connection.
@@ -756,7 +758,7 @@ Lists details about all member accounts for the current Security Hub master acco
 >### AWS SecurityHub ListMembers
 >**No entries.**
 
-
+<~XSOAR>
 ### get-remote-data
 ***
 Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
@@ -827,4 +829,5 @@ The supported fields in the mirroring out process are:
 **Important Note:**Mirroring out updates do not affect the value of UpdatedAt for a finding. These updates can be overwritten by the security-findings provider.
 
 * Before updating a comment, make sure that you chose an owner to the incident in the Case Details section. Otherwise, the comment update won't work.
-* AWS Security Hub Verification State, AWS Security Hub Workflow Status fields can contain only 1 state/status.
+</~XSOAR>
+* Note: AWS Security Hub Verification State, AWS Security Hub Workflow Status fields can contain only 1 state/status.

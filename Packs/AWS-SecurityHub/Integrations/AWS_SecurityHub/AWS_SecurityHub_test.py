@@ -225,7 +225,8 @@ def test_fetch_incidents_with_filters(mocker):
     }
     client = MockClient()
     get_findings_mock = mocker.patch.object(MockClient, 'get_findings', return_value=client.get_findings())
-    fetch_incidents(client, 'Medium', False, None, 'Both', ['Software and Configuration Checks'], ['New'], ['Security Hub'])
+    fetch_incidents(client, 'Medium', False, None, 'Both', ['Software and Configuration Checks'], ['New'],
+                    ['Security Hub'])
     get_findings_mock.assert_called_with(Filters=expected_filters)
 
 
@@ -457,6 +458,21 @@ workflow_status_update = ({'data': {'FindingIdentifiers.Id': 'ID',
                           {'FindingIdentifiers': [{'Id': 'ID', 'ProductArn': 'ProductArn'}],
                            'Workflow': {'Status': 'NOTIFIED'}})
 
+close_update = ({'data': {'FindingIdentifiers.Id': 'ID',
+                          'FindingIdentifiers.ProductArn': 'ProductArn',
+                          'Note.Text': 'checking again and again',
+                          'Note.UpdatedBy': 'admin',
+                          'Severity.Label': 'MEDIUM',
+                          'Workflow.Status': ['NEW']},
+                 'entries': [],
+                 'remoteId': 'ID',
+                 'status': IncidentStatus.DONE,
+                 'delta': {'Note.Text': 'checking again and again'},
+                 'incidentChanged': True}, 'ID',
+                {'FindingIdentifiers': [{'Id': 'ID', 'ProductArn': 'ProductArn'}],
+                 'Workflow': {'Status': 'RESOLVED'},
+                 'Note': {'Text': 'checking again and again', 'UpdatedBy': 'admin'}})
+
 test_update_remote_system_command_params = [severity_update,
                                             confidence_update,
                                             criticality_update,
@@ -479,7 +495,7 @@ def test_update_remote_system_command(mocker, args, remote_id, expected_kwargs):
     from AWS_SecurityHub import update_remote_system_command
     client = MockClient()
     batch_update_mock = mocker.patch.object(MockClient, 'batch_update_findings')
-    result = update_remote_system_command(client, args)
+    result = update_remote_system_command(client, args, '')
     assert result == remote_id
     batch_update_mock.assert_called_with(**expected_kwargs)
 
