@@ -1,0 +1,518 @@
+[
+    {
+        "addresses": [
+            {
+                "ip": "192.0.2.0"
+            }
+        ],
+        "assessedForPolicies": false,
+        "assessedForVulnerabilities": true,
+        "databases": [
+            {
+                "id": 0,
+                "name": "test"
+            }
+        ],
+        "history": [
+            {
+                "date": "2020-10-01T22:40:08.974Z",
+                "scanId": 650,
+                "type": "SCAN",
+                "version": 1
+            },
+            {
+                "date": "2021-06-29T06:58:48.740Z",
+                "scanId": 762,
+                "type": "SCAN",
+                "version": 2
+            },
+            {
+                "date": "2049-03-01T04:31:56Z",
+                "description": "admin",
+                "type": "ASSET-IMPORT",
+                "user": "admin",
+                "version": 3
+            },
+            {
+                "date": "2022-11-10T10:53:29.782Z",
+                "description": "admin",
+                "type": "VULNERABILITY_EXCEPTION_APPLIED",
+                "version": 4,
+                "vulnerabilityExceptionId": 10
+            }
+        ],
+        "id": 12,
+        "ip": "192.0.2.0",
+        "os": "Microsoft Windows",
+        "osFingerprint": {
+            "description": "Microsoft Windows",
+            "family": "Windows",
+            "id": 11,
+            "product": "Windows",
+            "systemName": "Microsoft Windows",
+            "vendor": "Microsoft"
+        },
+        "rawRiskScore": 19047.35546875,
+        "riskScore": 19047.35546875,
+        "services": [
+            {
+                "configurations": [
+                    {
+                        "name": "PHP",
+                        "value": "7.1.26"
+                    },
+                    {
+                        "name": "http.banner",
+                        "value": "Apache/2.4.25 (Debian)"
+                    },
+                    {
+                        "name": "http.banner.server",
+                        "value": "Apache/2.4.25 (Debian)"
+                    },
+                    {
+                        "name": "http.banner.x-powered-by",
+                        "value": "PHP/7.1.26"
+                    },
+                    {
+                        "name": "verbs-1",
+                        "value": "GET"
+                    },
+                    {
+                        "name": "verbs-count",
+                        "value": "1"
+                    }
+                ],
+                "family": "Apache",
+                "name": "HTTP",
+                "port": 80,
+                "product": "HTTPD",
+                "protocol": "tcp",
+                "vendor": "Apache",
+                "version": "2.4.25"
+            },
+            {
+                "configurations": [
+                    {
+                        "name": "PHP",
+                        "value": "7.1.26"
+                    },
+                    {
+                        "name": "http.banner",
+                        "value": "Apache/2.4.25 (Debian)"
+                    },
+                    {
+                        "name": "http.banner.server",
+                        "value": "Apache/2.4.25 (Debian)"
+                    },
+                    {
+                        "name": "http.banner.x-powered-by",
+                        "value": "PHP/7.1.26"
+                    },
+                    {
+                        "name": "verbs-1",
+                        "value": "GET"
+                    },
+                    {
+                        "name": "verbs-count",
+                        "value": "1"
+                    }
+                ],
+                "family": "Apache",
+                "name": "HTTP",
+                "port": 8080,
+                "product": "HTTPD",
+                "protocol": "tcp",
+                "vendor": "Apache",
+                "version": "2.4.25"
+            }
+        ],
+        "vulnerabilities": {
+            "critical": 6,
+            "exploits": 4,
+            "malwareKits": 0,
+            "moderate": 0,
+            "severe": 39,
+            "total": 45
+        }
+    },
+    {
+        "addresses": [
+            {
+                "ip": "192.0.2.1"
+            }
+        ],
+        "assessedForPolicies": false,
+        "assessedForVulnerabilities": false,
+        "history": [
+            {
+                "date": "2022-05-01T00:00:00Z",
+                "description": "admin",
+                "type": "ASSET-IMPORT",
+                "user": "admin",
+                "version": 1
+            }
+        ],
+        "hostName": "NewPC",
+        "hostNames": [
+            {
+                "name": "NewPC",
+                "source": "dns"
+            }
+        ],
+        "id": 21,
+        "os": "Microsoft Windows",
+        "osFingerprint": {
+            "description": "Microsoft Windows",
+            "family": "Windows",
+            "id": 11,
+            "product": "Windows",
+            "systemName": "Microsoft Windows",
+            "vendor": "Microsoft"
+        },
+        "rawRiskScore": 0.0,
+        "riskScore": 0.0,
+        "vulnerabilities": {
+            "critical": 0,
+            "exploits": 0,
+            "malwareKits": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
+    },
+    {
+        "addresses": [
+            {
+                "ip": "192.0.2.1"
+            }
+        ],
+        "assessedForPolicies": false,
+        "assessedForVulnerabilities": false,
+        "history": [
+            {
+                "date": "2022-05-01T00:00:00Z",
+                "description": "admin",
+                "type": "ASSET-IMPORT",
+                "user": "admin",
+                "version": 1
+            }
+        ],
+        "hostName": "192.0.2.1",
+        "hostNames": [
+            {
+                "name": "192.0.2.1",
+                "source": "dns"
+            }
+        ],
+        "id": 22,
+        "os": "Microsoft Windows",
+        "osFingerprint": {
+            "description": "Microsoft Windows",
+            "family": "Windows",
+            "id": 11,
+            "product": "Windows",
+            "systemName": "Microsoft Windows",
+            "vendor": "Microsoft"
+        },
+        "rawRiskScore": 0.0,
+        "riskScore": 0.0,
+        "vulnerabilities": {
+            "critical": 0,
+            "exploits": 0,
+            "malwareKits": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
+    },
+    {
+        "addresses": [
+            {
+                "ip": "192.0.2.2"
+            }
+        ],
+        "assessedForPolicies": false,
+        "assessedForVulnerabilities": false,
+        "history": [
+            {
+                "date": "2028-03-01T04:31:56Z",
+                "description": "admin",
+                "type": "ASSET-IMPORT",
+                "user": "admin",
+                "version": 1
+            },
+            {
+                "date": "2059-04-01T04:31:56Z",
+                "description": "admin",
+                "type": "ASSET-IMPORT",
+                "user": "admin",
+                "version": 2
+            }
+        ],
+        "id": 26,
+        "ip": "192.0.2.2",
+        "rawRiskScore": 0.0,
+        "riskScore": 0.0,
+        "vulnerabilities": {
+            "critical": 0,
+            "exploits": 0,
+            "malwareKits": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
+    },
+    {
+        "addresses": [
+            {
+                "ip": "192.0.2.3"
+            }
+        ],
+        "assessedForPolicies": false,
+        "assessedForVulnerabilities": false,
+        "history": [
+            {
+                "date": "2059-03-01T04:31:56Z",
+                "description": "admin",
+                "type": "ASSET-IMPORT",
+                "user": "admin",
+                "version": 1
+            },
+            {
+                "date": "2059-04-01T04:31:56Z",
+                "description": "admin",
+                "type": "ASSET-IMPORT",
+                "user": "admin",
+                "version": 2
+            }
+        ],
+        "id": 32,
+        "ip": "192.0.2.3",
+        "rawRiskScore": 0.0,
+        "riskScore": 0.0,
+        "vulnerabilities": {
+            "critical": 0,
+            "exploits": 0,
+            "malwareKits": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
+    },
+    {
+        "addresses": [
+            {
+                "ip": "192.0.2.4"
+            }
+        ],
+        "assessedForPolicies": false,
+        "assessedForVulnerabilities": false,
+        "databases": [
+            {
+                "id": 0,
+                "name": "test"
+            }
+        ],
+        "history": [
+            {
+                "date": "2048-03-01T04:31:56Z",
+                "description": "admin",
+                "type": "ASSET-IMPORT",
+                "user": "admin",
+                "version": 1
+            },
+            {
+                "date": "2049-03-01T04:31:56Z",
+                "description": "admin",
+                "type": "ASSET-IMPORT",
+                "user": "admin",
+                "version": 2
+            }
+        ],
+        "id": 34,
+        "ip": "192.0.2.4",
+        "os": "Microsoft Windows",
+        "osFingerprint": {
+            "description": "Microsoft Windows",
+            "family": "Windows",
+            "id": 11,
+            "product": "Windows",
+            "systemName": "Microsoft Windows",
+            "vendor": "Microsoft"
+        },
+        "rawRiskScore": 0.0,
+        "riskScore": 0.0,
+        "vulnerabilities": {
+            "critical": 0,
+            "exploits": 0,
+            "malwareKits": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
+    },
+    {
+        "addresses": [
+            {
+                "ip": "192.0.2.5"
+            }
+        ],
+        "assessedForPolicies": false,
+        "assessedForVulnerabilities": false,
+        "history": [
+            {
+                "date": "2022-01-01T00:00:00Z",
+                "description": "admin",
+                "type": "ASSET-IMPORT",
+                "user": "admin",
+                "version": 1
+            },
+            {
+                "date": "2022-01-01T10:00:00Z",
+                "description": "admin",
+                "type": "ASSET-IMPORT",
+                "user": "admin",
+                "version": 2
+            }
+        ],
+        "id": 39,
+        "ip": "192.0.2.5",
+        "rawRiskScore": 0.0,
+        "riskScore": 0.0,
+        "vulnerabilities": {
+            "critical": 0,
+            "exploits": 0,
+            "malwareKits": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
+    },
+    {
+        "addresses": [
+            {
+                "ip": "192.0.2.6"
+            }
+        ],
+        "assessedForPolicies": false,
+        "assessedForVulnerabilities": false,
+        "history": [
+            {
+                "date": "2022-01-01T10:00:00Z",
+                "description": "admin",
+                "type": "ASSET-IMPORT",
+                "user": "admin",
+                "version": 1
+            }
+        ],
+        "id": 40,
+        "ip": "192.0.2.6",
+        "rawRiskScore": 0.0,
+        "riskScore": 0.0,
+        "vulnerabilities": {
+            "critical": 0,
+            "exploits": 0,
+            "malwareKits": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
+    },
+    {
+        "addresses": [
+            {
+                "ip": "192.0.2.7"
+            }
+        ],
+        "assessedForPolicies": false,
+        "assessedForVulnerabilities": false,
+        "history": [
+            {
+                "date": "2022-06-29T16:10:06.738Z",
+                "description": "admin",
+                "type": "ASSET-IMPORT",
+                "user": "admin",
+                "version": 1
+            }
+        ],
+        "id": 72,
+        "ip": "192.0.2.7",
+        "rawRiskScore": 0.0,
+        "riskScore": 0.0,
+        "vulnerabilities": {
+            "critical": 0,
+            "exploits": 0,
+            "malwareKits": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
+    },
+    {
+        "addresses": [
+            {
+                "ip": "192.0.2.8"
+            }
+        ],
+        "assessedForPolicies": false,
+        "assessedForVulnerabilities": false,
+        "history": [
+            {
+                "date": "2022-01-01T10:00:00Z",
+                "description": "admin",
+                "type": "ASSET-IMPORT",
+                "user": "admin",
+                "version": 1
+            }
+        ],
+        "id": 73,
+        "ip": "192.0.2.8",
+        "rawRiskScore": 0.0,
+        "riskScore": 0.0,
+        "vulnerabilities": {
+            "critical": 0,
+            "exploits": 0,
+            "malwareKits": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
+    },
+    {
+        "addresses": [
+            {
+                "ip": "192.0.2.9"
+            }
+        ],
+        "assessedForPolicies": false,
+        "assessedForVulnerabilities": false,
+        "history": [
+            {
+                "date": "2022-10-26T21:30:00Z",
+                "description": "admin",
+                "type": "ASSET-IMPORT",
+                "user": "admin",
+                "version": 1
+            }
+        ],
+        "hostName": "RodSelfService",
+        "hostNames": [
+            {
+                "name": "RodSelfService",
+                "source": "other"
+            }
+        ],
+        "id": 213,
+        "ip": "192.0.2.9",
+        "rawRiskScore": 0.0,
+        "riskScore": 0.0,
+        "vulnerabilities": {
+            "critical": 0,
+            "exploits": 0,
+            "malwareKits": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
+    }
+]
